@@ -6,9 +6,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/datanucleus-appengine-1.0.0.final.jar" sourcepath="war/WEB-INF/libsrc/datanucleus-appengine-1.0.0.final-src.zip"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/datanucleus-core-1.1.0.jar" sourcepath="war/WEB-INF/libsrc/datanucleus-core-1.1.0-src.zip"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/jdo2-api-2.3-SNAPSHOT.jar" sourcepath="war/WEB-INF/libsrc/jdo2-api-2.3-SNAPSHOT-src.zip"/>
-	<classpathentry kind="lib" path="lib/appengine-local-runtime-shared.jar"/>
-	<classpathentry kind="lib" path="lib/jsp-api-2.0.jar" sourcepath="libsrc/jsp-api-2.0-sources.jar"/>
-	<classpathentry kind="lib" path="lib/servlet-api-2.4.jar" sourcepath="libsrc/servlet-api-2.4-sources.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/antlr-2.7.7.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-beanutils-1.7.0.jar" sourcepath="war/WEB-INF/libsrc/commons-beanutils-1.7.0-sources.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-collections-3.1.jar" sourcepath="war/WEB-INF/libsrc/commons-collections-3.1-sources.jar"/>
@@ -26,5 +23,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/standard.jar" sourcepath="war/WEB-INF/libsrc/standard-1.1.2-sources.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/struts-1.2.9.jar" sourcepath="war/WEB-INF/libsrc/struts-1.2.9-sources.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/log4j-1.2.13.jar"/>
+	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
