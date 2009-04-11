@@ -1,0 +1,1042 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+    <properties>
+        <title>Slim3 Struts Annotation Reference</title>
+    </properties>
+    <body>
+        <section name="Annotation Reference">
+			<ul>
+			<li><a href="#Execute">Execute</a></li>
+			<li><a href="#Required">Required</a></li>
+			<li><a href="#Validwhen">Validwhen</a></li>
+			<li><a href="#Minlength">Minlength</a></li>
+			<li><a href="#Maxlength">Maxlength</a></li>
+			<li><a href="#Minbytelength">Minbytelength</a></li>
+            <li><a href="#Maxbytelength">Maxbytelength</a></li>
+            <li><a href="#Mask">Mask</a></li>
+            <li><a href="#IntRange">IntRange</a></li>
+            <li><a href="#LongRange">LongRange</a></li>
+            <li><a href="#FloatRange">FloatRange</a></li>
+            <li><a href="#DoubleRange">DoubleRange</a></li>
+            <li><a href="#ByteType">ByteType</a></li>
+            <li><a href="#ShortType">ShortType</a></li>
+            <li><a href="#IntegerType">IntegerType</a></li>
+            <li><a href="#LongType">LongType</a></li>
+            <li><a href="#FloatType">FloatType</a></li>
+            <li><a href="#DoubleType">DoubleType</a></li>
+            <li><a href="#DateType">DateType</a></li>
+            <li><a href="#CreditCardType">CreditCardType</a></li>
+            <li><a href="#EmailType">EmailType</a></li>
+            <li><a href="#UrlType">UrlType</a></li>
+			<li><a href="#Msg">Msg</a></li>
+			<li><a href="#Arg">Arg</a></li>
+			</ul>
+			<subsection name = "Execute">
+		    <p>
+		    Define an <a href="action.html#Execute_method">execute method</a>.
+		    The definition of Execute annotation is as follows.
+		    </p>
+		    <source>
+@Execute(validate = false)
+public ActionForward index() {
+    ...
+}
+		    </source>
+		    <h5>validate attribute(option)</h5>
+            <p>
+            Specify whether this method is validated by annotation.
+            The default value is true.
+            </p>
+            <p>
+            If validate attribute is true, you must define input attribute as follows.
+            </p>
+            <source>
+@Execute(input = "index.jsp")
+public ActionForward submit() {
+    ...
+}
+            </source>
+            <h5>input attribute(option)</h5>
+            <p>
+            Specify the path when validation errors have occurred.
+            </p>
+            <h5>reset attribute(option)</h5>
+            <p>
+            Specify the invoked reset method when this execute method is invoked.
+            </p>
+            <h5>roles attribute(option)</h5>
+            <p>
+            Specify the required roles when this execute method is invoked.
+            </p>
+			</subsection>
+
+			<subsection name="Required">
+            <p>
+            Define mandatory validation.
+            The definition of Required annotation is as follows.
+            </p>
+            <source>
+@Required
+public String arg1;
+            </source>
+            <h5>msg attribute(option)</h5>
+            <p>
+            Specify the displayed message when validation errors have occurred.<br />
+            The default value is @Msg(key = "errors.required").
+            </p>
+            <p>
+            See <a href="#Msg">Msg annotation</a>.
+            </p>
+            <h5>arg0 attribute(option)</h5>
+            <p>
+            Specify the first argument of message.<br />
+            The default value is same as property name.
+            </p>
+            <p>
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>targets attribute(option)</h5>
+            <p>
+            Specify the execute method name for validation target.
+            If you don't specify this attribute,
+            execute methods that validate attribute is true are target. 
+            </p>
+            <source>
+targets = "aaa"
+            </source>
+            <source>
+targets = {"aaa", "bbb"}
+            </source>
+            </subsection>
+            
+            <subsection name="Validwhen">
+            <p>
+            Define validation for checking one property against another.
+            "antlr.jar" is required.
+            </p>
+            <h5>test attribute(mandatory)</h5>
+            <p>
+            Specify the boolean expression as follows.
+            </p>
+            <source>
+test = "((validwhen1Text == null) or (*this* != null))"
+            </source>
+            <h5>msg attribute(required)</h5>
+            <p>
+            Specify the displayed message when validation errors have occurred.
+            </p>
+            <p>
+            See <a href="#Msg">Msg annotation</a>.
+            </p>
+            <h5>arg0 attribute(option)</h5>
+            <p>
+            Specify the first argument of message.<br />
+            The default value is same as property name.
+            </p>
+            <p>
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>args attribute(option)</h5>
+            <p>
+            Specify the array of Arg annotations.
+            </p>
+            <p>
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>targets attribute(option)</h5>
+            <p>
+            Specify the execute method name for validation target.
+            If you don't specify this attribute,
+            execute methods that validate attribute is true are target. 
+            </p>
+            <source>
+targets = "aaa"
+            </source>
+            <source>
+targets = {"aaa", "bbb"}
+            </source>
+            </subsection>
+            
+            <subsection name="Minlength">
+            <p>
+            Validate that input data isn't less than a specified minimum length.
+            </p>
+            <h5>minlength attribute(required)</h5>
+            <p>
+            Specify a minimum length.
+            </p>
+            <h5>msg attribute(option)</h5>
+            <p>
+            Specify the displayed message when validation errors have occurred.<br />
+            The default value is @Msg(key = "errors.minlength").
+            </p>
+            <p>
+            See <a href="#Msg">Msg annotation</a>.
+            </p>
+            <h5>arg0 attribute(option)</h5>
+            <p>
+            Specify the first argument of message.<br />
+            The default value is same as property name.
+            </p>
+            <p>
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>arg1 attribute(option)</h5>
+            <p>
+            Specify the second argument of message.<br />
+            The default value is @Arg(key = "${var:minlength}"
+            </p>
+            <p>
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>targets attribute(option)</h5>
+            <p>
+            Specify the execute method name for validation target.
+            If you don't specify this attribute,
+            execute methods that validate attribute is true are target. 
+            </p>
+            <source>
+targets = "aaa"
+            </source>
+            <source>
+targets = {"aaa", "bbb"}
+            </source>
+            </subsection>
+            
+            <subsection name="Maxlength">
+            <p>
+            Validate that input data doesn't exceed a specified maximum length.
+            </p>
+            <h5>maxlength attribute(required)</h5>
+            <p>
+            Specify a maximum length.
+            </p>
+            <h5>msg attribute(option)</h5>
+            <p>
+            Specify the displayed message when validation errors have occurred.<br />
+            The default value is @Msg(key = "errors.maxlength").
+            </p>
+            <p>
+            See <a href="#Msg">Msg annotation</a>.
+            </p>
+            <h5>arg0 attribute(option)</h5>
+            <p>
+            Specify the first argument of message.<br />
+            The default value is same as property name.
+            </p>
+            <p>
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>arg1 attribute(option)</h5>
+            <p>
+            Specify the second argument of message.<br />
+            The default value is @Arg(key = "${var:maxlength}".
+            </p>
+            <p>
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>targets attribute(option)</h5>
+            <p>
+            Specify the execute method name for validation target.
+            If you don't specify this attribute,
+            execute methods that validate attribute is true are target. 
+            </p>
+            <source>
+targets = "aaa"
+            </source>
+            <source>
+targets = {"aaa", "bbb"}
+            </source>
+            </subsection>
+            
+            <subsection name="Minbytelength">
+            <p>
+            Validate that input data isn't less than a specified minimum byte length.
+            </p>
+            <h5>minbytelength attribute(required)</h5>
+            <p>
+            Specify a minimum byte length.
+            </p>
+            <h5>msg attribute(option)</h5>
+            <p>
+            Specify the displayed message when validation errors have occurred.<br />
+            The default value is @Msg(key = "errors.minbytelength").
+            </p>
+            <p>
+            See <a href="#Msg">Msg annotation</a>.
+            </p>
+            <h5>arg0 attribute(option)</h5>
+            <p>
+            Specify the first argument of message.<br />
+            The default value is same as property name.
+            </p>
+            <p>
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>arg1 attribute(option)</h5>
+            <p>
+            Specify the second argument of message.<br />
+            The default value is @Arg(key = "${var:minbytelength}".
+            </p>
+            <p>
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>targets attribute(option)</h5>
+            <p>
+            Specify the execute method name for validation target.
+            If you don't specify this attribute,
+            execute methods that validate attribute is true are target. 
+            </p>
+            <source>
+targets = "aaa"
+            </source>
+            <source>
+targets = {"aaa", "bbb"}
+            </source>
+            </subsection>
+            
+            <subsection name="Maxbytelength">
+            <p>
+            Validate that input data doesn't exceed a specified maximum byte length.
+            </p>
+            <h5>maxbytelength attribute(required)</h5>
+            <p>
+            Specify a maximum byte length.
+            </p>
+            <h5>msg attribute(option)</h5>
+            <p>
+            Specify the displayed message when validation errors have occurred.<br />
+            The default value is @Msg(key = "errors.maxbytelength").
+            </p>
+            <p>
+            See <a href="#Msg">Msg annotation</a>.
+            </p>
+            <h5>arg0 attribute(option)</h5>
+            <p>
+            Specify the first argument of message.<br />
+            The default value is same as property name.
+            </p>
+            <p>
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>arg1 attribute(option)</h5>
+            <p>
+            Specify the second argument of message.<br />
+            The default value is @Arg(key = "${var:maxbytelength}".
+            </p>
+            <p>  
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>targets attribute(option)</h5>
+            <p>
+            Specify the execute method name for validation target.
+            If you don't specify this attribute,
+            execute methods that validate attribute is true are target. 
+            </p>
+            <source>
+targets = "aaa"
+            </source>
+            <source>
+targets = {"aaa", "bbb"}
+            </source>
+            </subsection>
+            
+            <subsection name="Mask">
+            <p>
+            Validate format according to a regular expression.
+            "jakarta-oro.jar" is required. 
+            </p>
+            <h5>mask attribute(required)</h5>
+            <p>
+            Specify a regular expression. 
+            </p>
+            <h5>msg attribute(option)</h5>
+            <p>
+            Specify the displayed message when validation errors have occurred.<br />
+            The default value is @Msg(key = "errors.invalid").
+            </p>
+            <p>
+            See <a href="#Msg">Msg annotation</a>.
+            </p>
+            <h5>arg0 attribute(option)</h5>
+            <p>
+            Specify the first argument of message.<br />
+            The default value is same as property name.
+            </p>
+            <p>
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>args attribute(option)</h5>
+            <p>
+            Specify the array of Arg annotations.
+            </p>
+            <p>
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>targets attribute(option)</h5>
+            <p>
+            Specify the execute method name for validation target.
+            If you don't specify this attribute,
+            execute methods that validate attribute is true are target. 
+            </p>
+            <source>
+targets = "aaa"
+            </source>
+            <source>
+targets = {"aaa", "bbb"}
+            </source>
+            </subsection>
+            
+            <subsection name="IntRange">
+            <p>
+            Validate that an integer field is within a specified range.
+            </p>
+            <h5>min attribute(required)</h5>
+            <p>
+            Specify a minimum value.
+            </p>
+            <h5>max attribute(required)</h5>
+            <p>
+            Specify a maximum value.
+            </p>
+            <h5>msg attribute(option)</h5>
+            <p>
+            Specify the displayed message when validation errors have occurred.<br />
+            The default value is @Msg(key = "errors.range").
+            </p>
+            <p>
+            See <a href="#Msg">Msg annotation</a>.
+            </p>
+            <h5>arg0 attribute(option)</h5>
+            <p>
+            Specify the first argument of message.<br />
+            The default value is same as property name.
+            </p>
+            <p>
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>arg1 attribute(option)</h5>
+            <p>
+            Specify the second argument of message.<br />
+            The default value is @Arg(key = "${var:min}".
+            </p>
+            <p>  
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>arg2 attribute(option)</h5>
+            <p>
+            Specify the third argument of message.<br />
+            The default value is @Arg(key = "${var:max}".
+            </p>
+            <p>  
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>targets attribute(option)</h5>
+            <p>
+            Specify the execute method name for validation target.
+            If you don't specify this attribute,
+            execute methods that validate attribute is true are target. 
+            </p>
+            <source>
+targets = "aaa"
+            </source>
+            <source>
+targets = {"aaa", "bbb"}
+            </source>
+            </subsection>
+            
+            <subsection name="LongRange">
+            <p>
+            Validate that an long field is within a specified range.
+            </p>
+            <h5>min attribute(required)</h5>
+            <p>
+            Specify a minimum value.
+            </p>
+            <h5>max attribute(required)</h5>
+            <p>
+            Specify a maximum value.
+            </p>
+            <h5>msg attribute(option)</h5>
+            <p>
+            Specify the displayed message when validation errors have occurred.<br />
+            The default value is @Msg(key = "errors.range").
+            </p>
+            <p>
+            See <a href="#Msg">Msg annotation</a>.
+            </p>
+            <h5>arg0 attribute(option)</h5>
+            <p>
+            Specify the first argument of message.<br />
+            The default value is same as property name.
+            </p>
+            <p>
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>arg1 attribute(option)</h5>
+            <p>
+            Specify the second argument of message.<br />
+            The default value is @Arg(key = "${var:min}".
+            </p>
+            <p>  
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>arg2 attribute(option)</h5>
+            <p>
+            Specify the third argument of message.<br />
+            The default value is @Arg(key = "${var:max}".
+            </p>
+            <p>  
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>targets attribute(option)</h5>
+            <p>
+            Specify the execute method name for validation target.
+            If you don't specify this attribute,
+            execute methods that validate attribute is true are target. 
+            </p>
+            <source>
+targets = "aaa"
+            </source>
+            <source>
+targets = {"aaa", "bbb"}
+            </source>
+            </subsection>
+            
+            <subsection name="FloatRange">
+            <p>
+            Validate that an float field is within a specified range.
+            </p>
+            <h5>min attribute(required)</h5>
+            <p>
+            Specify a minimum value.
+            </p>
+            <h5>max attribute(required)</h5>
+            <p>
+            Specify a maximum value.
+            </p>
+            <h5>msg attribute(option)</h5>
+            <p>
+            Specify the displayed message when validation errors have occurred.<br />
+            The default value is @Msg(key = "errors.range").
+            </p>
+            <p>
+            See <a href="#Msg">Msg annotation</a>.
+            </p>
+            <h5>arg0 attribute(option)</h5>
+            <p>
+            Specify the first argument of message.<br />
+            The default value is same as property name.
+            </p>
+            <p>
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>arg1 attribute(option)</h5>
+            <p>
+            Specify the second argument of message.<br />
+            The default value is @Arg(key = "${var:min}".
+            </p>
+            <p>  
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>arg2 attribute(option)</h5>
+            <p>
+            Specify the third argument of message.<br />
+            The default value is @Arg(key = "${var:max}".
+            </p>
+            <p>  
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>targets attribute(option)</h5>
+            <p>
+            Specify the execute method name for validation target.
+            If you don't specify this attribute,
+            execute methods that validate attribute is true are target. 
+            </p>
+            <source>
+targets = "aaa"
+            </source>
+            <source>
+targets = {"aaa", "bbb"}
+            </source>
+            </subsection>
+            
+            <subsection name="DoubleRange">
+            <p>
+            Validate that an double field is within a specified range.
+            </p>
+            <h5>min attribute(required)</h5>
+            <p>
+            Specify a minimum value.
+            </p>
+            <h5>max attribute(required)</h5>
+            <p>
+            Specify a maximum value.
+            </p>
+            <h5>msg attribute(option)</h5>
+            <p>
+            Specify the displayed message when validation errors have occurred.<br />
+            The default value is @Msg(key = "errors.range").
+            </p>
+            <p>
+            See <a href="#Msg">Msg annotation</a>.
+            </p>
+            <h5>arg0 attribute(option)</h5>
+            <p>
+            Specify the first argument of message.<br />
+            The default value is same as property name.
+            </p>
+            <p>
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>arg1 attribute(option)</h5>
+            <p>
+            Specify the second argument of message.<br />
+            The default value is @Arg(key = "${var:min}".
+            </p>
+            <p>  
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>arg2 attribute(option)</h5>
+            <p>
+            Specify the third argument of message.<br />
+            The default value is @Arg(key = "${var:max}".
+            </p>
+            <p>  
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>targets attribute(option)</h5>
+            <p>
+            Specify the execute method name for validation target.
+            If you don't specify this attribute,
+            execute methods that validate attribute is true are target. 
+            </p>
+            <source>
+targets = "aaa"
+            </source>
+            <source>
+targets = {"aaa", "bbb"}
+            </source>
+            </subsection>
+            
+            <subsection name="ByteType">
+            <p>
+            Validate that a field can be converted to Byte.
+            </p>
+            <h5>msg attribute(option)</h5>
+            <p>
+            Specify the displayed message when validation errors have occurred.<br />
+            The default value is @Msg(key = "errors.byte").
+            </p>
+            <p>
+            See <a href="#Msg">Msg annotation</a>.
+            </p>
+            <h5>arg0 attribute(option)</h5>
+            <p>
+            Specify the first argument of message.<br />
+            The default value is same as property name.
+            </p>
+            <p>
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>targets attribute(option)</h5>
+            <p>
+            Specify the execute method name for validation target.
+            If you don't specify this attribute,
+            execute methods that validate attribute is true are target. 
+            </p>
+            <source>
+targets = "aaa"
+            </source>
+            <source>
+targets = {"aaa", "bbb"}
+            </source>
+            </subsection>
+            
+            <subsection name="ShortType">
+            <p>
+            Validate that a field can be converted to Short.
+            </p>
+            <h5>msg attribute(option)</h5>
+            <p>
+            Specify the displayed message when validation errors have occurred.<br />
+            The default value is @Msg(key = "errors.short").
+            </p>
+            <p>
+            See <a href="#Msg">Msg annotation</a>.
+            </p>
+            <h5>arg0 attribute(option)</h5>
+            <p>
+            Specify the first argument of message.<br />
+            The default value is same as property name.
+            </p>
+            <p>
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>targets attribute(option)</h5>
+            <p>
+            Specify the execute method name for validation target.
+            If you don't specify this attribute,
+            execute methods that validate attribute is true are target. 
+            </p>
+            <source>
+targets = "aaa"
+            </source>
+            <source>
+targets = {"aaa", "bbb"}
+            </source>
+            </subsection>
+            
+            <subsection name="IntegerType">
+            <p>
+            Validate that a field can be converted to Integer.
+            </p>
+            <h5>msg attribute(option)</h5>
+            <p>
+            Specify the displayed message when validation errors have occurred.<br />
+            The default value is @Msg(key = "errors.integer").
+            </p>
+            <p>
+            See <a href="#Msg">Msg annotation</a>.
+            </p>
+            <h5>arg0 attribute(option)</h5>
+            <p>
+            Specify the first argument of message.<br />
+            The default value is same as property name.
+            </p>
+            <p>
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>targets attribute(option)</h5>
+            <p>
+            Specify the execute method name for validation target.
+            If you don't specify this attribute,
+            execute methods that validate attribute is true are target. 
+            </p>
+            <source>
+targets = "aaa"
+            </source>
+            <source>
+targets = {"aaa", "bbb"}
+            </source>
+            </subsection>
+            
+            <subsection name="LongType">
+            <p>
+            Validate that a field can be converted to Long.
+            </p>
+            <h5>msg attribute(option)</h5>
+            <p>
+            Specify the displayed message when validation errors have occurred.<br />
+            The default value is @Msg(key = "errors.long").
+            </p>
+            <p>
+            See <a href="#Msg">Msg annotation</a>.
+            </p>
+            <h5>arg0 attribute(option)</h5>
+            <p>
+            Specify the first argument of message.<br />
+            The default value is same as property name.
+            </p>
+            <p>
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>targets attribute(option)</h5>
+            <p>
+            Specify the execute method name for validation target.
+            If you don't specify this attribute,
+            execute methods that validate attribute is true are target. 
+            </p>
+            <source>
+targets = "aaa"
+            </source>
+            <source>
+targets = {"aaa", "bbb"}
+            </source>
+            </subsection>
+            
+            <subsection name="FloatType">
+            <p>
+            Validate that a field can be converted to Float.
+            </p>
+            <h5>msg attribute(option)</h5>
+            <p>
+            Specify the displayed message when validation errors have occurred.<br />
+            The default value is @Msg(key = "errors.float").
+            </p>
+            <p>
+            See <a href="#Msg">Msg annotation</a>.
+            </p>
+            <h5>arg0 attribute(option)</h5>
+            <p>
+            Specify the first argument of message.<br />
+            The default value is same as property name.
+            </p>
+            <p>
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>targets attribute(option)</h5>
+            <p>
+            Specify the execute method name for validation target.
+            If you don't specify this attribute,
+            execute methods that validate attribute is true are target. 
+            </p>
+            <source>
+targets = "aaa"
+            </source>
+            <source>
+targets = {"aaa", "bbb"}
+            </source>
+            </subsection>
+            
+            <subsection name="DoubleType">
+            <p>
+            Validate that a field can be converted to Double.
+            </p>
+            <h5>msg attribute(option)</h5>
+            <p>
+            Specify the displayed message when validation errors have occurred.<br />
+            The default value is @Msg(key = "errors.double").
+            </p>
+            <p>
+            See <a href="#Msg">Msg annotation</a>.
+            </p>
+            <h5>arg0 attribute(option)</h5>
+            <p>
+            Specify the first argument of message.<br />
+            The default value is same as property name.
+            </p>
+            <p>
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>targets attribute(option)</h5>
+            <p>
+            Specify the execute method name for validation target.
+            If you don't specify this attribute,
+            execute methods that validate attribute is true are target. 
+            </p>
+            <source>
+targets = "aaa"
+            </source>
+            <source>
+targets = {"aaa", "bbb"}
+            </source>
+            </subsection>
+            
+            <subsection name="DateType">
+            <p>
+            Validate that a field can be converted to Date.
+            </p>
+            <h5>datePattern attribute(option)</h5>
+            <p>
+            Specify date pattern.
+            </p>
+            <h5>datePatternStrict attribute(option)</h5>
+            <p>
+            Specify date pattern strictly.
+            </p>
+            <h5>msg attribute(option)</h5>
+            <p>
+            Specify the displayed message when validation errors have occurred.<br />
+            The default value is @Msg(key = "errors.date").
+            </p>
+            <p>
+            See <a href="#Msg">Msg annotation</a>.
+            </p>
+            <h5>arg0 attribute(option)</h5>
+            <p>
+            Specify the first argument of message.<br />
+            The default value is same as property name.
+            </p>
+            <p>
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>targets attribute(option)</h5>
+            <p>
+            Specify the execute method name for validation target.
+            If you don't specify this attribute,
+            execute methods that validate attribute is true are target. 
+            </p>
+            <source>
+targets = "aaa"
+            </source>
+            <source>
+targets = {"aaa", "bbb"}
+            </source>
+            </subsection>
+            
+            <subsection name="CreditCardType">
+            <p>
+            Validate credit card number format.
+            </p>
+            <h5>msg attribute(option)</h5>
+            <p>
+            Specify the displayed message when validation errors have occurred.<br />
+            The default value is @Msg(key = "errors.creditcard").
+            </p>
+            <p>
+            See <a href="#Msg">Msg annotation</a>.
+            </p>
+            <h5>arg0 attribute(option)</h5>
+            <p>
+            Specify the first argument of message.<br />
+            The default value is same as property name.
+            </p>
+            <p>
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>targets attribute(option)</h5>
+            <p>
+            Specify the execute method name for validation target.
+            If you don't specify this attribute,
+            execute methods that validate attribute is true are target. 
+            </p>
+            <source>
+targets = "aaa"
+            </source>
+            <source>
+targets = {"aaa", "bbb"}
+            </source>
+            </subsection>
+            
+            <subsection name="EmailType">
+            <p>
+            Validate email address format.
+            </p>
+            <h5>msg attribute(option)</h5>
+            <p>
+            Specify the displayed message when validation errors have occurred.<br />
+            The default value is @Msg(key = "errors.email").
+            </p>
+            <p>
+            See <a href="#Msg">Msg annotation</a>.
+            </p>
+            <h5>arg0 attribute(option)</h5>
+            <p>
+            Specify the first argument of message.<br />
+            The default value is same as property name.
+            </p>
+            <p>
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>targets attribute(option)</h5>
+            <p>
+            Specify the execute method name for validation target.
+            If you don't specify this attribute,
+            execute methods that validate attribute is true are target. 
+            </p>
+            <source>
+targets = "aaa"
+            </source>
+            <source>
+targets = {"aaa", "bbb"}
+            </source>
+            </subsection>
+            
+            <subsection name="UrlType">
+            <p>
+            Validate url format.
+            </p>
+            <h5>allowallschemes attribute(option)</h5>
+            <p>
+            Specify whether all schemes are allowed.<br />
+            The default value is false.
+            </p>
+            <h5>allow2slashes attribute(option)</h5>
+            <p>
+            Specify whether double '/' characters are allowed.<br />
+            The default value is false.
+            </p>
+            <h5>nofragments attribute(option)</h5>
+            <p>
+            Specify whether fragements are allowed.<br />
+            The default value is false(allowed).
+            </p>
+            <h5>schemes attribute(option)</h5>
+            <p>
+            Specify a comma separated list of valid schemes.<br />
+            The default value is "http,https,ftp".
+            </p>
+            <h5>msg attribute(option)</h5>
+            <p>
+            Specify the displayed message when validation errors have occurred.<br />
+            The default value is @Msg(key = "errors.url").
+            </p>
+            <p>
+            See <a href="#Msg">Msg annotation</a>.
+            </p>
+            <h5>arg0 attribute(option)</h5>
+            <p>
+            Specify the first argument of message.<br />
+            The default value is same as property name.
+            </p>
+            <p>
+            See <a href="#Arg">Arg annotation</a>.
+            </p>
+            <h5>targets attribute(option)</h5>
+            <p>
+            Specify the execute method name for validation target.
+            If you don't specify this attribute,
+            execute methods that validate attribute is true are target. 
+            </p>
+            <source>
+targets = "aaa"
+            </source>
+            <source>
+targets = {"aaa", "bbb"}
+            </source>
+            </subsection>
+            
+            <subsection name="Msg">
+            <p>
+            Define a message.
+            </p>
+            <h5>key attribute(required)</h5>
+            <p>
+            If resource attribute is true,
+            specify the key registered in message resource(application.properties).
+            If resource attribute is false, specify the message itself.
+            </p>
+            <h5>resource attribute(option)</h5>
+            <p>
+            Specify whether the message is registered in message resource(application.properties).
+            The default value is true.
+            </p>
+            <h5>bundle attribute(option)</h5>
+            <p>
+            Specify the resource bundle.
+            </p>
+            </subsection>
+
+            <subsection name="Arg">
+            <p>
+            Define an argument of a message.
+            </p>
+            <h5>key attribute(required)</h5>
+            <p>
+            If resource attribute is true,
+            specify the key registered in message resource(application.properties).
+            If resource attribute is false, specify the message itself.
+            </p>
+            <p>
+            If you specify ${var:"variable name"} like @Arg(key = "${var:minlength}", resource = false),
+            the value of variable is applied
+            </p>
+            <h5>resource attribute(option)</h5>
+            <p>
+            Specify whether the message is registered in message resource(application.properties).
+            The default value is true.
+            </p>
+            <h5>bundle attribute(option)</h5>
+            <p>
+            Specify the resource bundle.
+            </p>
+            <h5>position attribute(option)</h5>
+            <p>
+            Specify the position of argument.
+            It starts with zero.
+            </p>
+        </subsection>
+		</section>
+	</body>
+</document>

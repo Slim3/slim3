@@ -1,0 +1,56 @@
+/*
+ * Copyright 2004-2009 the Seasar Foundation and the Others.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
+ */
+package org.slim3.struts.util;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.struts.action.ActionForm;
+import org.apache.struts.action.ActionMessages;
+import org.slim3.struts.config.S3ActionMapping;
+import org.slim3.struts.web.WebLocator;
+
+/**
+ * A utility of "commons-validator".
+ * 
+ * @author higa
+ * @since 3.0
+ * 
+ */
+public final class ValidatorUtil {
+
+    private ValidatorUtil() {
+    }
+
+    /**
+     * Validates request parameters.
+     * 
+     * @return error messages.
+     * 
+     */
+    public static ActionMessages validate() {
+        S3ActionMapping actionMapping = S3ActionMappingUtil.getActionMapping();
+        if (actionMapping == null) {
+            return null;
+        }
+        HttpServletRequest request = WebLocator.getRequest();
+        ActionForm actionForm = (ActionForm) request.getAttribute(actionMapping
+                .getAttribute());
+        if (actionForm == null) {
+            return null;
+        }
+        return actionForm.validate(actionMapping, request);
+    }
+}

@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+	<properties>
+		<title>Slim3 Struts Action</title>
+	</properties>
+	<body>
+	    <section name="Action">
+	    <p>
+        Action is a class activated by request.
+        Request URL is mapped to action by "Convention",
+        so you don't need to write configuration files.
+        </p>
+        <p>
+        Slim3 action is POJO(Plain Old Java Object),
+        so action don't need to extend Struts action.
+        </p>
+        <ul>
+        <li><a href="#Packages_structure">Packages structure</a></li>
+        <li><a href="#Convention">Convention</a></li>
+        <li><a href="#Input_and_output_variables">Input and output variables</a></li>
+        <li><a href="#Execute_method">Execute method</a></li>
+        <li><a href="#Validation_using_annotation">Validation using annotation</a></li>
+        </ul>
+
+        <subsection name="Packages structure">
+        <p>
+        In Slim3 Struts, the packages structure is defined beforehand.
+        Several packages such as action, service and entity are placed under root-package, as follows.
+        </p>
+        <source>
+root-package.action.XxxAction
+root-package.service.YyyAction
+        </source>
+        <p>
+        In case of slim3-struts-tutorial, root-package is "tutorial".
+        A root-package is defined in "slim3_configuration.properties", as follows.
+        </p>
+        <source>
+slim3.rootPackages=tutorial
+        </source>
+        </subsection>
+       
+        <subsection name="Convention">
+        <p>
+        Request URL is converted to a method of an action class by following convention.
+        </p>
+        <ul>
+        <li>You access "http://localhost:8080/slim3-struts-tutorial/hello/index".</li>
+        <li>"/slim3-struts-tutorial" is context path.</li>
+        <li>"/hello/" is action path.</li>
+        <li>"hello" is capitalized. As a result, "Hello".</li>
+        <li>"Action" is added to "Hello" as suffix. As a result, "HelloAction".</li>
+        <li>An action is placed under "root-package.action" package.
+            In this case, root-package is "tutorial",
+            As a result, the class name is "tutorial.action.HelloAction".
+        </li>
+        <li>"index" is method name, so "index" method of "tutorial.action.HelloAction" is invoked.</li>
+        <li>"index" method can be omitted, so "/hello/" is equivalent to "/hello/index".</li>
+        <li>If action path is "/", the class name is "tutorial.action.IndexAction".</li>
+        </ul>
+        <p>
+        CAUTION:"/hello" means "hello" method of "IndexAction" not "index" method of "HelloAction".
+        Whether "/" exists or not is very important.
+        </p>
+        <p>
+        In case of large scale application, you can divide action path like "/aaa/hello/".
+        It is mapped to "tutorial.action.aaa.HelloAction".
+        </p>
+        <p>
+        Other configurations are defined by annotation.
+        </p>
+        <p>
+        See <a href="annotationReference.html">Annotation reference</a>.
+        </p>
+        </subsection>
+        <subsection name="Input and output variables">
+        <p>
+        Input and output variables are defined in Action, not ActionForm. For example.
+        </p>
+        <source>
+public class AddAction {
+
+    public String arg1;
+
+    public String arg2;
+
+    public Integer result;
+    
+    ...
+}
+        </source>
+        <p>
+        The types of input variables are String or Boolean.
+        The types of output variables are free.
+        You don't need to write getter and setter methods for property.
+        </p>
+        <p>
+        The value of property is set to request.
+        The attribute name of request is same as property name.
+        So you can access property value in JSP as follows.
+        </p>
+        <source>
+${propertyName}
+        </source>
+        <p>
+        The scope of action is request.
+        If you want to store a property value in session,
+        define @SessionScope at the property, as follows.
+        </p>
+        <source>
+@SessionScope
+public String arg1;
+        </source>
+        </subsection>
+        <subsection name="Execute method">
+        <p>
+        You can process request using execute method.
+        The signature of execute method is "public ActionForward methodName()" as follows.
+        </p>
+        <source>
+@Execute(...)
+public ActionForward xxx() {
+    ...
+    return new ActionForward("xxx.jsp");
+}
+        </source>
+        <p>
+        The return value of execute method is path where you want to move.
+        If the path doesn't start with "/", the path is interpreted as action-relative path.
+        </p>
+        <p>
+        For example, if the path of "/add/" action is "index.jsp",
+        "index.jsp" means "/add/index.jsp".
+        Furthermore if "slim3.viewPrefix" is defined in slim3_configuration.properties,
+        the value is added as prefix.
+        </p>
+        <p>
+        For example, if "slim3.viewPrefix" is "/WEB-INF/view",
+        "/add/index.jsp" means "/WEB-INF/view/add/index.jsp".
+        </p>
+        <p>
+        If the path start with "/", the path is interpreted as context-relative path.
+        </p>
+        <p>
+        For example, "/select/" means "http://localhost:8080/slim3-struts-tutorial/select/".
+        </p>
+        <p>
+        The default operation of ActionForward is "forward".
+        If you want to redirect, specify that the second argument is "true" as follows.
+        </p>
+        <source>
+new ActionForward("xxx.jsp", true)
+        </source>
+        <p>
+        The detail of ActionForward is <a href="http://struts.apache.org/1.2.x/api/org/apache/struts/action/ActionForward.html">here</a>.
+        </p>
+        </subsection>
+        <subsection name="Validation using annotation">
+        <p>
+        You can validate a field using annotations as follows.
+        </p>
+        <source>
+@Required
+@IntegerType
+public String arg1;
+        </source>
+        <p>
+        So you don't need to define "validation.xml".
+        </p>
+        <p>
+        Annotations for validation are as follows.
+        </p>
+        <ul>
+            <li><a href="annotationReference.html#Required">Required</a></li>
+            <li><a href="annotationReference.html#Validwhen">Validwhen</a></li>
+            <li><a href="annotationReference.html#Minlength">Minlength</a></li>
+            <li><a href="annotationReference.html#Maxlength">Maxlength</a></li>
+            <li><a href="annotationReference.html#Minbytelength">Minbytelength</a></li>
+            <li><a href="annotationReference.html#Maxbytelength">Maxbytelength</a></li>
+            <li><a href="annotationReference.html#Mask">Mask</a></li>
+            <li><a href="annotationReference.html#IntRange">IntRange</a></li>
+            <li><a href="annotationReference.html#LongRange">LongRange</a></li>
+            <li><a href="annotationReference.html#FloatRange">FloatRange</a></li>
+            <li><a href="annotationReference.html#DoubleRange">DoubleRange</a></li>
+            <li><a href="annotationReference.html#ByteType">ByteType</a></li>
+            <li><a href="annotationReference.html#ShortType">ShortType</a></li>
+            <li><a href="annotationReference.html#IntegerType">IntegerType</a></li>
+            <li><a href="annotationReference.html#LongType">LongType</a></li>
+            <li><a href="annotationReference.html#FloatType">FloatType</a></li>
+            <li><a href="annotationReference.html#DoubleType">DoubleType</a></li>
+            <li><a href="annotationReference.html#DateType">DateType</a></li>
+            <li><a href="annotationReference.html#CreditCardType">CreditCardType</a></li>
+            <li><a href="annotationReference.html#EmailType">EmailType</a></li>
+            <li><a href="annotationReference.html#UrlType">UrlType</a></li>
+            </ul>
+        </subsection>
+        </section>
+	</body>
+</document>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+	<properties>
+		<title>Slim3</title>
+	</properties>
+	<body>
+		<section name="Home">
+			<p>
+				Slim3 is a full-stack web application framework for agile development.
+			</p>
+			<p>
+				Our main concept is "Simple" and <a href="http://en.wikipedia.org/wiki/Minimalism#Minimalist_design">"Less Is More"</a>.
+				"Less is more" means simplicity and clarity lead to good design.
+			</p>
+			<p>
+				80% of the effects come from 20% of the causes.
+				We concentrate all our energies into 20% of the causes.
+				Programmers can resolve the other issues without framework constraints.
+			</p>
+			<p>
+				We want to get rid of complex and wasted features from your applications and our framework.
+				As a result, we will slim down.
+			</p>
+			<p>
+                Slim3 is a Java open source framework.
+                The license is <a href="license.html">"The Apache Software License, Version 2.0"</a>.
+            </p>
+			<p>
+				The main characteristics of Slim3 are as follows: 
+				<ul>
+				<li><a href="#HOT_deployment">HOT deployment</a></li>
+				<li><a href="#Less_configuration">Less configuration</a></li>
+				<li><a href="#Less_learning_cost">Less learning cost</a></li>
+				</ul>
+			</p>
+			<subsection name="HOT deployment">
+            <p>
+                HOT deployment means re-deployment an application without restarting web application.
+                Due to HOT deployment, you can see the result　as soon as you change the source code.
+                The quick feedback is essence of agile development.
+            </p>
+            </subsection>
+			<subsection name="Less configuration">
+			<p>
+				Do you want to write configuration files or not?
+			</p>
+			<p>
+				Sure, you don't want to write them.
+				Slim3 employs <b>Convention over Configuration(CoC)</b> and <b>Annotations</b> properly,
+				so you don't need to write bloated configuration files.
+			</p>
+			<p>
+			    If <b>CoC</b> is abused,
+			    your source code will be hard to understand.
+			    If <b>Annotations</b> is used too much,
+                you will fall into <b>ANNOTATIONS HELL</b>.
+                It is important to use <b>CoC</b> and <b>Annotations</b> properly.
+			</p>
+			</subsection>
+			<subsection name="Less learing cost">
+            <p>
+                Slim3 is a thin wrapper on Struts 1.2 and JDBC.
+                If you know them, you can learn Slim3 quickly.
+                Many developers know Struts and JDBC.
+                Slim3 is based on popular technologies.
+            </p>
+            <p>
+                Furthermore, you can use Struts without bloated configuration files!!!
+            </p>
+            </subsection>
+		</section>
+	</body>
+</document>
