@@ -34,12 +34,16 @@ public class MessageResourceBundleFactoryTest extends CleanableTestCase {
     private static final String CONFIG_PATH = PACKAGE
             + "slim3_configuration.properties";
 
+    private static final String DEV_CONFIG_PATH = PACKAGE
+            + "slim3_configuration_development.properties";
+
     private static final String BUNDLE_NAME = "org.slim3.commons.message.foo";
 
     /**
      * 
      */
     public void testCreateBundle() {
+        Configuration.initialize(CONFIG_PATH);
         MessageResourceBundle bundle = MessageResourceBundleFactory
                 .createBundle(PATH);
         assertNotNull(bundle);
@@ -50,6 +54,7 @@ public class MessageResourceBundleFactoryTest extends CleanableTestCase {
      * 
      */
     public void testCreateBundleForIllegalPath() {
+        Configuration.initialize(CONFIG_PATH);
         MessageResourceBundle bundle = MessageResourceBundleFactory
                 .createBundle("illegal path");
         assertNull(bundle);
@@ -59,6 +64,7 @@ public class MessageResourceBundleFactoryTest extends CleanableTestCase {
      * 
      */
     public void testGetFile() {
+        Configuration.initialize(CONFIG_PATH);
         File file = MessageResourceBundleFactory.getFile(PATH);
         assertNull(file);
     }
@@ -67,7 +73,7 @@ public class MessageResourceBundleFactoryTest extends CleanableTestCase {
      * 
      */
     public void testGetFileForHotDeployment() {
-        Configuration.initialize(CONFIG_PATH);
+        Configuration.initialize(DEV_CONFIG_PATH);
         File file = MessageResourceBundleFactory.getFile(PATH);
         assertNotNull(file);
         assertTrue(file.exists());
@@ -77,6 +83,7 @@ public class MessageResourceBundleFactoryTest extends CleanableTestCase {
      * 
      */
     public void testGetBundle() {
+        Configuration.initialize(CONFIG_PATH);
         MessageResourceBundle bundle = MessageResourceBundleFactory
                 .getBundle(BUNDLE_NAME);
         assertNotNull(bundle);
@@ -87,6 +94,7 @@ public class MessageResourceBundleFactoryTest extends CleanableTestCase {
      * 
      */
     public void testGetBundleForLocale() {
+        Configuration.initialize(CONFIG_PATH);
         MessageResourceBundle bundle = MessageResourceBundleFactory.getBundle(
                 Locale.JAPAN, BUNDLE_NAME);
         assertNotNull(bundle);

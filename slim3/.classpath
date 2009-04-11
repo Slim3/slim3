@@ -14,7 +14,6 @@
 	<classpathentry kind="lib" path="lib/log4j-1.2.13.jar"/>
 	<classpathentry kind="lib" path="lib/commons-beanutils-1.7.0.jar" sourcepath="libsrc/commons-beanutils-1.7.0-src.zip"/>
 	<classpathentry kind="lib" path="lib/commons-digester-1.6.jar"/>
-	<classpathentry kind="lib" path="lib/commons-fileupload-1.2.jar" sourcepath="libsrc/commons-fileupload-1.2-sources.jar"/>
 	<classpathentry kind="lib" path="lib/commons-validator-1.2.0.jar" sourcepath="libsrc/commons-validator-1.2.0-src.zip"/>
 	<classpathentry kind="lib" path="lib/struts-1.2.9.jar" sourcepath="libsrc/struts-1.2.9-sources.jar"/>
 	<classpathentry kind="lib" path="lib/commons-el-1.0.jar" sourcepath="libsrc/commons-el-1.0-sources.jar"/>
@@ -23,5 +22,6 @@
 	<classpathentry kind="lib" path="lib/servlet-api-2.4.jar" sourcepath="libsrc/servlet-api-2.4-sources.jar"/>
 	<classpathentry kind="lib" path="lib/jsp-api-2.0.jar" sourcepath="libsrc/jsp-api-2.0-sources.jar"/>
 	<classpathentry kind="lib" path="lib/standard-1.1.2.jar" sourcepath="libsrc/standard-1.1.2-sources.jar"/>
+	<classpathentry kind="lib" path="lib/commons-fileupload-1.2.1.jar" sourcepath="libsrc/commons-fileupload-1.2.1-sources.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

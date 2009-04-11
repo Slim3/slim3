@@ -15,6 +15,8 @@
  */
 package org.slim3.struts.upload;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -22,16 +24,17 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.List;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.FileUploadBase.SizeLimitExceededException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload.util.Streams;
 import org.apache.struts.config.ModuleConfig;
 import org.apache.struts.upload.CommonsMultipartRequestHandler;
 import org.apache.struts.upload.FormFile;
@@ -48,6 +51,12 @@ import org.slim3.struts.util.S3ModuleConfigUtil;
  * 
  */
 public class S3MultipartRequestHandler extends CommonsMultipartRequestHandler {
+
+    /**
+     * The logger.
+     */
+    protected static Logger logger = Logger
+            .getLogger(S3MultipartRequestHandler.class.getName());
 
     /**
      * The all parameters.
@@ -68,17 +77,26 @@ public class S3MultipartRequestHandler extends CommonsMultipartRequestHandler {
     public void handleRequest(HttpServletRequest request)
             throws ServletException {
         ModuleConfig ac = S3ModuleConfigUtil.getModuleConfig();
-        ServletFileUpload upload = new ServletFileUpload(
-                new DiskFileItemFactory((int) getSizeThreshold(ac), new File(
-                        getRepositoryPath(ac))));
+        ServletFileUpload upload = new ServletFileUpload();
         upload.setHeaderEncoding(request.getCharacterEncoding());
         upload.setSizeMax(getSizeMax(ac));
         elementsText = new Hashtable<String, String[]>();
         elementsFile = new Hashtable<String, FormFile>();
         elementsAll = new Hashtable<String, Object>();
-        List<?> items = null;
         try {
-            items = upload.parseRequest(request);
+            upload = new ServletFileUpload();
+            FileItemIterator iter = upload.getItemIterator(request);
+            while (iter.hasNext()) {
+                FileItemStream item = iter.next();
+                if (item.isFormField()) {
+                    addTextParameter(request, item);
+                } else {
+                    addFileParameter(item);
+                }
+            }
+        } catch (IOException e) {
+            log.error("Failed to parse multipart request", e);
+            throw new ServletException(e);
         } catch (SizeLimitExceededException e) {
             request.setAttribute(
                     MultipartRequestHandler.ATTRIBUTE_MAX_LENGTH_EXCEEDED,
@@ -88,16 +106,6 @@ public class S3MultipartRequestHandler extends CommonsMultipartRequestHandler {
         } catch (FileUploadException e) {
             log.error("Failed to parse multipart request", e);
             throw new ServletException(e);
-        }
-
-        Iterator<?> iter = items.iterator();
-        while (iter.hasNext()) {
-            FileItem item = (FileItem) iter.next();
-            if (item.isFormField()) {
-                addTextParameter(request, item);
-            } else {
-                addFileParameter(item);
-            }
         }
     }
 
@@ -128,27 +136,22 @@ public class S3MultipartRequestHandler extends CommonsMultipartRequestHandler {
         }
     }
 
-    @Override
-    protected void addTextParameter(HttpServletRequest request, FileItem item) {
+    /**
+     * Adds text parameter.
+     * 
+     * @param request
+     *            the request
+     * @param item
+     *            the file item stream
+     * @throws IOException
+     *             if {@link IOException} has occurred
+     */
+    protected void addTextParameter(HttpServletRequest request,
+            FileItemStream item) throws IOException {
         String name = item.getFieldName();
         String value = null;
-        boolean haveValue = false;
         String encoding = request.getCharacterEncoding();
-        if (encoding != null) {
-            try {
-                value = item.getString(encoding);
-                haveValue = true;
-            } catch (Exception e) {
-            }
-        }
-        if (!haveValue) {
-            try {
-                value = item.getString("ISO-8859-1");
-            } catch (java.io.UnsupportedEncodingException uee) {
-                value = item.getString();
-            }
-            haveValue = true;
-        }
+        value = Streams.asString(item.openStream(), encoding);
         if (request instanceof MultipartRequestWrapper) {
             MultipartRequestWrapper wrapper = (MultipartRequestWrapper) request;
             wrapper.setParameter(name, value);
@@ -166,9 +169,16 @@ public class S3MultipartRequestHandler extends CommonsMultipartRequestHandler {
         elementsAll.put(name, newArray);
     }
 
-    @Override
-    protected void addFileParameter(FileItem item) {
-        FormFile formFile = new S2FormFile(item);
+    /**
+     * Adds form file parameter.
+     * 
+     * @param item
+     *            the file item stream
+     * @throws IOException
+     *             if {@link IOException} has occurred
+     */
+    protected void addFileParameter(FileItemStream item) throws IOException {
+        FormFile formFile = new S3FormFile(item);
         elementsFile.put(item.getFieldName(), formFile);
         elementsAll.put(item.getFieldName(), formFile);
     }
@@ -177,24 +187,43 @@ public class S3MultipartRequestHandler extends CommonsMultipartRequestHandler {
      * {@link FormFile} of Slim3.
      * 
      */
-    protected static class S2FormFile implements FormFile, Serializable {
+    protected static class S3FormFile implements FormFile, Serializable {
 
         private static final long serialVersionUID = 1L;
 
-        FileItem fileItem;
+        /**
+         * The content type.
+         */
+        protected String contentType;
+
+        /**
+         * The file name.
+         */
+        protected String fileName;
+
+        /**
+         * The file data.
+         */
+        protected byte[] fileData;
 
         /**
          * Constructor
          * 
-         * @param fileItem
-         *            the file item
+         * @param item
+         *            the file item stream
+         * @throws IOException
+         *             if {@link IOException} has occurred
          */
-        public S2FormFile(FileItem fileItem) {
-            this.fileItem = fileItem;
+        public S3FormFile(FileItemStream item) throws IOException {
+            contentType = item.getContentType();
+            fileName = getBaseFileName(item.getName());
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            Streams.copy(item.openStream(), out, true);
+            fileData = out.toByteArray();
         }
 
         public String getContentType() {
-            return fileItem.getContentType();
+            return contentType;
         }
 
         public void setContentType(String contentType) {
@@ -203,7 +232,7 @@ public class S3MultipartRequestHandler extends CommonsMultipartRequestHandler {
         }
 
         public int getFileSize() {
-            return (int) fileItem.getSize();
+            return fileData.length;
         }
 
         public void setFileSize(int filesize) {
@@ -212,7 +241,7 @@ public class S3MultipartRequestHandler extends CommonsMultipartRequestHandler {
         }
 
         public String getFileName() {
-            return getBaseFileName(fileItem.getName());
+            return fileName;
         }
 
         public void setFileName(String fileName) {
@@ -221,16 +250,18 @@ public class S3MultipartRequestHandler extends CommonsMultipartRequestHandler {
         }
 
         public byte[] getFileData() throws FileNotFoundException, IOException {
-            return fileItem.get();
+            return fileData;
         }
 
         public InputStream getInputStream() throws FileNotFoundException,
                 IOException {
-            return fileItem.getInputStream();
+            return new ByteArrayInputStream(fileData);
         }
 
         public void destroy() {
-            fileItem.delete();
+            contentType = null;
+            fileName = null;
+            fileData = null;
         }
 
         /**
