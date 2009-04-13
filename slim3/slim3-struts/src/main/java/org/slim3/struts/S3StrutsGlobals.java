@@ -15,7 +15,7 @@
  */
 package org.slim3.struts;
 
-import javax.naming.SizeLimitExceededException;
+import org.apache.commons.fileupload.FileUploadBase.SizeLimitExceededException;
 
 /**
  * An interface to define global constants.

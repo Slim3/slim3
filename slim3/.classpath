@@ -23,5 +23,6 @@
 	<classpathentry kind="lib" path="lib/jsp-api-2.0.jar" sourcepath="libsrc/jsp-api-2.0-sources.jar"/>
 	<classpathentry kind="lib" path="lib/standard-1.1.2.jar" sourcepath="libsrc/standard-1.1.2-sources.jar"/>
 	<classpathentry kind="lib" path="lib/commons-fileupload-1.2.1.jar" sourcepath="libsrc/commons-fileupload-1.2.1-sources.jar"/>
+	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

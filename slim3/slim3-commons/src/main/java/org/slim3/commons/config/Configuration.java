@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -173,7 +172,10 @@ public final class Configuration {
             logger.log(Level.INFO, "Slim3 stage:" + stage);
         }
         p.remove(STAGE_KEY);
-        String h = p.getProperty(HOT_KEY);
+        String h = System.getProperty(HOT_KEY);
+        if (h == null) {
+            h = p.getProperty(HOT_KEY);
+        }
         if (h != null) {
             hot = "true".equalsIgnoreCase(h);
         } else {
@@ -185,10 +187,9 @@ public final class Configuration {
         p.remove(HOT_KEY);
         String suffix = "_" + stage;
         int suffixLength = suffix.length();
-        for (Iterator i = p.entrySet().iterator(); i.hasNext();) {
-            Entry entry = (Entry) i.next();
-            String key = (String) entry.getKey();
-            String value = (String) entry.getValue();
+        for (Iterator i = p.keySet().iterator(); i.hasNext();) {
+            String key = (String) i.next();
+            String value = (String) p.get(key);
             if (key.endsWith(suffix)) {
                 key = key.substring(0, key.length() - suffixLength);
                 config.put(key, value);
