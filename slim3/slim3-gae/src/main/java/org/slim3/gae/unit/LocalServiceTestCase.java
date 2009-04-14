@@ -13,35 +13,36 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.gae.jdo.unit;
+package org.slim3.gae.unit;
 
-import com.google.appengine.api.datastore.dev.LocalDatastoreService;
+import java.io.File;
+
+import junit.framework.TestCase;
+
 import com.google.appengine.tools.development.ApiProxyLocalImpl;
 import com.google.apphosting.api.ApiProxy;
 
 /**
- * A test case for local data store.
+ * A test case for local services.
  * 
  * @author higa
  * @since 3.0
  * 
  */
-public abstract class LocalDatastoreTestCase extends LocalServiceTestCase {
+public abstract class LocalServiceTestCase extends TestCase {
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        ApiProxyLocalImpl proxy = (ApiProxyLocalImpl) ApiProxy.getDelegate();
-        proxy.setProperty(LocalDatastoreService.NO_STORAGE_PROPERTY,
-                Boolean.TRUE.toString());
+        ApiProxy.setEnvironmentForCurrentThread(new TestEnvironment());
+        ApiProxy.setDelegate(new ApiProxyLocalImpl(new File(".")) {
+        });
     }
 
     @Override
     public void tearDown() throws Exception {
-        ApiProxyLocalImpl proxy = (ApiProxyLocalImpl) ApiProxy.getDelegate();
-        LocalDatastoreService datastoreService = (LocalDatastoreService) proxy
-                .getService("datastore_v3");
-        datastoreService.clearProfiles();
+        ApiProxy.setDelegate(null);
+        ApiProxy.setEnvironmentForCurrentThread(null);
         super.tearDown();
     }
 }

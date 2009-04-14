@@ -17,7 +17,7 @@ package org.slim3.gae.jdo;
 
 import javax.jdo.PersistenceManager;
 
-import org.slim3.gae.jdo.unit.LocalDatastoreTestCase;
+import org.slim3.gae.unit.LocalDatastoreTestCase;
 
 /**
  * @author higa

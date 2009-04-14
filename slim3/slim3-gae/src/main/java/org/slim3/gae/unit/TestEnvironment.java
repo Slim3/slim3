@@ -13,36 +13,51 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.gae.jdo.unit;
+package org.slim3.gae.unit;
 
-import java.io.File;
-
-import junit.framework.TestCase;
-
-import com.google.appengine.tools.development.ApiProxyLocalImpl;
 import com.google.apphosting.api.ApiProxy;
 
 /**
- * A test case for local services.
+ * The test environment.
  * 
  * @author higa
  * @since 3.0
  * 
  */
-public abstract class LocalServiceTestCase extends TestCase {
+class TestEnvironment implements ApiProxy.Environment {
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        ApiProxy.setEnvironmentForCurrentThread(new TestEnvironment());
-        ApiProxy.setDelegate(new ApiProxyLocalImpl(new File(".")) {
-        });
+    public String getAppId() {
+        return "Unit Tests";
     }
 
-    @Override
-    public void tearDown() throws Exception {
-        ApiProxy.setDelegate(null);
-        ApiProxy.setEnvironmentForCurrentThread(null);
-        super.tearDown();
+    public String getVersionId() {
+        return "1.0";
+    }
+
+    public void setDefaultNamespace(String s) {
+    }
+
+    public String getRequestNamespace() {
+        return null;
+    }
+
+    public String getDefaultNamespace() {
+        return null;
+    }
+
+    public String getAuthDomain() {
+        return null;
+    }
+
+    public boolean isLoggedIn() {
+        return false;
+    }
+
+    public String getEmail() {
+        return null;
+    }
+
+    public boolean isAdmin() {
+        return false;
     }
 }
