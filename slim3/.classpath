@@ -8,6 +8,10 @@
 	<classpathentry kind="src" path="slim3-struts/src/main/resources"/>
 	<classpathentry kind="src" path="slim3-struts/src/test/java"/>
 	<classpathentry kind="src" path="slim3-struts/src/test/resources"/>
+	<classpathentry kind="src" path="slim3-gae/src/main/java"/>
+	<classpathentry kind="src" path="slim3-gae/src/main/resources"/>
+	<classpathentry kind="src" path="slim3-gae/src/test/java"/>
+	<classpathentry kind="src" path="slim3-gae/src/test/resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/junit-3.8.2.jar" sourcepath="libsrc/junit-3.8.2-sources.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging-1.1.jar"/>
@@ -23,6 +27,10 @@
 	<classpathentry kind="lib" path="lib/jsp-api-2.0.jar" sourcepath="libsrc/jsp-api-2.0-sources.jar"/>
 	<classpathentry kind="lib" path="lib/standard-1.1.2.jar" sourcepath="libsrc/standard-1.1.2-sources.jar"/>
 	<classpathentry kind="lib" path="lib/commons-fileupload-1.2.1.jar" sourcepath="libsrc/commons-fileupload-1.2.1-sources.jar"/>
+	<classpathentry kind="lib" path="lib/appengine-api-stubs.jar"/>
+	<classpathentry kind="lib" path="lib/appengine-local-runtime-shared.jar"/>
+	<classpathentry kind="lib" path="lib/appengine-local-runtime.jar"/>
+	<classpathentry kind="lib" path="lib/jdo2-api-2.3-SNAPSHOT.jar" sourcepath="libsrc/jdo2-api-2.3-SNAPSHOT-src.zip"/>
 	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

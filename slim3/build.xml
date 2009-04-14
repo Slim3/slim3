@@ -1,0 +1,13 @@
+<project name="slim3" default="dist" basedir=".">
+
+    <target name="dist" depends="clean">
+        <ant antfile="slim3-commons/build.xml" inheritAll="false"/>
+        <ant antfile="slim3-struts/build.xml" inheritAll="false"/>
+        <ant antfile="slim3-gae/build.xml" inheritAll="false"/>
+    </target>
+
+    <target name="clean">
+        <delete dir="target" failonerror="false"/>
+        <mkdir dir="target"/>
+    </target>
+</project>

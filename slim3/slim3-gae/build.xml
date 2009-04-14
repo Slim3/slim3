@@ -1,0 +1,11 @@
+<project name="slim3-gae" default="dist" basedir=".">
+
+	<import file="../common.xml"/>
+	
+	<target name="dist" depends="clean,compile,copy">
+		<jar jarfile="../target/slim3-gae-${ver}.jar" basedir="${build}" />
+        <jar jarfile="../target/slim3-gae-${ver}-sources.jar" basedir="${src}" />
+        <delete dir="target"/>
+	</target>
+
+</project>

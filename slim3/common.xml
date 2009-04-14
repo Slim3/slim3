@@ -1,0 +1,31 @@
+<project name="common">
+
+	<property file="../build.properties" />
+
+    <path id="classpath">
+        <fileset dir="${lib}" includes="*.jar"/>
+        <fileset dir="../target" includes="*.jar"/>
+    </path>
+
+    <target name="compile">
+        <javac fork="yes" srcdir="${src}" compiler="javac1.6"
+            classpathref="classpath" destdir="${build}" debug="on" encoding="UTF-8">
+        </javac>
+    </target>
+
+    <target name="copy" depends="compile">
+        <copy todir="${build}">
+            <fileset dir="${resources}">
+                <include name="**/*.properties" />
+                <include name="**/*.xml" />
+                <include name="**/*.dtd" />
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="clean">
+        <delete dir="target" failonerror="false"/>
+        <mkdir dir="target"/>
+        <mkdir dir="target/build"/>
+    </target>
+</project>
