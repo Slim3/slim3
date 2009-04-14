@@ -13,22 +13,23 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.struts.web.action;
+package org.slim3.struts.annotation;
 
-import org.apache.struts.action.ActionForward;
-import org.slim3.struts.annotation.Execute;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
+ * An annotation for controller.
+ * 
  * @author higa
+ * @since 3.0
  * 
  */
-public class IndexAction {
-
-    /**
-     * @return action forward
-     */
-    @Execute(validate = false)
-    public ActionForward index() {
-        return new ActionForward("index.jsp");
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+@Documented
+public @interface Controller {
 }

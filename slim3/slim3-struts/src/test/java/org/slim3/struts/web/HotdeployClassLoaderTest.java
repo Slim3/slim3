@@ -40,7 +40,7 @@ public class HotdeployClassLoaderTest extends CleanableTestCase {
     /**
      * 
      */
-    protected static final String ACTION_CLASS_NAME = "org.slim3.struts.web.action.IndexAction";
+    protected static final String CONTROLLER_CLASS_NAME = "org.slim3.struts.web.controller.IndexController";
 
     /**
      * 
@@ -86,10 +86,10 @@ public class HotdeployClassLoaderTest extends CleanableTestCase {
      * 
      */
     public void testLoadClass() throws Exception {
-        Class<?> clazz = hotClassLoader.loadClass(ACTION_CLASS_NAME);
+        Class<?> clazz = hotClassLoader.loadClass(CONTROLLER_CLASS_NAME);
         assertNotNull(clazz);
         assertSame(hotClassLoader, clazz.getClassLoader());
-        assertSame(clazz, hotClassLoader.loadClass(ACTION_CLASS_NAME));
+        assertSame(clazz, hotClassLoader.loadClass(CONTROLLER_CLASS_NAME));
         assertNotNull(clazz.getPackage());
     }
 
@@ -112,7 +112,7 @@ public class HotdeployClassLoaderTest extends CleanableTestCase {
      * @throws Exception
      */
     public void testIsTarget() throws Exception {
-        assertTrue(hotClassLoader.isTarget(ACTION_CLASS_NAME));
+        assertTrue(hotClassLoader.isTarget(CONTROLLER_CLASS_NAME));
         assertFalse(hotClassLoader.isTarget(String.class.getName()));
     }
 }

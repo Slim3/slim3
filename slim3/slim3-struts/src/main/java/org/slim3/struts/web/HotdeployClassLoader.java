@@ -241,7 +241,7 @@ public class HotdeployClassLoader extends ClassLoader {
      */
     protected boolean isTarget(String className) {
         String packageName = Configuration.getInstance().getValue(
-                S3StrutsGlobals.ACTION_PACKAGE_KEY);
+                S3StrutsGlobals.CONTROLLER_PACKAGE_KEY);
         if (StringUtil.isEmpty(packageName)) {
             return false;
         }

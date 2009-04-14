@@ -13,22 +13,21 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.struts.config.action;
+package org.slim3.struts.config.controller;
 
 import org.apache.struts.action.ActionForward;
-import org.slim3.struts.annotation.Execute;
+import org.slim3.struts.annotation.Controller;
 
 /**
  * @author higa
  * 
  */
-public class Bad4Action {
+@Controller
+public class Bad2Controller {
 
     /**
      * @return the action forward
-     * 
      */
-    @Execute
     public ActionForward index() {
         return null;
     }

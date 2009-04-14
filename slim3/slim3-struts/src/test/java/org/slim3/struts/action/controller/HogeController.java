@@ -13,13 +13,14 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.struts.action.action;
+package org.slim3.struts.action.controller;
 
 import java.util.List;
 import java.util.Map;
 
 import org.apache.struts.action.ActionForward;
 import org.slim3.struts.action.MyBean;
+import org.slim3.struts.annotation.Controller;
 import org.slim3.struts.annotation.Execute;
 import org.slim3.struts.annotation.SessionScope;
 
@@ -27,7 +28,8 @@ import org.slim3.struts.annotation.SessionScope;
  * @author higa
  * 
  */
-public class HogeAction {
+@Controller
+public class HogeController {
 
     /**
      * 

@@ -36,7 +36,7 @@ import org.slim3.struts.annotation.IntRange;
 import org.slim3.struts.annotation.Mask;
 import org.slim3.struts.annotation.Msg;
 import org.slim3.struts.annotation.Required;
-import org.slim3.struts.config.action.HogeAction;
+import org.slim3.struts.config.controller.HogeController;
 import org.slim3.struts.form.ActionFormWrapper;
 import org.slim3.struts.form.ActionFormWrapperClass;
 import org.slim3.struts.unit.MockServletContext;
@@ -100,11 +100,12 @@ public class S3ModuleConfigTest extends CleanableTestCase {
     /**
      * @throws Exception
      */
-    public void testToActionName() throws Exception {
-        assertEquals("hogeAction", moduleConfig.toActionName("/hoge"));
-        assertEquals("aaa.hogeAction", moduleConfig.toActionName("/aaa/hoge"));
+    public void testToControllerName() throws Exception {
+        assertEquals("hogeController", moduleConfig.toControllerName("/hoge"));
+        assertEquals("aaa.hogeController", moduleConfig
+                .toControllerName("/aaa/hoge"));
         try {
-            moduleConfig.toActionName("aaa");
+            moduleConfig.toControllerName("aaa");
             fail();
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
@@ -114,9 +115,9 @@ public class S3ModuleConfigTest extends CleanableTestCase {
     /**
      * @throws Exception
      */
-    public void testToActionClass() throws Exception {
-        assertNotNull(moduleConfig.toActionClass("hogeAction"));
-        assertNull(moduleConfig.toActionClass("xxxAction"));
+    public void testToControllerClass() throws Exception {
+        assertNotNull(moduleConfig.toControllerClass("hogeController"));
+        assertNull(moduleConfig.toControllerClass("xxxController"));
     }
 
     /**
@@ -133,22 +134,34 @@ public class S3ModuleConfigTest extends CleanableTestCase {
      */
     public void testCreateActionConfigForName() throws Exception {
         ActionConfig actionConfig = moduleConfig.createActionConfig("/hoge");
-        assertEquals("hogeActionForm", actionConfig.getName());
+        assertEquals("hogeControllerForm", actionConfig.getName());
     }
 
     /**
      * @throws Exception
      */
-    public void testCreateActionConfigForActionClass() throws Exception {
+    public void testCreateActionConfigForControllerClass() throws Exception {
         S3ActionMapping actionConfig = moduleConfig.createActionConfig("/hoge");
-        assertEquals(HogeAction.class, actionConfig.getActionClass());
+        assertEquals(HogeController.class, actionConfig.getControllerClass());
     }
 
     /**
      * @throws Exception
      */
-    public void testCreateActionConfigForNoActionPath() throws Exception {
+    public void testCreateActionConfigForNoControllerPath() throws Exception {
         assertNull(moduleConfig.createActionConfig("/xxx"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testCreateActionConfigForNoControllerAnnotation()
+            throws Exception {
+        try {
+            moduleConfig.createActionConfig("/bad6");
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     /**
@@ -259,7 +272,7 @@ public class S3ModuleConfigTest extends CleanableTestCase {
      * @throws Exception
      */
     public void testCreateFormBeanConfig() throws Exception {
-        String name = "hoge2ActionForm";
+        String name = "hoge2ControllerForm";
         moduleConfig.findActionConfig("/hoge2");
         S3FormBeanConfig formBeanConfig = (S3FormBeanConfig) moduleConfig
                 .findFormBeanConfig(name);
@@ -452,7 +465,7 @@ public class S3ModuleConfigTest extends CleanableTestCase {
                 .createActionConfig("/hoge2");
         moduleConfig.setupValidator(actionMapping);
         assertNotNull(ValidatorResourcesUtil.getValidatorResources().getForm(
-                null, "hoge2ActionForm_submit2"));
+                null, "hoge2ControllerForm_submit2"));
     }
 
     /**
@@ -460,9 +473,9 @@ public class S3ModuleConfigTest extends CleanableTestCase {
      */
     public void testFindActionConfig() throws Exception {
         assertNotNull(moduleConfig.findActionConfig("/hoge2"));
-        assertNotNull(moduleConfig.findFormBeanConfig("hoge2ActionForm"));
+        assertNotNull(moduleConfig.findFormBeanConfig("hoge2ControllerForm"));
         assertNotNull(ValidatorResourcesUtil.getValidatorResources().getForm(
-                null, "hoge2ActionForm_submit2"));
+                null, "hoge2ControllerForm_submit2"));
     }
 
     /**

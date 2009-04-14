@@ -13,30 +13,43 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.struts.web.action;
+package org.slim3.struts.form.controller;
 
 import org.apache.struts.action.ActionForward;
+import org.slim3.struts.annotation.Controller;
 import org.slim3.struts.annotation.Execute;
+import org.slim3.struts.annotation.Required;
 
 /**
  * @author higa
  * 
  */
-public class FilterAction {
+@Controller
+public class HogeController {
 
     /**
-     * @return action forward
+     * 
      */
-    @Execute(validate = false)
+    public boolean reseted = false;
+
+    /**
+     * 
+     */
+    @Required
+    public String aaa;
+
+    /**
+     * @return the result
+     */
+    @Execute(input = "index.jsp")
     public ActionForward index() {
-        return new ActionForward("index.jsp");
+        return null;
     }
 
     /**
-     * @return action forward
+     * 
      */
-    @Execute(input = "index.jsp")
-    public ActionForward submit() {
-        return new ActionForward("index.jsp");
+    public void reset() {
+        reseted = true;
     }
 }

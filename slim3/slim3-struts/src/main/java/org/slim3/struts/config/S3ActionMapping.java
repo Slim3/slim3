@@ -40,19 +40,19 @@ public class S3ActionMapping extends ActionMapping {
     private static final long serialVersionUID = 1L;
 
     /**
-     * The action name.
+     * The controller name.
      */
-    protected String actionName;
+    protected String controllerName;
 
     /**
-     * The action class.
+     * The controller class.
      */
-    protected Class<?> actionClass;
+    protected Class<?> controllerClass;
 
     /**
-     * The bean descriptor of the action.
+     * The bean descriptor.
      */
-    protected BeanDesc actionBeanDesc;
+    protected BeanDesc beanDesc;
 
     /**
      * The map for {@link S3ExecuteConfig}.
@@ -99,57 +99,58 @@ public class S3ActionMapping extends ActionMapping {
     }
 
     /**
-     * Returns the action name.
+     * Returns the controller name.
      * 
-     * @return the action name
+     * @return the controller name
      */
-    public String getActionName() {
-        return actionName;
+    public String getControllerName() {
+        return controllerName;
     }
 
     /**
-     * Sets the action name.
+     * Sets the controller name.
      * 
-     * @param actionName
-     *            the action name
+     * @param contollerName
+     *            the controller name
      */
-    public void setActionName(String actionName) {
-        this.actionName = actionName;
+    public void setControllerName(String contollerName) {
+        this.controllerName = contollerName;
     }
 
     /**
-     * Returns the action class.
+     * Returns the controller class.
      * 
-     * @return the action class
+     * @return the controller class
      */
-    public Class<?> getActionClass() {
-        return actionClass;
+    public Class<?> getControllerClass() {
+        return controllerClass;
     }
 
     /**
-     * Returns the bean descriptor of the action.
+     * Sets the controller class.
      * 
-     * @return the bean descriptor of the action
-     */
-    public BeanDesc getActionBeanDesc() {
-        return actionBeanDesc;
-    }
-
-    /**
-     * Sets the action class.
-     * 
-     * @param actionClass
-     *            the action class
+     * @param controllerClass
+     *            the controller class
      * @throws NullPointerException
-     *             if the actionClass parameter is null
+     *             if the controllerClass parameter is null
      */
-    public void setActionClass(Class<?> actionClass)
+    public void setControllerClass(Class<?> controllerClass)
             throws NullPointerException {
-        if (actionClass == null) {
-            throw new NullPointerException("The actionClass parameter is null.");
+        if (controllerClass == null) {
+            throw new NullPointerException(
+                    "The controllerClass parameter is null.");
         }
-        this.actionClass = actionClass;
-        actionBeanDesc = BeanUtil.getBeanDesc(actionClass);
+        this.controllerClass = controllerClass;
+        beanDesc = BeanUtil.getBeanDesc(controllerClass);
+    }
+
+    /**
+     * Returns the bean descriptor.
+     * 
+     * @return the bean descriptor
+     */
+    public BeanDesc getBeanDesc() {
+        return beanDesc;
     }
 
     /**

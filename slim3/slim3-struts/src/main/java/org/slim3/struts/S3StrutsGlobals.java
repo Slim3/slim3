@@ -32,9 +32,9 @@ public interface S3StrutsGlobals {
     String VIEW_PREFIX_KEY = "slim3.viewPrefix";
 
     /**
-     * The action package key.
+     * The controller package key.
      */
-    String ACTION_PACKAGE_KEY = "slim3.actionPackage";
+    String CONTROLLER_PACKAGE_KEY = "slim3.controllerPackage";
 
     /**
      * The encoding key.

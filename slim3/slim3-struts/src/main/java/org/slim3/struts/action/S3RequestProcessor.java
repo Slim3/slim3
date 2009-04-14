@@ -151,7 +151,7 @@ public class S3RequestProcessor extends RequestProcessor {
         if (mapping != null) {
             request.setAttribute(Globals.MAPPING_KEY, mapping);
             Object action = createAction(mapping);
-            BeanDesc beanDesc = mapping.getActionBeanDesc();
+            BeanDesc beanDesc = mapping.getBeanDesc();
             for (int i = 0; i < beanDesc.getPropertyDescSize(); i++) {
                 PropertyDesc pd = beanDesc.getPropertyDesc(i);
                 if (!pd.isWritable() || pd.getField() == null) {
@@ -178,7 +178,7 @@ public class S3RequestProcessor extends RequestProcessor {
      * @return a new action
      */
     protected Object createAction(S3ActionMapping mapping) {
-        return ClassUtil.newInstance(mapping.getActionClass());
+        return ClassUtil.newInstance(mapping.getControllerClass());
     }
 
     /**
@@ -466,12 +466,12 @@ public class S3RequestProcessor extends RequestProcessor {
                 path = request.getContextPath() + path;
             }
             exportProperties(request, response, S3ActionMappingUtil
-                    .getActionMapping().getActionBeanDesc(), true);
+                    .getActionMapping().getBeanDesc(), true);
             response.sendRedirect(response.encodeRedirectURL(path));
         } else {
             path = RoutingFilter.assembleActionPath(path);
             exportProperties(request, response, S3ActionMappingUtil
-                    .getActionMapping().getActionBeanDesc(), false);
+                    .getActionMapping().getBeanDesc(), false);
             doForward(path, request, response);
         }
     }

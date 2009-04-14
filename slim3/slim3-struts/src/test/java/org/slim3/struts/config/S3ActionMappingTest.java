@@ -17,7 +17,7 @@ package org.slim3.struts.config;
 
 import junit.framework.TestCase;
 
-import org.slim3.struts.config.action.HogeAction;
+import org.slim3.struts.config.controller.HogeController;
 import org.slim3.struts.unit.MockHttpServletRequest;
 import org.slim3.struts.unit.MockServletContext;
 import org.slim3.struts.util.S3ExecuteConfigUtil;
@@ -58,10 +58,10 @@ public class S3ActionMappingTest extends TestCase {
     /**
      * @throws Exception
      */
-    public void testActionClass() throws Exception {
+    public void testControllerClass() throws Exception {
         S3ActionMapping actionMapping = new S3ActionMapping();
-        actionMapping.setActionClass(HogeAction.class);
-        assertEquals(HogeAction.class, actionMapping.getActionBeanDesc()
+        actionMapping.setControllerClass(HogeController.class);
+        assertEquals(HogeController.class, actionMapping.getBeanDesc()
                 .getBeanClass());
     }
 

@@ -30,7 +30,7 @@ import org.slim3.commons.config.Configuration;
 import org.slim3.commons.unit.CleanableTestCase;
 import org.slim3.struts.config.S3ExecuteConfig;
 import org.slim3.struts.config.S3ModuleConfig;
-import org.slim3.struts.form.action.HogeAction;
+import org.slim3.struts.form.controller.HogeController;
 import org.slim3.struts.unit.MockHttpServletRequest;
 import org.slim3.struts.unit.MockServletContext;
 import org.slim3.struts.util.S3ExecuteConfigUtil;
@@ -81,12 +81,12 @@ public class ActionFormWrapperTest extends CleanableTestCase {
      * @throws Exception
      */
     public void testReset() throws Exception {
-        HogeAction action = new HogeAction();
+        HogeController action = new HogeController();
         DynaClass dynaClass = new ActionFormWrapperClass("hoge");
         ActionFormWrapper actionForm = new ActionFormWrapper(dynaClass, action);
-        S3ExecuteConfig executeConfig = new S3ExecuteConfig(HogeAction.class
-                .getMethod("index"));
-        executeConfig.setResetMethod(HogeAction.class.getMethod("reset"));
+        S3ExecuteConfig executeConfig = new S3ExecuteConfig(
+                HogeController.class.getMethod("index"));
+        executeConfig.setResetMethod(HogeController.class.getMethod("reset"));
         S3ExecuteConfigUtil.setExecuteConfig(executeConfig);
         actionForm.reset(null, request);
         assertTrue(action.reseted);
@@ -98,11 +98,11 @@ public class ActionFormWrapperTest extends CleanableTestCase {
     public void testValidate() throws Exception {
         ActionMapping actionMapping = (ActionMapping) moduleConfig
                 .findActionConfig("/hoge");
-        HogeAction action = new HogeAction();
+        HogeController controller = new HogeController();
         DynaClass dynaClass = new ActionFormWrapperClass("hoge");
-        ActionFormWrapper actionForm = new ActionFormWrapper(dynaClass, action);
-        S3ExecuteConfig executeConfig = new S3ExecuteConfig(HogeAction.class
-                .getMethod("index"));
+        ActionFormWrapper actionForm = new ActionFormWrapper(dynaClass, controller);
+        S3ExecuteConfig executeConfig = new S3ExecuteConfig(
+                HogeController.class.getMethod("index"));
         S3ExecuteConfigUtil.setExecuteConfig(executeConfig);
         ActionErrors errors = actionForm.validate(actionMapping, request);
         assertFalse(errors.isEmpty());
@@ -113,10 +113,10 @@ public class ActionFormWrapperTest extends CleanableTestCase {
      */
     public void testGet() throws Exception {
         ActionFormWrapperClass dynaClass = new ActionFormWrapperClass("hoge");
-        PropertyDesc pd = BeanUtil.getBeanDesc(HogeAction.class)
+        PropertyDesc pd = BeanUtil.getBeanDesc(HogeController.class)
                 .getPropertyDesc("aaa");
         dynaClass.addDynaProperty(new S3DynaProperty(pd));
-        HogeAction action = new HogeAction();
+        HogeController action = new HogeController();
         action.aaa = "111";
         ActionFormWrapper actionForm = new ActionFormWrapper(dynaClass, action);
         assertEquals("111", actionForm.get("aaa"));
@@ -127,7 +127,7 @@ public class ActionFormWrapperTest extends CleanableTestCase {
      */
     public void testGetForNoProperty() throws Exception {
         ActionFormWrapperClass dynaClass = new ActionFormWrapperClass("hoge");
-        HogeAction action = new HogeAction();
+        HogeController action = new HogeController();
         ActionFormWrapper actionForm = new ActionFormWrapper(dynaClass, action);
         try {
             actionForm.get("xxx");

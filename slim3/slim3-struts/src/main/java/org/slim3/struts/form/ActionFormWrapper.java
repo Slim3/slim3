@@ -50,32 +50,32 @@ public class ActionFormWrapper extends ActionForm implements DynaBean {
     protected DynaClass dynaClass;
 
     /**
-     * The action.
+     * The controller.
      */
-    protected Object action;
+    protected Object controller;
 
     /**
      * Constructor.
      * 
      * @param dynaClass
      *            the dynamic class
-     * @param action
-     *            the action
+     * @param controller
+     *            the controller
      * @throws NullPointerException
-     *             if the dynaClass parameter is null or if the action parameter
-     *             is null
+     *             if the dynaClass parameter is null or if the controller
+     *             parameter is null
      * 
      */
-    public ActionFormWrapper(DynaClass dynaClass, Object action)
+    public ActionFormWrapper(DynaClass dynaClass, Object controller)
             throws NullPointerException {
         if (dynaClass == null) {
             throw new NullPointerException("The dynaClass parameter is null.");
         }
-        if (action == null) {
-            throw new NullPointerException("The action parameter is null.");
+        if (controller == null) {
+            throw new NullPointerException("The controller parameter is null.");
         }
         this.dynaClass = dynaClass;
-        this.action = action;
+        this.controller = controller;
     }
 
     @Override
@@ -84,7 +84,7 @@ public class ActionFormWrapper extends ActionForm implements DynaBean {
         if (executeConfig != null) {
             Method m = executeConfig.getResetMethod();
             if (m != null) {
-                MethodUtil.invoke(m, action);
+                MethodUtil.invoke(m, controller);
             }
         }
     }
@@ -118,10 +118,10 @@ public class ActionFormWrapper extends ActionForm implements DynaBean {
                 .getDynaProperty(name);
         if (property == null) {
             throw new IllegalArgumentException("The property(" + name
-                    + ") is not found in the action("
-                    + action.getClass().getName() + ").");
+                    + ") is not found in the class("
+                    + controller.getClass().getName() + ").");
         }
-        return property.getPropertyDesc().getValue(action);
+        return property.getPropertyDesc().getValue(controller);
     }
 
     public void set(String name, Object value) {

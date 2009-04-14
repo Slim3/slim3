@@ -13,7 +13,7 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.struts.config.action;
+package org.slim3.struts.config.controller;
 
 import org.apache.struts.action.ActionForward;
 import org.slim3.struts.annotation.Execute;
@@ -22,33 +22,13 @@ import org.slim3.struts.annotation.Execute;
  * @author higa
  * 
  */
-public class Hoge2Action {
-
-    /**
-     * 
-     */
-    public String aaa;
+public class Bad6Controller {
 
     /**
      * @return action forward.
      */
-    @Execute(validate = false, input = "hoge.html", reset = "resetForIndex", roles = {
-            "aaa", "bbb" })
-    public ActionForward submit() {
+    @Execute(validate = false)
+    public ActionForward index() {
         return null;
-    }
-
-    /**
-     * @return action forward.
-     */
-    @Execute(input = "hoge.html")
-    public ActionForward submit2() {
-        return null;
-    }
-
-    /**
-     * 
-     */
-    public void resetForIndex() {
     }
 }

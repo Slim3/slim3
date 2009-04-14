@@ -72,7 +72,7 @@ public class S3FormBeanConfigTest extends CleanableTestCase {
      */
     public void testCreateActionForm() throws Exception {
         ActionUtil.setAction(new Object());
-        String name = "hoge2ActionForm";
+        String name = "hoge2ControllerForm";
         moduleConfig.findActionConfig("/hoge2");
         S3FormBeanConfig formBeanConfig = (S3FormBeanConfig) moduleConfig
                 .findFormBeanConfig(name);

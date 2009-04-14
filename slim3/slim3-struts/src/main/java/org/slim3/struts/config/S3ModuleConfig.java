@@ -43,6 +43,7 @@ import org.slim3.commons.util.MethodUtil;
 import org.slim3.commons.util.StringUtil;
 import org.slim3.struts.S3StrutsGlobals;
 import org.slim3.struts.annotation.Arg;
+import org.slim3.struts.annotation.Controller;
 import org.slim3.struts.annotation.Execute;
 import org.slim3.struts.annotation.Msg;
 import org.slim3.struts.annotation.Validator;
@@ -63,14 +64,14 @@ import org.slim3.struts.web.HotdeployClassLoader;
 public class S3ModuleConfig extends ModuleConfigImpl {
 
     /**
-     * The action suffix.
+     * The controller suffix.
      */
-    public static final String ACTION_SUFFIX = "Action";
+    public static final String CONTROLLER_SUFFIX = "Controller";
 
     /**
-     * The action package.
+     * The controller package.
      */
-    public static final String ACTION_PACKAGE = "action";
+    public static final String CONTROLLER_PACKAGE = "controller";
 
     /**
      * The form suffix.
@@ -196,52 +197,57 @@ public class S3ModuleConfig extends ModuleConfigImpl {
      *            the path
      * @return an action configuration
      * @throws IllegalStateException
-     *             if an action does not extend S3Action
+     *             if the controller is not marked by @Controller
      */
     protected S3ActionMapping createActionConfig(String path)
             throws IllegalStateException {
-        String actionName = toActionName(path);
-        Class<?> actionClass = toActionClass(actionName);
-        if (actionClass == null) {
+        String controllerName = toControllerName(path);
+        Class<?> controllerClass = toControllerClass(controllerName);
+        if (controllerClass == null) {
             return null;
+        }
+        if (controllerClass.getAnnotation(Controller.class) == null) {
+            throw new IllegalStateException("The controller("
+                    + controllerClass.getName()
+                    + ") is not marked by @Controller.");
         }
         S3ActionMapping actionMapping = new S3ActionMapping();
         actionMapping.setPath(path);
-        actionMapping.setName(actionName + FORM_SUFFIX);
-        actionMapping.setActionName(actionName);
-        actionMapping.setActionClass(actionClass);
-        setupExecuteMethod(actionMapping, actionClass);
+        actionMapping.setName(controllerName + FORM_SUFFIX);
+        actionMapping.setControllerName(controllerName);
+        actionMapping.setControllerClass(controllerClass);
+        setupExecuteMethod(actionMapping, controllerClass);
         return actionMapping;
     }
 
     /**
-     * Converts the path to action class.
+     * Converts the path to the controller name.
      * 
      * @param path
      *            the path
-     * @return action class
+     * @return the controller name
      */
-    protected String toActionName(String path) {
+    protected String toControllerName(String path) {
         int index = path.lastIndexOf('/');
         if (index < 0) {
             throw new IllegalArgumentException("The path(" + path
                     + ") does not contain slash(/).");
         }
         if (index == 0) {
-            return path.substring(1) + ACTION_SUFFIX;
+            return path.substring(1) + CONTROLLER_SUFFIX;
         }
         return path.substring(1, index).replace('/', '.') + "."
-                + path.substring(index + 1) + ACTION_SUFFIX;
+                + path.substring(index + 1) + CONTROLLER_SUFFIX;
     }
 
     /**
-     * Converts the action name into an action class.
+     * Converts the controller name into the controller class.
      * 
      * @param name
-     *            the action name.
-     * @return an action class.
+     *            the controller name.
+     * @return the controller class.
      */
-    protected Class<?> toActionClass(String name) {
+    protected Class<?> toControllerClass(String name) {
         int index = name.lastIndexOf('.');
         if (index > 0) {
             name = name.substring(0, index + 1)
@@ -250,7 +256,7 @@ public class S3ModuleConfig extends ModuleConfigImpl {
             name = StringUtil.capitalize(name);
         }
         String className = Configuration.getInstance().getValue(
-                S3StrutsGlobals.ACTION_PACKAGE_KEY)
+                S3StrutsGlobals.CONTROLLER_PACKAGE_KEY)
                 + "." + name;
         ClassLoader loader = HotdeployClassLoader.getCurrentInstance();
         if (loader == null) {
@@ -268,12 +274,12 @@ public class S3ModuleConfig extends ModuleConfigImpl {
      * 
      * @param actionMapping
      *            the action mapping
-     * @param actionClass
-     *            the action class
+     * @param controllerClass
+     *            the controller class
      */
     protected void setupExecuteMethod(S3ActionMapping actionMapping,
-            Class<?> actionClass) {
-        for (Class<?> clazz = actionClass; clazz != Object.class; clazz = clazz
+            Class<?> controllerClass) {
+        for (Class<?> clazz = controllerClass; clazz != Object.class; clazz = clazz
                 .getSuperclass()) {
             for (Method m : clazz.getDeclaredMethods()) {
                 if (!Modifier.isPublic(m.getModifiers())) {
@@ -284,7 +290,7 @@ public class S3ModuleConfig extends ModuleConfigImpl {
                     if (m.getParameterTypes().length == 0
                             && m.getReturnType() == ActionForward.class) {
                         throw new IllegalStateException("Define @Execute at "
-                                + actionClass.getName() + "#" + m.getName()
+                                + controllerClass.getName() + "#" + m.getName()
                                 + "().");
                     }
                     continue;
@@ -308,7 +314,7 @@ public class S3ModuleConfig extends ModuleConfigImpl {
                 if (validate && executeConfig.getInput() == null) {
                     throw new IllegalStateException(
                             "If you want to validate "
-                                    + actionClass.getName()
+                                    + controllerClass.getName()
                                     + "#"
                                     + m.getName()
                                     + "(), define @Execute(input = \"path when validation errors have occurred\"). If you do not, define @Execute(validate = false).");
@@ -317,12 +323,12 @@ public class S3ModuleConfig extends ModuleConfigImpl {
                 String reset = execute.reset();
                 if (!StringUtil.isEmpty(reset)) {
                     try {
-                        Method resetMethod = actionClass.getMethod(reset);
+                        Method resetMethod = controllerClass.getMethod(reset);
                         executeConfig.setResetMethod(resetMethod);
                     } catch (NoSuchMethodException e) {
                         throw new IllegalStateException("The reset method("
                                 + reset + ") is not found in the action("
-                                + actionClass.getName() + ").");
+                                + controllerClass.getName() + ").");
                     }
                 }
                 actionMapping.addExecuteConfig(executeConfig);
@@ -330,7 +336,7 @@ public class S3ModuleConfig extends ModuleConfigImpl {
         }
         if (actionMapping.getExecuteConfigSize() == 0) {
             throw new IllegalStateException("The action("
-                    + actionClass.getName()
+                    + controllerClass.getName()
                     + ") does not have any execute methods.");
         }
     }
@@ -348,7 +354,7 @@ public class S3ModuleConfig extends ModuleConfigImpl {
         formBeanConfig.setName(actionMapping.getName());
         ActionFormWrapperClass dynaClass = new ActionFormWrapperClass(
                 actionMapping.getName());
-        BeanDesc beanDesc = actionMapping.getActionBeanDesc();
+        BeanDesc beanDesc = actionMapping.getBeanDesc();
         for (int i = 0; i < beanDesc.getPropertyDescSize(); i++) {
             PropertyDesc propertyDesc = beanDesc.getPropertyDesc(i);
             dynaClass.addDynaProperty(new S3DynaProperty(propertyDesc));
@@ -370,7 +376,7 @@ public class S3ModuleConfig extends ModuleConfigImpl {
             form.setName(actionMapping.getName() + "_" + methodName);
             forms.put(methodName, form);
         }
-        for (Class<?> clazz = actionMapping.getActionClass(); clazz != null
+        for (Class<?> clazz = actionMapping.getControllerClass(); clazz != null
                 && clazz != Object.class; clazz = clazz.getSuperclass()) {
             for (Field field : clazz.getDeclaredFields()) {
                 for (Annotation anno : field.getDeclaredAnnotations()) {
