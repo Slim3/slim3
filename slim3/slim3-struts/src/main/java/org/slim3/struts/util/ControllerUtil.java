@@ -19,44 +19,44 @@ import org.slim3.struts.S3StrutsGlobals;
 import org.slim3.struts.web.WebLocator;
 
 /**
- * A utility for an action.
+ * A utility for a controller.
  * 
  * @author higa
  * @since 3.0
  * 
  */
-public final class ActionUtil {
+public final class ControllerUtil {
 
-    private static final String KEY = ActionUtil.class.getName();
+    private static final String KEY = ControllerUtil.class.getName();
 
-    private ActionUtil() {
+    private ControllerUtil() {
     }
 
     /**
-     * Returns the action from request.
+     * Returns the controller from request.
      * 
-     * @return the action
+     * @return the controller
      */
-    public static Object getAction() {
+    public static Object getController() {
         return WebLocator.getRequest().getAttribute(KEY);
     }
 
     /**
-     * Sets the action to request.
+     * Sets the controller to request.
      * 
-     * @param action
-     *            the action
+     * @param controller
+     *            the controller
      */
-    public static void setAction(Object action) {
-        WebLocator.getRequest().setAttribute(KEY, action);
+    public static void setController(Object controller) {
+        WebLocator.getRequest().setAttribute(KEY, controller);
     }
 
     /**
-     * Returns the action path.
+     * Returns the controller path.
      * 
-     * @return the action path
+     * @return the controller path
      */
-    public static String getActionPath() {
+    public static String getPath() {
         String s = RequestUtil.getPath();
         if (s.indexOf('.') < 0) {
             return s;

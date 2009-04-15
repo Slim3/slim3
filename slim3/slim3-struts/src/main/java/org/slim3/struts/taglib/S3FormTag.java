@@ -28,7 +28,7 @@ import org.apache.struts.taglib.TagUtils;
 import org.apache.struts.taglib.html.Constants;
 import org.apache.struts.taglib.html.FormTag;
 import org.apache.struts.util.RequestUtils;
-import org.slim3.struts.util.ActionUtil;
+import org.slim3.struts.util.ControllerUtil;
 
 /**
  * {@link FormTag} of Slim3.
@@ -126,9 +126,9 @@ public class S3FormTag extends FormTag {
         servlet = (ActionServlet) pageContext.getServletContext().getAttribute(
                 Globals.ACTION_SERVLET_KEY);
         if (action == null) {
-            action = ActionUtil.getActionPath();
+            action = ControllerUtil.getPath();
         } else if (!action.startsWith("/")) {
-            action = ActionUtil.getActionPath() + action;
+            action = ControllerUtil.getPath() + action;
         }
         String actionPath = action;
         if (actionPath.endsWith("/")) {

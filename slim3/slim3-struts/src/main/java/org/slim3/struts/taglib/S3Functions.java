@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.Date;
 
 import org.slim3.commons.util.StringUtil;
-import org.slim3.struts.util.ActionUtil;
+import org.slim3.struts.util.ControllerUtil;
 import org.slim3.struts.web.WebLocator;
 
 /**
@@ -161,11 +161,11 @@ public class S3Functions {
             sb.append(contextPath);
         }
         if (StringUtil.isEmpty(input)) {
-            sb.append(ActionUtil.getActionPath());
+            sb.append(ControllerUtil.getPath());
         } else if (input.startsWith("/")) {
             sb.append(input);
         } else {
-            sb.append(ActionUtil.getActionPath()).append(input);
+            sb.append(ControllerUtil.getPath()).append(input);
         }
         return WebLocator.getResponse().encodeURL(sb.toString());
     }

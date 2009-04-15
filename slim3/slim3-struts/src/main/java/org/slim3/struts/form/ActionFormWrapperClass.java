@@ -21,7 +21,7 @@ import java.util.Map;
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.commons.beanutils.DynaClass;
 import org.apache.commons.beanutils.DynaProperty;
-import org.slim3.struts.util.ActionUtil;
+import org.slim3.struts.util.ControllerUtil;
 
 /**
  * {@link DynaClass} of {@link ActionFormWrapper}.
@@ -86,6 +86,6 @@ public class ActionFormWrapperClass implements DynaClass {
 
     public DynaBean newInstance() throws IllegalAccessException,
             InstantiationException {
-        return new ActionFormWrapper(this, ActionUtil.getAction());
+        return new ActionFormWrapper(this, ControllerUtil.getController());
     }
 }

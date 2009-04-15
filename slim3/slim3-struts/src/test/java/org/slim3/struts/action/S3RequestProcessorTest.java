@@ -47,7 +47,7 @@ import org.slim3.struts.form.ActionFormWrapperClass;
 import org.slim3.struts.unit.MockHttpServletRequest;
 import org.slim3.struts.unit.MockHttpServletResponse;
 import org.slim3.struts.unit.MockServletContext;
-import org.slim3.struts.util.ActionUtil;
+import org.slim3.struts.util.ControllerUtil;
 import org.slim3.struts.util.S3ExecuteConfigUtil;
 import org.slim3.struts.web.WebLocator;
 
@@ -98,10 +98,10 @@ public class S3RequestProcessorTest extends CleanableTestCase {
         request.getSession().setAttribute("aaa", "111");
         S3ActionMapping mapping = new S3ActionMapping();
         mapping.setPath("/hoge");
-        mapping.setControllerName("hogeAction");
+        mapping.setControllerName("hogeController");
         mapping.setControllerClass(HogeController.class);
-        S3ExecuteConfig executeConfig = new S3ExecuteConfig(HogeController.class
-                .getMethod("index"));
+        S3ExecuteConfig executeConfig = new S3ExecuteConfig(
+                HogeController.class.getMethod("index"));
         mapping.addExecuteConfig(executeConfig);
         S3RequestProcessor processor = new S3RequestProcessor();
         S3ModuleConfig moduleConfig = new S3ModuleConfig("");
@@ -110,10 +110,11 @@ public class S3RequestProcessorTest extends CleanableTestCase {
         ActionMapping am = processor.processMapping(request, response, "/hoge");
         assertNotNull(am);
         assertNotNull(request.getAttribute(Globals.MAPPING_KEY));
-        HogeController action = (HogeController) ActionUtil.getAction();
-        assertNotNull(action);
-        assertEquals("111", action.aaa);
-        assertNull(action.bbb);
+        HogeController controller = (HogeController) ControllerUtil
+                .getController();
+        assertNotNull(controller);
+        assertEquals("111", controller.aaa);
+        assertNull(controller.bbb);
     }
 
     /**
@@ -123,8 +124,8 @@ public class S3RequestProcessorTest extends CleanableTestCase {
         S3ActionMapping mapping = new S3ActionMapping();
         mapping.setPath("/hoge");
         mapping.setControllerClass(HogeController.class);
-        S3ExecuteConfig executeConfig = new S3ExecuteConfig(HogeController.class
-                .getMethod("index"));
+        S3ExecuteConfig executeConfig = new S3ExecuteConfig(
+                HogeController.class.getMethod("index"));
         mapping.addExecuteConfig(executeConfig);
         S3RequestProcessor processor = new S3RequestProcessor();
         S3ModuleConfig moduleConfig = new S3ModuleConfig("");
@@ -143,8 +144,8 @@ public class S3RequestProcessorTest extends CleanableTestCase {
         S3ActionMapping mapping = new S3ActionMapping();
         mapping.setPath("/hoge");
         mapping.setControllerClass(HogeController.class);
-        S3ExecuteConfig executeConfig = new S3ExecuteConfig(HogeController.class
-                .getMethod("submit"));
+        S3ExecuteConfig executeConfig = new S3ExecuteConfig(
+                HogeController.class.getMethod("submit"));
         mapping.addExecuteConfig(executeConfig);
         S3RequestProcessor processor = new S3RequestProcessor();
         S3ModuleConfig moduleConfig = new S3ModuleConfig("");
@@ -162,8 +163,8 @@ public class S3RequestProcessorTest extends CleanableTestCase {
         S3ActionMapping mapping = new S3ActionMapping();
         mapping.setPath("/hoge");
         mapping.setControllerClass(HogeController.class);
-        S3ExecuteConfig executeConfig = new S3ExecuteConfig(HogeController.class
-                .getMethod("index"));
+        S3ExecuteConfig executeConfig = new S3ExecuteConfig(
+                HogeController.class.getMethod("index"));
         mapping.addExecuteConfig(executeConfig);
         S3ExecuteConfigUtil.setExecuteConfig(executeConfig);
         S3RequestProcessor processor = new S3RequestProcessor();
@@ -190,8 +191,8 @@ public class S3RequestProcessorTest extends CleanableTestCase {
         S3ActionMapping mapping = new S3ActionMapping();
         mapping.setPath("/hoge");
         mapping.setControllerClass(HogeController.class);
-        S3ExecuteConfig executeConfig = new S3ExecuteConfig(HogeController.class
-                .getMethod("submit"));
+        S3ExecuteConfig executeConfig = new S3ExecuteConfig(
+                HogeController.class.getMethod("submit"));
         mapping.addExecuteConfig(executeConfig);
         S3ExecuteConfigUtil.setExecuteConfig(executeConfig);
         S3RequestProcessor processor = new S3RequestProcessor();
@@ -217,8 +218,8 @@ public class S3RequestProcessorTest extends CleanableTestCase {
         S3ActionMapping mapping = new S3ActionMapping();
         mapping.setPath("/hoge");
         mapping.setControllerClass(HogeController.class);
-        S3ExecuteConfig executeConfig = new S3ExecuteConfig(HogeController.class
-                .getMethod("submit"));
+        S3ExecuteConfig executeConfig = new S3ExecuteConfig(
+                HogeController.class.getMethod("submit"));
         executeConfig.setRoles(new String[] { "role1", "role2" });
         mapping.addExecuteConfig(executeConfig);
         S3ExecuteConfigUtil.setExecuteConfig(executeConfig);
@@ -234,22 +235,22 @@ public class S3RequestProcessorTest extends CleanableTestCase {
      */
     public void testProcessActionForm() throws Exception {
         S3ActionMapping mapping = new S3ActionMapping();
-        mapping.setName("HogeActionForm");
+        mapping.setName("hogeControllerForm");
         S3RequestProcessor processor = new S3RequestProcessor();
         S3ModuleConfig moduleConfig = new S3ModuleConfig("");
         ActionFormWrapperClass wrapperClass = new ActionFormWrapperClass(
-                "HogeActionForm");
+                "hogeControllerForm");
         S3FormBeanConfig formConfig = new S3FormBeanConfig();
-        formConfig.setName("HogeActionForm");
+        formConfig.setName("hogeControllerForm");
         formConfig.setDynaClass(wrapperClass);
         moduleConfig.addFormBeanConfig(formConfig);
         processor.init(new ActionServlet(), moduleConfig);
-        ActionUtil.setAction(new HogeController());
+        ControllerUtil.setController(new HogeController());
         ActionForm actionForm = processor.processActionForm(request, response,
                 mapping);
         assertNotNull(actionForm);
         assertEquals(ActionFormWrapper.class, actionForm.getClass());
-        assertNotNull(request.getAttribute("HogeActionForm"));
+        assertNotNull(request.getAttribute("hogeControllerForm"));
     }
 
     /**
@@ -260,7 +261,7 @@ public class S3RequestProcessorTest extends CleanableTestCase {
         S3RequestProcessor processor = new S3RequestProcessor();
         S3ModuleConfig moduleConfig = new S3ModuleConfig("");
         processor.init(new ActionServlet(), moduleConfig);
-        ActionUtil.setAction(new HogeController());
+        ControllerUtil.setController(new HogeController());
         Action action = processor.processActionCreate(request, response,
                 mapping);
         assertNotNull(action);
@@ -721,17 +722,17 @@ public class S3RequestProcessorTest extends CleanableTestCase {
         S3ActionMapping mapping = new S3ActionMapping();
         mapping.setPath("/hoge");
         mapping.setControllerClass(HogeController.class);
-        S3ExecuteConfig executeConfig = new S3ExecuteConfig(HogeController.class
-                .getMethod("index"));
+        S3ExecuteConfig executeConfig = new S3ExecuteConfig(
+                HogeController.class.getMethod("index"));
         mapping.addExecuteConfig(executeConfig);
         S3RequestProcessor processor = new S3RequestProcessor();
         S3ModuleConfig moduleConfig = new S3ModuleConfig("");
         moduleConfig.addActionConfig(mapping);
         processor.init(new ActionServlet(), moduleConfig);
-        HogeController action = new HogeController();
-        ActionUtil.setAction(action);
-        action.aaa = "111";
-        action.bbb = "222";
+        HogeController controller = new HogeController();
+        ControllerUtil.setController(controller);
+        controller.aaa = "111";
+        controller.bbb = "222";
         processor.exportProperties(request, response, BeanUtil
                 .getBeanDesc(HogeController.class), false);
         assertEquals("111", request.getSession().getAttribute("aaa"));
@@ -745,17 +746,17 @@ public class S3RequestProcessorTest extends CleanableTestCase {
         S3ActionMapping mapping = new S3ActionMapping();
         mapping.setPath("/hoge");
         mapping.setControllerClass(HogeController.class);
-        S3ExecuteConfig executeConfig = new S3ExecuteConfig(HogeController.class
-                .getMethod("index"));
+        S3ExecuteConfig executeConfig = new S3ExecuteConfig(
+                HogeController.class.getMethod("index"));
         mapping.addExecuteConfig(executeConfig);
         S3RequestProcessor processor = new S3RequestProcessor();
         S3ModuleConfig moduleConfig = new S3ModuleConfig("");
         moduleConfig.addActionConfig(mapping);
         processor.init(new ActionServlet(), moduleConfig);
-        HogeController action = new HogeController();
-        ActionUtil.setAction(action);
-        action.aaa = "111";
-        action.bbb = "222";
+        HogeController controller = new HogeController();
+        ControllerUtil.setController(controller);
+        controller.aaa = "111";
+        controller.bbb = "222";
         processor.exportProperties(request, response, BeanUtil
                 .getBeanDesc(HogeController.class), true);
         assertEquals("111", request.getSession().getAttribute("aaa"));
@@ -770,16 +771,16 @@ public class S3RequestProcessorTest extends CleanableTestCase {
         S3ActionMapping mapping = new S3ActionMapping();
         mapping.setPath("/hoge");
         mapping.setControllerClass(HogeController.class);
-        S3ExecuteConfig executeConfig = new S3ExecuteConfig(HogeController.class
-                .getMethod("index"));
+        S3ExecuteConfig executeConfig = new S3ExecuteConfig(
+                HogeController.class.getMethod("index"));
         mapping.addExecuteConfig(executeConfig);
         S3RequestProcessor processor = new S3RequestProcessor();
         S3ModuleConfig moduleConfig = new S3ModuleConfig("");
         moduleConfig.addActionConfig(mapping);
         processor.init(new ActionServlet(), moduleConfig);
-        HogeController action = new HogeController();
-        ActionUtil.setAction(action);
-        action.aaa = null;
+        HogeController controller = new HogeController();
+        ControllerUtil.setController(controller);
+        controller.aaa = null;
         processor.exportProperties(request, response, BeanUtil
                 .getBeanDesc(HogeController.class), true);
         assertNull(request.getSession().getAttribute("aaa"));

@@ -20,7 +20,7 @@ import junit.framework.TestCase;
 import org.apache.commons.beanutils.DynaBean;
 import org.slim3.struts.unit.MockHttpServletRequest;
 import org.slim3.struts.unit.MockServletContext;
-import org.slim3.struts.util.ActionUtil;
+import org.slim3.struts.util.ControllerUtil;
 import org.slim3.struts.web.WebLocator;
 
 /**
@@ -49,7 +49,7 @@ public class ActionFormWrapperClassTest extends TestCase {
      */
     public void testNewInstance() throws Exception {
         String name = "hoge";
-        ActionUtil.setAction(new Object());
+        ControllerUtil.setController(new Object());
         ActionFormWrapperClass dynaClass = new ActionFormWrapperClass(name);
         DynaBean actionForm = dynaClass.newInstance();
         assertNotNull(actionForm);

@@ -25,7 +25,7 @@ import org.slim3.commons.bean.BeanUtil;
 import org.slim3.commons.config.Configuration;
 import org.slim3.commons.util.ArrayMap;
 import org.slim3.struts.S3StrutsGlobals;
-import org.slim3.struts.util.ActionUtil;
+import org.slim3.struts.util.ControllerUtil;
 import org.slim3.struts.util.S3ExecuteConfigUtil;
 
 /**
@@ -77,7 +77,7 @@ public class S3ActionMapping extends ActionMapping {
         if (executeConfig != null) {
             String input2 = executeConfig.getInput();
             if (!input2.startsWith("/")) {
-                input2 = ActionUtil.getActionPath() + input2;
+                input2 = ControllerUtil.getPath() + input2;
             }
             if (input2.indexOf('.') > 0) {
                 input2 = Configuration.getInstance().getValue(

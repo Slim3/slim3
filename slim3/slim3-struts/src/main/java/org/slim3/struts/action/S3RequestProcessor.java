@@ -33,6 +33,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.struts.Globals;
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
@@ -54,7 +55,7 @@ import org.slim3.struts.S3StrutsGlobals;
 import org.slim3.struts.annotation.SessionScope;
 import org.slim3.struts.config.S3ActionMapping;
 import org.slim3.struts.config.S3ExecuteConfig;
-import org.slim3.struts.util.ActionUtil;
+import org.slim3.struts.util.ControllerUtil;
 import org.slim3.struts.util.S3ActionMappingUtil;
 import org.slim3.struts.util.S3ExecuteConfigUtil;
 import org.slim3.struts.web.RoutingFilter;
@@ -150,7 +151,7 @@ public class S3RequestProcessor extends RequestProcessor {
                 .findActionConfig(path);
         if (mapping != null) {
             request.setAttribute(Globals.MAPPING_KEY, mapping);
-            Object action = createAction(mapping);
+            Object controller = createController(mapping);
             BeanDesc beanDesc = mapping.getBeanDesc();
             for (int i = 0; i < beanDesc.getPropertyDescSize(); i++) {
                 PropertyDesc pd = beanDesc.getPropertyDesc(i);
@@ -158,11 +159,11 @@ public class S3RequestProcessor extends RequestProcessor {
                     continue;
                 }
                 if (pd.getField().getAnnotation(SessionScope.class) != null) {
-                    pd.setValue(action, request.getSession().getAttribute(
+                    pd.setValue(controller, request.getSession().getAttribute(
                             pd.getPropertyName()));
                 }
             }
-            ActionUtil.setAction(action);
+            ControllerUtil.setController(controller);
             return mapping;
         }
         response.sendError(HttpServletResponse.SC_NOT_FOUND, path
@@ -171,13 +172,13 @@ public class S3RequestProcessor extends RequestProcessor {
     }
 
     /**
-     * Creates a new action.
+     * Creates a new controller.
      * 
      * @param mapping
      *            the action mapping
-     * @return a new action
+     * @return a new controller
      */
-    protected Object createAction(S3ActionMapping mapping) {
+    protected Object createController(S3ActionMapping mapping) {
         return ClassUtil.newInstance(mapping.getControllerClass());
     }
 
@@ -262,7 +263,7 @@ public class S3RequestProcessor extends RequestProcessor {
 
         Action action = null;
         try {
-            action = createActionWrapper(ActionUtil.getAction());
+            action = createActionWrapper(ControllerUtil.getController());
         } catch (Exception e) {
             log.error(getInternal().getMessage("actionCreate",
                     mapping.getPath()), e);
@@ -293,12 +294,12 @@ public class S3RequestProcessor extends RequestProcessor {
     /**
      * Creates {@link ActionWrapper}.
      * 
-     * @param ation
-     *            the action
+     * @param controller
+     *            the controller
      * @return a action wrapper
      */
-    protected ActionWrapper createActionWrapper(Object ation) {
-        return new ActionWrapper(ActionUtil.getAction());
+    protected ActionWrapper createActionWrapper(Object controller) {
+        return new ActionWrapper(ControllerUtil.getController());
     }
 
     @Override
@@ -310,13 +311,9 @@ public class S3RequestProcessor extends RequestProcessor {
             return;
         }
         form.setServlet(servlet);
-        String contentType = request.getContentType();
-        String method = request.getMethod();
         form.setMultipartRequestHandler(null);
         MultipartRequestHandler multipartHandler = null;
-        if (contentType != null
-                && contentType.startsWith("multipart/form-data")
-                && method.equalsIgnoreCase("POST")) {
+        if (ServletFileUpload.isMultipartContent(request)) {
             multipartHandler = getMultipartHandler(mapping.getMultipartClass());
             if (multipartHandler != null) {
                 multipartHandler.setServlet(servlet);
@@ -337,7 +334,7 @@ public class S3RequestProcessor extends RequestProcessor {
         Map<String, Object> params = getAllParameters(request, multipartHandler);
         for (Iterator<String> i = params.keySet().iterator(); i.hasNext();) {
             String name = i.next();
-            setProperty(ActionUtil.getAction(), name, params.get(name));
+            setProperty(ControllerUtil.getController(), name, params.get(name));
         }
     }
 
@@ -438,7 +435,7 @@ public class S3RequestProcessor extends RequestProcessor {
         String path = forward.getPath();
         if (path.indexOf(':') < 0) {
             if (!path.startsWith("/")) {
-                path = ActionUtil.getActionPath() + path; // uri
+                path = ControllerUtil.getPath() + path; // uri
             }
             if (path.indexOf('.') > 0) {
                 if (forward.getRedirect()) {
@@ -491,11 +488,11 @@ public class S3RequestProcessor extends RequestProcessor {
      */
     protected void exportProperties(HttpServletRequest request,
             HttpServletResponse response, BeanDesc beanDesc, boolean redirect) {
-        Object action = ActionUtil.getAction();
+        Object controller = ControllerUtil.getController();
         for (int i = 0; i < beanDesc.getPropertyDescSize(); i++) {
             PropertyDesc pd = beanDesc.getPropertyDesc(i);
             if (pd.isReadable()) {
-                Object value = pd.getValue(action);
+                Object value = pd.getValue(controller);
                 Field field = pd.getField();
                 if (field != null) {
                     if (field.getAnnotation(SessionScope.class) != null) {

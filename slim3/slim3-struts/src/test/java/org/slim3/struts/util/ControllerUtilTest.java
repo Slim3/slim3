@@ -25,7 +25,7 @@ import org.slim3.struts.web.WebLocator;
  * @author higa
  * 
  */
-public class ActionUtilTest extends TestCase {
+public class ControllerUtilTest extends TestCase {
 
     private MockServletContext servletContext = new MockServletContext();
 
@@ -45,24 +45,24 @@ public class ActionUtilTest extends TestCase {
     /**
      * @throws Exception
      */
-    public void testSetAndGetAction() throws Exception {
-        Object action = new Object();
-        ActionUtil.setAction(action);
-        assertSame(action, ActionUtil.getAction());
+    public void testSetAndGetController() throws Exception {
+        Object controller = new Object();
+        ControllerUtil.setController(controller);
+        assertSame(controller, ControllerUtil.getController());
     }
 
     /**
      * @throws Exception
      */
-    public void testGetActionPath() throws Exception {
-        assertEquals("/hoge/", ActionUtil.getActionPath());
+    public void testGetPath() throws Exception {
+        assertEquals("/hoge/", ControllerUtil.getPath());
     }
 
     /**
      * @throws Exception
      */
-    public void testGetActionPathForJSP() throws Exception {
+    public void testGetPathForJSP() throws Exception {
         request.setServletPath("/hoge/index.jsp");
-        assertEquals("/hoge/", ActionUtil.getActionPath());
+        assertEquals("/hoge/", ControllerUtil.getPath());
     }
 }

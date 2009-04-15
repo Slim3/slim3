@@ -24,7 +24,7 @@ import org.slim3.commons.unit.CleanableTestCase;
 import org.slim3.struts.form.ActionFormWrapper;
 import org.slim3.struts.unit.MockHttpServletRequest;
 import org.slim3.struts.unit.MockServletContext;
-import org.slim3.struts.util.ActionUtil;
+import org.slim3.struts.util.ControllerUtil;
 import org.slim3.struts.util.S3PropertyMessageResources;
 import org.slim3.struts.util.S3PropertyMessageResourcesFactory;
 import org.slim3.struts.validator.S3ValidatorResources;
@@ -71,7 +71,7 @@ public class S3FormBeanConfigTest extends CleanableTestCase {
      * @throws Exception
      */
     public void testCreateActionForm() throws Exception {
-        ActionUtil.setAction(new Object());
+        ControllerUtil.setController(new Object());
         String name = "hoge2ControllerForm";
         moduleConfig.findActionConfig("/hoge2");
         S3FormBeanConfig formBeanConfig = (S3FormBeanConfig) moduleConfig
