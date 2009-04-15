@@ -26,11 +26,9 @@ public abstract class AbstractProcessor extends
                     .getElementsAnnotatedWith(annotation))) {
                 Generator<TypeElement> generator = createGenerator();
                 generator.generate(element);
-                end(true);
-                return true;
             }
         }
-        end(false);
+        end();
         return false;
     }
 
@@ -44,15 +42,12 @@ public abstract class AbstractProcessor extends
         }
     }
 
-    protected void end(boolean claimed) {
+    protected void end() {
         if (Options.isDebugEnabled(processingEnv)) {
-            Logger
-                    .debug(
-                            processingEnv,
-                            "[%s] process ended. claimed=%5b count=%d. elapsed=%10d(nano)",
-                            getClass().getName(), claimed, count++, System
-                                    .nanoTime()
-                                    - startTime);
+            Logger.debug(processingEnv,
+                    "[%s] process ended. count=%d. elapsed=%10d(nano)",
+                    getClass().getName(), count++, System.nanoTime()
+                            - startTime);
         }
     }
 }
