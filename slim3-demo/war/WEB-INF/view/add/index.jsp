@@ -11,14 +11,13 @@
 
 <html>
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>Add</title>
 <link rel="stylesheet" type="text/css" href="../css/global.css" />
 </head>
 <body>
 <h1>Add</h1>
-
 <html:errors/>
-${f:h(props)}
 <s:form>
 <html:text property="arg1"/> +
 <html:text property="arg2"/>

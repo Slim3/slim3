@@ -1,9 +1,11 @@
-package demo.action;
+package demo.controller;
 
 import org.apache.struts.action.ActionForward;
+import org.slim3.struts.annotation.Controller;
 import org.slim3.struts.annotation.Execute;
 
-public class ProtectAction {
+@Controller
+public class ProtectController {
 
     @Execute(validate = false)
     public ActionForward index() {

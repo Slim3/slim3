@@ -1,4 +1,4 @@
-package demo.action;
+package demo.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.struts.action.ActionForward;
+import org.slim3.struts.annotation.Controller;
 import org.slim3.struts.annotation.Execute;
 
-public class ForeachAction {
+@Controller
+public class ForeachController {
 
     public String id;
 

@@ -16,7 +16,6 @@
 <link rel="stylesheet" type="text/css" href="css/global.css" />
 </head>
 <body>
-
 <h1>Welcome to Slim3</h1>
 
 <ul>

@@ -1,10 +1,12 @@
-package demo.action;
+package demo.controller;
 
 import org.apache.struts.action.ActionForward;
+import org.slim3.struts.annotation.Controller;
 import org.slim3.struts.annotation.Execute;
 import org.slim3.struts.util.ResponseUtil;
 
-public class DownloadAction {
+@Controller
+public class AjaxController {
 
     @Execute(validate = false)
     public ActionForward index() {
@@ -12,8 +14,8 @@ public class DownloadAction {
     }
 
     @Execute(validate = false)
-    public ActionForward download() {
-        ResponseUtil.download("sample.txt", "Hello world".getBytes());
+    public ActionForward hello() {
+        ResponseUtil.write("Hello World");
         return null;
     }
 }

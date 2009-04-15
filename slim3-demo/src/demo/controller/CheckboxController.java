@@ -1,30 +1,21 @@
-package demo.action;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+package demo.controller;
 
 import org.apache.struts.action.ActionForward;
+import org.slim3.struts.annotation.Controller;
 import org.slim3.struts.annotation.Execute;
 import org.slim3.struts.annotation.SessionScope;
 
-public class MultiboxAction {
+@Controller
+public class CheckboxController {
 
     @SessionScope
-    public String[] multibox;
+    public Boolean check1;
 
-    public List<Map<String, String>> multiboxItems;
+    @SessionScope
+    public Boolean check2;
 
     @Execute(validate = false)
     public ActionForward index() {
-        multiboxItems = new ArrayList<Map<String, String>>();
-        for (int i = 1; i <= 3; i++) {
-            Map<String, String> m = new HashMap<String, String>();
-            m.put("value", String.valueOf(i));
-            m.put("label", "label" + i);
-            multiboxItems.add(m);
-        }
         return new ActionForward("index.jsp");
     }
 
@@ -39,6 +30,7 @@ public class MultiboxAction {
     }
 
     public void reset() {
-        multibox = new String[0];
+        check1 = false;
+        check2 = false;
     }
 }

@@ -1,15 +1,16 @@
-package demo.action;
+package demo.controller;
 
 import org.apache.struts.action.ActionForward;
+import org.slim3.struts.annotation.Controller;
 import org.slim3.struts.annotation.Execute;
 
-public class TilesAction {
+@Controller
+public class ConditionController {
 
-    public String message;
+    public String id;
 
     @Execute(validate = false)
     public ActionForward index() {
-        message = "Welcome Slim3!";
         return new ActionForward("index.jsp");
     }
 }

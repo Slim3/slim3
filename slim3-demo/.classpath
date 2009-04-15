@@ -23,6 +23,7 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/struts-1.2.9.jar" sourcepath="war/WEB-INF/libsrc/struts-1.2.9-sources.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/log4j-1.2.13.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-fileupload-1.2.1.jar" sourcepath="war/WEB-INF/libsrc/commons-fileupload-1.2.1-sources.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/slim3-gae-EA1-SNAPSHOT.jar" sourcepath="war/WEB-INF/libsrc/slim3-gae-EA1-SNAPSHOT-sources.jar"/>
 	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

@@ -1,34 +1,28 @@
-package demo.action;
+package demo.controller;
 
 import org.apache.struts.action.ActionForward;
+import org.slim3.struts.annotation.Controller;
 import org.slim3.struts.annotation.Execute;
 import org.slim3.struts.annotation.SessionScope;
 
-public class CheckboxAction {
+@Controller
+public class MultiselectController {
 
     @SessionScope
-    public Boolean check1;
-
-    @SessionScope
-    public Boolean check2;
+    public String[] multiselect;
 
     @Execute(validate = false)
     public ActionForward index() {
+        multiselect = new String[] { "2" };
         return new ActionForward("index.jsp");
     }
 
     @Execute(validate = false, reset = "reset")
     public ActionForward submit() {
-        return new ActionForward("submit.jsp");
-    }
-
-    @Execute(validate = false)
-    public ActionForward moveToIndexPage() {
-        return new ActionForward("", true);
+        return new ActionForward("index.jsp");
     }
 
     public void reset() {
-        check1 = false;
-        check2 = false;
+        multiselect = new String[0];
     }
 }

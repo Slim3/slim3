@@ -1,19 +1,22 @@
-package demo.action;
+package demo.controller;
 
 import org.apache.struts.action.ActionForward;
+import org.slim3.struts.annotation.Controller;
 import org.slim3.struts.annotation.Execute;
-import org.slim3.struts.util.ResponseUtil;
 
-public class AjaxAction {
+@Controller
+public class RadioController {
+
+    public String radio;
 
     @Execute(validate = false)
     public ActionForward index() {
+        radio = "3";
         return new ActionForward("index.jsp");
     }
 
     @Execute(validate = false)
-    public ActionForward hello() {
-        ResponseUtil.write("Hello World");
-        return null;
+    public ActionForward submit() {
+        return new ActionForward("index.jsp");
     }
 }

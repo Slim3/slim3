@@ -1,24 +1,26 @@
 <project name="slim3-demo" default="copy" basedir=".">
-	<property name="ver" value="EA1-SNAPSHOT"/>
-	<target name="copy">
-		<copy todir="war/WEB-INF/lib" file="../slim3/slim3-commons/target/slim3-commons-${ver}.jar"/>
-		<copy todir="war/WEB-INF/lib" file="../slim3/slim3-struts/target/slim3-struts-${ver}.jar"/>
-		<copy todir="war/WEB-INF/libsrc" file="../slim3/slim3-commons/target/slim3-commons-${ver}-sources.jar"/>
-		<copy todir="war/WEB-INF/libsrc" file="../slim3/slim3-struts/target/slim3-struts-${ver}-sources.jar"/>	
-	</target>
+    <property name="ver" value="EA1-SNAPSHOT"/>
+    <target name="copy">
+        <copy todir="war/WEB-INF/lib" file="../slim3/target/slim3-commons-${ver}.jar"/>
+        <copy todir="war/WEB-INF/lib" file="../slim3/target/slim3-struts-${ver}.jar"/>
+        <copy todir="war/WEB-INF/lib" file="../slim3/target/slim3-gae-${ver}.jar"/>
+        <copy todir="war/WEB-INF/libsrc" file="../slim3/target/slim3-commons-${ver}-sources.jar"/>
+        <copy todir="war/WEB-INF/libsrc" file="../slim3/target/slim3-struts-${ver}-sources.jar"/>
+    	<copy todir="war/WEB-INF/libsrc" file="../slim3/target/slim3-gae-${ver}-sources.jar"/>
+    </target>
 
-	<target name="dist">
-			<delete includeemptydirs="true" failonerror="false">
-				<fileset dir="target"/>
-			</delete>
-			<mkdir dir="target"/>
-			<zip zipfile="target/slim3-demo-${ver}.zip">
-				<zipfileset prefix="slim3-demo" dir=".">
-					<exclude name="target/**"/>
-					<exclude name="work/**"/>
-					<exclude name="build.xml"/>
-					<exclude name="**/.DS_Store"/>
-				</zipfileset>
-			</zip>
-		</target>
+    <target name="dist">
+        <delete includeemptydirs="true" failonerror="false">
+            <fileset dir="target"/>
+        </delete>
+        <mkdir dir="target"/>
+        <zip zipfile="target/slim3-demo-${ver}.zip">
+            <zipfileset prefix="slim3-demo" dir=".">
+                <exclude name="target/**"/>
+                <exclude name="work/**"/>
+                <exclude name="build.xml"/>
+                <exclude name="**/.DS_Store"/>
+            </zipfileset>
+        </zip>
+    </target>
 </project>

@@ -1,4 +1,4 @@
-package demo.action;
+package demo.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,9 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.struts.action.ActionForward;
+import org.slim3.struts.annotation.Controller;
 import org.slim3.struts.annotation.Execute;
 
-public class UpdatableForeachAction {
+@Controller
+public class ForeachButtonController {
+
+    public String id;
 
     public List<Map<String, Object>> mapItems = new ArrayList<Map<String, Object>>();
 
@@ -24,7 +28,7 @@ public class UpdatableForeachAction {
     }
 
     @Execute(validate = false)
-    public ActionForward submit() {
-        return new ActionForward("index.jsp");
+    public ActionForward result() {
+        return new ActionForward("result.jsp");
     }
 }

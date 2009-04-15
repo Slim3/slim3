@@ -1,3 +1,3 @@
-<h1>Tutorial: Tiles	</h1>
+<h1>Tiles	</h1>
 
 header

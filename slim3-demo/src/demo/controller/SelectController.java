@@ -1,15 +1,17 @@
-package demo.action;
+package demo.controller;
 
 import org.apache.struts.action.ActionForward;
+import org.slim3.struts.annotation.Controller;
 import org.slim3.struts.annotation.Execute;
 
-public class RadioAction {
+@Controller
+public class SelectController {
 
-    public String radio;
+    public String select;
 
     @Execute(validate = false)
     public ActionForward index() {
-        radio = "3";
+        select = "3";
         return new ActionForward("index.jsp");
     }
 

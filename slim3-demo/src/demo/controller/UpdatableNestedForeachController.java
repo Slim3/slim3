@@ -1,4 +1,4 @@
-package demo.action;
+package demo.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.struts.action.ActionForward;
+import org.slim3.struts.annotation.Controller;
 import org.slim3.struts.annotation.Execute;
 
-public class NestedForeachAction {
+@Controller
+public class UpdatableNestedForeachController {
 
     public List<List<Map<String, Object>>> mapItemsItems = new ArrayList<List<Map<String, Object>>>();
 
@@ -24,6 +26,11 @@ public class NestedForeachAction {
             }
             mapItemsItems.add(mapItems);
         }
+        return new ActionForward("index.jsp");
+    }
+
+    @Execute(validate = false)
+    public ActionForward submit() {
         return new ActionForward("index.jsp");
     }
 }
