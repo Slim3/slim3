@@ -1,0 +1,2 @@
+org.slim3.gen.processor.S3ControllerProcessor
+org.slim3.gen.processor.JDOEntityProcessor
