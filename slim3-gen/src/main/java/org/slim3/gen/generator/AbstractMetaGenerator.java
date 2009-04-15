@@ -15,6 +15,7 @@ import javax.lang.model.util.ElementScanner6;
 import javax.lang.model.util.Elements;
 import javax.tools.JavaFileObject;
 
+import org.slim3.gen.ProductInfo;
 import org.slim3.gen.option.Options;
 import org.slim3.gen.util.Logger;
 
@@ -65,8 +66,9 @@ public abstract class AbstractMetaGenerator extends
         }
         p.format("import %s;\n", Generated.class.getName());
         p.format("\n");
-        p.format("@%s(value = \"%s\", date = \"%s\")\n", Generated.class
-                .getSimpleName(), "Slim3-Gen", getDate());
+        p.format("@%s(value = { \"%s\", \"%s\" }, date = \"%s\")\n",
+                Generated.class.getSimpleName(), ProductInfo.getName(),
+                ProductInfo.getVersion(), getDate());
         p.format("public final class %s%s {\n", e.getSimpleName(), getSuffix());
         p.format("\n");
         scan(e.getEnclosedElements(), p);

@@ -40,11 +40,12 @@ public class S3ControllerMetaGenerator extends AbstractMetaGenerator {
     protected void printProperty(Element element, Formatter p) {
         String name = element.getSimpleName().toString();
         if (names.contains(name)) {
-            Logger.warn(super.processingEnv, "property(%s) duplicated.", name);
+            Logger.warn(processingEnv, "[%s] property(%s) duplicated.",
+                    getClass().getName(), name);
             return;
         }
         names.add(name);
-        p.format("    public static final String %s =\"%s\";\n", name, name);
+        p.format("    public static final String %s = \"%s\";\n", name, name);
         p.format("\n");
     }
 

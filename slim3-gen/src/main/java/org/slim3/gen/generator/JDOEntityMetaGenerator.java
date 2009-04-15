@@ -17,7 +17,7 @@ public class JDOEntityMetaGenerator extends AbstractMetaGenerator {
     @Override
     public Void visitVariable(VariableElement e, Formatter p) {
         if (ElementUtil.isAnnotated(e, Annotations.Persistent)) {
-            p.format("    public static final String %s =\"%s\";\n", e
+            p.format("    public static final String %s = \"%s\";\n", e
                     .getSimpleName(), e.getSimpleName());
             p.format("\n");
         }

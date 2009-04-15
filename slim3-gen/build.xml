@@ -24,7 +24,8 @@
     </target>
 
     <target name="copy" depends="compile">
-        <copy todir="${build}">
+        <filter token="VERSION" value="${ver}" />
+        <copy todir="${build}" filtering="true">
             <fileset dir="${resources}">
                 <include name="**/*.properties" />
                 <include name="**/*.xml" />
