@@ -1,9 +1,12 @@
 <project name="slim3" default="dist" basedir=".">
 
+	<property file="build.properties" />
+	
     <target name="dist" depends="clean">
         <ant antfile="slim3-commons/build.xml" inheritAll="false"/>
         <ant antfile="slim3-struts/build.xml" inheritAll="false"/>
         <ant antfile="slim3-gae/build.xml" inheritAll="false"/>
+        <jar jarfile="target/slim3-${ver}.jar" basedir="target" />
     </target>
 
     <target name="clean">
