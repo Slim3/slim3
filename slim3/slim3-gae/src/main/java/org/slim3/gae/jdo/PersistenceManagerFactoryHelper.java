@@ -27,7 +27,7 @@ import org.slim3.commons.config.Configuration;
  * @since 3.0
  * 
  */
-public final class PMF {
+public final class PersistenceManagerFactoryHelper {
 
     /**
      * The key for persistence manager factory name.
@@ -70,6 +70,6 @@ public final class PMF {
     /**
      * Constructor.
      */
-    private PMF() {
+    private PersistenceManagerFactoryHelper() {
     }
 }

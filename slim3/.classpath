@@ -12,7 +12,6 @@
 	<classpathentry kind="src" path="slim3-gae/src/main/resources"/>
 	<classpathentry kind="src" path="slim3-gae/src/test/java"/>
 	<classpathentry kind="src" path="slim3-gae/src/test/resources"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/junit-3.8.2.jar" sourcepath="libsrc/junit-3.8.2-sources.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.13.jar"/>
@@ -32,5 +31,6 @@
 	<classpathentry kind="lib" path="lib/appengine-local-runtime.jar"/>
 	<classpathentry kind="lib" path="lib/jdo2-api-2.3-SNAPSHOT.jar" sourcepath="libsrc/jdo2-api-2.3-SNAPSHOT-src.zip"/>
 	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

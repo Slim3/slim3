@@ -61,14 +61,7 @@ public final class ConstructorUtil {
                     .getDeclaringClass(), e);
         } catch (InvocationTargetException e) {
             Throwable t = e.getCause();
-            if (t instanceof RuntimeException) {
-                throw (RuntimeException) t;
-            }
-            if (t instanceof Error) {
-                throw (Error) t;
-            }
-            throw new RuntimeException(t);
-
+            throw RuntimeExceptionUtil.convert(t);
         }
     }
 }

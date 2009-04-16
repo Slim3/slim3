@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
+import org.slim3.commons.exception.WrapRuntimeException;
 import org.slim3.commons.util.StringUtil;
 import org.slim3.struts.util.ControllerUtil;
 import org.slim3.struts.web.WebLocator;
@@ -224,7 +225,7 @@ public class S3Functions {
             DecimalFormat format = new DecimalFormat(pattern);
             return format.parse(input);
         } catch (ParseException e) {
-            throw new RuntimeException(e);
+            throw new WrapRuntimeException(e);
         }
     }
 

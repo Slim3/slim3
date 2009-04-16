@@ -73,19 +73,4 @@ public class ClassUtilTest extends TestCase {
         assertTrue(ClassUtil.isPresent("java.lang.String"));
         assertFalse(ClassUtil.isPresent("xxx"));
     }
-
-    /**
-     * 
-     */
-    public void testGetDeclaredField() {
-        assertNotNull(ClassUtil.getDeclaredField(Hoge.class, "aaa"));
-    }
-
-    private static class Hoge {
-        public String aaa;
-
-        public String bbb;
-
-        public String ccc;
-    }
 }

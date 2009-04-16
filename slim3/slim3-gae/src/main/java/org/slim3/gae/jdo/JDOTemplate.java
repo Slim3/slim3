@@ -18,6 +18,8 @@ package org.slim3.gae.jdo;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Transaction;
 
+import org.slim3.commons.util.RuntimeExceptionUtil;
+
 /**
  * A template class for JDO.
  * 
@@ -45,25 +47,28 @@ public abstract class JDOTemplate<T> {
      * @return the executed result
      */
     public final T execute() {
-        pm = PM.getPersistenceManager();
-        T ret = null;
+        pm = PersistenceManagerFactoryHelper.getPersistenceManagerFactory().getPersistenceManager();
+        T returnValue = null;
         try {
             tx = pm.currentTransaction();
             try {
-                tx.begin();
-                ret = doExecute();
-                if (tx.getRollbackOnly()) {
-                    tx.rollback();
-                } else {
-                    tx.commit();
-                }
+                beforeExecution();
+                returnValue = doExecute();
+                afterExecution(returnValue);
             } catch (Throwable t) {
-                tx.rollback();
+                handleThrowable(t);
             }
         } finally {
             pm.close();
         }
-        return ret;
+        return returnValue;
+    }
+
+    /**
+     * Processes an action before execution.
+     */
+    protected void beforeExecution() {
+        tx.begin();
     }
 
     /**
@@ -72,4 +77,29 @@ public abstract class JDOTemplate<T> {
      * @return the executed result
      */
     protected abstract T doExecute();
+
+    /**
+     * Processes an action after execution.
+     * 
+     * @param returnValue
+     *            the return value
+     */
+    protected void afterExecution(T returnValue) {
+        if (tx.getRollbackOnly()) {
+            tx.rollback();
+        } else {
+            tx.commit();
+        }
+    }
+
+    /**
+     * Handles the exception.
+     * 
+     * @param t
+     *            the exception
+     */
+    protected void handleThrowable(Throwable t) {
+        tx.rollback();
+        RuntimeExceptionUtil.wrapAndThrow(t);
+    }
 }

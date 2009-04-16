@@ -16,7 +16,6 @@
 package org.slim3.commons.util;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 
 import org.slim3.commons.exception.ClassNotFoundRuntimeException;
 import org.slim3.commons.exception.IllegalAccessRuntimeException;
@@ -119,23 +118,6 @@ public final class ClassUtil {
             return clazz.getConstructor(parameterTypes);
         } catch (NoSuchMethodException e) {
             throw new NoSuchMethodRuntimeException(clazz, e);
-        }
-    }
-
-    /**
-     * Returns a declared field.
-     * 
-     * @param clazz
-     *            the class
-     * @param fieldName
-     *            the field name
-     * @return a declared field.
-     */
-    public static Field getDeclaredField(Class<?> clazz, String fieldName) {
-        try {
-            return clazz.getDeclaredField(fieldName);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
         }
     }
 

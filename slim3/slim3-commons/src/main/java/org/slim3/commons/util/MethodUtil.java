@@ -18,6 +18,8 @@ package org.slim3.commons.util;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.slim3.commons.exception.IllegalAccessRuntimeException;
+
 /**
  * A utility class for {@link Method}.
  * 
@@ -44,15 +46,10 @@ public final class MethodUtil {
         try {
             return method.invoke(obj);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new IllegalAccessRuntimeException(method.getDeclaringClass(),
+                    e);
         } catch (InvocationTargetException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof RuntimeException) {
-                throw (RuntimeException) cause;
-            } else if (cause instanceof Error) {
-                throw (Error) cause;
-            }
-            throw new RuntimeException(cause);
+            throw RuntimeExceptionUtil.convert(e);
         }
     }
 }

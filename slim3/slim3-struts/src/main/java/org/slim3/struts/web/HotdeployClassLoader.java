@@ -24,6 +24,7 @@ import java.net.URLConnection;
 import javax.servlet.http.HttpServletRequest;
 
 import org.slim3.commons.config.Configuration;
+import org.slim3.commons.exception.WrapRuntimeException;
 import org.slim3.commons.util.StringUtil;
 import org.slim3.struts.S3StrutsGlobals;
 
@@ -197,7 +198,7 @@ public class HotdeployClassLoader extends ClassLoader {
             connection.setUseCaches(false);
             return connection.getInputStream();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new WrapRuntimeException(e);
         }
     }
 
@@ -227,7 +228,7 @@ public class HotdeployClassLoader extends ClassLoader {
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new WrapRuntimeException(e);
         }
         return bytes;
     }

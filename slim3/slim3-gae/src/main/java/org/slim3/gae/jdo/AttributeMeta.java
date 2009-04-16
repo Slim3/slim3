@@ -15,18 +15,39 @@
  */
 package org.slim3.gae.jdo;
 
-import org.slim3.gae.unit.LocalDatastoreTestCase;
-
 /**
+ * A meta data for attribute.
+ * 
  * @author higa
+ * @since 3.0
  * 
  */
-public class PMFTest extends LocalDatastoreTestCase {
+public class AttributeMeta {
 
     /**
-     * @throws Exception
+     * The name.
      */
-    public void testGetPersistenceManagerFactory() throws Exception {
-        assertNotNull(PMF.getPersistenceManagerFactory());
+    protected String name;
+
+    /**
+     * Constructor.
+     * 
+     * @param name
+     *            the name
+     */
+    public AttributeMeta(String name) {
+        if (name == null) {
+            throw new NullPointerException("The name parameter is null.");
+        }
+        this.name = name;
+    }
+
+    /**
+     * Returns the name.
+     * 
+     * @return the name
+     */
+    public String getName() {
+        return name;
     }
 }

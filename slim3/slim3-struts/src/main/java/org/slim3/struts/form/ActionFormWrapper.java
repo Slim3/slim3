@@ -28,6 +28,7 @@ import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.validator.Resources;
+import org.slim3.commons.exception.WrapRuntimeException;
 import org.slim3.commons.util.MethodUtil;
 import org.slim3.struts.config.S3ExecuteConfig;
 import org.slim3.struts.util.S3ExecuteConfigUtil;
@@ -103,7 +104,7 @@ public class ActionFormWrapper extends ActionForm implements DynaBean {
             try {
                 validator.validate();
             } catch (ValidatorException e) {
-                throw new RuntimeException(e);
+                throw new WrapRuntimeException(e);
             }
         }
         return errors;

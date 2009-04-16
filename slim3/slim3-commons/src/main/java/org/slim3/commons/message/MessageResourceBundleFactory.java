@@ -28,6 +28,7 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slim3.commons.config.Configuration;
+import org.slim3.commons.exception.WrapRuntimeException;
 
 /**
  * A factory class for {@link MessageResourceBundle}.
@@ -116,7 +117,7 @@ public final class MessageResourceBundleFactory {
             return new File(URLDecoder.decode(url.getPath(), "UTF-8"))
                     .getAbsoluteFile();
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+            throw new WrapRuntimeException(e);
         }
     }
 

@@ -29,6 +29,7 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
+import org.slim3.commons.exception.WrapRuntimeException;
 import org.slim3.commons.util.IteratorEnumeration;
 
 /**
@@ -152,7 +153,7 @@ public class MockServletContext implements ServletContext, Serializable {
             }
             return url.openStream();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new WrapRuntimeException(e);
         }
     }
 

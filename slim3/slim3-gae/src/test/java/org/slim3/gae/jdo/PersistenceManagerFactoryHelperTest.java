@@ -15,22 +15,18 @@
  */
 package org.slim3.gae.jdo;
 
-import javax.jdo.PersistenceManager;
-
 import org.slim3.gae.unit.LocalDatastoreTestCase;
 
 /**
  * @author higa
  * 
  */
-public class PMTest extends LocalDatastoreTestCase {
+public class PersistenceManagerFactoryHelperTest extends LocalDatastoreTestCase {
 
     /**
      * @throws Exception
      */
-    public void testGetPersistenceManager() throws Exception {
-        PersistenceManager pm = PM.getPersistenceManager();
-        pm.close();
-        assertNotNull(pm);
+    public void testGetPersistenceManagerFactory() throws Exception {
+        assertNotNull(PersistenceManagerFactoryHelper.getPersistenceManagerFactory());
     }
 }

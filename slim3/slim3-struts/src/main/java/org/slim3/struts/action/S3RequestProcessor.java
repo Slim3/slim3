@@ -50,6 +50,7 @@ import org.slim3.commons.bean.BeanUtil;
 import org.slim3.commons.bean.ParameterizedClassDesc;
 import org.slim3.commons.bean.PropertyDesc;
 import org.slim3.commons.config.Configuration;
+import org.slim3.commons.exception.WrapRuntimeException;
 import org.slim3.commons.util.ClassUtil;
 import org.slim3.struts.S3StrutsGlobals;
 import org.slim3.struts.annotation.SessionScope;
@@ -249,10 +250,10 @@ public class S3RequestProcessor extends RequestProcessor {
             return actionForm;
         } catch (IllegalAccessException e) {
             log.error(e.getMessage(), e);
-            throw new RuntimeException(e);
+            throw new WrapRuntimeException(e);
         } catch (InstantiationException e) {
             log.error(e.getMessage(), e);
-            throw new RuntimeException(e);
+            throw new WrapRuntimeException(e);
         }
     }
 

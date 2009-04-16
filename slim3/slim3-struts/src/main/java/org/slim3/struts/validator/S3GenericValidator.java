@@ -17,6 +17,7 @@ package org.slim3.struts.validator;
 
 import java.io.UnsupportedEncodingException;
 
+import org.slim3.commons.exception.WrapRuntimeException;
 import org.slim3.commons.util.StringUtil;
 
 /**
@@ -68,7 +69,7 @@ public class S3GenericValidator {
         try {
             return str.getBytes(charset);
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+            throw new WrapRuntimeException(e);
         }
     }
 }

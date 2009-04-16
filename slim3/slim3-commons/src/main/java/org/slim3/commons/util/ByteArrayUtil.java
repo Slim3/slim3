@@ -23,6 +23,8 @@ import java.io.ObjectOutputStream;
 import java.sql.Blob;
 import java.sql.SQLException;
 
+import org.slim3.commons.exception.WrapRuntimeException;
+
 /**
  * A utility class for array of bytes.
  * 
@@ -101,7 +103,7 @@ public final class ByteArrayUtil {
             }
             return baos.toByteArray();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new WrapRuntimeException(e);
         }
     }
 
@@ -127,9 +129,9 @@ public final class ByteArrayUtil {
             }
             return o;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new WrapRuntimeException(e);
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new WrapRuntimeException(e);
         }
     }
 }

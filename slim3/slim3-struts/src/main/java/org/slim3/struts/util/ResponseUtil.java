@@ -23,6 +23,7 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.slim3.commons.exception.WrapRuntimeException;
 import org.slim3.struts.web.WebLocator;
 
 /**
@@ -58,7 +59,7 @@ public final class ResponseUtil {
                 out.close();
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new WrapRuntimeException(e);
         }
     }
 
@@ -88,12 +89,12 @@ public final class ResponseUtil {
                 out.close();
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new WrapRuntimeException(e);
         } finally {
             try {
                 in.close();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new WrapRuntimeException(e);
             }
         }
     }

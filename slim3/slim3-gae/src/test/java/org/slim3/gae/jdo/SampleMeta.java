@@ -15,23 +15,26 @@
  */
 package org.slim3.gae.jdo;
 
-import javax.jdo.PersistenceManager;
-
 /**
- * A helper class for PersistenceManager.
- * 
  * @author higa
- * @since 3.0
  * 
  */
-public final class PM {
+public class SampleMeta extends ModelMeta<Sample> {
 
     /**
-     * Returns the instance.
      * 
-     * @return the instance
      */
-    public static PersistenceManager getPersistenceManager() {
-        return PMF.getPersistenceManagerFactory().getPersistenceManager();
+    public SampleMeta() {
+        super(Sample.class);
     }
+
+    /**
+     * 
+     */
+    public AttributeMeta id = new AttributeMeta("id");
+
+    /**
+     * 
+     */
+    public AttributeMeta name = new AttributeMeta("name");
 }
