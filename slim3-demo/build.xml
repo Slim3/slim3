@@ -37,7 +37,12 @@
         </fileset>
     </path>
 
-    <target name="compile"
+	<target name="clean">
+        <delete dir="war/WEB-INF/classes" failonerror="false"/>
+        <mkdir dir="war/WEB-INF/classes"/>
+    </target>
+
+    <target name="compile" depends="clean"
         description="Compiles Java source and copies other source files to the WAR.">
         <mkdir dir="war/WEB-INF/classes" />
         <copy todir="war/WEB-INF/classes">
