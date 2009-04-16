@@ -1,25 +1,23 @@
 package org.slim3.gen.generator;
 
-import java.util.Formatter;
-
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.VariableElement;
 
 import org.slim3.gen.annotation.Annotations;
 import org.slim3.gen.util.ElementUtil;
 
-public class JDOEntityMetaGenerator extends AbstractMetaGenerator {
+public class JDOModelMetaGenerator extends AbstractMetaGenerator {
 
-    public JDOEntityMetaGenerator(ProcessingEnvironment processingEnv) {
+    public JDOModelMetaGenerator(ProcessingEnvironment processingEnv) {
         super(processingEnv);
     }
 
     @Override
-    public Void visitVariable(VariableElement e, Formatter p) {
+    public Void visitVariable(VariableElement e, Printer p) {
         if (ElementUtil.isAnnotated(e, Annotations.Persistent)) {
-            p.format("    public static final String %s = \"%s\";\n", e
+            p.println("    public static final String %s = \"%s\";", e
                     .getSimpleName(), e.getSimpleName());
-            p.format("\n");
+            p.println();
         }
         return DEFAULT_VALUE;
     }

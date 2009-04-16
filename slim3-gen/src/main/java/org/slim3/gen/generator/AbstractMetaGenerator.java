@@ -1,10 +1,8 @@
 package org.slim3.gen.generator;
 
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Formatter;
 
 import javax.annotation.Generated;
 import javax.annotation.processing.Filer;
@@ -20,7 +18,7 @@ import org.slim3.gen.option.Options;
 import org.slim3.gen.util.Logger;
 
 public abstract class AbstractMetaGenerator extends
-        ElementScanner6<Void, Formatter> implements Generator<TypeElement> {
+        ElementScanner6<Void, Printer> implements Generator<TypeElement> {
 
     protected final ProcessingEnvironment processingEnv;
 
@@ -31,7 +29,7 @@ public abstract class AbstractMetaGenerator extends
     }
 
     public void generate(TypeElement element) {
-        Formatter formatter = null;
+        Printer printer = null;
         String fileName = null;
         Filer filer = processingEnv.getFiler();
         try {
@@ -40,39 +38,37 @@ public abstract class AbstractMetaGenerator extends
                     + getSuffix());
             fileName = file.getName();
             start(fileName);
-            formatter = new Formatter(new BufferedOutputStream(file
-                    .openOutputStream()));
-            scan(element, formatter);
+            printer = new Printer(file);
+            scan(element, printer);
         } catch (IOException e) {
-            Logger.error(processingEnv, "failed to handle element(%s)", element
-                    .getQualifiedName());
+            Logger.error(processingEnv, "[%s] Failed to handle element(%s).",
+                    getClass().getName(), element.getQualifiedName());
             throw new RuntimeException(e);
         } finally {
-            if (formatter != null) {
-                formatter.close();
+            if (printer != null) {
+                printer.close();
             }
         }
         end(fileName);
     }
 
     @Override
-    public Void visitType(TypeElement e, Formatter p) {
+    public Void visitType(TypeElement e, Printer p) {
         Elements elements = processingEnv.getElementUtils();
-
         PackageElement packageElement = elements.getPackageOf(e);
         if (packageElement.getQualifiedName().length() > 0) {
-            p.format("package %s ;\n", packageElement.getQualifiedName());
-            p.format("\n");
+            p.println("package %s ;", packageElement.getQualifiedName());
+            p.println();
         }
-        p.format("import %s;\n", Generated.class.getName());
-        p.format("\n");
-        p.format("@%s(value = { \"%s\", \"%s\" }, date = \"%s\")\n",
+        p.println("import %s;", Generated.class.getName());
+        p.println();
+        p.println("@%s(value = { \"%s\", \"%s\" }, date = \"%s\")",
                 Generated.class.getSimpleName(), ProductInfo.getName(),
                 ProductInfo.getVersion(), getDate());
-        p.format("public final class %s%s {\n", e.getSimpleName(), getSuffix());
-        p.format("\n");
+        p.println("public final class %s%s {", e.getSimpleName(), getSuffix());
+        p.println();
         scan(e.getEnclosedElements(), p);
-        p.format("}");
+        p.print("}");
         return DEFAULT_VALUE;
     }
 

@@ -29,7 +29,7 @@ public abstract class AbstractProcessor extends
             }
         }
         end();
-        return false;
+        return true;
     }
 
     protected abstract Generator<TypeElement> createGenerator();
