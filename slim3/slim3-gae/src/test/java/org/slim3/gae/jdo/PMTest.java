@@ -21,12 +21,12 @@ import org.slim3.gae.unit.LocalDatastoreTestCase;
  * @author higa
  * 
  */
-public class PersistenceManagerFactoryHelperTest extends LocalDatastoreTestCase {
+public class PMTest extends LocalDatastoreTestCase {
 
     /**
      * @throws Exception
      */
-    public void testGetPersistenceManagerFactory() throws Exception {
-        assertNotNull(PersistenceManagerFactoryHelper.getPersistenceManagerFactory());
+    public void testGetPersistenceManager() throws Exception {
+        assertNotNull(PM.getPersistenceManager());
     }
 }

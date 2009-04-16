@@ -47,7 +47,7 @@ public abstract class JDOTemplate<T> {
      * @return the executed result
      */
     public final T execute() {
-        pm = PersistenceManagerFactoryHelper.getPersistenceManagerFactory().getPersistenceManager();
+        pm = PM.getPersistenceManager();
         T returnValue = null;
         try {
             tx = pm.currentTransaction();
