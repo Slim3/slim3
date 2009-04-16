@@ -3,7 +3,6 @@ package demo.controller;
 import org.apache.struts.action.ActionForward;
 import org.slim3.struts.annotation.Arg;
 import org.slim3.struts.annotation.ByteType;
-import org.slim3.struts.annotation.Controller;
 import org.slim3.struts.annotation.CreditCardType;
 import org.slim3.struts.annotation.DateType;
 import org.slim3.struts.annotation.DoubleRange;
@@ -25,7 +24,6 @@ import org.slim3.struts.annotation.ShortType;
 import org.slim3.struts.annotation.UrlType;
 import org.slim3.struts.annotation.Validwhen;
 
-@Controller
 public class ValidatorController {
 
     @Required

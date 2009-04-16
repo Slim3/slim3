@@ -6,10 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.struts.action.ActionForward;
-import org.slim3.struts.annotation.Controller;
 import org.slim3.struts.annotation.Execute;
 
-@Controller
 public class ForeachButtonController {
 
     public String id;

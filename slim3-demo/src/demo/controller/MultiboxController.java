@@ -6,11 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.struts.action.ActionForward;
-import org.slim3.struts.annotation.Controller;
 import org.slim3.struts.annotation.Execute;
 import org.slim3.struts.annotation.SessionScope;
 
-@Controller
 public class MultiboxController {
 
     @SessionScope

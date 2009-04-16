@@ -3,12 +3,10 @@ package demo.controller;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.slim3.struts.annotation.Controller;
 import org.slim3.struts.annotation.Execute;
 import org.slim3.struts.util.ActionMessagesUtil;
 import org.slim3.struts.util.TokenUtil;
 
-@Controller
 public class TokenController {
 
     @Execute(validate = false)

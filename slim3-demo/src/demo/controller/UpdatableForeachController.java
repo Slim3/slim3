@@ -6,10 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.struts.action.ActionForward;
-import org.slim3.struts.annotation.Controller;
 import org.slim3.struts.annotation.Execute;
 
-@Controller
 public class UpdatableForeachController {
 
     public List<Map<String, Object>> mapItems = new ArrayList<Map<String, Object>>();

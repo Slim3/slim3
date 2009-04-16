@@ -2,12 +2,10 @@ package demo.controller;
 
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.upload.FormFile;
-import org.slim3.struts.annotation.Controller;
 import org.slim3.struts.annotation.Execute;
 import org.slim3.struts.annotation.Required;
 import org.slim3.struts.util.UploadUtil;
 
-@Controller
 public class UploadController {
 
     @Required
