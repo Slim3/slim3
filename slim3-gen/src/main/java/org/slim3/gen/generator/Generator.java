@@ -2,7 +2,7 @@ package org.slim3.gen.generator;
 
 import javax.lang.model.element.Element;
 
-public interface Generator<T extends Element> {
+public interface Generator<R, E extends Element, P> {
 
-    public void generate(T element);
+    R generate(E e, P p);
 }

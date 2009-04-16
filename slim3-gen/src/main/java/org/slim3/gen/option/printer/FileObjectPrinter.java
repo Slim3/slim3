@@ -1,18 +1,17 @@
-package org.slim3.gen.generator;
+package org.slim3.gen.option.printer;
 
-import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.Formatter;
 
-import javax.tools.JavaFileObject;
+import javax.tools.FileObject;
 
-public class Printer {
+public class FileObjectPrinter implements Printer {
 
     protected final Formatter formatter;
 
-    public Printer(JavaFileObject javaFileObject) throws IOException {
-        this.formatter = new Formatter(new BufferedOutputStream(javaFileObject
-                .openOutputStream()));
+    public FileObjectPrinter(FileObject fileObject) throws IOException {
+        formatter = new Formatter(new BufferedWriter(fileObject.openWriter()));
     }
 
     public void print(String format, Object... args) {

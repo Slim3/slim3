@@ -6,48 +6,33 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementFilter;
 
-import org.slim3.gen.generator.Generator;
 import org.slim3.gen.option.Options;
 import org.slim3.gen.util.Logger;
 
 public abstract class AbstractProcessor extends
         javax.annotation.processing.AbstractProcessor {
 
-    protected int count;
-
-    protected long startTime;
-
     @Override
     public boolean process(Set<? extends TypeElement> annotations,
             RoundEnvironment roundEnv) {
-        start();
+        long startTime = 0L;
+        if (Options.isDebugEnabled(processingEnv)) {
+            Logger.debug(processingEnv, "[%s] Started.", getClass().getName());
+            startTime = System.nanoTime();
+        }
         for (TypeElement annotation : annotations) {
             for (TypeElement element : ElementFilter.typesIn(roundEnv
                     .getElementsAnnotatedWith(annotation))) {
-                Generator<TypeElement> generator = createGenerator();
-                generator.generate(element);
+                handleTypeElement(element);
             }
         }
-        end();
+        if (Options.isDebugEnabled(processingEnv)) {
+            Logger.debug(processingEnv, "[%s] Ended. elapsed=%d(nano)",
+                    getClass().getName(), System.nanoTime() - startTime);
+        }
         return true;
     }
 
-    protected abstract Generator<TypeElement> createGenerator();
+    protected abstract void handleTypeElement(TypeElement element);
 
-    protected void start() {
-        if (Options.isDebugEnabled(processingEnv)) {
-            Logger.debug(processingEnv, "[%s] process started. count=%d.",
-                    getClass().getName(), count);
-            startTime = System.nanoTime();
-        }
-    }
-
-    protected void end() {
-        if (Options.isDebugEnabled(processingEnv)) {
-            Logger.debug(processingEnv,
-                    "[%s] process ended. count=%d. elapsed=%10d(nano)",
-                    getClass().getName(), count++, System.nanoTime()
-                            - startTime);
-        }
-    }
 }
