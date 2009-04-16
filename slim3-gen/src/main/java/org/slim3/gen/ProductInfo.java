@@ -6,7 +6,7 @@ import java.util.Properties;
 
 public class ProductInfo {
 
-    protected static final String PATH = "META-INF/product.properties";
+    protected static final String PATH = "/META-INF/product.properties";
 
     protected static String name = "Slim3-Gen";
 
@@ -18,8 +18,7 @@ public class ProductInfo {
     }
 
     protected static Properties loadProperties() {
-        InputStream is = Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream(PATH);
+        InputStream is = ProductInfo.class.getResourceAsStream(PATH);
         Properties props = new Properties();
         if (is != null) {
             try {
