@@ -16,14 +16,12 @@
 package org.slim3.struts.web.controller;
 
 import org.apache.struts.action.ActionForward;
-import org.slim3.struts.annotation.Controller;
 import org.slim3.struts.annotation.Execute;
 
 /**
  * @author higa
  * 
  */
-@Controller
 public class FilterController {
 
     /**

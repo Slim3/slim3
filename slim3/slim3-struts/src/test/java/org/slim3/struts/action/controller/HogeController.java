@@ -20,7 +20,6 @@ import java.util.Map;
 
 import org.apache.struts.action.ActionForward;
 import org.slim3.struts.action.MyBean;
-import org.slim3.struts.annotation.Controller;
 import org.slim3.struts.annotation.Execute;
 import org.slim3.struts.annotation.SessionScope;
 
@@ -28,7 +27,6 @@ import org.slim3.struts.annotation.SessionScope;
  * @author higa
  * 
  */
-@Controller
 public class HogeController {
 
     /**

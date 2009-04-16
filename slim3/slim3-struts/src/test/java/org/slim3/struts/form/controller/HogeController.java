@@ -16,7 +16,6 @@
 package org.slim3.struts.form.controller;
 
 import org.apache.struts.action.ActionForward;
-import org.slim3.struts.annotation.Controller;
 import org.slim3.struts.annotation.Execute;
 import org.slim3.struts.annotation.Required;
 
@@ -24,7 +23,6 @@ import org.slim3.struts.annotation.Required;
  * @author higa
  * 
  */
-@Controller
 public class HogeController {
 
     /**

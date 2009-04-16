@@ -16,13 +16,11 @@
 package org.slim3.struts.config.controller;
 
 import org.apache.struts.action.ActionForward;
-import org.slim3.struts.annotation.Controller;
 
 /**
  * @author higa
  * 
  */
-@Controller
 public class Bad2Controller {
 
     /**

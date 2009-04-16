@@ -15,12 +15,10 @@
  */
 package org.slim3.struts.config.controller;
 
-import org.slim3.struts.annotation.Controller;
 
 /**
  * @author higa
  * 
  */
-@Controller
 public class BadController {
 }

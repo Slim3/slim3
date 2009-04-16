@@ -43,7 +43,6 @@ import org.slim3.commons.util.MethodUtil;
 import org.slim3.commons.util.StringUtil;
 import org.slim3.struts.S3StrutsGlobals;
 import org.slim3.struts.annotation.Arg;
-import org.slim3.struts.annotation.Controller;
 import org.slim3.struts.annotation.Execute;
 import org.slim3.struts.annotation.Msg;
 import org.slim3.struts.annotation.Validator;
@@ -196,20 +195,13 @@ public class S3ModuleConfig extends ModuleConfigImpl {
      * @param path
      *            the path
      * @return an action configuration
-     * @throws IllegalStateException
-     *             if the controller is not marked by @Controller
+     * 
      */
-    protected S3ActionMapping createActionConfig(String path)
-            throws IllegalStateException {
+    protected S3ActionMapping createActionConfig(String path) {
         String controllerName = toControllerName(path);
         Class<?> controllerClass = toControllerClass(controllerName);
         if (controllerClass == null) {
             return null;
-        }
-        if (controllerClass.getAnnotation(Controller.class) == null) {
-            throw new IllegalStateException("The controller("
-                    + controllerClass.getName()
-                    + ") is not marked by @Controller.");
         }
         S3ActionMapping actionMapping = new S3ActionMapping();
         actionMapping.setPath(path);

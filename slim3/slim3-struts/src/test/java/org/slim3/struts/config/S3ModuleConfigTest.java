@@ -155,18 +155,6 @@ public class S3ModuleConfigTest extends CleanableTestCase {
     /**
      * @throws Exception
      */
-    public void testCreateActionConfigForNoControllerAnnotation()
-            throws Exception {
-        try {
-            moduleConfig.createActionConfig("/bad6");
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    /**
-     * @throws Exception
-     */
     public void testSetupExecuteMethodForValidate() throws Exception {
         S3ActionMapping actionConfig = moduleConfig.createActionConfig("/hoge");
         S3ExecuteConfig executeConfig = actionConfig.getExecuteConfig("index");
