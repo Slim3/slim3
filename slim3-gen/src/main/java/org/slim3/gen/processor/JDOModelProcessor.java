@@ -48,8 +48,8 @@ public class JDOModelProcessor extends AbstractProcessor {
             }
         }
         if (Options.isDebugEnabled(processingEnv)) {
-            Logger.debug(processingEnv, "Element(%s) is handled.", getClass()
-                    .getName(), element.getQualifiedName());
+            Logger.debug(processingEnv, "[%s] Element(%s) is handled.",
+                    getClass().getName(), element.getQualifiedName());
         }
     }
 
