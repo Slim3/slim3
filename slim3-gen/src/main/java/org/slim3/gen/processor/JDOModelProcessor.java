@@ -1,13 +1,17 @@
 package org.slim3.gen.processor;
 
 import java.io.IOException;
+import java.util.Set;
 
+import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
+import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.ElementFilter;
 import javax.tools.FileObject;
 
 import org.slim3.gen.annotation.Annotations;
@@ -24,6 +28,27 @@ import org.slim3.gen.util.Logger;
 public class JDOModelProcessor extends AbstractProcessor {
 
     protected static final String suffix = "Meta";
+
+    @Override
+    public boolean process(Set<? extends TypeElement> annotations,
+            RoundEnvironment roundEnv) {
+        long startTime = 0L;
+        if (Options.isDebugEnabled(processingEnv)) {
+            Logger.debug(processingEnv, "[%s] Started.", getClass().getName());
+            startTime = System.nanoTime();
+        }
+        for (TypeElement annotation : annotations) {
+            for (TypeElement element : ElementFilter.typesIn(roundEnv
+                    .getElementsAnnotatedWith(annotation))) {
+                handleTypeElement(element);
+            }
+        }
+        if (Options.isDebugEnabled(processingEnv)) {
+            Logger.debug(processingEnv, "[%s] Ended. elapsed=%d(nano)",
+                    getClass().getName(), System.nanoTime() - startTime);
+        }
+        return true;
+    }
 
     protected void handleTypeElement(TypeElement element) {
         if (Options.isDebugEnabled(processingEnv)) {
