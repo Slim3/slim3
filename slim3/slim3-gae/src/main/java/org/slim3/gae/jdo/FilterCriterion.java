@@ -16,25 +16,32 @@
 package org.slim3.gae.jdo;
 
 /**
+ * A criterion interface for filtering.
+ * 
  * @author higa
+ * @since 3.0
  * 
  */
-public class SampleMeta extends ModelMeta<Sample> {
+public interface FilterCriterion {
 
     /**
+     * Returns the query string.
      * 
+     * @return the query string
      */
-    public SampleMeta() {
-        super(Sample.class);
-    }
+    String getQueryString();
 
     /**
+     * Returns the parameter declaration.
      * 
+     * @return the parameter declaration
      */
-    public AttributeMeta<Long> id = new AttributeMeta<Long>("id");
+    String getParameterDeclaration();
 
     /**
+     * Returns the parameter.
      * 
+     * @return the parameter
      */
-    public AttributeMeta<String> name = new AttributeMeta<String>("name");
+    Object getParameter();
 }

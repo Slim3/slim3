@@ -26,14 +26,25 @@ import javax.jdo.PersistenceManager;
  */
 public final class PM {
 
+    private static ThreadLocal<PersistenceManager> persistenceManagers = new ThreadLocal<PersistenceManager>();
+
     /**
-     * Returns the persistence manager.
+     * Returns the persistence manager attached to the current thread.
      * 
      * @return the persistence manager
      */
-    public static PersistenceManager getPersistenceManager() {
-        return PMF.getPersistenceManagerFactory()
-                .getPersistenceManager();
+    public static PersistenceManager getCurrent() {
+        return persistenceManagers.get();
+    }
+
+    /**
+     * Attaches the persistence manager to the current thread.
+     * 
+     * @param pm
+     *            the persistence manager
+     */
+    public static void setCurrent(PersistenceManager pm) {
+        persistenceManagers.set(pm);
     }
 
     /**

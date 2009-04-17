@@ -19,10 +19,12 @@ package org.slim3.gae.jdo;
  * A meta data for attribute.
  * 
  * @author higa
+ * @param <T>
+ *            the attribute type
  * @since 3.0
  * 
  */
-public class AttributeMeta {
+public class AttributeMeta<T> {
 
     /**
      * The name.
@@ -49,5 +51,18 @@ public class AttributeMeta {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Returns the "equals" filter criterion.
+     * 
+     * @param parameter
+     * @return the "equals" filter criterion
+     */
+    public EqCriterion<T> eq(T parameter) {
+        if (parameter == null) {
+            return null;
+        }
+        return new EqCriterion<T>(name, name + "Param", parameter);
     }
 }

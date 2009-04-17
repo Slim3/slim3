@@ -16,25 +16,33 @@
 package org.slim3.gae.jdo;
 
 /**
+ * An implementation class for "equal" filter criterion.
+ * 
  * @author higa
+ * @param <T>
+ *            the parameter type
+ * @since 3.0
  * 
  */
-public class SampleMeta extends ModelMeta<Sample> {
+public class EqCriterion<T> extends AbstractFilterCriterion<T> {
 
     /**
+     * Constructor.
      * 
+     * @param propertyName
+     *            the property name
+     * @param parameterName
+     *            the parameter name
+     * @param parameter
+     *            the parameter
      */
-    public SampleMeta() {
-        super(Sample.class);
+    public EqCriterion(String propertyName, String parameterName, T parameter) {
+        super(propertyName, parameterName, parameter);
     }
 
-    /**
-     * 
-     */
-    public AttributeMeta<Long> id = new AttributeMeta<Long>("id");
+    @Override
+    public String getQueryString() {
+        return propertyName + " == " + parameterName;
+    }
 
-    /**
-     * 
-     */
-    public AttributeMeta<String> name = new AttributeMeta<String>("name");
 }

@@ -15,26 +15,20 @@
  */
 package org.slim3.gae.jdo;
 
+import junit.framework.TestCase;
+
 /**
  * @author higa
  * 
  */
-public class SampleMeta extends ModelMeta<Sample> {
+public class EqCriterionTest extends TestCase {
 
     /**
-     * 
+     * @throws Exception
      */
-    public SampleMeta() {
-        super(Sample.class);
+    public void testGetQueryString() throws Exception {
+        EqCriterion<Long> criterion = new EqCriterion<Long>("id", "idParam",
+                Long.valueOf(1));
+        assertEquals("id == idParam", criterion.getQueryString());
     }
-
-    /**
-     * 
-     */
-    public AttributeMeta<Long> id = new AttributeMeta<Long>("id");
-
-    /**
-     * 
-     */
-    public AttributeMeta<String> name = new AttributeMeta<String>("name");
 }

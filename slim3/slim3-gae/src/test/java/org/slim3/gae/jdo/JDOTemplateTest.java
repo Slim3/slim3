@@ -15,18 +15,15 @@
  */
 package org.slim3.gae.jdo;
 
-import javax.jdo.PersistenceManager;
 import javax.jdo.Transaction;
 
-import org.slim3.gae.unit.LocalDatastoreTestCase;
+import org.slim3.gae.unit.LocalJDOTestCase;
 
 /**
  * @author higa
  * 
  */
-public class JDOTemplateTest extends LocalDatastoreTestCase {
-
-    private PersistenceManager persistenceManager;
+public class JDOTemplateTest extends LocalJDOTestCase {
 
     private Transaction transaction;
 
@@ -44,20 +41,6 @@ public class JDOTemplateTest extends LocalDatastoreTestCase {
         }.execute());
     }
 
-    /**
-     * @throws Exception
-     */
-    public void testExecuteForPersistenceManager() throws Exception {
-        new JDOTemplate<Void>() {
-            @Override
-            public Void doExecute() {
-                persistenceManager = pm;
-                return null;
-            }
-        }.execute();
-        assertNotNull(persistenceManager);
-    }
-    
     /**
      * @throws Exception
      */

@@ -15,18 +15,21 @@
  */
 package org.slim3.gae.jdo;
 
-import org.slim3.gae.unit.LocalDatastoreTestCase;
+import junit.framework.TestCase;
 
 /**
  * @author higa
  * 
  */
-public class PMTest extends LocalDatastoreTestCase {
+public class AttributeMetaTest extends TestCase {
 
     /**
      * @throws Exception
      */
-    public void testGetPersistenceManager() throws Exception {
-        assertNotNull(PM.getPersistenceManager());
+    public void testEq() throws Exception {
+        AttributeMeta<Long> id = new AttributeMeta<Long>("id");
+        EqCriterion<Long> criterion = id.eq(Long.valueOf(1));
+        assertEquals("idParam", criterion.getParameterName());
+        assertEquals("id == idParam", criterion.getQueryString());
     }
 }

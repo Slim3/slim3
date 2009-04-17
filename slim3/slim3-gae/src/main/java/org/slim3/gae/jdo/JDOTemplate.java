@@ -15,10 +15,16 @@
  */
 package org.slim3.gae.jdo;
 
-import javax.jdo.PersistenceManager;
 import javax.jdo.Transaction;
 
+import org.slim3.commons.util.BooleanUtil;
+import org.slim3.commons.util.ByteUtil;
+import org.slim3.commons.util.DoubleUtil;
+import org.slim3.commons.util.FloatUtil;
+import org.slim3.commons.util.IntegerUtil;
+import org.slim3.commons.util.LongUtil;
 import org.slim3.commons.util.RuntimeExceptionUtil;
+import org.slim3.commons.util.ShortUtil;
 
 /**
  * A template class for JDO.
@@ -32,11 +38,6 @@ import org.slim3.commons.util.RuntimeExceptionUtil;
 public abstract class JDOTemplate<T> {
 
     /**
-     * The persistence manager.
-     */
-    protected PersistenceManager pm;
-
-    /**
      * The transaction.
      */
     protected Transaction tx;
@@ -47,19 +48,14 @@ public abstract class JDOTemplate<T> {
      * @return the executed result
      */
     public final T execute() {
-        pm = PM.getPersistenceManager();
         T returnValue = null;
+        tx = PM.getCurrent().currentTransaction();
         try {
-            tx = pm.currentTransaction();
-            try {
-                beforeExecution();
-                returnValue = doExecute();
-                afterExecution(returnValue);
-            } catch (Throwable t) {
-                handleThrowable(t);
-            }
-        } finally {
-            pm.close();
+            beforeExecution();
+            returnValue = doExecute();
+            afterExecution(returnValue);
+        } catch (Throwable t) {
+            handleThrowable(t);
         }
         return returnValue;
     }
@@ -101,5 +97,82 @@ public abstract class JDOTemplate<T> {
     protected void handleThrowable(Throwable t) {
         tx.rollback();
         RuntimeExceptionUtil.wrapAndThrow(t);
+    }
+
+    /**
+     * Converts the object to the boolean object.
+     * 
+     * @param o
+     *            the object
+     * @return the boolean object
+     */
+    protected Boolean toBoolean(Object o) {
+        return BooleanUtil.toBoolean(o);
+    }
+
+    /**
+     * Converts the object to the byte object.
+     * 
+     * @param o
+     *            the object
+     * @return the byte object
+     */
+    protected Byte toByte(Object o) {
+        return ByteUtil.toByte(o);
+    }
+
+    /**
+     * Converts the object to the short object.
+     * 
+     * @param o
+     *            the object
+     * @return the short object
+     */
+    protected Short toShort(Object o) {
+        return ShortUtil.toShort(o);
+    }
+
+    /**
+     * Converts the object to the integer object.
+     * 
+     * @param o
+     *            the object
+     * @return the integer object
+     */
+    protected Integer toInteger(Object o) {
+        return IntegerUtil.toInteger(o);
+    }
+
+    /**
+     * Converts the object to the long object.
+     * 
+     * @param o
+     *            the object
+     * @return the long object
+     */
+    protected Long toLong(Object o) {
+        return LongUtil.toLong(o);
+    }
+
+    /**
+     * Converts the object to the float object.
+     * 
+     * @param o
+     *            the object
+     * @return the float object
+     */
+    protected Float toFloat(Object o) {
+        return FloatUtil.toFloat(o);
+    }
+
+    /**
+     * Converts the object to the double object.
+     * 
+     * @param o
+     *            the object
+     * @return the double object
+     */
+    protected Double toDouble(Object o) {
+        return DoubleUtil.toDouble(o);
     }
 }
