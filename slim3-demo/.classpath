@@ -28,6 +28,5 @@
 			<attribute name="optional" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/slim3-gen-EA1-SNAPSHOT.jar" sourcepath="libsrc/slim3-gen-EA1-SNAPSHOT-sources.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

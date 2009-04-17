@@ -1,7 +1,5 @@
 <project name="slim3-demo" default="import.lib" basedir=".">
     <property name="ver" value="EA1-SNAPSHOT"/>
-    <property name="sdk.dir" location="../appengine-java-sdk" />
-    <import file="${sdk.dir}/config/user/ant-macros.xml" />
 	
     <target name="import.lib">
         <copy todir="war/WEB-INF/lib" file="../slim3/target/slim3-commons-${ver}.jar"/>
@@ -61,7 +59,10 @@
             </fileset>
         </delete>
     </target>
-
+<!--
+    <property name="sdk.dir" location="../appengine-java-sdk" />
+    <import file="${sdk.dir}/config/user/ant-macros.xml" />
+	
     <target name="enhance_model" depends="compile"
         description="Performs JDO enhancement on compiled model classes.">
     	<sequential>
@@ -75,4 +76,5 @@
             </enhance>
         </sequential>
     </target>
+-->
 </project>
