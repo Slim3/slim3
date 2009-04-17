@@ -15,12 +15,18 @@ public final class ElementUtil {
     public static boolean isAnnotated(Element element, final String annotation) {
         for (AnnotationMirror mirror : element.getAnnotationMirrors()) {
             Element e = mirror.getAnnotationType().asElement();
-            return e.accept(new ElementKindVisitor6<Boolean, Void>() {
-                @Override
-                public Boolean visitTypeAsAnnotationType(TypeElement e, Void p) {
-                    return e.getQualifiedName().toString().equals(annotation);
-                }
-            }, null);
+            boolean annotated = e.accept(
+                    new ElementKindVisitor6<Boolean, Void>() {
+                        @Override
+                        public Boolean visitTypeAsAnnotationType(TypeElement e,
+                                Void p) {
+                            return e.getQualifiedName().toString().equals(
+                                    annotation);
+                        }
+                    }, null);
+            if (annotated) {
+                return true;
+            }
         }
         return false;
     }

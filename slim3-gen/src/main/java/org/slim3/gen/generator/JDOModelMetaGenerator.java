@@ -7,8 +7,12 @@ import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.PrimitiveType;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementScanner6;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.SimpleTypeVisitor6;
+import javax.lang.model.util.Types;
 
 import org.slim3.gen.ProductInfo;
 import org.slim3.gen.annotation.Annotations;
@@ -20,11 +24,17 @@ public class JDOModelMetaGenerator extends ElementScanner6<Void, Printer>
 
     protected final ProcessingEnvironment processingEnv;
 
+    protected final Elements elements;
+
+    protected final Types types;
+
     protected final String simpleName;
 
     public JDOModelMetaGenerator(ProcessingEnvironment processingEnv,
             String simpleName) {
         this.processingEnv = processingEnv;
+        this.elements = processingEnv.getElementUtils();
+        this.types = processingEnv.getTypeUtils();
         this.simpleName = simpleName;
     }
 
@@ -38,7 +48,6 @@ public class JDOModelMetaGenerator extends ElementScanner6<Void, Printer>
         if (e.getNestingKind() != NestingKind.TOP_LEVEL) {
             return DEFAULT_VALUE;
         }
-        Elements elements = processingEnv.getElementUtils();
         PackageElement packageElement = elements.getPackageOf(e);
         if (packageElement.getQualifiedName().length() > 0) {
             p.println("package %s;", packageElement.getQualifiedName());
@@ -69,11 +78,29 @@ public class JDOModelMetaGenerator extends ElementScanner6<Void, Printer>
         if (ElementUtil.isAnnotated(e, Annotations.Persistent)) {
             p
                     .println(
-                            "    public AttributeMeta %s = new AttributeMeta(\"%<s\");",
-                            e.getSimpleName());
+                            "    public AttributeMeta<%1$s> %2$s = new AttributeMeta<%1$s>(\"%2$s\");",
+                            getTypeText(e), e.getSimpleName());
             p.println();
         }
         return DEFAULT_VALUE;
     }
 
+    protected String getTypeText(VariableElement e) {
+        String text = e.asType().accept(new SimpleTypeVisitor6<String, Void>() {
+            @Override
+            protected String defaultAction(TypeMirror e, Void p) {
+                return e.toString();
+            }
+
+            @Override
+            public String visitPrimitive(PrimitiveType t, Void p) {
+                return types.boxedClass(t).asType().toString();
+            }
+        }, null);
+
+        if (text.startsWith("java.lang.")) {
+            return text.substring(10);
+        }
+        return text;
+    }
 }
