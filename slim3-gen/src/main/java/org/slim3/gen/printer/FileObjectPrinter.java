@@ -1,4 +1,4 @@
-package org.slim3.gen.option.printer;
+package org.slim3.gen.printer;
 
 import java.io.BufferedWriter;
 import java.io.IOException;

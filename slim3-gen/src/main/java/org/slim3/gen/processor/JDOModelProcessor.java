@@ -18,8 +18,8 @@ import org.slim3.gen.annotation.Annotations;
 import org.slim3.gen.generator.Generator;
 import org.slim3.gen.generator.JDOModelMetaGenerator;
 import org.slim3.gen.option.Options;
-import org.slim3.gen.option.printer.FileObjectPrinter;
-import org.slim3.gen.option.printer.Printer;
+import org.slim3.gen.printer.FileObjectPrinter;
+import org.slim3.gen.printer.Printer;
 import org.slim3.gen.util.Logger;
 
 @SupportedSourceVersion(SourceVersion.RELEASE_6)

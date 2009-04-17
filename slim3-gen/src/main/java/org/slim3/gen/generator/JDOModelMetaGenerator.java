@@ -2,7 +2,6 @@ package org.slim3.gen.generator;
 
 import java.util.Date;
 
-import javax.annotation.Generated;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.PackageElement;
@@ -13,7 +12,7 @@ import javax.lang.model.util.Elements;
 
 import org.slim3.gen.ProductInfo;
 import org.slim3.gen.annotation.Annotations;
-import org.slim3.gen.option.printer.Printer;
+import org.slim3.gen.printer.Printer;
 import org.slim3.gen.util.ElementUtil;
 
 public class JDOModelMetaGenerator extends ElementScanner6<Void, Printer>
@@ -50,9 +49,9 @@ public class JDOModelMetaGenerator extends ElementScanner6<Void, Printer>
         p.println("import org.slim3.gae.jdo.AttributeMeta;");
         p.println("import org.slim3.gae.jdo.ModelMeta;");
         p.println();
-        p.println("@%s(value = { \"%s\", \"%s\" }, date = \"%tF %<tT\")",
-                Generated.class.getSimpleName(), ProductInfo.getName(),
-                ProductInfo.getVersion(), new Date());
+        p.println(
+                "@Generated(value = { \"%s\", \"%s\" }, date = \"%tF %<tT\")",
+                ProductInfo.getName(), ProductInfo.getVersion(), new Date());
         p.println("public final class %s extends ModelMeta<%s> {", simpleName,
                 e.getSimpleName());
         p.println();
