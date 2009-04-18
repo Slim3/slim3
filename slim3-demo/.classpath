@@ -30,8 +30,6 @@
 			<attribute name="optional" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="D:/USER/Program/eclipse/plugins/com.google.gwt.eclipse.sdkbundle.win32_1.6.4.v200904062334/gwt-windows-1.6.4/gwt-user.jar"/>
-	<classpathentry kind="lib" path="D:/USER/Program/eclipse/plugins/com.google.gwt.eclipse.sdkbundle.win32_1.6.4.v200904062334/gwt-windows-1.6.4/gwt-dev-windows.jar"/>
 	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
