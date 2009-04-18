@@ -127,7 +127,7 @@ public class JDOModelMetaGenerator extends ElementScanner6<Void, Printer>
         }.scan(e, typeElements);
         Set<String> result = new TreeSet<String>();
         for (Iterator<TypeElement> i = typeElements.iterator(); i.hasNext();) {
-            String name = i.next().toString();
+            String name = i.next().getQualifiedName().toString();
             if (!name.startsWith("java.lang.")) {
                 result.add(name);
             }
