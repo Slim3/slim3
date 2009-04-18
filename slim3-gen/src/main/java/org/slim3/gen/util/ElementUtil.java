@@ -1,13 +1,25 @@
+/*
+ * Copyright 2004-2009 the Seasar Foundation and the Others.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
+ */
 package org.slim3.gen.util;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
@@ -21,8 +33,25 @@ import javax.lang.model.util.SimpleElementVisitor6;
 import javax.lang.model.util.SimpleTypeVisitor6;
 import javax.lang.model.util.Types;
 
+/**
+ * A utility class for operationg elements.
+ * 
+ * @author taedium
+ * @since 3.0
+ * 
+ */
 public final class ElementUtil {
 
+    /**
+     * Returns {@code true} if an element is annotated with a specified
+     * annotation and {@code false} otherwise.
+     * 
+     * @param element
+     *            the element object to be checked.
+     * @param annotation
+     *            the fully qualified name of an annotation.
+     * @return
+     */
     public static boolean isAnnotated(Element element, final String annotation) {
         for (AnnotationMirror mirror : element.getAnnotationMirrors()) {
             Element e = mirror.getAnnotationType().asElement();
@@ -42,29 +71,36 @@ public final class ElementUtil {
         return false;
     }
 
-    public static boolean isBindableField(VariableElement e) {
-        if (e.getKind() == ElementKind.FIELD) {
-            Set<Modifier> modifires = e.getModifiers();
-            if (modifires.contains(Modifier.PUBLIC)
-                    && !modifires.contains(Modifier.STATIC)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static String toText(VariableElement e, Types types) {
+    /**
+     * Converts a variable element to a string representation.
+     * 
+     * @param e
+     *            the element object.
+     * @param types
+     *            the utility object.
+     * @return a string representation of the element.
+     * @see ToString
+     */
+    public static String toString(VariableElement e, Types types) {
         StringBuilder buf = new StringBuilder();
-        e.asType().accept(new ToText(types), buf);
+        e.asType().accept(new ToString(types), buf);
         return buf.toString();
     }
 
-    protected static class ToText extends
+    /**
+     * A visitor class to convert an variable element to a string
+     * representation.
+     * 
+     * @author taedium
+     * @since 3.0
+     * 
+     */
+    protected static class ToString extends
             SimpleTypeVisitor6<Void, StringBuilder> {
 
         protected final Types types;
 
-        public ToText(Types types) {
+        public ToString(Types types) {
             this.types = types;
         }
 
@@ -72,13 +108,13 @@ public final class ElementUtil {
         public Void visitArray(ArrayType t, StringBuilder p) {
             t.getComponentType().accept(this, p);
             p.append("[]");
-            return DEFAULT_VALUE;
+            return null;
         }
 
         @Override
         public Void visitPrimitive(PrimitiveType t, StringBuilder p) {
             types.boxedClass(t).asType().accept(this, p);
-            return DEFAULT_VALUE;
+            return null;
         }
 
         @Override
@@ -94,13 +130,13 @@ public final class ElementUtil {
                 p.append(" super ");
                 superBound.accept(this, p);
             }
-            return DEFAULT_VALUE;
+            return null;
         }
 
         @Override
         public Void visitError(ErrorType t, StringBuilder p) {
             p.append("Object");
-            return DEFAULT_VALUE;
+            return null;
         }
 
         @Override
@@ -116,7 +152,7 @@ public final class ElementUtil {
                 p.setLength(p.length() - 2);
                 p.append(">");
             }
-            return DEFAULT_VALUE;
+            return null;
         }
 
         protected void appendName(DeclaredType t, StringBuilder p) {
@@ -125,23 +161,39 @@ public final class ElementUtil {
                         @Override
                         public Void visitType(TypeElement e, StringBuilder p) {
                             p.append(e.getSimpleName());
-                            return DEFAULT_VALUE;
+                            return null;
                         }
                     }, p);
         }
     }
 
-    public static void collectTypeElement(VariableElement e,
+    /**
+     * Collects type elements from an element.
+     * 
+     * @param e
+     *            the element object.
+     * @param result
+     *            a collection of type elements.
+     * @see CollectTypeElements
+     */
+    public static void collectTypeElements(VariableElement e,
             Collection<TypeElement> result) {
-        e.asType().accept(new CollectTypeElement(), result);
+        e.asType().accept(new CollectTypeElements(), result);
     }
 
-    protected static class CollectTypeElement extends
+    /**
+     * A visitor class to collect type elements from an element.
+     * 
+     * @author taedium
+     * @since 3.0
+     * 
+     */
+    protected static class CollectTypeElements extends
             SimpleTypeVisitor6<Void, Collection<TypeElement>> {
         @Override
         public Void visitArray(ArrayType t, Collection<TypeElement> p) {
             t.getComponentType().accept(this, p);
-            return DEFAULT_VALUE;
+            return null;
         }
 
         @Override
@@ -154,7 +206,7 @@ public final class ElementUtil {
             if (superBound != null) {
                 superBound.accept(this, p);
             }
-            return DEFAULT_VALUE;
+            return null;
         }
 
         @Override
@@ -165,7 +217,7 @@ public final class ElementUtil {
                         public Void visitType(TypeElement e,
                                 Collection<TypeElement> p) {
                             p.add(e);
-                            return DEFAULT_VALUE;
+                            return null;
                         }
                     }, p);
 
@@ -175,7 +227,7 @@ public final class ElementUtil {
                     arg.accept(this, p);
                 }
             }
-            return DEFAULT_VALUE;
+            return null;
         }
     }
 }

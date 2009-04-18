@@ -1,3 +1,18 @@
+/*
+ * Copyright 2004-2009 the Seasar Foundation and the Others.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
+ */
 package org.slim3.gen.generator;
 
 import java.util.Date;
@@ -20,17 +35,36 @@ import org.slim3.gen.annotation.Annotations;
 import org.slim3.gen.printer.Printer;
 import org.slim3.gen.util.ElementUtil;
 
+/**
+ * Generates source codes of a JDO model meta class.
+ * 
+ * @author taedium
+ * @since 3.0
+ * 
+ */
 public class JDOModelMetaGenerator extends ElementScanner6<Void, Printer>
         implements Generator<Void, TypeElement, Printer> {
 
+    /** the processing environment */
     protected final ProcessingEnvironment processingEnv;
 
+    /** the utility object of elements */
     protected final Elements elements;
 
+    /** the utility object of types */
     protected final Types types;
 
+    /** simple class name */
     protected final String simpleName;
 
+    /**
+     * Creates a new {@link JDOModelMetaGenerator}.
+     * 
+     * @param processingEnv
+     *            the processing environment
+     * @param simpleName
+     *            simple class name
+     */
     public JDOModelMetaGenerator(ProcessingEnvironment processingEnv,
             String simpleName) {
         this.processingEnv = processingEnv;
@@ -50,11 +84,11 @@ public class JDOModelMetaGenerator extends ElementScanner6<Void, Printer>
             return DEFAULT_VALUE;
         }
         PackageElement packageElement = elements.getPackageOf(e);
-        if (packageElement.getQualifiedName().length() > 0) {
+        if (!packageElement.isUnnamed()) {
             p.println("package %s;", packageElement.getQualifiedName());
             p.println();
         }
-        for (String importName : getImportName(e)) {
+        for (String importName : getImportNames(e)) {
             p.println("import %s;", importName);
         }
         p.println();
@@ -73,13 +107,20 @@ public class JDOModelMetaGenerator extends ElementScanner6<Void, Printer>
         return DEFAULT_VALUE;
     }
 
-    protected Set<String> getImportName(TypeElement e) {
+    /**
+     * Returns a set of import names.
+     * 
+     * @param e
+     *            the type element object.
+     * @return a set of import names.
+     */
+    protected Set<String> getImportNames(TypeElement e) {
         Set<TypeElement> typeElements = new HashSet<TypeElement>();
         new ElementScanner6<Void, Set<TypeElement>>() {
             @Override
             public Void visitVariable(VariableElement e, Set<TypeElement> p) {
                 if (ElementUtil.isAnnotated(e, Annotations.Persistent)) {
-                    ElementUtil.collectTypeElement(e, p);
+                    ElementUtil.collectTypeElements(e, p);
                 }
                 return DEFAULT_VALUE;
             }
@@ -103,7 +144,7 @@ public class JDOModelMetaGenerator extends ElementScanner6<Void, Printer>
             p
                     .println(
                             "    public AttributeMeta<%1$s> %2$s = new AttributeMeta<%1$s>(\"%2$s\");",
-                            ElementUtil.toText(e, types), e.getSimpleName());
+                            ElementUtil.toString(e, types), e.getSimpleName());
             p.println();
         }
         return DEFAULT_VALUE;
