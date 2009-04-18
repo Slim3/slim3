@@ -1,17 +1,18 @@
 package org.slim3.gen.generator;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.PrimitiveType;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementScanner6;
 import javax.lang.model.util.Elements;
-import javax.lang.model.util.SimpleTypeVisitor6;
 import javax.lang.model.util.Types;
 
 import org.slim3.gen.ProductInfo;
@@ -53,10 +54,9 @@ public class JDOModelMetaGenerator extends ElementScanner6<Void, Printer>
             p.println("package %s;", packageElement.getQualifiedName());
             p.println();
         }
-        p.println("import javax.annotation.Generated;");
-        p.println();
-        p.println("import org.slim3.gae.jdo.AttributeMeta;");
-        p.println("import org.slim3.gae.jdo.ModelMeta;");
+        for (String importName : getImportName(e)) {
+            p.println("import %s;", importName);
+        }
         p.println();
         p.println(
                 "@Generated(value = { \"%s\", \"%s\" }, date = \"%tF %<tT\")",
@@ -73,34 +73,39 @@ public class JDOModelMetaGenerator extends ElementScanner6<Void, Printer>
         return DEFAULT_VALUE;
     }
 
+    protected Set<String> getImportName(TypeElement e) {
+        Set<TypeElement> typeElements = new HashSet<TypeElement>();
+        new ElementScanner6<Void, Set<TypeElement>>() {
+            @Override
+            public Void visitVariable(VariableElement e, Set<TypeElement> p) {
+                if (ElementUtil.isAnnotated(e, Annotations.Persistent)) {
+                    ElementUtil.collectTypeElement(e, p);
+                }
+                return DEFAULT_VALUE;
+            }
+        }.scan(e, typeElements);
+        Set<String> result = new TreeSet<String>();
+        for (Iterator<TypeElement> i = typeElements.iterator(); i.hasNext();) {
+            String name = i.next().toString();
+            if (!name.startsWith("java.lang.")) {
+                result.add(name);
+            }
+        }
+        result.add("javax.annotation.Generated");
+        result.add("org.slim3.gae.jdo.AttributeMeta");
+        result.add("org.slim3.gae.jdo.ModelMeta");
+        return result;
+    }
+
     @Override
     public Void visitVariable(VariableElement e, Printer p) {
         if (ElementUtil.isAnnotated(e, Annotations.Persistent)) {
             p
                     .println(
                             "    public AttributeMeta<%1$s> %2$s = new AttributeMeta<%1$s>(\"%2$s\");",
-                            getTypeText(e), e.getSimpleName());
+                            ElementUtil.toText(e, types), e.getSimpleName());
             p.println();
         }
         return DEFAULT_VALUE;
-    }
-
-    protected String getTypeText(VariableElement e) {
-        String text = e.asType().accept(new SimpleTypeVisitor6<String, Void>() {
-            @Override
-            protected String defaultAction(TypeMirror e, Void p) {
-                return e.toString();
-            }
-
-            @Override
-            public String visitPrimitive(PrimitiveType t, Void p) {
-                return types.boxedClass(t).asType().toString();
-            }
-        }, null);
-
-        if (text.startsWith("java.lang.")) {
-            return text.substring(10);
-        }
-        return text;
     }
 }
