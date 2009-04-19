@@ -15,32 +15,20 @@
  */
 package org.slim3.gen.generator;
 
-import javax.lang.model.element.Element;
-
 /**
- * Generates something from an element.
+ * Generates something and outputs it to destination.
  * 
  * @author taedium
  * @since 3.0
  * 
- * @param <R>
- *            the return type of the {@link #generate(Element, Object)} method.
- * @param <E>
- *            the element type.
- * @param <P>
- *            the type of the additional parameter to the
- *            {@link #generate(Element, Object)} method.
  */
-public interface Generator<R, E extends Element, P> {
+public interface Generator<T> {
 
     /**
-     * Generates something from an element.
+     * Generates something and outputs it to destination.
      * 
-     * @param e
-     *            the element object.
-     * @param p
-     *            the additional parameter.
-     * @return the result.
+     * @param destination
+     *            the destination of generated value.
      */
-    R generate(E e, P p);
+    void generate(T destination);
 }

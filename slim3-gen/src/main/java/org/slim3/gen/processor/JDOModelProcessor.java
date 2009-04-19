@@ -87,12 +87,11 @@ public class JDOModelProcessor extends AbstractProcessor {
         }
         Filer filer = processingEnv.getFiler();
         String name = element.getQualifiedName() + suffix;
-        String simpleName = element.getSimpleName() + suffix;
         Printer printer = null;
         try {
             printer = createPrinter(filer.createSourceFile(name, element));
-            Generator<Void, TypeElement, Printer> generator = createGenerator(simpleName);
-            generator.generate(element, printer);
+            Generator<Printer> generator = createGenerator(element, name);
+            generator.generate(printer);
         } catch (IOException e) {
             Logger.error(processingEnv, element, "[%s] Failed to generate.",
                     getClass().getName());
@@ -122,14 +121,16 @@ public class JDOModelProcessor extends AbstractProcessor {
     }
 
     /**
-     * Creates a generator objects.
+     * Creates a generator object.
      * 
-     * @param simpleName
-     *            simple name of the class to be generated.
+     * @param element
+     *            the element object.
+     * @param qualifiedName
+     *            qualified name of the class to be generated.
      * @return a generator object.
      */
-    protected Generator<Void, TypeElement, Printer> createGenerator(
-            String simpleName) {
-        return new JDOModelMetaGenerator(processingEnv, simpleName);
+    protected Generator<Printer> createGenerator(TypeElement element,
+            String qualifiedName) {
+        return new JDOModelMetaGenerator(processingEnv, element, qualifiedName);
     }
 }
