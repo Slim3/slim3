@@ -58,30 +58,29 @@ public class ImportedNames implements Iterable<String> {
      * 
      * @param qualifiedName
      *            the qualified class name.
-     * @return the simple class name if the class is imported or belongs to
-     *         {@code java.lang} package or unnamed package otherwise the
-     *         qualified class name.
+     * @return the qualified class name if the class must not be imported
+     *         otherwise the simple class name.
      */
     public String add(String qualifiedName) {
         int pos = qualifiedName.lastIndexOf('.');
         if (pos < 0) {
-            return qualifiedName;
+            String simpleName = qualifiedName;
+            simpleNameSet.add(simpleName);
+            return simpleName;
         }
         String packageName = qualifiedName.substring(0, pos);
         String simpleName = qualifiedName.substring(pos + 1);
-        if (packageName.startsWith("java.lang")) {
+        if (packageName.startsWith("java.lang")
+                || this.packageName.equals(packageName)) {
+            simpleNameSet.add(simpleName);
             return simpleName;
+        } else if (qualifiedNameSet.contains(qualifiedName)) {
+            return simpleName;
+        } else if (simpleNameSet.contains(simpleName)) {
+            return qualifiedName;
         }
-        if (!this.packageName.equals(packageName)) {
-            if (!qualifiedNameSet.contains(qualifiedName)) {
-                if (!simpleNameSet.contains(simpleName)) {
-                    simpleNameSet.add(simpleName);
-                    qualifiedNameSet.add(qualifiedName);
-                } else {
-                    return qualifiedName;
-                }
-            }
-        }
+        simpleNameSet.add(simpleName);
+        qualifiedNameSet.add(qualifiedName);
         return simpleName;
     }
 
