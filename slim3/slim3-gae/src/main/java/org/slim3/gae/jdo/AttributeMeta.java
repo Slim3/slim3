@@ -36,8 +36,10 @@ public class AttributeMeta<T> {
      * 
      * @param name
      *            the name
+     * @throws NullPointerException
+     *             the name parameter is null
      */
-    public AttributeMeta(String name) {
+    public AttributeMeta(String name) throws NullPointerException {
         if (name == null) {
             throw new NullPointerException("The name parameter is null.");
         }
@@ -54,15 +56,67 @@ public class AttributeMeta<T> {
     }
 
     /**
-     * Returns the "equals" filter criterion.
+     * Returns the "equal" filter criterion.
      * 
      * @param parameter
-     * @return the "equals" filter criterion
+     * @return the "equal" filter criterion
      */
     public EqCriterion<T> eq(T parameter) {
         if (parameter == null) {
             return null;
         }
         return new EqCriterion<T>(name, name + "Param", parameter);
+    }
+
+    /**
+     * Returns the "less than" filter criterion.
+     * 
+     * @param parameter
+     * @return the "less than" filter criterion
+     */
+    public LtCriterion<T> lt(T parameter) {
+        if (parameter == null) {
+            return null;
+        }
+        return new LtCriterion<T>(name, name + "LtParam", parameter);
+    }
+
+    /**
+     * Returns the "less equal" filter criterion.
+     * 
+     * @param parameter
+     * @return the "less equals" filter criterion
+     */
+    public LeCriterion<T> le(T parameter) {
+        if (parameter == null) {
+            return null;
+        }
+        return new LeCriterion<T>(name, name + "LeParam", parameter);
+    }
+
+    /**
+     * Returns the "greater than" filter criterion.
+     * 
+     * @param parameter
+     * @return the "greater than" filter criterion
+     */
+    public GtCriterion<T> gt(T parameter) {
+        if (parameter == null) {
+            return null;
+        }
+        return new GtCriterion<T>(name, name + "GtParam", parameter);
+    }
+
+    /**
+     * Returns the "greater equal" filter criterion.
+     * 
+     * @param parameter
+     * @return the "greater equal" filter criterion
+     */
+    public GeCriterion<T> ge(T parameter) {
+        if (parameter == null) {
+            return null;
+        }
+        return new GeCriterion<T>(name, name + "GeParam", parameter);
     }
 }

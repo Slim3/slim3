@@ -16,42 +16,33 @@
 package org.slim3.gae.jdo;
 
 /**
- * A meta data of model.
+ * An implementation class for "less equal" filter criterion.
  * 
  * @author higa
  * @param <T>
- *            the model type
+ *            the parameter type
  * @since 3.0
  * 
  */
-public class ModelMeta<T> {
-
-    /**
-     * The model class.
-     */
-    protected Class<T> modelClass;
+public class LeCriterion<T> extends AbstractFilterCriterion<T> {
 
     /**
      * Constructor.
      * 
-     * @param modelClass
-     *            the model class
-     * @throws NullPointerException
-     *             if the modelClass parameter is null
+     * @param propertyName
+     *            the property name
+     * @param parameterName
+     *            the parameter name
+     * @param parameter
+     *            the parameter
      */
-    public ModelMeta(Class<T> modelClass) throws NullPointerException {
-        if (modelClass == null) {
-            throw new NullPointerException("The modelClass parameter is null.");
-        }
-        this.modelClass = modelClass;
+    public LeCriterion(String propertyName, String parameterName, T parameter) {
+        super(propertyName, parameterName, parameter);
     }
 
-    /**
-     * Returns the model class.
-     * 
-     * @return the model class
-     */
-    public Class<T> getModelClass() {
-        return modelClass;
+    @Override
+    public String getQueryString() {
+        return propertyName + " <= " + parameterName;
     }
+
 }

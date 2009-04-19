@@ -29,28 +29,27 @@ import org.slim3.gae.jdo.PMF;
  */
 public abstract class LocalJDOTestCase extends LocalDatastoreTestCase {
 
+    /**
+     * The persistence manager.
+     */
+    protected PersistenceManager pm;
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        PM.setCurrent(PMF.getPersistenceManagerFactory()
-                .getPersistenceManager());
+        pm = PMF.getPersistenceManagerFactory().getPersistenceManager();
+        PM.setCurrent(pm);
     }
 
     @Override
     public void tearDown() throws Exception {
-        PersistenceManager pm = PM.getCurrent();
-        if (pm != null) {
-            PM.setCurrent(null);
-            try {
-                pm.close();
-            } finally {
-                super.tearDown();
-            }
-        } else {
-            throw new IllegalStateException(
-                    "The persistence manager attached to the current thread is not found.");
+        PM.setCurrent(null);
+        try {
+            pm.close();
+            pm = null;
+        } finally {
+            super.tearDown();
         }
-
     }
 
 }

@@ -32,4 +32,84 @@ public class AttributeMetaTest extends TestCase {
         assertEquals("idParam", criterion.getParameterName());
         assertEquals("id == idParam", criterion.getQueryString());
     }
+
+    /**
+     * @throws Exception
+     */
+    public void testEqForNull() throws Exception {
+        AttributeMeta<Long> id = new AttributeMeta<Long>("id");
+        assertNull(id.eq(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testLt() throws Exception {
+        AttributeMeta<Long> id = new AttributeMeta<Long>("id");
+        LtCriterion<Long> criterion = id.lt(Long.valueOf(1));
+        assertEquals("idLtParam", criterion.getParameterName());
+        assertEquals("id < idLtParam", criterion.getQueryString());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testLtForNull() throws Exception {
+        AttributeMeta<Long> id = new AttributeMeta<Long>("id");
+        assertNull(id.lt(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testLe() throws Exception {
+        AttributeMeta<Long> id = new AttributeMeta<Long>("id");
+        LeCriterion<Long> criterion = id.le(Long.valueOf(1));
+        assertEquals("idLeParam", criterion.getParameterName());
+        assertEquals("id <= idLeParam", criterion.getQueryString());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testLeForNull() throws Exception {
+        AttributeMeta<Long> id = new AttributeMeta<Long>("id");
+        assertNull(id.le(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGt() throws Exception {
+        AttributeMeta<Long> id = new AttributeMeta<Long>("id");
+        GtCriterion<Long> criterion = id.gt(Long.valueOf(1));
+        assertEquals("idGtParam", criterion.getParameterName());
+        assertEquals("id > idGtParam", criterion.getQueryString());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGtForNull() throws Exception {
+        AttributeMeta<Long> id = new AttributeMeta<Long>("id");
+        assertNull(id.gt(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGe() throws Exception {
+        AttributeMeta<Long> id = new AttributeMeta<Long>("id");
+        GeCriterion<Long> criterion = id.ge(Long.valueOf(1));
+        assertEquals("idGeParam", criterion.getParameterName());
+        assertEquals("id >= idGeParam", criterion.getQueryString());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGeForNull() throws Exception {
+        AttributeMeta<Long> id = new AttributeMeta<Long>("id");
+        assertNull(id.ge(null));
+    }
 }

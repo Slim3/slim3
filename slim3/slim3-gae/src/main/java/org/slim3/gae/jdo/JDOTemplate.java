@@ -15,10 +15,14 @@
  */
 package org.slim3.gae.jdo;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import javax.jdo.Transaction;
 
 import org.slim3.commons.util.BooleanUtil;
 import org.slim3.commons.util.ByteUtil;
+import org.slim3.commons.util.DateUtil;
 import org.slim3.commons.util.DoubleUtil;
 import org.slim3.commons.util.FloatUtil;
 import org.slim3.commons.util.IntegerUtil;
@@ -174,5 +178,29 @@ public abstract class JDOTemplate<T> {
      */
     protected Double toDouble(Object o) {
         return DoubleUtil.toDouble(o);
+    }
+
+    /**
+     * Converts the object to the date object.
+     * 
+     * @param o
+     *            the object
+     * @return the date object
+     */
+    protected Date toDate(Object o) {
+        return DateUtil.toDate(o);
+    }
+
+    /**
+     * Converts the object to the date object.
+     * 
+     * @param text
+     *            the text
+     * @param pattern
+     *            the pattern for {@link SimpleDateFormat}
+     * @return the date object
+     */
+    protected Date toDate(String text, String pattern) {
+        return DateUtil.toDate(text, pattern);
     }
 }

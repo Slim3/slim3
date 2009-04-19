@@ -50,9 +50,12 @@ public abstract class AbstractFilterCriterion<T> implements FilterCriterion {
      *            the parameter name
      * @param parameter
      *            the parameter
+     * @throws NullPointerException
+     *             if the propertyName parameter is null or if the parameterName
+     *             parameter is null or if the parameter parameter is null
      */
     public AbstractFilterCriterion(String propertyName, String parameterName,
-            T parameter) {
+            T parameter) throws NullPointerException {
         if (propertyName == null) {
             throw new NullPointerException(
                     "The propertyName parameter is null.");
@@ -98,6 +101,6 @@ public abstract class AbstractFilterCriterion<T> implements FilterCriterion {
 
     @Override
     public String getParameterDeclaration() {
-        return parameter.getClass().getSimpleName() + " " + parameterName;
+        return parameter.getClass().getName() + " " + parameterName;
     }
 }
