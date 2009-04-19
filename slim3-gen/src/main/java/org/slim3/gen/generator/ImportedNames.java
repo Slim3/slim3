@@ -28,8 +28,14 @@ import java.util.TreeSet;
  * 
  */
 public class ImportedNames implements Iterable<String> {
+
+    /** the package name of class which imports classes this oject represents */
     protected final String packageName;
+
+    /** the set of qualified class names */
     protected final Set<String> qualifiedNameSet = new TreeSet<String>();
+
+    /** the set of simple class names */
     protected final Set<String> simpleNameSet = new HashSet<String>();
 
     /**
@@ -37,9 +43,13 @@ public class ImportedNames implements Iterable<String> {
      * 
      * @param packageName
      *            the package name of class which imports classes this oject
-     *            represents.
+     *            represents. an empty name is acceptable for an unnamed
+     *            package.
      */
     public ImportedNames(String packageName) {
+        if (packageName == null) {
+            throw new NullPointerException("The pacakgeName parameter is null.");
+        }
         this.packageName = packageName;
     }
 
@@ -48,8 +58,9 @@ public class ImportedNames implements Iterable<String> {
      * 
      * @param qualifiedName
      *            the qualified class name.
-     * @return a qualified name if it does not belong to a package or it is not
-     *         yet added, otherwise a simple name.
+     * @return the simple class name if the class is imported or belongs to
+     *         {@code java.lang} package or unnamed package otherwise the
+     *         qualified class name.
      */
     public String add(String qualifiedName) {
         int pos = qualifiedName.lastIndexOf('.');
@@ -58,6 +69,9 @@ public class ImportedNames implements Iterable<String> {
         }
         String packageName = qualifiedName.substring(0, pos);
         String simpleName = qualifiedName.substring(pos + 1);
+        if (packageName.startsWith("java.lang")) {
+            return simpleName;
+        }
         if (!this.packageName.equals(packageName)) {
             if (!qualifiedNameSet.contains(qualifiedName)) {
                 if (!simpleNameSet.contains(simpleName)) {
@@ -73,33 +87,7 @@ public class ImportedNames implements Iterable<String> {
 
     @Override
     public Iterator<String> iterator() {
-        final Iterator<String> internalIterator = qualifiedNameSet.iterator();
-        return new Iterator<String>() {
-
-            protected String name;
-
-            @Override
-            public boolean hasNext() {
-                while (internalIterator.hasNext()) {
-                    name = internalIterator.next();
-                    if (name.startsWith("java.lang.")) {
-                        continue;
-                    }
-                    return true;
-                }
-                return false;
-            }
-
-            @Override
-            public String next() {
-                return name;
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException("remove");
-            }
-        };
+        return qualifiedNameSet.iterator();
     }
 
 }

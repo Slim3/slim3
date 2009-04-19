@@ -104,6 +104,17 @@ public class JDOModelMetaGenerator implements Generator<Printer> {
      */
     public JDOModelMetaGenerator(ProcessingEnvironment processingEnv,
             TypeElement element, String qualifiedName) {
+        if (processingEnv == null) {
+            throw new NullPointerException(
+                    "The processingEnv parameter is null.");
+        }
+        if (element == null) {
+            throw new NullPointerException("The element parameter is null.");
+        }
+        if (qualifiedName == null) {
+            throw new NullPointerException(
+                    "The qualifiedName parameter is null.");
+        }
         this.processingEnv = processingEnv;
         this.elements = processingEnv.getElementUtils();
         this.types = processingEnv.getTypeUtils();
@@ -113,7 +124,7 @@ public class JDOModelMetaGenerator implements Generator<Printer> {
         } else {
             this.packageName = qualifiedName.substring(0, pos);
         }
-        this.importedNames = new ImportedNames(qualifiedName);
+        this.importedNames = new ImportedNames(packageName);
         this.reservedNames = new ReservedNames(element.getQualifiedName()
                 .toString(), qualifiedName);
 

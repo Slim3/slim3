@@ -42,6 +42,9 @@ public class FileObjectPrinter implements Printer {
      *             if an I/O error occurred
      */
     public FileObjectPrinter(FileObject fileObject) throws IOException {
+        if (fileObject == null) {
+            throw new NullPointerException("The fileObject parameter is null.");
+        }
         formatter = new Formatter(new BufferedWriter(fileObject.openWriter()));
     }
 

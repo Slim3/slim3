@@ -37,9 +37,13 @@ public final class ElementUtil {
      *            the element object to be checked.
      * @param annotation
      *            the fully qualified name of an annotation.
-     * @return
+     * @return {@code true} if an element is annotated with a specified
+     *         annotation and {@code false} otherwise.
      */
     public static boolean isAnnotated(Element element, final String annotation) {
+        if (element == null) {
+            throw new NullPointerException("The element parameter is null.");
+        }
         for (AnnotationMirror mirror : element.getAnnotationMirrors()) {
             Element e = mirror.getAnnotationType().asElement();
             boolean annotated = e.accept(
