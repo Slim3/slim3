@@ -44,11 +44,21 @@ public class ImportedNamesTest extends TestCase {
 
     public void testDuplicatedClassNames_samePackage() throws Exception {
         ImportedNames names = new ImportedNames("aaa");
-        assertEquals("Model", names.add("aaa.Model"));
-        assertEquals("ModelMeta", names.add("aaa.ModelMeta"));
-        assertEquals("bbb.ModelMeta", names.add("bbb.ModelMeta"));
+        assertEquals("Aaa", names.add("aaa.Aaa"));
+        assertEquals("bbb.Aaa", names.add("bbb.Aaa"));
 
         Iterator<String> it = names.iterator();
+        assertFalse(it.hasNext());
+    }
+
+    public void testDuplicatedClassNames_samePackage2() throws Exception {
+        ImportedNames names = new ImportedNames("aaa");
+        assertEquals("Aaa", names.add("bbb.Aaa"));
+        assertEquals("aaa.Aaa", names.add("aaa.Aaa"));
+
+        Iterator<String> it = names.iterator();
+        assertTrue(it.hasNext());
+        assertEquals("bbb.Aaa", it.next());
         assertFalse(it.hasNext());
     }
 
@@ -56,8 +66,21 @@ public class ImportedNamesTest extends TestCase {
         ImportedNames names = new ImportedNames("aaa");
         assertEquals("Integer", names.add("java.lang.Integer"));
         assertEquals("bbb.Integer", names.add("bbb.Integer"));
+        assertEquals("Integer", names.add("java.lang.Integer"));
 
         Iterator<String> it = names.iterator();
+        assertFalse(it.hasNext());
+    }
+
+    public void testDuplicatedClassNames_javaLangPackage2() throws Exception {
+        ImportedNames names = new ImportedNames("aaa");
+        assertEquals("Integer", names.add("bbb.Integer"));
+        assertEquals("java.lang.Integer", names.add("java.lang.Integer"));
+        assertEquals("Integer", names.add("bbb.Integer"));
+
+        Iterator<String> it = names.iterator();
+        assertTrue(it.hasNext());
+        assertEquals("bbb.Integer", it.next());
         assertFalse(it.hasNext());
     }
 
@@ -65,8 +88,21 @@ public class ImportedNamesTest extends TestCase {
         ImportedNames names = new ImportedNames("aaa");
         assertEquals("Bbb", names.add("Bbb"));
         assertEquals("bbb.Bbb", names.add("bbb.Bbb"));
+        assertEquals("Bbb", names.add("Bbb"));
 
         Iterator<String> it = names.iterator();
+        assertFalse(it.hasNext());
+    }
+
+    public void testDuplicatedClassNames_defaultPacakge2() throws Exception {
+        ImportedNames names = new ImportedNames("aaa");
+        assertEquals("Bbb", names.add("bbb.Bbb"));
+        assertEquals("Bbb", names.add("Bbb"));
+        assertEquals("Bbb", names.add("bbb.Bbb"));
+
+        Iterator<String> it = names.iterator();
+        assertTrue(it.hasNext());
+        assertEquals("bbb.Bbb", it.next());
         assertFalse(it.hasNext());
     }
 }

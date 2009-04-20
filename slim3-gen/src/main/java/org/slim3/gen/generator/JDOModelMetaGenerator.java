@@ -39,8 +39,8 @@ import javax.lang.model.util.SimpleElementVisitor6;
 import javax.lang.model.util.SimpleTypeVisitor6;
 import javax.lang.model.util.Types;
 
+import org.slim3.gen.Annotations;
 import org.slim3.gen.ProductInfo;
-import org.slim3.gen.annotation.Annotations;
 import org.slim3.gen.printer.Printer;
 import org.slim3.gen.util.ElementUtil;
 import org.slim3.gen.util.Logger;

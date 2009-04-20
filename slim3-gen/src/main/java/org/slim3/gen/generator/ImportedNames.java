@@ -33,7 +33,7 @@ public class ImportedNames implements Iterable<String> {
     protected final String packageName;
 
     /** the set of qualified class names */
-    protected final Set<String> qualifiedNameSet = new TreeSet<String>();
+    protected final Set<String> qualifiedNameSet = new HashSet<String>();
 
     /** the set of simple class names */
     protected final Set<String> simpleNameSet = new HashSet<String>();
@@ -58,8 +58,8 @@ public class ImportedNames implements Iterable<String> {
      * 
      * @param qualifiedName
      *            the qualified class name.
-     * @return the qualified class name if the class must not be imported
-     *         otherwise the simple class name.
+     * @return the qualified class name if the simple class name has been
+     *         already added.
      */
     public String add(String qualifiedName) {
         int pos = qualifiedName.lastIndexOf('.');
@@ -68,13 +68,8 @@ public class ImportedNames implements Iterable<String> {
             simpleNameSet.add(simpleName);
             return simpleName;
         }
-        String packageName = qualifiedName.substring(0, pos);
         String simpleName = qualifiedName.substring(pos + 1);
-        if (packageName.startsWith("java.lang")
-                || this.packageName.equals(packageName)) {
-            simpleNameSet.add(simpleName);
-            return simpleName;
-        } else if (qualifiedNameSet.contains(qualifiedName)) {
+        if (qualifiedNameSet.contains(qualifiedName)) {
             return simpleName;
         } else if (simpleNameSet.contains(simpleName)) {
             return qualifiedName;
@@ -86,7 +81,19 @@ public class ImportedNames implements Iterable<String> {
 
     @Override
     public Iterator<String> iterator() {
-        return qualifiedNameSet.iterator();
+        Set<String> set = new TreeSet<String>();
+        for (String name : qualifiedNameSet) {
+            int pos = name.lastIndexOf('.');
+            if (pos > -1) {
+                String packageName = name.substring(0, pos);
+                if (packageName.startsWith("java.lang")
+                        || this.packageName.equals(packageName)) {
+                    continue;
+                }
+            }
+            set.add(name);
+        }
+        return set.iterator();
     }
 
 }

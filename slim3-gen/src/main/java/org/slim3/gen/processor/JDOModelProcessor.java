@@ -29,10 +29,10 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementFilter;
 import javax.tools.FileObject;
 
-import org.slim3.gen.annotation.Annotations;
+import org.slim3.gen.Annotations;
+import org.slim3.gen.Options;
 import org.slim3.gen.generator.Generator;
 import org.slim3.gen.generator.JDOModelMetaGenerator;
-import org.slim3.gen.option.Options;
 import org.slim3.gen.printer.FileObjectPrinter;
 import org.slim3.gen.printer.Printer;
 import org.slim3.gen.util.Logger;
