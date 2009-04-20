@@ -20,7 +20,6 @@ import java.util.List;
 import javax.jdo.annotations.IdentityType;
 
 import org.slim3.gae.jdo.JDOTemplate;
-import org.slim3.gae.jdo.PM;
 import org.slim3.gae.unit.LocalJDOTestCase;
 
 /**
@@ -33,24 +32,26 @@ public class JDOTemplateTest extends LocalJDOTestCase {
      * @throws Exception
      */
     public void test() throws Exception {
+        Sample sample = new Sample();
+        sample.setName("hoge");
+        sample.setEnabled(true);
+        sample.setMyByte(toByte(1));
+        sample.setMyShort(toShort(1));
+        sample.setMyInteger(1);
+        sample.setMyLong(toLong(1));
+        sample.setMyFloat(toFloat(1));
+        sample.setMyDouble(toDouble(1));
+        sample.setMyDate(new java.util.Date(1));
+        sample.setMyEnum(IdentityType.APPLICATION);
+        pm.makePersistent(sample);
         List<Sample> ret = new JDOTemplate<List<Sample>>() {
             @Override
             public List<Sample> doExecute() {
-                Sample s = new Sample();
-                s.setName("hoge");
-                s.setEnabled(true);
-                s.setMyByte((byte) 1);
-                s.setMyShort((short) 1);
-                s.setMyInteger(1);
-                s.setMyLong((long) 1);
-                s.setMyFloat((float) 1);
-                s.setMyDouble((double) 1);
-                s.setMyDate(new java.util.Date(1));
-                s.setMyEnum(IdentityType.APPLICATION);
-                PM.getCurrent().makePersistent(s);
-                SampleMeta sample = new SampleMeta();
-                return from(sample).where(sample.id.eq(Long.valueOf(1)))
-                        .getResultList();
+                SampleMeta s = new SampleMeta();
+                return from(s)
+                    .where(s.id.eq(toLong(1)), s.name.eq("hoge"))
+                    .orderBy(s.id.asc(), s.name.desc())
+                    .getResultList();
             }
         }.execute();
         System.out.println(ret);
