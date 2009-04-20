@@ -1,7 +1,7 @@
-<project name="slim3-demo" default="import.lib" basedir=".">
+<project name="slim3-demo" default="copy.lib" basedir=".">
     <property name="ver" value="EA1-SNAPSHOT"/>
 	
-    <target name="import.lib">
+    <target name="copy.lib">
         <copy todir="war/WEB-INF/lib" file="../slim3/target/slim3-commons-${ver}.jar"/>
         <copy todir="war/WEB-INF/lib" file="../slim3/target/slim3-struts-${ver}.jar"/>
         <copy todir="war/WEB-INF/lib" file="../slim3/target/slim3-gae-${ver}.jar"/>

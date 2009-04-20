@@ -18,6 +18,7 @@ package org.slim3.gae.jdo;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.jdo.PersistenceManager;
 import javax.jdo.Transaction;
 
 import org.slim3.commons.util.BooleanUtil;
@@ -34,12 +35,17 @@ import org.slim3.commons.util.ShortUtil;
  * A template class for JDO.
  * 
  * @author higa
- * @param <T>
- *            the type
+ * @param <R>
+ *            the return type
  * @since 3.0
  * 
  */
-public abstract class JDOTemplate<T> {
+public abstract class JDOTemplate<R> {
+
+    /**
+     * The persistence manager.
+     */
+    protected PersistenceManager pm;
 
     /**
      * The transaction.
@@ -51,9 +57,11 @@ public abstract class JDOTemplate<T> {
      * 
      * @return the executed result
      */
-    public final T execute() {
-        T returnValue = null;
-        tx = PM.getCurrent().currentTransaction();
+    public final R execute() {
+        R returnValue = null;
+        pm = PM.getCurrent();
+        assertPersistenceManagerIsActive();
+        tx = pm.currentTransaction();
         try {
             beforeExecution();
             returnValue = doExecute();
@@ -76,7 +84,7 @@ public abstract class JDOTemplate<T> {
      * 
      * @return the executed result
      */
-    protected abstract T doExecute();
+    protected abstract R doExecute();
 
     /**
      * Processes an action after execution.
@@ -84,7 +92,7 @@ public abstract class JDOTemplate<T> {
      * @param returnValue
      *            the return value
      */
-    protected void afterExecution(T returnValue) {
+    protected void afterExecution(R returnValue) {
         if (tx.getRollbackOnly()) {
             tx.rollback();
         } else {
@@ -101,6 +109,20 @@ public abstract class JDOTemplate<T> {
     protected void handleThrowable(Throwable t) {
         tx.rollback();
         RuntimeExceptionUtil.wrapAndThrow(t);
+    }
+
+    /**
+     * Creates a new {@link SelectQuery}.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @return a new {@link SelectQuery}
+     */
+    protected <M> SelectQuery<M> from(ModelMeta<M> modelMeta) {
+        assertPersistenceManagerIsActive();
+        return new SelectQuery<M>(modelMeta, pm);
     }
 
     /**
@@ -202,5 +224,25 @@ public abstract class JDOTemplate<T> {
      */
     protected Date toDate(String text, String pattern) {
         return DateUtil.toDate(text, pattern);
+    }
+
+    /**
+     * Asserts that the current persistence manager is active.
+     * 
+     * @throws IllegalStateException
+     *             if the persistence manager attached to the current thread is
+     *             not found or if the persistence manager attached to the
+     *             current thread is already closed
+     */
+    protected void assertPersistenceManagerIsActive()
+            throws IllegalStateException {
+        if (pm == null) {
+            throw new IllegalStateException(
+                    "The persistence manager attached to the current thread is not found.");
+        }
+        if (pm.isClosed()) {
+            throw new IllegalStateException(
+                    "The persistence manager attached to the current thread is already closed.");
+        }
     }
 }

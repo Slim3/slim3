@@ -56,4 +56,19 @@ public class JDOTemplateTest extends LocalJDOTestCase {
         assertNotNull(transaction);
         assertTrue(active);
     }
+
+    /**
+     * @throws Exception
+     */
+    public void testFrom() throws Exception {
+        new JDOTemplate<Void>() {
+            @Override
+            public Void doExecute() {
+                SampleMeta sample = new SampleMeta();
+                SelectQuery<Sample> selectQuery = from(sample);
+                assertNotNull(selectQuery);
+                return null;
+            }
+        };
+    }
 }

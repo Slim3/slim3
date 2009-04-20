@@ -119,4 +119,22 @@ public class AttributeMeta<T> {
         }
         return new GeCriterion<T>(name, name + "GeParam", parameter);
     }
+
+    /**
+     * Returns the "ascending" order criterion.
+     * 
+     * @return the "ascending" order criterion
+     */
+    public AscCriterion asc() {
+        return new AscCriterion(name);
+    }
+
+    /**
+     * Returns the "descending" order criterion.
+     * 
+     * @return the "descending" order criterion
+     */
+    public DescCriterion desc() {
+        return new DescCriterion(name);
+    }
 }

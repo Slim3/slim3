@@ -15,6 +15,8 @@
  */
 package demo.model;
 
+import java.util.Date;
+
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
@@ -55,6 +57,42 @@ public class Sample {
 
     @Persistent
     private Double myDouble;
+
+    @Persistent
+    private Date myDate;
+
+    @Persistent
+    private IdentityType myEnum;
+
+    /**
+     * @return the myEnum
+     */
+    public IdentityType getMyEnum() {
+        return myEnum;
+    }
+
+    /**
+     * @param myEnum
+     *            the myEnum to set
+     */
+    public void setMyEnum(IdentityType myEnum) {
+        this.myEnum = myEnum;
+    }
+
+    /**
+     * @return the myDate
+     */
+    public Date getMyDate() {
+        return myDate;
+    }
+
+    /**
+     * @param myDate
+     *            the myDate to set
+     */
+    public void setMyDate(Date myDate) {
+        this.myDate = myDate;
+    }
 
     /**
      * @return the myDouble

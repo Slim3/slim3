@@ -40,7 +40,8 @@ public class AbstFilterCriterionTest extends TestCase {
     public void testGetParameterDeclaration() throws Exception {
         MyFilterCriterion criterion = new MyFilterCriterion("id", "idParam",
                 Long.valueOf(1));
-        assertEquals("Long idParam", criterion.getParameterDeclaration());
+        assertEquals("java.lang.Long idParam", criterion
+                .getParameterDeclaration());
     }
 
     private static class MyFilterCriterion extends AbstractFilterCriterion<Long> {

@@ -112,4 +112,24 @@ public class AttributeMetaTest extends TestCase {
         AttributeMeta<Long> id = new AttributeMeta<Long>("id");
         assertNull(id.ge(null));
     }
+
+    /**
+     * @throws Exception
+     */
+    public void testAsc() throws Exception {
+        AttributeMeta<Long> id = new AttributeMeta<Long>("id");
+        AscCriterion criterion = id.asc();
+        assertNotNull(criterion);
+        assertEquals("id asc", criterion.getQueryString());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testDesc() throws Exception {
+        AttributeMeta<Long> id = new AttributeMeta<Long>("id");
+        DescCriterion criterion = id.desc();
+        assertNotNull(criterion);
+        assertEquals("id desc", criterion.getQueryString());
+    }
 }

@@ -17,7 +17,6 @@ package demo.model;
 
 import java.util.List;
 
-import javax.jdo.Query;
 import javax.jdo.annotations.IdentityType;
 
 import org.slim3.gae.jdo.JDOTemplate;
@@ -28,14 +27,13 @@ import org.slim3.gae.unit.LocalJDOTestCase;
  * @author higa
  * 
  */
-public class QueryTest extends LocalJDOTestCase {
+public class JDOTemplateTest extends LocalJDOTestCase {
 
     /**
      * @throws Exception
      */
-    public void testEq() throws Exception {
+    public void test() throws Exception {
         List<Sample> ret = new JDOTemplate<List<Sample>>() {
-            @SuppressWarnings("unchecked")
             @Override
             public List<Sample> doExecute() {
                 Sample s = new Sample();
@@ -50,14 +48,9 @@ public class QueryTest extends LocalJDOTestCase {
                 s.setMyDate(new java.util.Date(1));
                 s.setMyEnum(IdentityType.APPLICATION);
                 PM.getCurrent().makePersistent(s);
-                Query query = PM.getCurrent().newQuery(
-                        "select from " + Sample.class.getName()
-                                + " where id == idParam"
-                                + " parameters Long idParam" + " range 0, 1");
-                // query.setFilter("id == idParam");
-                // query.declareParameters("Long idParam");
-                // query.setOrdering("id desc, name asc");
-                return (List<Sample>) query.execute(Long.valueOf(1));
+                SampleMeta sample = new SampleMeta();
+                return from(sample).where(sample.id.eq(Long.valueOf(1)))
+                        .getResultList();
             }
         }.execute();
         System.out.println(ret);

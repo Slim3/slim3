@@ -15,21 +15,34 @@
  */
 package org.slim3.gae.jdo;
 
-import junit.framework.TestCase;
+import org.slim3.gae.unit.LocalJDOTestCase;
 
 /**
  * @author higa
  * 
  */
-public class SelectQueryTest extends TestCase {
+public class SelectQueryTest extends LocalJDOTestCase {
 
     /**
      * @throws Exception
      */
-    public void testEmptyCriterion() throws Exception {
+    public void testWhere() throws Exception {
         SampleMeta s = new SampleMeta();
-        SelectQuery<Sample> query = new SelectQuery<Sample>(s);
+        SelectQuery<Sample> query = new SelectQuery<Sample>(s, pm);
+        assertNull(query.getFilterCriteria());
         assertSame(query, query.where());
+        assertNotNull(query.getFilterCriteria());
+        query.where(s.id.eq(Long.valueOf(1)));
+        assertEquals(1, query.getFilterCriteria().length);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testEmptyFilterCriteria() throws Exception {
+        SampleMeta s = new SampleMeta();
+        SelectQuery<Sample> query = new SelectQuery<Sample>(s, pm);
+        query.where();
         assertNull(query.getFilter());
         assertNull(query.getParametersDeclaration());
         assertEquals(0, query.getParameters().length);
@@ -38,9 +51,9 @@ public class SelectQueryTest extends TestCase {
     /**
      * @throws Exception
      */
-    public void testNoCriterion() throws Exception {
+    public void testNoFilterCriteria() throws Exception {
         SampleMeta s = new SampleMeta();
-        SelectQuery<Sample> query = new SelectQuery<Sample>(s);
+        SelectQuery<Sample> query = new SelectQuery<Sample>(s, pm);
         assertNull(query.getFilter());
         assertNull(query.getParametersDeclaration());
         assertEquals(0, query.getParameters().length);
@@ -49,12 +62,12 @@ public class SelectQueryTest extends TestCase {
     /**
      * @throws Exception
      */
-    public void testSingleCriterion() throws Exception {
+    public void testSingleFilterCriteria() throws Exception {
         SampleMeta s = new SampleMeta();
-        SelectQuery<Sample> query = new SelectQuery<Sample>(s);
-        assertSame(query, query.where(s.id.eq(Long.valueOf(1))));
-        assertEquals(" where id == idParam", query.getFilter());
-        assertEquals("Long idParam", query.getParametersDeclaration());
+        SelectQuery<Sample> query = new SelectQuery<Sample>(s, pm);
+        query.where(s.id.eq(Long.valueOf(1)));
+        assertEquals("id == idParam", query.getFilter());
+        assertEquals("java.lang.Long idParam", query.getParametersDeclaration());
         assertEquals(1, query.getParameters().length);
         assertEquals(Long.valueOf(1), query.getParameters()[0]);
     }
@@ -62,17 +75,132 @@ public class SelectQueryTest extends TestCase {
     /**
      * @throws Exception
      */
-    public void testMultiCriteria() throws Exception {
+    public void testMultiFilterCriteria() throws Exception {
         SampleMeta s = new SampleMeta();
-        SelectQuery<Sample> query = new SelectQuery<Sample>(s);
-        assertSame(query, query.where(s.id.eq(Long.valueOf(1)), s.name
-                .eq("hoge")));
-        assertEquals(" where id == idParam && name == nameParam", query
-                .getFilter());
-        assertEquals("Long idParam, String nameParam", query
-                .getParametersDeclaration());
+        SelectQuery<Sample> query = new SelectQuery<Sample>(s, pm);
+        query.where(s.id.eq(Long.valueOf(1)), s.name.eq("hoge"));
+        assertEquals("id == idParam && name == nameParam", query.getFilter());
+        assertEquals("java.lang.Long idParam, java.lang.String nameParam",
+                query.getParametersDeclaration());
         assertEquals(2, query.getParameters().length);
         assertEquals(Long.valueOf(1), query.getParameters()[0]);
         assertEquals("hoge", query.getParameters()[1]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testOrderBy() throws Exception {
+        SampleMeta s = new SampleMeta();
+        SelectQuery<Sample> query = new SelectQuery<Sample>(s, pm);
+        assertNull(query.getOrderCriteria());
+        assertSame(query, query.orderBy());
+        assertNotNull(query.getOrderCriteria());
+        query.orderBy(s.id.asc());
+        assertEquals(1, query.getOrderCriteria().length);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testEmptyOrderCriteria() throws Exception {
+        SampleMeta s = new SampleMeta();
+        SelectQuery<Sample> query = new SelectQuery<Sample>(s, pm);
+        assertSame(query, query.orderBy());
+        assertNull(query.getOrdering());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testNoOrderCriterion() throws Exception {
+        SampleMeta s = new SampleMeta();
+        SelectQuery<Sample> query = new SelectQuery<Sample>(s, pm);
+        assertNull(query.getOrdering());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testSingleOrderCriteria() throws Exception {
+        SampleMeta s = new SampleMeta();
+        SelectQuery<Sample> query = new SelectQuery<Sample>(s, pm);
+        query.orderBy(s.id.asc());
+        assertEquals("id asc", query.getOrdering());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testMultiOrderCriteria() throws Exception {
+        SampleMeta s = new SampleMeta();
+        SelectQuery<Sample> query = new SelectQuery<Sample>(s, pm);
+        query.orderBy(s.id.asc(), s.name.desc());
+        assertEquals("id asc, name desc", query.getOrdering());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testRange() throws Exception {
+        SampleMeta s = new SampleMeta();
+        SelectQuery<Sample> query = new SelectQuery<Sample>(s, pm);
+        assertEquals(-1, query.getStartIndex());
+        assertEquals(-1, query.getEndIndex());
+        assertSame(query, query.range(50, 70));
+        assertEquals(50, query.getStartIndex());
+        assertEquals(70, query.getEndIndex());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testTimeoutMillis() throws Exception {
+        SampleMeta s = new SampleMeta();
+        SelectQuery<Sample> query = new SelectQuery<Sample>(s, pm);
+        assertEquals(-1, query.getTimeoutMillis());
+        assertSame(query, query.timeoutMillis(1000));
+        assertEquals(1000, query.getTimeoutMillis());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testNewQuery() throws Exception {
+        SampleMeta s = new SampleMeta();
+        SelectQuery<Sample> query = new SelectQuery<Sample>(s, pm);
+        assertNotNull(query.newQuery());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetQueryString() throws Exception {
+        SampleMeta s = new SampleMeta();
+        SelectQuery<Sample> query = new SelectQuery<Sample>(s, pm);
+        query.where(s.id.eq(Long.valueOf(1))).orderBy(s.id.asc()).range(0, 1);
+        String queryStr = query.getQueryString();
+        System.out.println(queryStr);
+        assertEquals(
+                "select from "
+                        + Sample.class.getName()
+                        + " where id == idParam order by id asc parameters java.lang.Long idParam range 0, 1",
+                queryStr);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetQueryStringWithParameters() throws Exception {
+        SampleMeta s = new SampleMeta();
+        SelectQuery<Sample> query = new SelectQuery<Sample>(s, pm);
+        query.where(s.id.eq(Long.valueOf(1))).orderBy(s.id.asc()).range(0, 1);
+        String queryStr = query.getQueryStringWithParameters();
+        System.out.println(queryStr);
+        assertEquals(
+                "select from "
+                        + Sample.class.getName()
+                        + " where id == idParam order by id asc parameters java.lang.Long idParam range 0, 1"
+                        + " with [1]", queryStr);
     }
 }

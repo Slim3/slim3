@@ -86,8 +86,8 @@ public class JDOTemplate2Test extends TestCase {
      * @throws Exception
      */
     public void testDateForString() throws Exception {
-        assertEquals(java.util.Date.class, template.toDate("01/01/1970 00:00:00",
-                "MM/dd/yyyy").getClass());
+        assertEquals(java.util.Date.class, template.toDate(
+                "01/01/1970 00:00:00", "MM/dd/yyyy").getClass());
     }
 
     private static class MyTemplate extends JDOTemplate<Void> {
