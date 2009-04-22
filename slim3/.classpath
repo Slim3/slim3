@@ -30,6 +30,7 @@
 	<classpathentry kind="lib" path="lib/appengine-local-runtime-shared.jar"/>
 	<classpathentry kind="lib" path="lib/appengine-local-runtime.jar"/>
 	<classpathentry kind="lib" path="lib/jdo2-api-2.3-SNAPSHOT.jar" sourcepath="libsrc/jdo2-api-2.3-SNAPSHOT-src.zip"/>
+	<classpathentry kind="lib" path="lib/appengine-api-1.0-sdk-1.2.0.jar"/>
 	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="output" path="build/classes"/>

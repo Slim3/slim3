@@ -31,6 +31,9 @@ import org.slim3.commons.util.LongUtil;
 import org.slim3.commons.util.RuntimeExceptionUtil;
 import org.slim3.commons.util.ShortUtil;
 
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+
 /**
  * A template class for JDO.
  * 
@@ -123,6 +126,145 @@ public abstract class JDOTemplate<R> {
     protected <M> SelectQuery<M> from(ModelMeta<M> modelMeta) {
         assertPersistenceManagerIsActive();
         return new SelectQuery<M>(modelMeta, pm);
+    }
+
+    /**
+     * Looks up the instance of the given type with the given key.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model type
+     * @param key
+     *            the key
+     * @return the model specified by the key
+     */
+    protected <M> M getObjectByKey(Class<M> modelClass, Key key) {
+        assertPersistenceManagerIsActive();
+        return pm.getObjectById(modelClass, key);
+    }
+
+    /**
+     * Looks up the instance of the given type with the given identifier.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model type
+     * @param id
+     *            the identifier
+     * @return the model specified by the identifier
+     */
+    protected <M> M getObjectById(Class<M> modelClass, long id) {
+        assertPersistenceManagerIsActive();
+        return pm.getObjectById(modelClass, id);
+    }
+
+    /**
+     * Looks up the instance of the given type with the given identifier.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model type
+     * @param id
+     *            the identifier
+     * @return the model specified by the identifier
+     */
+    protected <M> M getObjectByKeyId(Class<M> modelClass, long id) {
+        assertPersistenceManagerIsActive();
+        return getObjectByKey(modelClass, key(modelClass, id));
+    }
+
+    /**
+     * Looks up the instance of the given type with the given key.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param key
+     *            the key
+     * @return the model specified by the key
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null
+     */
+    protected <M> M getObjectByKey(ModelMeta<M> modelMeta, Key key)
+            throws NullPointerException {
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
+        }
+        assertPersistenceManagerIsActive();
+        return pm.getObjectById(modelMeta.getModelClass(), key);
+    }
+
+    /**
+     * Looks up the instance of the given type with the given identifier.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param id
+     *            the identifier
+     * @return the model specified by the identifier
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null
+     */
+    protected <M> M getObjectById(ModelMeta<M> modelMeta, long id)
+            throws NullPointerException {
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
+        }
+        assertPersistenceManagerIsActive();
+        return getObjectById(modelMeta.getModelClass(), id);
+    }
+
+    /**
+     * Looks up the instance of the given type with the given key identifier.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param id
+     *            the identifier
+     * @return the model specified by the identifier
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null
+     */
+    protected <M> M getObjectByKeyId(ModelMeta<M> modelMeta, long id)
+            throws NullPointerException {
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
+        }
+        assertPersistenceManagerIsActive();
+        return getObjectByKeyId(modelMeta.getModelClass(), id);
+    }
+
+    /**
+     * Makes the model persistent.
+     * 
+     * @param <M>
+     *            the model type
+     * @param model
+     *            the model
+     * @return the model
+     */
+    protected <M> M makePersistent(M model) {
+        assertPersistenceManagerIsActive();
+        return pm.makePersistent(model);
+    }
+
+    /**
+     * Deletes the model from the data store.
+     * 
+     * @param model
+     *            the model
+     */
+    protected void deletePersistent(Object model) {
+        assertPersistenceManagerIsActive();
+        pm.deletePersistent(model);
     }
 
     /**
@@ -224,6 +366,38 @@ public abstract class JDOTemplate<R> {
      */
     protected Date toDate(String text, String pattern) {
         return DateUtil.toDate(text, pattern);
+    }
+
+    /**
+     * Creates a new key.
+     * 
+     * @param modelClass
+     *            the model class
+     * @param id
+     *            the identifier
+     * @return a new key
+     */
+    protected Key key(Class<?> modelClass, long id) {
+        if (modelClass == null) {
+            throw new NullPointerException("The modelClass parameter is null.");
+        }
+        return KeyFactory.createKey(modelClass.getSimpleName(), id);
+    }
+
+    /**
+     * Creates a new key.
+     * 
+     * @param modelMeta
+     *            the meta data of model
+     * @param id
+     *            the identifier
+     * @return a new key
+     */
+    protected Key key(ModelMeta<?> modelMeta, long id) {
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
+        }
+        return key(modelMeta.getModelClass(), id);
     }
 
     /**

@@ -90,6 +90,16 @@ public class JDOTemplate2Test extends TestCase {
                 "01/01/1970 00:00:00", "MM/dd/yyyy").getClass());
     }
 
+    /**
+     * @throws Exception
+     */
+    public void testKey() throws Exception {
+        SampleMeta s = new SampleMeta();
+        assertNotNull(template.key(Sample.class, 1));
+        assertNotNull(template.key(s, 1));
+        assertEquals(template.key(Sample.class, 1), template.key(s, 1));
+    }
+
     private static class MyTemplate extends JDOTemplate<Void> {
 
         @Override
