@@ -40,7 +40,7 @@ public class QueryTest extends LocalJDOTestCase {
             public List<Sample> doExecute() {
                 Sample s = new Sample();
                 s.setName("hoge");
-                s.setEnabled(true);
+                s.setMyBoolean(true);
                 s.setMyByte((byte) 1);
                 s.setMyShort((short) 1);
                 s.setMyInteger(1);

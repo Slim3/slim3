@@ -34,7 +34,7 @@ public class JDOTemplateTest extends LocalJDOTestCase {
     public void test() throws Exception {
         Sample sample = new Sample();
         sample.setName("hoge");
-        sample.setEnabled(true);
+        sample.setMyBoolean(true);
         sample.setMyByte(toByte(1));
         sample.setMyShort(toShort(1));
         sample.setMyInteger(1);

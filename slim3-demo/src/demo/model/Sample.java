@@ -38,7 +38,7 @@ public class Sample {
     private String name;
 
     @Persistent
-    private Boolean enabled;
+    private Boolean myBoolean;
 
     @Persistent
     private Byte myByte;
@@ -187,16 +187,16 @@ public class Sample {
     /**
      * @return the enabled
      */
-    public Boolean getEnabled() {
-        return enabled;
+    public Boolean getMyBoolean() {
+        return myBoolean;
     }
 
     /**
      * @param enabled
      *            the enabled to set
      */
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
+    public void setMyBoolean(Boolean enabled) {
+        this.myBoolean = enabled;
     }
 
     /**
@@ -231,6 +231,6 @@ public class Sample {
 
     @Override
     public String toString() {
-        return "id:" + id + ", name:" + name + ", enabled:" + enabled;
+        return "id:" + id + ", name:" + name;
     }
 }
