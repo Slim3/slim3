@@ -40,7 +40,7 @@
       Converts string that could be interpreted as Date.
     </description>
     <name>date</name>
-    <function-class>org.slim3.struts.taglib.S2Functions</function-class>
+    <function-class>org.slim3.struts.taglib.S3Functions</function-class>
     <function-signature>java.util.Date date(java.lang.String, java.lang.String)</function-signature>
     <example>
       &lt;fmt:formatDate value="${f:date(date, 'MMddyyyy')}" pattern="MM/dd/yyyy"/&gt;
