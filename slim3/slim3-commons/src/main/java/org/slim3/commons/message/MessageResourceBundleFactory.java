@@ -114,8 +114,11 @@ public final class MessageResourceBundleFactory {
             return null;
         }
         try {
-            return new File(URLDecoder.decode(url.getPath(), "UTF-8"))
-                    .getAbsoluteFile();
+            File file = new File(URLDecoder.decode(url.getPath(), "UTF-8"));
+            if (file.exists()) {
+                return file;
+            }
+            return null;
         } catch (UnsupportedEncodingException e) {
             throw new WrapRuntimeException(e);
         }

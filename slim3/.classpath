@@ -4,10 +4,10 @@
 	<classpathentry kind="src" path="slim3-commons/src/main/resources"/>
 	<classpathentry kind="src" path="slim3-commons/src/test/java"/>
 	<classpathentry kind="src" path="slim3-commons/src/test/resources"/>
-	<classpathentry kind="src" path="slim3-struts/src/main/java"/>
-	<classpathentry kind="src" path="slim3-struts/src/main/resources"/>
-	<classpathentry kind="src" path="slim3-struts/src/test/java"/>
-	<classpathentry kind="src" path="slim3-struts/src/test/resources"/>
+	<classpathentry kind="src" path="slim3-mvc/src/main/java"/>
+	<classpathentry kind="src" path="slim3-mvc/src/main/resources"/>
+	<classpathentry kind="src" path="slim3-mvc/src/test/java"/>
+	<classpathentry kind="src" path="slim3-mvc/src/test/resources"/>
 	<classpathentry kind="src" path="slim3-gae/src/main/java"/>
 	<classpathentry kind="src" path="slim3-gae/src/main/resources"/>
 	<classpathentry kind="src" path="slim3-gae/src/test/java"/>

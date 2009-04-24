@@ -18,9 +18,6 @@ package org.slim3.commons.cleaner;
 import java.beans.Introspector;
 import java.util.LinkedList;
 
-import org.apache.commons.beanutils.BeanUtilsBean;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * A utility class to clean resources.
  * 
@@ -63,8 +60,6 @@ public final class Cleaner {
                 t.printStackTrace();
             }
         }
-        BeanUtilsBean.setInstance(new BeanUtilsBean());
-        LogFactory.releaseAll();
         Introspector.flushCaches();
     }
 }

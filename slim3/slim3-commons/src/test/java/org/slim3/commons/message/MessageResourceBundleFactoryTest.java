@@ -77,6 +77,8 @@ public class MessageResourceBundleFactoryTest extends CleanableTestCase {
         File file = MessageResourceBundleFactory.getFile(PATH);
         assertNotNull(file);
         assertTrue(file.exists());
+        assertNull(MessageResourceBundleFactory
+                .getFile("java/lang/String.class"));
     }
 
     /**
