@@ -21,13 +21,15 @@ import org.slim3.mvc.unit.MvcTestCase;
  * @author higa
  * 
  */
-public class ResponseLocatorTest extends MvcTestCase {
+public class FrontControllerTest extends MvcTestCase {
 
     /**
      * @throws Exception
      * 
      */
-    public void testGetResponse() throws Exception {
-        assertNotNull(ResponseLocator.getResponse());
+    public void testGetPath() throws Exception {
+        mvcTester.request.setPathInfo("/hello/");
+        assertEquals("/hello/", mvcTester.frontController
+                .getPath(mvcTester.request));
     }
 }

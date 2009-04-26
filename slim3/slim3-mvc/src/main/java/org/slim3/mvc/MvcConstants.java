@@ -25,6 +25,11 @@ package org.slim3.mvc;
 public interface MvcConstants {
 
     /**
+     * The key for encoding.
+     */
+    String ENCODING_KEY = "slim3.encoding";
+
+    /**
      * The key for locale.
      */
     String LOCALE_KEY = "slim3.locale";
@@ -43,4 +48,14 @@ public interface MvcConstants {
      * The key for application message bundle name.
      */
     String APP_MESSAGE_BUNDLE_NAME_KEY = "slim3.appMessageBundleName";
+
+    /**
+     * The suffix for controller.
+     */
+    String CONTROLLER_SUFFIX = "Controller";
+
+    /**
+     * The extension for JSP.
+     */
+    String JSP_EXTENSION = ".jsp";
 }

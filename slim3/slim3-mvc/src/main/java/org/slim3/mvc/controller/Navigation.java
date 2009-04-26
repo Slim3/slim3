@@ -25,7 +25,7 @@ package org.slim3.mvc.controller;
 public class Navigation {
 
     /**
-     * The path.
+     * The controller-relative path.
      */
     protected String path;
 
@@ -36,61 +36,30 @@ public class Navigation {
 
     /**
      * Constructor.
-     */
-    public Navigation() {
-        this(null, false);
-    }
-
-    /**
-     * Constructor.
      * 
      * @param path
-     *            the path
-     */
-    public Navigation(String path) {
-        this(path, false);
-    }
-
-    /**
-     * Constructor.
-     * 
+     *            the controller-relative path
      * @param redirect
      *            whether this navigation is "redirect"
+     * @throws NullPointerException
+     *             if the path parameter is null
      */
-    public Navigation(boolean redirect) {
-        this(null, redirect);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param path
-     *            the path
-     * @param redirect
-     *            whether this navigation is "redirect"
-     */
-    public Navigation(String path, boolean redirect) {
+    public Navigation(String path, boolean redirect)
+            throws NullPointerException {
+        if (path == null) {
+            throw new NullPointerException("The path parameter is null.");
+        }
         this.path = path;
         this.redirect = redirect;
     }
 
     /**
-     * Returns the path.
+     * Returns the controller-relative path.
      * 
-     * @return the path
+     * @return the controller-relative path
      */
     public String getPath() {
         return path;
-    }
-
-    /**
-     * Sets the path.
-     * 
-     * @param path
-     *            the path
-     */
-    public void setPath(String path) {
-        this.path = path;
     }
 
     /**
@@ -100,15 +69,5 @@ public class Navigation {
      */
     public boolean isRedirect() {
         return redirect;
-    }
-
-    /**
-     * Sets whether this navigation is "redirect"
-     * 
-     * @param redirect
-     *            whether this navigation is "redirect"
-     */
-    public void setRedirect(boolean redirect) {
-        this.redirect = redirect;
     }
 }

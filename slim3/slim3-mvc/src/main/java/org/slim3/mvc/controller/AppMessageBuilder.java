@@ -16,6 +16,7 @@
 package org.slim3.mvc.controller;
 
 import java.text.MessageFormat;
+import java.util.Locale;
 
 import org.slim3.commons.config.Configuration;
 import org.slim3.commons.message.MessageResourceBundle;
@@ -78,20 +79,26 @@ public class AppMessageBuilder {
     /**
      * Returns the message.
      * 
+     * @param locale
+     *            the locale
      * @param key
      *            the key
      * @param arguments
      *            the arguments
      * @return the message
      * @throws NullPointerException
-     *             if the key parameter is null
+     *             if the locale parameter is null or if the key parameter is
+     *             null
      */
-    public String getMessage(String key, Object... arguments)
+    public String getMessage(Locale locale, String key, Object... arguments)
             throws NullPointerException {
+        if (locale == null) {
+            throw new NullPointerException("The locale parameter is null.");
+        }
         if (key == null) {
             throw new NullPointerException("The key parameter is null.");
         }
-        MessageResourceBundle bundle = getBundle();
+        MessageResourceBundle bundle = getBundle(locale);
         String pattern = bundle.get(key);
         if (StringUtil.isEmpty(pattern)) {
             return null;
@@ -102,16 +109,17 @@ public class AppMessageBuilder {
     /**
      * Returns the message resource bundle.
      * 
+     * @param locale
+     *            the locale
      * @return the message resource bundle
      */
-    protected MessageResourceBundle getBundle() {
+    protected MessageResourceBundle getBundle(Locale locale) {
         String bundleName = Configuration.getInstance().getValue(
                 MvcConstants.APP_MESSAGE_BUNDLE_NAME_KEY);
         if (bundleName == null) {
             bundleName = DEFAULT_BUNDLE_NAME;
         }
-        return MessageResourceBundleFactory.getBundle(
-                LocaleLocator.getLocale(), bundleName);
+        return MessageResourceBundleFactory.getBundle(locale, bundleName);
 
     }
 }

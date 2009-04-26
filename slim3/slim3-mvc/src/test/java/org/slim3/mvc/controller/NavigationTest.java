@@ -27,37 +27,7 @@ public class NavigationTest extends TestCase {
      * @throws Exception
      * 
      */
-    public void testDefaultConstructor() throws Exception {
-        Navigation nav = new Navigation();
-        assertNull(nav.getPath());
-        assertFalse(nav.isRedirect());
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testConstructorWithPath() throws Exception {
-        Navigation nav = new Navigation("index.jsp");
-        assertEquals("index.jsp", nav.getPath());
-        assertFalse(nav.isRedirect());
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testConstructorWithRedirect() throws Exception {
-        Navigation nav = new Navigation(true);
-        assertNull(nav.getPath());
-        assertTrue(nav.isRedirect());
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testConstructorWithPathAndRedirect() throws Exception {
+    public void testConstructor() throws Exception {
         Navigation nav = new Navigation("index.jsp", true);
         assertEquals("index.jsp", nav.getPath());
         assertTrue(nav.isRedirect());

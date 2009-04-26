@@ -15,13 +15,15 @@
  */
 package org.slim3.mvc.controller;
 
-import org.slim3.mvc.unit.MvcTestCase;
+import java.util.Locale;
+
+import junit.framework.TestCase;
 
 /**
  * @author higa
  * 
  */
-public class AppMessageBuilderTest extends MvcTestCase {
+public class AppMessageBuilderTest extends TestCase {
 
     /**
      * @throws Exception
@@ -36,7 +38,7 @@ public class AppMessageBuilderTest extends MvcTestCase {
      * 
      */
     public void testGetBundle() throws Exception {
-        assertNotNull(AppMessageBuilder.getInstance().getBundle());
+        assertNotNull(AppMessageBuilder.getInstance().getBundle(Locale.ENGLISH));
     }
 
     /**
@@ -45,6 +47,6 @@ public class AppMessageBuilderTest extends MvcTestCase {
      */
     public void testGetMessage() throws Exception {
         assertEquals("hoge is required.", AppMessageBuilder.getInstance()
-                .getMessage("errors.required", "hoge"));
+                .getMessage(Locale.ENGLISH, "errors.required", "hoge"));
     }
 }

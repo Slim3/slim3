@@ -15,36 +15,33 @@
  */
 package org.slim3.mvc.unit;
 
-import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.ServletConfig;
+import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
 
 import org.slim3.commons.util.IteratorEnumeration;
 
 /**
- * A mock implementation for {@link ServletConfig}.
+ * A mock implementation for {@link FilterConfig}.
  * 
  * @author higa
  * @since 3.0
  * 
  */
-public class MockServletConfig implements ServletConfig, Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * The servlet name.
-     */
-    protected String servletName;
+public class MockFilterConfig implements FilterConfig {
 
     /**
      * The servlet context.
      */
     protected ServletContext servletContext;
+
+    /**
+     * The filter name.
+     */
+    protected String filterName;
 
     /**
      * The map for initial parameters.
@@ -59,7 +56,7 @@ public class MockServletConfig implements ServletConfig, Serializable {
      * @throws NullPointerException
      *             if the servletContext parameter is null
      */
-    public MockServletConfig(ServletContext servletContext)
+    public MockFilterConfig(ServletContext servletContext)
             throws NullPointerException {
         if (servletContext == null) {
             throw new NullPointerException(
@@ -68,27 +65,27 @@ public class MockServletConfig implements ServletConfig, Serializable {
         this.servletContext = servletContext;
     }
 
-    /**
-     * Returns the servlet name.
-     */
-    public String getServletName() {
-        return servletName;
-    }
-
-    /**
-     * Sets the servlet name.
-     * 
-     * @param servletName
-     *            the servlet name
-     */
-    public void setServletName(String servletName) {
-        this.servletName = servletName;
-    }
-
+    @Override
     public ServletContext getServletContext() {
         return servletContext;
     }
 
+    @Override
+    public String getFilterName() {
+        return filterName;
+    }
+
+    /**
+     * Sets the filter name.
+     * 
+     * @param filterName
+     *            the filter name
+     */
+    public void setFilterName(String filterName) {
+        this.filterName = filterName;
+    }
+
+    @Override
     public String getInitParameter(String name) {
         return initParameterMap.get(name);
     }
@@ -115,6 +112,7 @@ public class MockServletConfig implements ServletConfig, Serializable {
         initParameterMap.remove(name);
     }
 
+    @Override
     public Enumeration<String> getInitParameterNames() {
         return new IteratorEnumeration<String>(initParameterMap.keySet()
                 .iterator());

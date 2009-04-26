@@ -15,13 +15,13 @@
  */
 package org.slim3.mvc.unit;
 
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slim3.mvc.controller.RequestLocator;
-import org.slim3.mvc.controller.ServletContextLocator;
-import org.slim3.mvc.controller.ResponseLocator;
+import org.slim3.mvc.controller.FrontController;
 
 /**
  * A base test case for Slim3 MVC.
@@ -35,17 +35,32 @@ public class MvcTester {
     /**
      * The mock for {@link ServletContext}.
      */
-    protected MockServletContext servletContext;
+    public MockServletContext servletContext;
+
+    /**
+     * The mock for {@link ServletConfig}.
+     */
+    public MockServletConfig servletConfig;
+
+    /**
+     * The mock for {@link FilterConfig}.
+     */
+    public MockFilterConfig filterConfig;
+
+    /**
+     * The front controller.
+     */
+    public FrontController frontController;
 
     /**
      * The mock for {@link HttpServletRequest}.
      */
-    protected MockHttpServletRequest request;
+    public MockHttpServletRequest request;
 
     /**
      * The mock for {@link HttpServletResponse}.
      */
-    protected MockHttpServletResponse response;
+    public MockHttpServletResponse response;
 
     /**
      * Sets up the test environment.
@@ -55,11 +70,12 @@ public class MvcTester {
      */
     public void setUp() throws Exception {
         servletContext = new MockServletContext();
+        servletConfig = new MockServletConfig(servletContext);
+        filterConfig = new MockFilterConfig(servletContext);
+        frontController = new FrontController();
+        frontController.init(filterConfig);
         request = new MockHttpServletRequest(servletContext);
         response = new MockHttpServletResponse();
-        ServletContextLocator.setServletContext(servletContext);
-        RequestLocator.setRequest(request);
-        ResponseLocator.setResponse(response);
     }
 
     /**
@@ -70,37 +86,11 @@ public class MvcTester {
      */
     public void tearDown() throws Exception {
         servletContext = null;
+        servletConfig = null;
+        filterConfig = null;
+        frontController.destroy();
+        frontController = null;
         request = null;
         response = null;
-        ServletContextLocator.setServletContext(null);
-        RequestLocator.setRequest(null);
-        ResponseLocator.setResponse(null);
-    }
-
-    /**
-     * Returns the mock for {@link ServletContext}.
-     * 
-     * @return the mock for {@link ServletContext}
-     */
-    public MockServletContext getServletContext() {
-        return servletContext;
-    }
-
-    /**
-     * Returns the mock for {@link HttpServletRequest}.
-     * 
-     * @return the mock for {@link HttpServletRequest}
-     */
-    public MockHttpServletRequest getRequest() {
-        return request;
-    }
-
-    /**
-     * Returns the mock for {@link HttpServletResponse}.
-     * 
-     * @return the mock for {@link HttpServletResponse}
-     */
-    public MockHttpServletResponse getResponse() {
-        return response;
     }
 }

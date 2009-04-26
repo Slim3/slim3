@@ -17,10 +17,6 @@ package org.slim3.mvc.unit;
 
 import junit.framework.TestCase;
 
-import org.slim3.mvc.controller.RequestLocator;
-import org.slim3.mvc.controller.ResponseLocator;
-import org.slim3.mvc.controller.ServletContextLocator;
-
 /**
  * @author higa
  * 
@@ -36,12 +32,12 @@ public class MvcTesterTest extends TestCase {
     public void testSetUp() throws Exception {
         tester.setUp();
         try {
-            assertNotNull(ServletContextLocator.getServletContext());
-            assertNotNull(RequestLocator.getRequest());
-            assertNotNull(ResponseLocator.getResponse());
-            assertNotNull(tester.getServletContext());
-            assertNotNull(tester.getRequest());
-            assertNotNull(tester.getResponse());
+            assertNotNull(tester.servletContext);
+            assertNotNull(tester.servletConfig);
+            assertNotNull(tester.filterConfig);
+            assertNotNull(tester.frontController);
+            assertNotNull(tester.request);
+            assertNotNull(tester.response);
         } finally {
             tester.tearDown();
         }
@@ -54,11 +50,11 @@ public class MvcTesterTest extends TestCase {
     public void testTearDown() throws Exception {
         tester.setUp();
         tester.tearDown();
-        assertNull(ServletContextLocator.getServletContext());
-        assertNull(RequestLocator.getRequest());
-        assertNull(ResponseLocator.getResponse());
-        assertNull(tester.getServletContext());
-        assertNull(tester.getRequest());
-        assertNull(tester.getResponse());
+        assertNull(tester.servletContext);
+        assertNull(tester.servletConfig);
+        assertNull(tester.filterConfig);
+        assertNull(tester.frontController);
+        assertNull(tester.request);
+        assertNull(tester.response);
     }
 }
