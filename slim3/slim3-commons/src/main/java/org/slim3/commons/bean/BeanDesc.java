@@ -72,13 +72,13 @@ public final class BeanDesc {
         Method[] methods = beanDesc.beanClass.getMethods();
         for (int i = 0; i < methods.length; i++) {
             Method m = methods[i];
-            if (m.isBridge() || m.isSynthetic()) {
+            if (m.isBridge() || m.isSynthetic()
+                    || m.getDeclaringClass() == Object.class) {
                 continue;
             }
             String methodName = m.getName();
             if (methodName.startsWith("get")) {
                 if (m.getParameterTypes().length != 0
-                        || methodName.equals("getClass")
                         || m.getReturnType() == void.class) {
                     continue;
                 }
@@ -95,7 +95,6 @@ public final class BeanDesc {
                 setupReadMethod(beanDesc, m, propertyName, illegalPropertyNames);
             } else if (methodName.startsWith("set")) {
                 if (m.getParameterTypes().length != 1
-                        || methodName.equals("setClass")
                         || m.getReturnType() != void.class) {
                     continue;
                 }
@@ -108,11 +107,7 @@ public final class BeanDesc {
         for (Iterator<String> i = illegalPropertyNames.iterator(); i.hasNext();) {
             beanDesc.propertyDescCache.remove(i.next());
         }
-        addFields(beanDesc, beanDesc.beanClass);
-        for (Class<?> superClass = beanDesc.beanClass.getSuperclass(); superClass != Object.class
-                && superClass != null; superClass = superClass.getSuperclass()) {
-            addFields(beanDesc, superClass);
-        }
+        addFields(beanDesc);
     }
 
     private static void setupReadMethod(BeanDesc beanDesc, Method readMethod,
@@ -151,23 +146,26 @@ public final class BeanDesc {
         }
     }
 
-    private static void addFields(BeanDesc beanDesc, Class<?> beanClass) {
-        Field[] fields = beanClass.getDeclaredFields();
-        for (int i = 0; i < fields.length; ++i) {
-            Field field = fields[i];
-            String fname = field.getName();
-            if (!Modifier.isStatic(field.getModifiers())
-                    && !Modifier.isFinal(field.getModifiers())) {
-                PropertyDesc pd = beanDesc.propertyDescCache.get(fname);
-                if (pd != null) {
-                    pd.setField(field);
-                } else if (Modifier.isPublic(field.getModifiers())) {
-                    pd = new PropertyDesc(field.getName(), field.getType(),
-                            beanClass);
-                    pd.setField(field);
-                    beanDesc.propertyDescCache.put(fname, pd);
-                }
+    private static void addFields(BeanDesc beanDesc) {
+        for (Class<?> clazz = beanDesc.getBeanClass(); clazz != Object.class; clazz = clazz
+                .getSuperclass()) {
+            Field[] fields = clazz.getDeclaredFields();
+            for (int i = 0; i < fields.length; ++i) {
+                Field field = fields[i];
+                String fname = field.getName();
+                if (!Modifier.isStatic(field.getModifiers())
+                        && !Modifier.isFinal(field.getModifiers())) {
+                    PropertyDesc pd = beanDesc.propertyDescCache.get(fname);
+                    if (pd != null) {
+                        pd.setField(field);
+                    } else if (Modifier.isPublic(field.getModifiers())) {
+                        pd = new PropertyDesc(field.getName(), field.getType(),
+                                beanDesc.getBeanClass());
+                        pd.setField(field);
+                        beanDesc.propertyDescCache.put(fname, pd);
+                    }
 
+                }
             }
         }
     }
