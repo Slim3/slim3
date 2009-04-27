@@ -15,6 +15,10 @@
  */
 package org.slim3.mvc.controller;
 
+import org.slim3.commons.config.Configuration;
+import org.slim3.mvc.controller.controller.HogeController;
+import org.slim3.mvc.controller.controller.IndexController;
+import org.slim3.mvc.controller.controller.hello.ListController;
 import org.slim3.mvc.unit.MvcTestCase;
 
 /**
@@ -24,6 +28,23 @@ import org.slim3.mvc.unit.MvcTestCase;
 public class FrontControllerTest extends MvcTestCase {
 
     /**
+     * 
+     */
+    protected static final String PACKAGE = "org/slim3/mvc/controller/";
+
+    /**
+     * 
+     */
+    protected static final String CONFIG_PATH = PACKAGE
+            + "slim3_configuration.properties";
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        Configuration.initialize(CONFIG_PATH);
+    }
+
+    /**
      * @throws Exception
      * 
      */
@@ -31,5 +52,63 @@ public class FrontControllerTest extends MvcTestCase {
         mvcTester.request.setPathInfo("/hello/");
         assertEquals("/hello/", mvcTester.frontController
                 .getPath(mvcTester.request));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testCreateController() throws Exception {
+        Controller controller = mvcTester.frontController
+                .createController("/hello/list");
+        assertNotNull(controller);
+        assertEquals(ListController.class, controller.getClass());
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testCreateControllerForRoot() throws Exception {
+        Controller controller = mvcTester.frontController
+                .createController("/hoge");
+        assertNotNull(controller);
+        assertEquals(HogeController.class, controller.getClass());
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testCreateControllerForRootIndexController() throws Exception {
+        Controller controller = mvcTester.frontController.createController("/");
+        assertNotNull(controller);
+        assertEquals(IndexController.class, controller.getClass());
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testCreateControllerForIndexController() throws Exception {
+        Controller controller = mvcTester.frontController
+                .createController("/hello/");
+        assertNotNull(controller);
+        assertEquals(
+                org.slim3.mvc.controller.controller.hello.IndexController.class,
+                controller.getClass());
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testCreateControllerForBadController() throws Exception {
+        try {
+            mvcTester.frontController.createController("/bad");
+            fail();
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

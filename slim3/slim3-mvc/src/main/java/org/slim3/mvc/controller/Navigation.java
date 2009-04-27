@@ -49,6 +49,11 @@ public class Navigation {
         if (path == null) {
             throw new NullPointerException("The path parameter is null.");
         }
+        if (redirect && path.indexOf('.') >= 0) {
+            throw new IllegalArgumentException("The path(" + path
+                    + ") with extension(" + path.substring(path.indexOf('.'))
+                    + ") is not permitted in case of redirect.");
+        }
         this.path = path;
         this.redirect = redirect;
     }

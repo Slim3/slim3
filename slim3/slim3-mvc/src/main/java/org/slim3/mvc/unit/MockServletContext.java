@@ -88,6 +88,11 @@ public class MockServletContext implements ServletContext, Serializable {
     protected Map<String, String> realPathMap = new HashMap<String, String>();
 
     /**
+     * The latest request dispatcher.
+     */
+    protected MockRequestDispatcher latestRequestDispatcher;
+
+    /**
      * Constructor.
      */
     public MockServletContext() {
@@ -158,7 +163,17 @@ public class MockServletContext implements ServletContext, Serializable {
     }
 
     public RequestDispatcher getRequestDispatcher(String path) {
-        return new MockRequestDispatcher(path);
+        latestRequestDispatcher = new MockRequestDispatcher(path);
+        return latestRequestDispatcher;
+    }
+
+    /**
+     * Returns the latest request dispatcher.
+     * 
+     * @return the latest request dispatcher
+     */
+    public MockRequestDispatcher getLatestRequestDispatcher() {
+        return latestRequestDispatcher;
     }
 
     public RequestDispatcher getNamedDispatcher(String name) {

@@ -23,7 +23,7 @@ import org.slim3.commons.util.StringUtil;
 import org.slim3.mvc.MvcConstants;
 
 /**
- * A base controller. This controller is created for each request.
+ * A base controller. This controller is created each request.
  * 
  * @author higa
  * @since 3.0

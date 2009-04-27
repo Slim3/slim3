@@ -20,6 +20,8 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.servlet.RequestDispatcher;
+
 import junit.framework.TestCase;
 
 /**
@@ -132,5 +134,15 @@ public class MockServletContextTest extends TestCase {
         System.out.println(e.nextElement());
         System.out.println(e.nextElement());
         assertFalse(e.hasMoreElements());
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testGetRequestDispatcher() throws Exception {
+        RequestDispatcher dispatcher = servletContext
+                .getRequestDispatcher("/hello/");
+        assertSame(dispatcher, servletContext.getLatestRequestDispatcher());
     }
 }

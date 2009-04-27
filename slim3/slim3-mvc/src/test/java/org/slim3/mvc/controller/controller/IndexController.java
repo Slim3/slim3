@@ -13,36 +13,29 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.mvc.controller;
+package org.slim3.mvc.controller.controller;
 
-import junit.framework.TestCase;
+import org.slim3.mvc.controller.Controller;
+import org.slim3.mvc.controller.Navigation;
 
 /**
  * @author higa
  * 
  */
-public class NavigationTest extends TestCase {
+public class IndexController extends Controller {
 
     /**
-     * @throws Exception
      * 
      */
-    public void testConstructor() throws Exception {
-        Navigation nav = new Navigation("index.jsp", false);
-        assertEquals("index.jsp", nav.getPath());
-        assertFalse(nav.isRedirect());
-    }
+    public String aaa;
 
     /**
-     * @throws Exception
      * 
      */
-    public void testConstructorForRedirectAndExtension() throws Exception {
-        try {
-            new Navigation("index.jsp", true);
-            fail();
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        }
+    public String[] bbb;
+
+    @Override
+    public Navigation execute() {
+        return null;
     }
 }

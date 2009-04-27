@@ -50,9 +50,19 @@ public interface MvcConstants {
     String APP_MESSAGE_BUNDLE_NAME_KEY = "slim3.appMessageBundleName";
 
     /**
+     * The key for controller package.
+     */
+    String CONTROLLER_PACKAGE_KEY = "slim3.controllerPackage";
+
+    /**
      * The suffix for controller.
      */
     String CONTROLLER_SUFFIX = "Controller";
+
+    /**
+     * The index controller.
+     */
+    String INDEX_CONTROLLER = "Index" + CONTROLLER_SUFFIX;
 
     /**
      * The extension for JSP.
