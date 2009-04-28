@@ -154,6 +154,7 @@ public class MockHttpSession implements HttpSession, Serializable {
         return null;
     }
 
+    @SuppressWarnings("deprecation")
     public Object getValue(String name) {
         return getAttribute(name);
     }
@@ -162,14 +163,17 @@ public class MockHttpSession implements HttpSession, Serializable {
         return new IteratorEnumeration<String>(attributeMap.keySet().iterator());
     }
 
+    @SuppressWarnings("deprecation")
     public String[] getValueNames() {
         return attributeMap.keySet().toArray(new String[attributeMap.size()]);
     }
 
+    @SuppressWarnings("deprecation")
     public void putValue(String name, Object value) {
         setAttribute(name, value);
     }
 
+    @SuppressWarnings("deprecation")
     public void removeValue(String name) {
         removeAttribute(name);
     }

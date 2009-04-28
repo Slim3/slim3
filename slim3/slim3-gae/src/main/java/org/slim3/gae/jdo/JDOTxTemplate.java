@@ -15,33 +15,43 @@
  */
 package org.slim3.gae.jdo;
 
+import javax.jdo.Transaction;
+
 /**
- * A criterion interface for filtering.
+ * A JDO template class using transaction.
  * 
  * @author higa
+ * @param <R>
+ *            the return type
  * @since 3.0
  * 
  */
-public interface FilterCriterion {
+public abstract class JDOTxTemplate<R> extends JDOTemplate<R> {
 
     /**
-     * Returns the query string.
-     * 
-     * @return the query string
+     * The transaction.
      */
-    String getQueryString();
+    protected Transaction tx;
 
-    /**
-     * Returns the parameter declaration.
-     * 
-     * @return the parameter declaration
-     */
-    String getParameterDeclaration();
+    @Override
+    protected void beforeExecution() {
+        tx = pm.currentTransaction();
+        tx.begin();
+    }
 
-    /**
-     * Returns the parameter.
-     * 
-     * @return the parameter
-     */
-    Object getParameter();
+    @Override
+    protected void afterExecution(R returnValue) {
+        if (tx.getRollbackOnly()) {
+            tx.rollback();
+        } else {
+            tx.commit();
+        }
+    }
+
+    @Override
+    protected void handleThrowable(Throwable t) {
+        tx.rollback();
+        super.handleThrowable(t);
+    }
+
 }

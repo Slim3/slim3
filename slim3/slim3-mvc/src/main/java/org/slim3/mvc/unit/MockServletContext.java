@@ -63,6 +63,11 @@ public class MockServletContext implements ServletContext, Serializable {
     protected String servletContextName = "";
 
     /**
+     * The context path.
+     */
+    protected String contextPath = "/";
+
+    /**
      * The map for the initial parameters.
      */
     protected Map<String, String> initParameterMap = new HashMap<String, String>();
@@ -180,14 +185,17 @@ public class MockServletContext implements ServletContext, Serializable {
         throw new UnsupportedOperationException();
     }
 
+    @SuppressWarnings("deprecation")
     public Servlet getServlet(String name) throws ServletException {
         throw new UnsupportedOperationException();
     }
 
+    @SuppressWarnings("deprecation")
     public Enumeration<Servlet> getServlets() {
         throw new UnsupportedOperationException();
     }
 
+    @SuppressWarnings("deprecation")
     public Enumeration<String> getServletNames() {
         throw new UnsupportedOperationException();
     }
@@ -196,6 +204,7 @@ public class MockServletContext implements ServletContext, Serializable {
         System.out.println(message);
     }
 
+    @SuppressWarnings("deprecation")
     public void log(Exception ex, String message) {
         System.out.println(message);
         ex.printStackTrace();
@@ -286,5 +295,20 @@ public class MockServletContext implements ServletContext, Serializable {
      */
     public void setServletContextName(String servletContextName) {
         this.servletContextName = servletContextName;
+    }
+
+    @Override
+    public String getContextPath() {
+        return contextPath;
+    }
+
+    /**
+     * Sets the context path.
+     * 
+     * @param contextPath
+     *            the context path
+     */
+    public void setContextPath(String contextPath) {
+        this.contextPath = contextPath;
     }
 }

@@ -77,6 +77,71 @@ public class ControllerTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
+    public void testToBoolean() throws Exception {
+        assertEquals(Boolean.TRUE, controller.toBoolean("true"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testToByte() throws Exception {
+        assertEquals(Byte.valueOf("1"), controller.toByte("1"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testToShort() throws Exception {
+        assertEquals(Short.valueOf("1"), controller.toShort("1"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testToInteger() throws Exception {
+        assertEquals(Integer.valueOf(1), controller.toInteger("1"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testToLong() throws Exception {
+        assertEquals(Long.valueOf(1), controller.toLong("1"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testFloat() throws Exception {
+        assertEquals(Float.valueOf(1), controller.toFloat("1"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testDouble() throws Exception {
+        assertEquals(Double.valueOf(1), controller.toDouble("1"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testDate() throws Exception {
+        assertEquals(new java.util.Date(1), controller
+                .toDate(new java.sql.Date(1)));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testDateForString() throws Exception {
+        assertEquals(java.util.Date.class, controller.toDate(
+                "01/01/1970 00:00:00", "MM/dd/yyyy").getClass());
+    }
+
     private static class IndexController extends Controller {
 
         @Override

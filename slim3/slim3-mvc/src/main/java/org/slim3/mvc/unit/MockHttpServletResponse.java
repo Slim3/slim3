@@ -137,10 +137,12 @@ public class MockHttpServletResponse implements HttpServletResponse {
         return url;
     }
 
+    @SuppressWarnings("deprecation")
     public String encodeUrl(String url) {
         return encodeURL(url);
     }
 
+    @SuppressWarnings("deprecation")
     public String encodeRedirectUrl(String url) {
         return encodeRedirectUrl(url);
     }
@@ -154,6 +156,7 @@ public class MockHttpServletResponse implements HttpServletResponse {
         return status;
     }
 
+    @SuppressWarnings("deprecation")
     public void setStatus(int status, String message) {
         assertNotCommitted();
         this.status = status;

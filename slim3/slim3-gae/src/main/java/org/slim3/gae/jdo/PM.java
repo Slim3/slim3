@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the Seasar Foundation and the Others.
+ * Copyright 2004-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,25 +26,13 @@ import javax.jdo.PersistenceManager;
  */
 public final class PM {
 
-    private static ThreadLocal<PersistenceManager> persistenceManagers = new ThreadLocal<PersistenceManager>();
-
     /**
-     * Returns the persistence manager attached to the current thread.
+     * Returns the persistence manager.
      * 
      * @return the persistence manager
      */
-    public static PersistenceManager getCurrent() {
-        return persistenceManagers.get();
-    }
-
-    /**
-     * Attaches the persistence manager to the current thread.
-     * 
-     * @param pm
-     *            the persistence manager
-     */
-    public static void setCurrent(PersistenceManager pm) {
-        persistenceManagers.set(pm);
+    public static PersistenceManager getPersistenceManager() {
+        return PMF.getPersistenceManagerFactory().getPersistenceManager();
     }
 
     /**

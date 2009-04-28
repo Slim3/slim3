@@ -17,18 +17,15 @@
 	<classpathentry kind="lib" path="lib/commons-digester-1.6.jar"/>
 	<classpathentry kind="lib" path="lib/commons-validator-1.2.0.jar" sourcepath="libsrc/commons-validator-1.2.0-src.zip"/>
 	<classpathentry kind="lib" path="lib/struts-1.2.9.jar" sourcepath="libsrc/struts-1.2.9-sources.jar"/>
-	<classpathentry kind="lib" path="lib/commons-el-1.0.jar" sourcepath="libsrc/commons-el-1.0-sources.jar"/>
 	<classpathentry kind="lib" path="lib/commons-collections-3.1.jar" sourcepath="libsrc/commons-collections-3.1-sources.jar"/>
-	<classpathentry kind="lib" path="lib/jstl-1.1.2.jar" sourcepath="libsrc/jstl-1.1.2-sources.jar"/>
-	<classpathentry kind="lib" path="lib/servlet-api-2.4.jar" sourcepath="libsrc/servlet-api-2.4-sources.jar"/>
-	<classpathentry kind="lib" path="lib/jsp-api-2.0.jar" sourcepath="libsrc/jsp-api-2.0-sources.jar"/>
-	<classpathentry kind="lib" path="lib/standard-1.1.2.jar" sourcepath="libsrc/standard-1.1.2-sources.jar"/>
 	<classpathentry kind="lib" path="lib/commons-fileupload-1.2.1.jar" sourcepath="libsrc/commons-fileupload-1.2.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/appengine-api-stubs.jar"/>
 	<classpathentry kind="lib" path="lib/appengine-local-runtime-shared.jar"/>
 	<classpathentry kind="lib" path="lib/appengine-local-runtime.jar"/>
 	<classpathentry kind="lib" path="lib/jdo2-api-2.3-SNAPSHOT.jar" sourcepath="libsrc/jdo2-api-2.3-SNAPSHOT-src.zip"/>
 	<classpathentry kind="lib" path="lib/appengine-api-1.0-sdk-1.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/geronimo-jsp_2.1_spec-1.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/geronimo-servlet_2.5_spec-1.2.jar"/>
 	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="output" path="build/classes"/>

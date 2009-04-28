@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the Seasar Foundation and the Others.
+ * Copyright 2004-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,27 +15,19 @@
  */
 package org.slim3.gae.jdo;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Collection;
+import java.util.List;
 
 import javax.jdo.PersistenceManager;
-import javax.jdo.Transaction;
+import javax.jdo.annotations.PersistenceCapable;
 
-import org.slim3.commons.util.BooleanUtil;
-import org.slim3.commons.util.ByteUtil;
-import org.slim3.commons.util.DateUtil;
-import org.slim3.commons.util.DoubleUtil;
-import org.slim3.commons.util.FloatUtil;
-import org.slim3.commons.util.IntegerUtil;
-import org.slim3.commons.util.LongUtil;
 import org.slim3.commons.util.RuntimeExceptionUtil;
-import org.slim3.commons.util.ShortUtil;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
 /**
- * A template class for JDO.
+ * A JDO template class.
  * 
  * @author higa
  * @param <R>
@@ -51,35 +43,44 @@ public abstract class JDOTemplate<R> {
     protected PersistenceManager pm;
 
     /**
-     * The transaction.
-     */
-    protected Transaction tx;
-
-    /**
      * Executes an action.
      * 
      * @return the executed result
      */
     public final R execute() {
         R returnValue = null;
-        pm = PM.getCurrent();
-        assertPersistenceManagerIsActive();
-        tx = pm.currentTransaction();
+        pm = PM.getPersistenceManager();
         try {
             beforeExecution();
             returnValue = doExecute();
             afterExecution(returnValue);
         } catch (Throwable t) {
             handleThrowable(t);
+        } finally {
+            assertPersistenceManagerIsActive();
+            pm.close();
         }
         return returnValue;
+    }
+
+    /**
+     * Determines if the object is persistence capable.
+     * 
+     * @param o
+     *            the object
+     * @return whether the object is persistence capable
+     */
+    protected boolean isPersistenceCapable(Object o) {
+        if (o == null) {
+            return false;
+        }
+        return o.getClass().getAnnotation(PersistenceCapable.class) != null;
     }
 
     /**
      * Processes an action before execution.
      */
     protected void beforeExecution() {
-        tx.begin();
     }
 
     /**
@@ -96,11 +97,6 @@ public abstract class JDOTemplate<R> {
      *            the return value
      */
     protected void afterExecution(R returnValue) {
-        if (tx.getRollbackOnly()) {
-            tx.rollback();
-        } else {
-            tx.commit();
-        }
     }
 
     /**
@@ -110,7 +106,6 @@ public abstract class JDOTemplate<R> {
      *            the exception
      */
     protected void handleThrowable(Throwable t) {
-        tx.rollback();
         RuntimeExceptionUtil.wrapAndThrow(t);
     }
 
@@ -129,15 +124,15 @@ public abstract class JDOTemplate<R> {
     }
 
     /**
-     * Looks up the instance of the given type with the given key.
+     * Returns the model specified by the key.
      * 
      * @param <M>
      *            the model type
      * @param modelClass
-     *            the model type
+     *            the model class
      * @param key
      *            the key
-     * @return the model specified by the key
+     * @return the model
      */
     protected <M> M getObjectByKey(Class<M> modelClass, Key key) {
         assertPersistenceManagerIsActive();
@@ -145,15 +140,15 @@ public abstract class JDOTemplate<R> {
     }
 
     /**
-     * Looks up the instance of the given type with the given identifier.
+     * Returns the model specified by the identifier.
      * 
      * @param <M>
      *            the model type
      * @param modelClass
-     *            the model type
+     *            the model class
      * @param id
      *            the identifier
-     * @return the model specified by the identifier
+     * @return the model
      */
     protected <M> M getObjectById(Class<M> modelClass, long id) {
         assertPersistenceManagerIsActive();
@@ -161,15 +156,31 @@ public abstract class JDOTemplate<R> {
     }
 
     /**
-     * Looks up the instance of the given type with the given identifier.
+     * Returns the model specified by the name.
      * 
      * @param <M>
      *            the model type
      * @param modelClass
+     *            the model class
+     * @param name
+     *            the name
+     * @return the model
+     */
+    protected <M> M getObjectByName(Class<M> modelClass, String name) {
+        assertPersistenceManagerIsActive();
+        return pm.getObjectById(modelClass, name);
+    }
+
+    /**
+     * Returns the model specified by the key identifier.
+     * 
+     * @param <M>
      *            the model type
+     * @param modelClass
+     *            the model class
      * @param id
      *            the identifier
-     * @return the model specified by the identifier
+     * @return the model
      */
     protected <M> M getObjectByKeyId(Class<M> modelClass, long id) {
         assertPersistenceManagerIsActive();
@@ -177,7 +188,23 @@ public abstract class JDOTemplate<R> {
     }
 
     /**
-     * Looks up the instance of the given type with the given key.
+     * Returns the model specified by the key name.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param name
+     *            the name
+     * @return the model
+     */
+    protected <M> M getObjectByKeyName(Class<M> modelClass, String name) {
+        assertPersistenceManagerIsActive();
+        return getObjectByKey(modelClass, key(modelClass, name));
+    }
+
+    /**
+     * Returns the model specified by the key.
      * 
      * @param <M>
      *            the model type
@@ -185,7 +212,7 @@ public abstract class JDOTemplate<R> {
      *            the meta data of model
      * @param key
      *            the key
-     * @return the model specified by the key
+     * @return the model
      * @throws NullPointerException
      *             if the modelMeta parameter is null
      */
@@ -199,7 +226,7 @@ public abstract class JDOTemplate<R> {
     }
 
     /**
-     * Looks up the instance of the given type with the given identifier.
+     * Returns the model specified by the identifier.
      * 
      * @param <M>
      *            the model type
@@ -207,7 +234,7 @@ public abstract class JDOTemplate<R> {
      *            the meta data of model
      * @param id
      *            the identifier
-     * @return the model specified by the identifier
+     * @return the model
      * @throws NullPointerException
      *             if the modelMeta parameter is null
      */
@@ -221,7 +248,29 @@ public abstract class JDOTemplate<R> {
     }
 
     /**
-     * Looks up the instance of the given type with the given key identifier.
+     * Returns the model specified by the name.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param name
+     *            the name
+     * @return the model
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null
+     */
+    protected <M> M getObjectByName(ModelMeta<M> modelMeta, String name)
+            throws NullPointerException {
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
+        }
+        assertPersistenceManagerIsActive();
+        return getObjectByName(modelMeta.getModelClass(), name);
+    }
+
+    /**
+     * Returns the model specified by the key identifier.
      * 
      * @param <M>
      *            the model type
@@ -229,7 +278,7 @@ public abstract class JDOTemplate<R> {
      *            the meta data of model
      * @param id
      *            the identifier
-     * @return the model specified by the identifier
+     * @return the model
      * @throws NullPointerException
      *             if the modelMeta parameter is null
      */
@@ -240,6 +289,28 @@ public abstract class JDOTemplate<R> {
         }
         assertPersistenceManagerIsActive();
         return getObjectByKeyId(modelMeta.getModelClass(), id);
+    }
+
+    /**
+     * Returns the model specified by the key name.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param name
+     *            the name
+     * @return the model
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null
+     */
+    protected <M> M getObjectByKeyName(ModelMeta<M> modelMeta, String name)
+            throws NullPointerException {
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
+        }
+        assertPersistenceManagerIsActive();
+        return getObjectByKeyName(modelMeta.getModelClass(), name);
     }
 
     /**
@@ -268,108 +339,46 @@ public abstract class JDOTemplate<R> {
     }
 
     /**
-     * Converts the object to the boolean object.
+     * Detaches the model from persistence manager.
      * 
-     * @param o
-     *            the object
-     * @return the boolean object
+     * @param <M>
+     *            the model type
+     * @param model
+     *            the model
+     * @return the detached model.
      */
-    protected Boolean toBoolean(Object o) {
-        return BooleanUtil.toBoolean(o);
+    protected <M> M detachCopy(M model) {
+        return pm.detachCopy(model);
     }
 
     /**
-     * Converts the object to the byte object.
+     * Detaches the model from persistence manager.
      * 
-     * @param o
-     *            the object
-     * @return the byte object
+     * @param <M>
+     *            the model type
+     * @param models
+     *            the models
+     * @return the detached models
      */
-    protected Byte toByte(Object o) {
-        return ByteUtil.toByte(o);
+    protected <M> Collection<M> detachCopyAll(Collection<M> models) {
+        return pm.detachCopyAll(models);
     }
 
     /**
-     * Converts the object to the short object.
+     * Detaches the model from persistence manager.
      * 
-     * @param o
-     *            the object
-     * @return the short object
+     * @param <M>
+     *            the model type
+     * @param models
+     *            the models
+     * @return the detached models
      */
-    protected Short toShort(Object o) {
-        return ShortUtil.toShort(o);
+    protected <M> List<M> detachCopyAll(List<M> models) {
+        return (List<M>) pm.detachCopyAll(models);
     }
 
     /**
-     * Converts the object to the integer object.
-     * 
-     * @param o
-     *            the object
-     * @return the integer object
-     */
-    protected Integer toInteger(Object o) {
-        return IntegerUtil.toInteger(o);
-    }
-
-    /**
-     * Converts the object to the long object.
-     * 
-     * @param o
-     *            the object
-     * @return the long object
-     */
-    protected Long toLong(Object o) {
-        return LongUtil.toLong(o);
-    }
-
-    /**
-     * Converts the object to the float object.
-     * 
-     * @param o
-     *            the object
-     * @return the float object
-     */
-    protected Float toFloat(Object o) {
-        return FloatUtil.toFloat(o);
-    }
-
-    /**
-     * Converts the object to the double object.
-     * 
-     * @param o
-     *            the object
-     * @return the double object
-     */
-    protected Double toDouble(Object o) {
-        return DoubleUtil.toDouble(o);
-    }
-
-    /**
-     * Converts the object to the date object.
-     * 
-     * @param o
-     *            the object
-     * @return the date object
-     */
-    protected Date toDate(Object o) {
-        return DateUtil.toDate(o);
-    }
-
-    /**
-     * Converts the object to the date object.
-     * 
-     * @param text
-     *            the text
-     * @param pattern
-     *            the pattern for {@link SimpleDateFormat}
-     * @return the date object
-     */
-    protected Date toDate(String text, String pattern) {
-        return DateUtil.toDate(text, pattern);
-    }
-
-    /**
-     * Creates a new key.
+     * Creates a new key specified by the identifier.
      * 
      * @param modelClass
      *            the model class
@@ -385,7 +394,23 @@ public abstract class JDOTemplate<R> {
     }
 
     /**
-     * Creates a new key.
+     * Creates a new key specified by the name.
+     * 
+     * @param modelClass
+     *            the model class
+     * @param name
+     *            the name
+     * @return a new key
+     */
+    protected Key key(Class<?> modelClass, String name) {
+        if (modelClass == null) {
+            throw new NullPointerException("The modelClass parameter is null.");
+        }
+        return KeyFactory.createKey(modelClass.getSimpleName(), name);
+    }
+
+    /**
+     * Creates a new key specified by the identifier.
      * 
      * @param modelMeta
      *            the meta data of model
@@ -398,6 +423,22 @@ public abstract class JDOTemplate<R> {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
         return key(modelMeta.getModelClass(), id);
+    }
+
+    /**
+     * Creates a new key specified by the name.
+     * 
+     * @param modelMeta
+     *            the meta data of model
+     * @param name
+     *            the name
+     * @return a new key
+     */
+    protected Key key(ModelMeta<?> modelMeta, String name) {
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
+        }
+        return key(modelMeta.getModelClass(), name);
     }
 
     /**

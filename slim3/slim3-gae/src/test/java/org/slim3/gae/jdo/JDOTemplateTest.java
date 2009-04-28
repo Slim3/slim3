@@ -15,60 +15,35 @@
  */
 package org.slim3.gae.jdo;
 
-import javax.jdo.Transaction;
-
-import org.slim3.gae.unit.LocalJDOTestCase;
+import junit.framework.TestCase;
 
 /**
  * @author higa
  * 
  */
-public class JDOTemplateTest extends LocalJDOTestCase {
+public class JDOTemplateTest extends TestCase {
 
-    private Transaction transaction;
-
-    private boolean active = false;
+    private MyTemplate template = new MyTemplate();
 
     /**
      * @throws Exception
      */
-    public void testExecuteForVoid() throws Exception {
-        assertNull(new JDOTemplate<Void>() {
-            @Override
-            public Void doExecute() {
-                return null;
-            }
-        }.execute());
+    public void testKey() throws Exception {
+        SampleMeta s = new SampleMeta();
+        assertNotNull(template.key(Sample.class, 1));
+        assertNotNull(template.key(Sample.class, "hoge"));
+        assertNotNull(template.key(s, 1));
+        assertNotNull(template.key(s, "hoge"));
+        assertEquals(template.key(Sample.class, 1), template.key(s, 1));
+        assertEquals(template.key(Sample.class, "hoge"), template
+                .key(s, "hoge"));
     }
 
-    /**
-     * @throws Exception
-     */
-    public void testExecuteForTransaction() throws Exception {
-        new JDOTemplate<Void>() {
-            @Override
-            public Void doExecute() {
-                transaction = tx;
-                active = tx.isActive();
-                return null;
-            }
-        }.execute();
-        assertNotNull(transaction);
-        assertTrue(active);
-    }
+    private static class MyTemplate extends JDOTemplate<Void> {
 
-    /**
-     * @throws Exception
-     */
-    public void testFrom() throws Exception {
-        new JDOTemplate<Void>() {
-            @Override
-            public Void doExecute() {
-                SampleMeta sample = new SampleMeta();
-                SelectQuery<Sample> selectQuery = from(sample);
-                assertNotNull(selectQuery);
-                return null;
-            }
-        };
+        @Override
+        protected Void doExecute() {
+            return null;
+        }
     }
 }

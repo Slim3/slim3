@@ -517,6 +517,7 @@ public class MockHttpServletRequest implements HttpServletRequest {
         return !isRequestedSessionIdFromCookie();
     }
 
+    @SuppressWarnings("deprecation")
     public boolean isRequestedSessionIdFromUrl() {
         return isRequestedSessionIdFromURL();
     }
@@ -879,6 +880,7 @@ public class MockHttpServletRequest implements HttpServletRequest {
         return servletContext.getRequestDispatcher(path);
     }
 
+    @SuppressWarnings("deprecation")
     public String getRealPath(String path) {
         return servletContext.getRealPath(path);
     }
