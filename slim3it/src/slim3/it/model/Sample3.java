@@ -15,7 +15,6 @@
  */
 package slim3.it.model;
 
-import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
@@ -26,29 +25,11 @@ import javax.jdo.annotations.PrimaryKey;
  * 
  */
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
-public class Sample2 {
+public class Sample3 {
 
     @PrimaryKey
-    @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-    private Long id;
-
     @Persistent
     private String name;
-
-    /**
-     * @return the id
-     */
-    public Long getId() {
-        return id;
-    }
-
-    /**
-     * @param id
-     *            the id to set
-     */
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     /**
      * @param name

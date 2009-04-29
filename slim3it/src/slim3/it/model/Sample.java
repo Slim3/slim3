@@ -27,7 +27,7 @@ import com.google.appengine.api.datastore.Key;
  * @author higa
  * 
  */
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
+@PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
 public class Sample {
 
     @PrimaryKey

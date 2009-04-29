@@ -31,8 +31,8 @@ public final class PM {
      * 
      * @return the persistence manager
      */
-    public static PersistenceManager getPersistenceManager() {
-        return PMF.getPersistenceManagerFactory().getPersistenceManager();
+    public static PersistenceManager get() {
+        return PMF.get().getPersistenceManager();
     }
 
     /**

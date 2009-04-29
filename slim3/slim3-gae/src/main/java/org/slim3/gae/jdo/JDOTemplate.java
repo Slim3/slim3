@@ -15,11 +15,7 @@
  */
 package org.slim3.gae.jdo;
 
-import java.util.Collection;
-import java.util.List;
-
 import javax.jdo.PersistenceManager;
-import javax.jdo.annotations.PersistenceCapable;
 
 import org.slim3.commons.util.RuntimeExceptionUtil;
 
@@ -49,7 +45,7 @@ public abstract class JDOTemplate<R> {
      */
     public final R execute() {
         R returnValue = null;
-        pm = PM.getPersistenceManager();
+        pm = PM.get();
         try {
             beforeExecution();
             returnValue = doExecute();
@@ -61,20 +57,6 @@ public abstract class JDOTemplate<R> {
             pm.close();
         }
         return returnValue;
-    }
-
-    /**
-     * Determines if the object is persistence capable.
-     * 
-     * @param o
-     *            the object
-     * @return whether the object is persistence capable
-     */
-    protected boolean isPersistenceCapable(Object o) {
-        if (o == null) {
-            return false;
-        }
-        return o.getClass().getAnnotation(PersistenceCapable.class) != null;
     }
 
     /**
@@ -222,7 +204,7 @@ public abstract class JDOTemplate<R> {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
         assertPersistenceManagerIsActive();
-        return pm.getObjectById(modelMeta.getModelClass(), key);
+        return getObjectByKey(modelMeta.getModelClass(), key);
     }
 
     /**
@@ -339,45 +321,6 @@ public abstract class JDOTemplate<R> {
     }
 
     /**
-     * Detaches the model from persistence manager.
-     * 
-     * @param <M>
-     *            the model type
-     * @param model
-     *            the model
-     * @return the detached model.
-     */
-    protected <M> M detachCopy(M model) {
-        return pm.detachCopy(model);
-    }
-
-    /**
-     * Detaches the model from persistence manager.
-     * 
-     * @param <M>
-     *            the model type
-     * @param models
-     *            the models
-     * @return the detached models
-     */
-    protected <M> Collection<M> detachCopyAll(Collection<M> models) {
-        return pm.detachCopyAll(models);
-    }
-
-    /**
-     * Detaches the model from persistence manager.
-     * 
-     * @param <M>
-     *            the model type
-     * @param models
-     *            the models
-     * @return the detached models
-     */
-    protected <M> List<M> detachCopyAll(List<M> models) {
-        return (List<M>) pm.detachCopyAll(models);
-    }
-
-    /**
      * Creates a new key specified by the identifier.
      * 
      * @param modelClass
@@ -453,11 +396,11 @@ public abstract class JDOTemplate<R> {
             throws IllegalStateException {
         if (pm == null) {
             throw new IllegalStateException(
-                    "The persistence manager attached to the current thread is not found.");
+                "The persistence manager attached to the current thread is not found.");
         }
         if (pm.isClosed()) {
             throw new IllegalStateException(
-                    "The persistence manager attached to the current thread is already closed.");
+                "The persistence manager attached to the current thread is already closed.");
         }
     }
 }

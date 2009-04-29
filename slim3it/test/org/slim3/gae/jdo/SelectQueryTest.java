@@ -33,7 +33,7 @@ public class SelectQueryTest extends LocalDatastoreTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        pm = PM.getPersistenceManager();
+        pm = PM.get();
     }
 
     @Override

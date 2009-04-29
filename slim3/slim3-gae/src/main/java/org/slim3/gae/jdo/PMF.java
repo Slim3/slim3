@@ -63,7 +63,7 @@ public final class PMF {
      * 
      * @return the persistence manager factory
      */
-    public static PersistenceManagerFactory getPersistenceManagerFactory() {
+    public static PersistenceManagerFactory get() {
         return persistenceManagerFactory;
     }
 

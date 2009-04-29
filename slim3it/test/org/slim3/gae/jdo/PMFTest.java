@@ -27,6 +27,6 @@ public class PMFTest extends LocalDatastoreTestCase {
      * @throws Exception
      */
     public void testGetPersistenceManagerFactory() throws Exception {
-        assertNotNull(PMF.getPersistenceManagerFactory());
+        assertNotNull(PMF.get());
     }
 }
