@@ -15,34 +15,31 @@
  */
 package org.slim3.gae.unit;
 
-import java.io.File;
-
 import junit.framework.TestCase;
 
-import com.google.appengine.tools.development.ApiProxyLocalImpl;
-import com.google.apphosting.api.ApiProxy;
-
 /**
- * A test case for local services.
+ * A test case for local data store.
  * 
  * @author higa
  * @since 3.0
  * 
  */
-public abstract class LocalServiceTestCase extends TestCase {
+public abstract class DatastoreTestCase extends TestCase {
+
+    /**
+     * The tester for local data store.
+     */
+    protected DatastoreTester datastoreTester = new DatastoreTester();
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        ApiProxy.setEnvironmentForCurrentThread(new TestEnvironment());
-        ApiProxy.setDelegate(new ApiProxyLocalImpl(new File("war")) {
-        });
+        datastoreTester.setUp();
     }
 
     @Override
     public void tearDown() throws Exception {
-        ApiProxy.setDelegate(null);
-        ApiProxy.setEnvironmentForCurrentThread(null);
+        datastoreTester.tearDown();
         super.tearDown();
     }
 }

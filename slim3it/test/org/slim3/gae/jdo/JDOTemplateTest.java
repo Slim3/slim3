@@ -18,7 +18,7 @@ package org.slim3.gae.jdo;
 import javax.jdo.JDOHelper;
 import javax.jdo.ObjectState;
 
-import org.slim3.gae.unit.LocalDatastoreTestCase;
+import org.slim3.gae.unit.DatastoreTestCase;
 
 import slim3.it.model.Sample;
 import slim3.it.model.Sample2;
@@ -33,7 +33,7 @@ import com.google.appengine.api.datastore.Key;
  * @author higa
  * 
  */
-public class JDOTemplateTest extends LocalDatastoreTestCase {
+public class JDOTemplateTest extends DatastoreTestCase {
 
     /**
      * @throws Exception

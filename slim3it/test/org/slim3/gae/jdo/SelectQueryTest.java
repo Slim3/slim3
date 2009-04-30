@@ -17,7 +17,7 @@ package org.slim3.gae.jdo;
 
 import javax.jdo.PersistenceManager;
 
-import org.slim3.gae.unit.LocalDatastoreTestCase;
+import org.slim3.gae.unit.DatastoreTestCase;
 
 import slim3.it.model.Sample2;
 import slim3.it.model.Sample2Meta;
@@ -26,7 +26,7 @@ import slim3.it.model.Sample2Meta;
  * @author higa
  * 
  */
-public class SelectQueryTest extends LocalDatastoreTestCase {
+public class SelectQueryTest extends DatastoreTestCase {
 
     private PersistenceManager pm;
 
@@ -100,8 +100,9 @@ public class SelectQueryTest extends LocalDatastoreTestCase {
         SelectQuery<Sample2> query = new SelectQuery<Sample2>(s, pm);
         query.where(s.id.eq(Long.valueOf(1)), s.name.eq("hoge"));
         assertEquals("id == idParam && name == nameParam", query.getFilter());
-        assertEquals("java.lang.Long idParam, java.lang.String nameParam",
-                query.getParametersDeclaration());
+        assertEquals(
+            "java.lang.Long idParam, java.lang.String nameParam",
+            query.getParametersDeclaration());
         assertEquals(2, query.getParameters().length);
         assertEquals(Long.valueOf(1), query.getParameters()[0]);
         assertEquals("hoge", query.getParameters()[1]);
@@ -202,10 +203,10 @@ public class SelectQueryTest extends LocalDatastoreTestCase {
         String queryStr = query.getQueryString();
         System.out.println(queryStr);
         assertEquals(
-                "select from "
-                        + Sample2.class.getName()
-                        + " where id == idParam order by id asc parameters java.lang.Long idParam range 0, 1",
-                queryStr);
+            "select from "
+                + Sample2.class.getName()
+                + " where id == idParam order by id asc parameters java.lang.Long idParam range 0, 1",
+            queryStr);
     }
 
     /**
@@ -218,9 +219,10 @@ public class SelectQueryTest extends LocalDatastoreTestCase {
         String queryStr = query.getQueryStringWithParameters();
         System.out.println(queryStr);
         assertEquals(
-                "select from "
-                        + Sample2.class.getName()
-                        + " where id == idParam order by id asc parameters java.lang.Long idParam range 0, 1"
-                        + " with [1]", queryStr);
+            "select from "
+                + Sample2.class.getName()
+                + " where id == idParam order by id asc parameters java.lang.Long idParam range 0, 1"
+                + " with [1]",
+            queryStr);
     }
 }

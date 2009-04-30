@@ -15,13 +15,13 @@
  */
 package org.slim3.gae.jdo;
 
-import org.slim3.gae.unit.LocalDatastoreTestCase;
+import org.slim3.gae.unit.DatastoreTestCase;
 
 /**
  * @author higa
  * 
  */
-public class PMTest extends LocalDatastoreTestCase {
+public class PMTest extends DatastoreTestCase {
 
     /**
      * @throws Exception

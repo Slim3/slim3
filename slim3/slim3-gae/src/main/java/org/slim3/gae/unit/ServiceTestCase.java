@@ -15,33 +15,31 @@
  */
 package org.slim3.gae.unit;
 
-import com.google.appengine.api.datastore.dev.LocalDatastoreService;
-import com.google.appengine.tools.development.ApiProxyLocalImpl;
-import com.google.apphosting.api.ApiProxy;
+import junit.framework.TestCase;
 
 /**
- * A test case for local data store.
+ * A test case for local services.
  * 
  * @author higa
  * @since 3.0
  * 
  */
-public abstract class LocalDatastoreTestCase extends LocalServiceTestCase {
+public abstract class ServiceTestCase extends TestCase {
+
+    /**
+     * The tester for local service.
+     */
+    protected ServiceTester serviceTester = new ServiceTester();
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        ApiProxyLocalImpl proxy = (ApiProxyLocalImpl) ApiProxy.getDelegate();
-        proxy.setProperty(LocalDatastoreService.NO_STORAGE_PROPERTY,
-                Boolean.TRUE.toString());
+        serviceTester.setUp();
     }
 
     @Override
     public void tearDown() throws Exception {
-        ApiProxyLocalImpl proxy = (ApiProxyLocalImpl) ApiProxy.getDelegate();
-        LocalDatastoreService datastoreService = (LocalDatastoreService) proxy
-                .getService("datastore_v3");
-        datastoreService.clearProfiles();
+        serviceTester.tearDown();
         super.tearDown();
     }
 }

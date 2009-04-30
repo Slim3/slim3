@@ -17,7 +17,7 @@ package org.slim3.gae.jdo;
 
 import javax.jdo.PersistenceManager;
 
-import org.slim3.gae.unit.LocalDatastoreTestCase;
+import org.slim3.gae.unit.DatastoreTestCase;
 
 import slim3.it.model.Sample;
 
@@ -25,7 +25,7 @@ import slim3.it.model.Sample;
  * @author higa
  * 
  */
-public class SpikeTest extends LocalDatastoreTestCase {
+public class SpikeTest extends DatastoreTestCase {
 
     /**
      * @throws Exception

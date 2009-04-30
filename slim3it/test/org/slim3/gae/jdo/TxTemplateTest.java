@@ -17,13 +17,13 @@ package org.slim3.gae.jdo;
 
 import javax.jdo.Transaction;
 
-import org.slim3.gae.unit.LocalDatastoreTestCase;
+import org.slim3.gae.unit.DatastoreTestCase;
 
 /**
  * @author higa
  * 
  */
-public class TxTemplateTest extends LocalDatastoreTestCase {
+public class TxTemplateTest extends DatastoreTestCase {
 
     private Transaction transaction;
 
