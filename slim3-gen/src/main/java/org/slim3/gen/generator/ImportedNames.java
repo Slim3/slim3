@@ -86,7 +86,7 @@ public class ImportedNames implements Iterable<String> {
             int pos = name.lastIndexOf('.');
             if (pos > -1) {
                 String packageName = name.substring(0, pos);
-                if (packageName.startsWith("java.lang")
+                if (packageName.equals("java.lang")
                         || this.packageName.equals(packageName)) {
                     continue;
                 }

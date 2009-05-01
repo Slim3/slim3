@@ -30,6 +30,7 @@ public class ImportedNamesTest extends TestCase {
         assertEquals("Bbb", names.add("bbb.Bbb"));
         assertEquals("Ccc", names.add("ccc.Ccc"));
         assertEquals("Integer", names.add("java.lang.Integer"));
+        assertEquals("Annotation", names.add("java.lang.annotation.Annotation"));
         assertEquals("Aaa", names.add("aaa.Aaa"));
         assertEquals("Bbb", names.add("bbb.Bbb"));
         assertEquals("ddd.Bbb", names.add("ddd.Bbb"));
@@ -39,6 +40,8 @@ public class ImportedNamesTest extends TestCase {
         assertEquals("bbb.Bbb", it.next());
         assertTrue(it.hasNext());
         assertEquals("ccc.Ccc", it.next());
+        assertTrue(it.hasNext());
+        assertEquals("java.lang.annotation.Annotation", it.next());
         assertFalse(it.hasNext());
     }
 
