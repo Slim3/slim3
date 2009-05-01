@@ -16,9 +16,8 @@
 package org.slim3.commons.util;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Calendar;
+import java.util.Date;
 
 import org.slim3.commons.exception.ClassCanNotAssignedRuntimeException;
 
@@ -50,7 +49,7 @@ public final class ConversionUtil {
         } else if (Number.class.isAssignableFrom(destinationClass)) {
             return convertToNumber(value, destinationClass);
         } else if (java.util.Date.class.isAssignableFrom(destinationClass)) {
-            return DateUtil.toDate(value);
+            return convertToDate(value, destinationClass);
         } else if (destinationClass == Boolean.class) {
             return BooleanUtil.toBoolean(value);
         } else if (destinationClass.isEnum()) {
@@ -130,8 +129,6 @@ public final class ConversionUtil {
             Class<?> destinationClass) {
         if (destinationClass == Integer.class) {
             return IntegerUtil.toInteger(value);
-        } else if (destinationClass == BigDecimal.class) {
-            return BigDecimalUtil.toBigDecimal(value);
         } else if (destinationClass == Long.class) {
             return LongUtil.toLong(value);
         } else if (destinationClass == Double.class) {
@@ -142,10 +139,16 @@ public final class ConversionUtil {
             return ByteUtil.toByte(value);
         } else if (destinationClass == Float.class) {
             return FloatUtil.toFloat(value);
-        } else if (destinationClass == BigInteger.class) {
-            return BigIntegerUtil.toBigInteger(value);
         }
-        throw new IllegalArgumentException("Unknown number class: "
+        throw new IllegalArgumentException("Unsupported number class: "
+            + destinationClass.getName());
+    }
+
+    private static Object convertToDate(Object value, Class<?> destinationClass) {
+        if (destinationClass == Date.class) {
+            return DateUtil.toDate(value);
+        }
+        throw new IllegalArgumentException("Unsupported date class: "
             + destinationClass.getName());
     }
 

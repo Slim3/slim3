@@ -197,9 +197,12 @@ public class ConversionUtilTest extends TestCase {
      * @throws Exception
      */
     public void testConvertStringToBigInteger() throws Exception {
-        assertEquals(BigInteger.valueOf(1), ConversionUtil.convert(
-            "1",
-            BigInteger.class));
+        try {
+            ConversionUtil.convert("1", BigInteger.class);
+            fail();
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     /**
@@ -207,9 +210,12 @@ public class ConversionUtilTest extends TestCase {
      * @throws Exception
      */
     public void testConvertStringToBigDecimal() throws Exception {
-        assertEquals(BigDecimal.valueOf(1), ConversionUtil.convert(
-            "1",
-            BigDecimal.class));
+        try {
+            ConversionUtil.convert("1", BigDecimal.class);
+            fail();
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     /**

@@ -55,10 +55,12 @@ public final class DateUtil {
     public static Date toDate(Object o) {
         if (o == null) {
             return null;
-        } else if (o instanceof Date) {
+        } else if (o.getClass() == Date.class) {
             return (Date) o;
+        } else if (o instanceof Date) {
+            return new Date(((Date) o).getTime());
         } else if (o instanceof Calendar) {
-            return ((Calendar) o).getTime();
+            return new Date(((Calendar) o).getTime().getTime());
         } else {
             return toDate(o.toString(), ISO_DATE_PATTERN);
         }
