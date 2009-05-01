@@ -35,7 +35,12 @@ public class ConversionUtilTest extends TestCase {
      * @throws Exception
      */
     public void testConvertNullToCharacter() throws Exception {
-        assertEquals('0', ConversionUtil.convert(null, char.class));
+        try {
+            ConversionUtil.convert(null, char.class);
+            fail();
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     /**
@@ -126,14 +131,6 @@ public class ConversionUtilTest extends TestCase {
     public void testConvertForAssignableClass() throws Exception {
         MyDto2 dto = new MyDto2();
         assertSame(dto, ConversionUtil.convert(dto, MyDto.class));
-    }
-
-    /**
-     * 
-     * @throws Exception
-     */
-    public void testConvertStringToCharacter() throws Exception {
-        assertEquals('0', ConversionUtil.convert("0", Character.class));
     }
 
     /**
@@ -249,15 +246,6 @@ public class ConversionUtilTest extends TestCase {
      */
     public void testConvertBooleanToString() throws Exception {
         assertEquals("true", ConversionUtil.convert(Boolean.TRUE, String.class));
-    }
-
-    /**
-     * 
-     * @throws Exception
-     */
-    public void testConvertByteArrayToObject() throws Exception {
-        byte[] value = ByteArrayUtil.toByteArray("abc");
-        assertEquals("abc", ConversionUtil.convert(value, String.class));
     }
 
     /**

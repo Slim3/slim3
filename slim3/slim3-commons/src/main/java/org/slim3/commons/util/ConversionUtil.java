@@ -15,8 +15,6 @@
  */
 package org.slim3.commons.util;
 
-import java.io.Serializable;
-import java.util.Calendar;
 import java.util.Date;
 
 import org.slim3.commons.exception.ClassCanNotAssignedRuntimeException;
@@ -54,13 +52,6 @@ public final class ConversionUtil {
             return BooleanUtil.toBoolean(value);
         } else if (destinationClass.isEnum()) {
             return convertToEnum(value, destinationClass);
-        } else if (Calendar.class.isAssignableFrom(destinationClass)) {
-            return CalendarUtil.toCalendar(value);
-        } else if (destinationClass == Character.class) {
-            return CharacterUtil.toCharacter(value);
-        } else if (value.getClass() == byte[].class
-            && Serializable.class.isAssignableFrom(destinationClass)) {
-            return ByteArrayUtil.toObject((byte[]) value);
         } else if (destinationClass == String.class) {
             return value.toString();
         } else {
@@ -114,14 +105,8 @@ public final class ConversionUtil {
                 return b;
             }
             return Byte.valueOf((byte) 0);
-        } else if (destinationClass == char.class) {
-            Character c = CharacterUtil.toCharacter(value);
-            if (c != null) {
-                return c;
-            }
-            return Character.valueOf('0');
         }
-        throw new IllegalArgumentException("Unknown class: "
+        throw new IllegalArgumentException("Unsupported primitive class: "
             + destinationClass.getName());
     }
 
