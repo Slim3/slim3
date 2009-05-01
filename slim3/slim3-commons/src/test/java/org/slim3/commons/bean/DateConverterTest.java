@@ -15,13 +15,10 @@
  */
 package org.slim3.commons.bean;
 
-import java.sql.Timestamp;
 import java.util.Date;
 
 import junit.framework.TestCase;
 
-import org.slim3.commons.bean.DateConverter;
-import org.slim3.commons.bean.SqlDateConverter;
 import org.slim3.commons.exception.CastRuntimeException;
 
 /**
@@ -60,7 +57,7 @@ public class DateConverterTest extends TestCase {
      */
     public void testConstructorForNull() throws Exception {
         try {
-            new SqlDateConverter(null);
+            new DateConverter(null);
         } catch (NullPointerException e) {
             System.out.println(e);
         }
@@ -70,8 +67,8 @@ public class DateConverterTest extends TestCase {
      * @throws Exception
      */
     public void testIsTarget() throws Exception {
-        SqlDateConverter converter = new SqlDateConverter("MM/dd/yyyy");
-        assertTrue(converter.isTarget(java.sql.Date.class));
-        assertFalse(converter.isTarget(Timestamp.class));
+        DateConverter converter = new DateConverter("MM/dd/yyyy");
+        assertTrue(converter.isTarget(java.util.Date.class));
+        assertFalse(converter.isTarget(java.sql.Date.class));
     }
 }

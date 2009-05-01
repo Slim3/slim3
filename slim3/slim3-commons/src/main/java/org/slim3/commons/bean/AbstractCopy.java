@@ -15,8 +15,6 @@
  */
 package org.slim3.commons.bean;
 
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,9 +26,6 @@ import java.util.Map;
 
 import org.slim3.commons.exception.ConverterRuntimeException;
 import org.slim3.commons.util.DateUtil;
-import org.slim3.commons.util.SqlDateUtil;
-import org.slim3.commons.util.TimeUtil;
-import org.slim3.commons.util.TimestampUtil;
 
 /**
  * An abstract class to copy an object to an another object.
@@ -51,26 +46,8 @@ public abstract class AbstractCopy<S extends AbstractCopy<S>> {
     /**
      * The default converter for {@link java.util.Date}.
      */
-    protected static final Converter DEFAULT_DATE_CONVERTER = new DateConverter(
-            DateUtil.ISO_PATTERN);
-
-    /**
-     * The default converter for {@link java.sql.Date}.
-     */
-    protected static final Converter DEFAULT_SQL_DATE_CONVERTER = new DateConverter(
-            SqlDateUtil.ISO_PATTERN);
-
-    /**
-     * The default converter for {@link Timestamp}.
-     */
-    protected static final Converter DEFAULT_TIMESTAMP_CONVERTER = new DateConverter(
-            TimestampUtil.ISO_PATTERN);
-
-    /**
-     * The default converter for {@link Time}.
-     */
-    protected static final Converter DEFAULT_TIME_CONVERTER = new DateConverter(
-            TimeUtil.ISO_PATTERN);
+    protected static final Converter DEFAULT_DATE_CONVERTER =
+        new DateConverter(DateUtil.ISO_DATE_PATTERN);
 
     /**
      * The included property names.
@@ -95,7 +72,8 @@ public abstract class AbstractCopy<S extends AbstractCopy<S>> {
     /**
      * The converters that are bound to the specific property.
      */
-    protected Map<String, Converter> converterMap = new HashMap<String, Converter>();
+    protected Map<String, Converter> converterMap =
+        new HashMap<String, Converter>();
 
     /**
      * The converters that are not bound to any properties.
@@ -191,45 +169,6 @@ public abstract class AbstractCopy<S extends AbstractCopy<S>> {
     }
 
     /**
-     * Specifies the converter for {@link java.sql.Date}.
-     * 
-     * @param pattern
-     *            the pattern for {@link SimpleDateFormat}
-     * @param propertyNames
-     *            the property names
-     * @return this instance
-     */
-    public S sqlDateConverter(String pattern, CharSequence... propertyNames) {
-        return converter(new SqlDateConverter(pattern), propertyNames);
-    }
-
-    /**
-     * Specifies the converter for {@link Time}.
-     * 
-     * @param pattern
-     *            the pattern for {@link SimpleDateFormat}
-     * @param propertyNames
-     *            the property names
-     * @return this instance
-     */
-    public S timeConverter(String pattern, CharSequence... propertyNames) {
-        return converter(new TimeConverter(pattern), propertyNames);
-    }
-
-    /**
-     * Specifies the converter for {@link Timestamp}.
-     * 
-     * @param pattern
-     *            the pattern for {@link SimpleDateFormat}
-     * @param propertyNames
-     *            the property names
-     * @return this instance
-     */
-    public S timestampConverter(String pattern, CharSequence... propertyNames) {
-        return converter(new TimestampConverter(pattern), propertyNames);
-    }
-
-    /**
      * Specifies the number converter.
      * 
      * @param pattern
@@ -307,14 +246,14 @@ public abstract class AbstractCopy<S extends AbstractCopy<S>> {
             PropertyDesc srcPropertyDesc = srcBeanDesc.getPropertyDesc(i);
             String propertyName = srcPropertyDesc.getPropertyName();
             if (!srcPropertyDesc.isReadable()
-                    || !isTargetProperty(propertyName)) {
+                || !isTargetProperty(propertyName)) {
                 continue;
             }
             if (!destBeanDesc.hasPropertyDesc(propertyName)) {
                 continue;
             }
-            PropertyDesc destPropertyDesc = destBeanDesc
-                    .getPropertyDesc(propertyName);
+            PropertyDesc destPropertyDesc =
+                destBeanDesc.getPropertyDesc(propertyName);
             if (!destPropertyDesc.isWritable()) {
                 continue;
             }
@@ -322,7 +261,8 @@ public abstract class AbstractCopy<S extends AbstractCopy<S>> {
             if (!isTargetValue(value)) {
                 continue;
             }
-            value = convertValue(value, propertyName, destPropertyDesc
+            value =
+                convertValue(value, propertyName, destPropertyDesc
                     .getPropertyClass());
             destPropertyDesc.setValue(dest, value);
         }
@@ -380,7 +320,8 @@ public abstract class AbstractCopy<S extends AbstractCopy<S>> {
             if (!isTargetValue(value)) {
                 continue;
             }
-            value = convertValue(value, propertyName, propertyDesc
+            value =
+                convertValue(value, propertyName, propertyDesc
                     .getPropertyClass());
             propertyDesc.setValue(dest, value);
         }
@@ -427,21 +368,23 @@ public abstract class AbstractCopy<S extends AbstractCopy<S>> {
     protected Object convertValue(Object value, String destPropertyName,
             Class<?> destPropertyClass) throws ConverterRuntimeException {
         if (value == null
-                || value.getClass() == String.class
-                && destPropertyClass == String.class
-                || value.getClass() != String.class
-                && (destPropertyClass != String.class && destPropertyClass != null)) {
+            || value.getClass() == String.class
+            && destPropertyClass == String.class
+            || value.getClass() != String.class
+            && (destPropertyClass != String.class && destPropertyClass != null)) {
             return value;
         }
         Converter converter = converterMap.get(destPropertyName);
         if (converter == null) {
-            Class<?> targetClass = value.getClass() != String.class ? value
-                    .getClass() : destPropertyClass;
+            Class<?> targetClass =
+                value.getClass() != String.class
+                    ? value.getClass()
+                    : destPropertyClass;
             if (targetClass == null) {
                 return value;
             }
             for (Class<?> clazz = targetClass; clazz != null
-                    && clazz != Object.class; clazz = clazz.getSuperclass()) {
+                && clazz != Object.class; clazz = clazz.getSuperclass()) {
                 converter = findConverter(clazz);
                 if (converter != null) {
                     break;
@@ -488,15 +431,6 @@ public abstract class AbstractCopy<S extends AbstractCopy<S>> {
      * @return the default converter.
      */
     protected Converter findDefaultConverter(Class<?> clazz) {
-        if (clazz == java.sql.Date.class) {
-            return DEFAULT_SQL_DATE_CONVERTER;
-        }
-        if (clazz == Timestamp.class) {
-            return DEFAULT_TIMESTAMP_CONVERTER;
-        }
-        if (clazz == Time.class) {
-            return DEFAULT_TIME_CONVERTER;
-        }
         if (java.util.Date.class.isAssignableFrom(clazz)) {
             return DEFAULT_DATE_CONVERTER;
         }

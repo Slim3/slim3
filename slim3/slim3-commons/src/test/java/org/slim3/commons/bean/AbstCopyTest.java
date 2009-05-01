@@ -15,7 +15,6 @@
  */
 package org.slim3.commons.bean;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,7 +23,7 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.slim3.commons.exception.ConverterRuntimeException;
-import org.slim3.commons.util.TimeUtil;
+import org.slim3.commons.util.DateUtil;
 
 /**
  * @author higa
@@ -342,7 +341,8 @@ public class AbstCopyTest extends TestCase {
         bean.aaa = "1,000";
         BeanMap map = new BeanMap();
         new MyCopy().numberConverter("#,##0", BeanNames.aaa()).copyBeanToMap(
-                bean, map);
+            bean,
+            map);
         assertEquals(new Long(1000), map.get("aaa"));
     }
 
@@ -596,8 +596,9 @@ public class AbstCopyTest extends TestCase {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("aaa", "1,000");
         Map<String, Object> map2 = new HashMap<String, Object>();
-        new MyCopy().converter(new NumberConverter("#,##0"), "aaa")
-                .copyMapToMap(map, map2);
+        new MyCopy()
+            .converter(new NumberConverter("#,##0"), "aaa")
+            .copyMapToMap(map, map2);
         assertEquals(new Long(1000), map2.get("aaa"));
     }
 
@@ -605,16 +606,19 @@ public class AbstCopyTest extends TestCase {
      * @throws Exception
      */
     public void testConvertValueForZeroConverter() throws Exception {
-        assertEquals(new Integer(1), new MyCopy().convertValue(new Integer(1),
-                "aaa", null));
+        assertEquals(new Integer(1), new MyCopy().convertValue(
+            new Integer(1),
+            "aaa",
+            null));
     }
 
     /**
      * @throws Exception
      */
     public void testConvertValueForPropertyConverterAsString() throws Exception {
-        assertEquals("1", new MyCopy().converter(new NumberConverter("##0"),
-                "aaa").convertValue(new Integer(1), "aaa", String.class));
+        assertEquals("1", new MyCopy().converter(
+            new NumberConverter("##0"),
+            "aaa").convertValue(new Integer(1), "aaa", String.class));
     }
 
     /**
@@ -622,16 +626,17 @@ public class AbstCopyTest extends TestCase {
      */
     public void testConvertValueForPropertyConverterAsObject() throws Exception {
         assertEquals(new Long(1), new MyCopy().converter(
-                new NumberConverter("##0"), "aaa").convertValue("1", "aaa",
-                Long.class));
+            new NumberConverter("##0"),
+            "aaa").convertValue("1", "aaa", Long.class));
     }
 
     /**
      * @throws Exception
      */
     public void testConvertValueForTypeConverterAsString() throws Exception {
-        assertEquals("1", new MyCopy().converter(new NumberConverter("##0"))
-                .convertValue(new Integer(1), "aaa", String.class));
+        assertEquals("1", new MyCopy()
+            .converter(new NumberConverter("##0"))
+            .convertValue(new Integer(1), "aaa", String.class));
     }
 
     /**
@@ -639,11 +644,12 @@ public class AbstCopyTest extends TestCase {
      */
     public void testConvertValueForTypeConverterAsObject() throws Exception {
         assertEquals(new Long(1), new MyCopy().converter(
-                new NumberConverter("##0")).convertValue("1", "aaa",
-                Integer.class));
+            new NumberConverter("##0")).convertValue("1", "aaa", Integer.class));
         assertEquals("19700101", new MyCopy().converter(
-                new DateConverter("yyyyMMdd")).convertValue(new Timestamp(0),
-                "aaa", String.class));
+            new DateConverter("yyyyMMdd")).convertValue(
+            new Timestamp(0),
+            "aaa",
+            String.class));
     }
 
     /**
@@ -652,7 +658,9 @@ public class AbstCopyTest extends TestCase {
     public void testConvertValueForThrowable() throws Exception {
         try {
             new MyCopy().converter(new NumberConverter("##0")).convertValue(
-                    "a", "aaa", Integer.class);
+                "a",
+                "aaa",
+                Integer.class);
         } catch (ConverterRuntimeException e) {
             System.out.println(e);
         }
@@ -662,71 +670,36 @@ public class AbstCopyTest extends TestCase {
      * @throws Exception
      */
     public void testConvertValueForDefaultConverter() throws Exception {
-        assertEquals(TimeUtil.toTime("12:34:56", "HH:mm:ss"), new MyCopy()
-                .convertValue("12:34:56", "aaa", Time.class));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testConvertValueForDateToDate() throws Exception {
-        Date date = new Date(1);
-        assertEquals(date, new MyCopy().convertValue(date, "aaa", Date.class));
+        assertEquals(DateUtil.toDate("2009-04-07"), new MyCopy().convertValue(
+            "2009-04-07",
+            "aaa",
+            Date.class));
     }
 
     /**
      * @throws Exception
      */
     public void testDateConverter() throws Exception {
-        assertEquals("19700101", new MyCopy().dateConverter("yyyyMMdd")
-                .convertValue(new java.util.Date(0), "aaa", String.class));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testSqlDateConverter() throws Exception {
-        assertEquals("19700101", new MyCopy().sqlDateConverter("yyyyMMdd")
-                .convertValue(new java.sql.Date(0), "aaa", String.class));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testTimeConverter() throws Exception {
-        assertEquals("00", new MyCopy().timeConverter("ss").convertValue(
-                new java.sql.Time(0), "aaa", String.class));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testTimestampConverter() throws Exception {
-        assertEquals("19700101 00", new MyCopy().timestampConverter(
-                "yyyyMMdd ss").convertValue(new java.sql.Timestamp(0), "aaa",
-                String.class));
+        assertEquals("19700101", new MyCopy()
+            .dateConverter("yyyyMMdd")
+            .convertValue(new java.util.Date(0), "aaa", String.class));
     }
 
     /**
      * @throws Exception
      */
     public void testNumberConverter() throws Exception {
-        assertEquals("1,000", new MyCopy().numberConverter("0,000")
-                .convertValue(new Integer(1000), "aaa", String.class));
+        assertEquals("1,000", new MyCopy()
+            .numberConverter("0,000")
+            .convertValue(new Integer(1000), "aaa", String.class));
     }
 
     /**
      * @throws Exception
      */
     public void testFindDefaultConverter() throws Exception {
-        assertEquals(AbstractCopy.DEFAULT_TIME_CONVERTER, new MyCopy()
-                .findDefaultConverter(Time.class));
-        assertEquals(AbstractCopy.DEFAULT_TIMESTAMP_CONVERTER, new MyCopy()
-                .findDefaultConverter(Timestamp.class));
         assertEquals(AbstractCopy.DEFAULT_DATE_CONVERTER, new MyCopy()
-                .findDefaultConverter(java.util.Date.class));
-        assertEquals(AbstractCopy.DEFAULT_SQL_DATE_CONVERTER, new MyCopy()
-                .findDefaultConverter(java.sql.Date.class));
+            .findDefaultConverter(java.util.Date.class));
         assertNull(new MyCopy().findDefaultConverter(Integer.class));
     }
 

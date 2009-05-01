@@ -18,8 +18,6 @@ package org.slim3.commons.util;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.util.Calendar;
 
 import org.slim3.commons.exception.ClassCanNotAssignedRuntimeException;
@@ -52,7 +50,7 @@ public final class ConversionUtil {
         } else if (Number.class.isAssignableFrom(destinationClass)) {
             return convertToNumber(value, destinationClass);
         } else if (java.util.Date.class.isAssignableFrom(destinationClass)) {
-            return convertToDate(value, destinationClass);
+            return DateUtil.toDate(value);
         } else if (destinationClass == Boolean.class) {
             return BooleanUtil.toBoolean(value);
         } else if (destinationClass.isEnum()) {
@@ -62,13 +60,14 @@ public final class ConversionUtil {
         } else if (destinationClass == Character.class) {
             return CharacterUtil.toCharacter(value);
         } else if (value.getClass() == byte[].class
-                && Serializable.class.isAssignableFrom(destinationClass)) {
+            && Serializable.class.isAssignableFrom(destinationClass)) {
             return ByteArrayUtil.toObject((byte[]) value);
         } else if (destinationClass == String.class) {
             return value.toString();
         } else {
-            throw new ClassCanNotAssignedRuntimeException(value.getClass(),
-                    destinationClass);
+            throw new ClassCanNotAssignedRuntimeException(
+                value.getClass(),
+                destinationClass);
         }
     }
 
@@ -124,7 +123,7 @@ public final class ConversionUtil {
             return Character.valueOf('0');
         }
         throw new IllegalArgumentException("Unknown class: "
-                + destinationClass.getName());
+            + destinationClass.getName());
     }
 
     private static Object convertToNumber(Object value,
@@ -147,21 +146,7 @@ public final class ConversionUtil {
             return BigIntegerUtil.toBigInteger(value);
         }
         throw new IllegalArgumentException("Unknown number class: "
-                + destinationClass.getName());
-    }
-
-    private static Object convertToDate(Object value, Class<?> destinationClass) {
-        if (destinationClass == java.util.Date.class) {
-            return DateUtil.toDate(value);
-        } else if (destinationClass == Timestamp.class) {
-            return TimestampUtil.toTimestamp(value);
-        } else if (destinationClass == java.sql.Date.class) {
-            return SqlDateUtil.toDate(value);
-        } else if (destinationClass == Time.class) {
-            return TimeUtil.toTime(value);
-        }
-        throw new IllegalArgumentException("Unknown date class: "
-                + destinationClass.getName());
+            + destinationClass.getName());
     }
 
     private static Object convertToEnum(Object value, Class<?> destinationClass) {

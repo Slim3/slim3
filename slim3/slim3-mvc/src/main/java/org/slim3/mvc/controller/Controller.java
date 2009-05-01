@@ -163,10 +163,13 @@ public abstract class Controller {
         String path = getClass().getSimpleName();
         if (!path.endsWith(MvcConstants.CONTROLLER_SUFFIX)) {
             throw new IllegalStateException("The controller class("
-                    + getClass().getName() + ") does not end with \""
-                    + MvcConstants.CONTROLLER_SUFFIX + "\".");
+                + getClass().getName()
+                + ") does not end with \""
+                + MvcConstants.CONTROLLER_SUFFIX
+                + "\".");
         }
-        path = path.substring(0, path.length()
+        path =
+            path.substring(0, path.length()
                 - MvcConstants.CONTROLLER_SUFFIX.length());
         return StringUtil.decapitalize(path) + MvcConstants.JSP_EXTENSION;
     }
@@ -257,6 +260,28 @@ public abstract class Controller {
      */
     protected Date toDate(Object o) {
         return DateUtil.toDate(o);
+    }
+
+    /**
+     * Converts the object to the date part of the date.
+     * 
+     * @param o
+     *            the object
+     * @return the date part of the date
+     */
+    protected Date toDateAndClearTimePart(Object o) {
+        return DateUtil.toDateAndClearTimePart(o);
+    }
+
+    /**
+     * Converts the object to the date time of the date.
+     * 
+     * @param o
+     *            the object
+     * @return the time part of the date
+     */
+    protected Date toDateAndClearDatePart(Object o) {
+        return DateUtil.toDateAndClearDatePart(o);
     }
 
     /**

@@ -43,8 +43,9 @@ public class ConversionUtilTest extends TestCase {
      * @throws Exception
      */
     public void testConvertNullToByte() throws Exception {
-        assertEquals(Byte.valueOf((byte) 0), ConversionUtil.convert(null,
-                byte.class));
+        assertEquals(Byte.valueOf((byte) 0), ConversionUtil.convert(
+            null,
+            byte.class));
     }
 
     /**
@@ -52,8 +53,9 @@ public class ConversionUtilTest extends TestCase {
      * @throws Exception
      */
     public void testConvertNullToShort() throws Exception {
-        assertEquals(Short.valueOf((short) 0), ConversionUtil.convert(null,
-                short.class));
+        assertEquals(Short.valueOf((short) 0), ConversionUtil.convert(
+            null,
+            short.class));
     }
 
     /**
@@ -62,7 +64,7 @@ public class ConversionUtilTest extends TestCase {
      */
     public void testConvertNullToInteger() throws Exception {
         assertEquals(Integer.valueOf(0), ConversionUtil
-                .convert(null, int.class));
+            .convert(null, int.class));
     }
 
     /**
@@ -79,7 +81,7 @@ public class ConversionUtilTest extends TestCase {
      */
     public void testConvertNullToFloat() throws Exception {
         assertEquals(Float.valueOf(0), ConversionUtil
-                .convert(null, float.class));
+            .convert(null, float.class));
     }
 
     /**
@@ -87,8 +89,9 @@ public class ConversionUtilTest extends TestCase {
      * @throws Exception
      */
     public void testConvertNullToDouble() throws Exception {
-        assertEquals(Double.valueOf(0), ConversionUtil.convert(null,
-                double.class));
+        assertEquals(Double.valueOf(0), ConversionUtil.convert(
+            null,
+            double.class));
     }
 
     /**
@@ -138,8 +141,9 @@ public class ConversionUtilTest extends TestCase {
      * @throws Exception
      */
     public void testConvertStringToByte() throws Exception {
-        assertEquals(Byte.valueOf((byte) 1), ConversionUtil.convert("1",
-                Byte.class));
+        assertEquals(Byte.valueOf((byte) 1), ConversionUtil.convert(
+            "1",
+            Byte.class));
     }
 
     /**
@@ -147,8 +151,9 @@ public class ConversionUtilTest extends TestCase {
      * @throws Exception
      */
     public void testConvertStringToShort() throws Exception {
-        assertEquals(Short.valueOf((short) 1), ConversionUtil.convert("1",
-                Short.class));
+        assertEquals(Short.valueOf((short) 1), ConversionUtil.convert(
+            "1",
+            Short.class));
     }
 
     /**
@@ -156,8 +161,9 @@ public class ConversionUtilTest extends TestCase {
      * @throws Exception
      */
     public void testConvertStringToInteger() throws Exception {
-        assertEquals(Integer.valueOf(1), ConversionUtil.convert("1",
-                Integer.class));
+        assertEquals(Integer.valueOf(1), ConversionUtil.convert(
+            "1",
+            Integer.class));
     }
 
     /**
@@ -181,8 +187,9 @@ public class ConversionUtilTest extends TestCase {
      * @throws Exception
      */
     public void testConvertStringToDouble() throws Exception {
-        assertEquals(Double.valueOf(1), ConversionUtil.convert("1",
-                Double.class));
+        assertEquals(Double.valueOf(1), ConversionUtil.convert(
+            "1",
+            Double.class));
     }
 
     /**
@@ -190,8 +197,9 @@ public class ConversionUtilTest extends TestCase {
      * @throws Exception
      */
     public void testConvertStringToBigInteger() throws Exception {
-        assertEquals(BigInteger.valueOf(1), ConversionUtil.convert("1",
-                BigInteger.class));
+        assertEquals(BigInteger.valueOf(1), ConversionUtil.convert(
+            "1",
+            BigInteger.class));
     }
 
     /**
@@ -199,8 +207,9 @@ public class ConversionUtilTest extends TestCase {
      * @throws Exception
      */
     public void testConvertStringToBigDecimal() throws Exception {
-        assertEquals(BigDecimal.valueOf(1), ConversionUtil.convert("1",
-                BigDecimal.class));
+        assertEquals(BigDecimal.valueOf(1), ConversionUtil.convert(
+            "1",
+            BigDecimal.class));
     }
 
     /**
@@ -210,47 +219,6 @@ public class ConversionUtilTest extends TestCase {
     public void testConvertCalendarToDate() throws Exception {
         Calendar cal = Calendar.getInstance();
         assertEquals(cal.getTime(), ConversionUtil.convert(cal, Date.class));
-    }
-
-    /**
-     * 
-     * @throws Exception
-     */
-    public void testConvertCalendarToSqlDate() throws Exception {
-        Calendar cal = Calendar.getInstance();
-        Calendar cal2 = Calendar.getInstance();
-        cal2.setTimeInMillis(cal.getTimeInMillis());
-        cal2.set(Calendar.HOUR_OF_DAY, 0);
-        cal2.set(Calendar.MINUTE, 0);
-        cal2.set(Calendar.SECOND, 0);
-        cal2.set(Calendar.MILLISECOND, 0);
-        assertEquals(new java.sql.Date(cal2.getTimeInMillis()), ConversionUtil
-                .convert(cal, java.sql.Date.class));
-    }
-
-    /**
-     * 
-     * @throws Exception
-     */
-    public void testConvertCalendarToTime() throws Exception {
-        Calendar cal = Calendar.getInstance();
-        Calendar cal2 = Calendar.getInstance();
-        cal2.setTimeInMillis(cal.getTimeInMillis());
-        cal2.set(Calendar.YEAR, 1970);
-        cal2.set(Calendar.MONTH, Calendar.JANUARY);
-        cal2.set(Calendar.DAY_OF_MONTH, 1);
-        assertEquals(new java.sql.Time(cal2.getTime().getTime()),
-                ConversionUtil.convert(cal, java.sql.Time.class));
-    }
-
-    /**
-     * 
-     * @throws Exception
-     */
-    public void testConvertCalendarToTimesamp() throws Exception {
-        Calendar cal = Calendar.getInstance();
-        assertEquals(new java.sql.Timestamp(cal.getTime().getTime()),
-                ConversionUtil.convert(cal, java.sql.Timestamp.class));
     }
 
     /**

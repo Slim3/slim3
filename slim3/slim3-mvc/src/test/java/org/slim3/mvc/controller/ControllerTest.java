@@ -15,6 +15,8 @@
  */
 package org.slim3.mvc.controller;
 
+import java.util.Calendar;
+
 import junit.framework.TestCase;
 
 /**
@@ -131,7 +133,34 @@ public class ControllerTest extends TestCase {
      */
     public void testDate() throws Exception {
         assertEquals(new java.util.Date(1), controller
-                .toDate(new java.sql.Date(1)));
+            .toDate(new java.sql.Date(1)));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testToDateAndClearTimePart() throws Exception {
+        java.util.Date date = new java.util.Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        assertEquals(cal.getTime(), controller.toDateAndClearTimePart(date));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testToDateAndClearDatePart() throws Exception {
+        java.util.Date date = new java.util.Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.YEAR, 1970);
+        cal.set(Calendar.MONTH, Calendar.JANUARY);
+        cal.set(Calendar.DATE, 1);
+        assertEquals(cal.getTime(), controller.toDateAndClearDatePart(date));
     }
 
     /**
@@ -139,7 +168,8 @@ public class ControllerTest extends TestCase {
      */
     public void testDateForString() throws Exception {
         assertEquals(java.util.Date.class, controller.toDate(
-                "01/01/1970 00:00:00", "MM/dd/yyyy").getClass());
+            "01/01/1970 00:00:00",
+            "MM/dd/yyyy").getClass());
     }
 
     private static class IndexController extends Controller {

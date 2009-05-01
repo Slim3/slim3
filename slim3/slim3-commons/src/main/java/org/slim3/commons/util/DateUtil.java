@@ -31,12 +31,19 @@ import org.slim3.commons.exception.ParseRuntimeException;
 public final class DateUtil {
 
     /**
-     * The pattern for ISO-8601.
+     * The date pattern for ISO-8601.
      */
-    public static final String ISO_PATTERN = "yyyy-MM-dd";
+    public static final String ISO_DATE_PATTERN = "yyyy-MM-dd";
 
-    private DateUtil() {
-    }
+    /**
+     * The time pattern for ISO-8601.
+     */
+    public static final String ISO_TIME_PATTERN = "HH:mm:ss";
+
+    /**
+     * The date time pattern for ISO-8601.
+     */
+    public static final String ISO_DATE_TIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss";
 
     /**
      * Converts the object to {@link Date}.
@@ -53,21 +60,30 @@ public final class DateUtil {
         } else if (o instanceof Calendar) {
             return ((Calendar) o).getTime();
         } else {
-            return toDate(o.toString());
+            return toDate(o.toString(), ISO_DATE_PATTERN);
         }
     }
 
     /**
-     * Converts the text to {@link Date}.
+     * Converts the object to the date part of the date.
      * 
-     * @param text
-     *            the text
-     * @return the converted value
-     * @throws ParseRuntimeException
-     *             if {@link ParseException} is encountered
+     * @param o
+     *            the object
+     * @return the date part of the date
      */
-    public static Date toDate(String text) throws ParseRuntimeException {
-        return toDate(text, (String) null);
+    public static Date toDateAndClearTimePart(Object o) {
+        return clearTimePart(toDate(o));
+    }
+
+    /**
+     * Converts the object to the time part of the date.
+     * 
+     * @param o
+     *            the object
+     * @return the time part of the date
+     */
+    public static Date toDateAndClearDatePart(Object o) {
+        return clearDatePart(toDate(o));
     }
 
     /**
@@ -78,16 +94,18 @@ public final class DateUtil {
      * @param pattern
      *            the pattern for {@link SimpleDateFormat}
      * @return the converted value
+     * @throws NullPointerException
+     *             if the pattern parameter is null
      * @throws ParseRuntimeException
      *             if {@link ParseException} is encountered
      */
     public static Date toDate(String text, String pattern)
-            throws ParseRuntimeException {
+            throws NullPointerException, ParseRuntimeException {
+        if (pattern == null) {
+            throw new NullPointerException("The pattern parameter is null.");
+        }
         if (StringUtil.isEmpty(text)) {
             return null;
-        }
-        if (pattern == null) {
-            pattern = ISO_PATTERN;
         }
         try {
             SimpleDateFormat df = new SimpleDateFormat(pattern);
@@ -98,6 +116,89 @@ public final class DateUtil {
     }
 
     /**
+     * Converts {@link Date} to {@link Calendar}.
+     * 
+     * @param date
+     *            the date
+     * @return {@link Calendar}
+     */
+    public static Calendar toCalendar(Date date) {
+        if (date == null) {
+            return null;
+        }
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        return cal;
+    }
+
+    /**
+     * Clears the time part of the date.
+     * 
+     * @param date
+     *            the date
+     * @return the date part of the date
+     */
+    public static Date clearTimePart(Date date) {
+        if (date == null) {
+            return null;
+        }
+        Calendar cal = toCalendar(date);
+        cal = clearTimePart(cal);
+        return cal.getTime();
+    }
+
+    /**
+     * Clears the time part of the calendar.
+     * 
+     * @param cal
+     *            the calendar
+     * @return the date part of the calendar
+     */
+    public static Calendar clearTimePart(Calendar cal) {
+        if (cal == null) {
+            return null;
+        }
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal;
+    }
+
+    /**
+     * Clears the date part of the date.
+     * 
+     * @param date
+     *            the date
+     * @return the time part of the date
+     */
+    public static Date clearDatePart(Date date) {
+        if (date == null) {
+            return null;
+        }
+        Calendar cal = toCalendar(date);
+        cal = clearDatePart(cal);
+        return cal.getTime();
+    }
+
+    /**
+     * Clears the date part of the calendar.
+     * 
+     * @param cal
+     *            the calendar
+     * @return the time part of the calendar
+     */
+    public static Calendar clearDatePart(Calendar cal) {
+        if (cal == null) {
+            return null;
+        }
+        cal.set(Calendar.YEAR, 1970);
+        cal.set(Calendar.MONTH, Calendar.JANUARY);
+        cal.set(Calendar.DATE, 1);
+        return cal;
+    }
+
+    /**
      * Converts the object value to text.
      * 
      * @param value
@@ -105,7 +206,7 @@ public final class DateUtil {
      * @return the converted value
      */
     public static String toString(Object value) {
-        return toString(value, null);
+        return toString(toDate(value));
     }
 
     /**
@@ -130,7 +231,7 @@ public final class DateUtil {
      * @return the converted value
      */
     public static String toString(Date value) {
-        return toString(value, null);
+        return toString(value, ISO_DATE_PATTERN);
     }
 
     /**
@@ -141,15 +242,21 @@ public final class DateUtil {
      * @param pattern
      *            the pattern for {@link SimpleDateFormat}
      * @return the converted value
+     * @throws NullPointerException
+     *             if the pattern parameter is null
      */
-    public static String toString(Date value, String pattern) {
+    public static String toString(Date value, String pattern)
+            throws NullPointerException {
+        if (pattern == null) {
+            throw new NullPointerException("The pattern parameter is null.");
+        }
         if (value == null) {
             return null;
         }
-        if (pattern == null) {
-            pattern = ISO_PATTERN;
-        }
         SimpleDateFormat df = new SimpleDateFormat(pattern);
         return df.format(value);
+    }
+
+    private DateUtil() {
     }
 }

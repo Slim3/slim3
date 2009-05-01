@@ -77,6 +77,16 @@ public class DateUtilTest extends TestCase {
     /**
      * @throws Exception
      */
+    public void testToDateForTimeString() throws Exception {
+        System.out.println(DateUtil.toDate(
+            "12:34:56",
+            DateUtil.ISO_TIME_PATTERN));
+        assertNotNull(DateUtil.toDate("12:34:56", DateUtil.ISO_TIME_PATTERN));
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testToDateForException() throws Exception {
         try {
             DateUtil.toDate("xx/17/2008", "MM/dd/yyyy");
@@ -117,15 +127,100 @@ public class DateUtilTest extends TestCase {
     /**
      * @throws Exception
      */
-    public void testToString() throws Exception {
-        assertEquals("01/01/1970", DateUtil.toString(new Date(0), "MM/dd/yyyy"));
+    public void testToCalendar() throws Exception {
+        assertNotNull(DateUtil.toCalendar(new Date()));
     }
 
     /**
      * @throws Exception
      */
-    public void testToStringForPatternNull() throws Exception {
-        assertEquals("1970-01-01", DateUtil.toString(new Date(0), null));
+    public void testClearTimePartForCalendar() throws Exception {
+        java.util.Date date = new java.util.Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        Calendar cal2 = Calendar.getInstance();
+        cal2.setTime(date);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        assertEquals(cal, DateUtil.clearTimePart(cal2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testClearTimePartForDate() throws Exception {
+        java.util.Date date = new java.util.Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        assertEquals(cal.getTime(), DateUtil.clearTimePart(date));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testToDateAndClearTimePart() throws Exception {
+        java.util.Date date = new java.util.Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        assertEquals(cal.getTime(), DateUtil.toDateAndClearTimePart(date));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testClearDatePartForCalendar() throws Exception {
+        java.util.Date date = new java.util.Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        Calendar cal2 = Calendar.getInstance();
+        cal2.setTime(date);
+        cal.set(Calendar.YEAR, 1970);
+        cal.set(Calendar.MONTH, Calendar.JANUARY);
+        cal.set(Calendar.DATE, 1);
+        assertEquals(cal, DateUtil.clearDatePart(cal2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testClearDatePartForDate() throws Exception {
+        java.util.Date date = new java.util.Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.YEAR, 1970);
+        cal.set(Calendar.MONTH, Calendar.JANUARY);
+        cal.set(Calendar.DATE, 1);
+        assertEquals(cal.getTime(), DateUtil.clearDatePart(date));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testToDateAndClearDatePart() throws Exception {
+        java.util.Date date = new java.util.Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.YEAR, 1970);
+        cal.set(Calendar.MONTH, Calendar.JANUARY);
+        cal.set(Calendar.DATE, 1);
+        assertEquals(cal.getTime(), DateUtil.toDateAndClearDatePart(date));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testToString() throws Exception {
+        assertEquals("01/01/1970", DateUtil.toString(new Date(0), "MM/dd/yyyy"));
     }
 
     /**
