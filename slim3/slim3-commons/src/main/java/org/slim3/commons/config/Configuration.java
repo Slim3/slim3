@@ -38,24 +38,9 @@ import org.slim3.commons.cleaner.Cleaner;
 public final class Configuration {
 
     /**
-     * The stage key.
-     */
-    public static final String STAGE_KEY = "slim3.stage";
-
-    /**
      * The deployment key.
      */
     public static final String HOT_KEY = "slim3.hot";
-
-    /**
-     * production value.
-     */
-    public static final String PRODUCTION = "production";
-
-    /**
-     * development value.
-     */
-    public static final String DEVELOPMENT = "development";
 
     /**
      * The default path.
@@ -75,18 +60,13 @@ public final class Configuration {
     /**
      * The logger.
      */
-    protected static final Logger logger = Logger.getLogger(Configuration.class
-            .getName());
+    protected static final Logger logger =
+        Logger.getLogger(Configuration.class.getName());
 
     /**
      * The configuration data.
      */
     protected Map<String, String> config = new HashMap<String, String>(47);
-
-    /**
-     * The stage.
-     */
-    protected String stage = PRODUCTION;
 
     /**
      * Whether the current deployment mode is hot.
@@ -111,10 +91,8 @@ public final class Configuration {
      *            the path for the configuration file
      * @throws NullPointerException
      *             if the path parameter is null
-     * @throws IllegalArgumentException
-     *             if the path is illegal or if IOException is encountered
      */
-    public static void initialize(String path) {
+    public static void initialize(String path) throws NullPointerException {
         if (path == null) {
             throw new NullPointerException("The path parameter is null.");
         }
@@ -140,18 +118,16 @@ public final class Configuration {
         return instance;
     }
 
-    /**
-     * Constructor
-     */
     @SuppressWarnings("unchecked")
-    private Configuration(String path) {
+    private Configuration(String path) throws IllegalArgumentException {
         Properties p = new Properties();
         try {
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
             URL url = loader.getResource(path);
             if (url == null) {
-                throw new IllegalArgumentException("The path(" + path
-                        + ") is not found.");
+                throw new IllegalArgumentException("The path("
+                    + path
+                    + ") is not found.");
             }
             URLConnection connection = url.openConnection();
             connection.setUseCaches(false);
@@ -164,14 +140,6 @@ public final class Configuration {
         } catch (IOException e) {
             throw new IllegalArgumentException(path, e);
         }
-        stage = p.getProperty(STAGE_KEY);
-        if (stage == null || stage.length() == 0) {
-            stage = PRODUCTION;
-        }
-        if (logger.isLoggable(Level.INFO)) {
-            logger.log(Level.INFO, "Slim3 stage:" + stage);
-        }
-        p.remove(STAGE_KEY);
         String h = System.getProperty(HOT_KEY);
         if (h == null) {
             h = p.getProperty(HOT_KEY);
@@ -185,28 +153,20 @@ public final class Configuration {
             logger.log(Level.INFO, "Slim3 hot:" + hot);
         }
         p.remove(HOT_KEY);
-        String suffix = "_" + stage;
-        int suffixLength = suffix.length();
         for (Iterator i = p.keySet().iterator(); i.hasNext();) {
             String key = (String) i.next();
-            String value = (String) p.get(key);
-            if (key.endsWith(suffix)) {
-                key = key.substring(0, key.length() - suffixLength);
-                config.put(key, value);
-            } else if (!config.containsKey(key)) {
-                config.put(key, value);
+            String value = System.getProperty(key);
+            if (value == null) {
+                value = (String) p.get(key);
+            }
+            if (config.put(key, value) != null) {
+                throw new IllegalStateException("The key("
+                    + key
+                    + ") of configuration("
+                    + path
+                    + ") is duplicated.");
             }
         }
-    }
-
-    /**
-     * Returns the stage value.
-     * 
-     * @return the stage value
-     * 
-     */
-    public String getStage() {
-        return stage;
     }
 
     /**

@@ -25,11 +25,11 @@ public class ConfigurationTest extends CleanableTestCase {
 
     private static final String PACKAGE = "org/slim3/commons/config/";
 
-    private static final String CONFIG_PATH = PACKAGE
-            + "slim3_configuration.properties";
+    private static final String CONFIG_PATH =
+        PACKAGE + "slim3_configuration.properties";
 
-    private static final String DEVELOPMENT_CONFIG_PATH = PACKAGE
-            + "slim3_configuration_development.properties";
+    private static final String HOT_CONFIG_PATH =
+        PACKAGE + "slim3_configuration_hot.properties";
 
     /**
      * 
@@ -45,15 +45,7 @@ public class ConfigurationTest extends CleanableTestCase {
     /**
      * 
      */
-    public void testGetStage() {
-        Configuration.initialize(CONFIG_PATH);
-        assertEquals("test", Configuration.getInstance().getStage());
-    }
-
-    /**
-     * 
-     */
-    public void testIsHotForTestStage() {
+    public void testIsHotForDefault() {
         Configuration.initialize(CONFIG_PATH);
         assertFalse(Configuration.getInstance().isHot());
     }
@@ -61,8 +53,8 @@ public class ConfigurationTest extends CleanableTestCase {
     /**
      * 
      */
-    public void testIsHotForDevelopmentStage() {
-        Configuration.initialize(DEVELOPMENT_CONFIG_PATH);
+    public void testIsHotSpecified() {
+        Configuration.initialize(HOT_CONFIG_PATH);
         assertTrue(Configuration.getInstance().isHot());
     }
 
@@ -77,8 +69,18 @@ public class ConfigurationTest extends CleanableTestCase {
     /**
      * 
      */
-    public void testGetValueWithStageSuffix() {
-        Configuration.initialize(CONFIG_PATH);
-        assertEquals("3", Configuration.getInstance().getValue("bbb"));
+    public void testGetValueForSystemProperty() {
+        String previousValue = System.getProperty("aaa");
+        try {
+            System.setProperty("aaa", "2");
+            Configuration.initialize(CONFIG_PATH);
+            assertEquals("2", Configuration.getInstance().getValue("aaa"));
+        } finally {
+            if (previousValue != null) {
+                System.setProperty("aaa", previousValue);
+            } else {
+                System.clearProperty("aaa");
+            }
+        }
     }
 }
