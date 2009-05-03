@@ -35,8 +35,8 @@ public class FrontControllerTest extends MvcTestCase {
     /**
      * 
      */
-    protected static final String CONFIG_PATH = PACKAGE
-            + "slim3_configuration.properties";
+    protected static final String CONFIG_PATH =
+        PACKAGE + "slim3_configuration.properties";
 
     @Override
     protected void setUp() throws Exception {
@@ -48,10 +48,19 @@ public class FrontControllerTest extends MvcTestCase {
      * @throws Exception
      * 
      */
+    public void testInit() throws Exception {
+        mvcTester.frontController.init(mvcTester.filterConfig);
+        assertEquals("UTF-8", mvcTester.frontController.encoding);
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
     public void testGetPath() throws Exception {
         mvcTester.request.setPathInfo("/hello/");
         assertEquals("/hello/", mvcTester.frontController
-                .getPath(mvcTester.request));
+            .getPath(mvcTester.request));
     }
 
     /**
@@ -59,8 +68,8 @@ public class FrontControllerTest extends MvcTestCase {
      * 
      */
     public void testCreateController() throws Exception {
-        Controller controller = mvcTester.frontController
-                .createController("/hello/list");
+        Controller controller =
+            mvcTester.frontController.createController("/hello/list");
         assertNotNull(controller);
         assertEquals(ListController.class, controller.getClass());
     }
@@ -70,8 +79,8 @@ public class FrontControllerTest extends MvcTestCase {
      * 
      */
     public void testCreateControllerForRoot() throws Exception {
-        Controller controller = mvcTester.frontController
-                .createController("/hoge");
+        Controller controller =
+            mvcTester.frontController.createController("/hoge");
         assertNotNull(controller);
         assertEquals(HogeController.class, controller.getClass());
     }
@@ -91,12 +100,12 @@ public class FrontControllerTest extends MvcTestCase {
      * 
      */
     public void testCreateControllerForIndexController() throws Exception {
-        Controller controller = mvcTester.frontController
-                .createController("/hello/");
+        Controller controller =
+            mvcTester.frontController.createController("/hello/");
         assertNotNull(controller);
         assertEquals(
-                org.slim3.mvc.controller.controller.hello.IndexController.class,
-                controller.getClass());
+            org.slim3.mvc.controller.controller.hello.IndexController.class,
+            controller.getClass());
     }
 
     /**
@@ -110,5 +119,209 @@ public class FrontControllerTest extends MvcTestCase {
         } catch (IllegalStateException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testGetController() throws Exception {
+        Controller controller =
+            mvcTester.frontController.getController(
+                mvcTester.request,
+                mvcTester.response,
+                "/");
+        assertNotNull(controller.getServletContext());
+        assertNotNull(controller.getRequest());
+        assertNotNull(controller.getResponse());
+        assertEquals("/", controller.getPath());
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testGetControllerForJsp() throws Exception {
+        assertNull(mvcTester.frontController.getController(
+            mvcTester.request,
+            mvcTester.response,
+            "/index.jsp"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testExecuteController() throws Exception {
+        Controller controller = mvcTester.frontController.createController("/");
+        Navigation navigaton =
+            mvcTester.frontController.executeController(
+                mvcTester.request,
+                mvcTester.response,
+                controller);
+        assertNotNull(navigaton);
+        assertFalse(navigaton.isRedirect());
+        assertEquals("index.jsp", navigaton.getPath());
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testDoRedirect() throws Exception {
+        String path = "http://www.google.com";
+        Controller controller = mvcTester.frontController.createController("/");
+        mvcTester.frontController.doRedirect(
+            mvcTester.request,
+            mvcTester.response,
+            controller,
+            path);
+        assertEquals(path, mvcTester.response.getRedirectPath());
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testDoRedirectForContextRelativePath() throws Exception {
+        mvcTester.servletContext.setContextPath("/slim3-tutorial");
+        Controller controller = mvcTester.frontController.createController("/");
+        mvcTester.frontController.doRedirect(
+            mvcTester.request,
+            mvcTester.response,
+            controller,
+            "/hello/list");
+        assertEquals("/slim3-tutorial/hello/list", mvcTester.response
+            .getRedirectPath());
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testDoForward() throws Exception {
+        Controller controller =
+            mvcTester.frontController.getController(
+                mvcTester.request,
+                mvcTester.response,
+                "/");
+        mvcTester.frontController.doForward(
+            mvcTester.request,
+            mvcTester.response,
+            controller,
+            "index.jsp");
+        assertEquals("/index.jsp", mvcTester.servletContext
+            .getLatestRequestDispatcher()
+            .getPath());
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testDoForwardForApplicationRelativePath() throws Exception {
+        Controller controller =
+            mvcTester.frontController.getController(
+                mvcTester.request,
+                mvcTester.response,
+                "/hoge");
+        mvcTester.frontController.doForward(
+            mvcTester.request,
+            mvcTester.response,
+            controller,
+            "index.jsp");
+        assertEquals("/index.jsp", mvcTester.servletContext
+            .getLatestRequestDispatcher()
+            .getPath());
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testHandleNavigationForNoNavigation() throws Exception {
+        Controller controller = mvcTester.frontController.createController("/");
+        mvcTester.frontController.handleNavigation(
+            mvcTester.request,
+            mvcTester.response,
+            controller,
+            null);
+        assertNull(mvcTester.response.getRedirectPath());
+        assertNull(mvcTester.servletContext.getLatestRequestDispatcher());
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testHandleNavigationForRedirect() throws Exception {
+        String path = "http://www.google.com";
+        Controller controller = mvcTester.frontController.createController("/");
+        Navigation navigation = controller.redirect(path);
+        mvcTester.frontController.handleNavigation(
+            mvcTester.request,
+            mvcTester.response,
+            controller,
+            navigation);
+        assertEquals(path, mvcTester.response.getRedirectPath());
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testHandleNavigationForForward() throws Exception {
+        Controller controller =
+            mvcTester.frontController.getController(
+                mvcTester.request,
+                mvcTester.response,
+                "/");
+        Navigation navigation = controller.forward();
+        mvcTester.frontController.handleNavigation(
+            mvcTester.request,
+            mvcTester.response,
+            controller,
+            navigation);
+        assertEquals("/index.jsp", mvcTester.servletContext
+            .getLatestRequestDispatcher()
+            .getPath());
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testProcessController() throws Exception {
+        Controller controller =
+            mvcTester.frontController.getController(
+                mvcTester.request,
+                mvcTester.response,
+                "/");
+        mvcTester.frontController.processController(
+            mvcTester.request,
+            mvcTester.response,
+            controller);
+        assertNotNull(controller.getServletContext());
+        assertNotNull(controller.getRequest());
+        assertNotNull(controller.getResponse());
+        assertEquals("/index.jsp", mvcTester.servletContext
+            .getLatestRequestDispatcher()
+            .getPath());
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testDoFilter() throws Exception {
+        mvcTester.request.setPathInfo("/");
+        mvcTester.frontController.doFilter(
+            mvcTester.request,
+            mvcTester.response,
+            mvcTester.filterChain);
+        assertEquals("UTF-8", mvcTester.request.getCharacterEncoding());
+        assertEquals("/index.jsp", mvcTester.servletContext
+            .getLatestRequestDispatcher()
+            .getPath());
     }
 }

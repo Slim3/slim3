@@ -1,8 +1,4 @@
-<!-- Indices written at 4/29/09 11:55 AM -->
+<!-- Indices written at 5/1/09 12:05 PM -->
 
-<datastore-indexes>
+<datastore-indexes/>
 
-    <!-- Used 1 time in query history -->
-    <datastore-index kind="Child" ancestor="true" source="auto"/>
-
-</datastore-indexes>

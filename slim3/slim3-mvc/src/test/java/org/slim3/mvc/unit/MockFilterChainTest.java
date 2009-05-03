@@ -13,29 +13,28 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.mvc.controller.controller;
+package org.slim3.mvc.unit;
 
-import org.slim3.mvc.controller.Controller;
-import org.slim3.mvc.controller.Navigation;
+import junit.framework.TestCase;
 
 /**
  * @author higa
  * 
  */
-public class IndexController extends Controller {
+public class MockFilterChainTest extends TestCase {
 
     /**
+     * @throws Exception
      * 
      */
-    public String aaa;
-
-    /**
-     * 
-     */
-    public String[] bbb;
-
-    @Override
-    public Navigation execute() {
-        return forward();
+    public void testGetPath() throws Exception {
+        String path = "index.jsp";
+        MockServletContext servletContext = new MockServletContext();
+        MockHttpServletRequest request =
+            new MockHttpServletRequest(servletContext);
+        request.setPathInfo(path);
+        MockFilterChain chain = new MockFilterChain();
+        chain.doFilter(request, null);
+        assertEquals(path, chain.getPath());
     }
 }

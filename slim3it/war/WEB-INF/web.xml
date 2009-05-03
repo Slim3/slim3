@@ -4,15 +4,21 @@
  "http://java.sun.com/dtd/web-app_2_3.dtd">
 
 <web-app xmlns="http://java.sun.com/xml/ns/javaee" version="2.5">
-	<servlet>
-		<servlet-name>slim3_it</servlet-name>
-		<servlet-class>org.slim3.it.slim3_itServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>slim3_it</servlet-name>
-		<url-pattern>/slim3_it</url-pattern>
-	</servlet-mapping>
+	<filter>
+        <filter-name>frontController</filter-name>
+        <filter-class>org.slim3.mvc.controller.FrontController</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>frontController</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+        <dispatcher>INCLUDE</dispatcher>
+        <dispatcher>ERROR</dispatcher>
+    </filter-mapping>
+    <!--
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
+	  -->
 </web-app>

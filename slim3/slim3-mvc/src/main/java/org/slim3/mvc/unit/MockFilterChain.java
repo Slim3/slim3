@@ -17,24 +17,20 @@ package org.slim3.mvc.unit;
 
 import java.io.IOException;
 
-import javax.servlet.RequestDispatcher;
+import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 
 /**
- * A mock implementation for {@link RequestDispatcher}.
+ * A mock implementation for {@link FilterChain}.
  * 
  * @author higa
  * @since 3.0
  * 
  */
-public class MockRequestDispatcher implements RequestDispatcher {
-
-    /**
-     * The path.
-     */
-    protected String path;
+public class MockFilterChain implements FilterChain {
 
     /**
      * The request.
@@ -42,37 +38,13 @@ public class MockRequestDispatcher implements RequestDispatcher {
     protected ServletRequest request;
 
     /**
-     * The response
+     * The response.
      */
     protected ServletResponse response;
 
-    /**
-     * Constructor.
-     * 
-     * @param path
-     *            the path
-     */
-    public MockRequestDispatcher(String path) {
-        this.path = path;
-    }
-
-    /**
-     * Returns the path.
-     * 
-     * @return the path
-     */
-    public String getPath() {
-        return path;
-    }
-
-    public void forward(ServletRequest request, ServletResponse response)
-            throws ServletException, IOException {
-        this.request = request;
-        this.response = response;
-    }
-
-    public void include(ServletRequest request, ServletResponse response)
-            throws ServletException, IOException {
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response)
+            throws IOException, ServletException {
         this.request = request;
         this.response = response;
     }
@@ -93,5 +65,17 @@ public class MockRequestDispatcher implements RequestDispatcher {
      */
     public ServletResponse getResponse() {
         return response;
+    }
+
+    /**
+     * Returns the path.
+     * 
+     * @return the path
+     */
+    public String getPath() {
+        if (request instanceof HttpServletRequest) {
+            return HttpServletRequest.class.cast(request).getPathInfo();
+        }
+        return null;
     }
 }

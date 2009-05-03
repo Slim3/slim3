@@ -49,7 +49,8 @@ public class MockHttpServletResponse implements HttpServletResponse {
     /**
      * The map for the response header.
      */
-    protected Map<String, List<String>> headerMap = new HashMap<String, List<String>>();
+    protected Map<String, List<String>> headerMap =
+        new HashMap<String, List<String>>();
 
     /**
      * The committed flag.
@@ -105,6 +106,11 @@ public class MockHttpServletResponse implements HttpServletResponse {
      * The buffer size.
      */
     protected int bufferSize = 32;
+
+    /**
+     * The redirect path
+     */
+    protected String redirectPath;
 
     /**
      * Constructor.
@@ -295,6 +301,16 @@ public class MockHttpServletResponse implements HttpServletResponse {
     }
 
     public void sendRedirect(String path) throws IOException {
+        redirectPath = path;
+    }
+
+    /**
+     * Returns the redirect path.
+     * 
+     * @return the redirect path
+     */
+    public String getRedirectPath() {
+        return redirectPath;
     }
 
     /**
@@ -434,7 +450,7 @@ public class MockHttpServletResponse implements HttpServletResponse {
     public ServletOutputStream getOutputStream() throws IOException {
         if (getWriterCalled) {
             throw new IllegalStateException(
-                    "The getWriter method is already called.");
+                "The getWriter method is already called.");
         }
         if (!getOutputStreamCalled) {
             getOutputStreamCalled = true;
@@ -446,11 +462,13 @@ public class MockHttpServletResponse implements HttpServletResponse {
     public PrintWriter getWriter() throws IOException {
         if (getOutputStreamCalled) {
             throw new IllegalStateException(
-                    "The getOutputStream method is already called.");
+                "The getOutputStream method is already called.");
         }
         if (!getWriterCalled) {
             getWriterCalled = true;
-            writer = new PrintWriter(new OutputStreamWriter(sourceOutput,
+            writer =
+                new PrintWriter(new OutputStreamWriter(
+                    sourceOutput,
                     characterEncoding));
         }
         return writer;
@@ -485,11 +503,11 @@ public class MockHttpServletResponse implements HttpServletResponse {
     public void setBufferSize(int bufferSize) {
         if (getOutputStreamCalled) {
             throw new IllegalStateException(
-                    "The getOutputStream method is already called.");
+                "The getOutputStream method is already called.");
         }
         if (getWriterCalled) {
             throw new IllegalStateException(
-                    "The getWriter method is already called.");
+                "The getWriter method is already called.");
         }
         this.bufferSize = bufferSize;
         sourceOutput = new ByteArrayOutputStream(bufferSize);

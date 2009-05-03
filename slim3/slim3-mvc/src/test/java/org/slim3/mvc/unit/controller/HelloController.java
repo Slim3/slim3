@@ -13,7 +13,7 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.mvc.controller.controller;
+package org.slim3.mvc.unit.controller;
 
 import org.slim3.mvc.controller.Controller;
 import org.slim3.mvc.controller.Navigation;
@@ -22,17 +22,7 @@ import org.slim3.mvc.controller.Navigation;
  * @author higa
  * 
  */
-public class IndexController extends Controller {
-
-    /**
-     * 
-     */
-    public String aaa;
-
-    /**
-     * 
-     */
-    public String[] bbb;
+public class HelloController extends Controller {
 
     @Override
     public Navigation execute() {

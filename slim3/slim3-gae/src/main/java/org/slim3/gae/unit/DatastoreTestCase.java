@@ -15,7 +15,7 @@
  */
 package org.slim3.gae.unit;
 
-import junit.framework.TestCase;
+import org.slim3.commons.unit.CleanableTestCase;
 
 /**
  * A test case for local data store.
@@ -24,7 +24,7 @@ import junit.framework.TestCase;
  * @since 3.0
  * 
  */
-public abstract class DatastoreTestCase extends TestCase {
+public abstract class DatastoreTestCase extends CleanableTestCase {
 
     /**
      * The tester for local data store.

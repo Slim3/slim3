@@ -51,10 +51,29 @@ public class ControllerTest extends TestCase {
      * @throws Exception
      * 
      */
+    public void testForwardForOtherController() throws Exception {
+        Navigation nav = controller.forward("/hello/index");
+        assertEquals("/hello/index", nav.getPath());
+        assertFalse(nav.isRedirect());
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
     public void testRedirect() throws Exception {
         Navigation nav = controller.redirect("index");
         assertEquals("index", nav.getPath());
         assertTrue(nav.isRedirect());
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testSetPath() throws Exception {
+        controller.setPath("/hello/list");
+        assertEquals("/hello/", controller.getApplicationPath());
     }
 
     /**

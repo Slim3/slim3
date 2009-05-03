@@ -32,17 +32,4 @@ public class NavigationTest extends TestCase {
         assertEquals("index.jsp", nav.getPath());
         assertFalse(nav.isRedirect());
     }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testConstructorForRedirectAndExtension() throws Exception {
-        try {
-            new Navigation("index.jsp", true);
-            fail();
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        }
-    }
 }

@@ -15,11 +15,7 @@
  */
 package org.slim3.gae.jdo;
 
-import javax.jdo.PersistenceManager;
-
 import org.slim3.gae.unit.DatastoreTestCase;
-
-import slim3.it.model.Sample;
 
 /**
  * @author higa
@@ -31,13 +27,5 @@ public class SpikeTest extends DatastoreTestCase {
      * @throws Exception
      */
     public void test() throws Exception {
-        PersistenceManager pm = PM.get();
-        pm.makePersistent(new Sample());
-        pm.makePersistent(new Sample());
-        pm.close();
-        pm = PM.get();
-        pm.getObjectById(Sample.class, 1);
-        pm.getObjectById(Sample.class, 2);
-        pm.close();
     }
 }

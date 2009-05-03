@@ -25,7 +25,7 @@ package org.slim3.mvc.controller;
 public class Navigation {
 
     /**
-     * The controller-relative path.
+     * The application-relative path.
      */
     protected String path;
 
@@ -38,7 +38,7 @@ public class Navigation {
      * Constructor.
      * 
      * @param path
-     *            the controller-relative path
+     *            the application-relative path
      * @param redirect
      *            whether this navigation is "redirect"
      * @throws NullPointerException
@@ -49,19 +49,14 @@ public class Navigation {
         if (path == null) {
             throw new NullPointerException("The path parameter is null.");
         }
-        if (redirect && path.indexOf('.') >= 0) {
-            throw new IllegalArgumentException("The path(" + path
-                    + ") with extension(" + path.substring(path.indexOf('.'))
-                    + ") is not permitted in case of redirect.");
-        }
         this.path = path;
         this.redirect = redirect;
     }
 
     /**
-     * Returns the controller-relative path.
+     * Returns the application-relative path.
      * 
-     * @return the controller-relative path
+     * @return the application-relative path
      */
     public String getPath() {
         return path;

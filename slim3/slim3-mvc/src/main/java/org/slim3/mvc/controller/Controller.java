@@ -58,6 +58,16 @@ public abstract class Controller {
     protected HttpServletResponse response;
 
     /**
+     * The path of this controller.
+     */
+    protected String path;
+
+    /**
+     * The path of this application.
+     */
+    protected String applicationPath;
+
+    /**
      * Returns the servlet context.
      * 
      * @return the servlet context
@@ -112,6 +122,46 @@ public abstract class Controller {
      */
     public void setResponse(HttpServletResponse response) {
         this.response = response;
+    }
+
+    /**
+     * Returns the path of this controller.
+     * 
+     * @return the path
+     */
+    public String getPath() {
+        return path;
+    }
+
+    /**
+     * Sets the path of this controller.
+     * 
+     * @param path
+     *            the path
+     * @throws NullPointerException
+     *             if the path parameter is null
+     */
+    public void setPath(String path) throws NullPointerException {
+        if (path == null) {
+            throw new NullPointerException("The path parameter is null");
+        }
+        this.path = path;
+        int pos = path.lastIndexOf('/');
+        if (pos < 0) {
+            throw new IllegalArgumentException("The path("
+                + path
+                + ") does not contain \"/\"");
+        }
+        applicationPath = path.substring(0, pos + 1);
+    }
+
+    /**
+     * Returns the application path.
+     * 
+     * @return the application path
+     */
+    public String getApplicationPath() {
+        return applicationPath;
     }
 
     /**

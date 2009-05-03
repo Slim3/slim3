@@ -67,7 +67,8 @@ public class MockHttpServletRequest implements HttpServletRequest {
     /**
      * The map for the request header.
      */
-    protected Map<String, List<String>> headerMap = new HashMap<String, List<String>>();
+    protected Map<String, List<String>> headerMap =
+        new HashMap<String, List<String>>();
 
     /**
      * The method.
@@ -122,7 +123,7 @@ public class MockHttpServletRequest implements HttpServletRequest {
     /**
      * The character encoding.
      */
-    protected String characterEncoding = "ISO-8859-1";
+    protected String characterEncoding;
 
     /**
      * The content length.
@@ -137,7 +138,8 @@ public class MockHttpServletRequest implements HttpServletRequest {
     /**
      * The map for the parameters.
      */
-    protected Map<String, String[]> parameterMap = new HashMap<String, String[]>();
+    protected Map<String, String[]> parameterMap =
+        new HashMap<String, String[]>();
 
     /**
      * The requested session identifier.
@@ -211,7 +213,7 @@ public class MockHttpServletRequest implements HttpServletRequest {
             throws NullPointerException {
         if (servletContext == null) {
             throw new NullPointerException(
-                    "The servletContext parameter is null.");
+                "The servletContext parameter is null.");
         }
         this.servletContext = servletContext;
     }
@@ -407,7 +409,7 @@ public class MockHttpServletRequest implements HttpServletRequest {
     }
 
     public String getContextPath() {
-        return "/" + servletContext.getServletContextName();
+        return servletContext.getContextPath();
     }
 
     public String getQueryString() {
@@ -464,7 +466,7 @@ public class MockHttpServletRequest implements HttpServletRequest {
         url.append("://");
         url.append(serverName);
         if ((scheme.equals("http") && (serverPort != 80))
-                || (scheme.equals("https") && (serverPort != 443))) {
+            || (scheme.equals("https") && (serverPort != 443))) {
 
             url.append(':');
             url.append(serverPort);

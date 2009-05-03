@@ -1,0 +1,19 @@
+@CHARSET "utf-8";
+
+body { background-color: #EEEEEE; }
+
+h1 { 
+	height: 33px;
+	font-size: x-large;
+	font-family: "Times New Roman", Times, serif;
+}
+
+ul li { list-style: square; }
+a:hover { background-color: white; }
+
+input.err { background-color: orange; }
+
+.layout .header { background-color: orange; }
+.layout .menu { background-color: aqua; height: 300px; vertical-align: top;}
+.layout .content { background-color: white;  text-align: center; }
+.layout .footer { background-color: black; color: white; }

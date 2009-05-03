@@ -15,7 +15,7 @@
  */
 package org.slim3.gae.unit;
 
-import junit.framework.TestCase;
+import org.slim3.commons.unit.CleanableTestCase;
 
 /**
  * A test case for local services.
@@ -24,7 +24,7 @@ import junit.framework.TestCase;
  * @since 3.0
  * 
  */
-public abstract class ServiceTestCase extends TestCase {
+public abstract class ServiceTestCase extends CleanableTestCase {
 
     /**
      * The tester for local service.

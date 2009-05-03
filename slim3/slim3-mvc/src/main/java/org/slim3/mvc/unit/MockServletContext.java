@@ -65,22 +65,25 @@ public class MockServletContext implements ServletContext, Serializable {
     /**
      * The context path.
      */
-    protected String contextPath = "/";
+    protected String contextPath = "";
 
     /**
      * The map for the initial parameters.
      */
-    protected Map<String, String> initParameterMap = new HashMap<String, String>();
+    protected Map<String, String> initParameterMap =
+        new HashMap<String, String>();
 
     /**
      * The map for the attributes.
      */
-    protected Map<String, Object> attributeTable = new HashMap<String, Object>();
+    protected Map<String, Object> attributeTable =
+        new HashMap<String, Object>();
 
     /**
      * The map for resource paths.
      */
-    protected Map<String, Set<String>> resourcePathsMap = new HashMap<String, Set<String>>();
+    protected Map<String, Set<String>> resourcePathsMap =
+        new HashMap<String, Set<String>>();
 
     /**
      * The map for resource.
@@ -240,8 +243,9 @@ public class MockServletContext implements ServletContext, Serializable {
     }
 
     public Enumeration<String> getInitParameterNames() {
-        return new IteratorEnumeration<String>(initParameterMap.keySet()
-                .iterator());
+        return new IteratorEnumeration<String>(initParameterMap
+            .keySet()
+            .iterator());
     }
 
     /**
@@ -271,8 +275,9 @@ public class MockServletContext implements ServletContext, Serializable {
     }
 
     public Enumeration<String> getAttributeNames() {
-        return new IteratorEnumeration<String>(attributeTable.keySet()
-                .iterator());
+        return new IteratorEnumeration<String>(attributeTable
+            .keySet()
+            .iterator());
     }
 
     public void setAttribute(String name, Object value) {
