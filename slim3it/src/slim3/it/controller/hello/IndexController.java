@@ -7,7 +7,6 @@ public class IndexController extends Controller {
 
     @Override
     public Navigation execute() {
-        System.out.println(path);
         return forward();
     }
 }

@@ -26,6 +26,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.slim3.mvc.MvcConstants;
+import org.slim3.mvc.controller.Controller;
 import org.slim3.mvc.controller.FrontController;
 
 /**
@@ -243,6 +245,19 @@ public class MvcTester {
     public <T> T getServletContextAttribute(String name) {
         assertTestWasCalled();
         return (T) servletContext.getAttribute(name);
+    }
+
+    /**
+     * Returns the controller.
+     * 
+     * @param <T>
+     *            the controller type
+     * @return the controller
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends Controller> T getController() {
+        assertTestWasCalled();
+        return (T) request.getAttribute(MvcConstants.CONTROLLER_KEY);
     }
 
     /**

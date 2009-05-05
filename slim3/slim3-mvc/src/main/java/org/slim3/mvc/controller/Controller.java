@@ -17,10 +17,12 @@ package org.slim3.mvc.controller;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.slim3.commons.util.BooleanUtil;
 import org.slim3.commons.util.ByteUtil;
@@ -66,6 +68,11 @@ public abstract class Controller {
      * The path of this application.
      */
     protected String applicationPath;
+
+    /**
+     * The parsed request parameters.
+     */
+    protected Map<String, Object> parameters;
 
     /**
      * Returns the servlet context.
@@ -165,6 +172,25 @@ public abstract class Controller {
     }
 
     /**
+     * Returns the parsed request parameters.
+     * 
+     * @return the parsed request parameters
+     */
+    public Map<String, Object> getParameters() {
+        return parameters;
+    }
+
+    /**
+     * Sets the parsed request parameters.
+     * 
+     * @param parameters
+     *            the parsed request parameters
+     */
+    public void setParameters(Map<String, Object> parameters) {
+        this.parameters = parameters;
+    }
+
+    /**
      * Executes the action for request.
      * 
      * @return path to go.
@@ -212,7 +238,7 @@ public abstract class Controller {
     protected String calculateDefaultPath() throws IllegalStateException {
         String path = getClass().getSimpleName();
         if (!path.endsWith(MvcConstants.CONTROLLER_SUFFIX)) {
-            throw new IllegalStateException("The controller class("
+            throw new IllegalStateException("The controller class name("
                 + getClass().getName()
                 + ") does not end with \""
                 + MvcConstants.CONTROLLER_SUFFIX
@@ -345,5 +371,224 @@ public abstract class Controller {
      */
     protected Date toDate(String text, String pattern) {
         return DateUtil.toDate(text, pattern);
+    }
+
+    /**
+     * Returns the request attribute.
+     * 
+     * @param <T>
+     *            the type
+     * @param name
+     *            the name
+     * @return the request attribute
+     * @throws IllegalStateException
+     *             if the request is not set
+     */
+    @SuppressWarnings("unchecked")
+    protected <T> T getAttribute(String name) throws IllegalStateException {
+        if (request == null) {
+            throw new IllegalStateException("The request is not set.");
+        }
+        return (T) request.getAttribute(name);
+    }
+
+    /**
+     * Sets the request attribute.
+     * 
+     * @param name
+     *            the name
+     * @param value
+     *            the value
+     */
+    protected void setAttribute(String name, Object value) {
+        if (request == null) {
+            throw new IllegalStateException("The request is not set.");
+        }
+        request.setAttribute(name, value);
+    }
+
+    /**
+     * Removes the attribute from the request.
+     * 
+     * @param <T>
+     *            the attribute type
+     * @param name
+     *            the attribute name
+     * @return the attribute value
+     */
+    @SuppressWarnings("unchecked")
+    protected <T> T removeAttribute(String name) {
+        Object value = getAttribute(name);
+        request.removeAttribute(name);
+        return (T) value;
+    }
+
+    /**
+     * Returns the session attribute.
+     * 
+     * @param <T>
+     *            the type
+     * @param name
+     *            the name
+     * @return the session attribute
+     * @throws IllegalStateException
+     *             if the request is not set
+     */
+    @SuppressWarnings("unchecked")
+    protected <T> T getSessionAttribute(String name)
+            throws IllegalStateException {
+        if (request == null) {
+            throw new IllegalStateException("The request is not set.");
+        }
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            return null;
+        }
+        return (T) session.getAttribute(name);
+    }
+
+    /**
+     * Sets the session attribute.
+     * 
+     * @param name
+     *            the name
+     * @param value
+     *            the value
+     */
+    protected void setSessionAttribute(String name, Object value) {
+        if (request == null) {
+            throw new IllegalStateException("The request is not set.");
+        }
+        HttpSession session = request.getSession();
+        session.setAttribute(name, value);
+    }
+
+    /**
+     * Removes the attribute from the session.
+     * 
+     * @param <T>
+     *            the attribute type
+     * @param name
+     *            the attribute name
+     * @return the attribute value
+     */
+    @SuppressWarnings("unchecked")
+    protected <T> T removeSessionAttribute(String name) {
+        Object value = getSessionAttribute(name);
+        request.getSession().removeAttribute(name);
+        return (T) value;
+    }
+
+    /**
+     * Returns the servlet context attribute.
+     * 
+     * @param <T>
+     *            the type
+     * @param name
+     *            the name
+     * @return the servlet context attribute
+     * @throws IllegalStateException
+     *             if the servlet context is not set
+     */
+    @SuppressWarnings("unchecked")
+    protected <T> T getServletContextAttribute(String name)
+            throws IllegalStateException {
+        if (servletContext == null) {
+            throw new IllegalStateException("The servlet context is not set.");
+        }
+        return (T) servletContext.getAttribute(name);
+    }
+
+    /**
+     * Sets the servlet context attribute.
+     * 
+     * @param name
+     *            the name
+     * @param value
+     *            the value
+     */
+    protected void setServletContextAttribute(String name, Object value) {
+        if (servletContext == null) {
+            throw new IllegalStateException("The servlet context is not set.");
+        }
+        servletContext.setAttribute(name, value);
+    }
+
+    /**
+     * Removes the attribute from the servlet context.
+     * 
+     * @param <T>
+     *            the attribute type
+     * @param name
+     *            the attribute name
+     * @return the attribute value
+     */
+    @SuppressWarnings("unchecked")
+    protected <T> T removeServletContextAttribute(String name) {
+        Object value = getServletContextAttribute(name);
+        servletContext.removeAttribute(name);
+        return (T) value;
+    }
+
+    /**
+     * Returns the parsed request parameter as string.
+     * 
+     * @param name
+     *            the name
+     * @return the parsed request parameter
+     */
+    protected String getParameter(String name) {
+        String[] value = getStringArrayParameter(name);
+        if (value == null || value.length == 0) {
+            return null;
+        }
+        return value[0];
+    }
+
+    /**
+     * Returns the parsed request parameter as string array.
+     * 
+     * @param name
+     *            the name
+     * @return the parsed request parameter
+     * @throws IllegalStateException
+     *             if the class of the request parameter is not sring array
+     */
+    protected String[] getStringArrayParameter(String name)
+            throws IllegalStateException {
+        Object value = parameters.get(name);
+        if (value == null) {
+            return null;
+        }
+        if (value.getClass() == String[].class) {
+            return (String[]) value;
+        }
+        throw new IllegalStateException("The class("
+            + value.getClass().getName()
+            + ") of the request parameter("
+            + name
+            + ") is not string array.");
+    }
+
+    /**
+     * Returns the uploaded request parameter as byte array.
+     * 
+     * @param name
+     *            the name
+     * @return the uploaded request parameter
+     */
+    protected byte[] getByteArrayParameter(String name) {
+        Object value = parameters.get(name);
+        if (value == null) {
+            return null;
+        }
+        if (value.getClass() == byte[].class) {
+            return (byte[]) value;
+        }
+        throw new IllegalStateException("The class("
+            + value.getClass().getName()
+            + ") of the request parameter("
+            + name
+            + ") is not byte array.");
     }
 }

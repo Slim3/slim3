@@ -16,8 +16,13 @@
 package org.slim3.mvc.controller;
 
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import junit.framework.TestCase;
+
+import org.slim3.mvc.unit.MockHttpServletRequest;
+import org.slim3.mvc.unit.MockServletContext;
 
 /**
  * @author higa
@@ -26,6 +31,20 @@ import junit.framework.TestCase;
 public class ControllerTest extends TestCase {
 
     private IndexController controller = new IndexController();
+
+    private MockServletContext servletContext = new MockServletContext();
+
+    private MockHttpServletRequest request =
+        new MockHttpServletRequest(servletContext);
+
+    private Map<String, Object> parameters = new HashMap<String, Object>();
+
+    @Override
+    protected void setUp() throws Exception {
+        controller.setServletContext(servletContext);
+        controller.setRequest(request);
+        controller.setParameters(parameters);
+    }
 
     /**
      * @throws Exception
@@ -189,6 +208,144 @@ public class ControllerTest extends TestCase {
         assertEquals(java.util.Date.class, controller.toDate(
             "01/01/1970 00:00:00",
             "MM/dd/yyyy").getClass());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetAttribute() throws Exception {
+        request.setAttribute("aaa", 1);
+        Integer aaa = controller.getAttribute("aaa");
+        assertEquals(new Integer(1), aaa);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testSetAttribute() throws Exception {
+        controller.setAttribute("aaa", 1);
+        Integer aaa = controller.getAttribute("aaa");
+        assertEquals(new Integer(1), aaa);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testRemoveAttribute() throws Exception {
+        controller.setAttribute("aaa", 1);
+        Integer aaa = controller.removeAttribute("aaa");
+        assertEquals(new Integer(1), aaa);
+        assertNull(controller.getAttribute("aaa"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetSessionAttribute() throws Exception {
+        request.getSession().setAttribute("aaa", 1);
+        Integer aaa = controller.getSessionAttribute("aaa");
+        assertEquals(new Integer(1), aaa);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testSetSessionAttribute() throws Exception {
+        controller.setSessionAttribute("aaa", 1);
+        Integer aaa = controller.getSessionAttribute("aaa");
+        assertEquals(new Integer(1), aaa);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testRemoveSessionAttribute() throws Exception {
+        controller.setSessionAttribute("aaa", 1);
+        Integer aaa = controller.removeSessionAttribute("aaa");
+        assertEquals(new Integer(1), aaa);
+        assertNull(controller.getSessionAttribute("aaa"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetServletContextAttribute() throws Exception {
+        servletContext.setAttribute("aaa", 1);
+        Integer aaa = controller.getServletContextAttribute("aaa");
+        assertEquals(new Integer(1), aaa);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testSetServletContextAttribute() throws Exception {
+        controller.setServletContextAttribute("aaa", 1);
+        Integer aaa = controller.getServletContextAttribute("aaa");
+        assertEquals(new Integer(1), aaa);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testRemoveServletContextAttribute() throws Exception {
+        controller.setServletContextAttribute("aaa", 1);
+        Integer aaa = controller.removeServletContextAttribute("aaa");
+        assertEquals(new Integer(1), aaa);
+        assertNull(controller.getServletContextAttribute("aaa"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetParameter() throws Exception {
+        parameters.put("aaa", new String[] { "111" });
+        assertEquals("111", controller.getParameter("aaa"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetStringArrayParameter() throws Exception {
+        Object value = new String[] { "111" };
+        parameters.put("aaa", value);
+        assertEquals(value, controller.getStringArrayParameter("aaa"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetStringArrayParameterForByteArray() throws Exception {
+        Object value = new byte[] { (byte) 1 };
+        parameters.put("aaa", value);
+        try {
+            controller.getStringArrayParameter("aaa");
+            fail();
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetByteArrayParameter() throws Exception {
+        Object value = new byte[] { (byte) 1 };
+        parameters.put("aaa", value);
+        assertEquals(value, controller.getByteArrayParameter("aaa"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetByteArrayParameterForStringArray() throws Exception {
+        Object value = new String[] { "111" };
+        parameters.put("aaa", value);
+        try {
+            controller.getByteArrayParameter("aaa");
+            fail();
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private static class IndexController extends Controller {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the original author or authors.
+ * Copyright 2004-2009 the Seasar Foundation and the Others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,19 +15,16 @@
  */
 package org.slim3.mvc.controller.controller;
 
-import org.slim3.mvc.controller.Controller;
-import org.slim3.mvc.controller.Navigation;
-
 /**
  * @author higa
  * 
  */
-public class IndexController extends Controller {
+public class MyBean {
 
     /**
      * 
      */
-    private String aaa;
+    protected String aaa;
 
     /**
      * @return the aaa
@@ -42,10 +39,5 @@ public class IndexController extends Controller {
      */
     public void setAaa(String aaa) {
         this.aaa = aaa;
-    }
-
-    @Override
-    public Navigation execute() {
-        return forward();
     }
 }

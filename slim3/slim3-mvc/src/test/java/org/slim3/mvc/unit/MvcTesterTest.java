@@ -17,6 +17,7 @@ package org.slim3.mvc.unit;
 
 import org.slim3.commons.config.Configuration;
 import org.slim3.commons.unit.CleanableTestCase;
+import org.slim3.mvc.unit.controller.HelloController;
 
 /**
  * @author higa
@@ -204,5 +205,18 @@ public class MvcTesterTest extends CleanableTestCase {
         tester.servletContext.setAttribute("aaa", 1);
         Integer aaa = tester.getServletContextAttribute("aaa");
         assertEquals(new Integer(1), aaa);
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testGetController() throws Exception {
+        Configuration.initialize(CONFIG_PATH);
+        tester.setUp();
+        tester.setPath("/hello");
+        tester.test();
+        HelloController controller = tester.getController();
+        assertNotNull(controller);
     }
 }

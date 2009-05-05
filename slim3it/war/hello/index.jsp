@@ -8,7 +8,9 @@
 <link rel="stylesheet" type="text/css" href="/css/global.css" />
 </head>
 <body>
-<h1>Hello</h1>
-Hello World!!!
+<form action="sayHello" method="post">
+Input your name:<input type="text" name="name"/>
+<input type="submit" value="Say Hello"/>
+</form>
 </body>
 </html>

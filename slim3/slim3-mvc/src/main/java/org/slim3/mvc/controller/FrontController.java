@@ -16,6 +16,7 @@
 package org.slim3.mvc.controller;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -177,6 +178,7 @@ public class FrontController implements Filter {
         controller.setRequest(request);
         controller.setResponse(response);
         controller.setPath(path);
+        request.setAttribute(MvcConstants.CONTROLLER_KEY, controller);
         return controller;
     }
 
@@ -252,9 +254,29 @@ public class FrontController implements Filter {
     protected void processController(HttpServletRequest request,
             HttpServletResponse response, Controller controller)
             throws IOException, ServletException {
+        bindParameters(request, response, controller);
         Navigation navigation =
             executeController(request, response, controller);
         handleNavigation(request, response, controller, navigation);
+    }
+
+    /**
+     * Binds the request parameters to the controller.
+     * 
+     * @param request
+     *            the request
+     * @param response
+     *            the response
+     * @param controller
+     *            the controller
+     */
+    protected void bindParameters(HttpServletRequest request,
+            HttpServletResponse response, Controller controller) {
+        RequestParameterParser parser = new RequestParameterParser(request);
+        Map<String, Object> parameters = parser.parse();
+        controller.setParameters(parameters);
+        RequestParameterBinder binder = new RequestParameterBinder();
+        binder.bind(controller, parameters);
     }
 
     /**

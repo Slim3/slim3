@@ -16,6 +16,7 @@
 package org.slim3.mvc.controller;
 
 import org.slim3.commons.config.Configuration;
+import org.slim3.mvc.MvcConstants;
 import org.slim3.mvc.controller.controller.HogeController;
 import org.slim3.mvc.controller.controller.IndexController;
 import org.slim3.mvc.controller.controller.hello.ListController;
@@ -135,6 +136,8 @@ public class FrontControllerTest extends MvcTestCase {
         assertNotNull(controller.getRequest());
         assertNotNull(controller.getResponse());
         assertEquals("/", controller.getPath());
+        assertSame(controller, mvcTester.request
+            .getAttribute(MvcConstants.CONTROLLER_KEY));
     }
 
     /**
@@ -291,7 +294,28 @@ public class FrontControllerTest extends MvcTestCase {
      * @throws Exception
      * 
      */
+    public void testBindParameters() throws Exception {
+        mvcTester.setParameter("aaa", "111");
+        Controller controller =
+            mvcTester.frontController.getController(
+                mvcTester.request,
+                mvcTester.response,
+                "/");
+        mvcTester.frontController.bindParameters(
+            mvcTester.request,
+            mvcTester.response,
+            controller);
+        assertNotNull(controller.getParameters());
+        IndexController indexController = (IndexController) controller;
+        assertEquals("111", indexController.getAaa());
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
     public void testProcessController() throws Exception {
+        mvcTester.setParameter("aaa", "111");
         Controller controller =
             mvcTester.frontController.getController(
                 mvcTester.request,
@@ -307,6 +331,8 @@ public class FrontControllerTest extends MvcTestCase {
         assertEquals("/index.jsp", mvcTester.servletContext
             .getLatestRequestDispatcher()
             .getPath());
+        IndexController indexController = (IndexController) controller;
+        assertEquals("111", indexController.getAaa());
     }
 
     /**

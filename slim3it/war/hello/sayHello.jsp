@@ -4,11 +4,10 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Index</title>
+<title>Hello</title>
 <link rel="stylesheet" type="text/css" href="/css/global.css" />
 </head>
 <body>
-<h1>Index</h1>
-${c.aaa}
+Hello ${c.name}.
 </body>
 </html>

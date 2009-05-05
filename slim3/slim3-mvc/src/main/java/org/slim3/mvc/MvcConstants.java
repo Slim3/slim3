@@ -35,11 +35,6 @@ public interface MvcConstants {
     String LOCALE_KEY = "slim3.locale";
 
     /**
-     * The key for message resource bundle.
-     */
-    String MESSAGE_RESOURCE_BUNDLE_KEY = "slim3.messageResourceBundle";
-
-    /**
      * The key for application message builder.
      */
     String APP_MESSAGE_BUILDER_KEY = "slim3.appMessageBuilder";
@@ -53,6 +48,11 @@ public interface MvcConstants {
      * The key for controller package.
      */
     String CONTROLLER_PACKAGE_KEY = "slim3.controllerPackage";
+
+    /**
+     * The key for controller.
+     */
+    String CONTROLLER_KEY = "c";
 
     /**
      * The suffix for controller.
