@@ -88,11 +88,8 @@ public abstract class AbstractCopy<S extends AbstractCopy<S>> {
      * @return this instance
      */
     @SuppressWarnings("unchecked")
-    public S include(CharSequence... propertyNames) {
-        includedPropertyNames = new String[propertyNames.length];
-        for (int i = 0; i < propertyNames.length; i++) {
-            includedPropertyNames[i] = propertyNames[i].toString();
-        }
+    public S include(String... propertyNames) {
+        includedPropertyNames = propertyNames;
         return (S) this;
     }
 
@@ -104,11 +101,8 @@ public abstract class AbstractCopy<S extends AbstractCopy<S>> {
      * @return this instance
      */
     @SuppressWarnings("unchecked")
-    public S exclude(CharSequence... propertyNames) {
-        excludedPropertyNames = new String[propertyNames.length];
-        for (int i = 0; i < propertyNames.length; i++) {
-            excludedPropertyNames[i] = propertyNames[i].toString();
-        }
+    public S exclude(String... propertyNames) {
+        excludedPropertyNames = propertyNames;
         return (S) this;
     }
 
@@ -144,12 +138,12 @@ public abstract class AbstractCopy<S extends AbstractCopy<S>> {
      * @return this instance
      */
     @SuppressWarnings("unchecked")
-    public S converter(Converter converter, CharSequence... propertyNames) {
+    public S converter(Converter converter, String... propertyNames) {
         if (propertyNames.length == 0) {
             converters.add(converter);
         } else {
-            for (CharSequence name : propertyNames) {
-                converterMap.put(name.toString(), converter);
+            for (String name : propertyNames) {
+                converterMap.put(name, converter);
             }
         }
         return (S) this;
@@ -164,7 +158,7 @@ public abstract class AbstractCopy<S extends AbstractCopy<S>> {
      *            the property names
      * @return this instance
      */
-    public S dateConverter(String pattern, CharSequence... propertyNames) {
+    public S dateConverter(String pattern, String... propertyNames) {
         return converter(new DateConverter(pattern), propertyNames);
     }
 
@@ -177,7 +171,7 @@ public abstract class AbstractCopy<S extends AbstractCopy<S>> {
      *            the property names
      * @return this instance
      */
-    public S numberConverter(String pattern, CharSequence... propertyNames) {
+    public S numberConverter(String pattern, String... propertyNames) {
         return converter(new NumberConverter(pattern), propertyNames);
     }
 
