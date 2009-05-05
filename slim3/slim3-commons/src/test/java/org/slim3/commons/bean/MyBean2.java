@@ -26,5 +26,20 @@ public class MyBean2 {
     /**
      * 
      */
-    public Date aaa;
+    private Date aaa;
+
+    /**
+     * @return the aaa
+     */
+    public Date getAaa() {
+        return aaa;
+    }
+
+    /**
+     * @param aaa
+     *            the aaa to set
+     */
+    public void setAaa(Date aaa) {
+        this.aaa = aaa;
+    }
 }

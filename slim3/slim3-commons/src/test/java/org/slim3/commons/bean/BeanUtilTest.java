@@ -37,10 +37,10 @@ public class BeanUtilTest extends TestCase {
      */
     public void testCopyBeanToBean() throws Exception {
         MyBean src = new MyBean();
-        src.aaa = "aaa";
+        src.setAaa("aaa");
         MyBean dest = new MyBean();
         BeanUtil.copy(src, dest).execute();
-        assertEquals("aaa", dest.aaa);
+        assertEquals("aaa", dest.getAaa());
     }
 
     /**
@@ -48,7 +48,7 @@ public class BeanUtilTest extends TestCase {
      */
     public void testCopyBeanToMap() throws Exception {
         MyBean src = new MyBean();
-        src.aaa = "aaa";
+        src.setAaa("aaa");
         BeanMap dest = new BeanMap();
         BeanUtil.copy(src, dest).execute();
         assertEquals("aaa", dest.get("aaa"));
@@ -62,7 +62,7 @@ public class BeanUtilTest extends TestCase {
         src.put("aaa", "aaa");
         MyBean dest = new MyBean();
         BeanUtil.copy(src, dest).execute();
-        assertEquals("aaa", dest.aaa);
+        assertEquals("aaa", dest.getAaa());
     }
 
     /**
@@ -81,9 +81,9 @@ public class BeanUtilTest extends TestCase {
      */
     public void testCreateAndCopyBeanToBean() throws Exception {
         MyBean src = new MyBean();
-        src.aaa = "aaa";
+        src.setAaa("aaa");
         MyBean dest = BeanUtil.createAndCopy(MyBean.class, src).execute();
-        assertEquals("aaa", dest.aaa);
+        assertEquals("aaa", dest.getAaa());
     }
 
     /**
@@ -91,7 +91,7 @@ public class BeanUtilTest extends TestCase {
      */
     public void testCreateAndCopyBeanToMap() throws Exception {
         MyBean src = new MyBean();
-        src.aaa = "aaa";
+        src.setAaa("aaa");
         BeanMap dest = BeanUtil.createAndCopy(BeanMap.class, src).execute();
         assertEquals("aaa", dest.get("aaa"));
     }
@@ -103,7 +103,7 @@ public class BeanUtilTest extends TestCase {
         BeanMap src = new BeanMap();
         src.put("aaa", "aaa");
         MyBean dest = BeanUtil.createAndCopy(MyBean.class, src).execute();
-        assertEquals("aaa", dest.aaa);
+        assertEquals("aaa", dest.getAaa());
     }
 
     /**

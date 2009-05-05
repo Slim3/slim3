@@ -15,9 +15,7 @@
  */
 package org.slim3.commons.bean;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -37,7 +35,8 @@ public final class BeanDesc {
 
     private Class<?> beanClass;
 
-    private CaseInsensitiveMap<PropertyDesc> propertyDescCache = new CaseInsensitiveMap<PropertyDesc>();
+    private CaseInsensitiveMap<PropertyDesc> propertyDescCache =
+        new CaseInsensitiveMap<PropertyDesc>();
 
     /**
      * Constructor.
@@ -72,42 +71,45 @@ public final class BeanDesc {
         Method[] methods = beanDesc.beanClass.getMethods();
         for (int i = 0; i < methods.length; i++) {
             Method m = methods[i];
-            if (m.isBridge() || m.isSynthetic()
-                    || m.getDeclaringClass() == Object.class) {
+            if (m.isBridge()
+                || m.isSynthetic()
+                || m.getDeclaringClass() == Object.class) {
                 continue;
             }
             String methodName = m.getName();
             if (methodName.startsWith("get")) {
                 if (m.getParameterTypes().length != 0
-                        || m.getReturnType() == void.class) {
+                    || m.getReturnType() == void.class) {
                     continue;
                 }
-                String propertyName = StringUtil.decapitalize(methodName
-                        .substring(3));
+                String propertyName =
+                    StringUtil.decapitalize(methodName.substring(3));
                 setupReadMethod(beanDesc, m, propertyName, illegalPropertyNames);
             } else if (methodName.startsWith("is")) {
                 if (m.getParameterTypes().length != 0
-                        || m.getReturnType() != boolean.class) {
+                    || m.getReturnType() != boolean.class) {
                     continue;
                 }
-                String propertyName = StringUtil.decapitalize(methodName
-                        .substring(2));
+                String propertyName =
+                    StringUtil.decapitalize(methodName.substring(2));
                 setupReadMethod(beanDesc, m, propertyName, illegalPropertyNames);
             } else if (methodName.startsWith("set")) {
                 if (m.getParameterTypes().length != 1
-                        || m.getReturnType() != void.class) {
+                    || m.getReturnType() != void.class) {
                     continue;
                 }
-                String propertyName = StringUtil.decapitalize(methodName
-                        .substring(3));
-                setupWriteMethod(beanDesc, m, propertyName,
-                        illegalPropertyNames);
+                String propertyName =
+                    StringUtil.decapitalize(methodName.substring(3));
+                setupWriteMethod(
+                    beanDesc,
+                    m,
+                    propertyName,
+                    illegalPropertyNames);
             }
         }
         for (Iterator<String> i = illegalPropertyNames.iterator(); i.hasNext();) {
             beanDesc.propertyDescCache.remove(i.next());
         }
-        addFields(beanDesc);
     }
 
     private static void setupReadMethod(BeanDesc beanDesc, Method readMethod,
@@ -121,7 +123,10 @@ public final class BeanDesc {
                 propDesc.setReadMethod(readMethod);
             }
         } else {
-            propDesc = new PropertyDesc(propertyName, propertyClass,
+            propDesc =
+                new PropertyDesc(
+                    propertyName,
+                    propertyClass,
                     beanDesc.beanClass);
             propDesc.setReadMethod(readMethod);
             beanDesc.propertyDescCache.put(propertyName, propDesc);
@@ -139,34 +144,13 @@ public final class BeanDesc {
                 propDesc.setWriteMethod(writeMethod);
             }
         } else {
-            propDesc = new PropertyDesc(propertyName, propertyClass,
+            propDesc =
+                new PropertyDesc(
+                    propertyName,
+                    propertyClass,
                     beanDesc.beanClass);
             propDesc.setWriteMethod(writeMethod);
             beanDesc.propertyDescCache.put(propertyName, propDesc);
-        }
-    }
-
-    private static void addFields(BeanDesc beanDesc) {
-        for (Class<?> clazz = beanDesc.getBeanClass(); clazz != Object.class; clazz = clazz
-                .getSuperclass()) {
-            Field[] fields = clazz.getDeclaredFields();
-            for (int i = 0; i < fields.length; ++i) {
-                Field field = fields[i];
-                String fname = field.getName();
-                if (!Modifier.isStatic(field.getModifiers())
-                        && !Modifier.isFinal(field.getModifiers())) {
-                    PropertyDesc pd = beanDesc.propertyDescCache.get(fname);
-                    if (pd != null) {
-                        pd.setField(field);
-                    } else if (Modifier.isPublic(field.getModifiers())) {
-                        pd = new PropertyDesc(field.getName(), field.getType(),
-                                beanDesc.getBeanClass());
-                        pd.setField(field);
-                        beanDesc.propertyDescCache.put(fname, pd);
-                    }
-
-                }
-            }
         }
     }
 

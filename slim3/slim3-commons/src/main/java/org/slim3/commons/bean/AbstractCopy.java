@@ -244,7 +244,7 @@ public abstract class AbstractCopy<S extends AbstractCopy<S>> {
         int size = srcBeanDesc.getPropertyDescSize();
         for (int i = 0; i < size; i++) {
             PropertyDesc srcPropertyDesc = srcBeanDesc.getPropertyDesc(i);
-            String propertyName = srcPropertyDesc.getPropertyName();
+            String propertyName = srcPropertyDesc.getName();
             if (!srcPropertyDesc.isReadable()
                 || !isTargetProperty(propertyName)) {
                 continue;
@@ -281,7 +281,7 @@ public abstract class AbstractCopy<S extends AbstractCopy<S>> {
         int size = beanDesc.getPropertyDescSize();
         for (int i = 0; i < size; i++) {
             PropertyDesc propertyDesc = beanDesc.getPropertyDesc(i);
-            String propertyName = propertyDesc.getPropertyName();
+            String propertyName = propertyDesc.getName();
             if (!propertyDesc.isReadable() || !isTargetProperty(propertyName)) {
                 continue;
             }

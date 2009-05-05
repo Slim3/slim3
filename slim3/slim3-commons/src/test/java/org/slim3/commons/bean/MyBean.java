@@ -24,10 +24,40 @@ public class MyBean {
     /**
      * 
      */
-    public String aaa;
+    private String aaa;
 
     /**
      * 
      */
-    public String bbb;
+    private String bbb;
+
+    /**
+     * @return the aaa
+     */
+    public String getAaa() {
+        return aaa;
+    }
+
+    /**
+     * @param aaa
+     *            the aaa to set
+     */
+    public void setAaa(String aaa) {
+        this.aaa = aaa;
+    }
+
+    /**
+     * @return the bbb
+     */
+    public String getBbb() {
+        return bbb;
+    }
+
+    /**
+     * @param bbb
+     *            the bbb to set
+     */
+    public void setBbb(String bbb) {
+        this.bbb = bbb;
+    }
 }

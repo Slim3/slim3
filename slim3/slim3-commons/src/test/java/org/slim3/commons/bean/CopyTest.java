@@ -18,8 +18,6 @@ package org.slim3.commons.bean;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.slim3.commons.bean.Copy;
-
 import junit.framework.TestCase;
 
 /**
@@ -32,10 +30,10 @@ public class CopyTest extends TestCase {
      */
     public void testExecuteForBeanToBean() throws Exception {
         MyBean src = new MyBean();
-        src.aaa = "aaa";
+        src.setAaa("aaa");
         MyBean dest = new MyBean();
         new Copy(src, dest).execute();
-        assertEquals("aaa", dest.aaa);
+        assertEquals("aaa", dest.getAaa());
     }
 
     /**
@@ -67,7 +65,7 @@ public class CopyTest extends TestCase {
      */
     public void testExecuteForBeanToMap() throws Exception {
         MyBean src = new MyBean();
-        src.aaa = "aaa";
+        src.setAaa("aaa");
         Map<String, Object> dest = new HashMap<String, Object>();
         new Copy(src, dest).execute();
         assertEquals("aaa", dest.get("aaa"));
@@ -81,7 +79,7 @@ public class CopyTest extends TestCase {
         src.put("aaa", "aaa");
         MyBean dest = new MyBean();
         new Copy(src, dest).execute();
-        assertEquals("aaa", dest.aaa);
+        assertEquals("aaa", dest.getAaa());
     }
 
     /**

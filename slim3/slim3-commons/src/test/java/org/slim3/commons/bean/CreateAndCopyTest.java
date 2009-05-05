@@ -15,9 +15,6 @@
  */
 package org.slim3.commons.bean;
 
-import org.slim3.commons.bean.BeanMap;
-import org.slim3.commons.bean.CreateAndCopy;
-
 import junit.framework.TestCase;
 
 /**
@@ -30,9 +27,9 @@ public class CreateAndCopyTest extends TestCase {
      */
     public void testExecute() throws Exception {
         MyBean src = new MyBean();
-        src.aaa = "aaa";
+        src.setAaa("aaa");
         MyBean dest = new CreateAndCopy<MyBean>(MyBean.class, src).execute();
-        assertEquals("aaa", dest.aaa);
+        assertEquals("aaa", dest.getAaa());
     }
 
     /**
@@ -64,7 +61,7 @@ public class CreateAndCopyTest extends TestCase {
      */
     public void testExecuteForBeanToMap() throws Exception {
         MyBean src = new MyBean();
-        src.aaa = "aaa";
+        src.setAaa("aaa");
         BeanMap dest = new CreateAndCopy<BeanMap>(BeanMap.class, src).execute();
         assertEquals("aaa", dest.get("aaa"));
     }
@@ -76,7 +73,7 @@ public class CreateAndCopyTest extends TestCase {
         BeanMap src = new BeanMap();
         src.put("aaa", "aaa");
         MyBean dest = new CreateAndCopy<MyBean>(MyBean.class, src).execute();
-        assertEquals("aaa", dest.aaa);
+        assertEquals("aaa", dest.getAaa());
     }
 
     /**

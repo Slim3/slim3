@@ -15,14 +15,13 @@
  */
 package org.slim3.commons.bean;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 
 import org.slim3.commons.exception.PropertyCanNotReadRuntimeException;
 import org.slim3.commons.exception.PropertyCanNotWriteRuntimeException;
 import org.slim3.commons.exception.PropertyNotReadableRuntimeException;
 import org.slim3.commons.exception.PropertyNotWritableRuntimeException;
+import org.slim3.commons.exception.WrapRuntimeException;
 import org.slim3.commons.util.ConversionUtil;
 
 /**
@@ -33,7 +32,7 @@ import org.slim3.commons.util.ConversionUtil;
  */
 public final class PropertyDesc {
 
-    private String propertyName;
+    private String name;
 
     private Class<?> propertyClass;
 
@@ -43,18 +42,12 @@ public final class PropertyDesc {
 
     private Method writeMethod;
 
-    private Field field;
-
-    private boolean readable = false;
-
-    private boolean writable = false;
-
     private ParameterizedClassDesc parameterizedClassDesc;
 
     /**
      * Constructor.
      * 
-     * @param propertyName
+     * @param name
      *            the property name
      * @param propertyClass
      *            the property class
@@ -64,20 +57,19 @@ public final class PropertyDesc {
      *             if the propertyName parameter is null or the propertyClass
      *             parameter is null or the beanClass parameter is null
      */
-    PropertyDesc(String propertyName, Class<?> propertyClass, Class<?> beanClass)
+    PropertyDesc(String name, Class<?> propertyClass, Class<?> beanClass)
             throws NullPointerException {
-        if (propertyName == null) {
-            throw new NullPointerException(
-                    "The propertyName parameter is null.");
+        if (name == null) {
+            throw new NullPointerException("The name parameter is null.");
         }
         if (propertyClass == null) {
             throw new NullPointerException(
-                    "The propertyClass parameter is null.");
+                "The propertyClass parameter is null.");
         }
         if (beanClass == null) {
             throw new NullPointerException("The beanClass parameter is null.");
         }
-        this.propertyName = propertyName;
+        this.name = name;
         this.propertyClass = propertyClass;
         this.beanClass = beanClass;
     }
@@ -87,8 +79,8 @@ public final class PropertyDesc {
      * 
      * @return the property name
      */
-    public String getPropertyName() {
-        return propertyName;
+    public String getName() {
+        return name;
     }
 
     /**
@@ -124,17 +116,15 @@ public final class PropertyDesc {
      * @return whether this property is readable
      */
     public boolean isReadable() {
-        return readable;
+        return readMethod != null;
     }
 
     void setReadMethod(Method readMethod) {
         this.readMethod = readMethod;
-        if (readMethod != null) {
-            readable = true;
-            if (parameterizedClassDesc == null) {
-                parameterizedClassDesc = ParameterizedClassDesc
-                        .create(readMethod.getGenericReturnType());
-            }
+        if (parameterizedClassDesc == null) {
+            parameterizedClassDesc =
+                ParameterizedClassDesc
+                    .create(readMethod.getGenericReturnType());
         }
     }
 
@@ -153,41 +143,15 @@ public final class PropertyDesc {
      * @return whether this property is writable
      */
     public boolean isWritable() {
-        return writable;
+        return writeMethod != null;
     }
 
     void setWriteMethod(Method writeMethod) {
         this.writeMethod = writeMethod;
-        if (writeMethod != null) {
-            writable = true;
-            if (parameterizedClassDesc == null) {
-                parameterizedClassDesc = ParameterizedClassDesc
-                        .create(writeMethod.getGenericParameterTypes()[0]);
-            }
-        }
-    }
-
-    /**
-     * Returns the field.
-     * 
-     * @return the field
-     */
-    public Field getField() {
-        return field;
-    }
-
-    void setField(Field field) {
-        this.field = field;
-        if (field != null) {
-            field.setAccessible(true);
-            if (Modifier.isPublic(field.getModifiers())) {
-                readable = true;
-                writable = true;
-                if (parameterizedClassDesc == null) {
-                    parameterizedClassDesc = ParameterizedClassDesc
-                            .create(field.getGenericType());
-                }
-            }
+        if (parameterizedClassDesc == null) {
+            parameterizedClassDesc =
+                ParameterizedClassDesc.create(writeMethod
+                    .getGenericParameterTypes()[0]);
         }
     }
 
@@ -206,18 +170,13 @@ public final class PropertyDesc {
     public Object getValue(Object bean)
             throws PropertyNotReadableRuntimeException,
             PropertyCanNotReadRuntimeException {
-        if (!readable) {
-            throw new PropertyNotReadableRuntimeException(beanClass,
-                    propertyName);
+        if (!isReadable()) {
+            throw new PropertyNotReadableRuntimeException(beanClass, name);
         }
         try {
-            if (readMethod != null) {
-                return readMethod.invoke(bean);
-            }
-            return field.get(bean);
+            return readMethod.invoke(bean);
         } catch (Throwable t) {
-            throw new PropertyCanNotReadRuntimeException(beanClass,
-                    propertyName, t);
+            throw new PropertyCanNotReadRuntimeException(beanClass, name, t);
         }
     }
 
@@ -237,23 +196,21 @@ public final class PropertyDesc {
     public void setValue(Object bean, Object value)
             throws PropertyNotWritableRuntimeException,
             PropertyCanNotWriteRuntimeException {
-        if (!writable) {
-            throw new PropertyNotWritableRuntimeException(beanClass,
-                    propertyName);
+        if (!isWritable()) {
+            throw new PropertyNotWritableRuntimeException(beanClass, name);
         }
         try {
             value = ConversionUtil.convert(value, propertyClass);
-            if (writeMethod != null) {
-                writeMethod.invoke(bean, value);
-            } else {
-                field.set(bean, value);
-            }
+            writeMethod.invoke(bean, value);
         } catch (Throwable t) {
-            if (t.getClass() == RuntimeException.class) {
+            if (t.getClass() == WrapRuntimeException.class) {
                 t = t.getCause();
             }
-            throw new PropertyCanNotWriteRuntimeException(beanClass,
-                    propertyName, value, t);
+            throw new PropertyCanNotWriteRuntimeException(
+                beanClass,
+                name,
+                value,
+                t);
         }
     }
 

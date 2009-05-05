@@ -141,12 +141,12 @@ public class AbstCopyTest extends TestCase {
      */
     public void testCopyBeanToBeanForInclude() throws Exception {
         MyBean src = new MyBean();
-        src.aaa = "aaa";
-        src.bbb = "bbb";
+        src.setAaa("aaa");
+        src.setBbb("bbb");
         MyBean dest = new MyBean();
         new MyCopy().include("aaa").copyBeanToBean(src, dest);
-        assertEquals("aaa", dest.aaa);
-        assertNull(dest.bbb);
+        assertEquals("aaa", dest.getAaa());
+        assertNull(dest.getBbb());
     }
 
     /**
@@ -154,12 +154,12 @@ public class AbstCopyTest extends TestCase {
      */
     public void testCopyBeanToBeanForExclude() throws Exception {
         MyBean src = new MyBean();
-        src.aaa = "aaa";
-        src.bbb = "bbb";
+        src.setAaa("aaa");
+        src.setBbb("bbb");
         MyBean dest = new MyBean();
         new MyCopy().exclude("bbb").copyBeanToBean(src, dest);
-        assertEquals("aaa", dest.aaa);
-        assertNull(dest.bbb);
+        assertEquals("aaa", dest.getAaa());
+        assertNull(dest.getBbb());
     }
 
     /**
@@ -250,7 +250,7 @@ public class AbstCopyTest extends TestCase {
         src.bbb = "bbb";
         src.ccc = "ccc";
         Map<String, Object> dest = new HashMap<String, Object>();
-        new MyCopy().include(BeanNames.aaa()).copyBeanToMap(src, dest);
+        new MyCopy().include("aaa").copyBeanToMap(src, dest);
         assertEquals("aaa", dest.get("aaa"));
         assertNull(dest.get("ccc"));
     }
@@ -264,7 +264,7 @@ public class AbstCopyTest extends TestCase {
         src.bbb = "bbb";
         src.ccc = "ccc";
         Map<String, Object> dest = new HashMap<String, Object>();
-        new MyCopy().exclude(BeanNames.ccc()).copyBeanToMap(src, dest);
+        new MyCopy().exclude("ccc").copyBeanToMap(src, dest);
         assertEquals("aaa", dest.get("aaa"));
         assertNull(dest.get("ccc"));
     }
@@ -340,9 +340,7 @@ public class AbstCopyTest extends TestCase {
         Bean bean = new Bean();
         bean.aaa = "1,000";
         BeanMap map = new BeanMap();
-        new MyCopy().numberConverter("#,##0", BeanNames.aaa()).copyBeanToMap(
-            bean,
-            map);
+        new MyCopy().numberConverter("#,##0", "aaa").copyBeanToMap(bean, map);
         assertEquals(new Long(1000), map.get("aaa"));
     }
 
@@ -405,7 +403,7 @@ public class AbstCopyTest extends TestCase {
         src.put("bbb", "bbb");
         src.put("ccc", "ccc");
         DestBean dest = new DestBean();
-        new MyCopy().include(BeanNames.bbb()).copyMapToBean(src, dest);
+        new MyCopy().include("bbb").copyMapToBean(src, dest);
         assertEquals("bbb", dest.bbb);
         assertNull(dest.ccc);
     }
@@ -419,7 +417,7 @@ public class AbstCopyTest extends TestCase {
         src.put("bbb", "bbb");
         src.put("ccc", "ccc");
         DestBean dest = new DestBean();
-        new MyCopy().exclude(BeanNames.ccc()).copyMapToBean(src, dest);
+        new MyCopy().exclude("ccc").copyMapToBean(src, dest);
         assertEquals("bbb", dest.bbb);
         assertNull(dest.ccc);
     }
@@ -497,7 +495,7 @@ public class AbstCopyTest extends TestCase {
         src.put("aaa", "aaa");
         src.put("bbb", "bbb");
         Map<String, Object> dest = new HashMap<String, Object>();
-        new MyCopy().include(BeanNames.aaa()).copyMapToMap(src, dest);
+        new MyCopy().include("aaa").copyMapToMap(src, dest);
         assertEquals("aaa", dest.get("aaa"));
         assertNull(dest.get("bbb"));
     }
@@ -510,7 +508,7 @@ public class AbstCopyTest extends TestCase {
         src.put("aaa", "aaa");
         src.put("bbb", "bbb");
         Map<String, Object> dest = new HashMap<String, Object>();
-        new MyCopy().exclude(BeanNames.bbb()).copyMapToMap(src, dest);
+        new MyCopy().exclude("bbb").copyMapToMap(src, dest);
         assertEquals("aaa", dest.get("aaa"));
         assertNull(dest.get("bbb"));
     }
@@ -722,15 +720,7 @@ public class AbstCopyTest extends TestCase {
 
         private String ccc;
 
-        /**
-         * 
-         */
-        public String ddd;
-
-        /**
-         * 
-         */
-        public String ggg;
+        private String ggg;
 
         /**
          * @return the result
@@ -759,6 +749,21 @@ public class AbstCopyTest extends TestCase {
         public String getCcc() {
             return ccc;
         }
+
+        /**
+         * @return the ggg
+         */
+        public String getGgg() {
+            return ggg;
+        }
+
+        /**
+         * @param ggg
+         *            the ggg to set
+         */
+        public void setGgg(String ggg) {
+            this.ggg = ggg;
+        }
     }
 
     /**
@@ -772,10 +777,7 @@ public class AbstCopyTest extends TestCase {
 
         private String ddd;
 
-        /**
-         * 
-         */
-        public Integer ggg;
+        private Integer ggg;
 
         /**
          * @param bbb
@@ -804,6 +806,21 @@ public class AbstCopyTest extends TestCase {
         public void setDdd(String ddd) {
             this.ddd = ddd;
         }
+
+        /**
+         * @return the ggg
+         */
+        public Integer getGgg() {
+            return ggg;
+        }
+
+        /**
+         * @param ggg
+         *            the ggg to set
+         */
+        public void setGgg(Integer ggg) {
+            this.ggg = ggg;
+        }
     }
 
     /**
@@ -814,66 +831,41 @@ public class AbstCopyTest extends TestCase {
         /**
          * 
          */
-        public String aaa;
+        private String aaa;
 
         /**
          * 
          */
-        public Integer bbb;
-    }
-
-    /**
-     *
-     */
-    public static class BeanNames {
+        private Integer bbb;
 
         /**
-         * 
-         * @param name
-         * @return the result
+         * @return the aaa
          */
-        protected static CharSequence createCharSequence(final String name) {
-            return new CharSequence() {
-
-                @Override
-                public String toString() {
-                    return name;
-                }
-
-                public char charAt(int index) {
-                    return name.charAt(index);
-                }
-
-                public int length() {
-                    return name.length();
-                }
-
-                public CharSequence subSequence(int start, int end) {
-                    return name.subSequence(start, end);
-                }
-
-            };
+        public String getAaa() {
+            return aaa;
         }
 
         /**
-         * @return the result
+         * @param aaa
+         *            the aaa to set
          */
-        public static CharSequence aaa() {
-            return createCharSequence("aaa");
+        public void setAaa(String aaa) {
+            this.aaa = aaa;
         }
 
         /**
-         * @return the result
+         * @return the bbb
          */
-        public static CharSequence bbb() {
-            return createCharSequence("bbb");
+        public Integer getBbb() {
+            return bbb;
         }
 
         /**
-         * @return the result
+         * @param bbb
+         *            the bbb to set
          */
-        public static CharSequence ccc() {
-            return createCharSequence("ccc");
+        public void setBbb(Integer bbb) {
+            this.bbb = bbb;
         }
     }
 }

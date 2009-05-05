@@ -15,9 +15,7 @@
  */
 package org.slim3.commons.bean;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -31,43 +29,21 @@ import org.slim3.commons.exception.PropertyNotWritableRuntimeException;
  */
 public class PropertyDescTest extends TestCase {
 
-    /**
-     * 
-     */
-    public List<String> list;
+    private int aaa = 1;
 
     /**
-     * @return the result
+     * @return the aaa
      */
-    public List<String> getList() {
-        return list;
+    public int getAaa() {
+        return aaa;
     }
 
     /**
-     * @param list
+     * @param aaa
+     *            the aaa to set
      */
-    public void setList(List<String> list) {
-        this.list = list;
-    }
-
-    /**
-     * 
-     */
-    public Integer aaa = 1;
-
-    /**
-     * 
-     * @throws Exception
-     */
-    public void testSetField() throws Exception {
-        Field field = getClass().getDeclaredField("list");
-        PropertyDesc pd = new PropertyDesc("list", field.getType(), getClass());
-        pd.setField(field);
-        assertSame(field, pd.getField());
-        assertTrue(pd.isReadable());
-        assertTrue(pd.isWritable());
-        assertNotNull(pd.getParameterizedClassDesc());
-        assertTrue(pd.getParameterizedClassDesc().isParameterized());
+    public void setAaa(int aaa) {
+        this.aaa = aaa;
     }
 
     /**
@@ -75,15 +51,13 @@ public class PropertyDescTest extends TestCase {
      * @throws Exception
      */
     public void testSetReadMethod() throws Exception {
-        Method m = getClass().getDeclaredMethod("getList");
-        PropertyDesc pd = new PropertyDesc("list", m.getReturnType(),
-                getClass());
+        PropertyDesc pd = new PropertyDesc("aaa", int.class, getClass());
+        Method m = getClass().getDeclaredMethod("getAaa");
         pd.setReadMethod(m);
         assertSame(m, pd.getReadMethod());
         assertTrue(pd.isReadable());
         assertFalse(pd.isWritable());
         assertNotNull(pd.getParameterizedClassDesc());
-        assertTrue(pd.getParameterizedClassDesc().isParameterized());
     }
 
     /**
@@ -91,15 +65,13 @@ public class PropertyDescTest extends TestCase {
      * @throws Exception
      */
     public void testSetWriteMethod() throws Exception {
-        Method m = getClass().getDeclaredMethod("setList", List.class);
-        PropertyDesc pd = new PropertyDesc("list", m.getParameterTypes()[0],
-                getClass());
+        PropertyDesc pd = new PropertyDesc("aaa", int.class, getClass());
+        Method m = getClass().getDeclaredMethod("setAaa", int.class);
         pd.setWriteMethod(m);
         assertSame(m, pd.getWriteMethod());
         assertFalse(pd.isReadable());
         assertTrue(pd.isWritable());
         assertNotNull(pd.getParameterizedClassDesc());
-        assertTrue(pd.getParameterizedClassDesc().isParameterized());
     }
 
     /**
@@ -107,10 +79,10 @@ public class PropertyDescTest extends TestCase {
      * @throws Exception
      */
     public void testGetValue() throws Exception {
-        Field field = getClass().getDeclaredField("aaa");
-        PropertyDesc pd = new PropertyDesc("aaa", field.getType(), getClass());
-        pd.setField(field);
-        assertEquals(Integer.valueOf(1), pd.getValue(this));
+        PropertyDesc pd = new PropertyDesc("aaa", int.class, getClass());
+        Method m = getClass().getDeclaredMethod("getAaa");
+        pd.setReadMethod(m);
+        assertEquals(1, pd.getValue(this));
     }
 
     /**
@@ -118,7 +90,7 @@ public class PropertyDescTest extends TestCase {
      * @throws Exception
      */
     public void testGetValueForNotReadable() throws Exception {
-        PropertyDesc pd = new PropertyDesc("aaa", Integer.class, getClass());
+        PropertyDesc pd = new PropertyDesc("aaa", int.class, getClass());
         try {
             pd.getValue(this);
             fail();
@@ -134,11 +106,11 @@ public class PropertyDescTest extends TestCase {
      * @throws Exception
      */
     public void testSetValue() throws Exception {
-        Field field = getClass().getDeclaredField("aaa");
-        PropertyDesc pd = new PropertyDesc("aaa", field.getType(), getClass());
-        pd.setField(field);
+        PropertyDesc pd = new PropertyDesc("aaa", int.class, getClass());
+        Method m = getClass().getDeclaredMethod("setAaa", int.class);
+        pd.setWriteMethod(m);
         pd.setValue(this, "2");
-        assertEquals(Integer.valueOf(2), aaa);
+        assertEquals(2, aaa);
     }
 
     /**
@@ -146,7 +118,7 @@ public class PropertyDescTest extends TestCase {
      * @throws Exception
      */
     public void testSetValueForNotWritable() throws Exception {
-        PropertyDesc pd = new PropertyDesc("aaa", Integer.class, getClass());
+        PropertyDesc pd = new PropertyDesc("aaa", int.class, getClass());
         try {
             pd.setValue(this, null);
             fail();
@@ -162,9 +134,9 @@ public class PropertyDescTest extends TestCase {
      * @throws Exception
      */
     public void testSetValueForIllegalValue() throws Exception {
-        Field field = getClass().getDeclaredField("aaa");
-        PropertyDesc pd = new PropertyDesc("aaa", field.getType(), getClass());
-        pd.setField(field);
+        PropertyDesc pd = new PropertyDesc("aaa", int.class, getClass());
+        Method m = getClass().getDeclaredMethod("setAaa", int.class);
+        pd.setWriteMethod(m);
         try {
             pd.setValue(this, "xxx");
             fail();

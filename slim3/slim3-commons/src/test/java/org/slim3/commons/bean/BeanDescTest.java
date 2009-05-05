@@ -17,8 +17,6 @@ package org.slim3.commons.bean;
 
 import junit.framework.TestCase;
 
-import org.slim3.commons.bean.BeanDesc;
-import org.slim3.commons.bean.PropertyDesc;
 import org.slim3.commons.exception.PropertyNotFoundRuntimeException;
 
 /**
@@ -34,11 +32,10 @@ public class BeanDescTest extends TestCase {
         BeanDesc beanDesc = BeanDesc.create(MyBean.class);
         PropertyDesc pd = beanDesc.getPropertyDesc("aaa");
         assertNotNull(pd);
-        assertEquals("aaa", pd.getPropertyName());
+        assertEquals("aaa", pd.getName());
         assertEquals(String.class, pd.getPropertyClass());
         assertNotNull(pd.getReadMethod());
         assertNotNull(pd.getWriteMethod());
-        assertNotNull(pd.getField());
     }
 
     /**
@@ -48,11 +45,10 @@ public class BeanDescTest extends TestCase {
         BeanDesc beanDesc = BeanDesc.create(MyBean.class);
         PropertyDesc pd = beanDesc.getPropertyDesc("bbb");
         assertNotNull(pd);
-        assertEquals("bbb", pd.getPropertyName());
+        assertEquals("bbb", pd.getName());
         assertEquals(String.class, pd.getPropertyClass());
         assertNotNull(pd.getReadMethod());
         assertNull(pd.getWriteMethod());
-        assertNotNull(pd.getField());
     }
 
     /**
@@ -62,11 +58,10 @@ public class BeanDescTest extends TestCase {
         BeanDesc beanDesc = BeanDesc.create(MyBean.class);
         PropertyDesc pd = beanDesc.getPropertyDesc("ccc");
         assertNotNull(pd);
-        assertEquals("ccc", pd.getPropertyName());
+        assertEquals("ccc", pd.getName());
         assertEquals(String.class, pd.getPropertyClass());
         assertNull(pd.getReadMethod());
         assertNotNull(pd.getWriteMethod());
-        assertNotNull(pd.getField());
     }
 
     /**
@@ -76,11 +71,10 @@ public class BeanDescTest extends TestCase {
         BeanDesc beanDesc = BeanDesc.create(MyBean.class);
         PropertyDesc pd = beanDesc.getPropertyDesc("ddd");
         assertNotNull(pd);
-        assertEquals("ddd", pd.getPropertyName());
+        assertEquals("ddd", pd.getName());
         assertEquals(boolean.class, pd.getPropertyClass());
         assertNotNull(pd.getReadMethod());
         assertNull(pd.getWriteMethod());
-        assertNotNull(pd.getField());
     }
 
     /**
@@ -90,11 +84,10 @@ public class BeanDescTest extends TestCase {
         BeanDesc beanDesc = BeanDesc.create(MyBean.class);
         PropertyDesc pd = beanDesc.getPropertyDesc("eee");
         assertNotNull(pd);
-        assertEquals("eee", pd.getPropertyName());
+        assertEquals("eee", pd.getName());
         assertEquals(Boolean.class, pd.getPropertyClass());
         assertNotNull(pd.getReadMethod());
         assertNull(pd.getWriteMethod());
-        assertNotNull(pd.getField());
     }
 
     /**
@@ -103,20 +96,6 @@ public class BeanDescTest extends TestCase {
     public void testPropertyDescForIsBooleanWrapper() {
         BeanDesc beanDesc = BeanDesc.create(MyBean.class);
         assertFalse(beanDesc.hasPropertyDesc("fff"));
-    }
-
-    /**
-     * 
-     */
-    public void testPropertyDescForPublicField() {
-        BeanDesc beanDesc = BeanDesc.create(MyBean.class);
-        PropertyDesc pd = beanDesc.getPropertyDesc("ggg");
-        assertNotNull(pd);
-        assertEquals("ggg", pd.getPropertyName());
-        assertEquals(String.class, pd.getPropertyClass());
-        assertNull(pd.getReadMethod());
-        assertNull(pd.getWriteMethod());
-        assertNotNull(pd.getField());
     }
 
     /**
@@ -155,11 +134,6 @@ public class BeanDescTest extends TestCase {
         private Boolean eee;
 
         private Boolean fff;
-
-        /**
-         * 
-         */
-        public String ggg;
 
         /**
          * @return the result
