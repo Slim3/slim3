@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the Seasar Foundation and the Others.
+ * Copyright 2004-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@ package org.slim3.commons.bean;
 
 import java.util.List;
 import java.util.Map;
-
-import org.slim3.commons.bean.ParameterizedClassDesc;
 
 import junit.framework.TestCase;
 
@@ -39,8 +37,10 @@ public class ParameterizedClassDescTest extends TestCase {
      * @throws Exception
      */
     public void testCreate() throws Exception {
-        ParameterizedClassDesc pcd = ParameterizedClassDesc.create(getClass()
-                .getDeclaredField("list").getGenericType());
+        ParameterizedClassDesc pcd =
+            ParameterizedClassDesc.create(getClass()
+                .getDeclaredField("list")
+                .getGenericType());
         assertNotNull(pcd);
         assertEquals(List.class, pcd.getRawClass());
         assertEquals(1, pcd.getArguments().length);
@@ -52,8 +52,10 @@ public class ParameterizedClassDescTest extends TestCase {
      * @throws Exception
      */
     public void testIsParameterizedForTrue() throws Exception {
-        ParameterizedClassDesc pcd = ParameterizedClassDesc.create(getClass()
-                .getDeclaredField("list").getGenericType());
+        ParameterizedClassDesc pcd =
+            ParameterizedClassDesc.create(getClass()
+                .getDeclaredField("list")
+                .getGenericType());
         assertTrue(pcd.isParameterized());
     }
 
@@ -62,8 +64,10 @@ public class ParameterizedClassDescTest extends TestCase {
      * @throws Exception
      */
     public void testIsParameterizedForFalse() throws Exception {
-        ParameterizedClassDesc pcd = ParameterizedClassDesc.create(getClass()
-                .getDeclaredField("str").getGenericType());
+        ParameterizedClassDesc pcd =
+            ParameterizedClassDesc.create(getClass()
+                .getDeclaredField("str")
+                .getGenericType());
         assertFalse(pcd.isParameterized());
     }
 
@@ -72,8 +76,10 @@ public class ParameterizedClassDescTest extends TestCase {
      * @throws Exception
      */
     public void testGetElementClassOfCollection() throws Exception {
-        ParameterizedClassDesc pcd = ParameterizedClassDesc.create(getClass()
-                .getDeclaredField("list").getGenericType());
+        ParameterizedClassDesc pcd =
+            ParameterizedClassDesc.create(getClass()
+                .getDeclaredField("list")
+                .getGenericType());
         assertEquals(String.class, pcd.getElementClassOfCollection());
     }
 
@@ -83,8 +89,10 @@ public class ParameterizedClassDescTest extends TestCase {
      */
     public void testGetElementClassOfCollectionForNotCollection()
             throws Exception {
-        ParameterizedClassDesc pcd = ParameterizedClassDesc.create(getClass()
-                .getDeclaredField("str").getGenericType());
+        ParameterizedClassDesc pcd =
+            ParameterizedClassDesc.create(getClass()
+                .getDeclaredField("str")
+                .getGenericType());
         assertNull(pcd.getElementClassOfCollection());
     }
 
@@ -93,8 +101,10 @@ public class ParameterizedClassDescTest extends TestCase {
      * @throws Exception
      */
     public void testGetKeyClassOfMap() throws Exception {
-        ParameterizedClassDesc pcd = ParameterizedClassDesc.create(getClass()
-                .getDeclaredField("map").getGenericType());
+        ParameterizedClassDesc pcd =
+            ParameterizedClassDesc.create(getClass()
+                .getDeclaredField("map")
+                .getGenericType());
         assertEquals(String.class, pcd.getKeyClassOfMap());
     }
 
@@ -103,8 +113,10 @@ public class ParameterizedClassDescTest extends TestCase {
      * @throws Exception
      */
     public void testGetKeyClassOfMapNotMap() throws Exception {
-        ParameterizedClassDesc pcd = ParameterizedClassDesc.create(getClass()
-                .getDeclaredField("str").getGenericType());
+        ParameterizedClassDesc pcd =
+            ParameterizedClassDesc.create(getClass()
+                .getDeclaredField("str")
+                .getGenericType());
         assertNull(pcd.getKeyClassOfMap());
     }
 
@@ -113,8 +125,10 @@ public class ParameterizedClassDescTest extends TestCase {
      * @throws Exception
      */
     public void testGetValueClassOfMap() throws Exception {
-        ParameterizedClassDesc pcd = ParameterizedClassDesc.create(getClass()
-                .getDeclaredField("map").getGenericType());
+        ParameterizedClassDesc pcd =
+            ParameterizedClassDesc.create(getClass()
+                .getDeclaredField("map")
+                .getGenericType());
         assertEquals(Integer.class, pcd.getValueClassOfMap());
     }
 
@@ -123,8 +137,10 @@ public class ParameterizedClassDescTest extends TestCase {
      * @throws Exception
      */
     public void testGetValueClassOfMapNotMap() throws Exception {
-        ParameterizedClassDesc pcd = ParameterizedClassDesc.create(getClass()
-                .getDeclaredField("str").getGenericType());
+        ParameterizedClassDesc pcd =
+            ParameterizedClassDesc.create(getClass()
+                .getDeclaredField("str")
+                .getGenericType());
         assertNull(pcd.getValueClassOfMap());
     }
 }

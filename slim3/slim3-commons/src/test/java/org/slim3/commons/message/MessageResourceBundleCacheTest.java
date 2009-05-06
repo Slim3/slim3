@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the Seasar Foundation and the Others.
+ * Copyright 2004-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,6 @@ package org.slim3.commons.message;
 
 import java.io.File;
 
-import org.slim3.commons.message.MessageResourceBundle;
-import org.slim3.commons.message.MessageResourceBundleCache;
-
-
 import junit.framework.TestCase;
 
 /**
@@ -34,8 +30,8 @@ public class MessageResourceBundleCacheTest extends TestCase {
      */
     public void testIsModifiedForFileIsNull() {
         MessageResourceBundle mrb = new MessageResourceBundle(null);
-        MessageResourceBundleCache cache = new MessageResourceBundleCache(mrb,
-                null);
+        MessageResourceBundleCache cache =
+            new MessageResourceBundleCache(mrb, null);
         assertFalse(cache.isModified());
     }
 
@@ -47,8 +43,8 @@ public class MessageResourceBundleCacheTest extends TestCase {
     public void testIsModifiedForFileIsNotModified() throws Exception {
         MessageResourceBundle mrb = new MessageResourceBundle(null);
         File file = new FileMock();
-        MessageResourceBundleCache cache = new MessageResourceBundleCache(mrb,
-                file);
+        MessageResourceBundleCache cache =
+            new MessageResourceBundleCache(mrb, file);
         assertFalse(cache.isModified());
     }
 
@@ -60,8 +56,8 @@ public class MessageResourceBundleCacheTest extends TestCase {
     public void testIsModifiedForFileIsModified() throws Exception {
         MessageResourceBundle mrb = new MessageResourceBundle(null);
         File file = new FileMock();
-        MessageResourceBundleCache cache = new MessageResourceBundleCache(mrb,
-                file);
+        MessageResourceBundleCache cache =
+            new MessageResourceBundleCache(mrb, file);
         file.setLastModified(file.lastModified() + 1);
         assertTrue(cache.isModified());
     }
@@ -73,8 +69,8 @@ public class MessageResourceBundleCacheTest extends TestCase {
      */
     public void testGetBundle() throws Exception {
         MessageResourceBundle mrb = new MessageResourceBundle(null);
-        MessageResourceBundleCache cache = new MessageResourceBundleCache(mrb,
-                null);
+        MessageResourceBundleCache cache =
+            new MessageResourceBundleCache(mrb, null);
         assertSame(mrb, cache.getBundle());
     }
 

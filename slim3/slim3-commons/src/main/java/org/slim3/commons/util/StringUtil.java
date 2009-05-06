@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the Seasar Foundation and the Others.
+ * Copyright 2004-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,8 +56,9 @@ public final class StringUtil {
             return text;
         }
         char chars[] = text.toCharArray();
-        if (chars.length >= 2 && Character.isUpperCase(chars[0])
-                && Character.isUpperCase(chars[1])) {
+        if (chars.length >= 2
+            && Character.isUpperCase(chars[0])
+            && Character.isUpperCase(chars[1])) {
             return text;
         }
         chars[0] = Character.toLowerCase(chars[0]);

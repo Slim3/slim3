@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the Seasar Foundation and the Others.
+ * Copyright 2004-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,9 @@ public class ConverterRuntimeExceptionTest extends TestCase {
      * @throws Exception
      */
     public void test() throws Exception {
-        ConverterRuntimeException e = new ConverterRuntimeException("hoge",
-                "xxx", new RuntimeException("Cause."));
+        ConverterRuntimeException e =
+            new ConverterRuntimeException("hoge", "xxx", new RuntimeException(
+                "Cause."));
         System.out.println(e.getMessage());
         assertEquals("hoge", e.getPropertyName());
         assertEquals("xxx", e.getValue());

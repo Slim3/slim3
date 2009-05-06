@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the Seasar Foundation and the Others.
+ * Copyright 2004-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,9 @@
  */
 package org.slim3.commons.util;
 
-import java.lang.reflect.Constructor;
-
 import org.slim3.commons.exception.ClassNotFoundRuntimeException;
 import org.slim3.commons.exception.IllegalAccessRuntimeException;
 import org.slim3.commons.exception.InstantiationRuntimeException;
-import org.slim3.commons.exception.NoSuchMethodRuntimeException;
 
 /**
  * A utility class for {@link Class}.
@@ -101,40 +98,5 @@ public final class ClassUtil {
     public static <T> T newInstance(String className, ClassLoader loader) {
         Class<?> clazz = forName(className, loader);
         return (T) newInstance(clazz);
-    }
-
-    /**
-     * Returns the constructor.
-     * 
-     * @param clazz
-     *            the target class
-     * @param parameterTypes
-     *            the parameter types.
-     * @return the constructor
-     */
-    public static Constructor<?> getConstructor(Class<?> clazz,
-            Class<?>... parameterTypes) {
-        try {
-            return clazz.getConstructor(parameterTypes);
-        } catch (NoSuchMethodException e) {
-            throw new NoSuchMethodRuntimeException(clazz, e);
-        }
-    }
-
-    /**
-     * Determines if the class is present.
-     * 
-     * @param className
-     *            the class name
-     * @return whether the class is present
-     */
-    public static boolean isPresent(String className) {
-        try {
-            Class.forName(className, true, Thread.currentThread()
-                    .getContextClassLoader());
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
     }
 }

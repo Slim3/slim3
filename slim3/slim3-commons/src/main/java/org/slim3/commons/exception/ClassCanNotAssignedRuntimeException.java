@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the Seasar Foundation and the Others.
+ * Copyright 2004-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ public class ClassCanNotAssignedRuntimeException extends SRuntimeException {
     public ClassCanNotAssignedRuntimeException(Class<?> originalClass,
             Class<?> destinationClass) {
         super("S3Commons-E0015", originalClass.getName(), destinationClass
-                .getName());
+            .getName());
         this.originalClass = originalClass;
         this.destinationClass = destinationClass;
     }

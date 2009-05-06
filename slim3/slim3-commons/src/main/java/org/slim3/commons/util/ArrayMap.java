@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the Seasar Foundation and the Others.
+ * Copyright 2004-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -222,8 +222,10 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Map<K, V>,
      */
     public final Entry<K, V> getEntry(int index) {
         if (index >= size) {
-            throw new IndexOutOfBoundsException("Index:" + index + ", Size:"
-                    + size);
+            throw new IndexOutOfBoundsException("Index:"
+                + index
+                + ", Size:"
+                + size);
         }
         return listTable[index];
     }
@@ -297,8 +299,8 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Map<K, V>,
 
     @Override
     public void putAll(Map<? extends K, ? extends V> map) {
-        for (Iterator<? extends Map.Entry<? extends K, ? extends V>> i = map
-                .entrySet().iterator(); i.hasNext();) {
+        for (Iterator<? extends Map.Entry<? extends K, ? extends V>> i =
+            map.entrySet().iterator(); i.hasNext();) {
             Map.Entry<? extends K, ? extends V> e = i.next();
             put(e.getKey(), e.getValue());
         }
@@ -338,7 +340,9 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Map<K, V>,
     public final Object[] toArray(final Object proto[]) {
         Object[] array = proto;
         if (proto.length < size) {
-            array = (Object[]) Array.newInstance(proto.getClass()
+            array =
+                (Object[]) Array.newInstance(proto
+                    .getClass()
                     .getComponentType(), size);
         }
         for (int i = 0; i < array.length; i++) {
@@ -468,7 +472,8 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Map<K, V>,
         if (key != null) {
             hashCode = key.hashCode();
             index = (hashCode & 0x7FFFFFFF) % mapTable.length;
-            for (Entry<K, V> e = mapTable[index], prev = null; e != null; prev = e, e = e.next) {
+            for (Entry<K, V> e = mapTable[index], prev = null; e != null; prev =
+                e, e = e.next) {
                 if ((e.hashCode == hashCode) && key.equals(e.key)) {
                     if (prev != null) {
                         prev.next = e.next;
@@ -479,7 +484,8 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Map<K, V>,
                 }
             }
         } else {
-            for (Entry<K, V> e = mapTable[index], prev = null; e != null; prev = e, e = e.next) {
+            for (Entry<K, V> e = mapTable[index], prev = null; e != null; prev =
+                e, e = e.next) {
                 if ((e.hashCode == hashCode) && e.key == null) {
                     if (prev != null) {
                         prev.next = e.next;
@@ -630,7 +636,7 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Map<K, V>,
             }
             Entry<?, ?> e = (Entry<?, ?>) o;
             return (key != null ? key.equals(e.key) : e.key == null)
-                    && (value != null ? value.equals(e.value) : e.value == null);
+                && (value != null ? value.equals(e.value) : e.value == null);
         }
 
         @Override

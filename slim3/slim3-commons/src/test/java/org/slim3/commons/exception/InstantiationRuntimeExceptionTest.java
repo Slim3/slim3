@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the Seasar Foundation and the Others.
+ * Copyright 2004-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,6 @@
  * governing permissions and limitations under the License.
  */
 package org.slim3.commons.exception;
-
-import org.slim3.commons.exception.InstantiationRuntimeException;
 
 import junit.framework.TestCase;
 
@@ -35,8 +33,8 @@ public class InstantiationRuntimeExceptionTest extends TestCase {
             Hoge.class.newInstance();
             fail();
         } catch (InstantiationException e) {
-            InstantiationRuntimeException re = new InstantiationRuntimeException(
-                    Hoge.class, e);
+            InstantiationRuntimeException re =
+                new InstantiationRuntimeException(Hoge.class, e);
             System.out.println(re);
             assertEquals(Hoge.class, re.getTargetClass());
         }

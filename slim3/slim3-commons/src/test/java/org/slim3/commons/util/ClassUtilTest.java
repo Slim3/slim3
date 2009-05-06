@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the Seasar Foundation and the Others.
+ * Copyright 2004-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,10 @@ public class ClassUtilTest extends TestCase {
      * 
      */
     public void testNewInstanceForClassName() {
-        String s = ClassUtil.newInstance("java.lang.String", Thread
-                .currentThread().getContextClassLoader());
+        String s =
+            ClassUtil.newInstance("java.lang.String", Thread
+                .currentThread()
+                .getContextClassLoader());
         assertNotNull(s);
     }
 
@@ -46,8 +48,10 @@ public class ClassUtilTest extends TestCase {
      * 
      */
     public void testForName() {
-        Class<?> clazz = ClassUtil.forName("java.lang.String", Thread
-                .currentThread().getContextClassLoader());
+        Class<?> clazz =
+            ClassUtil.forName("java.lang.String", Thread
+                .currentThread()
+                .getContextClassLoader());
         assertNotNull(clazz);
         assertEquals(String.class, clazz);
     }
@@ -58,19 +62,12 @@ public class ClassUtilTest extends TestCase {
     public void testForNameForException() {
         String className = "Xxx";
         try {
-            ClassUtil.forName(className, Thread.currentThread()
-                    .getContextClassLoader());
+            ClassUtil.forName(className, Thread
+                .currentThread()
+                .getContextClassLoader());
         } catch (ClassNotFoundRuntimeException e) {
             System.out.println(e.getMessage());
             assertEquals(className, e.getClassName());
         }
-    }
-
-    /**
-     * 
-     */
-    public void testIsPresent() {
-        assertTrue(ClassUtil.isPresent("java.lang.String"));
-        assertFalse(ClassUtil.isPresent("xxx"));
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the Seasar Foundation and the Others.
+ * Copyright 2004-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@ package org.slim3.commons.util;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
-
-import org.slim3.commons.util.GenericsUtil;
 
 import junit.framework.TestCase;
 
@@ -44,7 +42,8 @@ public class GenericsUtilTest extends TestCase {
      */
     public void testGetRawClass() throws Exception {
         assertEquals(List.class, GenericsUtil.getRawClass(getClass()
-                .getDeclaredField("list").getGenericType()));
+            .getDeclaredField("list")
+            .getGenericType()));
     }
 
     /**
@@ -53,7 +52,8 @@ public class GenericsUtilTest extends TestCase {
      */
     public void testGetRawClassForArray() throws Exception {
         assertEquals(new Map[0].getClass(), GenericsUtil.getRawClass(getClass()
-                .getDeclaredField("maps").getGenericType()));
+            .getDeclaredField("maps")
+            .getGenericType()));
     }
 
     /**
@@ -62,7 +62,8 @@ public class GenericsUtilTest extends TestCase {
      */
     public void testGetRawClassForNotParameterizedClass() throws Exception {
         assertEquals(List.class, GenericsUtil.getRawClass(getClass()
-                .getDeclaredField("list2").getGenericType()));
+            .getDeclaredField("list2")
+            .getGenericType()));
     }
 
     /**
@@ -70,8 +71,10 @@ public class GenericsUtilTest extends TestCase {
      * @throws Exception
      */
     public void testTypeArguments() throws Exception {
-        Type[] arguments = GenericsUtil.getTypeArguments(getClass()
-                .getDeclaredField("list").getGenericType());
+        Type[] arguments =
+            GenericsUtil.getTypeArguments(getClass()
+                .getDeclaredField("list")
+                .getGenericType());
         assertEquals(1, arguments.length);
         assertEquals(String.class, GenericsUtil.getRawClass(arguments[0]));
     }
@@ -81,8 +84,10 @@ public class GenericsUtilTest extends TestCase {
      * @throws Exception
      */
     public void testTypeArguments2() throws Exception {
-        Type[] arguments = GenericsUtil.getTypeArguments(getClass()
-                .getDeclaredField("map").getGenericType());
+        Type[] arguments =
+            GenericsUtil.getTypeArguments(getClass()
+                .getDeclaredField("map")
+                .getGenericType());
         assertEquals(2, arguments.length);
         assertEquals(String.class, GenericsUtil.getRawClass(arguments[0]));
         assertEquals(String.class, GenericsUtil.getRawClass(arguments[1]));
@@ -93,8 +98,10 @@ public class GenericsUtilTest extends TestCase {
      * @throws Exception
      */
     public void testTypeArgumentsForArray() throws Exception {
-        Type[] arguments = GenericsUtil.getTypeArguments(getClass()
-                .getDeclaredField("maps").getGenericType());
+        Type[] arguments =
+            GenericsUtil.getTypeArguments(getClass()
+                .getDeclaredField("maps")
+                .getGenericType());
         assertEquals(2, arguments.length);
         assertEquals(String.class, GenericsUtil.getRawClass(arguments[0]));
         assertEquals(String.class, GenericsUtil.getRawClass(arguments[1]));
@@ -105,8 +112,10 @@ public class GenericsUtilTest extends TestCase {
      * @throws Exception
      */
     public void testTypeArgumentsForNotParameterizedClass() throws Exception {
-        Type[] arguments = GenericsUtil.getTypeArguments(getClass()
-                .getDeclaredField("list2").getGenericType());
+        Type[] arguments =
+            GenericsUtil.getTypeArguments(getClass()
+                .getDeclaredField("list2")
+                .getGenericType());
         assertNull(arguments);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the Seasar Foundation and the Others.
+ * Copyright 2004-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,9 @@ public final class ShortUtil {
             }
             return Short.valueOf(s);
         } else if (o.getClass() == Boolean.class) {
-            return ((Boolean) o).booleanValue() ? Short.valueOf((short) 1)
-                    : Short.valueOf((short) 0);
+            return ((Boolean) o).booleanValue()
+                ? Short.valueOf((short) 1)
+                : Short.valueOf((short) 0);
         } else {
             return Short.valueOf(o.toString());
         }

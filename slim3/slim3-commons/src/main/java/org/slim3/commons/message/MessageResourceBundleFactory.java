@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the Seasar Foundation and the Others.
+ * Copyright 2004-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,8 @@ import org.slim3.commons.exception.WrapRuntimeException;
  */
 public final class MessageResourceBundleFactory {
 
-    private static Map<String, MessageResourceBundleCache> bundleCaches = new ConcurrentHashMap<String, MessageResourceBundleCache>();
+    private static Map<String, MessageResourceBundleCache> bundleCaches =
+        new ConcurrentHashMap<String, MessageResourceBundleCache>();
 
     private MessageResourceBundleFactory() {
     }
@@ -63,11 +64,11 @@ public final class MessageResourceBundleFactory {
         }
         if (messageBundleName == null) {
             throw new NullPointerException(
-                    "The messageBundleName parameter is null.");
+                "The messageBundleName parameter is null.");
         }
         MessageResourceBundle parentBundle = getBundle(messageBundleName);
-        MessageResourceBundle bundle = getBundle(messageBundleName + "_"
-                + locale.getLanguage());
+        MessageResourceBundle bundle =
+            getBundle(messageBundleName + "_" + locale.getLanguage());
         if (bundle != null) {
             bundle.setParent(parentBundle);
             return bundle;
@@ -91,8 +92,8 @@ public final class MessageResourceBundleFactory {
             }
             return cache.getBundle();
         }
-        cache = new MessageResourceBundleCache(createBundle(path),
-                getFile(path));
+        cache =
+            new MessageResourceBundleCache(createBundle(path), getFile(path));
         bundleCaches.put(messageBundleName, cache);
         return cache.getBundle();
     }

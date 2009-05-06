@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the Seasar Foundation and the Others.
+ * Copyright 2004-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,8 @@ import org.slim3.commons.cleaner.Cleaner;
  */
 public final class BeanUtil {
 
-    private static ConcurrentHashMap<String, BeanDesc> beanDescCache = new ConcurrentHashMap<String, BeanDesc>(
-            200);
+    private static ConcurrentHashMap<String, BeanDesc> beanDescCache =
+        new ConcurrentHashMap<String, BeanDesc>(200);
 
     private static volatile boolean initialized = false;
 

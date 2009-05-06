@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the Seasar Foundation and the Others.
+ * Copyright 2004-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public final class DoubleUtil {
             return Double.valueOf(s);
         } else if (o.getClass() == Boolean.class) {
             return ((Boolean) o).booleanValue() ? Double.valueOf(1) : Double
-                    .valueOf(0);
+                .valueOf(0);
         } else {
             return Double.valueOf(o.toString());
         }

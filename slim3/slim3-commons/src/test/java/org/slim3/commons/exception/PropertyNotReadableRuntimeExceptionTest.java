@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the Seasar Foundation and the Others.
+ * Copyright 2004-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,8 @@
  * governing permissions and limitations under the License.
  */
 package org.slim3.commons.exception;
-import org.slim3.commons.exception.PropertyNotReadableRuntimeException;
 
 import junit.framework.TestCase;
-
 
 /**
  * @author higa
@@ -30,8 +28,8 @@ public class PropertyNotReadableRuntimeExceptionTest extends TestCase {
      * @throws Exception
      */
     public void testAll() throws Exception {
-        PropertyNotReadableRuntimeException e = new PropertyNotReadableRuntimeException(
-                getClass(), "aaa");
+        PropertyNotReadableRuntimeException e =
+            new PropertyNotReadableRuntimeException(getClass(), "aaa");
         System.out.println(e);
         assertEquals(getClass(), e.getBeanClass());
         assertEquals("aaa", e.getPropertyName());

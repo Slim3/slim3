@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the Seasar Foundation and the Others.
+ * Copyright 2004-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,16 +29,21 @@ public class MessageBuilderTest extends TestCase {
      * 
      */
     public void testGetMessageForIllegalArgument() {
-        assertEquals("1, 2", MessageBuilder.getMessage(Locale.getDefault(),
-                null, 1, 2));
+        assertEquals("1, 2", MessageBuilder.getMessage(
+            Locale.getDefault(),
+            null,
+            1,
+            2));
     }
 
     /**
      * 
      */
     public void testGetMessage() {
-        assertEquals("foo(1)", MessageBuilder.getMessage(Locale.getDefault(),
-                "S3Test-E0002", 1));
+        assertEquals("foo(1)", MessageBuilder.getMessage(
+            Locale.getDefault(),
+            "S3Test-E0002",
+            1));
     }
 
     /**
@@ -66,8 +71,9 @@ public class MessageBuilderTest extends TestCase {
      * 
      */
     public void testGetPattern() {
-        assertEquals("hoge", MessageBuilder.getPattern(Locale.getDefault(),
-                "S3Test-E0001"));
+        assertEquals("hoge", MessageBuilder.getPattern(
+            Locale.getDefault(),
+            "S3Test-E0001"));
     }
 
     /**
@@ -82,7 +88,7 @@ public class MessageBuilderTest extends TestCase {
      */
     public void testCalculateBundleName() {
         assertEquals("S3TestMessages", MessageBuilder
-                .calculateBundleName("S3Test-E0001"));
+            .calculateBundleName("S3Test-E0001"));
     }
 
     /**

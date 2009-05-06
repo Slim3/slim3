@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the Seasar Foundation and the Others.
+ * Copyright 2004-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.slim3.commons.util.IteratorEnumeration;
-
 import junit.framework.TestCase;
 
 /**
@@ -35,8 +33,8 @@ public class IteratorEnumrationTest extends TestCase {
      */
     public void testHasMoreElements() throws Exception {
         List<String> list = new ArrayList<String>();
-        IteratorEnumeration<String> e = new IteratorEnumeration<String>(list
-                .iterator());
+        IteratorEnumeration<String> e =
+            new IteratorEnumeration<String>(list.iterator());
         assertFalse(e.hasMoreElements());
         list.add("aaa");
         e = new IteratorEnumeration<String>(list.iterator());
@@ -51,8 +49,8 @@ public class IteratorEnumrationTest extends TestCase {
      */
     public void testNextElement() throws Exception {
         List<String> list = new ArrayList<String>();
-        IteratorEnumeration<String> e = new IteratorEnumeration<String>(list
-                .iterator());
+        IteratorEnumeration<String> e =
+            new IteratorEnumeration<String>(list.iterator());
         try {
             e.nextElement();
             fail();

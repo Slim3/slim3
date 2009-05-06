@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the Seasar Foundation and the Others.
+ * Copyright 2004-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,8 @@ public class IllegalAccessRuntimeExceptionTest extends TestCase {
             Hoge.class.newInstance();
             fail();
         } catch (IllegalAccessException e) {
-            IllegalAccessRuntimeException re = new IllegalAccessRuntimeException(
-                    Hoge.class, e);
+            IllegalAccessRuntimeException re =
+                new IllegalAccessRuntimeException(Hoge.class, e);
             System.out.println(re.getMessage());
             assertEquals(Hoge.class, re.getTargetClass());
         }

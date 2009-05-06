@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the Seasar Foundation and the Others.
+ * Copyright 2004-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,15 +43,15 @@ public final class GenericsUtil {
             return Class.class.cast(type);
         }
         if (ParameterizedType.class.isInstance(type)) {
-            ParameterizedType parameterizedType = ParameterizedType.class
-                    .cast(type);
+            ParameterizedType parameterizedType =
+                ParameterizedType.class.cast(type);
             return getRawClass(parameterizedType.getRawType());
         }
         if (GenericArrayType.class.isInstance(type)) {
-            GenericArrayType genericArrayType = GenericArrayType.class
-                    .cast(type);
-            Class<?> rawClass = getRawClass(genericArrayType
-                    .getGenericComponentType());
+            GenericArrayType genericArrayType =
+                GenericArrayType.class.cast(type);
+            Class<?> rawClass =
+                getRawClass(genericArrayType.getGenericComponentType());
             return Array.newInstance(rawClass, 0).getClass();
         }
         return null;
@@ -69,8 +69,9 @@ public final class GenericsUtil {
             return ParameterizedType.class.cast(type).getActualTypeArguments();
         }
         if (GenericArrayType.class.isInstance(type)) {
-            return getTypeArguments(GenericArrayType.class.cast(type)
-                    .getGenericComponentType());
+            return getTypeArguments(GenericArrayType.class
+                .cast(type)
+                .getGenericComponentType());
         }
         return null;
     }

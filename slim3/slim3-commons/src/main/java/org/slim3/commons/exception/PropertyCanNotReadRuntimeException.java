@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the Seasar Foundation and the Others.
+ * Copyright 2004-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,12 @@ public class PropertyCanNotReadRuntimeException extends SRuntimeException {
      */
     public PropertyCanNotReadRuntimeException(Class<?> beanClass,
             String propertyName, Throwable cause) {
-        super(cause, "S3Commons-E0009", beanClass.getName(), propertyName,
-                convertCauseMessage(cause));
+        super(
+            cause,
+            "S3Commons-E0009",
+            beanClass.getName(),
+            propertyName,
+            convertCauseMessage(cause));
         this.beanClass = beanClass;
         this.propertyName = propertyName;
     }

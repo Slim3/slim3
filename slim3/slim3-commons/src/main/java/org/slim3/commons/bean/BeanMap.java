@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the Seasar Foundation and the Others.
+ * Copyright 2004-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,9 @@ public class BeanMap extends HashMap<String, Object> {
     @Override
     public Object get(Object key) {
         if (!containsKey(key)) {
-            throw new IllegalArgumentException(key + " is not found in "
-                    + keySet());
+            throw new IllegalArgumentException(key
+                + " is not found in "
+                + keySet());
         }
         return super.get(key);
     }
