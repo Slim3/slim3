@@ -39,14 +39,14 @@ public class JDOTemplateTest extends DatastoreTestCase {
      * @throws Exception
      */
     public void testExecuteAndDetach() throws Exception {
-        Sample s = new JDOTemplate<Sample>() {
+        Sample s = new JDOTemplate() {
             @Override
-            public Sample doExecute() {
+            public Object doRun() {
                 Sample sample = new Sample();
                 makePersistent(sample);
                 return sample;
             }
-        }.execute();
+        }.run();
         assertEquals(ObjectState.DETACHED_CLEAN, JDOHelper.getObjectState(s));
     }
 
@@ -54,78 +54,78 @@ public class JDOTemplateTest extends DatastoreTestCase {
      * @throws Exception
      */
     public void testFrom() throws Exception {
-        new JDOTemplate<Void>() {
+        new JDOTemplate() {
             @Override
-            public Void doExecute() {
+            public Object doRun() {
                 SampleMeta s = new SampleMeta();
                 assertNotNull(from(s));
                 return null;
             }
-        }.execute();
+        }.run();
     }
 
     /**
      * @throws Exception
      */
     public void testGetObjectByKey() throws Exception {
-        final Key key = new JDOTemplate<Key>() {
+        final Key key = new JDOTemplate() {
             @Override
-            public Key doExecute() {
+            public Object doRun() {
                 Sample sample = new Sample();
                 makePersistent(sample);
                 return sample.getKey();
             }
-        }.execute();
-        new JDOTemplate<Void>() {
+        }.run();
+        new JDOTemplate() {
             @Override
-            public Void doExecute() {
+            public Object doRun() {
                 assertNotNull(getObjectByKey(Sample.class, key));
                 return null;
             }
-        }.execute();
+        }.run();
     }
 
     /**
      * @throws Exception
      */
     public void testGetObjectByKeyForName() throws Exception {
-        final Key key = new JDOTemplate<Key>() {
+        final Key key = new JDOTemplate() {
             @Override
-            public Key doExecute() {
+            public Object doRun() {
                 Sample sample = new Sample();
                 sample.setKey(key(Sample.class, "hoge"));
                 makePersistent(sample);
                 return sample.getKey();
             }
-        }.execute();
-        new JDOTemplate<Void>() {
+        }.run();
+        new JDOTemplate() {
             @Override
-            public Void doExecute() {
+            public Object doRun() {
                 assertNotNull(getObjectByKey(Sample.class, key));
                 return null;
             }
-        }.execute();
+        }.run();
     }
 
     /**
      * @throws Exception
      */
     public void testGetObjectById() throws Exception {
-        final Long id = new JDOTemplate<Long>() {
+        final Long id = new JDOTemplate() {
             @Override
-            public Long doExecute() {
+            public Object doRun() {
                 Sample2 sample2 = new Sample2();
                 makePersistent(sample2);
                 return sample2.getId();
             }
-        }.execute();
-        new JDOTemplate<Void>() {
+        }.run();
+        new JDOTemplate() {
             @Override
-            public Void doExecute() {
+            public Object doRun() {
                 assertNotNull(getObjectById(Sample2.class, id));
                 return null;
             }
-        }.execute();
+        }.run();
     }
 
     /**
@@ -133,43 +133,43 @@ public class JDOTemplateTest extends DatastoreTestCase {
      */
     public void testGetObjectByName() throws Exception {
         final String name = "hoge";
-        new JDOTemplate<Void>() {
+        new JDOTemplate() {
             @Override
-            public Void doExecute() {
+            public Object doRun() {
                 Sample3 sample3 = new Sample3();
                 sample3.setName(name);
                 makePersistent(sample3);
                 return null;
             }
-        }.execute();
-        new JDOTemplate<Void>() {
+        }.run();
+        new JDOTemplate() {
             @Override
-            public Void doExecute() {
+            public Object doRun() {
                 assertNotNull(getObjectByName(Sample3.class, name));
                 return null;
             }
-        }.execute();
+        }.run();
     }
 
     /**
      * @throws Exception
      */
     public void testGetObjectByKeyId() throws Exception {
-        final Long id = new JDOTemplate<Long>() {
+        final Long id = new JDOTemplate() {
             @Override
-            public Long doExecute() {
+            public Object doRun() {
                 Sample sample = new Sample();
                 makePersistent(sample);
                 return sample.getKey().getId();
             }
-        }.execute();
-        new JDOTemplate<Void>() {
+        }.run();
+        new JDOTemplate() {
             @Override
-            public Void doExecute() {
+            public Object doRun() {
                 assertNotNull(getObjectByKeyId(Sample.class, id));
                 return null;
             }
-        }.execute();
+        }.run();
     }
 
     /**
@@ -177,86 +177,86 @@ public class JDOTemplateTest extends DatastoreTestCase {
      */
     public void testGetObjectByKeyName() throws Exception {
         final String name = "hoge";
-        new JDOTemplate<Void>() {
+        new JDOTemplate() {
             @Override
-            public Void doExecute() {
+            public Object doRun() {
                 Sample sample = new Sample();
                 sample.setKey(key(Sample.class, name));
                 makePersistent(sample);
                 return null;
             }
-        }.execute();
-        new JDOTemplate<Void>() {
+        }.run();
+        new JDOTemplate() {
             @Override
-            public Void doExecute() {
+            public Object doRun() {
                 assertNotNull(getObjectByKeyName(Sample.class, name));
                 return null;
             }
-        }.execute();
+        }.run();
     }
 
     /**
      * @throws Exception
      */
     public void testGetObjectByKeyForMeta() throws Exception {
-        final Key key = new JDOTemplate<Key>() {
+        final Key key = new JDOTemplate() {
             @Override
-            public Key doExecute() {
+            public Object doRun() {
                 Sample sample = new Sample();
                 makePersistent(sample);
                 return sample.getKey();
             }
-        }.execute();
-        new JDOTemplate<Void>() {
+        }.run();
+        new JDOTemplate() {
             @Override
-            public Void doExecute() {
+            public Object doRun() {
                 assertNotNull(getObjectByKey(new SampleMeta(), key));
                 return null;
             }
-        }.execute();
+        }.run();
     }
 
     /**
      * @throws Exception
      */
     public void testGetObjectByKeyForNameForMeta() throws Exception {
-        final Key key = new JDOTemplate<Key>() {
+        final Key key = new JDOTemplate() {
             @Override
-            public Key doExecute() {
+            public Object doRun() {
                 Sample sample = new Sample();
                 sample.setKey(key(Sample.class, "hoge"));
                 makePersistent(sample);
                 return sample.getKey();
             }
-        }.execute();
-        new JDOTemplate<Void>() {
+        }.run();
+        new JDOTemplate() {
             @Override
-            public Void doExecute() {
+            public Object doRun() {
                 assertNotNull(getObjectByKey(new SampleMeta(), key));
                 return null;
             }
-        }.execute();
+        }.run();
     }
 
     /**
      * @throws Exception
      */
     public void testGetObjectByIdForMeta() throws Exception {
-        final Long id = new JDOTemplate<Long>() {
+        final Long id = new JDOTemplate() {
             @Override
-            public Long doExecute() {
+            public Object doRun() {
                 Sample2 sample2 = new Sample2();
                 makePersistent(sample2);
                 return sample2.getId();
             }
-        }.execute();
-        new JDOTemplate<Void>() {
+        }.run();
+        new JDOTemplate() {
             @Override
-            public Void doExecute() {
+            public Object doRun() {
                 assertNotNull(getObjectById(new Sample2Meta(), id));
                 return null;
             }
-        }.execute();
+        }.run();
     }
 
     /**
@@ -264,43 +264,43 @@ public class JDOTemplateTest extends DatastoreTestCase {
      */
     public void testGetObjectByNameForMeta() throws Exception {
         final String name = "hoge";
-        new JDOTemplate<Void>() {
+        new JDOTemplate() {
             @Override
-            public Void doExecute() {
+            public Object doRun() {
                 Sample3 sample3 = new Sample3();
                 sample3.setName(name);
                 makePersistent(sample3);
                 return null;
             }
-        }.execute();
-        new JDOTemplate<Void>() {
+        }.run();
+        new JDOTemplate() {
             @Override
-            public Void doExecute() {
+            public Object doRun() {
                 assertNotNull(getObjectByName(new Sample3Meta(), name));
                 return null;
             }
-        }.execute();
+        }.run();
     }
 
     /**
      * @throws Exception
      */
     public void testGetObjectByKeyIdForMeta() throws Exception {
-        final Long id = new JDOTemplate<Long>() {
+        final Long id = new JDOTemplate() {
             @Override
-            public Long doExecute() {
+            public Object doRun() {
                 Sample sample = new Sample();
                 makePersistent(sample);
                 return sample.getKey().getId();
             }
-        }.execute();
-        new JDOTemplate<Void>() {
+        }.run();
+        new JDOTemplate() {
             @Override
-            public Void doExecute() {
+            public Object doRun() {
                 assertNotNull(getObjectByKeyId(new SampleMeta(), id));
                 return null;
             }
-        }.execute();
+        }.run();
     }
 
     /**
@@ -308,21 +308,21 @@ public class JDOTemplateTest extends DatastoreTestCase {
      */
     public void testGetObjectByKeyNameForMeta() throws Exception {
         final String name = "hoge";
-        new JDOTemplate<Void>() {
+        new JDOTemplate() {
             @Override
-            public Void doExecute() {
+            public Object doRun() {
                 Sample sample = new Sample();
                 sample.setKey(key(Sample.class, name));
                 makePersistent(sample);
                 return null;
             }
-        }.execute();
-        new JDOTemplate<Void>() {
+        }.run();
+        new JDOTemplate() {
             @Override
-            public Void doExecute() {
+            public Object doRun() {
                 assertNotNull(getObjectByKeyName(new SampleMeta(), name));
                 return null;
             }
-        }.execute();
+        }.run();
     }
 }

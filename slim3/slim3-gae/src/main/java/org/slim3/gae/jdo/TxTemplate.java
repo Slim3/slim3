@@ -22,12 +22,10 @@ import javax.jdo.Transaction;
  * A transaction template class.
  * 
  * @author higa
- * @param <R>
- *            the return type
  * @since 3.0
  * 
  */
-public abstract class TxTemplate<R> {
+public abstract class TxTemplate {
 
     /**
      * The persistence manager.
@@ -55,16 +53,19 @@ public abstract class TxTemplate<R> {
     }
 
     /**
-     * Executes an action with transaction.
+     * Run this template.
      * 
-     * @return the executed result
+     * @param <R>
+     *            the return value
+     * @return the result
      */
-    public final R execute() {
-        R returnValue = null;
+    @SuppressWarnings("unchecked")
+    public final <R> R run() {
+        Object returnValue = null;
         tx = pm.currentTransaction();
         try {
             tx.begin();
-            returnValue = doExecute();
+            returnValue = doRun();
             if (tx.getRollbackOnly()) {
                 tx.rollback();
             } else {
@@ -75,13 +76,13 @@ public abstract class TxTemplate<R> {
                 tx.rollback();
             }
         }
-        return returnValue;
+        return (R) returnValue;
     }
 
     /**
-     * Executes an action.
+     * You can implement this method to customize this template.
      * 
-     * @return the executed result
+     * @return the result
      */
-    protected abstract R doExecute();
+    protected abstract Object doRun();
 }

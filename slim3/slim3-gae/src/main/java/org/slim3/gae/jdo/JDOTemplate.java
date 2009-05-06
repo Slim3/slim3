@@ -26,12 +26,10 @@ import com.google.appengine.api.datastore.KeyFactory;
  * A JDO template class.
  * 
  * @author higa
- * @param <R>
- *            the return type
  * @since 3.0
  * 
  */
-public abstract class JDOTemplate<R> {
+public abstract class JDOTemplate {
 
     /**
      * The persistence manager.
@@ -39,47 +37,33 @@ public abstract class JDOTemplate<R> {
     protected PersistenceManager pm;
 
     /**
-     * Executes an action.
+     * Runs this template.
      * 
-     * @return the executed result
+     * @param <R>
+     *            the return type
+     * @return the result
      */
-    public final R execute() {
-        R returnValue = null;
+    @SuppressWarnings("unchecked")
+    public final <R> R run() {
+        Object returnValue = null;
         pm = PM.get();
         try {
-            beforeExecution();
-            returnValue = doExecute();
-            afterExecution(returnValue);
+            returnValue = doRun();
         } catch (Throwable t) {
             handleThrowable(t);
         } finally {
             assertPersistenceManagerIsActive();
             pm.close();
         }
-        return returnValue;
+        return (R) returnValue;
     }
 
     /**
-     * Processes an action before execution.
-     */
-    protected void beforeExecution() {
-    }
-
-    /**
-     * Executes an action.
+     * You can implement this method to customize this template.
      * 
-     * @return the executed result
+     * @return the result
      */
-    protected abstract R doExecute();
-
-    /**
-     * Processes an action after execution.
-     * 
-     * @param returnValue
-     *            the return value
-     */
-    protected void afterExecution(R returnValue) {
-    }
+    protected abstract Object doRun();
 
     /**
      * Handles the exception.

@@ -36,13 +36,13 @@ public class JDOTemplateTest extends TestCase {
         assertNotNull(template.key(s, "hoge"));
         assertEquals(template.key(Sample.class, 1), template.key(s, 1));
         assertEquals(template.key(Sample.class, "hoge"), template
-                .key(s, "hoge"));
+            .key(s, "hoge"));
     }
 
-    private static class MyTemplate extends JDOTemplate<Void> {
+    private static class MyTemplate extends JDOTemplate {
 
         @Override
-        protected Void doExecute() {
+        protected Object doRun() {
             return null;
         }
     }

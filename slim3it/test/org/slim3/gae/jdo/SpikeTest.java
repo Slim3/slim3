@@ -16,6 +16,7 @@
 package org.slim3.gae.jdo;
 
 import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
 
 import org.slim3.gae.unit.DatastoreTestCase;
 
@@ -34,10 +35,8 @@ public class SpikeTest extends DatastoreTestCase {
         PersistenceManager pm = PM.get();
         Sample s = new Sample();
         pm.makePersistent(s);
-        pm.close();
-        pm = PM.get();
-        // pm.setCopyOnAttach(true);
-        Sample s2 = pm.makePersistent(s);
-        assertSame(s, s2);
+        Query query = pm.newQuery(Sample.class);
+        query.setOrdering("key");
+        query.execute();
     }
 }

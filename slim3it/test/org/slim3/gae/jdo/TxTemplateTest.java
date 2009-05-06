@@ -33,22 +33,22 @@ public class TxTemplateTest extends DatastoreTestCase {
      * @throws Exception
      */
     public void testExecute() throws Exception {
-        new JDOTemplate<Void>() {
+        new JDOTemplate() {
             @Override
-            protected Void doExecute() {
-                TxTemplate<Void> txTemplate = new TxTemplate<Void>(pm) {
+            protected Object doRun() {
+                TxTemplate txTemplate = new TxTemplate(pm) {
                     @Override
-                    protected Void doExecute() {
+                    protected Object doRun() {
                         transaction = tx;
                         active = tx.isActive();
                         return null;
                     }
                 };
-                txTemplate.execute();
+                txTemplate.run();
                 assertFalse(txTemplate.tx.isActive());
                 return null;
             }
-        }.execute();
+        }.run();
         assertNotNull(transaction);
         assertTrue(active);
     }
