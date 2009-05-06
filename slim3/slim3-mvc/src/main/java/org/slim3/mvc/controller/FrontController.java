@@ -85,10 +85,12 @@ public class FrontController implements Filter {
             encoding = DEFAULT_ENCODING;
         }
         servletContext = config.getServletContext();
+        ServletContextLocator.setServletContext(servletContext);
     }
 
     public void destroy() {
         Cleaner.cleanAll();
+        ServletContextLocator.setServletContext(null);
     }
 
     public void doFilter(ServletRequest request, ServletResponse response,
@@ -116,25 +118,34 @@ public class FrontController implements Filter {
     protected void doFilter(HttpServletRequest request,
             HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        if (request.getCharacterEncoding() == null) {
-            request.setCharacterEncoding(encoding);
-        }
-        String path = getPath(request);
-        Controller controller = getController(request, response, path);
-        if (controller == null) {
-            chain.doFilter(request, response);
-        } else {
-            if (Configuration.getInstance().isHot()) {
-                synchronized (this) {
-                    try {
-                        processController(request, response, controller);
-                    } finally {
-                        Cleaner.cleanAll();
-                    }
-                }
-            } else {
-                processController(request, response, controller);
+        HttpServletRequest previousRequest = RequestLocator.getRequest();
+        HttpServletResponse previousResponse = ResponseLocator.getResponse();
+        RequestLocator.setRequest(request);
+        ResponseLocator.setResponse(response);
+        try {
+            if (request.getCharacterEncoding() == null) {
+                request.setCharacterEncoding(encoding);
             }
+            String path = getPath(request);
+            Controller controller = getController(request, response, path);
+            if (controller == null) {
+                chain.doFilter(request, response);
+            } else {
+                if (Configuration.getInstance().isHot()) {
+                    synchronized (this) {
+                        try {
+                            processController(request, response, controller);
+                        } finally {
+                            Cleaner.cleanAll();
+                        }
+                    }
+                } else {
+                    processController(request, response, controller);
+                }
+            }
+        } finally {
+            RequestLocator.setRequest(previousRequest);
+            ResponseLocator.setResponse(previousResponse);
         }
     }
 
@@ -178,7 +189,7 @@ public class FrontController implements Filter {
         controller.setRequest(request);
         controller.setResponse(response);
         controller.setPath(path);
-        request.setAttribute(MvcConstants.CONTROLLER_KEY, controller);
+        ControllerLocator.setController(controller);
         return controller;
     }
 
@@ -189,31 +200,12 @@ public class FrontController implements Filter {
      *            the path
      * @return a new controller
      * @throws IllegalStateException
-     *             if the entry(slim3.controllerPackage) of
-     *             "slim3_configuration.properites" is not found or if the
-     *             controller does not extend
+     *             if the controller does not extend
      *             "org.slim3.mvc.controller.Controller"
      */
     protected Controller createController(String path)
             throws IllegalStateException {
-        String packageName =
-            Configuration.getInstance().getValue(
-                MvcConstants.CONTROLLER_PACKAGE_KEY);
-        if (StringUtil.isEmpty(packageName)) {
-            throw new IllegalStateException("The entry("
-                + MvcConstants.CONTROLLER_PACKAGE_KEY
-                + ") of \"slim3_configuration.properties\" is not found.");
-        }
-        String className = packageName + path.replace('/', '.');
-        if (className.endsWith(".")) {
-            className += MvcConstants.INDEX_CONTROLLER;
-        } else {
-            int pos = className.lastIndexOf('.');
-            className =
-                className.substring(0, pos + 1)
-                    + StringUtil.capitalize(className.substring(pos + 1))
-                    + MvcConstants.CONTROLLER_SUFFIX;
-        }
+        String className = toControllerClassName(path);
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         if (Configuration.getInstance().isHot()) {
             loader = new HotReloadingClassLoader(loader);
@@ -235,6 +227,39 @@ public class FrontController implements Filter {
                 + "\".");
         }
         return ClassUtil.newInstance(clazz);
+    }
+
+    /**
+     * Converts the path to the controller class name.
+     * 
+     * @param path
+     *            the path
+     * @return the controller class name
+     * @throws IllegalStateException
+     *             if the entry(slim3.controllerPackage) of
+     *             "slim3_configuration.properties" is not found
+     */
+    protected String toControllerClassName(String path)
+            throws IllegalStateException {
+        String packageName =
+            Configuration.getInstance().getValue(
+                MvcConstants.CONTROLLER_PACKAGE_KEY);
+        if (StringUtil.isEmpty(packageName)) {
+            throw new IllegalStateException("The entry("
+                + MvcConstants.CONTROLLER_PACKAGE_KEY
+                + ") of \"slim3_configuration.properties\" is not found.");
+        }
+        String className = packageName + path.replace('/', '.');
+        if (className.endsWith(".")) {
+            className += MvcConstants.INDEX_CONTROLLER;
+        } else {
+            int pos = className.lastIndexOf('.');
+            className =
+                className.substring(0, pos + 1)
+                    + StringUtil.capitalize(className.substring(pos + 1))
+                    + MvcConstants.CONTROLLER_SUFFIX;
+        }
+        return className;
     }
 
     /**

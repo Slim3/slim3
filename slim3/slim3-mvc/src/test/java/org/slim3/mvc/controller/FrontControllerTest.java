@@ -52,6 +52,7 @@ public class FrontControllerTest extends MvcTestCase {
     public void testInit() throws Exception {
         mvcTester.frontController.init(mvcTester.filterConfig);
         assertEquals("UTF-8", mvcTester.frontController.encoding);
+        assertNotNull(ServletContextLocator.getServletContext());
     }
 
     /**
@@ -62,6 +63,19 @@ public class FrontControllerTest extends MvcTestCase {
         mvcTester.request.setPathInfo("/hello/");
         assertEquals("/hello/", mvcTester.frontController
             .getPath(mvcTester.request));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testToControllerClassName() throws Exception {
+        assertEquals(ListController.class.getName(), mvcTester.frontController
+            .toControllerClassName("/hello/list"));
+        assertEquals(HogeController.class.getName(), mvcTester.frontController
+            .toControllerClassName("/hoge"));
+        assertEquals(IndexController.class.getName(), mvcTester.frontController
+            .toControllerClassName("/"));
     }
 
     /**

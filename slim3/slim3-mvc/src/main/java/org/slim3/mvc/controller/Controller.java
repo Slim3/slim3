@@ -381,14 +381,9 @@ public abstract class Controller {
      * @param name
      *            the name
      * @return the request attribute
-     * @throws IllegalStateException
-     *             if the request is not set
      */
     @SuppressWarnings("unchecked")
-    protected <T> T getAttribute(String name) throws IllegalStateException {
-        if (request == null) {
-            throw new IllegalStateException("The request is not set.");
-        }
+    protected <T> T getAttribute(String name) {
         return (T) request.getAttribute(name);
     }
 
@@ -401,9 +396,6 @@ public abstract class Controller {
      *            the value
      */
     protected void setAttribute(String name, Object value) {
-        if (request == null) {
-            throw new IllegalStateException("The request is not set.");
-        }
         request.setAttribute(name, value);
     }
 
@@ -431,15 +423,9 @@ public abstract class Controller {
      * @param name
      *            the name
      * @return the session attribute
-     * @throws IllegalStateException
-     *             if the request is not set
      */
     @SuppressWarnings("unchecked")
-    protected <T> T getSessionAttribute(String name)
-            throws IllegalStateException {
-        if (request == null) {
-            throw new IllegalStateException("The request is not set.");
-        }
+    protected <T> T getSessionAttribute(String name) {
         HttpSession session = request.getSession(false);
         if (session == null) {
             return null;
@@ -456,9 +442,6 @@ public abstract class Controller {
      *            the value
      */
     protected void setSessionAttribute(String name, Object value) {
-        if (request == null) {
-            throw new IllegalStateException("The request is not set.");
-        }
         HttpSession session = request.getSession();
         session.setAttribute(name, value);
     }
@@ -487,15 +470,9 @@ public abstract class Controller {
      * @param name
      *            the name
      * @return the servlet context attribute
-     * @throws IllegalStateException
-     *             if the servlet context is not set
      */
     @SuppressWarnings("unchecked")
-    protected <T> T getServletContextAttribute(String name)
-            throws IllegalStateException {
-        if (servletContext == null) {
-            throw new IllegalStateException("The servlet context is not set.");
-        }
+    protected <T> T getServletContextAttribute(String name) {
         return (T) servletContext.getAttribute(name);
     }
 
@@ -508,9 +485,6 @@ public abstract class Controller {
      *            the value
      */
     protected void setServletContextAttribute(String name, Object value) {
-        if (servletContext == null) {
-            throw new IllegalStateException("The servlet context is not set.");
-        }
         servletContext.setAttribute(name, value);
     }
 
