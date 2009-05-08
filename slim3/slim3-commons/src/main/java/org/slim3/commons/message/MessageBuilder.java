@@ -17,6 +17,7 @@ package org.slim3.commons.message;
 
 import java.text.MessageFormat;
 import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * A class to build a message.
@@ -106,13 +107,15 @@ public final class MessageBuilder {
         if (bundleName == null) {
             return null;
         }
-        MessageResourceBundle bundle =
-            MessageResourceBundleFactory.getBundle(locale, bundleName);
+        ResourceBundle bundle =
+            ResourceBundle.getBundle(bundleName, locale, Thread
+                .currentThread()
+                .getContextClassLoader());
         if (bundle == null) {
             return null;
         }
         String key = calculateKey(messageCode);
-        return bundle.get(key);
+        return bundle.getString(key);
     }
 
     /**

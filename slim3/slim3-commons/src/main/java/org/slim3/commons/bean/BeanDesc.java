@@ -20,7 +20,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.slim3.commons.exception.PropertyNotFoundRuntimeException;
 import org.slim3.commons.util.CaseInsensitiveMap;
 import org.slim3.commons.util.StringUtil;
 
@@ -164,32 +163,14 @@ public final class BeanDesc {
     }
 
     /**
-     * Returns true if this class has the property.
-     * 
-     * @param propertyName
-     *            the property name
-     * @return whether this class has the property
-     */
-    public boolean hasPropertyDesc(String propertyName) {
-        return propertyDescCache.containsKey(propertyName);
-    }
-
-    /**
      * Returns the property descriptor.
      * 
      * @param propertyName
      *            the property name
      * @return the property descriptor
-     * @throws PropertyNotFoundRuntimeException
-     *             if the property is not found
      */
-    public PropertyDesc getPropertyDesc(String propertyName)
-            throws PropertyNotFoundRuntimeException {
-        PropertyDesc pd = propertyDescCache.get(propertyName);
-        if (pd == null) {
-            throw new PropertyNotFoundRuntimeException(beanClass, propertyName);
-        }
-        return pd;
+    public PropertyDesc getPropertyDesc(String propertyName) {
+        return propertyDescCache.get(propertyName);
     }
 
     /**

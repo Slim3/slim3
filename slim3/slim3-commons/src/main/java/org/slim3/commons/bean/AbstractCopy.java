@@ -243,11 +243,11 @@ public abstract class AbstractCopy<S extends AbstractCopy<S>> {
                 || !isTargetProperty(propertyName)) {
                 continue;
             }
-            if (!destBeanDesc.hasPropertyDesc(propertyName)) {
-                continue;
-            }
             PropertyDesc destPropertyDesc =
                 destBeanDesc.getPropertyDesc(propertyName);
+            if (destPropertyDesc == null) {
+                continue;
+            }
             if (!destPropertyDesc.isWritable()) {
                 continue;
             }
@@ -303,10 +303,10 @@ public abstract class AbstractCopy<S extends AbstractCopy<S>> {
             if (!isTargetProperty(propertyName)) {
                 continue;
             }
-            if (!beanDesc.hasPropertyDesc(propertyName)) {
+            PropertyDesc propertyDesc = beanDesc.getPropertyDesc(propertyName);
+            if (propertyDesc == null) {
                 continue;
             }
-            PropertyDesc propertyDesc = beanDesc.getPropertyDesc(propertyName);
             if (!propertyDesc.isWritable()) {
                 continue;
             }

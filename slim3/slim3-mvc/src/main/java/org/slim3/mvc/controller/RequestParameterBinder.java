@@ -146,10 +146,10 @@ public class RequestParameterBinder {
      */
     protected Object getSimpleProperty(Object bean, String name) {
         BeanDesc beanDesc = BeanUtil.getBeanDesc(bean.getClass());
-        if (!beanDesc.hasPropertyDesc(name)) {
+        PropertyDesc pd = beanDesc.getPropertyDesc(name);
+        if (pd == null) {
             return null;
         }
-        PropertyDesc pd = beanDesc.getPropertyDesc(name);
         if (!pd.isReadable()) {
             return null;
         }
@@ -193,10 +193,10 @@ public class RequestParameterBinder {
             return;
         }
         BeanDesc beanDesc = BeanUtil.getBeanDesc(bean.getClass());
-        if (!beanDesc.hasPropertyDesc(name)) {
+        PropertyDesc pd = beanDesc.getPropertyDesc(name);
+        if (pd == null) {
             return;
         }
-        PropertyDesc pd = beanDesc.getPropertyDesc(name);
         if (!pd.isWritable()) {
             return;
         }
@@ -235,10 +235,10 @@ public class RequestParameterBinder {
     @SuppressWarnings("unchecked")
     protected Object getIndexedProperty(Object bean, String name, int[] indexes) {
         BeanDesc beanDesc = BeanUtil.getBeanDesc(bean.getClass());
-        if (!beanDesc.hasPropertyDesc(name)) {
+        PropertyDesc pd = beanDesc.getPropertyDesc(name);
+        if (pd == null) {
             return null;
         }
-        PropertyDesc pd = beanDesc.getPropertyDesc(name);
         if (!pd.isReadable()) {
             return null;
         }
@@ -316,10 +316,10 @@ public class RequestParameterBinder {
     protected void setIndexedProperty(Object bean, String name, int[] indexes,
             Object value) {
         BeanDesc beanDesc = BeanUtil.getBeanDesc(bean.getClass());
-        if (!beanDesc.hasPropertyDesc(name)) {
+        PropertyDesc pd = beanDesc.getPropertyDesc(name);
+        if (pd == null) {
             return;
         }
-        PropertyDesc pd = beanDesc.getPropertyDesc(name);
         if (!pd.isWritable()) {
             return;
         }

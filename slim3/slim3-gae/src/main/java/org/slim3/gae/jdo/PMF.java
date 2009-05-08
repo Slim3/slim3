@@ -18,10 +18,9 @@ package org.slim3.gae.jdo;
 import javax.jdo.JDOHelper;
 import javax.jdo.PersistenceManagerFactory;
 
-import org.slim3.commons.config.Configuration;
-
 /**
- * A helper class for PersistenceManagerFactory.
+ * A helper class for PersistenceManagerFactory. If you want to use the specific
+ * PMF name, define system property(slim3.persistenceManagerFactoryName).
  * 
  * @author higa
  * @since 3.0
@@ -32,7 +31,8 @@ public final class PMF {
     /**
      * The key for persistence manager factory name.
      */
-    public static final String PERSISTENCE_MANAGER_FACTORY_NAME_KEY = "slim3.persistenceManagerHelper";
+    public static final String PERSISTENCE_MANAGER_FACTORY_NAME_KEY =
+        "slim3.persistenceManagerFactoryName";
 
     /**
      * The persistence manager factory.
@@ -47,14 +47,13 @@ public final class PMF {
      * Initializes this class.
      */
     private static void initialize() {
-        String name = Configuration.getInstance().getValue(
-                PERSISTENCE_MANAGER_FACTORY_NAME_KEY);
+        String name = System.getProperty(PERSISTENCE_MANAGER_FACTORY_NAME_KEY);
         if (name == null) {
-            persistenceManagerFactory = JDOHelper
-                    .getPersistenceManagerFactory();
+            persistenceManagerFactory =
+                JDOHelper.getPersistenceManagerFactory();
         } else {
-            persistenceManagerFactory = JDOHelper
-                    .getPersistenceManagerFactory(name);
+            persistenceManagerFactory =
+                JDOHelper.getPersistenceManagerFactory(name);
         }
     }
 

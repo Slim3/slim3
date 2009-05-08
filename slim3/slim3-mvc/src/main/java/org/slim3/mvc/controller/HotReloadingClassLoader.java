@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.slim3.commons.config.Configuration;
 import org.slim3.commons.exception.WrapRuntimeException;
 import org.slim3.commons.util.StringUtil;
 import org.slim3.mvc.MvcConstants;
@@ -57,8 +56,15 @@ public class HotReloadingClassLoader extends ClassLoader {
                 String packageName = className.substring(0, index);
                 if (getPackage(packageName) == null) {
                     try {
-                        definePackage(packageName, null, null, null, null,
-                                null, null, null);
+                        definePackage(
+                            packageName,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null);
                     } catch (IllegalArgumentException ignore) {
                     }
                 }
@@ -180,8 +186,8 @@ public class HotReloadingClassLoader extends ClassLoader {
      * @return whether the class is the target of hot deployment
      */
     protected boolean isTarget(String className) {
-        String packageName = Configuration.getInstance().getValue(
-                MvcConstants.CONTROLLER_PACKAGE_KEY);
+        String packageName =
+            System.getProperty(MvcConstants.CONTROLLER_PACKAGE_KEY);
         if (StringUtil.isEmpty(packageName)) {
             return false;
         }

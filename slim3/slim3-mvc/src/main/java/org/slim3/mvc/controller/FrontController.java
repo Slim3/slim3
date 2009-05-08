@@ -32,7 +32,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slim3.commons.cleaner.Cleaner;
-import org.slim3.commons.config.Configuration;
 import org.slim3.commons.util.ClassUtil;
 import org.slim3.commons.util.StringUtil;
 import org.slim3.mvc.MvcConstants;
@@ -63,6 +62,11 @@ public class FrontController implements Filter {
     protected ServletContext servletContext;
 
     /**
+     * Whether this filter supports hot reloading.
+     */
+    protected boolean hotReloading = false;
+
+    /**
      * Constructor.
      */
     public FrontController() {
@@ -75,6 +79,12 @@ public class FrontController implements Filter {
             servletContext.getInitParameter(MvcConstants.REQUEST_CHARSET_KEY);
         if (charset == null) {
             charset = MvcConstants.DEFAULT_REQUEST_CHARSET;
+        }
+        hotReloading =
+            "true".equalsIgnoreCase(System
+                .getProperty(MvcConstants.HOT_RELOADING_KEY));
+        if (logger.isLoggable(Level.INFO)) {
+            logger.log(Level.INFO, "Slim3 hot reloading:" + hotReloading);
         }
     }
 
@@ -121,7 +131,7 @@ public class FrontController implements Filter {
             if (controller == null) {
                 chain.doFilter(request, response);
             } else {
-                if (Configuration.getInstance().isHot()) {
+                if (hotReloading) {
                     synchronized (this) {
                         try {
                             processController(request, response, controller);
@@ -197,7 +207,7 @@ public class FrontController implements Filter {
             throws IllegalStateException {
         String className = toControllerClassName(path);
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        if (Configuration.getInstance().isHot()) {
+        if (hotReloading) {
             loader = new HotReloadingClassLoader(loader);
         }
         Class<?> clazz = null;
@@ -226,18 +236,16 @@ public class FrontController implements Filter {
      *            the path
      * @return the controller class name
      * @throws IllegalStateException
-     *             if the entry(slim3.controllerPackage) of
-     *             "slim3_configuration.properties" is not found
+     *             if the system property(slim3.controllerPackage) is not found
      */
     protected String toControllerClassName(String path)
             throws IllegalStateException {
         String packageName =
-            Configuration.getInstance().getValue(
-                MvcConstants.CONTROLLER_PACKAGE_KEY);
+            System.getProperty(MvcConstants.CONTROLLER_PACKAGE_KEY);
         if (StringUtil.isEmpty(packageName)) {
-            throw new IllegalStateException("The entry("
+            throw new IllegalStateException("The system property("
                 + MvcConstants.CONTROLLER_PACKAGE_KEY
-                + ") of \"slim3_configuration.properties\" is not found.");
+                + ") is not found.");
         }
         String className = packageName + path.replace('/', '.');
         if (className.endsWith(".")) {

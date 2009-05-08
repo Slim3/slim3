@@ -17,8 +17,6 @@ package org.slim3.commons.bean;
 
 import junit.framework.TestCase;
 
-import org.slim3.commons.exception.PropertyNotFoundRuntimeException;
-
 /**
  * @author higa
  * 
@@ -95,7 +93,7 @@ public class BeanDescTest extends TestCase {
      */
     public void testPropertyDescForIsBooleanWrapper() {
         BeanDesc beanDesc = BeanDesc.create(MyBean.class);
-        assertFalse(beanDesc.hasPropertyDesc("fff"));
+        assertNull(beanDesc.getPropertyDesc("fff"));
     }
 
     /**
@@ -103,22 +101,7 @@ public class BeanDescTest extends TestCase {
      */
     public void testPropertyDescForIllegalProperty() {
         BeanDesc beanDesc = BeanDesc.create(MyBean.class);
-        assertFalse(beanDesc.hasPropertyDesc("hhh"));
-    }
-
-    /**
-     * 
-     */
-    public void testGetPropertyDescForNotFound() {
-        BeanDesc beanDesc = BeanDesc.create(MyBean.class);
-        try {
-            beanDesc.getPropertyDesc("hhh");
-            fail();
-        } catch (PropertyNotFoundRuntimeException e) {
-            System.out.println(e);
-            assertEquals(MyBean.class, e.getBeanClass());
-            assertEquals("hhh", e.getPropertyName());
-        }
+        assertNull(beanDesc.getPropertyDesc("hhh"));
     }
 
     private static class MyBean {

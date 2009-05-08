@@ -15,8 +15,8 @@
  */
 package org.slim3.mvc.unit;
 
-import org.slim3.commons.config.Configuration;
 import org.slim3.commons.unit.CleanableTestCase;
+import org.slim3.mvc.MvcConstants;
 import org.slim3.mvc.unit.controller.HelloController;
 
 /**
@@ -25,18 +25,21 @@ import org.slim3.mvc.unit.controller.HelloController;
  */
 public class MvcTesterTest extends CleanableTestCase {
 
-    /**
-     * 
-     */
-    protected static final String PACKAGE = "org/slim3/mvc/unit/";
-
-    /**
-     * 
-     */
-    protected static final String CONFIG_PATH =
-        PACKAGE + "slim3_configuration.properties";
-
     private MvcTester tester = new MvcTester();
+
+    @Override
+    protected void setUp() throws Exception {
+        System.setProperty(
+            MvcConstants.CONTROLLER_PACKAGE_KEY,
+            "org.slim3.mvc.unit.controller");
+        super.setUp();
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        System.clearProperty(MvcConstants.CONTROLLER_PACKAGE_KEY);
+        super.tearDown();
+    }
 
     /**
      * @throws Exception
@@ -118,7 +121,6 @@ public class MvcTesterTest extends CleanableTestCase {
      * 
      */
     public void testTestForForward() throws Exception {
-        Configuration.initialize(CONFIG_PATH);
         tester.setUp();
         tester.setPath("/");
         tester.test();
@@ -131,7 +133,6 @@ public class MvcTesterTest extends CleanableTestCase {
      * 
      */
     public void testTestForRedirect() throws Exception {
-        Configuration.initialize(CONFIG_PATH);
         tester.setUp();
         tester.setPath("/redirect");
         tester.test();
@@ -144,7 +145,6 @@ public class MvcTesterTest extends CleanableTestCase {
      * 
      */
     public void testTestForJSP() throws Exception {
-        Configuration.initialize(CONFIG_PATH);
         tester.setUp();
         tester.setPath("/index.jsp");
         tester.test();
@@ -170,7 +170,6 @@ public class MvcTesterTest extends CleanableTestCase {
      * 
      */
     public void testGetAttributge() throws Exception {
-        Configuration.initialize(CONFIG_PATH);
         tester.setUp();
         tester.setPath("/index.jsp");
         tester.test();
@@ -184,7 +183,6 @@ public class MvcTesterTest extends CleanableTestCase {
      * 
      */
     public void testGetSessionAttributge() throws Exception {
-        Configuration.initialize(CONFIG_PATH);
         tester.setUp();
         tester.setPath("/index.jsp");
         tester.test();
@@ -198,7 +196,6 @@ public class MvcTesterTest extends CleanableTestCase {
      * 
      */
     public void testGetServletContextAttributge() throws Exception {
-        Configuration.initialize(CONFIG_PATH);
         tester.setUp();
         tester.setPath("/index.jsp");
         tester.test();
@@ -212,7 +209,6 @@ public class MvcTesterTest extends CleanableTestCase {
      * 
      */
     public void testGetController() throws Exception {
-        Configuration.initialize(CONFIG_PATH);
         tester.setUp();
         tester.setPath("/hello");
         tester.test();

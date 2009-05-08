@@ -17,7 +17,6 @@ package org.slim3.mvc.controller;
 
 import java.util.Locale;
 
-import org.slim3.commons.config.Configuration;
 import org.slim3.mvc.MvcConstants;
 import org.slim3.mvc.controller.controller.HogeController;
 import org.slim3.mvc.controller.controller.IndexController;
@@ -30,21 +29,18 @@ import org.slim3.mvc.unit.MvcTestCase;
  */
 public class FrontControllerTest extends MvcTestCase {
 
-    /**
-     * 
-     */
-    protected static final String PACKAGE = "org/slim3/mvc/controller/";
-
-    /**
-     * 
-     */
-    protected static final String CONFIG_PATH =
-        PACKAGE + "slim3_configuration.properties";
-
     @Override
     protected void setUp() throws Exception {
+        System.setProperty(
+            MvcConstants.CONTROLLER_PACKAGE_KEY,
+            "org.slim3.mvc.controller.controller");
         super.setUp();
-        Configuration.initialize(CONFIG_PATH);
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        System.clearProperty(MvcConstants.CONTROLLER_PACKAGE_KEY);
+        super.tearDown();
     }
 
     /**
@@ -57,6 +53,7 @@ public class FrontControllerTest extends MvcTestCase {
             MvcConstants.DEFAULT_REQUEST_CHARSET,
             mvcTester.frontController.charset);
         assertNotNull(ServletContextLocator.getServletContext());
+        assertFalse(mvcTester.frontController.hotReloading);
     }
 
     /**

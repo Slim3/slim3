@@ -15,8 +15,8 @@
  */
 package org.slim3.mvc.controller;
 
-import org.slim3.commons.config.Configuration;
 import org.slim3.commons.unit.CleanableTestCase;
+import org.slim3.mvc.MvcConstants;
 
 /**
  * @author higa
@@ -27,18 +27,8 @@ public class HotReloadingClassLoaderTest extends CleanableTestCase {
     /**
      * 
      */
-    protected static final String PACKAGE = "org/slim3/mvc/controller/";
-
-    /**
-     * 
-     */
-    protected static final String CONFIG_PATH = PACKAGE
-            + "slim3_configuration.properties";
-
-    /**
-     * 
-     */
-    protected static final String CONTROLLER_CLASS_NAME = "org.slim3.mvc.controller.controller.HogeController";
+    protected static final String CONTROLLER_CLASS_NAME =
+        "org.slim3.mvc.controller.controller.HogeController";
 
     /**
      * 
@@ -52,8 +42,10 @@ public class HotReloadingClassLoaderTest extends CleanableTestCase {
 
     @Override
     protected void setUp() throws Exception {
+        System.setProperty(
+            MvcConstants.CONTROLLER_PACKAGE_KEY,
+            "org.slim3.mvc.controller.controller");
         super.setUp();
-        Configuration.initialize(CONFIG_PATH);
         originalClassLoader = Thread.currentThread().getContextClassLoader();
         hotClassLoader = new HotReloadingClassLoader(originalClassLoader);
     }
@@ -62,6 +54,7 @@ public class HotReloadingClassLoaderTest extends CleanableTestCase {
     protected void tearDown() throws Exception {
         originalClassLoader = null;
         hotClassLoader = null;
+        System.clearProperty(MvcConstants.CONTROLLER_PACKAGE_KEY);
         super.tearDown();
     }
 

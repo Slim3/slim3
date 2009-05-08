@@ -15,7 +15,7 @@
  */
 package org.slim3.mvc.controller;
 
-import org.slim3.commons.config.Configuration;
+import org.slim3.mvc.MvcConstants;
 import org.slim3.mvc.unit.MvcTestCase;
 
 /**
@@ -24,21 +24,28 @@ import org.slim3.mvc.unit.MvcTestCase;
  */
 public class FrontControllerHotReloadingTest extends MvcTestCase {
 
-    /**
-     * 
-     */
-    protected static final String PACKAGE = "org/slim3/mvc/controller/";
-
-    /**
-     * 
-     */
-    protected static final String CONFIG_PATH = PACKAGE
-            + "slim3_configuration_hot.properties";
-
     @Override
     protected void setUp() throws Exception {
+        System.setProperty(MvcConstants.HOT_RELOADING_KEY, "true");
+        System.setProperty(
+            MvcConstants.CONTROLLER_PACKAGE_KEY,
+            "org.slim3.mvc.controller.controller");
         super.setUp();
-        Configuration.initialize(CONFIG_PATH);
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        System.clearProperty(MvcConstants.HOT_RELOADING_KEY);
+        System.clearProperty(MvcConstants.CONTROLLER_PACKAGE_KEY);
+        super.tearDown();
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testInit() throws Exception {
+        assertTrue(mvcTester.frontController.hotReloading);
     }
 
     /**
@@ -46,10 +53,12 @@ public class FrontControllerHotReloadingTest extends MvcTestCase {
      * 
      */
     public void testCreateController() throws Exception {
-        Controller controller = mvcTester.frontController
-                .createController("/hello/list");
+        Controller controller =
+            mvcTester.frontController.createController("/hello/list");
         assertNotNull(controller);
-        assertEquals(HotReloadingClassLoader.class, controller.getClass()
-                .getClassLoader().getClass());
+        assertEquals(HotReloadingClassLoader.class, controller
+            .getClass()
+            .getClassLoader()
+            .getClass());
     }
 }

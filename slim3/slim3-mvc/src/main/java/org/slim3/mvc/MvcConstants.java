@@ -25,6 +25,11 @@ package org.slim3.mvc;
 public interface MvcConstants {
 
     /**
+     * The key of hot reloading.
+     */
+    String HOT_RELOADING_KEY = "slim3.hotReloading";
+
+    /**
      * The key of configuration setting for request character set.
      */
     String REQUEST_CHARSET_KEY = "javax.servlet.jsp.jstl.fmt.request.charset";
