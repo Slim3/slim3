@@ -25,37 +25,48 @@ package org.slim3.mvc;
 public interface MvcConstants {
 
     /**
-     * The key for encoding.
+     * The key of configuration setting for request character set.
      */
-    String ENCODING_KEY = "slim3.encoding";
+    String REQUEST_CHARSET_KEY = "javax.servlet.jsp.jstl.fmt.request.charset";
 
     /**
-     * The key for locale.
+     * The default value of configuration setting for request character set.
      */
-    String LOCALE_KEY = "slim3.locale";
+    String DEFAULT_REQUEST_CHARSET = "UTF-8";
 
     /**
-     * The key for application message builder.
+     * The key of configuration setting for i18n localization context.
      */
-    String APP_MESSAGE_BUILDER_KEY = "slim3.appMessageBuilder";
+    String LOCALIZATION_CONTEXT_KEY =
+        "javax.servlet.jsp.jstl.fmt.localizationContext";
 
     /**
-     * The key for application message bundle name.
+     * The default value of configuration setting for i18n localization context.
      */
-    String APP_MESSAGE_BUNDLE_NAME_KEY = "slim3.appMessageBundleName";
+    String DEFAULT_LOCALIZATION_CONTEXT = "application";
 
     /**
-     * The key for controller package.
+     * The key of configuration setting for application based preferred locale.
+     */
+    String LOCALE_KEY = "javax.servlet.jsp.jstl.fmt.locale";
+
+    /**
+     * The key of localization setting for time zone.
+     */
+    String TIME_ZONE_KEY = "javax.servlet.jsp.jstl.fmt.timeZone";
+
+    /**
+     * The key of controller package.
      */
     String CONTROLLER_PACKAGE_KEY = "slim3.controllerPackage";
 
     /**
-     * The key for controller.
+     * The key of controller.
      */
     String CONTROLLER_KEY = "c";
 
     /**
-     * The suffix for controller.
+     * The suffix of controller.
      */
     String CONTROLLER_SUFFIX = "Controller";
 
@@ -65,7 +76,7 @@ public interface MvcConstants {
     String INDEX_CONTROLLER = "Index" + CONTROLLER_SUFFIX;
 
     /**
-     * The extension for JSP.
+     * The extension of JSP.
      */
     String JSP_EXTENSION = ".jsp";
 }

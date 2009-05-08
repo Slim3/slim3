@@ -47,25 +47,15 @@ import org.slim3.mvc.MvcConstants;
 public class FrontController implements Filter {
 
     /**
-     * The default encoding.
-     */
-    protected static final String DEFAULT_ENCODING = "UTF-8";
-
-    /**
-     * The default view prefix
-     */
-    protected static final String DEFAULT_VIEW_PREFIX = "/WEB-INF/view";
-
-    /**
      * The logger.
      */
     protected static final Logger logger =
         Logger.getLogger(FrontController.class.getName());
 
     /**
-     * The encoding.
+     * The character set.
      */
-    protected String encoding;
+    protected String charset;
 
     /**
      * The servlet context.
@@ -79,13 +69,13 @@ public class FrontController implements Filter {
     }
 
     public void init(FilterConfig config) throws ServletException {
-        encoding =
-            Configuration.getInstance().getValue(MvcConstants.ENCODING_KEY);
-        if (encoding == null) {
-            encoding = DEFAULT_ENCODING;
-        }
         servletContext = config.getServletContext();
         ServletContextLocator.setServletContext(servletContext);
+        charset =
+            servletContext.getInitParameter(MvcConstants.REQUEST_CHARSET_KEY);
+        if (charset == null) {
+            charset = MvcConstants.DEFAULT_REQUEST_CHARSET;
+        }
     }
 
     public void destroy() {
@@ -124,7 +114,7 @@ public class FrontController implements Filter {
         ResponseLocator.setResponse(response);
         try {
             if (request.getCharacterEncoding() == null) {
-                request.setCharacterEncoding(encoding);
+                request.setCharacterEncoding(charset);
             }
             String path = getPath(request);
             Controller controller = getController(request, response, path);
@@ -189,7 +179,7 @@ public class FrontController implements Filter {
         controller.setRequest(request);
         controller.setResponse(response);
         controller.setPath(path);
-        ControllerLocator.setController(controller);
+        request.setAttribute(MvcConstants.CONTROLLER_KEY, controller);
         return controller;
     }
 

@@ -17,16 +17,22 @@ package org.slim3.commons.cleaner;
 
 import java.beans.Introspector;
 import java.util.LinkedList;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A utility class to clean resources.
  * 
- * @author koichik
  * @author higa
+ * @since 3.0
  */
 public final class Cleaner {
 
     static final LinkedList<Cleanable> cleanables = new LinkedList<Cleanable>();
+
+    private static final Logger logger =
+        Logger.getLogger(Cleaner.class.getName());
 
     /**
      * Adds the cleanable resource.
@@ -57,9 +63,14 @@ public final class Cleaner {
             try {
                 cleanable.clean();
             } catch (Throwable t) {
-                t.printStackTrace();
+                if (logger.isLoggable(Level.WARNING)) {
+                    logger.log(Level.WARNING, t.getMessage(), t);
+                }
             }
         }
         Introspector.flushCaches();
+        ResourceBundle.clearCache(Thread
+            .currentThread()
+            .getContextClassLoader());
     }
 }

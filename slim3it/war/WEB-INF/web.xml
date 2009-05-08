@@ -4,6 +4,10 @@
  "http://java.sun.com/dtd/web-app_2_3.dtd">
 
 <web-app xmlns="http://java.sun.com/xml/ns/javaee" version="2.4">
+	<context-param>
+        <param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
+        <param-value>application</param-value>
+    </context-param>
 	<filter>
         <filter-name>frontController</filter-name>
         <filter-class>org.slim3.mvc.controller.FrontController</filter-class>

@@ -15,6 +15,8 @@
  */
 package org.slim3.mvc.controller;
 
+import java.util.Locale;
+
 import org.slim3.commons.config.Configuration;
 import org.slim3.mvc.MvcConstants;
 import org.slim3.mvc.controller.controller.HogeController;
@@ -51,7 +53,9 @@ public class FrontControllerTest extends MvcTestCase {
      */
     public void testInit() throws Exception {
         mvcTester.frontController.init(mvcTester.filterConfig);
-        assertEquals("UTF-8", mvcTester.frontController.encoding);
+        assertEquals(
+            MvcConstants.DEFAULT_REQUEST_CHARSET,
+            mvcTester.frontController.charset);
         assertNotNull(ServletContextLocator.getServletContext());
     }
 
@@ -363,5 +367,48 @@ public class FrontControllerTest extends MvcTestCase {
         assertEquals("/index.jsp", mvcTester.servletContext
             .getLatestRequestDispatcher()
             .getPath());
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testGetLocaleFromSession() throws Exception {
+        Locale locale = Locale.ENGLISH;
+        Controller controller =
+            mvcTester.frontController.getController(
+                mvcTester.request,
+                mvcTester.response,
+                "/");
+        controller.setLocale(locale);
+        assertEquals(locale, controller.getLocale());
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testGetLocaleFromRequest() throws Exception {
+        Locale locale = Locale.ENGLISH;
+        mvcTester.request.addLocale(locale);
+        Controller controller =
+            mvcTester.frontController.getController(
+                mvcTester.request,
+                mvcTester.response,
+                "/");
+        assertEquals(locale, controller.getLocale());
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testGetLocaleForDefault() throws Exception {
+        Controller controller =
+            mvcTester.frontController.getController(
+                mvcTester.request,
+                mvcTester.response,
+                "/");
+        assertEquals(Locale.getDefault(), controller.getLocale());
     }
 }

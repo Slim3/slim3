@@ -13,40 +13,49 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.mvc.controller;
+package org.slim3.mvc.unit;
 
-import java.util.Locale;
-
-import junit.framework.TestCase;
+import org.slim3.commons.unit.CleanableTestCase;
+import org.slim3.gae.unit.DatastoreTester;
 
 /**
+ * A test case for Slim3 MVC and local data store.
+ * 
  * @author higa
+ * @since 3.0
  * 
  */
-public class AppMessageBuilderTest extends TestCase {
+public abstract class MvcDatastoreTestCase extends CleanableTestCase {
+
+    /**
+     * The tester for Slim3 MVC.
+     */
+    protected MvcTester mvcTester = new MvcTester();
+
+    /**
+     * The tester for local data store.
+     */
+    protected DatastoreTester datastoreTester = new DatastoreTester();
 
     /**
      * @throws Exception
      * 
      */
-    public void testGetInstance() throws Exception {
-        assertNotNull(AppMessageBuilder.getInstance());
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        mvcTester.setUp();
+        datastoreTester.setUp();
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testGetBundle() throws Exception {
-        assertNotNull(AppMessageBuilder.getInstance().getBundle(Locale.ENGLISH));
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testGetMessage() throws Exception {
-        assertEquals("hoge is required.", AppMessageBuilder.getInstance()
-                .getMessage(Locale.ENGLISH, "errors.required", "hoge"));
+    @Override
+    protected void tearDown() throws Exception {
+        datastoreTester.tearDown();
+        mvcTester.tearDown();
+        super.tearDown();
     }
 }

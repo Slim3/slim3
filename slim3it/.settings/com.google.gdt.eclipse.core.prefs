@@ -1,3 +1,3 @@
-#Tue Apr 28 13:59:29 JST 2009
+#Fri May 08 17:29:50 JST 2009
 eclipse.preferences.version=1
-jarsExcludedFromWebInfLib=D\:/USER/workspace/slim3_it/lib/junit-3.8.2.jar|D\:/USER/workspace/slim3it/lib/junit-3.8.2.jar|D\:/USER/workspace/slim3it/lib/appengine-api-stubs.jar|D\:/USER/workspace/slim3it/lib/appengine-local-runtime.jar
+jarsExcludedFromWebInfLib=D\:/USER/workspace/slim3_it/lib/junit-3.8.2.jar|D\:/USER/workspace/slim3it/lib/junit-3.8.2.jar|D\:/USER/workspace/slim3it/lib/appengine-api-stubs.jar|D\:/USER/workspace/slim3it/lib/appengine-local-runtime.jar|D\:/USER/workspace/slim3it/lib/jakarta-standard-1.1.2.jar

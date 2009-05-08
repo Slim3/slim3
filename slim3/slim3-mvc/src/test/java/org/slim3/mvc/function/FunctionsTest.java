@@ -19,6 +19,7 @@ import java.util.Date;
 
 import junit.framework.TestCase;
 
+import org.slim3.mvc.MvcConstants;
 import org.slim3.mvc.controller.Controller;
 import org.slim3.mvc.controller.Navigation;
 import org.slim3.mvc.controller.RequestLocator;
@@ -118,6 +119,13 @@ public class FunctionsTest extends TestCase {
     /**
      * @throws Exception
      */
+    public void testHForNbsp() throws Exception {
+        assertEquals("&nbsp;", Functions.h(" "));
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testHForDate() throws Exception {
         String s = Functions.h(new Date());
         System.out.println(s);
@@ -144,126 +152,67 @@ public class FunctionsTest extends TestCase {
     /**
      * @throws Exception
      */
-    public void testDate() throws Exception {
-        assertNotNull(S3Functions.date("20080131", "yyyyMMdd"));
+    public void testUrlForNull() throws Exception {
+        servletContext.setContextPath("/aaa");
+        HogeController controller = new HogeController();
+        controller.setPath("/bbb/hoge");
+        request.setAttribute(MvcConstants.CONTROLLER_KEY, controller);
+        assertEquals("/aaa/bbb/", Functions.url(null));
     }
 
     /**
      * @throws Exception
      */
-    public void testDateValueIsNull() throws Exception {
-        assertNull(S3Functions.date(null, "yyyyMMdd"));
+    public void testUrlForNullAndNoContextPath() throws Exception {
+        HogeController controller = new HogeController();
+        controller.setPath("/bbb/hoge");
+        request.setAttribute(MvcConstants.CONTROLLER_KEY, controller);
+        assertEquals("/bbb/", Functions.url(null));
     }
 
     /**
      * @throws Exception
      */
-    public void testDatePatternIsNull() throws Exception {
-        try {
-            S3Functions.date("20080131", null);
-            fail();
-        } catch (NullPointerException e) {
-            System.out.println(e.getMessage());
-        }
+    public void testUrlForControllerRelativePath() throws Exception {
+        HogeController controller = new HogeController();
+        controller.setPath("/bbb/hoge");
+        request.setAttribute(MvcConstants.CONTROLLER_KEY, controller);
+        assertEquals("/bbb/foo", Functions.url("foo"));
     }
 
     /**
      * @throws Exception
      */
-    public void testNumber() throws Exception {
-        assertEquals("1000", S3Functions.number("1000", "####").toString());
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testNumberValueIsNull() throws Exception {
-        assertNull(S3Functions.number(null, "####"));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testNumberPatternIsNull() throws Exception {
-        try {
-            S3Functions.number("1000", null);
-            fail();
-        } catch (NullPointerException e) {
-            System.out.println(e.getMessage());
-        }
+    public void testUrlForOtherController() throws Exception {
+        assertEquals("/hello/sayHello", Functions.url("/hello/sayHello"));
     }
 
     /**
      * @throws Exception
      */
     public void testBrForCRLF() throws Exception {
-        assertEquals("<br />", S3Functions.br("\r\n"));
+        assertEquals("<br />", Functions.br("\r\n"));
     }
 
     /**
      * @throws Exception
      */
     public void testBrForCR() throws Exception {
-        assertEquals("<br />", S3Functions.br("\r"));
+        assertEquals("<br />", Functions.br("\r"));
     }
 
     /**
      * @throws Exception
      */
     public void testBrForLF() throws Exception {
-        assertEquals("<br />", S3Functions.br("\n"));
+        assertEquals("<br />", Functions.br("\n"));
     }
 
     /**
      * @throws Exception
      */
     public void testBrForNull() throws Exception {
-        assertEquals("", S3Functions.br(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testNbsp() throws Exception {
-        assertEquals("&nbsp;&nbsp;", S3Functions.nbsp("  "));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testNbspForNull() throws Exception {
-        assertEquals("", S3Functions.nbsp(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testUrlForNull() throws Exception {
-        servletContext.setServletContextName("context");
-        request.setPathInfo("/add/index.jsp");
-        assertEquals("/context/add/", S3Functions.url(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testUrlForNullAndContextNameNull() throws Exception {
-        request.setPathInfo("/add/index.jsp");
-        assertEquals("/add/", S3Functions.url(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testUrlForActionRelativePath() throws Exception {
-        assertEquals("/hoge/index.jsp", S3Functions.url("index.jsp"));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testUrlForAction() throws Exception {
-        assertEquals("/add/submit", S3Functions.url("/add/submit"));
+        assertEquals("", Functions.br(null));
     }
 
     private static class HogeController extends Controller {

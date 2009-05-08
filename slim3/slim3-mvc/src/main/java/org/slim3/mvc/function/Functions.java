@@ -15,20 +15,11 @@
  */
 package org.slim3.mvc.function;
 
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.Locale;
 
-import org.slim3.commons.exception.WrapRuntimeException;
 import org.slim3.commons.util.StringUtil;
+import org.slim3.mvc.MvcConstants;
 import org.slim3.mvc.controller.Controller;
-import org.slim3.mvc.controller.ControllerLocator;
-import org.slim3.mvc.controller.LocaleLocator;
 import org.slim3.mvc.controller.RequestLocator;
 import org.slim3.mvc.controller.ResponseLocator;
 
@@ -45,8 +36,6 @@ public final class Functions {
 
     private static String BR = "<br />";
 
-    private static String NBSP = "&nbsp;";
-
     private static char[][] specialCharactersRepresentation =
         new char[HIGHEST_SPECIAL + 1][];
 
@@ -54,6 +43,7 @@ public final class Functions {
         specialCharactersRepresentation['&'] = "&amp;".toCharArray();
         specialCharactersRepresentation['<'] = "&lt;".toCharArray();
         specialCharactersRepresentation['>'] = "&gt;".toCharArray();
+        specialCharactersRepresentation[' '] = "&nbsp;".toCharArray();
         specialCharactersRepresentation['"'] = "&#034;".toCharArray();
         specialCharactersRepresentation['\''] = "&#039;".toCharArray();
     }
@@ -95,15 +85,6 @@ public final class Functions {
             } else {
                 return Arrays.toString((Object[]) input);
             }
-        } else if (input instanceof Date) {
-            Locale locale = LocaleLocator.getLocale();
-            DateFormat df =
-                DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
-            return df.format((Date) input);
-        } else if (input instanceof Number) {
-            Locale locale = LocaleLocator.getLocale();
-            NumberFormat nf = NumberFormat.getNumberInstance(locale);
-            return nf.format(input);
         }
         return input.toString();
     }
@@ -120,7 +101,6 @@ public final class Functions {
         char[] arrayBuffer = input.toCharArray();
         int length = arrayBuffer.length;
         StringBuilder escapedBuffer = null;
-
         for (int i = 0; i < length; i++) {
             char c = arrayBuffer[i];
             if (c <= HIGHEST_SPECIAL) {
@@ -158,12 +138,14 @@ public final class Functions {
         if (!empty && input.indexOf(':') >= 0) {
             return input;
         }
-        Controller controller = ControllerLocator.getController();
+        Controller controller =
+            (Controller) RequestLocator.getRequest().getAttribute(
+                MvcConstants.CONTROLLER_KEY);
         if (controller == null) {
             return input;
         }
         String contextPath = RequestLocator.getRequest().getContextPath();
-        StringBuilder sb = new StringBuilder(input.length() + 20);
+        StringBuilder sb = new StringBuilder(50);
         if (contextPath.length() > 1) {
             sb.append(contextPath);
         }
@@ -175,64 +157,6 @@ public final class Functions {
             sb.append(controller.getApplicationPath()).append(input);
         }
         return ResponseLocator.getResponse().encodeURL(sb.toString());
-    }
-
-    /**
-     * Converts string that could be interpreted as Date.
-     * 
-     * @param input
-     *            the input value
-     * @param pattern
-     *            the date format pattern
-     * @return the converted value
-     * @throws NullPointerException
-     *             if the pattern parameter is null
-     * @throws RuntimeException
-     *             if {@link ParseException} occurs
-     */
-    public static Date date(String input, String pattern)
-            throws NullPointerException, RuntimeException {
-        if (StringUtil.isEmpty(input)) {
-            return null;
-        }
-        if (StringUtil.isEmpty(pattern)) {
-            throw new NullPointerException("The pattern parameter is null.");
-        }
-        try {
-            SimpleDateFormat format = new SimpleDateFormat(pattern);
-            return format.parse(input);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Converts string that could be interpreted as Number.
-     * 
-     * @param input
-     *            the input value
-     * @param pattern
-     *            the decimal format pattern
-     * @return the converted value
-     * @throws NullPointerException
-     *             if the pattern parameter is null
-     * @throws RuntimeException
-     *             if {@link ParseException} occurs
-     */
-    public static Number number(String input, String pattern)
-            throws NullPointerException, RuntimeException {
-        if (StringUtil.isEmpty(input)) {
-            return null;
-        }
-        if (StringUtil.isEmpty(pattern)) {
-            throw new NullPointerException("The pattern parameter is null.");
-        }
-        try {
-            DecimalFormat format = new DecimalFormat(pattern);
-            return format.parse(input);
-        } catch (ParseException e) {
-            throw new WrapRuntimeException(e);
-        }
     }
 
     /**
@@ -249,20 +173,6 @@ public final class Functions {
         return input.replaceAll("\r\n", BR).replaceAll("\r", BR).replaceAll(
             "\n",
             BR);
-    }
-
-    /**
-     * Converts space that could be interpreted as HTML.
-     * 
-     * @param input
-     *            the input value
-     * @return the converted value
-     */
-    public static String nbsp(String input) {
-        if (StringUtil.isEmpty(input)) {
-            return "";
-        }
-        return input.replaceAll(" ", NBSP);
     }
 
     private Functions() {

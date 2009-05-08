@@ -18,13 +18,16 @@ package org.slim3.mvc.unit;
 import org.slim3.commons.unit.CleanableTestCase;
 
 /**
+ * A test case for Slim3 MVC.
+ * 
  * @author higa
+ * @since 3.0
  * 
  */
 public abstract class MvcTestCase extends CleanableTestCase {
 
     /**
-     * The tester for MVC.
+     * The tester for Slim3 MVC.
      */
     protected MvcTester mvcTester = new MvcTester();
 

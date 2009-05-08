@@ -17,6 +17,7 @@ package org.slim3.mvc.controller;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
@@ -196,6 +197,27 @@ public abstract class Controller {
      * @return path to go.
      */
     public abstract Navigation execute();
+
+    /**
+     * Returns the locale.
+     * 
+     * @return the locale
+     */
+    public Locale getLocale() {
+        Locale locale = null;
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            locale = (Locale) session.getAttribute(MvcConstants.LOCALE_KEY);
+            if (locale != null) {
+                return locale;
+            }
+        }
+        locale = request.getLocale();
+        if (locale != null) {
+            return locale;
+        }
+        return Locale.getDefault();
+    }
 
     /**
      * Creates a new {@link Navigation} for "forward".
@@ -564,5 +586,15 @@ public abstract class Controller {
             + ") of the request parameter("
             + name
             + ") is not byte array.");
+    }
+
+    /**
+     * Sets the locale to the session
+     * 
+     * @param locale
+     *            the locale
+     */
+    protected void setLocale(Locale locale) {
+        request.getSession().setAttribute(MvcConstants.LOCALE_KEY, locale);
     }
 }
