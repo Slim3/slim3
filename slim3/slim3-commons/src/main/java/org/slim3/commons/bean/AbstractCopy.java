@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.slim3.commons.exception.ConverterRuntimeException;
 import org.slim3.commons.util.DateUtil;
 
 /**
@@ -355,12 +354,12 @@ public abstract class AbstractCopy<S extends AbstractCopy<S>> {
      * @param destPropertyClass
      *            the destination property class
      * @return the converted value
-     * @throws ConverterRuntimeException
-     *             if an exception is encountered while coverting
+     * @throws IllegalArgumentException
+     *             if an exception occurred while converting
      * 
      */
     protected Object convertValue(Object value, String destPropertyName,
-            Class<?> destPropertyClass) throws ConverterRuntimeException {
+            Class<?> destPropertyClass) throws IllegalArgumentException {
         if (value == null
             || value.getClass() == String.class
             && destPropertyClass == String.class
@@ -397,7 +396,14 @@ public abstract class AbstractCopy<S extends AbstractCopy<S>> {
             }
             return converter.getAsString(value);
         } catch (Throwable cause) {
-            throw new ConverterRuntimeException(destPropertyName, value, cause);
+            throw new IllegalArgumentException("The value("
+                + value
+                + ") of the class("
+                + value.getClass().getName()
+                + ") can not be converted to the class("
+                + destPropertyClass.getName()
+                + "). Error message: "
+                + cause.getMessage(), cause);
         }
     }
 

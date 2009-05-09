@@ -20,7 +20,7 @@ import java.util.Date;
 
 import junit.framework.TestCase;
 
-import org.slim3.commons.exception.ParseRuntimeException;
+import org.slim3.commons.exception.WrapRuntimeException;
 
 /**
  * @author higa
@@ -87,13 +87,12 @@ public class DateUtilTest extends TestCase {
     /**
      * @throws Exception
      */
-    public void testToDateForException() throws Exception {
+    public void testToDateForBadText() throws Exception {
         try {
             DateUtil.toDate("xx/17/2008", "MM/dd/yyyy");
             fail();
-        } catch (ParseRuntimeException e) {
-            System.out.println(e);
-            assertEquals("xx/17/2008", e.getText());
+        } catch (WrapRuntimeException e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -114,13 +113,12 @@ public class DateUtilTest extends TestCase {
     /**
      * @throws Exception
      */
-    public void testToDateWithPatternForException() throws Exception {
+    public void testToDateWithPatternForBadText() throws Exception {
         try {
             DateUtil.toDate("xx/17/2008", "yyyyMMdd");
             fail();
-        } catch (ParseRuntimeException e) {
-            System.out.println(e);
-            assertEquals("xx/17/2008", e.getText());
+        } catch (WrapRuntimeException e) {
+            System.out.println(e.getMessage());
         }
     }
 

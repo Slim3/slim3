@@ -15,9 +15,7 @@
  */
 package org.slim3.commons.util;
 
-import org.slim3.commons.exception.ClassNotFoundRuntimeException;
-import org.slim3.commons.exception.IllegalAccessRuntimeException;
-import org.slim3.commons.exception.InstantiationRuntimeException;
+import org.slim3.commons.exception.WrapRuntimeException;
 
 /**
  * A utility class for {@link Class}.
@@ -27,25 +25,25 @@ import org.slim3.commons.exception.InstantiationRuntimeException;
  */
 public final class ClassUtil {
 
-    private ClassUtil() {
-    }
-
     /**
-     * Returns a class instance.
+     * Returns the class object specified by the name.
      * 
+     * @param <T>
+     *            the type
      * @param className
      *            the class name
      * @param loader
      *            the class loader
-     * @return a class instance
+     * @return the class object
      * @throws NullPointerException
      *             if the className parameter is null or if the loader parameter
      *             is null
-     * @throws ClassNotFoundRuntimeException
-     *             if {@link ClassNotFoundException} is encountered
+     * @throws WrapRuntimeException
+     *             if the class specified by the name is not found
      */
-    public static Class<?> forName(String className, ClassLoader loader)
-            throws NullPointerException, ClassNotFoundRuntimeException {
+    @SuppressWarnings("unchecked")
+    public static <T> Class<T> forName(String className, ClassLoader loader)
+            throws NullPointerException, WrapRuntimeException {
         if (className == null) {
             throw new NullPointerException("The className parameter is null.");
         }
@@ -53,9 +51,11 @@ public final class ClassUtil {
             throw new NullPointerException("The loader parameter is null.");
         }
         try {
-            return Class.forName(className, true, loader);
+            return (Class<T>) Class.forName(className, true, loader);
         } catch (ClassNotFoundException e) {
-            throw new ClassNotFoundRuntimeException(className, e);
+            throw new WrapRuntimeException("The class("
+                + className
+                + ") is not found.", e);
         }
     }
 
@@ -67,19 +67,20 @@ public final class ClassUtil {
      * @param clazz
      *            the class
      * @return a new instance
-     * @throws InstantiationRuntimeException
-     *             if {@link InstantiationException} is encountered.
-     * @throws IllegalAccessRuntimeException
-     *             if {@link IllegalAccessException} is encountered.
+     * @throws WrapRuntimeException
+     *             if an error occurred while creating a new instance.
      */
     @SuppressWarnings("unchecked")
     public static <T> T newInstance(Class<?> clazz) {
         try {
             return (T) clazz.newInstance();
-        } catch (InstantiationException e) {
-            throw new InstantiationRuntimeException(clazz, e);
-        } catch (IllegalAccessException e) {
-            throw new IllegalAccessRuntimeException(clazz, e);
+        } catch (Throwable cause) {
+            throw new WrapRuntimeException(
+                "An error occurred while creating a new instance of the class("
+                    + clazz.getName()
+                    + "). Error message: "
+                    + cause.getMessage(),
+                cause);
         }
     }
 
@@ -98,5 +99,8 @@ public final class ClassUtil {
     public static <T> T newInstance(String className, ClassLoader loader) {
         Class<?> clazz = forName(className, loader);
         return (T) newInstance(clazz);
+    }
+
+    private ClassUtil() {
     }
 }

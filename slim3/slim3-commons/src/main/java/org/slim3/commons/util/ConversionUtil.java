@@ -17,8 +17,6 @@ package org.slim3.commons.util;
 
 import java.util.Date;
 
-import org.slim3.commons.exception.ClassCanNotAssignedRuntimeException;
-
 /**
  * A utility class for conversion.
  * 
@@ -55,9 +53,11 @@ public final class ConversionUtil {
         } else if (destinationClass == String.class) {
             return value.toString();
         } else {
-            throw new ClassCanNotAssignedRuntimeException(
-                value.getClass(),
-                destinationClass);
+            throw new IllegalArgumentException("The class("
+                + value.getClass().getName()
+                + ") can not be converted to the class("
+                + destinationClass.getName()
+                + ").");
         }
     }
 

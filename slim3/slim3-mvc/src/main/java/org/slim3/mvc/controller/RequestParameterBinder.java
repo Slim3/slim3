@@ -28,7 +28,7 @@ import org.slim3.commons.bean.BeanDesc;
 import org.slim3.commons.bean.BeanUtil;
 import org.slim3.commons.bean.ParameterizedClassDesc;
 import org.slim3.commons.bean.PropertyDesc;
-import org.slim3.commons.exception.PropertyCanNotWriteRuntimeException;
+import org.slim3.commons.exception.WrapRuntimeException;
 import org.slim3.commons.util.ClassUtil;
 
 /**
@@ -90,8 +90,11 @@ public class RequestParameterBinder {
      *            the parameter name
      * @param value
      *            the parameter value
+     * @throws WrapRuntimeException
+     *             if an error occurred while writing the value to the property
      */
-    protected void setProperty(Object bean, String name, Object value) {
+    protected void setProperty(Object bean, String name, Object value)
+            throws WrapRuntimeException {
         try {
             int nestedIndex = name.indexOf(NESTED_DELIM);
             int indexedIndex = name.indexOf(INDEXED_DELIM);
@@ -127,11 +130,14 @@ public class RequestParameterBinder {
                     value);
             }
         } catch (Throwable cause) {
-            throw new PropertyCanNotWriteRuntimeException(
-                bean.getClass(),
-                name,
-                value,
-                cause);
+            throw new WrapRuntimeException("Writing the value("
+                + value
+                + ") to the property("
+                + name
+                + ") of the class("
+                + bean.getClass().getName()
+                + ") is a failure. Error message: "
+                + cause.getMessage(), cause);
         }
     }
 

@@ -18,7 +18,6 @@ package org.slim3.commons.bean;
 import java.text.DecimalFormat;
 import java.util.Date;
 
-import org.slim3.commons.exception.CastRuntimeException;
 import org.slim3.commons.util.DateUtil;
 import org.slim3.commons.util.StringUtil;
 
@@ -59,12 +58,14 @@ public class DateConverter implements Converter {
             return null;
         }
         if (!(value instanceof Date)) {
-            throw new CastRuntimeException(value.getClass(), Date.class);
+            throw new IllegalArgumentException("The class("
+                + value.getClass().getName()
+                + ") can not be assigned to date.");
         }
         return DateUtil.toString((Date) value, pattern);
     }
 
     public boolean isTarget(Class<?> clazz) {
-        return clazz == Date.class;
+        return Date.class.isAssignableFrom(clazz);
     }
 }

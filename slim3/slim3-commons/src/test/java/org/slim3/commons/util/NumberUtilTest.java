@@ -17,7 +17,7 @@ package org.slim3.commons.util;
 
 import junit.framework.TestCase;
 
-import org.slim3.commons.exception.ParseRuntimeException;
+import org.slim3.commons.exception.WrapRuntimeException;
 
 /**
  * @author higa
@@ -54,13 +54,12 @@ public class NumberUtilTest extends TestCase {
     /**
      * @throws Exception
      */
-    public void testToNumberForParseException() throws Exception {
+    public void testToNumberForBadText() throws Exception {
         try {
             NumberUtil.toNumber("abc", "###");
             fail();
-        } catch (ParseRuntimeException e) {
-            System.out.println(e);
-            assertEquals("abc", e.getText());
+        } catch (WrapRuntimeException e) {
+            System.out.println(e.getMessage());
         }
     }
 

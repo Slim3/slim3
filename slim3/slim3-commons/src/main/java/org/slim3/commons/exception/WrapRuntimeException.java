@@ -29,16 +29,6 @@ public class WrapRuntimeException extends RuntimeException {
     /**
      * Constructor.
      * 
-     * @param message
-     *            the message
-     */
-    public WrapRuntimeException(String message) {
-        super(message);
-    }
-
-    /**
-     * Constructor.
-     * 
      * @param cause
      *            the cause
      */

@@ -22,7 +22,6 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.slim3.commons.exception.ConverterRuntimeException;
 import org.slim3.commons.util.DateUtil;
 
 /**
@@ -659,8 +658,9 @@ public class AbstCopyTest extends TestCase {
                 "a",
                 "aaa",
                 Integer.class);
-        } catch (ConverterRuntimeException e) {
-            System.out.println(e);
+            fail();
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
         }
     }
 

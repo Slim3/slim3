@@ -19,9 +19,7 @@ import java.lang.reflect.Method;
 
 import junit.framework.TestCase;
 
-import org.slim3.commons.exception.PropertyCanNotWriteRuntimeException;
-import org.slim3.commons.exception.PropertyNotReadableRuntimeException;
-import org.slim3.commons.exception.PropertyNotWritableRuntimeException;
+import org.slim3.commons.exception.WrapRuntimeException;
 
 /**
  * @author higa
@@ -94,10 +92,8 @@ public class PropertyDescTest extends TestCase {
         try {
             pd.getValue(this);
             fail();
-        } catch (PropertyNotReadableRuntimeException e) {
-            System.out.println(e);
-            assertEquals("aaa", e.getPropertyName());
-            assertEquals(getClass(), e.getBeanClass());
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -122,10 +118,8 @@ public class PropertyDescTest extends TestCase {
         try {
             pd.setValue(this, null);
             fail();
-        } catch (PropertyNotWritableRuntimeException e) {
+        } catch (IllegalStateException e) {
             System.out.println(e);
-            assertEquals("aaa", e.getPropertyName());
-            assertEquals(getClass(), e.getBeanClass());
         }
     }
 
@@ -140,11 +134,8 @@ public class PropertyDescTest extends TestCase {
         try {
             pd.setValue(this, "xxx");
             fail();
-        } catch (PropertyCanNotWriteRuntimeException e) {
-            System.out.println(e);
-            assertEquals("aaa", e.getPropertyName());
-            assertEquals(getClass(), e.getBeanClass());
-            assertEquals("xxx", e.getValue());
+        } catch (WrapRuntimeException e) {
+            System.out.println(e.getMessage());
         }
     }
 }

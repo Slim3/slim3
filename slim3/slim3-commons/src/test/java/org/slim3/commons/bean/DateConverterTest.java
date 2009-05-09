@@ -19,8 +19,6 @@ import java.util.Date;
 
 import junit.framework.TestCase;
 
-import org.slim3.commons.exception.CastRuntimeException;
-
 /**
  * @author higa
  * 
@@ -45,10 +43,8 @@ public class DateConverterTest extends TestCase {
         try {
             converter.getAsString("aaa");
             fail();
-        } catch (CastRuntimeException e) {
+        } catch (IllegalArgumentException e) {
             System.out.println(e);
-            assertEquals(String.class, e.getSrcClass());
-            assertEquals(Date.class, e.getDestClass());
         }
     }
 
@@ -69,6 +65,6 @@ public class DateConverterTest extends TestCase {
     public void testIsTarget() throws Exception {
         DateConverter converter = new DateConverter("MM/dd/yyyy");
         assertTrue(converter.isTarget(java.util.Date.class));
-        assertFalse(converter.isTarget(java.sql.Date.class));
+        assertTrue(converter.isTarget(java.sql.Date.class));
     }
 }

@@ -19,8 +19,6 @@ import java.sql.Timestamp;
 
 import junit.framework.TestCase;
 
-import org.slim3.commons.exception.CastRuntimeException;
-
 /**
  * @author higa
  * 
@@ -51,10 +49,8 @@ public class NumberConverterTest extends TestCase {
         try {
             converter.getAsString("aaa");
             fail();
-        } catch (CastRuntimeException e) {
+        } catch (IllegalArgumentException e) {
             System.out.println(e);
-            assertEquals(String.class, e.getSrcClass());
-            assertEquals(Number.class, e.getDestClass());
         }
     }
 

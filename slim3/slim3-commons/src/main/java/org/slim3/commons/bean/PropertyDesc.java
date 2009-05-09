@@ -17,10 +17,6 @@ package org.slim3.commons.bean;
 
 import java.lang.reflect.Method;
 
-import org.slim3.commons.exception.PropertyCanNotReadRuntimeException;
-import org.slim3.commons.exception.PropertyCanNotWriteRuntimeException;
-import org.slim3.commons.exception.PropertyNotReadableRuntimeException;
-import org.slim3.commons.exception.PropertyNotWritableRuntimeException;
 import org.slim3.commons.exception.WrapRuntimeException;
 import org.slim3.commons.util.ConversionUtil;
 
@@ -161,22 +157,29 @@ public final class PropertyDesc {
      * @param bean
      *            the bean
      * @return the value.
-     * @throws PropertyNotReadableRuntimeException
+     * @throws IllegalStateException
      *             if the property is not readable
-     * @throws PropertyCanNotReadRuntimeException
-     *             if an exception is encountered while trying to read the
-     *             property
+     * @throws WrapRuntimeException
+     *             if reading the property is a failure.
      */
-    public Object getValue(Object bean)
-            throws PropertyNotReadableRuntimeException,
-            PropertyCanNotReadRuntimeException {
+    public Object getValue(Object bean) throws IllegalStateException,
+            WrapRuntimeException {
         if (!isReadable()) {
-            throw new PropertyNotReadableRuntimeException(beanClass, name);
+            throw new IllegalStateException("The property("
+                + name
+                + ") of the class("
+                + beanClass.getName()
+                + ") is not readable.");
         }
         try {
             return readMethod.invoke(bean);
-        } catch (Throwable t) {
-            throw new PropertyCanNotReadRuntimeException(beanClass, name, t);
+        } catch (Throwable cause) {
+            throw new WrapRuntimeException("Reading the property("
+                + name
+                + ") of the class("
+                + beanClass.getName()
+                + ") is a failure. Error message: "
+                + cause.getMessage(), cause);
         }
     }
 
@@ -187,30 +190,32 @@ public final class PropertyDesc {
      *            the bean
      * @param value
      *            the value
-     * @throws PropertyNotWritableRuntimeException
+     * @throws IllegalStateException
      *             if the property is not writable
-     * @throws PropertyCanNotWriteRuntimeException
-     *             if an other exception is encountered while trying to write
-     *             value to the property
+     * @throws WrapRuntimeException
+     *             if an error occurred while writing the value to the property
      */
     public void setValue(Object bean, Object value)
-            throws PropertyNotWritableRuntimeException,
-            PropertyCanNotWriteRuntimeException {
+            throws IllegalStateException, WrapRuntimeException {
         if (!isWritable()) {
-            throw new PropertyNotWritableRuntimeException(beanClass, name);
+            throw new IllegalStateException("The property("
+                + name
+                + ") of the class("
+                + beanClass.getName()
+                + ") is not writable.");
         }
         try {
             value = ConversionUtil.convert(value, propertyClass);
             writeMethod.invoke(bean, value);
-        } catch (Throwable t) {
-            if (t.getClass() == WrapRuntimeException.class) {
-                t = t.getCause();
-            }
-            throw new PropertyCanNotWriteRuntimeException(
-                beanClass,
-                name,
-                value,
-                t);
+        } catch (Throwable cause) {
+            throw new WrapRuntimeException("Writing the value("
+                + value
+                + ") to the property("
+                + name
+                + ") of the class("
+                + beanClass.getName()
+                + ") is a failure. Error message: "
+                + cause.getMessage(), cause);
         }
     }
 

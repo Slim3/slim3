@@ -18,7 +18,7 @@ package org.slim3.commons.util;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 
-import org.slim3.commons.exception.ParseRuntimeException;
+import org.slim3.commons.exception.WrapRuntimeException;
 
 /**
  * A utility class for {@link Number}.
@@ -41,11 +41,11 @@ public final class NumberUtil {
      * @return the converted value
      * @throws NullPointerException
      *             if the pattern parameter is null
-     * @throws ParseRuntimeException
-     *             if {@link ParseException} is encountered
+     * @throws WrapRuntimeException
+     *             if an error occurred while parsing the text
      */
     public static Number toNumber(String text, String pattern)
-            throws NullPointerException, ParseRuntimeException {
+            throws NullPointerException, WrapRuntimeException {
         if (StringUtil.isEmpty(text)) {
             return null;
         }
@@ -55,8 +55,13 @@ public final class NumberUtil {
         try {
             DecimalFormat df = new DecimalFormat(pattern);
             return df.parse(text);
-        } catch (ParseException e) {
-            throw new ParseRuntimeException(text, e);
+        } catch (ParseException cause) {
+            throw new WrapRuntimeException(
+                "An error occurred while parsing the text("
+                    + text
+                    + "). Error message: "
+                    + cause.getMessage(),
+                cause);
         }
     }
 

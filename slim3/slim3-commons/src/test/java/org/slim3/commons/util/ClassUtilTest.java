@@ -17,7 +17,7 @@ package org.slim3.commons.util;
 
 import junit.framework.TestCase;
 
-import org.slim3.commons.exception.ClassNotFoundRuntimeException;
+import org.slim3.commons.exception.WrapRuntimeException;
 
 /**
  * @author higa
@@ -59,15 +59,14 @@ public class ClassUtilTest extends TestCase {
     /**
      * 
      */
-    public void testForNameForException() {
-        String className = "Xxx";
+    public void testForNameForBadName() {
         try {
-            ClassUtil.forName(className, Thread
+            ClassUtil.forName("xxx", Thread
                 .currentThread()
                 .getContextClassLoader());
-        } catch (ClassNotFoundRuntimeException e) {
+            fail();
+        } catch (WrapRuntimeException e) {
             System.out.println(e.getMessage());
-            assertEquals(className, e.getClassName());
         }
     }
 }

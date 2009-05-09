@@ -22,8 +22,6 @@ import java.util.Date;
 
 import junit.framework.TestCase;
 
-import org.slim3.commons.exception.ClassCanNotAssignedRuntimeException;
-
 /**
  * @author higa
  * 
@@ -252,15 +250,12 @@ public class ConversionUtilTest extends TestCase {
      * 
      * @throws Exception
      */
-    public void testConvertForClassCanNotAssignedRuntimeException()
-            throws Exception {
+    public void testConvertForIllegalArgument() throws Exception {
         try {
             ConversionUtil.convert(1, MyDto.class);
             fail();
-        } catch (ClassCanNotAssignedRuntimeException e) {
+        } catch (IllegalArgumentException e) {
             System.out.println(e);
-            assertEquals(Integer.class, e.getOriginalClass());
-            assertEquals(MyDto.class, e.getDestinationClass());
         }
     }
 

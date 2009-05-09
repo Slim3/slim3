@@ -17,7 +17,6 @@ package org.slim3.commons.bean;
 
 import java.text.DecimalFormat;
 
-import org.slim3.commons.exception.CastRuntimeException;
 import org.slim3.commons.util.NumberUtil;
 import org.slim3.commons.util.StringUtil;
 
@@ -58,7 +57,9 @@ public class NumberConverter implements Converter {
             return null;
         }
         if (!(value instanceof Number)) {
-            throw new CastRuntimeException(value.getClass(), Number.class);
+            throw new IllegalArgumentException("The class("
+                + value.getClass().getName()
+                + ") can not be assigned to number.");
         }
         return NumberUtil.toString((Number) value, pattern);
     }

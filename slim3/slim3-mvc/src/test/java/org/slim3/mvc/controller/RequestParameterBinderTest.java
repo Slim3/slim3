@@ -24,7 +24,7 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.slim3.commons.exception.PropertyCanNotWriteRuntimeException;
+import org.slim3.commons.exception.WrapRuntimeException;
 import org.slim3.mvc.controller.RequestParameterBinder.IndexParsedResult;
 import org.slim3.mvc.controller.controller.HogeController;
 import org.slim3.mvc.controller.controller.MyBean;
@@ -129,8 +129,8 @@ public class RequestParameterBinderTest extends TestCase {
                 "beanArrayArray[1][1]",
                 new String[] { "111" });
             fail();
-        } catch (PropertyCanNotWriteRuntimeException e) {
-            System.out.println(e);
+        } catch (WrapRuntimeException e) {
+            System.out.println(e.getMessage());
         }
     }
 

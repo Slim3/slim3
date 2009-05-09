@@ -20,7 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.slim3.commons.exception.ParseRuntimeException;
+import org.slim3.commons.exception.WrapRuntimeException;
 
 /**
  * A utility class for {@link Date}.
@@ -98,11 +98,11 @@ public final class DateUtil {
      * @return the converted value
      * @throws NullPointerException
      *             if the pattern parameter is null
-     * @throws ParseRuntimeException
-     *             if {@link ParseException} is encountered
+     * @throws WrapRuntimeException
+     *             if an error occurred while parsing the text
      */
     public static Date toDate(String text, String pattern)
-            throws NullPointerException, ParseRuntimeException {
+            throws NullPointerException, WrapRuntimeException {
         if (pattern == null) {
             throw new NullPointerException("The pattern parameter is null.");
         }
@@ -112,8 +112,13 @@ public final class DateUtil {
         try {
             SimpleDateFormat df = new SimpleDateFormat(pattern);
             return df.parse(text);
-        } catch (ParseException e) {
-            throw new ParseRuntimeException(text, e);
+        } catch (ParseException cause) {
+            throw new WrapRuntimeException(
+                "An error occurred while parsing the text("
+                    + text
+                    + "). Error message: "
+                    + cause.getMessage(),
+                cause);
         }
     }
 
