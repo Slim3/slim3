@@ -6,7 +6,7 @@
         <ant antfile="slim3-commons/build.xml" inheritAll="false"/>
         <ant antfile="slim3-gae/build.xml" inheritAll="false"/>
     	<ant antfile="slim3-mvc/build.xml" inheritAll="false"/>
-    	<jar jarfile="target/slim3-${ver}.jar" basedir="target" />
+    	<zip zipfile="target/slim3-${ver}.zip" basedir="target" />
     </target>
 
     <target name="clean">

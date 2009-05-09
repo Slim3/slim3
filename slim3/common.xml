@@ -10,7 +10,7 @@
     <target name="compile">
         <javac fork="yes" srcdir="${src}" compiler="javac1.6" nowarn="on"
             classpathref="classpath" destdir="${build}" debug="on" encoding="UTF-8">
-        	<compilerarg value="-Xlint:-unchecked"/>
+        	<compilerarg value="-Xlint:none"/>
         </javac>
     </target>
 
