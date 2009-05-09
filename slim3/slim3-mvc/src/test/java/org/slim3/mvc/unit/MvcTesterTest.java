@@ -15,7 +15,8 @@
  */
 package org.slim3.mvc.unit;
 
-import org.slim3.commons.unit.CleanableTestCase;
+import junit.framework.TestCase;
+
 import org.slim3.mvc.MvcConstants;
 import org.slim3.mvc.unit.controller.HelloController;
 
@@ -23,7 +24,7 @@ import org.slim3.mvc.unit.controller.HelloController;
  * @author higa
  * 
  */
-public class MvcTesterTest extends CleanableTestCase {
+public class MvcTesterTest extends TestCase {
 
     private MvcTester tester = new MvcTester();
 

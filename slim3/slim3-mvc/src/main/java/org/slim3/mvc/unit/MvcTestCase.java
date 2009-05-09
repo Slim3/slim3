@@ -15,7 +15,7 @@
  */
 package org.slim3.mvc.unit;
 
-import org.slim3.commons.unit.CleanableTestCase;
+import junit.framework.TestCase;
 
 /**
  * A test case for Slim3 MVC.
@@ -24,7 +24,7 @@ import org.slim3.commons.unit.CleanableTestCase;
  * @since 3.0
  * 
  */
-public abstract class MvcTestCase extends CleanableTestCase {
+public abstract class MvcTestCase extends TestCase {
 
     /**
      * The tester for Slim3 MVC.

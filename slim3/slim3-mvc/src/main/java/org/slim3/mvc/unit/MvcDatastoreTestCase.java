@@ -15,7 +15,8 @@
  */
 package org.slim3.mvc.unit;
 
-import org.slim3.commons.unit.CleanableTestCase;
+import junit.framework.TestCase;
+
 import org.slim3.gae.unit.DatastoreTester;
 
 /**
@@ -25,7 +26,7 @@ import org.slim3.gae.unit.DatastoreTester;
  * @since 3.0
  * 
  */
-public abstract class MvcDatastoreTestCase extends CleanableTestCase {
+public abstract class MvcDatastoreTestCase extends TestCase {
 
     /**
      * The tester for Slim3 MVC.

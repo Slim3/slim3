@@ -15,14 +15,15 @@
  */
 package org.slim3.mvc.controller;
 
-import org.slim3.commons.unit.CleanableTestCase;
+import junit.framework.TestCase;
+
 import org.slim3.mvc.MvcConstants;
 
 /**
  * @author higa
  * 
  */
-public class HotReloadingClassLoaderTest extends CleanableTestCase {
+public class HotReloadingClassLoaderTest extends TestCase {
 
     /**
      * 
