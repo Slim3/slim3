@@ -219,10 +219,10 @@ public class JDOModelMetaGenerator implements Generator<Printer> {
         /** name of {@code javax.annotation.Generated} class */
         protected final String generated;
 
-        /** name of {@code org.slim3.gae.jdo.ModelMeta} class */
+        /** name of {@code org.slim3.jdo.ModelMeta} class */
         protected final String s3modelMeta;
 
-        /** name of {@code org.slim3.gae.jdo.AttributeMeta} class */
+        /** name of {@code org.slim3.jdo.AttributeMeta} class */
         protected final String s3attributeMeta;
 
         /**
@@ -238,9 +238,8 @@ public class JDOModelMetaGenerator implements Generator<Printer> {
             model = importedNames.add(qualifiedModelName);
             modelMeta = importedNames.add(qualifiedModelMetaName);
             generated = importedNames.add("javax.annotation.Generated");
-            s3modelMeta = importedNames.add("org.slim3.gae.jdo.ModelMeta");
-            s3attributeMeta = importedNames
-                    .add("org.slim3.gae.jdo.AttributeMeta");
+            s3modelMeta = importedNames.add("org.slim3.jdo.ModelMeta");
+            s3attributeMeta = importedNames.add("org.slim3.jdo.AttributeMeta");
         }
     }
 
