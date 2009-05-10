@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the Seasar Foundation and the Others.
+ * Copyright 2004-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,31 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.gae.jdo;
+package org.slim3.jdo;
 
-import org.slim3.gae.unit.DatastoreTestCase;
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
+
+import org.slim3.jdo.PMF;
+import org.slim3.tester.DatastoreTestCase;
+
+import slim3.it.model.Sample;
 
 /**
  * @author higa
  * 
  */
-public class PMTest extends DatastoreTestCase {
+public class SpikeTest extends DatastoreTestCase {
 
     /**
      * @throws Exception
      */
-    public void testGetPersistenceManager() throws Exception {
-        assertNotNull(PM.get());
+    public void test() throws Exception {
+        PersistenceManager pm = PMF.get().getPersistenceManager();
+        Sample s = new Sample();
+        pm.makePersistent(s);
+        Query query = pm.newQuery(Sample.class);
+        query.setOrdering("key");
+        query.execute();
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the Seasar Foundation and the Others.
+ * Copyright 2004-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,13 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.gae.jdo;
+package org.slim3.jdo;
 
 import javax.jdo.Transaction;
 
-import org.slim3.gae.unit.DatastoreTestCase;
+import org.slim3.jdo.JDOTemplate;
+import org.slim3.jdo.TxTemplate;
+import org.slim3.tester.DatastoreTestCase;
 
 /**
  * @author higa
@@ -32,7 +34,7 @@ public class TxTemplateTest extends DatastoreTestCase {
     /**
      * @throws Exception
      */
-    public void testExecute() throws Exception {
+    public void testRun() throws Exception {
         new JDOTemplate() {
             @Override
             protected Object doRun() {

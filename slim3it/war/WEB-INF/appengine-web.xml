@@ -4,7 +4,9 @@
 	<version>12</version>
 	<sessions-enabled>true</sessions-enabled>
 	<system-properties>
+        <property name="slim3.controllerPackage" value="slim3.it.controller"/>
+    </system-properties>
+	<system-properties>
 		<property name="java.util.logging.config.file" value="WEB-INF/classes/logging.properties"/>
 	</system-properties>
-	
 </appengine-web-app>

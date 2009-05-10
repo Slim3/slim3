@@ -2,11 +2,7 @@
     <property name="ver" value="EA1-SNAPSHOT"/>
 	
     <target name="copy.lib">
-        <copy todir="war/WEB-INF/lib" file="../slim3/target/slim3-commons-${ver}.jar"/>
-        <copy todir="war/WEB-INF/lib" file="../slim3/target/slim3-mvc-${ver}.jar"/>
-        <copy todir="war/WEB-INF/lib" file="../slim3/target/slim3-gae-${ver}.jar"/>
-        <copy todir="war/WEB-INF/libsrc" file="../slim3/target/slim3-commons-${ver}-sources.jar"/>
-        <copy todir="war/WEB-INF/libsrc" file="../slim3/target/slim3-mvc-${ver}-sources.jar"/>
-    	<copy todir="war/WEB-INF/libsrc" file="../slim3/target/slim3-gae-${ver}-sources.jar"/>
+        <copy todir="war/WEB-INF/lib" file="../slim3/target/slim3-${ver}.jar"/>
+        <copy todir="war/WEB-INF/libsrc" file="../slim3/target/slim3-${ver}-sources.jar"/>
     </target>
 </project>
