@@ -49,7 +49,8 @@ public class HotReloadingClassLoaderTest extends TestCase {
             CONTROLLER_PACKAGE);
         super.setUp();
         originalClassLoader = Thread.currentThread().getContextClassLoader();
-        hotClassLoader = new HotReloadingClassLoader(originalClassLoader);
+        hotClassLoader =
+            new HotReloadingClassLoader(originalClassLoader, CONTROLLER_PACKAGE);
     }
 
     @Override

@@ -22,7 +22,6 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import org.slim3.exception.WrapRuntimeException;
-import org.slim3.util.StringUtil;
 
 /**
  * The {@link ClassLoader} for hot reloading.
@@ -33,13 +32,26 @@ import org.slim3.util.StringUtil;
 public class HotReloadingClassLoader extends ClassLoader {
 
     /**
+     * The controller package name.
+     */
+    protected String controllerPackageName;
+
+    /**
      * Constructor
      * 
      * @param parentClassLoader
      *            the parent class loader.
+     * @param controllerPackageName
+     *            the controller package name
      */
-    public HotReloadingClassLoader(ClassLoader parentClassLoader) {
+    public HotReloadingClassLoader(ClassLoader parentClassLoader,
+            String controllerPackageName) {
         super(parentClassLoader);
+        if (controllerPackageName == null) {
+            throw new NullPointerException(
+                "The controllerPackageName parameter is null.");
+        }
+        this.controllerPackageName = controllerPackageName;
     }
 
     @Override
@@ -185,11 +197,6 @@ public class HotReloadingClassLoader extends ClassLoader {
      * @return whether the class is the target of hot deployment
      */
     protected boolean isTarget(String className) {
-        String packageName =
-            System.getProperty(ControllerConstants.CONTROLLER_PACKAGE_KEY);
-        if (StringUtil.isEmpty(packageName)) {
-            return false;
-        }
-        return className.startsWith(packageName + ".");
+        return className.startsWith(controllerPackageName + ".");
     }
 }

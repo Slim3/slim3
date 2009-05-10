@@ -66,6 +66,11 @@ public class FrontController implements Filter {
     protected boolean hotReloading = false;
 
     /**
+     * The controller package name.
+     */
+    protected String controllerPackageName;
+
+    /**
      * Constructor.
      */
     public FrontController() {
@@ -75,7 +80,8 @@ public class FrontController implements Filter {
         servletContext = config.getServletContext();
         ServletContextLocator.setServletContext(servletContext);
         charset =
-            servletContext.getInitParameter(ControllerConstants.REQUEST_CHARSET_KEY);
+            servletContext
+                .getInitParameter(ControllerConstants.REQUEST_CHARSET_KEY);
         if (charset == null) {
             charset = ControllerConstants.DEFAULT_REQUEST_CHARSET;
         }
@@ -84,6 +90,13 @@ public class FrontController implements Filter {
                 .getProperty(ControllerConstants.HOT_RELOADING_KEY));
         if (logger.isLoggable(Level.INFO)) {
             logger.log(Level.INFO, "Slim3 hot reloading:" + hotReloading);
+        }
+        controllerPackageName =
+            System.getProperty(ControllerConstants.CONTROLLER_PACKAGE_KEY);
+        if (StringUtil.isEmpty(controllerPackageName)) {
+            throw new IllegalStateException("The system property("
+                + ControllerConstants.CONTROLLER_PACKAGE_KEY
+                + ") is not found.");
         }
     }
 
@@ -207,7 +220,7 @@ public class FrontController implements Filter {
         String className = toControllerClassName(path);
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         if (hotReloading) {
-            loader = new HotReloadingClassLoader(loader);
+            loader = new HotReloadingClassLoader(loader, controllerPackageName);
         }
         Class<?> clazz = null;
         try {
@@ -239,14 +252,7 @@ public class FrontController implements Filter {
      */
     protected String toControllerClassName(String path)
             throws IllegalStateException {
-        String packageName =
-            System.getProperty(ControllerConstants.CONTROLLER_PACKAGE_KEY);
-        if (StringUtil.isEmpty(packageName)) {
-            throw new IllegalStateException("The system property("
-                + ControllerConstants.CONTROLLER_PACKAGE_KEY
-                + ") is not found.");
-        }
-        String className = packageName + path.replace('/', '.');
+        String className = controllerPackageName + path.replace('/', '.');
         if (className.endsWith(".")) {
             className += ControllerConstants.INDEX_CONTROLLER;
         } else {
