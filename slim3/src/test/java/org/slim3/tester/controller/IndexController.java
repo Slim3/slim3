@@ -26,6 +26,6 @@ public class IndexController extends Controller {
 
     @Override
     public Navigation execute() {
-        return forward();
+        return forward("index.jsp");
     }
 }

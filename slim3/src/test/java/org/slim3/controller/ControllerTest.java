@@ -21,8 +21,6 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.slim3.controller.Controller;
-import org.slim3.controller.Navigation;
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
 
@@ -62,16 +60,6 @@ public class ControllerTest extends TestCase {
      * @throws Exception
      * 
      */
-    public void testForwardForDefaultPath() throws Exception {
-        Navigation nav = controller.forward();
-        assertEquals("index.jsp", nav.getPath());
-        assertFalse(nav.isRedirect());
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
     public void testForwardForOtherController() throws Exception {
         Navigation nav = controller.forward("/hello/index");
         assertEquals("/hello/index", nav.getPath());
@@ -86,37 +74,6 @@ public class ControllerTest extends TestCase {
         Navigation nav = controller.redirect("index");
         assertEquals("index", nav.getPath());
         assertTrue(nav.isRedirect());
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testSetPath() throws Exception {
-        controller.setPath("/hello/list");
-        assertEquals("/hello/", controller.getApplicationPath());
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testCalculateDefaultPath() throws Exception {
-        assertEquals("index.jsp", controller.calculateDefaultPath());
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testCalculateDefaultPathForBadControllerClass()
-            throws Exception {
-        try {
-            new BadControl().calculateDefaultPath();
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
     }
 
     /**
@@ -351,14 +308,6 @@ public class ControllerTest extends TestCase {
     }
 
     private static class IndexController extends Controller {
-
-        @Override
-        public Navigation execute() {
-            return null;
-        }
-    }
-
-    private static class BadControl extends Controller {
 
         @Override
         public Navigation execute() {

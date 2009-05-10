@@ -33,7 +33,6 @@ import org.slim3.util.FloatUtil;
 import org.slim3.util.IntegerUtil;
 import org.slim3.util.LongUtil;
 import org.slim3.util.ShortUtil;
-import org.slim3.util.StringUtil;
 
 /**
  * A base controller. This controller is created each request.
@@ -60,11 +59,6 @@ public abstract class Controller {
     protected HttpServletResponse response;
 
     /**
-     * The path of this controller.
-     */
-    protected String path;
-
-    /**
      * The path of this application.
      */
     protected String applicationPath;
@@ -73,122 +67,6 @@ public abstract class Controller {
      * The parsed request parameters.
      */
     protected Map<String, Object> parameters;
-
-    /**
-     * Returns the servlet context.
-     * 
-     * @return the servlet context
-     */
-    public ServletContext getServletContext() {
-        return servletContext;
-    }
-
-    /**
-     * Sets the servlet context.
-     * 
-     * @param servletContext
-     *            the servlet context
-     */
-    public void setServletContext(ServletContext servletContext) {
-        this.servletContext = servletContext;
-    }
-
-    /**
-     * Returns the request.
-     * 
-     * @return the request
-     */
-    public HttpServletRequest getRequest() {
-        return request;
-    }
-
-    /**
-     * Sets the request.
-     * 
-     * @param request
-     *            the request
-     */
-    public void setRequest(HttpServletRequest request) {
-        this.request = request;
-    }
-
-    /**
-     * Returns the response.
-     * 
-     * @return the response
-     */
-    public HttpServletResponse getResponse() {
-        return response;
-    }
-
-    /**
-     * Sets the response.
-     * 
-     * @param response
-     *            the response
-     */
-    public void setResponse(HttpServletResponse response) {
-        this.response = response;
-    }
-
-    /**
-     * Returns the path of this controller.
-     * 
-     * @return the path
-     */
-    public String getPath() {
-        return path;
-    }
-
-    /**
-     * Sets the path of this controller.
-     * 
-     * @param path
-     *            the path
-     * @throws NullPointerException
-     *             if the path parameter is null
-     */
-    public void setPath(String path) throws NullPointerException {
-        if (path == null) {
-            throw new NullPointerException("The path parameter is null");
-        }
-        this.path = path;
-        int pos = path.lastIndexOf('/');
-        if (pos < 0) {
-            throw new IllegalArgumentException("The path("
-                + path
-                + ") does not contain \"/\"");
-        }
-        applicationPath = path.substring(0, pos + 1);
-    }
-
-    /**
-     * Returns the application path.
-     * 
-     * @return the application path
-     */
-    public String getApplicationPath() {
-        return applicationPath;
-    }
-
-    /**
-     * Returns the parsed request parameters.
-     * 
-     * @return the parsed request parameters
-     */
-    public Map<String, Object> getParameters() {
-        return parameters;
-    }
-
-    /**
-     * Sets the parsed request parameters.
-     * 
-     * @param parameters
-     *            the parsed request parameters
-     */
-    public void setParameters(Map<String, Object> parameters) {
-        this.parameters = parameters;
-    }
 
     /**
      * Executes the action for request.
@@ -220,6 +98,68 @@ public abstract class Controller {
     }
 
     /**
+     * Sets the locale to the session
+     * 
+     * @param locale
+     *            the locale
+     */
+    protected void setLocale(Locale locale) {
+        request.getSession().setAttribute(
+            ControllerConstants.LOCALE_KEY,
+            locale);
+    }
+
+    /**
+     * Sets the servlet context.
+     * 
+     * @param servletContext
+     *            the servlet context
+     */
+    protected void setServletContext(ServletContext servletContext) {
+        this.servletContext = servletContext;
+    }
+
+    /**
+     * Sets the request.
+     * 
+     * @param request
+     *            the request
+     */
+    protected void setRequest(HttpServletRequest request) {
+        this.request = request;
+    }
+
+    /**
+     * Sets the response.
+     * 
+     * @param response
+     *            the response
+     */
+    protected void setResponse(HttpServletResponse response) {
+        this.response = response;
+    }
+
+    /**
+     * Sets the application path.
+     * 
+     * @param applicationPath
+     *            the application path
+     */
+    protected void setApplicationPath(String applicationPath) {
+        this.applicationPath = applicationPath;
+    }
+
+    /**
+     * Sets the parsed request parameters.
+     * 
+     * @param parameters
+     *            the parsed request parameters
+     */
+    protected void setParameters(Map<String, Object> parameters) {
+        this.parameters = parameters;
+    }
+
+    /**
      * Creates a new {@link Navigation} for "forward".
      * 
      * @param path
@@ -231,15 +171,6 @@ public abstract class Controller {
     }
 
     /**
-     * Creates a default {@link Navigation} for "forward".
-     * 
-     * @return a default {@link Navigation} for "forward".
-     */
-    protected Navigation forward() {
-        return forward(calculateDefaultPath());
-    }
-
-    /**
      * Creates a new {@link Navigation} for "redirect".
      * 
      * @param path
@@ -248,29 +179,6 @@ public abstract class Controller {
      */
     protected Navigation redirect(String path) {
         return new Navigation(path, true);
-    }
-
-    /**
-     * Calculates the default path when the path is not specified.
-     * 
-     * @return the default path
-     * @throws IllegalStateException
-     *             if this controller class name does not end with "Controller".
-     */
-    protected String calculateDefaultPath() throws IllegalStateException {
-        String path = getClass().getSimpleName();
-        if (!path.endsWith(ControllerConstants.CONTROLLER_SUFFIX)) {
-            throw new IllegalStateException("The controller class name("
-                + getClass().getName()
-                + ") does not end with \""
-                + ControllerConstants.CONTROLLER_SUFFIX
-                + "\".");
-        }
-        path =
-            path.substring(0, path.length()
-                - ControllerConstants.CONTROLLER_SUFFIX.length());
-        return StringUtil.decapitalize(path)
-            + ControllerConstants.JSP_EXTENSION;
     }
 
     /**
@@ -591,17 +499,5 @@ public abstract class Controller {
             + ") of the request parameter("
             + name
             + ") is not byte array.");
-    }
-
-    /**
-     * Sets the locale to the session
-     * 
-     * @param locale
-     *            the locale
-     */
-    protected void setLocale(Locale locale) {
-        request.getSession().setAttribute(
-            ControllerConstants.LOCALE_KEY,
-            locale);
     }
 }

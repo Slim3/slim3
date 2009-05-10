@@ -157,10 +157,10 @@ public class FrontControllerTest extends ControllerTestCase {
                 controllerTester.request,
                 controllerTester.response,
                 "/");
-        assertNotNull(controller.getServletContext());
-        assertNotNull(controller.getRequest());
-        assertNotNull(controller.getResponse());
-        assertEquals("/", controller.getPath());
+        assertNotNull(controller.servletContext);
+        assertNotNull(controller.request);
+        assertNotNull(controller.response);
+        assertEquals("/", controller.applicationPath);
         assertSame(controller, controllerTester.request
             .getAttribute(ControllerConstants.CONTROLLER_KEY));
     }
@@ -309,7 +309,7 @@ public class FrontControllerTest extends ControllerTestCase {
                 controllerTester.request,
                 controllerTester.response,
                 "/");
-        Navigation navigation = controller.forward();
+        Navigation navigation = controller.forward("index.jsp");
         controllerTester.frontController.handleNavigation(
             controllerTester.request,
             controllerTester.response,
@@ -335,7 +335,7 @@ public class FrontControllerTest extends ControllerTestCase {
             controllerTester.request,
             controllerTester.response,
             controller);
-        assertNotNull(controller.getParameters());
+        assertNotNull(controller.parameters);
         IndexController indexController = (IndexController) controller;
         assertEquals("111", indexController.getAaa());
     }
@@ -355,9 +355,9 @@ public class FrontControllerTest extends ControllerTestCase {
             controllerTester.request,
             controllerTester.response,
             controller);
-        assertNotNull(controller.getServletContext());
-        assertNotNull(controller.getRequest());
-        assertNotNull(controller.getResponse());
+        assertNotNull(controller.servletContext);
+        assertNotNull(controller.request);
+        assertNotNull(controller.response);
         assertEquals("/index.jsp", controllerTester.servletContext
             .getLatestRequestDispatcher()
             .getPath());

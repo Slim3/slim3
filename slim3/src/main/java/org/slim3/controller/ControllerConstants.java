@@ -16,7 +16,7 @@
 package org.slim3.controller;
 
 /**
- * This interface defines the constants of Slim3 MVC.
+ * This interface defines the constants of Slim3 Controller.
  * 
  * @author higa
  * @since 3.0
@@ -79,9 +79,4 @@ public interface ControllerConstants {
      * The index controller.
      */
     String INDEX_CONTROLLER = "Index" + CONTROLLER_SUFFIX;
-
-    /**
-     * The extension of JSP.
-     */
-    String JSP_EXTENSION = ".jsp";
 }

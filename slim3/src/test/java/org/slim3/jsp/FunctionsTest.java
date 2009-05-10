@@ -19,12 +19,8 @@ import java.util.Date;
 
 import junit.framework.TestCase;
 
-import org.slim3.controller.Controller;
-import org.slim3.controller.ControllerConstants;
-import org.slim3.controller.Navigation;
 import org.slim3.controller.RequestLocator;
 import org.slim3.controller.ResponseLocator;
-import org.slim3.jsp.Functions;
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockHttpServletResponse;
 import org.slim3.tester.MockServletContext;
@@ -155,9 +151,7 @@ public class FunctionsTest extends TestCase {
      */
     public void testUrlForNull() throws Exception {
         servletContext.setContextPath("/aaa");
-        HogeController controller = new HogeController();
-        controller.setPath("/bbb/hoge");
-        request.setAttribute(ControllerConstants.CONTROLLER_KEY, controller);
+        request.setPathInfo("/bbb/hoge");
         assertEquals("/aaa/bbb/", Functions.url(null));
     }
 
@@ -165,9 +159,7 @@ public class FunctionsTest extends TestCase {
      * @throws Exception
      */
     public void testUrlForNullAndNoContextPath() throws Exception {
-        HogeController controller = new HogeController();
-        controller.setPath("/bbb/hoge");
-        request.setAttribute(ControllerConstants.CONTROLLER_KEY, controller);
+        request.setPathInfo("/bbb/hoge");
         assertEquals("/bbb/", Functions.url(null));
     }
 
@@ -175,9 +167,7 @@ public class FunctionsTest extends TestCase {
      * @throws Exception
      */
     public void testUrlForControllerRelativePath() throws Exception {
-        HogeController controller = new HogeController();
-        controller.setPath("/bbb/hoge");
-        request.setAttribute(ControllerConstants.CONTROLLER_KEY, controller);
+        request.setPathInfo("/bbb/hoge");
         assertEquals("/bbb/foo", Functions.url("foo"));
     }
 
@@ -185,6 +175,7 @@ public class FunctionsTest extends TestCase {
      * @throws Exception
      */
     public void testUrlForOtherController() throws Exception {
+        request.setPathInfo("/bbb/hoge");
         assertEquals("/hello/sayHello", Functions.url("/hello/sayHello"));
     }
 
@@ -214,14 +205,5 @@ public class FunctionsTest extends TestCase {
      */
     public void testBrForNull() throws Exception {
         assertEquals("", Functions.br(null));
-    }
-
-    private static class HogeController extends Controller {
-
-        @Override
-        public Navigation execute() {
-            return null;
-        }
-
     }
 }

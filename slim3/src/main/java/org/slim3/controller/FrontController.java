@@ -200,7 +200,8 @@ public class FrontController implements Filter {
         controller.setServletContext(servletContext);
         controller.setRequest(request);
         controller.setResponse(response);
-        controller.setPath(path);
+        int pos = path.lastIndexOf('/');
+        controller.setApplicationPath(path.substring(0, pos + 1));
         request.setAttribute(ControllerConstants.CONTROLLER_KEY, controller);
         return controller;
     }
@@ -397,7 +398,7 @@ public class FrontController implements Filter {
             HttpServletResponse response, Controller controller, String path)
             throws IOException, ServletException {
         if (!path.startsWith("/")) {
-            path = controller.getApplicationPath() + path;
+            path = controller.applicationPath + path;
         }
         RequestDispatcher rd = servletContext.getRequestDispatcher(path);
         if (rd == null) {

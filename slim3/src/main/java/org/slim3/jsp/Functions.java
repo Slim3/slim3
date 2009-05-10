@@ -17,8 +17,8 @@ package org.slim3.jsp;
 
 import java.util.Arrays;
 
-import org.slim3.controller.Controller;
-import org.slim3.controller.ControllerConstants;
+import javax.servlet.http.HttpServletRequest;
+
 import org.slim3.controller.RequestLocator;
 import org.slim3.controller.ResponseLocator;
 import org.slim3.util.StringUtil;
@@ -138,23 +138,21 @@ public final class Functions {
         if (!empty && input.indexOf(':') >= 0) {
             return input;
         }
-        Controller controller =
-            (Controller) RequestLocator.getRequest().getAttribute(
-                ControllerConstants.CONTROLLER_KEY);
-        if (controller == null) {
-            return input;
-        }
-        String contextPath = RequestLocator.getRequest().getContextPath();
+        HttpServletRequest request = RequestLocator.getRequest();
+        String contextPath = request.getContextPath();
         StringBuilder sb = new StringBuilder(50);
         if (contextPath.length() > 1) {
             sb.append(contextPath);
         }
+        String path = request.getPathInfo();
+        int pos = path.lastIndexOf('/');
+        path = path.substring(0, pos + 1);
         if (empty) {
-            sb.append(controller.getApplicationPath());
+            sb.append(path);
         } else if (input.startsWith("/")) {
             sb.append(input);
         } else {
-            sb.append(controller.getApplicationPath()).append(input);
+            sb.append(path).append(input);
         }
         return ResponseLocator.getResponse().encodeURL(sb.toString());
     }
