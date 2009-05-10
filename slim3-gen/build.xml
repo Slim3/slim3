@@ -3,7 +3,6 @@
     <property file="build.properties" />
 
     <path id="classpath">
-        <fileset dir="target" includes="*.jar"/>
     </path>
 
     <target name="dist" depends="clean,compile,copy">

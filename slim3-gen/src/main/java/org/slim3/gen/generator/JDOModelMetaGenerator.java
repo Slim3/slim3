@@ -17,33 +17,16 @@ package org.slim3.gen.generator;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
+import javax.annotation.Generated;
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementVisitor;
-import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.ArrayType;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.ErrorType;
-import javax.lang.model.type.PrimitiveType;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.type.WildcardType;
-import javax.lang.model.util.ElementScanner6;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.SimpleElementVisitor6;
-import javax.lang.model.util.SimpleTypeVisitor6;
-import javax.lang.model.util.Types;
 
-import org.slim3.gen.Annotations;
+import org.slim3.gen.ClassConstants;
+import org.slim3.gen.Constants;
 import org.slim3.gen.ProductInfo;
 import org.slim3.gen.printer.Printer;
-import org.slim3.gen.util.ElementUtil;
-import org.slim3.gen.util.Logger;
 
 /**
  * Generates source codes of a JDO model meta class.
@@ -54,31 +37,8 @@ import org.slim3.gen.util.Logger;
  */
 public class JDOModelMetaGenerator implements Generator<Printer> {
 
-    /** the document URL */
-    protected static final String docURL = "http://code.google.com/intl/en/appengine/docs/java/datastore/dataclasses.html";
-
-    /** the list of unsupported package names */
-    protected static final List<String> unsupportedPackageNameList = new ArrayList<String>();
-    static {
-        unsupportedPackageNameList.add("java.math");
-        unsupportedPackageNameList.add("java.sql");
-    }
-
-    /** the list of unsupported class names */
-    protected static final List<String> unsupportedClassNameList = new ArrayList<String>();
-    static {
-        unsupportedClassNameList.add("java.util.Calendar");
-        unsupportedClassNameList.add("java.lang.Character");
-    }
-
     /** the processing environment */
     protected final ProcessingEnvironment processingEnv;
-
-    /** the utility object of elements */
-    protected final Elements elements;
-
-    /** the utility object of types */
-    protected final Types types;
 
     /** the package name */
     protected final String packageName;
@@ -89,8 +49,8 @@ public class JDOModelMetaGenerator implements Generator<Printer> {
     /** the collection of reserved names */
     protected final ReservedNames reservedNames;
 
-    /** the attributeMeta map */
-    protected final Map<String, String> attributeMetaMap = new LinkedHashMap<String, String>();
+    /** the list of attribute description */
+    protected final List<AttributeDesc> attributeDescList;
 
     /**
      * Creates a new {@link JDOModelMetaGenerator}.
@@ -116,8 +76,6 @@ public class JDOModelMetaGenerator implements Generator<Printer> {
                     "The qualifiedName parameter is null.");
         }
         this.processingEnv = processingEnv;
-        this.elements = processingEnv.getElementUtils();
-        this.types = processingEnv.getTypeUtils();
         int pos = qualifiedName.lastIndexOf('.');
         if (pos < 0) {
             this.packageName = "";
@@ -128,7 +86,9 @@ public class JDOModelMetaGenerator implements Generator<Printer> {
         this.reservedNames = new ReservedNames(element.getQualifiedName()
                 .toString(), qualifiedName);
 
-        new ClassElementScanner().scan(element);
+        AttributeDescCollector collector = new AttributeDescCollector(
+                new ArrayList<AttributeDesc>(), importedNames, processingEnv);
+        attributeDescList = collector.scan(element);
     }
 
     @Override
@@ -152,53 +112,20 @@ public class JDOModelMetaGenerator implements Generator<Printer> {
         p.println("        super(%s.class);", reservedNames.model);
         p.println("    }");
         p.println();
-        for (Map.Entry<String, String> entry : attributeMetaMap.entrySet()) {
-            p.println("    public %1$s<%2$s> %3$s = new %1$s<%2$s>(\"%3$s\");",
-                    reservedNames.s3attributeMeta, entry.getValue(), entry
-                            .getKey());
+        for (AttributeDesc desc : attributeDescList) {
+            if (desc.modelType) {
+                p.println("    public %1$s%2$s %3$s = new %1$s%2$s();",
+                        desc.typeName, Constants.METACLASS_SUFFIX, desc.name);
+            } else {
+                p
+                        .println(
+                                "    public %1$s<%2$s> %3$s = new %1$s<%2$s>(\"%3$s\");",
+                                reservedNames.s3attributeMeta, desc.typeName,
+                                desc.name);
+            }
             p.println();
         }
         p.print("}");
-    }
-
-    /**
-     * Adds a package name to the list of unsupported package names.
-     * 
-     * @param packageName
-     *            the package name.
-     */
-    public static void addUnsupportedPackageName(String packageName) {
-        unsupportedPackageNameList.add(packageName);
-    }
-
-    /**
-     * Removes a package name from the list of unsupported package names.
-     * 
-     * @param packageName
-     *            the package name.
-     */
-    public static void removeUnsupportedPackageName(String packageName) {
-        unsupportedPackageNameList.remove(packageName);
-    }
-
-    /**
-     * Adds a class name to the list of unsupported class names.
-     * 
-     * @param className
-     *            the class name.
-     */
-    public static void addUnsupportedClassName(String className) {
-        unsupportedClassNameList.add(className);
-    }
-
-    /**
-     * Removes a class name from the list of unsupported class names.
-     * 
-     * @param className
-     *            the class name.
-     */
-    public static void removeUnsupportedClassName(String className) {
-        unsupportedClassNameList.remove(className);
     }
 
     /**
@@ -237,153 +164,9 @@ public class JDOModelMetaGenerator implements Generator<Printer> {
                 String qualifiedModelMetaName) {
             model = importedNames.add(qualifiedModelName);
             modelMeta = importedNames.add(qualifiedModelMetaName);
-            generated = importedNames.add("javax.annotation.Generated");
-            s3modelMeta = importedNames.add("org.slim3.jdo.ModelMeta");
-            s3attributeMeta = importedNames.add("org.slim3.jdo.AttributeMeta");
-        }
-    }
-
-    /**
-     * Scans a JDM model class element.
-     * 
-     * @author taedium
-     * @since 3.0
-     * 
-     */
-    protected class ClassElementScanner extends ElementScanner6<Void, Void> {
-
-        @Override
-        public Void visitType(TypeElement e, Void p) {
-            if (e.getNestingKind() != NestingKind.TOP_LEVEL) {
-                return null;
-            }
-            return super.visitType(e, p);
-        }
-
-        @Override
-        public Void visitVariable(VariableElement e, Void p) {
-            if (ElementUtil.isAnnotated(e, Annotations.Persistent)) {
-                String fieldName = e.getSimpleName().toString();
-                StringBuilder buf = new StringBuilder();
-                e.asType().accept(new TypeParameterBuilder(e), buf);
-                String typeParameter = buf.toString();
-                attributeMetaMap.put(fieldName, typeParameter);
-            }
-            return null;
-        }
-    }
-
-    /**
-     * Builds a string of a actual type parameter.
-     * 
-     * @author taedium
-     * @since 3.0
-     * 
-     */
-    protected class TypeParameterBuilder extends
-            SimpleTypeVisitor6<Void, StringBuilder> {
-
-        /** the element which a message notified */
-        protected Element notifiedElement;
-
-        public TypeParameterBuilder(Element notifiedElement) {
-            this.notifiedElement = notifiedElement;
-        }
-
-        @Override
-        public Void visitArray(ArrayType t, StringBuilder p) {
-            t.getComponentType().accept(this, p);
-            p.append("[]");
-            return null;
-        }
-
-        @Override
-        public Void visitPrimitive(PrimitiveType t, StringBuilder p) {
-            types.boxedClass(t).asType().accept(this, p);
-            return null;
-        }
-
-        @Override
-        public Void visitWildcard(WildcardType t, StringBuilder p) {
-            p.append("?");
-            TypeMirror extendedBound = t.getExtendsBound();
-            if (extendedBound != null) {
-                p.append(" extends ");
-                extendedBound.accept(this, p);
-            }
-            TypeMirror superBound = t.getSuperBound();
-            if (superBound != null) {
-                p.append(" super ");
-                superBound.accept(this, p);
-            }
-            return null;
-        }
-
-        @Override
-        public Void visitError(ErrorType t, StringBuilder p) {
-            p.append("Object");
-            return null;
-        }
-
-        @Override
-        public Void visitDeclared(DeclaredType t, StringBuilder p) {
-            appendName(t, p);
-            List<? extends TypeMirror> typeArgs = t.getTypeArguments();
-            if (typeArgs.size() > 0) {
-                p.append("<");
-                for (TypeMirror arg : typeArgs) {
-                    arg.accept(this, p);
-                    p.append(", ");
-                }
-                p.setLength(p.length() - 2);
-                p.append(">");
-            }
-            return null;
-        }
-
-        /**
-         * Appends a type name to {@code p}.
-         * 
-         * @param t
-         *            the type.
-         * @param p
-         *            the object to which the type name is appended.
-         */
-        protected void appendName(DeclaredType t, StringBuilder p) {
-            ElementVisitor<Void, StringBuilder> visitor = new SimpleElementVisitor6<Void, StringBuilder>() {
-                @Override
-                public Void visitType(TypeElement e, StringBuilder p) {
-                    checkName(e);
-                    String qualifiedName = e.getQualifiedName().toString();
-                    p.append(importedNames.add(qualifiedName));
-                    return null;
-                }
-
-                protected void checkName(TypeElement e) {
-                    String packageName = elements.getPackageOf(e)
-                            .getQualifiedName().toString();
-                    String qualifiedName = e.getQualifiedName().toString();
-                    if (unsupportedPackageNameList.contains(packageName)) {
-                        Logger
-                                .error(
-                                        processingEnv,
-                                        notifiedElement,
-                                        "[%s] Package(%s) is not supported on Google App Engine. See %s",
-                                        JDOModelMetaGenerator.class.getName(),
-                                        packageName, docURL);
-                    }
-                    if (unsupportedClassNameList.contains(qualifiedName)) {
-                        Logger
-                                .error(
-                                        processingEnv,
-                                        notifiedElement,
-                                        "[%s] Class(%s) is not supported on Google App Engine. See %s",
-                                        JDOModelMetaGenerator.class.getName(),
-                                        qualifiedName, docURL);
-                    }
-                }
-            };
-            t.asElement().accept(visitor, p);
+            generated = importedNames.add(Generated.class.getName());
+            s3modelMeta = importedNames.add(ClassConstants.ModelMeta);
+            s3attributeMeta = importedNames.add(ClassConstants.AttributeMeta);
         }
     }
 }

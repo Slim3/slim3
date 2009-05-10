@@ -19,6 +19,8 @@ import java.util.Formatter;
 
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.tools.Diagnostic.Kind;
 
@@ -90,5 +92,55 @@ public final class Logger {
         String msg = String.format(format, args);
         Messager messager = env.getMessager();
         messager.printMessage(Kind.ERROR, msg, element);
+    }
+
+    /**
+     * Logs an error message.
+     * 
+     * @param env
+     *            the processing environment.
+     * @param element
+     *            the annotated element
+     * @param annotationMirror
+     *            the annotation to use as a position hint
+     * @param format
+     *            the format string.
+     * @param args
+     *            arguments referenced by the format specifiers in the format
+     *            string.
+     * @see Formatter
+     */
+    public static void error(ProcessingEnvironment env, Element element,
+            AnnotationMirror annotationMirror, String format, Object... args) {
+        String msg = String.format(format, args);
+        Messager messager = env.getMessager();
+        messager.printMessage(Kind.ERROR, msg, element, annotationMirror);
+    }
+
+    /**
+     * Logs an error message.
+     * 
+     * @param env
+     *            the processing environment.
+     * @param element
+     *            the annotated element
+     * @param annotationMirror
+     *            the annotation containing the annotation value
+     * @param annotationValue
+     *            the annotation value to use as a position hint
+     * @param format
+     *            the format string.
+     * @param args
+     *            arguments referenced by the format specifiers in the format
+     *            string.
+     * @see Formatter
+     */
+    public static void error(ProcessingEnvironment env, Element element,
+            AnnotationMirror annotationMirror, AnnotationValue annotationValue,
+            String format, Object... args) {
+        String msg = String.format(format, args);
+        Messager messager = env.getMessager();
+        messager.printMessage(Kind.ERROR, msg, element, annotationMirror,
+                annotationValue);
     }
 }

@@ -29,7 +29,8 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementFilter;
 import javax.tools.FileObject;
 
-import org.slim3.gen.Annotations;
+import org.slim3.gen.ClassConstants;
+import org.slim3.gen.Constants;
 import org.slim3.gen.Options;
 import org.slim3.gen.generator.Generator;
 import org.slim3.gen.generator.JDOModelMetaGenerator;
@@ -46,12 +47,9 @@ import org.slim3.gen.util.Logger;
  * 
  */
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
-@SupportedAnnotationTypes(Annotations.PersistenceCapable)
-@SupportedOptions( { Options.DEBUG })
+@SupportedAnnotationTypes(ClassConstants.PersistenceCapable)
+@SupportedOptions( { Options.DEBUG, Options.VALIDATION })
 public class JDOModelProcessor extends AbstractProcessor {
-
-    /** the suffix for JDO model meta classes. */
-    protected static final String suffix = "Meta";
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations,
@@ -86,7 +84,7 @@ public class JDOModelProcessor extends AbstractProcessor {
                     getClass().getName(), element.getQualifiedName());
         }
         Filer filer = processingEnv.getFiler();
-        String name = element.getQualifiedName() + suffix;
+        String name = element.getQualifiedName() + Constants.METACLASS_SUFFIX;
         Printer printer = null;
         try {
             printer = createPrinter(filer.createSourceFile(name, element));

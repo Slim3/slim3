@@ -16,18 +16,30 @@
 package org.slim3.gen;
 
 /**
- * Represents annotations handled by this product.
+ * The collection of Constants of class.
  * 
  * @author taedium
  * @since 3.0
  * 
  */
-public final class Annotations {
+public final class ClassConstants {
+
+    /** {@code org.slim3.jdo.ModelMeta} */
+    public static final String ModelMeta = "org.slim3.jdo.ModelMeta";
+
+    /** {@code org.slim3.jdo.AttributeMeta} */
+    public static final String AttributeMeta = "org.slim3.jdo.AttributeMeta";
 
     /** {@code javax.jdo.annotations.PersistenceCapable} */
     public static final String PersistenceCapable = "javax.jdo.annotations.PersistenceCapable";
 
     /** {@code javax.jdo.annotations.Persistent} */
     public static final String Persistent = "javax.jdo.annotations.Persistent";
+
+    /** mappedBy element of {@code javax.jdo.annotations.Persistent} */
+    public static final String Persistent$mappedBy = "mappedBy";
+
+    /** serialized element of {@code javax.jdo.annotations.Persistent} */
+    public static final String Persistent$serialized = "serialized";
 
 }

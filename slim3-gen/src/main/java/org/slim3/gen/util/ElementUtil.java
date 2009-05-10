@@ -30,17 +30,18 @@ import javax.lang.model.util.ElementKindVisitor6;
 public final class ElementUtil {
 
     /**
-     * Returns {@code true} if an element is annotated with a specified
-     * annotation and {@code false} otherwise.
+     * Returns {@code AnnotationMirror} if an element is annotated with a
+     * specified annotation and {@code null} otherwise.
      * 
      * @param element
      *            the element object to be checked.
      * @param annotation
      *            the fully qualified name of an annotation.
-     * @return {@code true} if an element is annotated with a specified
-     *         annotation and {@code false} otherwise.
+     * @return {@code AnnotationMirror} if an element is annotated with a
+     *         specified annotation and {@code null} otherwise.
      */
-    public static boolean isAnnotated(Element element, final String annotation) {
+    public static AnnotationMirror getAnnotationMirror(Element element,
+            final String annotation) {
         if (element == null) {
             throw new NullPointerException("The element parameter is null.");
         }
@@ -56,10 +57,10 @@ public final class ElementUtil {
                         }
                     }, null);
             if (annotated) {
-                return true;
+                return mirror;
             }
         }
-        return false;
+        return null;
     }
 
 }
