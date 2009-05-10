@@ -3,10 +3,9 @@
 	<property file="build.properties" />
 	
     <target name="dist" depends="clean">
-        <ant antfile="slim3-commons/build.xml" inheritAll="false"/>
-        <ant antfile="slim3-gae/build.xml" inheritAll="false"/>
-    	<ant antfile="slim3-mvc/build.xml" inheritAll="false"/>
-    	<zip zipfile="target/slim3-${ver}.zip" basedir="target" />
+    	<jar jarfile="target/slim3-${ver}.jar" basedir="build/classes"/>
+    	<jar jarfile="target/slim3-${ver}-sources.jar" basedir="src/main/java"/>
+    	<zip zipfile="target/slim3-${ver}.zip" basedir="target"/>
     </target>
 
     <target name="clean">
