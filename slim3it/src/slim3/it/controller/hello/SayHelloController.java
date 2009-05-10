@@ -24,6 +24,6 @@ public class SayHelloController extends Controller {
 
     @Override
     public Navigation execute() {
-        return forward();
+        return forward("sayHello.jsp");
     }
 }
