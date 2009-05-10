@@ -1,5 +1,6 @@
 <%@page pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@taglib prefix="f" uri="http://www.slim3.org/functions"%>
 
 <html>
 <head>
@@ -8,7 +9,7 @@
 <link rel="stylesheet" type="text/css" href="/css/global.css" />
 </head>
 <body>
-<form action="sayHello" method="post">
+<form action="${f:url('sayHello')}" method="post">
 Input your name:<input type="text" name="name"/>
 <input type="submit" value="Say Hello"/>
 </form>

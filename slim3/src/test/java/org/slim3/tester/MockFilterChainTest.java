@@ -15,10 +15,6 @@
  */
 package org.slim3.tester;
 
-import org.slim3.tester.MockFilterChain;
-import org.slim3.tester.MockHttpServletRequest;
-import org.slim3.tester.MockServletContext;
-
 import junit.framework.TestCase;
 
 /**
@@ -36,7 +32,7 @@ public class MockFilterChainTest extends TestCase {
         MockServletContext servletContext = new MockServletContext();
         MockHttpServletRequest request =
             new MockHttpServletRequest(servletContext);
-        request.setPathInfo(path);
+        request.setServletPath(path);
         MockFilterChain chain = new MockFilterChain();
         chain.doFilter(request, null);
         assertEquals(path, chain.getPath());

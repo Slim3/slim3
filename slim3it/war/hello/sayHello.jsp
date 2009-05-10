@@ -1,5 +1,6 @@
 <%@page pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@taglib prefix="f" uri="http://www.slim3.org/functions"%>
 
 <html>
 <head>
@@ -8,6 +9,6 @@
 <link rel="stylesheet" type="text/css" href="/css/global.css" />
 </head>
 <body>
-Hello ${c.name}.
+Hello ${f:h(c.name)}.
 </body>
 </html>

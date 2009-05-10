@@ -138,7 +138,7 @@ public class FrontController implements Filter {
             if (request.getCharacterEncoding() == null) {
                 request.setCharacterEncoding(charset);
             }
-            String path = getPath(request);
+            String path = request.getServletPath();
             Controller controller = getController(request, response, path);
             if (controller == null) {
                 chain.doFilter(request, response);
@@ -159,21 +159,6 @@ public class FrontController implements Filter {
             RequestLocator.setRequest(previousRequest);
             ResponseLocator.setResponse(previousResponse);
         }
-    }
-
-    /**
-     * Returns the path of the request.
-     * 
-     * @param request
-     *            the request
-     * @return the path of the request
-     */
-    protected String getPath(HttpServletRequest request) {
-        String path = request.getPathInfo();
-        if (StringUtil.isEmpty(path)) {
-            path = request.getServletPath();
-        }
-        return path;
     }
 
     /**

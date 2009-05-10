@@ -343,7 +343,7 @@ public class ControllerTester {
                 + ") must start with \"/\".");
         }
         assertSetUpWasInvoked();
-        request.setPathInfo(path);
+        request.setServletPath(path);
         frontController.doFilter(request, response, filterChain);
         startInvoked = true;
     }

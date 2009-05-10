@@ -74,7 +74,7 @@ public class MockFilterChain implements FilterChain {
      */
     public String getPath() {
         if (request instanceof HttpServletRequest) {
-            return HttpServletRequest.class.cast(request).getPathInfo();
+            return HttpServletRequest.class.cast(request).getServletPath();
         }
         return null;
     }

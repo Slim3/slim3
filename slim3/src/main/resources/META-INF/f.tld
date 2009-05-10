@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+  version="2.0">
+    
+  <description>Slim3 functions library</description>
+  <display-name>Slim3 functions</display-name>
+  <tlib-version>1.1</tlib-version>
+  <short-name>f</short-name>
+  <uri>http://www.slim3.org/functions</uri>
+  
+  <function>
+    <description>
+      Escapes string that could be interpreted as HTML.
+    </description>
+    <name>h</name>
+    <function-class>org.slim3.jsp.Functions</function-class>
+    <function-signature>java.lang.String h(java.lang.Object)</function-signature>
+    <example>
+      ${f:h(param)}
+    </example>
+  </function>
+  
+  <function>
+    <description>
+      Returns context-relative URL.
+    </description>
+    <name>url</name>
+    <function-class>org.slim3.jsp.Functions</function-class>
+    <function-signature>java.lang.String url(java.lang.String)</function-signature>
+    <example>
+      &lt;a href="${f:url(param)}" ...
+    </example>
+  </function>
+  
+  <function>
+    <description>
+      Converts line break to br tag.
+    </description>
+    <name>br</name>
+    <function-class>org.slim3.jsp.Functions</function-class>
+    <function-signature>java.lang.String br(java.lang.String)</function-signature>
+    <example>
+      ${f:br(f:h(textarea))}
+    </example>
+  </function>
+</taglib>

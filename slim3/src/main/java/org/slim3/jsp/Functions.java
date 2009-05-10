@@ -144,7 +144,7 @@ public final class Functions {
         if (contextPath.length() > 1) {
             sb.append(contextPath);
         }
-        String path = request.getPathInfo();
+        String path = request.getServletPath();
         int pos = path.lastIndexOf('/');
         path = path.substring(0, pos + 1);
         if (empty) {

@@ -20,7 +20,6 @@ import junit.framework.TestCase;
 import org.slim3.controller.ControllerConstants;
 import org.slim3.controller.RequestLocator;
 import org.slim3.controller.ResponseLocator;
-import org.slim3.tester.ControllerTester;
 import org.slim3.tester.controller.HelloController;
 
 /**
@@ -187,7 +186,7 @@ public class ControllerTesterTest extends TestCase {
     public void testStartForPath() throws Exception {
         tester.setUp();
         tester.start("/");
-        assertEquals("/", tester.request.getPathInfo());
+        assertEquals("/", tester.request.getServletPath());
     }
 
     /**

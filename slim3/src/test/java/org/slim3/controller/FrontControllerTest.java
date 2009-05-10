@@ -65,16 +65,6 @@ public class FrontControllerTest extends ControllerTestCase {
      * @throws Exception
      * 
      */
-    public void testGetPath() throws Exception {
-        controllerTester.request.setPathInfo("/hello/");
-        assertEquals("/hello/", controllerTester.frontController
-            .getPath(controllerTester.request));
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
     public void testToControllerClassName() throws Exception {
         assertEquals(
             ListController.class.getName(),
@@ -370,7 +360,7 @@ public class FrontControllerTest extends ControllerTestCase {
      * 
      */
     public void testDoFilter() throws Exception {
-        controllerTester.request.setPathInfo("/");
+        controllerTester.request.setServletPath("/");
         controllerTester.frontController.doFilter(
             controllerTester.request,
             controllerTester.response,

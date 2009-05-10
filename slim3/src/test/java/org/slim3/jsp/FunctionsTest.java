@@ -151,7 +151,7 @@ public class FunctionsTest extends TestCase {
      */
     public void testUrlForNull() throws Exception {
         servletContext.setContextPath("/aaa");
-        request.setPathInfo("/bbb/hoge");
+        request.setServletPath("/bbb/hoge");
         assertEquals("/aaa/bbb/", Functions.url(null));
     }
 
@@ -159,7 +159,7 @@ public class FunctionsTest extends TestCase {
      * @throws Exception
      */
     public void testUrlForNullAndNoContextPath() throws Exception {
-        request.setPathInfo("/bbb/hoge");
+        request.setServletPath("/bbb/hoge");
         assertEquals("/bbb/", Functions.url(null));
     }
 
@@ -167,7 +167,7 @@ public class FunctionsTest extends TestCase {
      * @throws Exception
      */
     public void testUrlForControllerRelativePath() throws Exception {
-        request.setPathInfo("/bbb/hoge");
+        request.setServletPath("/bbb/hoge");
         assertEquals("/bbb/foo", Functions.url("foo"));
     }
 
@@ -175,7 +175,7 @@ public class FunctionsTest extends TestCase {
      * @throws Exception
      */
     public void testUrlForOtherController() throws Exception {
-        request.setPathInfo("/bbb/hoge");
+        request.setServletPath("/bbb/hoge");
         assertEquals("/hello/sayHello", Functions.url("/hello/sayHello"));
     }
 
