@@ -1,6 +1,5 @@
 <%@page pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@taglib prefix="f" uri="http://www.slim3.org/functions"%>
 
 <html>
@@ -11,8 +10,6 @@
 </head>
 <body>
 <h1>Index</h1>
-<fmt:message key="aaa" /><br />
-${f:h(c.now)}<br />
-<fmt:formatDate value="${c.now}" type="both" timeStyle="full"/>
+Hello World!!!
 </body>
 </html>
