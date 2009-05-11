@@ -22,6 +22,7 @@ import javax.servlet.ServletException;
 import junit.framework.TestCase;
 
 import org.slim3.controller.Controller;
+import org.slim3.controller.ControllerConstants;
 
 /**
  * A test case for Slim3 Controller.
@@ -44,7 +45,26 @@ public abstract class ControllerTestCase extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        setUpControllerPackage();
         controllerTester.setUp();
+    }
+
+    /**
+     * Sets up the controller package automatically.
+     */
+    protected void setUpControllerPackage() {
+        if (System.getProperty(ControllerConstants.CONTROLLER_PACKAGE_KEY) != null) {
+            return;
+        }
+        String className = getClass().getName();
+        int pos = className.indexOf(".controller.");
+        if (pos < 0) {
+            return;
+        }
+        String packageName = className.substring(0, pos + 11);
+        System.setProperty(
+            ControllerConstants.CONTROLLER_PACKAGE_KEY,
+            packageName);
     }
 
     /**
@@ -54,7 +74,15 @@ public abstract class ControllerTestCase extends TestCase {
     @Override
     protected void tearDown() throws Exception {
         controllerTester.tearDown();
+        tearDownControllerPackage();
         super.tearDown();
+    }
+
+    /**
+     * Tears down the controller package.
+     */
+    protected void tearDownControllerPackage() {
+        System.clearProperty(ControllerConstants.CONTROLLER_PACKAGE_KEY);
     }
 
     /**
