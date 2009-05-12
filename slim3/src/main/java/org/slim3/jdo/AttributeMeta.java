@@ -62,7 +62,7 @@ public class AttributeMeta<T> {
      * @return the "equal" filter criterion
      */
     public EqCriterion<T> eq(T parameter) {
-        if (parameter == null) {
+        if (isEmpty(parameter)) {
             return null;
         }
         return new EqCriterion<T>(name, name + "Param", parameter);
@@ -75,7 +75,7 @@ public class AttributeMeta<T> {
      * @return the "less than" filter criterion
      */
     public LtCriterion<T> lt(T parameter) {
-        if (parameter == null) {
+        if (isEmpty(parameter)) {
             return null;
         }
         return new LtCriterion<T>(name, name + "LtParam", parameter);
@@ -88,7 +88,7 @@ public class AttributeMeta<T> {
      * @return the "less equals" filter criterion
      */
     public LeCriterion<T> le(T parameter) {
-        if (parameter == null) {
+        if (isEmpty(parameter)) {
             return null;
         }
         return new LeCriterion<T>(name, name + "LeParam", parameter);
@@ -101,7 +101,7 @@ public class AttributeMeta<T> {
      * @return the "greater than" filter criterion
      */
     public GtCriterion<T> gt(T parameter) {
-        if (parameter == null) {
+        if (isEmpty(parameter)) {
             return null;
         }
         return new GtCriterion<T>(name, name + "GtParam", parameter);
@@ -114,7 +114,7 @@ public class AttributeMeta<T> {
      * @return the "greater equal" filter criterion
      */
     public GeCriterion<T> ge(T parameter) {
-        if (parameter == null) {
+        if (isEmpty(parameter)) {
             return null;
         }
         return new GeCriterion<T>(name, name + "GeParam", parameter);
@@ -136,5 +136,16 @@ public class AttributeMeta<T> {
      */
     public DescCriterion desc() {
         return new DescCriterion(name);
+    }
+
+    /**
+     * Determines if the parameter is empty.
+     * 
+     * @param parameter
+     *            the parameter
+     * @return whether the parameter is empty
+     */
+    protected boolean isEmpty(Object parameter) {
+        return parameter == null || "".equals(parameter);
     }
 }

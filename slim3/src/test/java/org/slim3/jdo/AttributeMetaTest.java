@@ -15,15 +15,6 @@
  */
 package org.slim3.jdo;
 
-import org.slim3.jdo.AscCriterion;
-import org.slim3.jdo.AttributeMeta;
-import org.slim3.jdo.DescCriterion;
-import org.slim3.jdo.EqCriterion;
-import org.slim3.jdo.GeCriterion;
-import org.slim3.jdo.GtCriterion;
-import org.slim3.jdo.LeCriterion;
-import org.slim3.jdo.LtCriterion;
-
 import junit.framework.TestCase;
 
 /**
@@ -53,6 +44,14 @@ public class AttributeMetaTest extends TestCase {
     /**
      * @throws Exception
      */
+    public void testEqForEmpty() throws Exception {
+        AttributeMeta<String> id = new AttributeMeta<String>("id");
+        assertNull(id.eq(""));
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testLt() throws Exception {
         AttributeMeta<Long> id = new AttributeMeta<Long>("id");
         LtCriterion<Long> criterion = id.lt(Long.valueOf(1));
@@ -66,6 +65,14 @@ public class AttributeMetaTest extends TestCase {
     public void testLtForNull() throws Exception {
         AttributeMeta<Long> id = new AttributeMeta<Long>("id");
         assertNull(id.lt(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testLtForEmpty() throws Exception {
+        AttributeMeta<String> id = new AttributeMeta<String>("id");
+        assertNull(id.lt(""));
     }
 
     /**
@@ -89,6 +96,14 @@ public class AttributeMetaTest extends TestCase {
     /**
      * @throws Exception
      */
+    public void testLeForEmpty() throws Exception {
+        AttributeMeta<String> id = new AttributeMeta<String>("id");
+        assertNull(id.le(""));
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testGt() throws Exception {
         AttributeMeta<Long> id = new AttributeMeta<Long>("id");
         GtCriterion<Long> criterion = id.gt(Long.valueOf(1));
@@ -107,6 +122,14 @@ public class AttributeMetaTest extends TestCase {
     /**
      * @throws Exception
      */
+    public void testGtForEmpty() throws Exception {
+        AttributeMeta<String> id = new AttributeMeta<String>("id");
+        assertNull(id.gt(""));
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testGe() throws Exception {
         AttributeMeta<Long> id = new AttributeMeta<Long>("id");
         GeCriterion<Long> criterion = id.ge(Long.valueOf(1));
@@ -120,6 +143,14 @@ public class AttributeMetaTest extends TestCase {
     public void testGeForNull() throws Exception {
         AttributeMeta<Long> id = new AttributeMeta<Long>("id");
         assertNull(id.ge(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGeForEmpty() throws Exception {
+        AttributeMeta<String> id = new AttributeMeta<String>("id");
+        assertNull(id.ge(""));
     }
 
     /**
