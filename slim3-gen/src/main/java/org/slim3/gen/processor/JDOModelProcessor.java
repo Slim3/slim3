@@ -31,11 +31,10 @@ import javax.tools.FileObject;
 
 import org.slim3.gen.ClassConstants;
 import org.slim3.gen.Constants;
-import org.slim3.gen.Options;
 import org.slim3.gen.generator.Generator;
 import org.slim3.gen.generator.JDOModelMetaGenerator;
-import org.slim3.gen.printer.FileObjectPrinter;
 import org.slim3.gen.printer.Printer;
+import org.slim3.gen.printer.FilePrinter;
 import org.slim3.gen.util.Logger;
 
 /**
@@ -84,11 +83,11 @@ public class JDOModelProcessor extends AbstractProcessor {
                     getClass().getName(), element.getQualifiedName());
         }
         Filer filer = processingEnv.getFiler();
-        String name = element.getQualifiedName() + Constants.METACLASS_SUFFIX;
+        String name = element.getQualifiedName() + Constants.META_SUFFIX;
         Printer printer = null;
         try {
             printer = createPrinter(filer.createSourceFile(name, element));
-            Generator<Printer> generator = createGenerator(element, name);
+            Generator generator = createGenerator(element, name);
             generator.generate(printer);
         } catch (IOException e) {
             Logger.error(processingEnv, element, "[%s] Failed to generate.",
@@ -115,7 +114,7 @@ public class JDOModelProcessor extends AbstractProcessor {
      *             if an I/O error occurred
      */
     protected Printer createPrinter(FileObject file) throws IOException {
-        return new FileObjectPrinter(file);
+        return new FilePrinter(file);
     }
 
     /**
@@ -127,7 +126,7 @@ public class JDOModelProcessor extends AbstractProcessor {
      *            qualified name of the class to be generated.
      * @return a generator object.
      */
-    protected Generator<Printer> createGenerator(TypeElement element,
+    protected Generator createGenerator(TypeElement element,
             String qualifiedName) {
         return new JDOModelMetaGenerator(processingEnv, element, qualifiedName);
     }

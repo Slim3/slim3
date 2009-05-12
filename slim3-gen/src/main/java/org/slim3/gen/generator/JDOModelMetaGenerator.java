@@ -26,6 +26,8 @@ import javax.lang.model.element.TypeElement;
 import org.slim3.gen.ClassConstants;
 import org.slim3.gen.Constants;
 import org.slim3.gen.ProductInfo;
+import org.slim3.gen.desc.AttributeDesc;
+import org.slim3.gen.desc.AttributeDescCollector;
 import org.slim3.gen.printer.Printer;
 
 /**
@@ -35,7 +37,7 @@ import org.slim3.gen.printer.Printer;
  * @since 3.0
  * 
  */
-public class JDOModelMetaGenerator implements Generator<Printer> {
+public class JDOModelMetaGenerator implements Generator {
 
     /** the processing environment */
     protected final ProcessingEnvironment processingEnv;
@@ -113,15 +115,15 @@ public class JDOModelMetaGenerator implements Generator<Printer> {
         p.println("    }");
         p.println();
         for (AttributeDesc desc : attributeDescList) {
-            if (desc.modelType) {
-                p.println("    public %1$s%2$s %3$s = new %1$s%2$s();",
-                        desc.typeName, Constants.METACLASS_SUFFIX, desc.name);
+            if (desc.isModelType()) {
+                p.println("    public %1$s%2$s %3$s = new %1$s%2$s();", desc
+                        .getTypeName(), Constants.META_SUFFIX, desc.getName());
             } else {
                 p
                         .println(
                                 "    public %1$s<%2$s> %3$s = new %1$s<%2$s>(\"%3$s\");",
-                                reservedNames.s3attributeMeta, desc.typeName,
-                                desc.name);
+                                reservedNames.s3attributeMeta, desc
+                                        .getTypeName(), desc.getName());
             }
             p.println();
         }

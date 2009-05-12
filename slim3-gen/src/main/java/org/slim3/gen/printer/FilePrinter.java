@@ -16,36 +16,47 @@
 package org.slim3.gen.printer;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.util.Formatter;
 
 import javax.tools.FileObject;
 
 /**
- * Prints format strings to a {@link FileObject} object.
+ * Prints format strings to a stream object.
  * 
  * @author taedium
  * @since 3.0
  * 
  */
-public class FileObjectPrinter implements Printer {
+public class FilePrinter implements Printer {
 
     /** the formatter object */
     protected final Formatter formatter;
 
     /**
-     * Creates a new {@link FileObjectPrinter}.
+     * Creates a new {@link FilePrinter}.
      * 
      * @param fileObject
-     *            the file object.
+     *            the writer object.
      * @throws IOException
      *             if an I/O error occurred
      */
-    public FileObjectPrinter(FileObject fileObject) throws IOException {
+    public FilePrinter(FileObject fileObject) throws IOException {
         if (fileObject == null) {
             throw new NullPointerException("The fileObject parameter is null.");
         }
         formatter = new Formatter(new BufferedWriter(fileObject.openWriter()));
+    }
+
+    public FilePrinter(File file, String encoding) throws IOException {
+        if (file == null) {
+            throw new NullPointerException("The file parameter is null.");
+        }
+        if (encoding == null) {
+            throw new NullPointerException("The encoding parameter is null.");
+        }
+        formatter = new Formatter(file, encoding);
     }
 
     public void print(String format, Object... args) {

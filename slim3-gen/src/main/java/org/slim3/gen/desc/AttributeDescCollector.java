@@ -13,7 +13,7 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.gen.generator;
+package org.slim3.gen.desc;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -40,7 +40,8 @@ import javax.lang.model.util.SimpleElementVisitor6;
 import javax.lang.model.util.SimpleTypeVisitor6;
 
 import org.slim3.gen.ClassConstants;
-import org.slim3.gen.Options;
+import org.slim3.gen.generator.ImportedNames;
+import org.slim3.gen.processor.Options;
 import org.slim3.gen.util.ElementUtil;
 import org.slim3.gen.util.Logger;
 

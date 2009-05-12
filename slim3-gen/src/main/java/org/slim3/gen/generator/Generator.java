@@ -15,20 +15,22 @@
  */
 package org.slim3.gen.generator;
 
+import org.slim3.gen.printer.Printer;
+
 /**
- * Generates something and outputs it to destination.
+ * Generates something and outputs it to a printer.
  * 
  * @author taedium
  * @since 3.0
  * 
  */
-public interface Generator<T> {
+public interface Generator {
 
     /**
-     * Generates something and outputs it to destination.
+     * Generates something and outputs it to a printer.
      * 
-     * @param destination
-     *            the destination of generated value.
+     * @param printer
+     *            the printer of generated value.
      */
-    void generate(T destination);
+    void generate(Printer printer);
 }

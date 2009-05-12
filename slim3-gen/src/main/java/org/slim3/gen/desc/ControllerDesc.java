@@ -13,25 +13,42 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.gen;
+package org.slim3.gen.desc;
 
 /**
- * The collection of Constants.
- * 
  * @author taedium
- * @since 3.0
+ * 
  */
-public class Constants {
+public class ControllerDesc {
 
-    /** the suffix for meta classes. */
-    public static final String META_SUFFIX = "Meta";
+    protected String packageName;
 
-    /** the suffix for test classes. */
-    public static final String TEST_SUFFIX = "Test";
+    protected String simpleName;
 
-    /** the suffix of controller. */
-    public static final String CONTROLLER_SUFFIX = "Controller";
+    protected String jspName;
 
-    /** the index controller. */
-    public static final String INDEX_CONTROLLER = "Index" + CONTROLLER_SUFFIX;
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
+    }
+
+    public String getSimpleName() {
+        return simpleName;
+    }
+
+    public void setSimpleName(String simpleName) {
+        this.simpleName = simpleName;
+    }
+
+    public String getJspName() {
+        return jspName;
+    }
+
+    public void setJspName(String jspName) {
+        this.jspName = jspName;
+    }
+
 }
