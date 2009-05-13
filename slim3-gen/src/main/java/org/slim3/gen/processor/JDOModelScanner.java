@@ -197,7 +197,7 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
                             attribute,
                             persistent,
                             mappedBy,
-                            "[slim3-gen] The mappedBy property(%1$s) is not found in a Entity class(%2$s). The property(%1$s) must be annotated with a Persistent annotation.",
+                            "[slim3-gen] The mappedBy property(%1$s) is not found in an Entity class(%2$s). The property(%1$s) must be annotated with a Persistent annotation.",
                             mappedBy, model);
         }
     }
