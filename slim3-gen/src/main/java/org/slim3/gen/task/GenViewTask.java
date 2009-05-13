@@ -24,6 +24,7 @@ import org.slim3.gen.desc.ViewDesc;
 import org.slim3.gen.desc.ViewDescFactory;
 import org.slim3.gen.generator.Generator;
 import org.slim3.gen.generator.ViewGenerator;
+import org.slim3.gen.printer.Printer;
 
 /**
  * Represents a task to generate a view file.
@@ -74,9 +75,6 @@ public class GenViewTask extends AbstractTask {
         File viewDir = new File(warDir, viewDesc.getDirName());
         viewDir.mkdirs();
         File viewFile = new File(viewDir, viewDesc.getFileName());
-        if (viewFile.exists()) {
-            return;
-        }
         Generator generator = careateViewGenerator();
         generate(generator, viewFile);
     }
@@ -88,6 +86,31 @@ public class GenViewTask extends AbstractTask {
      */
     protected Generator careateViewGenerator() {
         return new ViewGenerator();
+    }
+
+    /**
+     * Generates a file.
+     * 
+     * @param generator
+     * @param file
+     * @throws IOException
+     */
+    protected void generate(Generator generator, File file) throws IOException {
+        if (file.exists()) {
+            log("Already exists. Skipped generation. ("
+                    + file.getAbsolutePath() + ")");
+            return;
+        }
+        Printer printer = null;
+        try {
+            printer = createPrinter(file);
+            generator.generate(printer);
+        } finally {
+            if (printer != null) {
+                printer.close();
+            }
+        }
+        log("Generated. (" + file.getAbsolutePath() + ")");
     }
 
 }

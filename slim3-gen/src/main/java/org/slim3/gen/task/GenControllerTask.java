@@ -34,6 +34,7 @@ import org.slim3.gen.desc.ControllerDescFactory;
 import org.slim3.gen.generator.ControllerGenerator;
 import org.slim3.gen.generator.ControllerTestCaseGenerator;
 import org.slim3.gen.generator.Generator;
+import org.slim3.gen.printer.Printer;
 import org.slim3.gen.util.CloseableUtil;
 import org.slim3.gen.util.StringUtil;
 import org.xml.sax.InputSource;
@@ -171,11 +172,10 @@ public class GenControllerTask extends AbstractTask {
         File javaFile = new File(packageDir, controllerDesc.getSimpleName()
                 .replace('.', '/')
                 + ".java");
-        if (javaFile.exists()) {
-            return;
-        }
+        String className = controllerDesc.getPackageName() + "."
+                + controllerDesc.getSimpleName();
         Generator generator = careateControllerGenerator(controllerDesc);
-        generate(generator, javaFile);
+        generate(generator, javaFile, className);
     }
 
     /**
@@ -203,11 +203,10 @@ public class GenControllerTask extends AbstractTask {
         packageDir.mkdirs();
         File javaFile = new File(packageDir, controllerDesc.getSimpleName()
                 + Constants.TEST_SUFFIX + ".java");
-        if (javaFile.exists()) {
-            return;
-        }
+        String className = controllerDesc.getPackageName() + "."
+                + controllerDesc.getSimpleName() + Constants.TEST_SUFFIX;
         Generator generator = careateControllerTestCaseGenerator(controllerDesc);
-        generate(generator, javaFile);
+        generate(generator, javaFile, className);
     }
 
     /**
@@ -222,4 +221,29 @@ public class GenControllerTask extends AbstractTask {
         return new ControllerTestCaseGenerator(controllerDesc);
     }
 
+    /**
+     * Generates a file.
+     * 
+     * @param generator
+     * @param file
+     * @throws IOException
+     */
+    protected void generate(Generator generator, File file, String className)
+            throws IOException {
+        if (file.exists()) {
+            log("Already exists. Skipped generation. (" + className
+                    + ".java:0)");
+            return;
+        }
+        Printer printer = null;
+        try {
+            printer = createPrinter(file);
+            generator.generate(printer);
+        } finally {
+            if (printer != null) {
+                printer.close();
+            }
+        }
+        log("Generated. (" + className + ".java:0)");
+    }
 }

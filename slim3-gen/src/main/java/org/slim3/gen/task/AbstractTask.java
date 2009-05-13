@@ -20,7 +20,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import org.slim3.gen.generator.Generator;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Task;
 import org.slim3.gen.printer.FilePrinter;
 import org.slim3.gen.printer.Printer;
 
@@ -31,7 +32,7 @@ import org.slim3.gen.printer.Printer;
  * @since 3.0
  * 
  */
-public abstract class AbstractTask {
+public abstract class AbstractTask extends Task {
 
     /** the war directory */
     protected File warDir;
@@ -81,7 +82,7 @@ public abstract class AbstractTask {
         } catch (Exception e) {
             StringWriter writer = new StringWriter();
             e.printStackTrace(new PrintWriter(writer));
-            throw new RuntimeException(writer.toString());
+            throw new BuildException(writer.toString());
         }
     }
 
@@ -91,26 +92,6 @@ public abstract class AbstractTask {
      * @throws Exception
      */
     protected abstract void doExecute() throws Exception;
-
-    /**
-     * Generates a file.
-     * 
-     * @param generator
-     * @param file
-     * @throws IOException
-     */
-    protected void generate(Generator generator, File file) throws IOException {
-        Printer printer = null;
-        try {
-            printer = createPrinter(file);
-            generator.generate(printer);
-        } finally {
-            if (printer != null) {
-                printer.close();
-            }
-        }
-        System.out.println("generated. " + file.getAbsolutePath());
-    }
 
     /**
      * Creates a printer.
