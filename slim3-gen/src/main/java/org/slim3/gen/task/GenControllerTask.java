@@ -74,6 +74,7 @@ public class GenControllerTask extends AbstractTask {
         this.testDir = testDir;
     }
 
+    @Override
     public void doExecute() throws IOException, XPathExpressionException {
         if (srcDir == null) {
             throw new IllegalStateException("The srcDir parameter is null.");

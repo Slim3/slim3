@@ -17,8 +17,6 @@ package org.slim3.gen.task;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
 import org.slim3.gen.desc.ViewDesc;
 import org.slim3.gen.desc.ViewDescFactory;
@@ -34,25 +32,20 @@ import org.slim3.gen.printer.Printer;
  */
 public class GenViewTask extends AbstractTask {
 
-    public void doExecute() {
-        try {
-            if (warDir == null) {
-                throw new IllegalStateException("The warDir parameter is null.");
-            }
-            if (controllerPath == null) {
-                throw new IllegalStateException(
-                        "The controllerPath parameter is null.");
-            }
-            String path = controllerPath.startsWith("/") ? controllerPath : "/"
-                    + controllerPath;
-            ViewDescFactory viewDescFactory = createViewDescFactory();
-            ViewDesc viewDesc = viewDescFactory.createViewDesc(path);
-            generateView(viewDesc);
-        } catch (Exception e) {
-            StringWriter writer = new StringWriter();
-            e.printStackTrace(new PrintWriter(writer));
-            throw new RuntimeException(writer.toString());
+    @Override
+    public void doExecute() throws IOException {
+        if (warDir == null) {
+            throw new IllegalStateException("The warDir parameter is null.");
         }
+        if (controllerPath == null) {
+            throw new IllegalStateException(
+                    "The controllerPath parameter is null.");
+        }
+        String path = controllerPath.startsWith("/") ? controllerPath : "/"
+                + controllerPath;
+        ViewDescFactory viewDescFactory = createViewDescFactory();
+        ViewDesc viewDesc = viewDescFactory.createViewDesc(path);
+        generateView(viewDesc);
     }
 
     /**
