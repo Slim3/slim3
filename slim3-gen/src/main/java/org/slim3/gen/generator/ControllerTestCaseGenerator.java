@@ -40,6 +40,10 @@ public class ControllerTestCaseGenerator implements Generator {
      *            the controller description
      */
     public ControllerTestCaseGenerator(ControllerDesc controllerDesc) {
+        if (controllerDesc == null) {
+            throw new NullPointerException(
+                    "The controllerDesc parameter is null.");
+        }
         this.controllerDesc = controllerDesc;
     }
 

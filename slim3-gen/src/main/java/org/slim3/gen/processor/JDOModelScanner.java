@@ -13,7 +13,7 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.gen.desc;
+package org.slim3.gen.processor;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -39,9 +39,9 @@ import javax.lang.model.util.SimpleElementVisitor6;
 import javax.lang.model.util.SimpleTypeVisitor6;
 
 import org.slim3.gen.ClassConstants;
-import org.slim3.gen.processor.Options;
+import org.slim3.gen.desc.AttributeDesc;
+import org.slim3.gen.desc.ModelDesc;
 import org.slim3.gen.util.ElementUtil;
-import org.slim3.gen.util.Logger;
 
 /**
  * Collects attribute descriptions of a JDO model.
@@ -50,7 +50,7 @@ import org.slim3.gen.util.Logger;
  * @since 3.0
  * 
  */
-public class JDOModelElementScanner extends ElementScanner6<Void, ModelDesc> {
+public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
 
     /** the document URL */
     protected static final String docURL = "http://code.google.com/intl/en/appengine/docs/java/datastore/dataclasses.html";
@@ -73,12 +73,12 @@ public class JDOModelElementScanner extends ElementScanner6<Void, ModelDesc> {
     protected final ProcessingEnvironment processingEnv;
 
     /**
-     * Creates a new {@link JDOModelElementScanner}.
+     * Creates a new {@link JDOModelScanner}.
      * 
      * @param processingEnv
      *            the processing environment
      */
-    public JDOModelElementScanner(ProcessingEnvironment processingEnv) {
+    public JDOModelScanner(ProcessingEnvironment processingEnv) {
         this.processingEnv = processingEnv;
     }
 

@@ -50,6 +50,9 @@ public class ModelDescFactory {
      * @return a model description
      */
     public ModelDesc createModelDesc(TypeElement model) {
+        if (model == null) {
+            throw new NullPointerException("The model parameter is null.");
+        }
         ModelDesc modelDesc = new ModelDesc();
         modelDesc.setPackageName(ClassUtil.getPackageName(model
                 .getQualifiedName().toString()));

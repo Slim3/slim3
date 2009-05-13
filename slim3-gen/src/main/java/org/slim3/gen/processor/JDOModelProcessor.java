@@ -31,14 +31,12 @@ import javax.tools.FileObject;
 
 import org.slim3.gen.ClassConstants;
 import org.slim3.gen.Constants;
-import org.slim3.gen.desc.JDOModelElementScanner;
 import org.slim3.gen.desc.ModelDesc;
 import org.slim3.gen.desc.ModelDescFactory;
 import org.slim3.gen.generator.Generator;
-import org.slim3.gen.generator.JDOModelMetaGenerator;
+import org.slim3.gen.generator.ModelMetaGenerator;
 import org.slim3.gen.printer.FilePrinter;
 import org.slim3.gen.printer.Printer;
-import org.slim3.gen.util.Logger;
 
 /**
  * Processes JDO model classes which annotated with the {@code
@@ -128,7 +126,7 @@ public class JDOModelProcessor extends AbstractProcessor {
      * @return a model description factory
      */
     protected ModelDescFactory createModelDescFactory() {
-        return new ModelDescFactory(new JDOModelElementScanner(processingEnv));
+        return new ModelDescFactory(new JDOModelScanner(processingEnv));
     }
 
     /**
@@ -152,6 +150,6 @@ public class JDOModelProcessor extends AbstractProcessor {
      * @return a generator object.
      */
     protected Generator createGenerator(ModelDesc modelDesc) {
-        return new JDOModelMetaGenerator(processingEnv, modelDesc);
+        return new ModelMetaGenerator(modelDesc);
     }
 }

@@ -13,7 +13,7 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.gen.util;
+package org.slim3.gen.processor;
 
 import java.util.Formatter;
 

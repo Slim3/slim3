@@ -18,7 +18,6 @@ package org.slim3.gen.generator;
 import java.util.Date;
 
 import javax.annotation.Generated;
-import javax.annotation.processing.ProcessingEnvironment;
 
 import org.slim3.gen.ClassConstants;
 import org.slim3.gen.Constants;
@@ -34,32 +33,21 @@ import org.slim3.gen.printer.Printer;
  * @since 3.0
  * 
  */
-public class JDOModelMetaGenerator implements Generator {
-
-    /** the processing environment */
-    protected final ProcessingEnvironment processingEnv;
+public class ModelMetaGenerator implements Generator {
 
     /** the model description */
     protected final ModelDesc modelDesc;
 
     /**
-     * Creates a new {@link JDOModelMetaGenerator}.
+     * Creates a new {@link ModelMetaGenerator}.
      * 
-     * @param processingEnv
-     *            the processing environment.
      * @param the
      *            model description
      */
-    public JDOModelMetaGenerator(ProcessingEnvironment processingEnv,
-            ModelDesc modelDesc) {
-        if (processingEnv == null) {
-            throw new NullPointerException(
-                    "The processingEnv parameter is null.");
-        }
+    public ModelMetaGenerator(ModelDesc modelDesc) {
         if (modelDesc == null) {
             throw new NullPointerException("The modelDesc parameter is null.");
         }
-        this.processingEnv = processingEnv;
         this.modelDesc = modelDesc;
     }
 
