@@ -23,7 +23,7 @@ import java.util.Formatter;
 import javax.tools.FileObject;
 
 /**
- * Prints format strings to a stream object.
+ * Prints format strings to a file.
  * 
  * @author taedium
  * @since 3.0
@@ -33,6 +33,9 @@ public class FilePrinter implements Printer {
 
     /** the formatter object */
     protected final Formatter formatter;
+
+    /** the line delimiter */
+    protected String lineDelimiter = System.getProperty("line.separator");
 
     /**
      * Creates a new {@link FilePrinter}.
@@ -65,11 +68,11 @@ public class FilePrinter implements Printer {
 
     public void println(String format, Object... args) {
         formatter.format(format, args);
-        formatter.format("\n");
+        formatter.format(lineDelimiter);
     }
 
     public void println() {
-        formatter.format("\n");
+        formatter.format(lineDelimiter);
     }
 
     public void close() {

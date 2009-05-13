@@ -20,17 +20,34 @@ import org.slim3.gen.util.ClassUtil;
 import org.slim3.gen.util.StringUtil;
 
 /**
+ * Creates a controller description.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class ControllerDescFactory {
 
+    /** the base package name of controllers */
     protected final String controllerPackageName;
 
+    /**
+     * Creates a new {@link ControllerDescFactory}.
+     * 
+     * @param controllerPackageName
+     *            the base package name of controllers
+     */
     public ControllerDescFactory(String controllerPackageName) {
         this.controllerPackageName = controllerPackageName;
     }
 
+    /**
+     * Creates a controller description.
+     * 
+     * @param path
+     *            the path
+     * @return a controller description
+     */
     public ControllerDesc createControllerDesc(String path) {
         if (path == null) {
             throw new NullPointerException("The path parameter is null.");
@@ -48,6 +65,13 @@ public class ControllerDescFactory {
         return controllerDesc;
     }
 
+    /**
+     * Converts the path to a name of controller.
+     * 
+     * @param path
+     *            the path
+     * @return a name of controller
+     */
     protected String toControllerClassName(String path)
             throws IllegalStateException {
         String className = controllerPackageName + path.replace('/', '.');
@@ -62,6 +86,13 @@ public class ControllerDescFactory {
         return className;
     }
 
+    /**
+     * Converts the path to a neme of view.
+     * 
+     * @param path
+     *            the path
+     * @return a name of view
+     */
     protected String toViewName(String path) {
         String viewName = path;
         if (path.endsWith("/")) {

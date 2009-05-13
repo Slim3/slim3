@@ -35,26 +35,40 @@ import org.slim3.gen.generator.ControllerGenerator;
 import org.slim3.gen.generator.ControllerTestCaseGenerator;
 import org.slim3.gen.generator.Generator;
 import org.slim3.gen.util.CloseableUtil;
+import org.slim3.gen.util.StringUtil;
 import org.xml.sax.InputSource;
 
 /**
+ * Represents a task to generate a controller java file.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class GenControllerTask extends AbstractTask {
 
+    /** the source directory */
     protected File srcDir;
 
+    /** the test source directory */
     protected File testDir;
 
+    /**
+     * Sets the srcDir.
+     * 
+     * @param srcDir
+     *            the srcDir to set
+     */
     public void setSrcDir(File srcDir) {
         this.srcDir = srcDir;
     }
 
-    public File getTestDir() {
-        return testDir;
-    }
-
+    /**
+     * Sets the testDir.
+     * 
+     * @param testDir
+     *            the testDir to set
+     */
     public void setTestDir(File testDir) {
         this.testDir = testDir;
     }
@@ -79,14 +93,28 @@ public class GenControllerTask extends AbstractTask {
         ControllerDescFactory factory = createControllerDescFactory(controllerPackageName);
         ControllerDesc controllerDesc = factory.createControllerDesc(path);
         generateController(controllerDesc);
-        generateControllerTest(controllerDesc);
+        generateControllerTestCase(controllerDesc);
     }
 
+    /**
+     * Creates a {@link ControllerDescFactory}.
+     * 
+     * @param controllerPackageName
+     *            the base package name of controllers.
+     * @return a factory
+     */
     protected ControllerDescFactory createControllerDescFactory(
             String controllerPackageName) {
         return new ControllerDescFactory(controllerPackageName);
     }
 
+    /**
+     * Finds a base package name of controllers.
+     * 
+     * @return a base package name of controlle
+     * @throws FileNotFoundException
+     * @throws XPathExpressionException
+     */
     protected String findControllerPackageName() throws FileNotFoundException,
             XPathExpressionException {
         XPathFactory factory = XPathFactory.newInstance();
@@ -118,9 +146,9 @@ public class GenControllerTask extends AbstractTask {
                     .evaluate(
                             "/pre:appengine-web-app/pre:system-properties/pre:property[@name='slim3.controllerPackage']/@value",
                             new InputSource(inputStream));
-            if (value == null) {
+            if (StringUtil.isEmpty(value)) {
                 throw new RuntimeException(
-                        "The system-property 'slim3.controllerPackage' is not found in appengine-web.xml.");
+                        "The system-property 'slim3.controllerPackage' is not found in appengine-web.xml or the system-property value is empty.");
             }
             return value;
         } finally {
@@ -128,6 +156,13 @@ public class GenControllerTask extends AbstractTask {
         }
     }
 
+    /**
+     * Generates a controller.
+     * 
+     * @param controllerDesc
+     *            the controller description
+     * @throws IOException
+     */
     protected void generateController(ControllerDesc controllerDesc)
             throws IOException {
         File packageDir = new File(srcDir, controllerDesc.getPackageName()
@@ -143,11 +178,25 @@ public class GenControllerTask extends AbstractTask {
         generate(generator, javaFile);
     }
 
+    /**
+     * Creates a {@link Generator}.
+     * 
+     * @param controllerDesc
+     *            the controller description
+     * @return a generator
+     */
     protected Generator careateControllerGenerator(ControllerDesc controllerDesc) {
         return new ControllerGenerator(controllerDesc);
     }
 
-    protected void generateControllerTest(ControllerDesc controllerDesc)
+    /**
+     * Generates a controller test case.
+     * 
+     * @param controllerDesc
+     *            the controller description
+     * @throws IOException
+     */
+    protected void generateControllerTestCase(ControllerDesc controllerDesc)
             throws IOException {
         File packageDir = new File(testDir, controllerDesc.getPackageName()
                 .replace(".", File.separator));
@@ -161,6 +210,13 @@ public class GenControllerTask extends AbstractTask {
         generate(generator, javaFile);
     }
 
+    /**
+     * Creates a {@link Generator}.
+     * 
+     * @param controllerDesc
+     *            the controller description
+     * @return a generator
+     */
     protected Generator careateControllerTestCaseGenerator(
             ControllerDesc controllerDesc) {
         return new ControllerTestCaseGenerator(controllerDesc);

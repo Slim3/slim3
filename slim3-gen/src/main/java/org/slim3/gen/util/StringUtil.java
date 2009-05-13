@@ -16,7 +16,10 @@
 package org.slim3.gen.util;
 
 /**
+ * A utility class for {@link String}.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public final class StringUtil {

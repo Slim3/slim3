@@ -21,13 +21,23 @@ import org.slim3.gen.printer.Printer;
 import org.slim3.gen.util.ClassUtil;
 
 /**
+ * Generates source codes of a controller java file.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class ControllerGenerator implements Generator {
 
+    /** the controller description */
     protected final ControllerDesc controllerDesc;
 
+    /**
+     * Creates a new {@link ControllerGenerator}.
+     * 
+     * @param controllerDesc
+     *            the controller description
+     */
     public ControllerGenerator(ControllerDesc controllerDesc) {
         this.controllerDesc = controllerDesc;
     }

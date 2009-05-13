@@ -16,11 +16,21 @@
 package org.slim3.gen.util;
 
 /**
+ * A utility class for {@link Class}.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public final class ClassUtil {
 
+    /**
+     * Returns a package name of the qualifiedName.
+     * 
+     * @param qualifiedName
+     *            the qualifiedName.
+     * @return a package name.
+     */
     public static String getPackageName(String qualifiedName) {
         if (qualifiedName == null) {
             throw new NullPointerException(
@@ -33,6 +43,13 @@ public final class ClassUtil {
         return qualifiedName.substring(0, pos);
     }
 
+    /**
+     * Returns a simple name of the qualifiedName.
+     * 
+     * @param qualifiedName
+     *            the qualifiedName.
+     * @return a simple name.
+     */
     public static String getSimpleName(String qualifiedName) {
         if (qualifiedName == null) {
             throw new NullPointerException(

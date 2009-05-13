@@ -20,33 +20,18 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import org.slim3.gen.Constants;
+import org.slim3.gen.desc.ViewDesc;
+import org.slim3.gen.desc.ViewDescFactory;
 import org.slim3.gen.generator.Generator;
 import org.slim3.gen.generator.ViewGenerator;
 
 /**
- * @author taedium
+ * Represents a task to generate a view file.
  * 
+ * @author taedium
+ * @since 3.0
  */
 public class GenViewTask extends AbstractTask {
-
-    protected File warDir;
-
-    protected String controllerPath;
-
-    protected String encoding = "UTF-8";
-
-    public void setWarDir(File warDir) {
-        this.warDir = warDir;
-    }
-
-    public void setControllerPath(String controllerPath) {
-        this.controllerPath = controllerPath;
-    }
-
-    public void setEncoding(String encoding) {
-        this.encoding = encoding;
-    }
 
     public void doExecute() {
         try {
@@ -59,7 +44,9 @@ public class GenViewTask extends AbstractTask {
             }
             String path = controllerPath.startsWith("/") ? controllerPath : "/"
                     + controllerPath;
-            generateView(path);
+            ViewDescFactory viewDescFactory = createViewDescFactory();
+            ViewDesc viewDesc = viewDescFactory.createViewDesc(path);
+            generateView(viewDesc);
         } catch (Exception e) {
             StringWriter writer = new StringWriter();
             e.printStackTrace(new PrintWriter(writer));
@@ -67,19 +54,26 @@ public class GenViewTask extends AbstractTask {
         }
     }
 
-    protected void generateView(String path) throws IOException {
-        int pos = path.lastIndexOf("/");
-        String dirName = path.substring(0, pos);
-        String fileName = path.substring(pos + 1);
-        if (fileName.length() == 0) {
-            fileName = Constants.INDEX_VIEW;
-        } else {
-            fileName += Constants.VIEW_SUFFIX;
-        }
+    /**
+     * Creates a {@link ViewDescFactory}.
+     * 
+     * @return a factory
+     */
+    protected ViewDescFactory createViewDescFactory() {
+        return new ViewDescFactory();
+    }
 
-        File viewDir = new File(warDir, dirName);
+    /***
+     * Generates a view.
+     * 
+     * @param viewDesc
+     *            the view description.
+     * @throws IOException
+     */
+    protected void generateView(ViewDesc viewDesc) throws IOException {
+        File viewDir = new File(warDir, viewDesc.getDirName());
         viewDir.mkdirs();
-        File viewFile = new File(viewDir, fileName);
+        File viewFile = new File(viewDir, viewDesc.getFileName());
         if (viewFile.exists()) {
             return;
         }
@@ -87,6 +81,11 @@ public class GenViewTask extends AbstractTask {
         generate(generator, viewFile);
     }
 
+    /**
+     * Creates a {@link Generator}.
+     * 
+     * @return a generator
+     */
     protected Generator careateViewGenerator() {
         return new ViewGenerator();
     }

@@ -42,7 +42,7 @@ public class ControllerDescFactoryTest extends TestCase {
         assertEquals("/", controllerDesc.getPath());
     }
 
-    public void testCreateControllerDesc_endsWithslash() throws Exception {
+    public void testCreateControllerDesc_endsWithSlash() throws Exception {
         ControllerDescFactory factory = new ControllerDescFactory("aaa.bbb");
         ControllerDesc controllerDesc = factory
                 .createControllerDesc("/ccc/ddd/");

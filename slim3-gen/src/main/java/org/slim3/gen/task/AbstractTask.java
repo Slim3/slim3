@@ -25,29 +25,56 @@ import org.slim3.gen.printer.FilePrinter;
 import org.slim3.gen.printer.Printer;
 
 /**
+ * An abstract class for Ant tasks.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public abstract class AbstractTask {
 
+    /** the war directory */
     protected File warDir;
 
+    /** the controller path */
     protected String controllerPath;
 
+    /** the file encoding */
     protected String encoding = "UTF-8";
 
+    /**
+     * Sets the warDir.
+     * 
+     * @param warDir
+     *            the warDir to set
+     */
     public void setWarDir(File warDir) {
         this.warDir = warDir;
     }
 
+    /**
+     * Sets the controllerPath.
+     * 
+     * @param controllerPath
+     *            the controllerPath to set
+     */
     public void setControllerPath(String controllerPath) {
         this.controllerPath = controllerPath;
     }
 
+    /**
+     * Sets the encoding.
+     * 
+     * @param encoding
+     *            the encoding to set
+     */
     public void setEncoding(String encoding) {
         this.encoding = encoding;
     }
 
+    /**
+     * Executes this task.
+     */
     public void execute() {
         try {
             doExecute();
@@ -58,8 +85,20 @@ public abstract class AbstractTask {
         }
     }
 
+    /**
+     * Executes this task.
+     * 
+     * @throws Exception
+     */
     protected abstract void doExecute() throws Exception;
 
+    /**
+     * Generates a file.
+     * 
+     * @param generator
+     * @param file
+     * @throws IOException
+     */
     protected void generate(Generator generator, File file) throws IOException {
         Printer printer = null;
         try {
@@ -70,8 +109,17 @@ public abstract class AbstractTask {
                 printer.close();
             }
         }
+        System.out.println("generated. " + file.getAbsolutePath());
     }
 
+    /**
+     * Creates a printer.
+     * 
+     * @param file
+     *            the file
+     * @return a printer.
+     * @throws IOException
+     */
     protected Printer createPrinter(File file) throws IOException {
         return new FilePrinter(file, encoding);
     }

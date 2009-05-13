@@ -19,11 +19,20 @@ import java.io.Closeable;
 import java.io.IOException;
 
 /**
+ * A utility class for {@link Cloneable}.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public final class CloseableUtil {
 
+    /**
+     * Closes the closeable object.
+     * 
+     * @param closeable
+     *            the closeable object
+     */
     public static void close(Closeable closeable) {
         try {
             if (closeable != null) {

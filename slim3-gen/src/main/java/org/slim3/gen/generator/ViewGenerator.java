@@ -18,7 +18,10 @@ package org.slim3.gen.generator;
 import org.slim3.gen.printer.Printer;
 
 /**
+ * Generates source codes of a view file.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class ViewGenerator implements Generator {
