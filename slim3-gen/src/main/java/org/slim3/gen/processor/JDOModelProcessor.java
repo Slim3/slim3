@@ -31,10 +31,13 @@ import javax.tools.FileObject;
 
 import org.slim3.gen.ClassConstants;
 import org.slim3.gen.Constants;
+import org.slim3.gen.desc.JDOModelElementScanner;
+import org.slim3.gen.desc.ModelDesc;
+import org.slim3.gen.desc.ModelDescFactory;
 import org.slim3.gen.generator.Generator;
 import org.slim3.gen.generator.JDOModelMetaGenerator;
-import org.slim3.gen.printer.Printer;
 import org.slim3.gen.printer.FilePrinter;
+import org.slim3.gen.printer.Printer;
 import org.slim3.gen.util.Logger;
 
 /**
@@ -82,15 +85,34 @@ public class JDOModelProcessor extends AbstractProcessor {
             Logger.debug(processingEnv, "[%s] Element(%s) is handling.",
                     getClass().getName(), element.getQualifiedName());
         }
+        ModelDescFactory modelDescFactory = createModelDescFactory();
+        ModelDesc modelDesc = modelDescFactory.createModelDesc(element);
+        generateModelMeta(modelDesc, element);
+        if (Options.isDebugEnabled(processingEnv)) {
+            Logger.debug(processingEnv, "[%s] Element(%s) is handled.",
+                    getClass().getName(), element.getQualifiedName());
+        }
+    }
+
+    /**
+     * Generates a model meta java file.
+     * 
+     * @param modelDesc
+     *            the model description.
+     * @param model
+     *            the element represents a JDO model class.
+     */
+    protected void generateModelMeta(ModelDesc modelDesc, TypeElement model) {
         Filer filer = processingEnv.getFiler();
-        String name = element.getQualifiedName() + Constants.META_SUFFIX;
+        String name = modelDesc.getPackageName() + "."
+                + modelDesc.getSimpleName() + Constants.META_SUFFIX;
         Printer printer = null;
         try {
-            printer = createPrinter(filer.createSourceFile(name, element));
-            Generator generator = createGenerator(element, name);
+            printer = createPrinter(filer.createSourceFile(name, model));
+            Generator generator = createGenerator(modelDesc);
             generator.generate(printer);
         } catch (IOException e) {
-            Logger.error(processingEnv, element, "[%s] Failed to generate.",
+            Logger.error(processingEnv, model, "[%s] Failed to generate.",
                     getClass().getName());
             throw new RuntimeException(e);
         } finally {
@@ -98,10 +120,15 @@ public class JDOModelProcessor extends AbstractProcessor {
                 printer.close();
             }
         }
-        if (Options.isDebugEnabled(processingEnv)) {
-            Logger.debug(processingEnv, "[%s] Element(%s) is handled.",
-                    getClass().getName(), element.getQualifiedName());
-        }
+    }
+
+    /**
+     * Creates a model description factory.
+     * 
+     * @return a model description factory
+     */
+    protected ModelDescFactory createModelDescFactory() {
+        return new ModelDescFactory(new JDOModelElementScanner(processingEnv));
     }
 
     /**
@@ -120,14 +147,11 @@ public class JDOModelProcessor extends AbstractProcessor {
     /**
      * Creates a generator object.
      * 
-     * @param element
-     *            the element object.
-     * @param qualifiedName
-     *            qualified name of the class to be generated.
+     * @param modelDesc
+     *            the model description.
      * @return a generator object.
      */
-    protected Generator createGenerator(TypeElement element,
-            String qualifiedName) {
-        return new JDOModelMetaGenerator(processingEnv, element, qualifiedName);
+    protected Generator createGenerator(ModelDesc modelDesc) {
+        return new JDOModelMetaGenerator(processingEnv, modelDesc);
     }
 }

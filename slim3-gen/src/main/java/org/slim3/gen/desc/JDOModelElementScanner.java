@@ -25,7 +25,6 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ElementVisitor;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
@@ -40,7 +39,6 @@ import javax.lang.model.util.SimpleElementVisitor6;
 import javax.lang.model.util.SimpleTypeVisitor6;
 
 import org.slim3.gen.ClassConstants;
-import org.slim3.gen.generator.ImportedNames;
 import org.slim3.gen.processor.Options;
 import org.slim3.gen.util.ElementUtil;
 import org.slim3.gen.util.Logger;
@@ -52,8 +50,7 @@ import org.slim3.gen.util.Logger;
  * @since 3.0
  * 
  */
-public class AttributeDescCollector extends
-        ElementScanner6<List<AttributeDesc>, Void> {
+public class JDOModelElementScanner extends ElementScanner6<Void, ModelDesc> {
 
     /** the document URL */
     protected static final String docURL = "http://code.google.com/intl/en/appengine/docs/java/datastore/dataclasses.html";
@@ -75,36 +72,22 @@ public class AttributeDescCollector extends
     /** the processing environment */
     protected final ProcessingEnvironment processingEnv;
 
-    /** the collection of imported names */
-    protected final ImportedNames importedNames;
-
-    /** the list of attribute description */
-    protected final List<AttributeDesc> attributeDescList;
-
     /**
-     * Creates a new {@link AttributeDescCollector}.
+     * Creates a new {@link JDOModelElementScanner}.
      * 
-     * @param defaultValue
-     *            the default value.
-     * @param importedNames
-     *            the collection of imported names
      * @param processingEnv
      *            the processing environment
      */
-    public AttributeDescCollector(List<AttributeDesc> defaultValue,
-            ImportedNames importedNames, ProcessingEnvironment processingEnv) {
-        super(defaultValue);
+    public JDOModelElementScanner(ProcessingEnvironment processingEnv) {
         this.processingEnv = processingEnv;
-        this.importedNames = importedNames;
-        this.attributeDescList = defaultValue;
     }
 
     @Override
-    public List<AttributeDesc> visitVariable(VariableElement attribute, Void p) {
+    public Void visitVariable(VariableElement attribute, ModelDesc p) {
         AnnotationMirror persistent = ElementUtil.getAnnotationMirror(
                 attribute, ClassConstants.Persistent);
         if (persistent == null) {
-            return attributeDescList;
+            return null;
         }
 
         boolean modelType = isModelType(attribute);
@@ -131,9 +114,9 @@ public class AttributeDescCollector extends
                 .build();
         AttributeDesc attributeDesc = new AttributeDesc(name, typeName,
                 modelType);
-        attributeDescList.add(attributeDesc);
+        p.addAttributeDesc(attributeDesc);
 
-        return attributeDescList;
+        return null;
     }
 
     /**
@@ -309,42 +292,45 @@ public class AttributeDescCollector extends
          *            the object to which the type name is appended.
          */
         protected void appendName(DeclaredType t, StringBuilder p) {
-            ElementVisitor<Void, StringBuilder> visitor = new SimpleElementVisitor6<Void, StringBuilder>() {
-                @Override
-                public Void visitType(TypeElement e, StringBuilder p) {
-                    if (!serialized) {
-                        if (Options.isValidationEnabled(processingEnv)) {
-                            validateTypeName(e);
+            t.asElement().accept(
+                    new SimpleElementVisitor6<Void, StringBuilder>() {
+                        @Override
+                        public Void visitType(TypeElement e, StringBuilder p) {
+                            if (!serialized) {
+                                if (Options.isValidationEnabled(processingEnv)) {
+                                    validateTypeName(e);
+                                }
+                            }
+                            p.append(e.getQualifiedName().toString());
+                            return null;
                         }
-                    }
-                    String qualifiedName = e.getQualifiedName().toString();
-                    p.append(importedNames.add(qualifiedName));
-                    return null;
-                }
 
-                protected void validateTypeName(TypeElement e) {
-                    String packageName = processingEnv.getElementUtils()
-                            .getPackageOf(e).getQualifiedName().toString();
-                    String qualifiedName = e.getQualifiedName().toString();
-                    if (unsupportedPackageNameList.contains(packageName)) {
-                        Logger
-                                .error(
-                                        processingEnv,
-                                        notifiedElement,
-                                        "[slim3-gen] Package(%s) is not supported on Google App Engine. See %s",
-                                        packageName, docURL);
-                    }
-                    if (unsupportedClassNameList.contains(qualifiedName)) {
-                        Logger
-                                .error(
-                                        processingEnv,
-                                        notifiedElement,
-                                        "slim3-gen] Class(%s) is not supported on Google App Engine. See %s",
-                                        qualifiedName, docURL);
-                    }
-                }
-            };
-            t.asElement().accept(visitor, p);
+                        protected void validateTypeName(TypeElement e) {
+                            String packageName = processingEnv
+                                    .getElementUtils().getPackageOf(e)
+                                    .getQualifiedName().toString();
+                            String qualifiedName = e.getQualifiedName()
+                                    .toString();
+                            if (unsupportedPackageNameList
+                                    .contains(packageName)) {
+                                Logger
+                                        .error(
+                                                processingEnv,
+                                                notifiedElement,
+                                                "[slim3-gen] Package(%s) is not supported on Google App Engine. See %s",
+                                                packageName, docURL);
+                            }
+                            if (unsupportedClassNameList
+                                    .contains(qualifiedName)) {
+                                Logger
+                                        .error(
+                                                processingEnv,
+                                                notifiedElement,
+                                                "slim3-gen] Class(%s) is not supported on Google App Engine. See %s",
+                                                qualifiedName, docURL);
+                            }
+                        }
+                    }, p);
         }
     }
 }
