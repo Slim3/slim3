@@ -1,8 +1,27 @@
 <project name="slim3it" default="copy.lib" basedir=".">
     <property name="ver" value="EA1-SNAPSHOT"/>
-	
+    <property name="src" value="src"/>
+    <property name="test" value="test"/>
+    <property name="war" value="war"/>
+
+    <path id="classpath">
+        <fileset dir="lib">
+            <include name="**/*.jar" />
+        </fileset>
+    </path>
+
     <target name="copy.lib">
         <copy todir="war/WEB-INF/lib" file="../slim3/target/slim3-${ver}.jar"/>
         <copy todir="war/WEB-INF/libsrc" file="../slim3/target/slim3-${ver}-sources.jar"/>
+        <copy todir="lib" file="../slim3-gen/target/slim3-gen-${ver}.jar"/>
+        <copy todir="libsrc" file="../slim3-gen/target/slim3-gen-${ver}-sources.jar"/>
+    </target>
+
+    <target name="gen">
+        <taskdef name="gen-controller" classname="org.slim3.gen.task.GenControllerTask" classpathref="classpath"/>
+        <taskdef name="gen-view" classname="org.slim3.gen.task.GenViewTask" classpathref="classpath"/>
+        <input message="Input a controller path." addproperty="controllerPath"/>
+        <gen-controller srcDir="${src}" testdir="${test}" wardir="${war}" controllerpath="${controllerPath}"/>
+        <gen-view wardir="${war}" controllerpath="${controllerPath}"/>
     </target>
 </project>
