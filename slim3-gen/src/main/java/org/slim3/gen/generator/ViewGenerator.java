@@ -15,20 +15,13 @@
  */
 package org.slim3.gen.generator;
 
-import org.slim3.gen.desc.ControllerDesc;
 import org.slim3.gen.printer.Printer;
 
 /**
  * @author taedium
  * 
  */
-public class ControllerJspGenerator implements Generator {
-
-    protected final ControllerDesc controllerDesc;
-
-    public ControllerJspGenerator(ControllerDesc controllerDesc) {
-        this.controllerDesc = controllerDesc;
-    }
+public class ViewGenerator implements Generator {
 
     @Override
     public void generate(Printer p) {

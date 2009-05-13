@@ -16,33 +16,36 @@
 package org.slim3.gen.task;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
+
+import javax.xml.XMLConstants;
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.slim3.gen.Constants;
 import org.slim3.gen.desc.ControllerDesc;
 import org.slim3.gen.desc.ControllerDescFactory;
 import org.slim3.gen.generator.ControllerGenerator;
-import org.slim3.gen.generator.ControllerJspGenerator;
 import org.slim3.gen.generator.ControllerTestCaseGenerator;
 import org.slim3.gen.generator.Generator;
-import org.slim3.gen.printer.FilePrinter;
-import org.slim3.gen.printer.Printer;
+import org.slim3.gen.util.CloseableUtil;
+import org.xml.sax.InputSource;
 
 /**
  * @author taedium
  * 
  */
-public class GenControllerTask {
+public class GenControllerTask extends AbstractTask {
 
     protected File srcDir;
 
     protected File testDir;
-
-    protected File warDir;
-
-    protected String controllerPath;
-
-    protected String encoding = "UTF-8";
 
     public void setSrcDir(File srcDir) {
         this.srcDir = srcDir;
@@ -56,49 +59,73 @@ public class GenControllerTask {
         this.testDir = testDir;
     }
 
-    public void setWarDir(File warDir) {
-        this.warDir = warDir;
-    }
-
-    public void setControllerPath(String controllerPath) {
-        this.controllerPath = controllerPath;
-    }
-
-    public void setEncoding(String encoding) {
-        this.encoding = encoding;
-    }
-
-    public void execute() throws Exception {
+    public void doExecute() throws IOException, XPathExpressionException {
         if (srcDir == null) {
-            throw new IllegalStateException("The srcDir parameter is null on "
-                    + getClass() + ".");
+            throw new IllegalStateException("The srcDir parameter is null.");
         }
         if (testDir == null) {
-            throw new IllegalStateException("The testDir parameter is null on "
-                    + getClass() + ".");
+            throw new IllegalStateException("The testDir parameter is null.");
         }
         if (warDir == null) {
-            throw new IllegalStateException("The warDir parameter isnull on "
-                    + getClass() + ".");
+            throw new IllegalStateException("The warDir parameter is null.");
         }
         if (controllerPath == null) {
             throw new IllegalStateException(
-                    "The controllerPath parameter is null on " + getClass()
-                            + ".");
+                    "The controllerPath parameter is null.");
         }
+        String path = controllerPath.startsWith("/") ? controllerPath : "/"
+                + controllerPath;
         String controllerPackageName = findControllerPackageName();
-        ControllerDescFactory factory = new ControllerDescFactory(
-                controllerPackageName);
-        ControllerDesc controllerDesc = factory
-                .createControllerDesc(controllerPath);
+        ControllerDescFactory factory = createControllerDescFactory(controllerPackageName);
+        ControllerDesc controllerDesc = factory.createControllerDesc(path);
         generateController(controllerDesc);
         generateControllerTest(controllerDesc);
-        generateControllerJsp(controllerDesc);
     }
 
-    protected String findControllerPackageName() throws Exception {
+    protected ControllerDescFactory createControllerDescFactory(
+            String controllerPackageName) {
+        return new ControllerDescFactory(controllerPackageName);
+    }
+
+    protected String findControllerPackageName() throws FileNotFoundException,
+            XPathExpressionException {
+        XPathFactory factory = XPathFactory.newInstance();
+        XPath xpath = factory.newXPath();
+        xpath.setNamespaceContext(new NamespaceContext() {
+            public String getNamespaceURI(String prefix) {
+                if (prefix == null)
+                    throw new NullPointerException(
+                            "The parameter prefix is null.");
+                else if ("pre".equals(prefix))
+                    return "http://appengine.google.com/ns/1.0";
+                else if ("xml".equals(prefix))
+                    return XMLConstants.XML_NS_URI;
+                return XMLConstants.NULL_NS_URI;
+            }
+
+            public String getPrefix(String uri) {
+                throw new UnsupportedOperationException("getPrefix");
+            }
+
+            public Iterator<?> getPrefixes(String uri) {
+                throw new UnsupportedOperationException("getPrefixes");
+            }
+        });
         File file = new File(new File(warDir, "WEB-INF"), "appengine-web.xml");
-        return "aaa.bbb";
+        InputStream inputStream = new FileInputStream(file);
+        try {
+            String value = xpath
+                    .evaluate(
+                            "/pre:appengine-web-app/pre:system-properties/pre:property[@name='slim3.controllerPackage']/@value",
+                            new InputSource(inputStream));
+            if (value == null) {
+                throw new RuntimeException(
+                        "The system-property 'slim3.controllerPackage' is not found in appengine-web.xml.");
+            }
+            return value;
+        } finally {
+            CloseableUtil.close(inputStream);
+        }
     }
 
     protected void generateController(ControllerDesc controllerDesc)
@@ -139,35 +166,4 @@ public class GenControllerTask {
         return new ControllerTestCaseGenerator(controllerDesc);
     }
 
-    protected void generateControllerJsp(ControllerDesc controllerDesc)
-            throws IOException {
-        warDir.mkdirs();
-        File jspFile = new File(warDir, controllerDesc.getJspName());
-        if (jspFile.exists()) {
-            return;
-        }
-        Generator generator = careateControllerJspGenerator(controllerDesc);
-        generate(generator, jspFile);
-    }
-
-    protected Generator careateControllerJspGenerator(
-            ControllerDesc controllerDesc) {
-        return new ControllerJspGenerator(controllerDesc);
-    }
-
-    protected void generate(Generator generator, File file) throws IOException {
-        Printer printer = null;
-        try {
-            printer = createPrinter(file);
-            generator.generate(printer);
-        } finally {
-            if (printer != null) {
-                printer.close();
-            }
-        }
-    }
-
-    protected Printer createPrinter(File file) throws IOException {
-        return new FilePrinter(file, encoding);
-    }
 }

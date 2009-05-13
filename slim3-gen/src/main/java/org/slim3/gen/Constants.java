@@ -34,4 +34,10 @@ public class Constants {
 
     /** the index controller. */
     public static final String INDEX_CONTROLLER = "Index" + CONTROLLER_SUFFIX;
+
+    /** the suffix of view. */
+    public static final String VIEW_SUFFIX = ".jsp";
+
+    /** the index view. */
+    public static final String INDEX_VIEW = "index" + VIEW_SUFFIX;
 }

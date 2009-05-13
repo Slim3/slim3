@@ -47,7 +47,7 @@ public class ControllerGenerator implements Generator {
         p.println("    public %s execute() {", ClassUtil
                 .getSimpleName(ClassConstants.Navigation));
         p.println("        return forward(\"%s\");", controllerDesc
-                .getJspName());
+                .getViewName());
         p.println("    }");
         p.println("}");
     }

@@ -44,13 +44,13 @@ public class ControllerTestCaseGenerator implements Generator {
                 .getSimpleName(ClassConstants.ControllerDatastoreTestCase));
         p.println();
         p.println("    public void testExecute() throws Exception {");
-        p.println("        start(\"/\");");
+        p.println("        start(\"%s\");", controllerDesc.getPath());
         p.println("        %s controller = getController();", controllerDesc
                 .getSimpleName());
         p.println("        assertNotNull(controller);");
         p.println("        assertFalse(isRedirect());");
         p.println("        assertEquals(\"%s\", getNextPath());",
-                controllerDesc.getJspName());
+                controllerDesc.getViewName());
         p.println("    }");
         p.println("}");
     }

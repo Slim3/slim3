@@ -25,7 +25,9 @@ public class ControllerDesc {
 
     protected String simpleName;
 
-    protected String jspName;
+    protected String viewName;
+
+    protected String path;
 
     public String getPackageName() {
         return packageName;
@@ -43,12 +45,20 @@ public class ControllerDesc {
         this.simpleName = simpleName;
     }
 
-    public String getJspName() {
-        return jspName;
+    public String getViewName() {
+        return viewName;
     }
 
-    public void setJspName(String jspName) {
-        this.jspName = jspName;
+    public void setViewName(String viewName) {
+        this.viewName = viewName;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
 }

@@ -43,7 +43,8 @@ public class ControllerDescFactory {
         String className = toControllerClassName(path);
         controllerDesc.setPackageName(ClassUtil.getPackageName(className));
         controllerDesc.setSimpleName(ClassUtil.getSimpleName(className));
-        controllerDesc.setJspName(toJspName(path));
+        controllerDesc.setViewName(toViewName(path));
+        controllerDesc.setPath(path);
         return controllerDesc;
     }
 
@@ -61,12 +62,13 @@ public class ControllerDescFactory {
         return className;
     }
 
-    protected String toJspName(String path) {
-        int pos = path.lastIndexOf('/');
-        String name = path.substring(pos + 1);
-        if (name.length() == 0) {
-            return "index.jsp";
+    protected String toViewName(String path) {
+        String viewName = path;
+        if (path.endsWith("/")) {
+            viewName += Constants.INDEX_VIEW;
+        } else {
+            viewName += Constants.VIEW_SUFFIX;
         }
-        return name + ".jsp";
+        return viewName;
     }
 }
