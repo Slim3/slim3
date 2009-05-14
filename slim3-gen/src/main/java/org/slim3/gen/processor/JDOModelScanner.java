@@ -15,6 +15,7 @@
  */
 package org.slim3.gen.processor;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -44,7 +45,7 @@ import org.slim3.gen.desc.ModelDesc;
 import org.slim3.gen.util.ElementUtil;
 
 /**
- * Collects attribute descriptions of a JDO model.
+ * Scans a JDO model.
  * 
  * @author taedium
  * @since 3.0
@@ -52,13 +53,12 @@ import org.slim3.gen.util.ElementUtil;
  */
 public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
 
-    /** the document URL */
-    protected static final String docURL = "http://code.google.com/intl/en/appengine/docs/java/datastore/dataclasses.html";
+    /** the Google App Engine document URL */
+    protected static final String documentURL = "http://code.google.com/intl/en/appengine/docs/java/datastore/dataclasses.html";
 
     /** the list of unsupported package names */
     protected static final List<String> unsupportedPackageNameList = new ArrayList<String>();
     static {
-        unsupportedPackageNameList.add("java.math");
         unsupportedPackageNameList.add("java.sql");
     }
 
@@ -67,6 +67,7 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
     static {
         unsupportedClassNameList.add(Calendar.class.getName());
         unsupportedClassNameList.add(Character.class.getName());
+        unsupportedClassNameList.add(BigInteger.class.getName());
     }
 
     /** the processing environment */
@@ -318,7 +319,7 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
                                                 processingEnv,
                                                 notifiedElement,
                                                 "[slim3-gen] Package(%s) is not supported on Google App Engine. See %s",
-                                                packageName, docURL);
+                                                packageName, documentURL);
                             }
                             if (unsupportedClassNameList
                                     .contains(qualifiedName)) {
@@ -326,8 +327,8 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
                                         .error(
                                                 processingEnv,
                                                 notifiedElement,
-                                                "slim3-gen] Class(%s) is not supported on Google App Engine. See %s",
-                                                qualifiedName, docURL);
+                                                "[slim3-gen] Class(%s) is not supported on Google App Engine. See %s",
+                                                qualifiedName, documentURL);
                             }
                         }
                     }, p);
