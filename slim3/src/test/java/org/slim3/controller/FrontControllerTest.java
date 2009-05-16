@@ -141,6 +141,14 @@ public class FrontControllerTest extends ControllerTestCase {
      * @throws Exception
      * 
      */
+    public void testCreateControllerForClassNotFound() throws Exception {
+        assertNull(controllerTester.frontController.createController("/xxx"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
     public void testGetController() throws Exception {
         Controller controller =
             controllerTester.frontController.getController(

@@ -21,14 +21,15 @@ import junit.framework.TestCase;
  * @author higa
  * 
  */
-public class GeCriterionTest extends TestCase {
+public class ContainsCriterionTest extends TestCase {
 
     /**
      * @throws Exception
      */
     public void testGetQueryString() throws Exception {
-        GeCriterion<Long> criterion =
-            new GeCriterion<Long>("id", "idGeParam", Long.valueOf(1));
-        assertEquals("id >= idGeParam", criterion.getQueryString());
+        ContainsCriterion criterion =
+            new ContainsCriterion("aaaList", "aaaListParam", Long.valueOf(1));
+        assertEquals("aaaList.contains(aaaListParam)", criterion
+            .getQueryString());
     }
 }

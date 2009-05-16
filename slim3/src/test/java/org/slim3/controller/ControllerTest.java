@@ -15,6 +15,7 @@
  */
 package org.slim3.controller;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -123,6 +124,13 @@ public class ControllerTest extends TestCase {
      */
     public void testDouble() throws Exception {
         assertEquals(Double.valueOf(1), controller.toDouble("1"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testBigDecimal() throws Exception {
+        assertEquals(BigDecimal.valueOf(1), controller.toBigDecimal("1"));
     }
 
     /**

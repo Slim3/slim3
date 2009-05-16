@@ -50,18 +50,4 @@ public class FrontControllerHotReloadingTest extends ControllerTestCase {
     public void testInit() throws Exception {
         assertTrue(controllerTester.frontController.hotReloading);
     }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testCreateController() throws Exception {
-        Controller controller =
-            controllerTester.frontController.createController("/hello/list");
-        assertNotNull(controller);
-        assertEquals(HotReloadingClassLoader.class, controller
-            .getClass()
-            .getClassLoader()
-            .getClass());
-    }
 }

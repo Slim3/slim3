@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the Seasar Foundation and the Others.
+ * Copyright 2004-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 package org.slim3.jdo;
 
-import org.slim3.jdo.EqCriterion;
-
 import junit.framework.TestCase;
 
 /**
@@ -29,8 +27,8 @@ public class EqCriterionTest extends TestCase {
      * @throws Exception
      */
     public void testGetQueryString() throws Exception {
-        EqCriterion<Long> criterion = new EqCriterion<Long>("id", "idParam",
-                Long.valueOf(1));
+        EqCriterion<Long> criterion =
+            new EqCriterion<Long>("id", "idParam", Long.valueOf(1));
         assertEquals("id == idParam", criterion.getQueryString());
     }
 }

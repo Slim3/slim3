@@ -199,22 +199,29 @@ public class FrontController implements Filter {
      * @return a new controller
      * @throws IllegalStateException
      *             if the controller does not extend
-     *             "org.slim3.mvc.controller.Controller"
+     *             "org.slim3.controller.Controller"
      */
     protected Controller createController(String path)
             throws IllegalStateException {
         String className = toControllerClassName(path);
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        if (hotReloading) {
-            loader = new HotReloadingClassLoader(loader, controllerPackageName);
-        }
         Class<?> clazz = null;
-        try {
-            clazz = Class.forName(className, true, loader);
-        } catch (Throwable t) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, t.getMessage(), t);
+        ClassLoader originalLoader =
+            Thread.currentThread().getContextClassLoader();
+        if (hotReloading) {
+            ClassLoader loader =
+                new HotReloadingClassLoader(
+                    originalLoader,
+                    controllerPackageName);
+            try {
+                Thread.currentThread().setContextClassLoader(loader);
+                clazz = createControllerClass(className);
+            } finally {
+                Thread.currentThread().setContextClassLoader(originalLoader);
             }
+        } else {
+            clazz = createControllerClass(className);
+        }
+        if (clazz == null) {
             return null;
         }
         if (!Controller.class.isAssignableFrom(clazz)) {
@@ -249,6 +256,24 @@ public class FrontController implements Filter {
                     + ControllerConstants.CONTROLLER_SUFFIX;
         }
         return className;
+    }
+
+    /**
+     * Creates a new controller class.
+     * 
+     * @param className
+     *            the class name
+     * @return a new controller class
+     */
+    protected Class<?> createControllerClass(String className) {
+        try {
+            return Class.forName(className);
+        } catch (Throwable t) {
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, t.getMessage(), t);
+            }
+            return null;
+        }
     }
 
     /**

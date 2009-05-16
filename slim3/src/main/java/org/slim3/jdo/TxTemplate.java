@@ -55,17 +55,12 @@ public abstract class TxTemplate {
     /**
      * Run this template.
      * 
-     * @param <R>
-     *            the return value
-     * @return the result
      */
-    @SuppressWarnings("unchecked")
-    public final <R> R run() {
-        Object returnValue = null;
+    public final void run() {
         tx = pm.currentTransaction();
         try {
             tx.begin();
-            returnValue = doRun();
+            doRun();
             if (tx.getRollbackOnly()) {
                 tx.rollback();
             } else {
@@ -76,13 +71,11 @@ public abstract class TxTemplate {
                 tx.rollback();
             }
         }
-        return (R) returnValue;
     }
 
     /**
      * You can implement this method to customize this template.
      * 
-     * @return the result
      */
-    protected abstract Object doRun();
+    protected abstract void doRun();
 }

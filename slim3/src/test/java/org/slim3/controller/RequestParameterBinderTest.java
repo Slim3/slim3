@@ -24,7 +24,6 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.slim3.controller.RequestParameterBinder;
 import org.slim3.controller.RequestParameterBinder.IndexParsedResult;
 import org.slim3.controller.controller.HogeController;
 import org.slim3.controller.controller.MyBean;
@@ -394,12 +393,12 @@ public class RequestParameterBinderTest extends TestCase {
     /**
      * @throws Exception
      */
-    public void testConvertConcreteClass() throws Exception {
-        assertEquals(int.class, binder.convertConcreteClass(int.class));
-        assertEquals(HashMap.class, binder.convertConcreteClass(Map.class));
-        assertEquals(ArrayList.class, binder.convertConcreteClass(List.class));
+    public void testToConcreteClass() throws Exception {
+        assertEquals(int.class, binder.toConcreteClass(int.class));
+        assertEquals(HashMap.class, binder.toConcreteClass(Map.class));
+        assertEquals(ArrayList.class, binder.toConcreteClass(List.class));
         try {
-            binder.convertConcreteClass(Serializable.class);
+            binder.toConcreteClass(Serializable.class);
             fail();
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());

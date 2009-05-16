@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the Seasar Foundation and the Others.
+ * Copyright 2004-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 package org.slim3.jdo;
 
-import org.slim3.jdo.AbstractFilterCriterion;
-
 import junit.framework.TestCase;
 
 /**
@@ -29,8 +27,8 @@ public class AbstFilterCriterionTest extends TestCase {
      * @throws Exception
      */
     public void testConstructor() throws Exception {
-        MyFilterCriterion criterion = new MyFilterCriterion("id", "idParam",
-                Long.valueOf(1));
+        MyFilterCriterion criterion =
+            new MyFilterCriterion("id", "idParam", Long.valueOf(1));
         assertEquals("id", criterion.getPropertyName());
         assertEquals("idParam", criterion.getParameterName());
         assertEquals(Long.valueOf(1), criterion.getParameter());
@@ -40,13 +38,14 @@ public class AbstFilterCriterionTest extends TestCase {
      * @throws Exception
      */
     public void testGetParameterDeclaration() throws Exception {
-        MyFilterCriterion criterion = new MyFilterCriterion("id", "idParam",
-                Long.valueOf(1));
+        MyFilterCriterion criterion =
+            new MyFilterCriterion("id", "idParam", Long.valueOf(1));
         assertEquals("java.lang.Long idParam", criterion
-                .getParameterDeclaration());
+            .getParameterDeclaration());
     }
 
-    private static class MyFilterCriterion extends AbstractFilterCriterion<Long> {
+    private static class MyFilterCriterion extends
+            AbstractFilterCriterion<Long> {
 
         /**
          * @param propertyName

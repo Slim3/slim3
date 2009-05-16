@@ -121,6 +121,19 @@ public class AttributeMeta<T> {
     }
 
     /**
+     * Returns the "contains" filter criterion.
+     * 
+     * @param parameter
+     * @return the "contains" filter criterion
+     */
+    public ContainsCriterion contains(Object parameter) {
+        if (isEmpty(parameter)) {
+            return null;
+        }
+        return new ContainsCriterion(name, name + "Param", parameter);
+    }
+
+    /**
      * Returns the "ascending" order criterion.
      * 
      * @return the "ascending" order criterion

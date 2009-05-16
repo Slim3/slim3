@@ -15,20 +15,33 @@
  */
 package org.slim3.jdo;
 
-import junit.framework.TestCase;
-
 /**
+ * An implementation class for "contains" filter criterion.
+ * 
  * @author higa
+ * @since 3.0
  * 
  */
-public class GeCriterionTest extends TestCase {
+public class ContainsCriterion extends AbstractFilterCriterion<Object> {
 
     /**
-     * @throws Exception
+     * Constructor.
+     * 
+     * @param propertyName
+     *            the property name
+     * @param parameterName
+     *            the parameter name
+     * @param parameter
+     *            the parameter
      */
-    public void testGetQueryString() throws Exception {
-        GeCriterion<Long> criterion =
-            new GeCriterion<Long>("id", "idGeParam", Long.valueOf(1));
-        assertEquals("id >= idGeParam", criterion.getQueryString());
+    public ContainsCriterion(String propertyName, String parameterName,
+            Object parameter) {
+        super(propertyName, parameterName, parameter);
     }
+
+    @Override
+    public String getQueryString() {
+        return propertyName + ".contains(" + parameterName + ")";
+    }
+
 }

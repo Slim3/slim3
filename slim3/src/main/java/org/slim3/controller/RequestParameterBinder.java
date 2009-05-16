@@ -286,7 +286,7 @@ public class RequestParameterBinder {
                 pcd = pcd.getArguments()[0];
                 for (int j = size; j <= indexes[i]; j++) {
                     if (i == indexes.length - 1) {
-                        list.add(ClassUtil.newInstance(convertConcreteClass(pcd
+                        list.add(ClassUtil.newInstance(toConcreteClass(pcd
                             .getRawClass())));
                     } else {
                         list.add(new ArrayList());
@@ -370,7 +370,7 @@ public class RequestParameterBinder {
                 pcd = pcd.getArguments()[0];
                 for (int j = size; j <= indexes[i]; j++) {
                     if (i == indexes.length - 1) {
-                        list.add(ClassUtil.newInstance(convertConcreteClass(pcd
+                        list.add(ClassUtil.newInstance(toConcreteClass(pcd
                             .getRawClass())));
                     } else {
                         list.add(new ArrayList());
@@ -472,7 +472,7 @@ public class RequestParameterBinder {
     protected Object getArrayValue(Object array, int[] indexes,
             Class<?> elementClass) {
         Object value = array;
-        elementClass = convertConcreteClass(elementClass);
+        elementClass = toConcreteClass(elementClass);
         for (int i = 0; i < indexes.length; i++) {
             Object value2 = Array.get(value, indexes[i]);
             if (i == indexes.length - 1 && value2 == null) {
@@ -499,28 +499,6 @@ public class RequestParameterBinder {
             array = Array.get(array, indexes[i]);
         }
         Array.set(array, indexes[indexes.length - 1], value);
-    }
-
-    /**
-     * Converts the abstract class to the concrete class.
-     * 
-     * @param clazz
-     *            the class
-     * @return converted class
-     */
-    protected Class<?> convertConcreteClass(Class<?> clazz) {
-        if (!clazz.isPrimitive() && Modifier.isAbstract(clazz.getModifiers())) {
-            if (Map.class.isAssignableFrom(clazz)) {
-                return HashMap.class;
-            } else if (List.class.isAssignableFrom(clazz)) {
-                return ArrayList.class;
-            } else {
-                throw new IllegalArgumentException("The class("
-                    + clazz.getName()
-                    + ") can not be converted to concrete class.");
-            }
-        }
-        return clazz;
     }
 
     /**
@@ -557,6 +535,34 @@ public class RequestParameterBinder {
         }
         result.name = name;
         return result;
+    }
+
+    /**
+     * Converts the class to the concrete class if the class is abstract.
+     * 
+     * @param clazz
+     *            the class
+     * @return the converted class
+     * @throws NullPointerException
+     *             if the clazz parameter is null
+     */
+    protected Class<?> toConcreteClass(Class<?> clazz)
+            throws NullPointerException {
+        if (clazz == null) {
+            throw new NullPointerException("The clazz parameter is null.");
+        }
+        if (!clazz.isPrimitive() && Modifier.isAbstract(clazz.getModifiers())) {
+            if (Map.class.isAssignableFrom(clazz)) {
+                return HashMap.class;
+            } else if (List.class.isAssignableFrom(clazz)) {
+                return ArrayList.class;
+            } else {
+                throw new IllegalArgumentException("The class("
+                    + clazz.getName()
+                    + ") can not be converted to a concrete class.");
+            }
+        }
+        return clazz;
     }
 
     /**

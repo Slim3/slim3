@@ -15,6 +15,7 @@
  */
 package org.slim3.controller;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -25,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.slim3.util.BigDecimalUtil;
 import org.slim3.util.BooleanUtil;
 import org.slim3.util.ByteUtil;
 import org.slim3.util.DateUtil;
@@ -256,6 +258,17 @@ public abstract class Controller {
      */
     protected Double toDouble(Object o) {
         return DoubleUtil.toDouble(o);
+    }
+
+    /**
+     * Converts the object to the big decimal.
+     * 
+     * @param o
+     *            the object
+     * @return the big decimal
+     */
+    protected BigDecimal toBigDecimal(Object o) {
+        return BigDecimalUtil.toBigDecimal(o);
     }
 
     /**

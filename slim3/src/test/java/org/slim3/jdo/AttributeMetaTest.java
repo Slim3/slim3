@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the Seasar Foundation and the Others.
+ * Copyright 2004-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * governing permissions and limitations under the License.
  */
 package org.slim3.jdo;
+
+import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -151,6 +153,36 @@ public class AttributeMetaTest extends TestCase {
     public void testGeForEmpty() throws Exception {
         AttributeMeta<String> id = new AttributeMeta<String>("id");
         assertNull(id.ge(""));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testContains() throws Exception {
+        AttributeMeta<List<Long>> aaaList =
+            new AttributeMeta<List<Long>>("aaaList");
+        ContainsCriterion criterion = aaaList.contains(Long.valueOf(1));
+        assertEquals("aaaListParam", criterion.getParameterName());
+        assertEquals("aaaList.contains(aaaListParam)", criterion
+            .getQueryString());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testContainsForNull() throws Exception {
+        AttributeMeta<List<Long>> aaaList =
+            new AttributeMeta<List<Long>>("aaaList");
+        assertNull(aaaList.contains(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testContainsForEmpty() throws Exception {
+        AttributeMeta<List<String>> aaaList =
+            new AttributeMeta<List<String>>("aaaList");
+        assertNull(aaaList.contains(""));
     }
 
     /**

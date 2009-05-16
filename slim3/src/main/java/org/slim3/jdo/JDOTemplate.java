@@ -37,33 +37,68 @@ public abstract class JDOTemplate {
     protected PersistenceManager pm;
 
     /**
+     * Creates a new key.
+     * 
+     * @param modelClass
+     *            the model class
+     * @param id
+     *            the identity
+     * @return a new key
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     */
+    protected final static Key key(Class<?> modelClass, long id)
+            throws NullPointerException {
+        if (modelClass == null) {
+            throw new NullPointerException("The modelClass parameter is null.");
+        }
+        return KeyFactory.createKey(modelClass.getSimpleName(), id);
+    }
+
+    /**
+     * Creates a new key.
+     * 
+     * @param modelClass
+     *            the model class
+     * @param name
+     *            the name
+     * @return a new key
+     * @throws NullPointerException
+     *             if the modelClass parameter is null or if the name parameter
+     *             is null
+     */
+    protected final static Key key(Class<?> modelClass, String name)
+            throws NullPointerException {
+        if (modelClass == null) {
+            throw new NullPointerException("The modelClass parameter is null.");
+        }
+        if (name == null) {
+            throw new NullPointerException("The name parameter is null.");
+        }
+        return KeyFactory.createKey(modelClass.getSimpleName(), name);
+    }
+
+    /**
      * Runs this template.
      * 
-     * @param <R>
-     *            the return type
-     * @return the result
      */
-    @SuppressWarnings("unchecked")
-    public final <R> R run() {
-        Object returnValue = null;
+    public final void run() {
         pm = PMF.get().getPersistenceManager();
         try {
-            returnValue = doRun();
+            doRun();
         } catch (Throwable t) {
             handleThrowable(t);
         } finally {
             assertPersistenceManagerIsActive();
             pm.close();
         }
-        return (R) returnValue;
     }
 
     /**
      * You can implement this method to customize this template.
      * 
-     * @return the result
      */
-    protected abstract Object doRun();
+    protected abstract void doRun();
 
     /**
      * Handles the exception.
@@ -87,285 +122,6 @@ public abstract class JDOTemplate {
     protected <M> SelectQuery<M> from(ModelMeta<M> modelMeta) {
         assertPersistenceManagerIsActive();
         return new SelectQuery<M>(modelMeta, pm);
-    }
-
-    /**
-     * Returns the model specified by the key.
-     * 
-     * @param <M>
-     *            the model type
-     * @param modelClass
-     *            the model class
-     * @param key
-     *            the key
-     * @return the model
-     */
-    protected <M> M getObjectByKey(Class<M> modelClass, Key key) {
-        assertPersistenceManagerIsActive();
-        return pm.getObjectById(modelClass, key);
-    }
-
-    /**
-     * Returns the model specified by the identifier.
-     * 
-     * @param <M>
-     *            the model type
-     * @param modelClass
-     *            the model class
-     * @param id
-     *            the identifier
-     * @return the model
-     */
-    protected <M> M getObjectById(Class<M> modelClass, long id) {
-        assertPersistenceManagerIsActive();
-        return pm.getObjectById(modelClass, id);
-    }
-
-    /**
-     * Returns the model specified by the name.
-     * 
-     * @param <M>
-     *            the model type
-     * @param modelClass
-     *            the model class
-     * @param name
-     *            the name
-     * @return the model
-     */
-    protected <M> M getObjectByName(Class<M> modelClass, String name) {
-        assertPersistenceManagerIsActive();
-        return pm.getObjectById(modelClass, name);
-    }
-
-    /**
-     * Returns the model specified by the key identifier.
-     * 
-     * @param <M>
-     *            the model type
-     * @param modelClass
-     *            the model class
-     * @param id
-     *            the identifier
-     * @return the model
-     */
-    protected <M> M getObjectByKeyId(Class<M> modelClass, long id) {
-        assertPersistenceManagerIsActive();
-        return getObjectByKey(modelClass, key(modelClass, id));
-    }
-
-    /**
-     * Returns the model specified by the key name.
-     * 
-     * @param <M>
-     *            the model type
-     * @param modelClass
-     *            the model class
-     * @param name
-     *            the name
-     * @return the model
-     */
-    protected <M> M getObjectByKeyName(Class<M> modelClass, String name) {
-        assertPersistenceManagerIsActive();
-        return getObjectByKey(modelClass, key(modelClass, name));
-    }
-
-    /**
-     * Returns the model specified by the key.
-     * 
-     * @param <M>
-     *            the model type
-     * @param modelMeta
-     *            the meta data of model
-     * @param key
-     *            the key
-     * @return the model
-     * @throws NullPointerException
-     *             if the modelMeta parameter is null
-     */
-    protected <M> M getObjectByKey(ModelMeta<M> modelMeta, Key key)
-            throws NullPointerException {
-        if (modelMeta == null) {
-            throw new NullPointerException("The modelMeta parameter is null.");
-        }
-        assertPersistenceManagerIsActive();
-        return getObjectByKey(modelMeta.getModelClass(), key);
-    }
-
-    /**
-     * Returns the model specified by the identifier.
-     * 
-     * @param <M>
-     *            the model type
-     * @param modelMeta
-     *            the meta data of model
-     * @param id
-     *            the identifier
-     * @return the model
-     * @throws NullPointerException
-     *             if the modelMeta parameter is null
-     */
-    protected <M> M getObjectById(ModelMeta<M> modelMeta, long id)
-            throws NullPointerException {
-        if (modelMeta == null) {
-            throw new NullPointerException("The modelMeta parameter is null.");
-        }
-        assertPersistenceManagerIsActive();
-        return getObjectById(modelMeta.getModelClass(), id);
-    }
-
-    /**
-     * Returns the model specified by the name.
-     * 
-     * @param <M>
-     *            the model type
-     * @param modelMeta
-     *            the meta data of model
-     * @param name
-     *            the name
-     * @return the model
-     * @throws NullPointerException
-     *             if the modelMeta parameter is null
-     */
-    protected <M> M getObjectByName(ModelMeta<M> modelMeta, String name)
-            throws NullPointerException {
-        if (modelMeta == null) {
-            throw new NullPointerException("The modelMeta parameter is null.");
-        }
-        assertPersistenceManagerIsActive();
-        return getObjectByName(modelMeta.getModelClass(), name);
-    }
-
-    /**
-     * Returns the model specified by the key identifier.
-     * 
-     * @param <M>
-     *            the model type
-     * @param modelMeta
-     *            the meta data of model
-     * @param id
-     *            the identifier
-     * @return the model
-     * @throws NullPointerException
-     *             if the modelMeta parameter is null
-     */
-    protected <M> M getObjectByKeyId(ModelMeta<M> modelMeta, long id)
-            throws NullPointerException {
-        if (modelMeta == null) {
-            throw new NullPointerException("The modelMeta parameter is null.");
-        }
-        assertPersistenceManagerIsActive();
-        return getObjectByKeyId(modelMeta.getModelClass(), id);
-    }
-
-    /**
-     * Returns the model specified by the key name.
-     * 
-     * @param <M>
-     *            the model type
-     * @param modelMeta
-     *            the meta data of model
-     * @param name
-     *            the name
-     * @return the model
-     * @throws NullPointerException
-     *             if the modelMeta parameter is null
-     */
-    protected <M> M getObjectByKeyName(ModelMeta<M> modelMeta, String name)
-            throws NullPointerException {
-        if (modelMeta == null) {
-            throw new NullPointerException("The modelMeta parameter is null.");
-        }
-        assertPersistenceManagerIsActive();
-        return getObjectByKeyName(modelMeta.getModelClass(), name);
-    }
-
-    /**
-     * Makes the model persistent.
-     * 
-     * @param <M>
-     *            the model type
-     * @param model
-     *            the model
-     * @return the model
-     */
-    protected <M> M makePersistent(M model) {
-        assertPersistenceManagerIsActive();
-        return pm.makePersistent(model);
-    }
-
-    /**
-     * Deletes the model from the data store.
-     * 
-     * @param model
-     *            the model
-     */
-    protected void deletePersistent(Object model) {
-        assertPersistenceManagerIsActive();
-        pm.deletePersistent(model);
-    }
-
-    /**
-     * Creates a new key specified by the identifier.
-     * 
-     * @param modelClass
-     *            the model class
-     * @param id
-     *            the identifier
-     * @return a new key
-     */
-    protected Key key(Class<?> modelClass, long id) {
-        if (modelClass == null) {
-            throw new NullPointerException("The modelClass parameter is null.");
-        }
-        return KeyFactory.createKey(modelClass.getSimpleName(), id);
-    }
-
-    /**
-     * Creates a new key specified by the name.
-     * 
-     * @param modelClass
-     *            the model class
-     * @param name
-     *            the name
-     * @return a new key
-     */
-    protected Key key(Class<?> modelClass, String name) {
-        if (modelClass == null) {
-            throw new NullPointerException("The modelClass parameter is null.");
-        }
-        return KeyFactory.createKey(modelClass.getSimpleName(), name);
-    }
-
-    /**
-     * Creates a new key specified by the identifier.
-     * 
-     * @param modelMeta
-     *            the meta data of model
-     * @param id
-     *            the identifier
-     * @return a new key
-     */
-    protected Key key(ModelMeta<?> modelMeta, long id) {
-        if (modelMeta == null) {
-            throw new NullPointerException("The modelMeta parameter is null.");
-        }
-        return key(modelMeta.getModelClass(), id);
-    }
-
-    /**
-     * Creates a new key specified by the name.
-     * 
-     * @param modelMeta
-     *            the meta data of model
-     * @param name
-     *            the name
-     * @return a new key
-     */
-    protected Key key(ModelMeta<?> modelMeta, String name) {
-        if (modelMeta == null) {
-            throw new NullPointerException("The modelMeta parameter is null.");
-        }
-        return key(modelMeta.getModelClass(), name);
     }
 
     /**
