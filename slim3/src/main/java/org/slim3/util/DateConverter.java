@@ -18,7 +18,6 @@ package org.slim3.util;
 import java.text.DecimalFormat;
 import java.util.Date;
 
-
 /**
  * The converter for date.
  * 

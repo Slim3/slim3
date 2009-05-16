@@ -17,7 +17,6 @@ package org.slim3.util;
 
 import java.text.DecimalFormat;
 
-
 /**
  * A converter for number.
  * 

@@ -16,9 +16,10 @@
 package org.slim3.util;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
- * A map that acts as bean.
+ * A map like bean.
  * 
  * @author higa
  * @since 3.0
@@ -28,13 +29,41 @@ public class BeanMap extends HashMap<String, Object> {
 
     private static final long serialVersionUID = 1;
 
-    @Override
-    public Object get(Object key) {
-        if (!containsKey(key)) {
-            throw new IllegalArgumentException(key
-                + " is not found in "
-                + keySet());
-        }
-        return super.get(key);
+    /**
+     * Constructor.
+     */
+    public BeanMap() {
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param initialCapacity
+     *            the initial capacity
+     * @param loadFactor
+     *            the load factor
+     */
+    public BeanMap(int initialCapacity, float loadFactor) {
+        super(initialCapacity, loadFactor);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param initialCapacity
+     *            the initial capacity
+     */
+    public BeanMap(int initialCapacity) {
+        super(initialCapacity);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param m
+     *            another bean map
+     */
+    public BeanMap(Map<? extends String, ? extends Object> m) {
+        super(m);
     }
 }

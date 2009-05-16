@@ -15,8 +15,9 @@
  */
 package org.slim3.util;
 
+import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 
 /**
  * A utility class for bean.
@@ -27,6 +28,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class BeanUtil {
 
+    private static final CopyOptions DEFAULT_OPTIONS = new CopyOptions();
+
     private static ConcurrentHashMap<String, BeanDesc> beanDescCache =
         new ConcurrentHashMap<String, BeanDesc>(200);
 
@@ -34,9 +37,6 @@ public final class BeanUtil {
 
     static {
         initialize();
-    }
-
-    private BeanUtil() {
     }
 
     private static void initialize() {
@@ -78,31 +78,241 @@ public final class BeanUtil {
     }
 
     /**
-     * Creates a {@link Copy} instance.
+     * Copies a bean to another one.
      * 
      * @param src
      *            the source
      * @param dest
      *            the destination
-     * @return a {@link Copy} instance
      */
-    public static Copy copy(Object src, Object dest) {
-        return new Copy(src, dest);
+    public static void copy(Object src, Object dest) {
+        copy(src, dest, DEFAULT_OPTIONS);
     }
 
     /**
-     * Creates a {@link CreateAndCopy} instance.
+     * Copies a bean to another one.
      * 
-     * @param <T>
-     *            the destination type
-     * @param destClass
-     *            the destination class
      * @param src
      *            the source
-     * @return a {@link CreateAndCopy} instance
+     * @param dest
+     *            the destination
+     * @param options
+     *            the copy options
+     * @throws NullPointerException
+     *             if the src parameter is null or if the dest parameter is null
+     *             or if the options parameter is null
      */
-    public static <T> CreateAndCopy<T> createAndCopy(Class<T> destClass,
-            Object src) {
-        return new CreateAndCopy<T>(destClass, src);
+    public static void copy(Object src, Object dest, CopyOptions options)
+            throws NullPointerException {
+        if (src == null) {
+            throw new NullPointerException("The src parameter is null.");
+        }
+        if (dest == null) {
+            throw new NullPointerException("The dest parameter is null.");
+        }
+        if (options == null) {
+            throw new NullPointerException("The options parameter is null.");
+        }
+        BeanDesc srcBeanDesc = getBeanDesc(src.getClass());
+        BeanDesc destBeanDesc = getBeanDesc(dest.getClass());
+        int size = srcBeanDesc.getPropertyDescSize();
+        for (int i = 0; i < size; i++) {
+            PropertyDesc srcPropertyDesc = srcBeanDesc.getPropertyDesc(i);
+            String propertyName = srcPropertyDesc.getName();
+            if (!srcPropertyDesc.isReadable()
+                || !options.isTargetProperty(propertyName)) {
+                continue;
+            }
+            PropertyDesc destPropertyDesc =
+                destBeanDesc.getPropertyDesc(propertyName);
+            if (destPropertyDesc == null) {
+                continue;
+            }
+            if (!destPropertyDesc.isWritable()) {
+                continue;
+            }
+            Object value = srcPropertyDesc.getValue(src);
+            if (!options.isTargetValue(value)) {
+                continue;
+            }
+            value =
+                options.convertValue(value, propertyName, destPropertyDesc
+                    .getPropertyClass());
+            destPropertyDesc.setValue(dest, value);
+        }
+    }
+
+    /**
+     * Copies a bean to a map.
+     * 
+     * @param src
+     *            the source
+     * @param dest
+     *            the destination
+     */
+    @SuppressWarnings("unchecked")
+    public static void copy(Object src, Map dest) {
+        copy(src, dest, DEFAULT_OPTIONS);
+    }
+
+    /**
+     * Copies a bean to a map.
+     * 
+     * @param src
+     *            the source
+     * @param dest
+     *            the destination
+     * @param options
+     *            the copy options
+     * @throws NullPointerException
+     *             if the src parameter is null or if the dest parameter is null
+     *             or if the options parameter is null
+     */
+    @SuppressWarnings("unchecked")
+    public static void copy(Object src, Map dest, CopyOptions options)
+            throws NullPointerException {
+        if (src == null) {
+            throw new NullPointerException("The src parameter is null.");
+        }
+        if (dest == null) {
+            throw new NullPointerException("The dest parameter is null.");
+        }
+        if (options == null) {
+            throw new NullPointerException("The options parameter is null.");
+        }
+        BeanDesc srcBeanDesc = getBeanDesc(src.getClass());
+        int size = srcBeanDesc.getPropertyDescSize();
+        for (int i = 0; i < size; i++) {
+            PropertyDesc srcPropertyDesc = srcBeanDesc.getPropertyDesc(i);
+            String propertyName = srcPropertyDesc.getName();
+            if (!srcPropertyDesc.isReadable()
+                || !options.isTargetProperty(propertyName)) {
+                continue;
+            }
+            Object value = srcPropertyDesc.getValue(src);
+            if (!options.isTargetValue(value)) {
+                continue;
+            }
+            value = options.convertValue(value, propertyName, null);
+            dest.put(propertyName, value);
+        }
+    }
+
+    /**
+     * Copies a map to a bean.
+     * 
+     * @param src
+     *            the source
+     * @param dest
+     *            the destination
+     */
+    @SuppressWarnings("unchecked")
+    public static void copy(Map src, Object dest) {
+        copy(src, dest, DEFAULT_OPTIONS);
+    }
+
+    /**
+     * Copies a map to a bean.
+     * 
+     * @param src
+     *            the source
+     * @param dest
+     *            the destination
+     * @param options
+     *            the copy options
+     * @throws NullPointerException
+     *             if the src parameter is null or if the dest parameter is null
+     *             or if the options parameter is null
+     */
+    @SuppressWarnings("unchecked")
+    public static void copy(Map src, Object dest, CopyOptions options)
+            throws NullPointerException {
+        if (src == null) {
+            throw new NullPointerException("The src parameter is null.");
+        }
+        if (dest == null) {
+            throw new NullPointerException("The dest parameter is null.");
+        }
+        if (options == null) {
+            throw new NullPointerException("The options parameter is null.");
+        }
+        BeanDesc destBeanDesc = getBeanDesc(dest.getClass());
+        for (Iterator<String> i = src.keySet().iterator(); i.hasNext();) {
+            String propertyName = i.next();
+            if (!options.isTargetProperty(propertyName)) {
+                continue;
+            }
+            PropertyDesc destPropertyDesc =
+                destBeanDesc.getPropertyDesc(propertyName);
+            if (destPropertyDesc == null) {
+                continue;
+            }
+            if (!destPropertyDesc.isWritable()) {
+                continue;
+            }
+            Object value = src.get(propertyName);
+            if (!options.isTargetValue(value)) {
+                continue;
+            }
+            value =
+                options.convertValue(value, propertyName, destPropertyDesc
+                    .getPropertyClass());
+            destPropertyDesc.setValue(dest, value);
+        }
+    }
+
+    /**
+     * Copies a map to another one.
+     * 
+     * @param src
+     *            the source
+     * @param dest
+     *            the destination
+     */
+    @SuppressWarnings("unchecked")
+    public static void copy(Map src, Map dest) {
+        copy(src, dest, DEFAULT_OPTIONS);
+    }
+
+    /**
+     * Copies a map to another one.
+     * 
+     * @param src
+     *            the source
+     * @param dest
+     *            the destination
+     * @param options
+     *            the copy options
+     * @throws NullPointerException
+     *             if the src parameter is null or if the dest parameter is null
+     *             or if the options parameter is null
+     */
+    @SuppressWarnings("unchecked")
+    public static void copy(Map src, Map dest, CopyOptions options)
+            throws NullPointerException {
+        if (src == null) {
+            throw new NullPointerException("The src parameter is null.");
+        }
+        if (dest == null) {
+            throw new NullPointerException("The dest parameter is null.");
+        }
+        if (options == null) {
+            throw new NullPointerException("The options parameter is null.");
+        }
+        for (Iterator<String> i = src.keySet().iterator(); i.hasNext();) {
+            String propertyName = i.next();
+            if (!options.isTargetProperty(propertyName)) {
+                continue;
+            }
+            Object value = src.get(propertyName);
+            if (!options.isTargetValue(value)) {
+                continue;
+            }
+            value = options.convertValue(value, propertyName, null);
+            dest.put(propertyName, value);
+        }
+    }
+
+    private BeanUtil() {
     }
 }

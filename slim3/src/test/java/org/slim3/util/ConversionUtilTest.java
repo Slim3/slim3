@@ -20,8 +20,6 @@ import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.slim3.util.ConversionUtil;
-
 import junit.framework.TestCase;
 
 /**
@@ -207,12 +205,9 @@ public class ConversionUtilTest extends TestCase {
      * @throws Exception
      */
     public void testConvertStringToBigDecimal() throws Exception {
-        try {
-            ConversionUtil.convert("1", BigDecimal.class);
-            fail();
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        }
+        assertEquals(new BigDecimal(1), ConversionUtil.convert(
+            "1",
+            BigDecimal.class));
     }
 
     /**

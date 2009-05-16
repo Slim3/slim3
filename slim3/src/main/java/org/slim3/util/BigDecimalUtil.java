@@ -15,39 +15,39 @@
  */
 package org.slim3.util;
 
+import java.math.BigDecimal;
+
 /**
- * An interface that converts string and object.
+ * A utility class for {@link BigDecimal}.
  * 
  * @author higa
- * @since 3.0
- * 
+ * @version 3.0
  */
-public interface Converter {
+public final class BigDecimalUtil {
+
+    private BigDecimalUtil() {
+    }
 
     /**
-     * Returns the value as string.
+     * Converts the object to {@link BigDecimal}.
      * 
-     * @param value
-     *            the value
+     * @param o
+     *            the object
      * @return the converted value
      */
-    String getAsString(Object value);
-
-    /**
-     * Returns the value as object.
-     * 
-     * @param value
-     *            the value
-     * @return the converted value
-     */
-    Object getAsObject(String value);
-
-    /**
-     * Determines if the class is target.
-     * 
-     * @param clazz
-     *            the class
-     * @return whether the class is target
-     */
-    boolean isTarget(Class<?> clazz);
+    public static BigDecimal toBigDecimal(Object o) {
+        if (o == null) {
+            return null;
+        } else if (o instanceof BigDecimal) {
+            return (BigDecimal) o;
+        } else if (o.getClass() == String.class) {
+            String s = (String) o;
+            if (StringUtil.isEmpty(s)) {
+                return null;
+            }
+            return new BigDecimal(s);
+        } else {
+            return new BigDecimal(o.toString());
+        }
+    }
 }

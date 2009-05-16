@@ -15,6 +15,7 @@
  */
 package org.slim3.util;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -116,6 +117,8 @@ public final class ConversionUtil {
             return IntegerUtil.toInteger(value);
         } else if (destinationClass == Long.class) {
             return LongUtil.toLong(value);
+        } else if (destinationClass == BigDecimal.class) {
+            return BigDecimalUtil.toBigDecimal(value);
         } else if (destinationClass == Double.class) {
             return DoubleUtil.toDouble(value);
         } else if (destinationClass == Short.class) {

@@ -28,9 +28,6 @@ import org.slim3.exception.WrapRuntimeException;
  */
 public final class NumberUtil {
 
-    private NumberUtil() {
-    }
-
     /**
      * Converts text to {@link Number}.
      * 
@@ -86,5 +83,8 @@ public final class NumberUtil {
         }
         DecimalFormat df = new DecimalFormat(pattern);
         return df.format(value);
+    }
+
+    private NumberUtil() {
     }
 }
