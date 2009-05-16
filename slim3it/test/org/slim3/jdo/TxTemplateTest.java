@@ -17,8 +17,6 @@ package org.slim3.jdo;
 
 import javax.jdo.Transaction;
 
-import org.slim3.jdo.JDOTemplate;
-import org.slim3.jdo.TxTemplate;
 import org.slim3.tester.DatastoreTestCase;
 
 /**
@@ -37,18 +35,16 @@ public class TxTemplateTest extends DatastoreTestCase {
     public void testRun() throws Exception {
         new JDOTemplate() {
             @Override
-            protected Object doRun() {
+            protected void doRun() {
                 TxTemplate txTemplate = new TxTemplate(pm) {
                     @Override
-                    protected Object doRun() {
+                    protected void doRun() {
                         transaction = tx;
                         active = tx.isActive();
-                        return null;
                     }
                 };
                 txTemplate.run();
                 assertFalse(txTemplate.tx.isActive());
-                return null;
             }
         }.run();
         assertNotNull(transaction);

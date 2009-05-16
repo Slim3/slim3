@@ -11,7 +11,7 @@
        <property name="javax.jdo.option.NontransactionalWrite" value="true"/>
        <property name="javax.jdo.option.RetainValues" value="true"/>
        <property name="datanucleus.DetachOnClose" value="true"/>
-       <property name=" datanucleus.CopyOnAttach" value="false"/>
+       <property name="datanucleus.CopyOnAttach" value="false"/>
        <property name="datanucleus.appengine.autoCreateDatastoreTxns" value="true"/>
    </persistence-manager-factory>
 </jdoconfig>

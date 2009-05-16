@@ -5,14 +5,16 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Index</title>
+<title>Hello</title>
 <link rel="stylesheet" type="text/css" href="/css/global.css" />
 </head>
 <body>
-<h1>Index</h1>
-<ul>
-<li><a href="${f:h('/hello/')}">Hello</a></li>
-<li><a href="${f:h('/blog/')}">Blog</a></li>
-</ul>
+<form action="${f:url('update')}" method="post">
+Title<br />
+<input type="text" name="title" value="${f:h(c.title)}"/><br />
+Content<br />
+<textarea name="content">${f:h(c.content)}</textarea><br />
+<input type="submit" value="Update"/>
+</form>
 </body>
 </html>
