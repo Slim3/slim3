@@ -68,17 +68,19 @@ public class GenViewTask extends AbstractTask {
         File viewDir = new File(warDir, viewDesc.getDirName());
         viewDir.mkdirs();
         File viewFile = new File(viewDir, viewDesc.getFileName());
-        Generator generator = careateViewGenerator();
+        Generator generator = careateViewGenerator(viewDesc);
         generate(generator, viewFile);
     }
 
     /**
      * Creates a {@link Generator}.
      * 
+     * @param viewDesc
+     *            the view description.
      * @return a generator
      */
-    protected Generator careateViewGenerator() {
-        return new ViewGenerator();
+    protected Generator careateViewGenerator(ViewDesc viewDesc) {
+        return new ViewGenerator(viewDesc);
     }
 
     /**

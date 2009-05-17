@@ -15,6 +15,7 @@
  */
 package org.slim3.gen.generator;
 
+import org.slim3.gen.desc.ViewDesc;
 import org.slim3.gen.printer.Printer;
 
 /**
@@ -25,6 +26,19 @@ import org.slim3.gen.printer.Printer;
  * 
  */
 public class ViewGenerator implements Generator {
+
+    /** the view description */
+    protected final ViewDesc viewDesc;
+
+    /**
+     * Creates a new {@link ViewGenerator}.
+     * 
+     * @param viewDesc
+     *            the view description
+     */
+    public ViewGenerator(ViewDesc viewDesc) {
+        this.viewDesc = viewDesc;
+    }
 
     @Override
     public void generate(Printer p) {
@@ -38,12 +52,13 @@ public class ViewGenerator implements Generator {
         p.println("<head>");
         p
                 .println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />");
-        p.println("<title>Hello</title>");
+        p.println("<title>%s</title>", viewDesc.getTitle());
         p
                 .println("<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/global.css\" />");
         p.println("</head>");
         p.println("<body>");
-        p.println("Hello ${f:h(c.name)}.");
+        p.println("<a href=\"${f:url('%1$s')}\">${f:url('%1$s')}</a>", viewDesc
+                .getPath());
         p.println("</body>");
         p.println("</html>");
     }

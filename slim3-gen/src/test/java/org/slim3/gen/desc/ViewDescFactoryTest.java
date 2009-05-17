@@ -28,6 +28,8 @@ public class ViewDescFactoryTest extends TestCase {
         ViewDesc viewDesc = factory.createViewDesc("/aaa/bbb");
         assertEquals("/aaa", viewDesc.getDirName());
         assertEquals("bbb.jsp", viewDesc.getFileName());
+        assertEquals("/aaa/bbb", viewDesc.getPath());
+        assertEquals("aaa Bbb", viewDesc.getTitle());
     }
 
     public void testCreateViewDesc_slashOnly() throws Exception {
@@ -35,6 +37,8 @@ public class ViewDescFactoryTest extends TestCase {
         ViewDesc viewDesc = factory.createViewDesc("/");
         assertEquals("", viewDesc.getDirName());
         assertEquals("index.jsp", viewDesc.getFileName());
+        assertEquals("/", viewDesc.getPath());
+        assertEquals("Index", viewDesc.getTitle());
     }
 
     public void testCreateViewDesc_endsWithSlash() throws Exception {
@@ -42,5 +46,7 @@ public class ViewDescFactoryTest extends TestCase {
         ViewDesc viewDesc = factory.createViewDesc("/aaa/bbb/");
         assertEquals("/aaa/bbb", viewDesc.getDirName());
         assertEquals("index.jsp", viewDesc.getFileName());
+        assertEquals("/aaa/bbb/", viewDesc.getPath());
+        assertEquals("aaa bbb Index", viewDesc.getTitle());
     }
 }

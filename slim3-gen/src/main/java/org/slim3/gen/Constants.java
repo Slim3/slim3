@@ -15,6 +15,8 @@
  */
 package org.slim3.gen;
 
+import org.slim3.gen.util.StringUtil;
+
 /**
  * The collection of Constants.
  * 
@@ -23,21 +25,25 @@ package org.slim3.gen;
  */
 public class Constants {
 
-    /** the suffix for meta classes. */
+    /** the suffix of meta class */
     public static final String META_SUFFIX = "Meta";
 
-    /** the suffix for test classes. */
+    /** the suffix of test class */
     public static final String TEST_SUFFIX = "Test";
 
     /** the suffix of controller. */
     public static final String CONTROLLER_SUFFIX = "Controller";
 
-    /** the index controller. */
-    public static final String INDEX_CONTROLLER = "Index" + CONTROLLER_SUFFIX;
-
     /** the suffix of view. */
     public static final String VIEW_SUFFIX = ".jsp";
 
+    /** the index */
+    public static final String INDEX = "index";
+
+    /** the index controller. */
+    public static final String INDEX_CONTROLLER = StringUtil.capitalize(INDEX)
+            + CONTROLLER_SUFFIX;
+
     /** the index view. */
-    public static final String INDEX_VIEW = "index" + VIEW_SUFFIX;
+    public static final String INDEX_VIEW = INDEX + VIEW_SUFFIX;
 }

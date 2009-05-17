@@ -16,6 +16,7 @@
 package org.slim3.gen.desc;
 
 import org.slim3.gen.Constants;
+import org.slim3.gen.util.StringUtil;
 
 /**
  * Creates a view description.
@@ -51,6 +52,25 @@ public class ViewDescFactory {
         ViewDesc viewDesc = new ViewDesc();
         viewDesc.setDirName(dirName);
         viewDesc.setFileName(fileName);
+        viewDesc.setPath(path);
+        viewDesc.setTitle(toTitle(path));
         return viewDesc;
+    }
+
+    /**
+     * Converts a path to a title.
+     * 
+     * @param path
+     *            the path to a view.
+     * @return a view title.
+     */
+    protected String toTitle(String path) {
+        if (path.endsWith("/")) {
+            return path.substring(1).replace("/", " ")
+                    + StringUtil.capitalize(Constants.INDEX);
+        }
+        int pos = path.lastIndexOf("/");
+        return path.substring(1, pos).replace("/", " ") + " "
+                + StringUtil.capitalize(path.substring(pos + 1));
     }
 }

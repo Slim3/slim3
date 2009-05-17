@@ -29,6 +29,12 @@ public class ViewDesc {
     /** the fileName */
     protected String fileName;
 
+    /** the path */
+    protected String path;
+
+    /** the title */
+    protected String title;
+
     /**
      * Returns the dirName.
      * 
@@ -65,6 +71,44 @@ public class ViewDesc {
      */
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    /**
+     * Returns the path.
+     * 
+     * @return the path
+     */
+    public String getPath() {
+        return path;
+    }
+
+    /**
+     * Sets the path.
+     * 
+     * @param path
+     *            the path to set
+     */
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    /**
+     * Returns the title.
+     * 
+     * @return the title
+     */
+    public String getTitle() {
+        return title;
+    }
+
+    /**
+     * Returns the title.
+     * 
+     * @param title
+     *            the title to set
+     */
+    public void setTitle(String title) {
+        this.title = title;
     }
 
 }
