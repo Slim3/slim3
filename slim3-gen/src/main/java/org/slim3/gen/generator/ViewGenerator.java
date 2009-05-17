@@ -58,7 +58,7 @@ public class ViewGenerator implements Generator {
         p.println("</head>");
         p.println("<body>");
         p.println("<a href=\"${f:url('%1$s')}\">${f:url('%1$s')}</a>", viewDesc
-                .getPath());
+                .getRelativePath());
         p.println("</body>");
         p.println("</html>");
     }

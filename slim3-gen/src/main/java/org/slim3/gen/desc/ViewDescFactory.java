@@ -52,13 +52,25 @@ public class ViewDescFactory {
         ViewDesc viewDesc = new ViewDesc();
         viewDesc.setDirName(dirName);
         viewDesc.setFileName(fileName);
-        viewDesc.setPath(path);
+        viewDesc.setRelativePath(toRelativePath(path));
         viewDesc.setTitle(toTitle(path));
         return viewDesc;
     }
 
     /**
-     * Converts a path to a title.
+     * Converts the path to a relative path.
+     * 
+     * @param path
+     *            the path to a view.
+     * @return a relative path.
+     */
+    protected String toRelativePath(String path) {
+        int pos = path.lastIndexOf("/");
+        return path.substring(pos + 1);
+    }
+
+    /**
+     * Converts the path to a title.
      * 
      * @param path
      *            the path to a view.

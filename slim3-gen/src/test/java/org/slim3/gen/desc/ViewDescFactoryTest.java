@@ -28,7 +28,7 @@ public class ViewDescFactoryTest extends TestCase {
         ViewDesc viewDesc = factory.createViewDesc("/aaa/bbb");
         assertEquals("/aaa", viewDesc.getDirName());
         assertEquals("bbb.jsp", viewDesc.getFileName());
-        assertEquals("/aaa/bbb", viewDesc.getPath());
+        assertEquals("bbb", viewDesc.getRelativePath());
         assertEquals("aaa Bbb", viewDesc.getTitle());
     }
 
@@ -37,7 +37,7 @@ public class ViewDescFactoryTest extends TestCase {
         ViewDesc viewDesc = factory.createViewDesc("/");
         assertEquals("", viewDesc.getDirName());
         assertEquals("index.jsp", viewDesc.getFileName());
-        assertEquals("/", viewDesc.getPath());
+        assertEquals("", viewDesc.getRelativePath());
         assertEquals("Index", viewDesc.getTitle());
     }
 
@@ -46,7 +46,7 @@ public class ViewDescFactoryTest extends TestCase {
         ViewDesc viewDesc = factory.createViewDesc("/aaa/bbb/");
         assertEquals("/aaa/bbb", viewDesc.getDirName());
         assertEquals("index.jsp", viewDesc.getFileName());
-        assertEquals("/aaa/bbb/", viewDesc.getPath());
+        assertEquals("", viewDesc.getRelativePath());
         assertEquals("aaa bbb Index", viewDesc.getTitle());
     }
 }

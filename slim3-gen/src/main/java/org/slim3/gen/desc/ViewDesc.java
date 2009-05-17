@@ -29,8 +29,8 @@ public class ViewDesc {
     /** the fileName */
     protected String fileName;
 
-    /** the path */
-    protected String path;
+    /** the relativePath */
+    protected String relativePath;
 
     /** the title */
     protected String title;
@@ -74,22 +74,22 @@ public class ViewDesc {
     }
 
     /**
-     * Returns the path.
+     * Returns the relativePath.
      * 
-     * @return the path
+     * @return the relativePath
      */
-    public String getPath() {
-        return path;
+    public String getRelativePath() {
+        return relativePath;
     }
 
     /**
-     * Sets the path.
+     * Sets the relativePath.
      * 
-     * @param path
-     *            the path to set
+     * @param relativePath
+     *            the relativePath to set
      */
-    public void setPath(String path) {
-        this.path = path;
+    public void setRelativePath(String relativePath) {
+        this.relativePath = relativePath;
     }
 
     /**
