@@ -15,8 +15,6 @@
  */
 package org.slim3.jdo;
 
-import java.util.List;
-
 import junit.framework.TestCase;
 
 /**
@@ -29,179 +27,182 @@ public class AttributeMetaTest extends TestCase {
      * @throws Exception
      */
     public void testEq() throws Exception {
-        AttributeMeta<Long> id = new AttributeMeta<Long>("id");
-        EqCriterion<Long> criterion = id.eq(Long.valueOf(1));
-        assertEquals("idParam", criterion.getParameterName());
-        assertEquals("id == idParam", criterion.getQueryString());
+        AttributeMeta aaa = new AttributeMeta("aaa", Long.class);
+        EqCriterion criterion = aaa.eq("1");
+        assertEquals("aaaParam", criterion.getParameterName());
+        assertEquals("aaa == aaaParam", criterion.getQueryString());
+        assertEquals(Long.valueOf(1), criterion.getParameter());
     }
 
     /**
      * @throws Exception
      */
     public void testEqForNull() throws Exception {
-        AttributeMeta<Long> id = new AttributeMeta<Long>("id");
-        assertNull(id.eq(null));
+        AttributeMeta aaa = new AttributeMeta("aaa", Long.class);
+        assertNull(aaa.eq(null));
     }
 
     /**
      * @throws Exception
      */
     public void testEqForEmpty() throws Exception {
-        AttributeMeta<String> id = new AttributeMeta<String>("id");
-        assertNull(id.eq(""));
+        AttributeMeta aaa = new AttributeMeta("aaa", String.class);
+        assertNull(aaa.eq(""));
     }
 
     /**
      * @throws Exception
      */
     public void testLt() throws Exception {
-        AttributeMeta<Long> id = new AttributeMeta<Long>("id");
-        LtCriterion<Long> criterion = id.lt(Long.valueOf(1));
-        assertEquals("idLtParam", criterion.getParameterName());
-        assertEquals("id < idLtParam", criterion.getQueryString());
+        AttributeMeta aaa = new AttributeMeta("aaa", Long.class);
+        LtCriterion criterion = aaa.lt("1");
+        assertEquals("aaaLtParam", criterion.getParameterName());
+        assertEquals("aaa < aaaLtParam", criterion.getQueryString());
+        assertEquals(Long.valueOf(1), criterion.getParameter());
     }
 
     /**
      * @throws Exception
      */
     public void testLtForNull() throws Exception {
-        AttributeMeta<Long> id = new AttributeMeta<Long>("id");
-        assertNull(id.lt(null));
+        AttributeMeta aaa = new AttributeMeta("aaa", Long.class);
+        assertNull(aaa.lt(null));
     }
 
     /**
      * @throws Exception
      */
     public void testLtForEmpty() throws Exception {
-        AttributeMeta<String> id = new AttributeMeta<String>("id");
-        assertNull(id.lt(""));
+        AttributeMeta aaa = new AttributeMeta("aaa", String.class);
+        assertNull(aaa.lt(""));
     }
 
     /**
      * @throws Exception
      */
     public void testLe() throws Exception {
-        AttributeMeta<Long> id = new AttributeMeta<Long>("id");
-        LeCriterion<Long> criterion = id.le(Long.valueOf(1));
-        assertEquals("idLeParam", criterion.getParameterName());
-        assertEquals("id <= idLeParam", criterion.getQueryString());
+        AttributeMeta aaa = new AttributeMeta("aaa", Long.class);
+        LeCriterion criterion = aaa.le("1");
+        assertEquals("aaaLeParam", criterion.getParameterName());
+        assertEquals("aaa <= aaaLeParam", criterion.getQueryString());
+        assertEquals(Long.valueOf(1), criterion.getParameter());
     }
 
     /**
      * @throws Exception
      */
     public void testLeForNull() throws Exception {
-        AttributeMeta<Long> id = new AttributeMeta<Long>("id");
-        assertNull(id.le(null));
+        AttributeMeta aaa = new AttributeMeta("aaa", Long.class);
+        assertNull(aaa.le(null));
     }
 
     /**
      * @throws Exception
      */
     public void testLeForEmpty() throws Exception {
-        AttributeMeta<String> id = new AttributeMeta<String>("id");
-        assertNull(id.le(""));
+        AttributeMeta aaa = new AttributeMeta("aaa", String.class);
+        assertNull(aaa.le(""));
     }
 
     /**
      * @throws Exception
      */
     public void testGt() throws Exception {
-        AttributeMeta<Long> id = new AttributeMeta<Long>("id");
-        GtCriterion<Long> criterion = id.gt(Long.valueOf(1));
-        assertEquals("idGtParam", criterion.getParameterName());
-        assertEquals("id > idGtParam", criterion.getQueryString());
+        AttributeMeta aaa = new AttributeMeta("aaa", Long.class);
+        GtCriterion criterion = aaa.gt("1");
+        assertEquals("aaaGtParam", criterion.getParameterName());
+        assertEquals("aaa > aaaGtParam", criterion.getQueryString());
+        assertEquals(Long.valueOf(1), criterion.getParameter());
     }
 
     /**
      * @throws Exception
      */
     public void testGtForNull() throws Exception {
-        AttributeMeta<Long> id = new AttributeMeta<Long>("id");
-        assertNull(id.gt(null));
+        AttributeMeta aaa = new AttributeMeta("aaa", Long.class);
+        assertNull(aaa.gt(null));
     }
 
     /**
      * @throws Exception
      */
     public void testGtForEmpty() throws Exception {
-        AttributeMeta<String> id = new AttributeMeta<String>("id");
-        assertNull(id.gt(""));
+        AttributeMeta aaa = new AttributeMeta("aaa", String.class);
+        assertNull(aaa.gt(""));
     }
 
     /**
      * @throws Exception
      */
     public void testGe() throws Exception {
-        AttributeMeta<Long> id = new AttributeMeta<Long>("id");
-        GeCriterion<Long> criterion = id.ge(Long.valueOf(1));
-        assertEquals("idGeParam", criterion.getParameterName());
-        assertEquals("id >= idGeParam", criterion.getQueryString());
+        AttributeMeta aaa = new AttributeMeta("aaa", Long.class);
+        GeCriterion criterion = aaa.ge("1");
+        assertEquals("aaaGeParam", criterion.getParameterName());
+        assertEquals("aaa >= aaaGeParam", criterion.getQueryString());
+        assertEquals(Long.valueOf(1), criterion.getParameter());
     }
 
     /**
      * @throws Exception
      */
     public void testGeForNull() throws Exception {
-        AttributeMeta<Long> id = new AttributeMeta<Long>("id");
-        assertNull(id.ge(null));
+        AttributeMeta aaa = new AttributeMeta("aaa", Long.class);
+        assertNull(aaa.ge(null));
     }
 
     /**
      * @throws Exception
      */
     public void testGeForEmpty() throws Exception {
-        AttributeMeta<String> id = new AttributeMeta<String>("id");
-        assertNull(id.ge(""));
+        AttributeMeta aaa = new AttributeMeta("aaa", String.class);
+        assertNull(aaa.ge(""));
     }
 
     /**
      * @throws Exception
      */
     public void testContains() throws Exception {
-        AttributeMeta<List<Long>> aaaList =
-            new AttributeMeta<List<Long>>("aaaList");
-        ContainsCriterion criterion = aaaList.contains(Long.valueOf(1));
-        assertEquals("aaaListParam", criterion.getParameterName());
-        assertEquals("aaaList.contains(aaaListParam)", criterion
+        AttributeMeta aaaArray = new AttributeMeta("aaaArray", Long[].class);
+        ContainsCriterion criterion = aaaArray.contains("1");
+        assertEquals("aaaArrayParam", criterion.getParameterName());
+        assertEquals("aaaArray.contains(aaaArrayParam)", criterion
             .getQueryString());
+        assertEquals(Long.valueOf(1), criterion.getParameter());
     }
 
     /**
      * @throws Exception
      */
     public void testContainsForNull() throws Exception {
-        AttributeMeta<List<Long>> aaaList =
-            new AttributeMeta<List<Long>>("aaaList");
-        assertNull(aaaList.contains(null));
+        AttributeMeta aaaArray = new AttributeMeta("aaaArray", Long[].class);
+        assertNull(aaaArray.contains(null));
     }
 
     /**
      * @throws Exception
      */
     public void testContainsForEmpty() throws Exception {
-        AttributeMeta<List<String>> aaaList =
-            new AttributeMeta<List<String>>("aaaList");
-        assertNull(aaaList.contains(""));
+        AttributeMeta aaaArray = new AttributeMeta("aaaArray", String[].class);
+        assertNull(aaaArray.contains(""));
     }
 
     /**
      * @throws Exception
      */
     public void testAsc() throws Exception {
-        AttributeMeta<Long> id = new AttributeMeta<Long>("id");
-        AscCriterion criterion = id.asc();
+        AttributeMeta aaa = new AttributeMeta("aaa", Long.class);
+        AscCriterion criterion = aaa.asc();
         assertNotNull(criterion);
-        assertEquals("id asc", criterion.getQueryString());
+        assertEquals("aaa asc", criterion.getQueryString());
     }
 
     /**
      * @throws Exception
      */
     public void testDesc() throws Exception {
-        AttributeMeta<Long> id = new AttributeMeta<Long>("id");
-        DescCriterion criterion = id.desc();
+        AttributeMeta aaa = new AttributeMeta("aaa", Long.class);
+        DescCriterion criterion = aaa.desc();
         assertNotNull(criterion);
-        assertEquals("id desc", criterion.getQueryString());
+        assertEquals("aaa desc", criterion.getQueryString());
     }
 }

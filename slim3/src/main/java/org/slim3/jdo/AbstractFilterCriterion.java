@@ -19,12 +19,10 @@ package org.slim3.jdo;
  * An abstract class for filter criterion.
  * 
  * @author higa
- * @param <T>
- *            the parameter type
  * @since 3.0
  * 
  */
-public abstract class AbstractFilterCriterion<T> implements FilterCriterion {
+public abstract class AbstractFilterCriterion implements FilterCriterion {
 
     /**
      * The property name.
@@ -39,7 +37,7 @@ public abstract class AbstractFilterCriterion<T> implements FilterCriterion {
     /**
      * The parameter.
      */
-    protected T parameter;
+    protected Object parameter;
 
     /**
      * Constructor.
@@ -55,14 +53,14 @@ public abstract class AbstractFilterCriterion<T> implements FilterCriterion {
      *             parameter is null or if the parameter parameter is null
      */
     public AbstractFilterCriterion(String propertyName, String parameterName,
-            T parameter) throws NullPointerException {
+            Object parameter) throws NullPointerException {
         if (propertyName == null) {
             throw new NullPointerException(
-                    "The propertyName parameter is null.");
+                "The propertyName parameter is null.");
         }
         if (parameterName == null) {
             throw new NullPointerException(
-                    "The parameterName parameter is null.");
+                "The parameterName parameter is null.");
         }
         if (parameter == null) {
             throw new NullPointerException("The parameter parameter is null.");
@@ -95,7 +93,7 @@ public abstract class AbstractFilterCriterion<T> implements FilterCriterion {
      * 
      * @return the parameter
      */
-    public T getParameter() {
+    public Object getParameter() {
         return parameter;
     }
 

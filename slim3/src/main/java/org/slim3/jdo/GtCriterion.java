@@ -19,12 +19,10 @@ package org.slim3.jdo;
  * An implementation class for "greater than" filter criterion.
  * 
  * @author higa
- * @param <T>
- *            the parameter type
  * @since 3.0
  * 
  */
-public class GtCriterion<T> extends AbstractFilterCriterion<T> {
+public class GtCriterion extends AbstractFilterCriterion {
 
     /**
      * Constructor.
@@ -36,7 +34,8 @@ public class GtCriterion<T> extends AbstractFilterCriterion<T> {
      * @param parameter
      *            the parameter
      */
-    public GtCriterion(String propertyName, String parameterName, T parameter) {
+    public GtCriterion(String propertyName, String parameterName,
+            Object parameter) {
         super(propertyName, parameterName, parameter);
     }
 
@@ -44,5 +43,4 @@ public class GtCriterion<T> extends AbstractFilterCriterion<T> {
     public String getQueryString() {
         return propertyName + " > " + parameterName;
     }
-
 }

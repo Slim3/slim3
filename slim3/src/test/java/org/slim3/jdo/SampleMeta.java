@@ -15,7 +15,6 @@
  */
 package org.slim3.jdo;
 
-
 /**
  * @author higa
  * 
@@ -32,10 +31,10 @@ public class SampleMeta extends ModelMeta<Sample> {
     /**
      * 
      */
-    public AttributeMeta<Long> id = new AttributeMeta<Long>("id");
+    public AttributeMeta id = new AttributeMeta("id", Long.class);
 
     /**
      * 
      */
-    public AttributeMeta<String> name = new AttributeMeta<String>("name");
+    public AttributeMeta name = new AttributeMeta("name", String.class);
 }

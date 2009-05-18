@@ -22,7 +22,7 @@ package org.slim3.jdo;
  * @since 3.0
  * 
  */
-public class ContainsCriterion extends AbstractFilterCriterion<Object> {
+public class ContainsCriterion extends AbstractFilterCriterion {
 
     /**
      * Constructor.
@@ -43,5 +43,4 @@ public class ContainsCriterion extends AbstractFilterCriterion<Object> {
     public String getQueryString() {
         return propertyName + ".contains(" + parameterName + ")";
     }
-
 }

@@ -15,16 +15,16 @@
  */
 package org.slim3.jdo;
 
+import org.slim3.util.ConversionUtil;
+
 /**
  * A meta data for attribute.
  * 
  * @author higa
- * @param <T>
- *            the attribute type
  * @since 3.0
  * 
  */
-public class AttributeMeta<T> {
+public class AttributeMeta {
 
     /**
      * The name.
@@ -32,18 +32,32 @@ public class AttributeMeta<T> {
     protected String name;
 
     /**
+     * The attribute class.
+     */
+    protected Class<?> attributeClass;
+
+    /**
      * Constructor.
      * 
      * @param name
      *            the name
+     * @param attributeClass
+     *            the attribute class
      * @throws NullPointerException
-     *             the name parameter is null
+     *             if the name parameter is null or if the attributeClass
+     *             parameter is null
      */
-    public AttributeMeta(String name) throws NullPointerException {
+    public AttributeMeta(String name, Class<?> attributeClass)
+            throws NullPointerException {
         if (name == null) {
             throw new NullPointerException("The name parameter is null.");
         }
+        if (attributeClass == null) {
+            throw new NullPointerException(
+                "The attributeClass parameter is null.");
+        }
         this.name = name;
+        this.attributeClass = attributeClass;
     }
 
     /**
@@ -56,16 +70,26 @@ public class AttributeMeta<T> {
     }
 
     /**
+     * Returns the attribute class.
+     * 
+     * @return the attribute class
+     */
+    public Class<?> getAttributeClass() {
+        return attributeClass;
+    }
+
+    /**
      * Returns the "equal" filter criterion.
      * 
      * @param parameter
      * @return the "equal" filter criterion
      */
-    public EqCriterion<T> eq(T parameter) {
+    public EqCriterion eq(Object parameter) {
         if (isEmpty(parameter)) {
             return null;
         }
-        return new EqCriterion<T>(name, name + "Param", parameter);
+        parameter = ConversionUtil.convert(parameter, attributeClass);
+        return new EqCriterion(name, name + "Param", parameter);
     }
 
     /**
@@ -74,11 +98,12 @@ public class AttributeMeta<T> {
      * @param parameter
      * @return the "less than" filter criterion
      */
-    public LtCriterion<T> lt(T parameter) {
+    public LtCriterion lt(Object parameter) {
         if (isEmpty(parameter)) {
             return null;
         }
-        return new LtCriterion<T>(name, name + "LtParam", parameter);
+        parameter = ConversionUtil.convert(parameter, attributeClass);
+        return new LtCriterion(name, name + "LtParam", parameter);
     }
 
     /**
@@ -87,11 +112,12 @@ public class AttributeMeta<T> {
      * @param parameter
      * @return the "less equals" filter criterion
      */
-    public LeCriterion<T> le(T parameter) {
+    public LeCriterion le(Object parameter) {
         if (isEmpty(parameter)) {
             return null;
         }
-        return new LeCriterion<T>(name, name + "LeParam", parameter);
+        parameter = ConversionUtil.convert(parameter, attributeClass);
+        return new LeCriterion(name, name + "LeParam", parameter);
     }
 
     /**
@@ -100,11 +126,12 @@ public class AttributeMeta<T> {
      * @param parameter
      * @return the "greater than" filter criterion
      */
-    public GtCriterion<T> gt(T parameter) {
+    public GtCriterion gt(Object parameter) {
         if (isEmpty(parameter)) {
             return null;
         }
-        return new GtCriterion<T>(name, name + "GtParam", parameter);
+        parameter = ConversionUtil.convert(parameter, attributeClass);
+        return new GtCriterion(name, name + "GtParam", parameter);
     }
 
     /**
@@ -113,11 +140,12 @@ public class AttributeMeta<T> {
      * @param parameter
      * @return the "greater equal" filter criterion
      */
-    public GeCriterion<T> ge(T parameter) {
+    public GeCriterion ge(Object parameter) {
         if (isEmpty(parameter)) {
             return null;
         }
-        return new GeCriterion<T>(name, name + "GeParam", parameter);
+        parameter = ConversionUtil.convert(parameter, attributeClass);
+        return new GeCriterion(name, name + "GeParam", parameter);
     }
 
     /**
@@ -129,6 +157,10 @@ public class AttributeMeta<T> {
     public ContainsCriterion contains(Object parameter) {
         if (isEmpty(parameter)) {
             return null;
+        }
+        if (attributeClass.isArray()) {
+            Class<?> clazz = attributeClass.getComponentType();
+            parameter = ConversionUtil.convert(parameter, clazz);
         }
         return new ContainsCriterion(name, name + "Param", parameter);
     }

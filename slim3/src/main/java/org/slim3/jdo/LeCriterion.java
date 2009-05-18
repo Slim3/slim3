@@ -19,12 +19,10 @@ package org.slim3.jdo;
  * An implementation class for "less equal" filter criterion.
  * 
  * @author higa
- * @param <T>
- *            the parameter type
  * @since 3.0
  * 
  */
-public class LeCriterion<T> extends AbstractFilterCriterion<T> {
+public class LeCriterion extends AbstractFilterCriterion {
 
     /**
      * Constructor.
@@ -36,7 +34,8 @@ public class LeCriterion<T> extends AbstractFilterCriterion<T> {
      * @param parameter
      *            the parameter
      */
-    public LeCriterion(String propertyName, String parameterName, T parameter) {
+    public LeCriterion(String propertyName, String parameterName,
+            Object parameter) {
         super(propertyName, parameterName, parameter);
     }
 
@@ -44,5 +43,4 @@ public class LeCriterion<T> extends AbstractFilterCriterion<T> {
     public String getQueryString() {
         return propertyName + " <= " + parameterName;
     }
-
 }

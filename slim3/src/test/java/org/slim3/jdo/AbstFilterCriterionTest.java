@@ -44,8 +44,7 @@ public class AbstFilterCriterionTest extends TestCase {
             .getParameterDeclaration());
     }
 
-    private static class MyFilterCriterion extends
-            AbstractFilterCriterion<Long> {
+    private static class MyFilterCriterion extends AbstractFilterCriterion {
 
         /**
          * @param propertyName
@@ -53,7 +52,7 @@ public class AbstFilterCriterionTest extends TestCase {
          * @param parameter
          */
         public MyFilterCriterion(String propertyName, String parameterName,
-                Long parameter) {
+                Object parameter) {
             super(propertyName, parameterName, parameter);
         }
 

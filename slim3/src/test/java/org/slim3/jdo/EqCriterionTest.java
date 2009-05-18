@@ -27,8 +27,8 @@ public class EqCriterionTest extends TestCase {
      * @throws Exception
      */
     public void testGetQueryString() throws Exception {
-        EqCriterion<Long> criterion =
-            new EqCriterion<Long>("id", "idParam", Long.valueOf(1));
+        EqCriterion criterion =
+            new EqCriterion("id", "idParam", Long.valueOf(1));
         assertEquals("id == idParam", criterion.getQueryString());
     }
 }
