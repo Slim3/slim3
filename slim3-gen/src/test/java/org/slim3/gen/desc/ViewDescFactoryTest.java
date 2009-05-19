@@ -23,15 +23,6 @@ import junit.framework.TestCase;
  */
 public class ViewDescFactoryTest extends TestCase {
 
-    public void testCreateViewDesc() throws Exception {
-        ViewDescFactory factory = new ViewDescFactory();
-        ViewDesc viewDesc = factory.createViewDesc("/aaa/bbb");
-        assertEquals("/aaa", viewDesc.getDirName());
-        assertEquals("bbb.jsp", viewDesc.getFileName());
-        assertEquals("bbb", viewDesc.getRelativePath());
-        assertEquals("aaa Bbb", viewDesc.getTitle());
-    }
-
     public void testCreateViewDesc_slashOnly() throws Exception {
         ViewDescFactory factory = new ViewDescFactory();
         ViewDesc viewDesc = factory.createViewDesc("/");
@@ -41,7 +32,34 @@ public class ViewDescFactoryTest extends TestCase {
         assertEquals("Index", viewDesc.getTitle());
     }
 
-    public void testCreateViewDesc_endsWithSlash() throws Exception {
+    public void testCreateViewDesc_oneDepth() throws Exception {
+        ViewDescFactory factory = new ViewDescFactory();
+        ViewDesc viewDesc = factory.createViewDesc("/aaa");
+        assertEquals("", viewDesc.getDirName());
+        assertEquals("aaa.jsp", viewDesc.getFileName());
+        assertEquals("aaa", viewDesc.getRelativePath());
+        assertEquals("Aaa", viewDesc.getTitle());
+    }
+
+    public void testCreateViewDesc_oneDepth_endsWithSlash() throws Exception {
+        ViewDescFactory factory = new ViewDescFactory();
+        ViewDesc viewDesc = factory.createViewDesc("/aaa/");
+        assertEquals("/aaa", viewDesc.getDirName());
+        assertEquals("index.jsp", viewDesc.getFileName());
+        assertEquals("", viewDesc.getRelativePath());
+        assertEquals("aaa Index", viewDesc.getTitle());
+    }
+
+    public void testCreateViewDesc_twoDepth() throws Exception {
+        ViewDescFactory factory = new ViewDescFactory();
+        ViewDesc viewDesc = factory.createViewDesc("/aaa/bbb");
+        assertEquals("/aaa", viewDesc.getDirName());
+        assertEquals("bbb.jsp", viewDesc.getFileName());
+        assertEquals("bbb", viewDesc.getRelativePath());
+        assertEquals("aaa Bbb", viewDesc.getTitle());
+    }
+
+    public void testCreateViewDesc_twoDepth_endsWithSlash() throws Exception {
         ViewDescFactory factory = new ViewDescFactory();
         ViewDesc viewDesc = factory.createViewDesc("/aaa/bbb/");
         assertEquals("/aaa/bbb", viewDesc.getDirName());

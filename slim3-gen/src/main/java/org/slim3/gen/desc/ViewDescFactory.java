@@ -82,7 +82,12 @@ public class ViewDescFactory {
                     + StringUtil.capitalize(Constants.INDEX);
         }
         int pos = path.lastIndexOf("/");
-        return path.substring(1, pos).replace("/", " ") + " "
-                + StringUtil.capitalize(path.substring(pos + 1));
+        if (pos == 0) {
+            return StringUtil.capitalize(path.substring(1));
+        } else if (pos > 0) {
+            return path.substring(1, pos).replace("/", " ") + " "
+                    + StringUtil.capitalize(path.substring(pos + 1));
+        }
+        throw new IllegalArgumentException("path");
     }
 }
