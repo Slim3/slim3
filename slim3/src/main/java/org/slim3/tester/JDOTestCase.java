@@ -17,7 +17,9 @@ package org.slim3.tester;
 
 import javax.jdo.PersistenceManager;
 
+import org.slim3.jdo.ModelMeta;
 import org.slim3.jdo.PMF;
+import org.slim3.jdo.SelectQuery;
 
 /**
  * A test case for JDO.
@@ -34,15 +36,36 @@ public abstract class JDOTestCase extends DatastoreTestCase {
     protected PersistenceManager pm;
 
     @Override
-    public void setUp() throws Exception {
+    protected void setUp() throws Exception {
         super.setUp();
         pm = PMF.get().getPersistenceManager();
     }
 
     @Override
-    public void tearDown() throws Exception {
+    protected void tearDown() throws Exception {
         pm.close();
         pm = null;
         super.tearDown();
+    }
+
+    /**
+     * Creates a new {@link SelectQuery}.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @return a new {@link SelectQuery}
+     */
+    protected <M> SelectQuery<M> from(ModelMeta<M> modelMeta) {
+        return new SelectQuery<M>(modelMeta, pm);
+    }
+
+    /**
+     * Refreshes the current persistence manager.
+     */
+    protected void refreshPersistenceManager() {
+        pm.close();
+        pm = PMF.get().getPersistenceManager();
     }
 }

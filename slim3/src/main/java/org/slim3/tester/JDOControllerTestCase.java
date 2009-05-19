@@ -17,7 +17,9 @@ package org.slim3.tester;
 
 import javax.jdo.PersistenceManager;
 
+import org.slim3.jdo.ModelMeta;
 import org.slim3.jdo.PMF;
+import org.slim3.jdo.SelectQuery;
 
 /**
  * A test case for Slim3 Controller and JDO.
@@ -59,5 +61,26 @@ public abstract class JDOControllerTestCase extends ControllerTestCase {
         pm = null;
         datastoreTester.tearDown();
         super.tearDown();
+    }
+
+    /**
+     * Creates a new {@link SelectQuery}.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @return a new {@link SelectQuery}
+     */
+    protected <M> SelectQuery<M> from(ModelMeta<M> modelMeta) {
+        return new SelectQuery<M>(modelMeta, pm);
+    }
+
+    /**
+     * Refreshes the current persistence manager.
+     */
+    protected void refreshPersistenceManager() {
+        pm.close();
+        pm = PMF.get().getPersistenceManager();
     }
 }

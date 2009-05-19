@@ -32,13 +32,13 @@ public abstract class DatastoreTestCase extends TestCase {
     protected DatastoreTester datastoreTester = new DatastoreTester();
 
     @Override
-    public void setUp() throws Exception {
+    protected void setUp() throws Exception {
         super.setUp();
         datastoreTester.setUp();
     }
 
     @Override
-    public void tearDown() throws Exception {
+    protected void tearDown() throws Exception {
         datastoreTester.tearDown();
         super.tearDown();
     }
