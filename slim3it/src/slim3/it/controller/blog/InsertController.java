@@ -1,58 +1,18 @@
 package slim3.it.controller.blog;
 
-import org.slim3.controller.Controller;
+import org.slim3.controller.JDOController;
 import org.slim3.controller.Navigation;
-import org.slim3.jdo.JDOTemplate;
 import org.slim3.util.BeanUtil;
 
 import slim3.it.model.Blog;
 
-public class InsertController extends Controller {
-
-    private String title;
-
-    private String content;
-
-    /**
-     * @return the title
-     */
-    public String getTitle() {
-        return title;
-    }
-
-    /**
-     * @param title
-     *            the title to set
-     */
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    /**
-     * @return the content
-     */
-    public String getContent() {
-        return content;
-    }
-
-    /**
-     * @param content
-     *            the content to set
-     */
-    public void setContent(String content) {
-        this.content = content;
-    }
+public class InsertController extends JDOController {
 
     @Override
-    public Navigation execute() {
-        final Blog blog = new Blog();
-        BeanUtil.copy(this, blog);
-        new JDOTemplate() {
-            @Override
-            public void doRun() {
-                pm.makePersistent(blog);
-            }
-        }.run();
+    public Navigation run() {
+        Blog blog = new Blog();
+        BeanUtil.copy(request, blog);
+        pm.makePersistent(blog);
         return redirect("/blog/");
     }
 }

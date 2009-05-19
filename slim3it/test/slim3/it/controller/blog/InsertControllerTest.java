@@ -1,13 +1,12 @@
 package slim3.it.controller.blog;
 
-import org.slim3.jdo.JDOTemplate;
-import org.slim3.tester.ControllerDatastoreTestCase;
+import org.slim3.tester.JDOControllerTestCase;
 
 import slim3.it.model.BlogMeta;
 
-public class InsertControllerTest extends ControllerDatastoreTestCase {
+public class InsertControllerTest extends JDOControllerTestCase {
 
-    public void testExecute() throws Exception {
+    public void testRun() throws Exception {
         setParameter("title", "aaa");
         setParameter("content", "bbb");
         start("/blog/insert");
@@ -15,14 +14,9 @@ public class InsertControllerTest extends ControllerDatastoreTestCase {
         assertNotNull(controller);
         assertTrue(isRedirect());
         assertEquals("/blog/", getNextPath());
-        assertEquals("aaa", controller.getTitle());
-        assertEquals("bbb", controller.getContent());
-        new JDOTemplate() {
-            @Override
-            public void doRun() {
-                BlogMeta m = new BlogMeta();
-                assertEquals(1, from(m).getResultList().size());
-            }
-        }.run();
+        assertEquals("aaa", getAttribute("title"));
+        assertEquals("bbb", getAttribute("content"));
+        BlogMeta m = new BlogMeta();
+        assertEquals(1, from(m).getResultList().size());
     }
 }

@@ -15,11 +15,7 @@
  */
 package org.slim3.jdo;
 
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
-
-import org.slim3.jdo.PMF;
-import org.slim3.tester.DatastoreTestCase;
+import org.slim3.tester.JDOTestCase;
 
 import slim3.it.model.Sample;
 
@@ -27,17 +23,13 @@ import slim3.it.model.Sample;
  * @author higa
  * 
  */
-public class SpikeTest extends DatastoreTestCase {
+public class SpikeTest extends JDOTestCase {
 
     /**
      * @throws Exception
      */
     public void test() throws Exception {
-        PersistenceManager pm = PMF.get().getPersistenceManager();
         Sample s = new Sample();
         pm.makePersistent(s);
-        Query query = pm.newQuery(Sample.class);
-        query.setOrdering("key");
-        query.execute();
     }
 }

@@ -3,42 +3,28 @@ package slim3.it.controller.blog;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slim3.controller.Controller;
+import org.slim3.controller.JDOController;
 import org.slim3.controller.Navigation;
-import org.slim3.jdo.JDOTemplate;
 import org.slim3.util.BeanMap;
 import org.slim3.util.BeanUtil;
 
 import slim3.it.model.Blog;
 import slim3.it.model.BlogMeta;
 
-public class IndexController extends Controller {
-
-    private List<BeanMap> blogList;
-
-    /**
-     * @return the blogList
-     */
-    public List<BeanMap> getBlogList() {
-        return blogList;
-    }
+public class IndexController extends JDOController {
 
     @Override
-    public Navigation execute() {
-        new JDOTemplate() {
-            @Override
-            public void doRun() {
-                BlogMeta meta = new BlogMeta();
-                List<Blog> list =
-                    from(meta).orderBy(meta.title.asc()).getResultList();
-                blogList = new ArrayList<BeanMap>(list.size());
-                for (Blog b : list) {
-                    BeanMap m = new BeanMap();
-                    BeanUtil.copy(b, m);
-                    blogList.add(m);
-                }
-            }
-        }.run();
+    public Navigation run() {
+        BlogMeta meta = new BlogMeta();
+        List<Blog> list = from(meta).getResultList();
+        List<BeanMap> blogList = new ArrayList<BeanMap>(list.size());
+        for (Blog b : list) {
+            BeanMap m = new BeanMap();
+            BeanUtil.copy(b, m);
+            m.put("id", b.getKey().getId());
+            blogList.add(m);
+        }
+        request.setAttribute("blogList", blogList);
         return forward("/blog/index.jsp");
     }
 }

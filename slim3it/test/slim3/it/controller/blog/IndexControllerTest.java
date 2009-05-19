@@ -1,13 +1,13 @@
 package slim3.it.controller.blog;
 
-import org.slim3.tester.ControllerDatastoreTestCase;
+import org.slim3.tester.JDOControllerTestCase;
 
-public class IndexControllerTest extends ControllerDatastoreTestCase {
+public class IndexControllerTest extends JDOControllerTestCase {
 
-    public void testExecute() throws Exception {
+    public void testRun() throws Exception {
         start("/blog/");
         IndexController controller = getController();
-        assertNotNull(controller.getBlogList());
+        assertNotNull(getAttribute("blogList"));
         assertNotNull(controller);
         assertFalse(isRedirect());
         assertEquals("/blog/index.jsp", getNextPath());

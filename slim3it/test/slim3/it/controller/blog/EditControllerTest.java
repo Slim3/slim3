@@ -1,41 +1,28 @@
 package slim3.it.controller.blog;
 
-import org.slim3.jdo.JDOTemplate;
-import org.slim3.tester.ControllerDatastoreTestCase;
+import org.slim3.tester.JDOControllerTestCase;
 
 import slim3.it.model.Blog;
 import slim3.it.model.BlogMeta;
 
-public class EditControllerTest extends ControllerDatastoreTestCase {
+public class EditControllerTest extends JDOControllerTestCase {
 
-    private Blog blog;
-
-    public void testExecute() throws Exception {
-        new JDOTemplate() {
-            @Override
-            public void doRun() {
-                blog = new Blog();
-                blog.setTitle("aaa");
-                blog.setContent("111");
-                pm.makePersistent(blog);
-            }
-        }.run();
+    public void testRun() throws Exception {
+        Blog blog = new Blog();
+        blog.setTitle("aaa");
+        blog.setContent("111");
+        pm.makePersistent(blog);
         setParameter("id", String.valueOf(blog.getKey().getId()));
         start("/blog/edit");
         EditController controller = getController();
         assertNotNull(controller);
         assertFalse(isRedirect());
         assertEquals("/blog/edit.jsp", getNextPath());
-        assertEquals(String.valueOf(blog.getKey().getId()), controller.getId());
-        assertEquals(blog.getTitle(), controller.getTitle());
-        assertEquals(blog.getContent(), controller.getContent());
+        assertEquals(String.valueOf(blog.getKey().getId()), getAttribute("id"));
+        assertEquals(blog.getTitle(), getAttribute("title"));
+        assertEquals(blog.getContent(), getAttribute("content"));
         assertNotNull(getSessionAttribute("blog"));
-        new JDOTemplate() {
-            @Override
-            public void doRun() {
-                BlogMeta m = new BlogMeta();
-                assertEquals(1, from(m).getResultList().size());
-            }
-        }.run();
+        BlogMeta m = new BlogMeta();
+        assertEquals(1, from(m).getResultList().size());
     }
 }
