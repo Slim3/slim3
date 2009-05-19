@@ -15,11 +15,13 @@
 <tr><th>Title</th><th>Content</th></tr>
 </thead>
 <tbody>
-<c:forEach var="e" items="${c.blogList}">
+<c:forEach var="e" items="${blogList}">
 <tr>
 <td>${f:h(e.title)}</td><td>${f:h(e.content)}</td>
-<c:set var="url" value="edit?id=${e.key.id}"/>
-<td><a href="${f:url(url)}">Edit</a></td>
+<c:set var="editUrl" value="edit?id=${e.id}"/>
+<c:set var="deleteUrl" value="delete?id=${e.id}"/>
+<td><a href="${f:url(editUrl)}">Edit</a></td>
+<td><a href="${f:url(deleteUrl)}" onclick="return confirm('delete OK?')">Delete</a></td>
 </tr>
 </c:forEach>
 </tbody>

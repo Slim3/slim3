@@ -11,9 +11,9 @@
 <body>
 <form action="${f:url('update')}" method="post">
 Title<br />
-<input type="text" name="title" value="${f:h(c.title)}"/><br />
+<input type="text" name="title" value="${f:h(title)}"/><br />
 Content<br />
-<textarea name="content">${f:h(c.content)}</textarea><br />
+<textarea name="content">${f:h(content)}</textarea><br />
 <input type="submit" value="Update"/>
 </form>
 </body>

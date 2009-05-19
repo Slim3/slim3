@@ -8,7 +8,7 @@ import com.google.appengine.api.datastore.Key;
 
 public class UpdateControllerTest extends JDOControllerTestCase {
 
-    public void testExecute() throws Exception {
+    public void testRun() throws Exception {
         Blog blog = new Blog();
         blog.setTitle("aaa");
         blog.setContent("111");
@@ -17,6 +17,7 @@ public class UpdateControllerTest extends JDOControllerTestCase {
         Key key = blog.getKey();
         setParameter("title", "aaa2");
         setParameter("content", "111");
+        refreshPersistenceManager();
         start("/blog/update");
         UpdateController controller = getController();
         assertNotNull(controller);

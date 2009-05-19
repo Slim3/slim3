@@ -10,7 +10,6 @@
 <body>
 <h1>Index</h1>
 <ul>
-<li><a href="${f:h('/hello/')}">Hello</a></li>
 <li><a href="${f:h('/blog/')}">Blog</a></li>
 </ul>
 </body>

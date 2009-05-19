@@ -17,6 +17,6 @@ public class UpdateController extends JDOController {
         request.getSession().removeAttribute("blog");
         BeanUtil.copy(request, blog);
         pm.makePersistent(blog);
-        return redirect("/blog/");
+        return redirect(basePath);
     }
 }

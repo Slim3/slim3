@@ -13,6 +13,6 @@ public class InsertController extends JDOController {
         Blog blog = new Blog();
         BeanUtil.copy(request, blog);
         pm.makePersistent(blog);
-        return redirect("/blog/");
+        return redirect(basePath);
     }
 }
