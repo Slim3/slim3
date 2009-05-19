@@ -25,7 +25,7 @@ import org.slim3.controller.Navigation;
 public class RedirectController extends Controller {
 
     @Override
-    public Navigation execute() {
+    public Navigation run() {
         return redirect("http://www.google.com");
     }
 }

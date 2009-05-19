@@ -15,8 +15,6 @@
  */
 package org.slim3.controller;
 
-import java.util.Locale;
-
 import org.slim3.controller.controller.HogeController;
 import org.slim3.controller.controller.IndexController;
 import org.slim3.controller.controller.hello.ListController;
@@ -150,6 +148,7 @@ public class FrontControllerTest extends ControllerTestCase {
      * 
      */
     public void testGetController() throws Exception {
+        setParameter("aaa", "111");
         Controller controller =
             controllerTester.frontController.getController(
                 controllerTester.request,
@@ -158,9 +157,10 @@ public class FrontControllerTest extends ControllerTestCase {
         assertNotNull(controller.servletContext);
         assertNotNull(controller.request);
         assertNotNull(controller.response);
-        assertEquals("/", controller.applicationPath);
+        assertEquals("/", controller.basePath);
         assertSame(controller, controllerTester.request
             .getAttribute(ControllerConstants.CONTROLLER_KEY));
+        assertEquals("111", getAttribute("aaa"));
     }
 
     /**
@@ -172,23 +172,6 @@ public class FrontControllerTest extends ControllerTestCase {
             controllerTester.request,
             controllerTester.response,
             "/index.jsp"));
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testExecuteController() throws Exception {
-        Controller controller =
-            controllerTester.frontController.createController("/");
-        Navigation navigaton =
-            controllerTester.frontController.executeController(
-                controllerTester.request,
-                controllerTester.response,
-                controller);
-        assertNotNull(navigaton);
-        assertFalse(navigaton.isRedirect());
-        assertEquals("index.jsp", navigaton.getPath());
     }
 
     /**
@@ -322,28 +305,7 @@ public class FrontControllerTest extends ControllerTestCase {
      * @throws Exception
      * 
      */
-    public void testBindParameters() throws Exception {
-        controllerTester.setParameter("aaa", "111");
-        Controller controller =
-            controllerTester.frontController.getController(
-                controllerTester.request,
-                controllerTester.response,
-                "/");
-        controllerTester.frontController.bindParameters(
-            controllerTester.request,
-            controllerTester.response,
-            controller);
-        assertNotNull(controller.parameters);
-        IndexController indexController = (IndexController) controller;
-        assertEquals("111", indexController.getAaa());
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
     public void testProcessController() throws Exception {
-        controllerTester.setParameter("aaa", "111");
         Controller controller =
             controllerTester.frontController.getController(
                 controllerTester.request,
@@ -359,8 +321,6 @@ public class FrontControllerTest extends ControllerTestCase {
         assertEquals("/index.jsp", controllerTester.servletContext
             .getLatestRequestDispatcher()
             .getPath());
-        IndexController indexController = (IndexController) controller;
-        assertEquals("111", indexController.getAaa());
     }
 
     /**
@@ -377,48 +337,5 @@ public class FrontControllerTest extends ControllerTestCase {
         assertEquals("/index.jsp", controllerTester.servletContext
             .getLatestRequestDispatcher()
             .getPath());
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testGetLocaleFromSession() throws Exception {
-        Locale locale = Locale.ENGLISH;
-        Controller controller =
-            controllerTester.frontController.getController(
-                controllerTester.request,
-                controllerTester.response,
-                "/");
-        controller.setLocale(locale);
-        assertEquals(locale, controller.getLocale());
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testGetLocaleFromRequest() throws Exception {
-        Locale locale = Locale.ENGLISH;
-        controllerTester.request.addLocale(locale);
-        Controller controller =
-            controllerTester.frontController.getController(
-                controllerTester.request,
-                controllerTester.response,
-                "/");
-        assertEquals(locale, controller.getLocale());
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testGetLocaleForDefault() throws Exception {
-        Controller controller =
-            controllerTester.frontController.getController(
-                controllerTester.request,
-                controllerTester.response,
-                "/");
-        assertEquals(Locale.getDefault(), controller.getLocale());
     }
 }

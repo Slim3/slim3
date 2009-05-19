@@ -77,14 +77,14 @@ public class ControllerTester {
     public MockFilterChain filterChain;
 
     /**
-     * Whether "setUp" method was invoked.
+     * Whether "setUp" method was called.
      */
-    protected boolean setUpInvoked = false;
+    protected boolean setUpCalled = false;
 
     /**
-     * Whether "start" method was invoked.
+     * Whether "start" method was called.
      */
-    protected boolean startInvoked = false;
+    protected boolean startCalled = false;
 
     /**
      * Sets up the test environment.
@@ -103,7 +103,7 @@ public class ControllerTester {
         RequestLocator.setRequest(request);
         ResponseLocator.setResponse(response);
         filterChain = new MockFilterChain();
-        setUpInvoked = true;
+        setUpCalled = true;
     }
 
     /**
@@ -133,7 +133,7 @@ public class ControllerTester {
      * @return the parameter value
      */
     public String getParameter(String name) {
-        assertSetUpWasInvoked();
+        assertSetUpWasCalled();
         return request.getParameter(name);
     }
 
@@ -146,7 +146,7 @@ public class ControllerTester {
      *            the parameter value
      */
     public void setParameter(String name, String value) {
-        assertSetUpWasInvoked();
+        assertSetUpWasCalled();
         request.setParameter(name, value);
     }
 
@@ -158,7 +158,7 @@ public class ControllerTester {
      * @return the parameter value
      */
     public String[] getParameterValues(String name) {
-        assertSetUpWasInvoked();
+        assertSetUpWasCalled();
         return request.getParameterValues(name);
     }
 
@@ -171,7 +171,7 @@ public class ControllerTester {
      *            the parameter value
      */
     public void setParameter(String name, String[] value) {
-        assertSetUpWasInvoked();
+        assertSetUpWasCalled();
         request.setParameter(name, value);
     }
 
@@ -186,7 +186,7 @@ public class ControllerTester {
      */
     @SuppressWarnings("unchecked")
     public <T> T getAttribute(String name) {
-        assertSetUpWasInvoked();
+        assertSetUpWasCalled();
         return (T) request.getAttribute(name);
     }
 
@@ -199,25 +199,8 @@ public class ControllerTester {
      *            the attribute value
      */
     public void setAttribute(String name, Object value) {
-        assertSetUpWasInvoked();
+        assertSetUpWasCalled();
         request.setAttribute(name, value);
-    }
-
-    /**
-     * Removes the request attribute.
-     * 
-     * @param <T>
-     *            the return type
-     * @param name
-     *            the attribute name
-     * @return the removed value
-     */
-    @SuppressWarnings("unchecked")
-    public <T> T removeAttribute(String name) {
-        assertSetUpWasInvoked();
-        Object value = request.getAttribute(name);
-        request.removeAttribute(name);
-        return (T) value;
     }
 
     /**
@@ -231,7 +214,7 @@ public class ControllerTester {
      */
     @SuppressWarnings("unchecked")
     public <T> T getSessionAttribute(String name) {
-        assertSetUpWasInvoked();
+        assertSetUpWasCalled();
         HttpSession session = request.getSession(false);
         if (session == null) {
             return null;
@@ -248,29 +231,8 @@ public class ControllerTester {
      *            the attribute value
      */
     public void setSessionAttribute(String name, Object value) {
-        assertSetUpWasInvoked();
+        assertSetUpWasCalled();
         request.getSession().setAttribute(name, value);
-    }
-
-    /**
-     * Removes the session attribute.
-     * 
-     * @param <T>
-     *            the return type
-     * @param name
-     *            the attribute name
-     * @return the removed value
-     */
-    @SuppressWarnings("unchecked")
-    public <T> T removeSessionAttribute(String name) {
-        assertSetUpWasInvoked();
-        HttpSession session = request.getSession(false);
-        if (session == null) {
-            return null;
-        }
-        Object value = session.getAttribute(name);
-        session.removeAttribute(name);
-        return (T) value;
     }
 
     /**
@@ -284,7 +246,7 @@ public class ControllerTester {
      */
     @SuppressWarnings("unchecked")
     public <T> T getServletContextAttribute(String name) {
-        assertSetUpWasInvoked();
+        assertSetUpWasCalled();
         return (T) servletContext.getAttribute(name);
     }
 
@@ -297,25 +259,8 @@ public class ControllerTester {
      *            the attribute value
      */
     public void setServletContextAttribute(String name, Object value) {
-        assertSetUpWasInvoked();
+        assertSetUpWasCalled();
         servletContext.setAttribute(name, value);
-    }
-
-    /**
-     * Returns the servlet context attribute.
-     * 
-     * @param <T>
-     *            the return type
-     * @param name
-     *            the attribute name
-     * @return the removed value
-     */
-    @SuppressWarnings("unchecked")
-    public <T> T removeServletContextAttribute(String name) {
-        assertSetUpWasInvoked();
-        Object value = servletContext.getAttribute(name);
-        servletContext.removeAttribute(name);
-        return (T) value;
     }
 
     /**
@@ -342,10 +287,10 @@ public class ControllerTester {
                 + path
                 + ") must start with \"/\".");
         }
-        assertSetUpWasInvoked();
+        assertSetUpWasCalled();
         request.setServletPath(path);
         frontController.doFilter(request, response, filterChain);
-        startInvoked = true;
+        startCalled = true;
     }
 
     /**
@@ -354,7 +299,7 @@ public class ControllerTester {
      * @return whether the test result is "redirect"
      */
     public boolean isRedirect() {
-        assertStartWasInvoked();
+        assertStartWasCalled();
         return response.getRedirectPath() != null;
     }
 
@@ -364,7 +309,7 @@ public class ControllerTester {
      * @return the next path
      */
     public String getNextPath() {
-        assertStartWasInvoked();
+        assertStartWasCalled();
         MockRequestDispatcher dispatcher =
             servletContext.getLatestRequestDispatcher();
         if (dispatcher != null) {
@@ -385,27 +330,27 @@ public class ControllerTester {
      */
     @SuppressWarnings("unchecked")
     public <T extends Controller> T getController() {
-        assertStartWasInvoked();
+        assertStartWasCalled();
         return (T) request.getAttribute(ControllerConstants.CONTROLLER_KEY);
     }
 
     /**
      * Asserts that "setUp" method was invoked.
      */
-    protected void assertSetUpWasInvoked() {
-        if (!setUpInvoked) {
+    protected void assertSetUpWasCalled() {
+        if (!setUpCalled) {
             throw new IllegalStateException(
-                "Invoke ControllerTester#setUp() before using this tester.");
+                "Call ControllerTester#setUp() before using this tester.");
         }
     }
 
     /**
-     * Asserts that "start" method was invoked.
+     * Asserts that "start" method was called.
      */
-    protected void assertStartWasInvoked() {
-        if (!startInvoked) {
+    protected void assertStartWasCalled() {
+        if (!startCalled) {
             throw new IllegalStateException(
-                "Invoke ControllerTester#start() before getting the test results.");
+                "Call ControllerTester#start() before getting the test results.");
         }
     }
 }

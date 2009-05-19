@@ -13,7 +13,7 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.jdo;
+package org.slim3.controller;
 
 import junit.framework.TestCase;
 
@@ -21,13 +21,13 @@ import junit.framework.TestCase;
  * @author higa
  * 
  */
-public class JDOTemplateTest extends TestCase {
+public class JDOControllerTest extends TestCase {
 
     /**
      * @throws Exception
      */
     public void testKey() throws Exception {
-        assertNotNull(JDOTemplate.key(Sample.class, 1));
-        assertNotNull(JDOTemplate.key(Sample.class, "hoge"));
+        assertNotNull(JDOController.key(getClass(), 1));
+        assertNotNull(JDOController.key(getClass(), "hoge"));
     }
 }

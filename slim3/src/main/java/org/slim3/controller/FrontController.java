@@ -16,7 +16,6 @@
 package org.slim3.controller;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -182,12 +181,13 @@ public class FrontController implements Filter {
         if (controller == null) {
             return null;
         }
-        controller.setServletContext(servletContext);
-        controller.setRequest(request);
-        controller.setResponse(response);
-        int pos = path.lastIndexOf('/');
-        controller.setApplicationPath(path.substring(0, pos + 1));
         request.setAttribute(ControllerConstants.CONTROLLER_KEY, controller);
+        controller.servletContext = servletContext;
+        RequestHandler requestHandler = createRequestHandler(request);
+        controller.request = requestHandler.handle();
+        controller.response = response;
+        int pos = path.lastIndexOf('/');
+        controller.basePath = path.substring(0, pos + 1);
         return controller;
     }
 
@@ -205,23 +205,16 @@ public class FrontController implements Filter {
             throws IllegalStateException {
         String className = toControllerClassName(path);
         Class<?> clazz = null;
-        ClassLoader originalLoader =
-            Thread.currentThread().getContextClassLoader();
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
         if (hotReloading) {
-            ClassLoader loader =
-                new HotReloadingClassLoader(
-                    originalLoader,
-                    controllerPackageName);
-            try {
-                Thread.currentThread().setContextClassLoader(loader);
-                clazz = createControllerClass(className);
-            } finally {
-                Thread.currentThread().setContextClassLoader(originalLoader);
-            }
-        } else {
-            clazz = createControllerClass(className);
+            loader = new HotReloadingClassLoader(loader, controllerPackageName);
         }
-        if (clazz == null) {
+        try {
+            clazz = loader.loadClass(className);
+        } catch (Throwable t) {
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, t.getMessage(), t);
+            }
             return null;
         }
         if (!Controller.class.isAssignableFrom(clazz)) {
@@ -259,24 +252,6 @@ public class FrontController implements Filter {
     }
 
     /**
-     * Creates a new controller class.
-     * 
-     * @param className
-     *            the class name
-     * @return a new controller class
-     */
-    protected Class<?> createControllerClass(String className) {
-        try {
-            return Class.forName(className);
-        } catch (Throwable t) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, t.getMessage(), t);
-            }
-            return null;
-        }
-    }
-
-    /**
      * Processes the controller.
      * 
      * @param request
@@ -293,45 +268,20 @@ public class FrontController implements Filter {
     protected void processController(HttpServletRequest request,
             HttpServletResponse response, Controller controller)
             throws IOException, ServletException {
-        bindParameters(request, response, controller);
-        Navigation navigation =
-            executeController(request, response, controller);
+        Navigation navigation = controller.runBare();
         handleNavigation(request, response, controller, navigation);
     }
 
     /**
-     * Binds the request parameters to the controller.
+     * Creates a new request handlers.
      * 
      * @param request
      *            the request
-     * @param response
-     *            the response
-     * @param controller
-     *            the controller
-     */
-    protected void bindParameters(HttpServletRequest request,
-            HttpServletResponse response, Controller controller) {
-        RequestParameterParser parser = new RequestParameterParser(request);
-        Map<String, Object> parameters = parser.parse();
-        controller.setParameters(parameters);
-        RequestParameterBinder binder = new RequestParameterBinder();
-        binder.bind(controller, parameters);
-    }
-
-    /**
-     * Executes the controller.
+     * @return a new request handler
      * 
-     * @param request
-     *            the request
-     * @param response
-     *            the response
-     * @param controller
-     *            the controller
-     * @return navigation
      */
-    protected Navigation executeController(HttpServletRequest request,
-            HttpServletResponse response, Controller controller) {
-        return controller.execute();
+    protected RequestHandler createRequestHandler(HttpServletRequest request) {
+        return new RequestHandler(request);
     }
 
     /**
@@ -408,7 +358,7 @@ public class FrontController implements Filter {
             HttpServletResponse response, Controller controller, String path)
             throws IOException, ServletException {
         if (!path.startsWith("/")) {
-            path = controller.applicationPath + path;
+            path = controller.basePath + path;
         }
         RequestDispatcher rd = servletContext.getRequestDispatcher(path);
         if (rd == null) {

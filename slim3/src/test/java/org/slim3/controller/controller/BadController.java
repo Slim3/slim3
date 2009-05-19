@@ -24,19 +24,9 @@ import org.slim3.controller.Navigation;
 public class BadController {
 
     /**
-     * 
-     */
-    public String aaa;
-
-    /**
-     * 
-     */
-    public String[] bbb;
-
-    /**
      * @return the navigation path
      */
-    public Navigation execute() {
+    public Navigation run() {
         return null;
     }
 }

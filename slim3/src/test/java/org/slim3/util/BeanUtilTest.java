@@ -20,6 +20,9 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
+import org.slim3.tester.MockHttpServletRequest;
+import org.slim3.tester.MockServletContext;
+
 /**
  * @author higa
  * 
@@ -507,6 +510,271 @@ public class BeanUtilTest extends TestCase {
     }
 
     /**
+     * @throws Exception
+     */
+    public void testCopyRB() throws Exception {
+        MockServletContext servletContext = new MockServletContext();
+        MockHttpServletRequest src = new MockHttpServletRequest(servletContext);
+        src.setAttribute("aaa", "111");
+        DestRB dest = new DestRB();
+        BeanUtil.copy(src, dest);
+        assertEquals("111", dest.aaa);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testCopyRBToReadOnly() throws Exception {
+        MockServletContext servletContext = new MockServletContext();
+        MockHttpServletRequest src = new MockHttpServletRequest(servletContext);
+        src.setAttribute("bbb", "111");
+        DestRB dest = new DestRB();
+        BeanUtil.copy(src, dest);
+        assertNull(dest.bbb);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testCopyRBToWriteOnly() throws Exception {
+        MockServletContext servletContext = new MockServletContext();
+        MockHttpServletRequest src = new MockHttpServletRequest(servletContext);
+        src.setAttribute("ccc", "111");
+        DestRB dest = new DestRB();
+        BeanUtil.copy(src, dest);
+        assertEquals("111", dest.ccc);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testCopyRBForInclude() throws Exception {
+        MockServletContext servletContext = new MockServletContext();
+        MockHttpServletRequest src = new MockHttpServletRequest(servletContext);
+        src.setAttribute("aaa", "111");
+        src.setAttribute("ccc", "222");
+        DestRB dest = new DestRB();
+        BeanUtil.copy(src, dest, new CopyOptions().include("aaa"));
+        assertEquals("111", dest.aaa);
+        assertNull(dest.ccc);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testCopyRBForExclude() throws Exception {
+        MockServletContext servletContext = new MockServletContext();
+        MockHttpServletRequest src = new MockHttpServletRequest(servletContext);
+        src.setAttribute("aaa", "111");
+        src.setAttribute("ccc", "222");
+        DestRB dest = new DestRB();
+        BeanUtil.copy(src, dest, new CopyOptions().exclude("ccc"));
+        assertEquals("111", dest.aaa);
+        assertNull(dest.ccc);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testCopyRBForNull() throws Exception {
+        MockServletContext servletContext = new MockServletContext();
+        MockHttpServletRequest src = new MockHttpServletRequest(servletContext);
+        DestRB dest = new DestRB();
+        dest.aaa = "111";
+        BeanUtil.copy(src, dest);
+        assertEquals("111", dest.aaa);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testCopyRBForCopyNull() throws Exception {
+        MockServletContext servletContext = new MockServletContext();
+        MockHttpServletRequest src = new MockHttpServletRequest(servletContext);
+        src.setAttribute("aaa", null);
+        DestRB dest = new DestRB();
+        dest.aaa = "111";
+        BeanUtil.copy(src, dest, new CopyOptions().copyNull());
+        assertNull(dest.aaa);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testCopyRBForEmptyString() throws Exception {
+        MockServletContext servletContext = new MockServletContext();
+        MockHttpServletRequest src = new MockHttpServletRequest(servletContext);
+        src.setAttribute("aaa", "");
+        DestRB dest = new DestRB();
+        dest.aaa = "111";
+        BeanUtil.copy(src, dest);
+        assertEquals("111", dest.aaa);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testCopyRBForCopyEmptyString() throws Exception {
+        MockServletContext servletContext = new MockServletContext();
+        MockHttpServletRequest src = new MockHttpServletRequest(servletContext);
+        src.setAttribute("aaa", "");
+        DestRB dest = new DestRB();
+        dest.aaa = "111";
+        BeanUtil.copy(src, dest, new CopyOptions().copyEmptyString());
+        assertEquals("", dest.aaa);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testCopyRBForConverter() throws Exception {
+        MockServletContext servletContext = new MockServletContext();
+        MockHttpServletRequest src = new MockHttpServletRequest(servletContext);
+        src.setAttribute("ddd", "1,000");
+        DestRB dest = new DestRB();
+        BeanUtil.copy(src, dest, new CopyOptions().numberConverter("#,##0"));
+        assertEquals(new Integer(1000), dest.ddd);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testCopyBR() throws Exception {
+        SrcBR src = new SrcBR();
+        src.aaa = "111";
+        MockServletContext servletContext = new MockServletContext();
+        MockHttpServletRequest dest =
+            new MockHttpServletRequest(servletContext);
+        BeanUtil.copy(src, dest);
+        assertEquals("111", dest.getAttribute("aaa"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testCopyBRFromReadOnly() throws Exception {
+        SrcBR src = new SrcBR();
+        src.bbb = "111";
+        MockServletContext servletContext = new MockServletContext();
+        MockHttpServletRequest dest =
+            new MockHttpServletRequest(servletContext);
+        BeanUtil.copy(src, dest);
+        assertEquals("111", dest.getAttribute("bbb"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testCopyBRFromWriteOnly() throws Exception {
+        SrcBR src = new SrcBR();
+        src.ccc = "111";
+        MockServletContext servletContext = new MockServletContext();
+        MockHttpServletRequest dest =
+            new MockHttpServletRequest(servletContext);
+        BeanUtil.copy(src, dest);
+        assertNull(dest.getAttribute("ccc"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testCopyBRForInclude() throws Exception {
+        SrcBR src = new SrcBR();
+        src.aaa = "111";
+        src.bbb = "222";
+        MockServletContext servletContext = new MockServletContext();
+        MockHttpServletRequest dest =
+            new MockHttpServletRequest(servletContext);
+        BeanUtil.copy(src, dest, new CopyOptions().include("aaa"));
+        assertEquals("111", dest.getAttribute("aaa"));
+        assertNull(dest.getAttribute("bbb"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testCopyBRForExclude() throws Exception {
+        SrcBR src = new SrcBR();
+        src.aaa = "111";
+        src.bbb = "222";
+        MockServletContext servletContext = new MockServletContext();
+        MockHttpServletRequest dest =
+            new MockHttpServletRequest(servletContext);
+        BeanUtil.copy(src, dest, new CopyOptions().exclude("bbb"));
+        assertEquals("111", dest.getAttribute("aaa"));
+        assertNull(dest.getAttribute("bbb"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testCopyBRForNull() throws Exception {
+        SrcBR src = new SrcBR();
+        MockServletContext servletContext = new MockServletContext();
+        MockHttpServletRequest dest =
+            new MockHttpServletRequest(servletContext);
+        dest.setAttribute("aaa", "111");
+        BeanUtil.copy(src, dest);
+        assertEquals("111", dest.getAttribute("aaa"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testCopyBRForCopyNull() throws Exception {
+        SrcBR src = new SrcBR();
+        MockServletContext servletContext = new MockServletContext();
+        MockHttpServletRequest dest =
+            new MockHttpServletRequest(servletContext);
+        dest.setAttribute("aaa", "111");
+        BeanUtil.copy(src, dest, new CopyOptions().copyNull());
+        assertNull(dest.getAttribute("aaa"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testCopyBRForEmptyString() throws Exception {
+        SrcBR src = new SrcBR();
+        src.aaa = "";
+        MockServletContext servletContext = new MockServletContext();
+        MockHttpServletRequest dest =
+            new MockHttpServletRequest(servletContext);
+        dest.setAttribute("aaa", "111");
+        BeanUtil.copy(src, dest);
+        assertEquals("111", dest.getAttribute("aaa"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testCopyBRForCopyEmptyString() throws Exception {
+        SrcBR src = new SrcBR();
+        src.aaa = "";
+        MockServletContext servletContext = new MockServletContext();
+        MockHttpServletRequest dest =
+            new MockHttpServletRequest(servletContext);
+        dest.setAttribute("aaa", "111");
+        BeanUtil.copy(src, dest, new CopyOptions().copyEmptyString());
+        assertEquals("", dest.getAttribute("aaa"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testCopyBRForConverter() throws Exception {
+        SrcBR src = new SrcBR();
+        src.aaa = "1,000";
+        MockServletContext servletContext = new MockServletContext();
+        MockHttpServletRequest dest =
+            new MockHttpServletRequest(servletContext);
+        BeanUtil.copy(src, dest, new CopyOptions().numberConverter(
+            "#,##0",
+            "aaa"));
+        assertEquals(new Long(1000), dest.getAttribute("aaa"));
+    }
+
+    /**
      * 
      */
     private static class SrcBB {
@@ -777,6 +1045,106 @@ public class BeanUtilTest extends TestCase {
          */
         public void setDdd(Integer ddd) {
             this.ddd = ddd;
+        }
+    }
+
+    /**
+     * 
+     */
+    private static class DestRB {
+
+        private String aaa;
+
+        private String bbb;
+
+        private String ccc;
+
+        private Integer ddd;
+
+        /**
+         * @return the result
+         */
+        public String getAaa() {
+            return aaa;
+        }
+
+        /**
+         * @param aaa
+         */
+        public void setAaa(String aaa) {
+            this.aaa = aaa;
+        }
+
+        /**
+         * @return the bbb
+         */
+        public String getBbb() {
+            return bbb;
+        }
+
+        /**
+         * @param ccc
+         *            the ccc to set
+         */
+        public void setCcc(String ccc) {
+            this.ccc = ccc;
+        }
+
+        /**
+         * @return the ddd
+         */
+        public Integer getDdd() {
+            return ddd;
+        }
+
+        /**
+         * @param ddd
+         *            the ddd to set
+         */
+        public void setDdd(Integer ddd) {
+            this.ddd = ddd;
+        }
+    }
+
+    /**
+     * 
+     */
+    private static class SrcBR {
+
+        private String aaa;
+
+        private String bbb;
+
+        @SuppressWarnings("unused")
+        private String ccc;
+
+        /**
+         * @return the result
+         */
+        public String getAaa() {
+            return aaa;
+        }
+
+        /**
+         * @param aaa
+         */
+        public void setAaa(String aaa) {
+            this.aaa = aaa;
+        }
+
+        /**
+         * @return the bbb
+         */
+        public String getBbb() {
+            return bbb;
+        }
+
+        /**
+         * @param ccc
+         *            the ccc to set
+         */
+        public void setCcc(String ccc) {
+            this.ccc = ccc;
         }
     }
 }

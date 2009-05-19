@@ -162,7 +162,8 @@ public class AttributeMetaTest extends TestCase {
      * @throws Exception
      */
     public void testContains() throws Exception {
-        AttributeMeta aaaArray = new AttributeMeta("aaaArray", Long[].class);
+        AttributeMeta aaaArray =
+            new AttributeMeta("aaaArray", Long[].class, Long.class);
         ContainsCriterion criterion = aaaArray.contains("1");
         assertEquals("aaaArrayParam", criterion.getParameterName());
         assertEquals("aaaArray.contains(aaaArrayParam)", criterion

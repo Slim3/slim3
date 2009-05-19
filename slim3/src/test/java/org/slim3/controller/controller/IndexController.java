@@ -24,28 +24,8 @@ import org.slim3.controller.Navigation;
  */
 public class IndexController extends Controller {
 
-    /**
-     * 
-     */
-    private String aaa;
-
-    /**
-     * @return the aaa
-     */
-    public String getAaa() {
-        return aaa;
-    }
-
-    /**
-     * @param aaa
-     *            the aaa to set
-     */
-    public void setAaa(String aaa) {
-        this.aaa = aaa;
-    }
-
     @Override
-    public Navigation execute() {
+    public Navigation run() {
         return forward("index.jsp");
     }
 }

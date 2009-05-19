@@ -115,20 +115,6 @@ public class ControllerTesterTest extends TestCase {
      * @throws Exception
      * 
      */
-    public void testRemoveAttribute() throws Exception {
-        tester.setUp();
-        Integer value = 1;
-        tester.setAttribute("aaa", value);
-        Integer returnValue = tester.removeAttribute("aaa");
-        assertEquals(value, returnValue);
-        assertNull(tester.getAttribute("aaa"));
-        assertNull(tester.request.getAttribute("aaa"));
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
     public void testSetSessionAttribute() throws Exception {
         tester.setUp();
         Integer value = 1;
@@ -142,20 +128,6 @@ public class ControllerTesterTest extends TestCase {
      * @throws Exception
      * 
      */
-    public void testRemoveSessionAttribute() throws Exception {
-        tester.setUp();
-        Integer value = 1;
-        tester.setSessionAttribute("aaa", value);
-        Integer returnValue = tester.removeSessionAttribute("aaa");
-        assertEquals(value, returnValue);
-        assertNull(tester.getSessionAttribute("aaa"));
-        assertNull(tester.request.getSession().getAttribute("aaa"));
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
     public void testSetServletContextAttribute() throws Exception {
         tester.setUp();
         Integer value = 1;
@@ -163,20 +135,6 @@ public class ControllerTesterTest extends TestCase {
         Integer returnValue = tester.getServletContextAttribute("aaa");
         assertEquals(value, returnValue);
         assertEquals(value, tester.servletContext.getAttribute("aaa"));
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testRemoveServletContextAttribute() throws Exception {
-        tester.setUp();
-        Integer value = 1;
-        tester.setServletContextAttribute("aaa", value);
-        Integer returnValue = tester.removeServletContextAttribute("aaa");
-        assertEquals(value, returnValue);
-        assertNull(tester.getServletContextAttribute("aaa"));
-        assertNull(tester.servletContext.getAttribute("aaa"));
     }
 
     /**

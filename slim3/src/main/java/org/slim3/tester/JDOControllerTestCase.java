@@ -15,20 +15,28 @@
  */
 package org.slim3.tester;
 
+import javax.jdo.PersistenceManager;
+
+import org.slim3.jdo.PMF;
 
 /**
- * A test case for Slim3 Controller and local data store.
+ * A test case for Slim3 Controller and JDO.
  * 
  * @author higa
  * @since 3.0
  * 
  */
-public abstract class ControllerDatastoreTestCase extends ControllerTestCase {
+public abstract class JDOControllerTestCase extends ControllerTestCase {
 
     /**
      * The tester for local data store.
      */
     protected DatastoreTester datastoreTester = new DatastoreTester();
+
+    /**
+     * The persistence manager.
+     */
+    protected PersistenceManager pm;
 
     /**
      * @throws Exception
@@ -38,6 +46,7 @@ public abstract class ControllerDatastoreTestCase extends ControllerTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         datastoreTester.setUp();
+        pm = PMF.get().getPersistenceManager();
     }
 
     /**
@@ -46,6 +55,8 @@ public abstract class ControllerDatastoreTestCase extends ControllerTestCase {
      */
     @Override
     protected void tearDown() throws Exception {
+        pm.close();
+        pm = null;
         datastoreTester.tearDown();
         super.tearDown();
     }

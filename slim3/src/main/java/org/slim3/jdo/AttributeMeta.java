@@ -37,18 +37,37 @@ public class AttributeMeta {
     protected Class<?> attributeClass;
 
     /**
+     * The element class.
+     */
+    protected Class<?> elementClass;
+
+    /**
      * Constructor.
      * 
      * @param name
      *            the name
      * @param attributeClass
      *            the attribute class
+     */
+    public AttributeMeta(String name, Class<?> attributeClass) {
+        this(name, attributeClass, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param name
+     *            the name
+     * @param attributeClass
+     *            the attribute class
+     * @param elementClass
+     *            the element class
      * @throws NullPointerException
      *             if the name parameter is null or if the attributeClass
      *             parameter is null
      */
-    public AttributeMeta(String name, Class<?> attributeClass)
-            throws NullPointerException {
+    public AttributeMeta(String name, Class<?> attributeClass,
+            Class<?> elementClass) throws NullPointerException {
         if (name == null) {
             throw new NullPointerException("The name parameter is null.");
         }
@@ -58,6 +77,7 @@ public class AttributeMeta {
         }
         this.name = name;
         this.attributeClass = attributeClass;
+        this.elementClass = elementClass;
     }
 
     /**
@@ -76,6 +96,15 @@ public class AttributeMeta {
      */
     public Class<?> getAttributeClass() {
         return attributeClass;
+    }
+
+    /**
+     * Returns the element class.
+     * 
+     * @return the element class
+     */
+    public Class<?> getElementClass() {
+        return elementClass;
     }
 
     /**
@@ -158,9 +187,8 @@ public class AttributeMeta {
         if (isEmpty(parameter)) {
             return null;
         }
-        if (attributeClass.isArray()) {
-            Class<?> clazz = attributeClass.getComponentType();
-            parameter = ConversionUtil.convert(parameter, clazz);
+        if (elementClass != null) {
+            parameter = ConversionUtil.convert(parameter, elementClass);
         }
         return new ContainsCriterion(name, name + "Param", parameter);
     }

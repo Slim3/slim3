@@ -24,18 +24,8 @@ import org.slim3.controller.Navigation;
  */
 public class IndexController extends Controller {
 
-    /**
-     * 
-     */
-    public String aaa;
-
-    /**
-     * 
-     */
-    public String[] bbb;
-
     @Override
-    public Navigation execute() {
+    public Navigation run() {
         return null;
     }
 }

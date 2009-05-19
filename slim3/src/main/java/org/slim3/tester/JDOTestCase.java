@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the Seasar Foundation and the Others.
+ * Copyright 2004-2009 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,31 +13,36 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.controller.controller;
+package org.slim3.tester;
+
+import javax.jdo.PersistenceManager;
+
+import org.slim3.jdo.PMF;
 
 /**
+ * A test case for JDO.
+ * 
  * @author higa
+ * @since 3.0
  * 
  */
-public class MyBean {
+public abstract class JDOTestCase extends DatastoreTestCase {
 
     /**
-     * 
+     * The persistence manager.
      */
-    protected String aaa;
+    protected PersistenceManager pm;
 
-    /**
-     * @return the aaa
-     */
-    public String getAaa() {
-        return aaa;
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        pm = PMF.get().getPersistenceManager();
     }
 
-    /**
-     * @param aaa
-     *            the aaa to set
-     */
-    public void setAaa(String aaa) {
-        this.aaa = aaa;
+    @Override
+    public void tearDown() throws Exception {
+        pm.close();
+        pm = null;
+        super.tearDown();
     }
 }

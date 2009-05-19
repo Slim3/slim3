@@ -158,20 +158,6 @@ public abstract class ControllerTestCase extends TestCase {
     }
 
     /**
-     * Removes the request attribute.
-     * 
-     * @param <T>
-     *            the return type
-     * @param name
-     *            the attribute name
-     * @return the removed value
-     */
-    @SuppressWarnings("unchecked")
-    protected <T> T removeAttribute(String name) {
-        return (T) controllerTester.removeAttribute(name);
-    }
-
-    /**
      * Returns the session attribute.
      * 
      * @param <T>
@@ -198,20 +184,6 @@ public abstract class ControllerTestCase extends TestCase {
     }
 
     /**
-     * Removes the session attribute.
-     * 
-     * @param <T>
-     *            the return type
-     * @param name
-     *            the attribute name
-     * @return the removed value
-     */
-    @SuppressWarnings("unchecked")
-    protected <T> T removeSessionAttribute(String name) {
-        return (T) controllerTester.removeSessionAttribute(name);
-    }
-
-    /**
      * Returns the servlet context attribute.
      * 
      * @param <T>
@@ -235,20 +207,6 @@ public abstract class ControllerTestCase extends TestCase {
      */
     protected void setServletContextAttribute(String name, Object value) {
         controllerTester.setServletContextAttribute(name, value);
-    }
-
-    /**
-     * Returns the servlet context attribute.
-     * 
-     * @param <T>
-     *            the return type
-     * @param name
-     *            the attribute name
-     * @return the removed value
-     */
-    @SuppressWarnings("unchecked")
-    protected <T> T removeServletContextAttribute(String name) {
-        return (T) controllerTester.removeServletContextAttribute(name);
     }
 
     /**

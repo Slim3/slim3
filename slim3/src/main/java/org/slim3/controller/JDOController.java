@@ -13,23 +13,25 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.jdo;
+package org.slim3.controller;
 
 import javax.jdo.PersistenceManager;
 
-import org.slim3.util.RuntimeExceptionUtil;
+import org.slim3.jdo.ModelMeta;
+import org.slim3.jdo.PMF;
+import org.slim3.jdo.SelectQuery;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
 /**
- * A JDO template class.
+ * A controller class for JDO.
  * 
  * @author higa
  * @since 3.0
  * 
  */
-public abstract class JDOTemplate {
+public abstract class JDOController extends Controller {
 
     /**
      * The persistence manager.
@@ -78,36 +80,17 @@ public abstract class JDOTemplate {
         return KeyFactory.createKey(modelClass.getSimpleName(), name);
     }
 
-    /**
-     * Runs this template.
-     * 
-     */
-    public final void run() {
+    @Override
+    protected void setUp() {
+        super.setUp();
         pm = PMF.get().getPersistenceManager();
-        try {
-            doRun();
-        } catch (Throwable t) {
-            handleThrowable(t);
-        } finally {
-            assertPersistenceManagerIsActive();
-            pm.close();
-        }
     }
 
-    /**
-     * You can implement this method to customize this template.
-     * 
-     */
-    protected abstract void doRun();
-
-    /**
-     * Handles the exception.
-     * 
-     * @param t
-     *            the exception
-     */
-    protected void handleThrowable(Throwable t) {
-        RuntimeExceptionUtil.wrapAndThrow(t);
+    @Override
+    protected void tearDown() {
+        pm.close();
+        pm = null;
+        super.tearDown();
     }
 
     /**
@@ -120,27 +103,6 @@ public abstract class JDOTemplate {
      * @return a new {@link SelectQuery}
      */
     protected <M> SelectQuery<M> from(ModelMeta<M> modelMeta) {
-        assertPersistenceManagerIsActive();
         return new SelectQuery<M>(modelMeta, pm);
-    }
-
-    /**
-     * Asserts that the current persistence manager is active.
-     * 
-     * @throws IllegalStateException
-     *             if the persistence manager attached to the current thread is
-     *             not found or if the persistence manager attached to the
-     *             current thread is already closed
-     */
-    protected void assertPersistenceManagerIsActive()
-            throws IllegalStateException {
-        if (pm == null) {
-            throw new IllegalStateException(
-                "The persistence manager attached to the current thread is not found.");
-        }
-        if (pm.isClosed()) {
-            throw new IllegalStateException(
-                "The persistence manager attached to the current thread is already closed.");
-        }
     }
 }

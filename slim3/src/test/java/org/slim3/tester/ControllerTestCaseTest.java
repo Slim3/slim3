@@ -16,7 +16,6 @@
 package org.slim3.tester;
 
 import org.slim3.controller.ControllerConstants;
-import org.slim3.tester.ControllerTestCase;
 import org.slim3.tester.controller.HelloController;
 
 /**
@@ -74,19 +73,6 @@ public class ControllerTestCaseTest extends ControllerTestCase {
      * @throws Exception
      * 
      */
-    public void testRemoveAttribute() throws Exception {
-        Integer value = 1;
-        setAttribute("aaa", value);
-        Integer returnValue = removeAttribute("aaa");
-        assertEquals(value, returnValue);
-        assertNull(getAttribute("aaa"));
-        assertNull(controllerTester.request.getAttribute("aaa"));
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
     public void testSetSessionAttribute() throws Exception {
         Integer value = 1;
         setSessionAttribute("aaa", value);
@@ -100,38 +86,12 @@ public class ControllerTestCaseTest extends ControllerTestCase {
      * @throws Exception
      * 
      */
-    public void testRemoveSessionAttribute() throws Exception {
-        Integer value = 1;
-        setSessionAttribute("aaa", value);
-        Integer returnValue = removeSessionAttribute("aaa");
-        assertEquals(value, returnValue);
-        assertNull(getSessionAttribute("aaa"));
-        assertNull(controllerTester.request.getSession().getAttribute("aaa"));
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
     public void testSetServletContextAttribute() throws Exception {
         Integer value = 1;
         setServletContextAttribute("aaa", value);
         Integer returnValue = getServletContextAttribute("aaa");
         assertEquals(value, returnValue);
         assertEquals(value, controllerTester.servletContext.getAttribute("aaa"));
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testRemoveServletContextAttribute() throws Exception {
-        Integer value = 1;
-        setServletContextAttribute("aaa", value);
-        Integer returnValue = removeServletContextAttribute("aaa");
-        assertEquals(value, returnValue);
-        assertNull(getServletContextAttribute("aaa"));
-        assertNull(controllerTester.servletContext.getAttribute("aaa"));
     }
 
     /**

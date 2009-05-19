@@ -15,11 +15,10 @@
  */
 package org.slim3.controller;
 
-import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 
 import junit.framework.TestCase;
 
-import org.slim3.controller.RequestParameterParser;
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
 
@@ -27,7 +26,7 @@ import org.slim3.tester.MockServletContext;
  * @author higa
  * 
  */
-public class RequestParameterParserTest extends TestCase {
+public class RequestHandlerTest extends TestCase {
 
     private MockServletContext servletContext = new MockServletContext();
 
@@ -38,14 +37,15 @@ public class RequestParameterParserTest extends TestCase {
      * @throws Exception
      * 
      */
-    public void testParse() throws Exception {
+    public void testHandle() throws Exception {
         request.setParameter("aaa", "111");
-        RequestParameterParser parser = new RequestParameterParser(request);
-        Map<String, Object> parameters = parser.parse();
-        assertEquals(1, parameters.size());
-        String[] value = (String[]) parameters.get("aaa");
-        assertNotNull(value);
-        assertEquals(1, value.length);
-        assertEquals("111", value[0]);
+        request.setParameter("bbbArray", new String[] { "222" });
+        RequestHandler handler = new RequestHandler(request);
+        HttpServletRequest request2 = handler.handle();
+        assertEquals("111", request2.getAttribute("aaa"));
+        String[] bbbArray = (String[]) request2.getAttribute("bbbArray");
+        assertNotNull(bbbArray);
+        assertEquals(1, bbbArray.length);
+        assertEquals("222", bbbArray[0]);
     }
 }
