@@ -50,15 +50,15 @@ public class ControllerGenerator implements Generator {
     public void generate(Printer p) {
         p.println("package %s;", controllerDesc.getPackageName());
         p.println();
-        p.println("import %s;", ClassConstants.Controller);
+        p.println("import %s;", ClassConstants.JDOController);
         p.println("import %s;", ClassConstants.Navigation);
         p.println();
         p.println("public class %s extends %s {", controllerDesc
                 .getSimpleName(), ClassUtil
-                .getSimpleName(ClassConstants.Controller));
+                .getSimpleName(ClassConstants.JDOController));
         p.println();
         p.println("    @Override");
-        p.println("    public %s execute() {", ClassUtil
+        p.println("    public %s run() {", ClassUtil
                 .getSimpleName(ClassConstants.Navigation));
         p.println("        return forward(\"%s\");", controllerDesc
                 .getViewName());

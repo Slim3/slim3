@@ -23,56 +23,92 @@ package org.slim3.gen.desc;
  */
 public class AttributeDesc {
 
-    /** the name of attribute */
-    protected final String name;
+    /** the name */
+    protected String name;
 
-    /** the name of attribute type */
-    protected final String typeName;
+    /** the className */
+    protected String className;
 
-    /** {@code true} if the attribute type is a model type. */
-    protected final boolean modelType;
+    /** the elementClassName */
+    protected String elementClassName;
 
-    /**
-     * Creates a new {@link AttributeDesc}.
-     * 
-     * @param name
-     *            the name of attribute.
-     * @param typeName
-     *            the name of attribute type.
-     * @param modelType
-     *            {@code true} if the attribute type is a model type.
-     */
-    public AttributeDesc(String name, String typeName, boolean modelType) {
-        this.name = name;
-        this.typeName = typeName;
-        this.modelType = modelType;
-    }
+    /** {@code true} if the {@code className} is a model type. */
+    protected boolean modelType;
 
     /**
-     * Returns the name of attribute.
+     * Returns the name.
      * 
-     * @return the name of attribute
+     * @return the name
      */
     public String getName() {
         return name;
     }
 
     /**
-     * Returns the name of attribute type.
+     * Sets the name.
      * 
-     * @return the name of attribute type
+     * @param name
+     *            the name to set
      */
-    public String getTypeName() {
-        return typeName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
-     * Returns {@code true} if the attribute type is a model type.
+     * Returns the className.
      * 
-     * @return {@code true} if the attribute type is a model type
+     * @return the className
+     */
+    public String getClassName() {
+        return className;
+    }
+
+    /**
+     * Sets the className.
+     * 
+     * @param className
+     *            the className to set
+     */
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+    /**
+     * Returns the elementClassName.
+     * 
+     * @return the elementClassName
+     */
+    public String getElementClassName() {
+        return elementClassName;
+    }
+
+    /**
+     * Sets the elementClassName.
+     * 
+     * @param elementClassName
+     *            the elementClassName to set
+     */
+    public void setElementClassName(String elementClassName) {
+        this.elementClassName = elementClassName;
+    }
+
+    /**
+     * Returns {@code true} if the {@code className} is a model type.
+     * 
+     * @return the modelType
      */
     public boolean isModelType() {
         return modelType;
+    }
+
+    /**
+     * Sets {@code true} if the {@code className} is a model type.
+     * 
+     * @param modelType
+     *            the modelType to set
+     */
+    public void setModelType(boolean modelType) {
+        this.modelType = modelType;
     }
 
 }

@@ -51,13 +51,13 @@ public class ControllerTestCaseGenerator implements Generator {
     public void generate(Printer p) {
         p.println("package %s;", controllerDesc.getPackageName());
         p.println();
-        p.println("import %s;", ClassConstants.ControllerDatastoreTestCase);
+        p.println("import %s;", ClassConstants.JDOControllerTestCase);
         p.println();
         p.println("public class %s%s extends %s {", controllerDesc
                 .getSimpleName(), Constants.TEST_SUFFIX, ClassUtil
-                .getSimpleName(ClassConstants.ControllerDatastoreTestCase));
+                .getSimpleName(ClassConstants.JDOControllerTestCase));
         p.println();
-        p.println("    public void testExecute() throws Exception {");
+        p.println("    public void testRun() throws Exception {");
         p.println("        start(\"%s\");", controllerDesc.getPath());
         p.println("        %s controller = getController();", controllerDesc
                 .getSimpleName());

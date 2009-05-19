@@ -74,13 +74,22 @@ public class ModelMetaGenerator implements Generator {
         for (AttributeDesc desc : modelDesc.getAttributeDescList()) {
             if (desc.isModelType()) {
                 p.println("    public %1$s%2$s %3$s = new %1$s%2$s();", desc
-                        .getTypeName(), Constants.META_SUFFIX, desc.getName());
+                        .getClassName(), Constants.META_SUFFIX, desc.getName());
             } else {
-                p
-                        .println(
-                                "    public %1$s<%2$s> %3$s = new %1$s<%2$s>(\"%3$s\");",
-                                ClassConstants.AttributeMeta, desc
-                                        .getTypeName(), desc.getName());
+                if (desc.getElementClassName() == null) {
+                    p
+                            .println(
+                                    "    public %1$s %2$s = new %1$s(\"%2$s\", %3$s.class);",
+                                    ClassConstants.AttributeMeta, desc
+                                            .getName(), desc.getClassName());
+                } else {
+                    p
+                            .println(
+                                    "    public %1$s %2$s = new %1$s(\"%2$s\", %3$s.class, %4$s.class);",
+                                    ClassConstants.AttributeMeta, desc
+                                            .getName(), desc.getClassName(),
+                                    desc.getElementClassName());
+                }
             }
             p.println();
         }

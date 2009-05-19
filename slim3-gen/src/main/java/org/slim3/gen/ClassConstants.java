@@ -30,14 +30,14 @@ public final class ClassConstants {
     /** {@code org.slim3.jdo.AttributeMeta} */
     public static final String AttributeMeta = "org.slim3.jdo.AttributeMeta";
 
-    /** {@code org.slim3.controller.Controller} */
-    public static final String Controller = "org.slim3.controller.Controller";
+    /** {@code org.slim3.controller.JDOController} */
+    public static final String JDOController = "org.slim3.controller.JDOController";
 
     /** {@code org.slim3.controller.Navigation} */
     public static final String Navigation = "org.slim3.controller.Navigation";
 
-    /** {@code org.slim3.tester.ControllerDatastoreTestCase} */
-    public static final String ControllerDatastoreTestCase = "org.slim3.tester.ControllerDatastoreTestCase";
+    /** {@code org.slim3.tester.JDOControllerTestCase} */
+    public static final String JDOControllerTestCase = "org.slim3.tester.JDOControllerTestCase";
 
     /** {@code javax.jdo.annotations.PersistenceCapable} */
     public static final String PersistenceCapable = "javax.jdo.annotations.PersistenceCapable";

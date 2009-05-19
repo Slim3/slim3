@@ -18,6 +18,8 @@ package org.slim3.gen.processor;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +44,7 @@ import javax.lang.model.util.SimpleTypeVisitor6;
 import org.slim3.gen.ClassConstants;
 import org.slim3.gen.desc.AttributeDesc;
 import org.slim3.gen.desc.ModelDesc;
+import org.slim3.gen.util.ClassUtil;
 import org.slim3.gen.util.ElementUtil;
 
 /**
@@ -90,12 +93,10 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
         if (persistent == null) {
             return null;
         }
-
         boolean modelType = isModelType(attribute);
         boolean serialized = false;
         for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : persistent
                 .getElementValues().entrySet()) {
-
             ExecutableElement element = entry.getKey();
             AnnotationValue annotationValue = entry.getValue();
             if (element.getSimpleName().contentEquals(
@@ -109,14 +110,22 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
                 }
             }
         }
-
-        String name = attribute.getSimpleName().toString();
-        String typeName = new AttributeTypeNameBuilder(attribute, serialized)
-                .build();
-        AttributeDesc attributeDesc = new AttributeDesc(name, typeName,
-                modelType);
+        AttributeDesc attributeDesc = new AttributeDesc();
+        attributeDesc.setName(attribute.getSimpleName().toString());
+        attributeDesc.setModelType(modelType);
+        Iterator<String> classNames = new ClassNameCollector(attribute.asType())
+                .collect().iterator();
+        if (classNames.hasNext()) {
+            String className = classNames.next();
+            validateClassName(className, serialized, attribute);
+            attributeDesc.setClassName(className);
+        }
+        if (classNames.hasNext()) {
+            String elementClassName = classNames.next();
+            validateClassName(elementClassName, serialized, attribute);
+            attributeDesc.setElementClassName(elementClassName);
+        }
         p.addAttributeDesc(attributeDesc);
-
         return null;
     }
 
@@ -151,7 +160,6 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
      */
     protected void validateMappedBy(boolean modelType, Element attribute,
             AnnotationMirror persistent, final AnnotationValue mappedBy) {
-
         if (!modelType) {
             Logger
                     .error(
@@ -166,7 +174,6 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
                 attribute.asType());
         boolean mapped = model.accept(
                 new ElementScanner6<Boolean, Void>(false) {
-
                     @Override
                     public Boolean visitType(TypeElement model, Void p) {
                         for (Element e : model.getEnclosedElements()) {
@@ -204,134 +211,122 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
     }
 
     /**
-     * Builds a string of a type name.
+     * Validates the className.
+     * 
+     * @param className
+     *            the class name
+     * @param serialized
+     *            {@code true} if the attribute element is marked as serialized
+     * @param attribute
+     *            the attribute element
+     */
+    protected void validateClassName(String className, boolean serialized,
+            Element attribute) {
+        String packageName = ClassUtil.getPackageName(className);
+        if (unsupportedPackageNameList.contains(packageName)) {
+            Logger
+                    .error(
+                            processingEnv,
+                            attribute,
+                            "[slim3-gen] Package(%s) is not supported on Google App Engine. See %s",
+                            packageName, documentURL);
+        }
+        if (unsupportedClassNameList.contains(className)) {
+            Logger
+                    .error(
+                            processingEnv,
+                            attribute,
+                            "[slim3-gen] Class(%s) is not supported on Google App Engine. See %s",
+                            className, documentURL);
+        }
+    }
+
+    /**
+     * Collects the collection of class name.
      * 
      * @author taedium
      * @since 3.0
      * 
      */
-    protected class AttributeTypeNameBuilder extends
-            SimpleTypeVisitor6<Void, StringBuilder> {
+    protected class ClassNameCollector extends
+            SimpleTypeVisitor6<Void, LinkedList<String>> {
 
-        /** the element which a message notified */
-        protected Element notifiedElement;
+        /** the target typeMirror */
+        protected final TypeMirror typeMirror;
 
-        protected TypeMirror typeMirror;
-
-        protected boolean serialized;
-
-        public AttributeTypeNameBuilder(Element notifiedElement,
-                boolean serialized) {
-            this.notifiedElement = notifiedElement;
-            this.typeMirror = notifiedElement.asType();
-            this.serialized = serialized;
+        /**
+         * Creates a new {@link ClassNameCollector}
+         * 
+         * @param typeMirror
+         *            the target typeMirror
+         */
+        public ClassNameCollector(TypeMirror typeMirror) {
+            this.typeMirror = typeMirror;
         }
 
-        public String build() {
-            StringBuilder buf = new StringBuilder();
-            typeMirror.accept(this, buf);
-            return buf.toString();
+        public List<String> collect() {
+            LinkedList<String> names = new LinkedList<String>();
+            typeMirror.accept(this, names);
+            return names;
         }
 
         @Override
-        public Void visitArray(ArrayType t, StringBuilder p) {
-            t.getComponentType().accept(this, p);
-            p.append("[]");
+        public Void visitArray(ArrayType t, LinkedList<String> p) {
+            LinkedList<String> names = new LinkedList<String>();
+            t.getComponentType().accept(this, names);
+            p.add(names.getFirst() + "[]");
+            p.add(names.getFirst());
             return null;
         }
 
         @Override
-        public Void visitPrimitive(PrimitiveType t, StringBuilder p) {
-            processingEnv.getTypeUtils().boxedClass(t).asType().accept(this, p);
+        public Void visitPrimitive(PrimitiveType t, LinkedList<String> p) {
+            String name = processingEnv.getTypeUtils().boxedClass(t)
+                    .getQualifiedName().toString();
+            p.add(name);
             return null;
         }
 
         @Override
-        public Void visitWildcard(WildcardType t, StringBuilder p) {
-            p.append("?");
+        public Void visitWildcard(WildcardType t, LinkedList<String> p) {
             TypeMirror extendedBound = t.getExtendsBound();
             if (extendedBound != null) {
-                p.append(" extends ");
-                extendedBound.accept(this, p);
+                LinkedList<String> names = new LinkedList<String>();
+                extendedBound.accept(this, names);
+                p.add(names.getFirst());
             }
             TypeMirror superBound = t.getSuperBound();
             if (superBound != null) {
-                p.append(" super ");
-                superBound.accept(this, p);
+                LinkedList<String> names = new LinkedList<String>();
+                superBound.accept(this, names);
+                p.add(names.getFirst());
             }
             return null;
         }
 
         @Override
-        public Void visitError(ErrorType t, StringBuilder p) {
-            p.append("Object");
+        public Void visitError(ErrorType t, LinkedList<String> p) {
+            p.add("Object");
             return null;
         }
 
         @Override
-        public Void visitDeclared(DeclaredType t, StringBuilder p) {
-            appendName(t, p);
-            List<? extends TypeMirror> typeArgs = t.getTypeArguments();
-            if (typeArgs.size() > 0) {
-                p.append("<");
-                for (TypeMirror arg : typeArgs) {
-                    arg.accept(this, p);
-                    p.append(", ");
-                }
-                p.setLength(p.length() - 2);
-                p.append(">");
-            }
-            return null;
-        }
-
-        /**
-         * Appends a type name to {@code p}.
-         * 
-         * @param t
-         *            the type.
-         * @param p
-         *            the object to which the type name is appended.
-         */
-        protected void appendName(DeclaredType t, StringBuilder p) {
+        public Void visitDeclared(DeclaredType t, LinkedList<String> p) {
             t.asElement().accept(
-                    new SimpleElementVisitor6<Void, StringBuilder>() {
+                    new SimpleElementVisitor6<Void, LinkedList<String>>() {
                         @Override
-                        public Void visitType(TypeElement e, StringBuilder p) {
-                            if (!serialized) {
-                                if (Options.isValidationEnabled(processingEnv)) {
-                                    validateTypeName(e);
-                                }
-                            }
-                            p.append(e.getQualifiedName().toString());
+                        public Void visitType(TypeElement e,
+                                LinkedList<String> p) {
+                            p.add(e.getQualifiedName().toString());
                             return null;
                         }
-
-                        protected void validateTypeName(TypeElement e) {
-                            String packageName = processingEnv
-                                    .getElementUtils().getPackageOf(e)
-                                    .getQualifiedName().toString();
-                            String qualifiedName = e.getQualifiedName()
-                                    .toString();
-                            if (unsupportedPackageNameList
-                                    .contains(packageName)) {
-                                Logger
-                                        .error(
-                                                processingEnv,
-                                                notifiedElement,
-                                                "[slim3-gen] Package(%s) is not supported on Google App Engine. See %s",
-                                                packageName, documentURL);
-                            }
-                            if (unsupportedClassNameList
-                                    .contains(qualifiedName)) {
-                                Logger
-                                        .error(
-                                                processingEnv,
-                                                notifiedElement,
-                                                "[slim3-gen] Class(%s) is not supported on Google App Engine. See %s",
-                                                qualifiedName, documentURL);
-                            }
-                        }
                     }, p);
+            for (TypeMirror arg : t.getTypeArguments()) {
+                LinkedList<String> names = new LinkedList<String>();
+                arg.accept(this, names);
+                p.add(names.getFirst());
+            }
+            return null;
         }
     }
 }
