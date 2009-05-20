@@ -10,11 +10,10 @@ public class UpdateController extends JDOController {
 
     @Override
     public Navigation run() {
-        Blog blog = (Blog) request.getSession().getAttribute("blog");
+        Blog blog = removeSessionScope("blog");
         if (blog == null) {
             throw new IllegalStateException("The blog instance is not found.");
         }
-        request.getSession().removeAttribute("blog");
         BeanUtil.copy(request, blog);
         pm.makePersistent(blog);
         return redirect(basePath);

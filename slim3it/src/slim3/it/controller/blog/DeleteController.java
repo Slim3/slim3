@@ -12,9 +12,7 @@ public class DeleteController extends JDOController {
 
     @Override
     public Navigation run() {
-        Key key =
-            key(Blog.class, LongUtil
-                .toPrimitiveLong(request.getAttribute("id")));
+        Key key = key(Blog.class, LongUtil.toLong(requestScope("id")));
         Blog blog = pm.getObjectById(Blog.class, key);
         pm.deletePersistent(blog);
         return redirect(basePath);

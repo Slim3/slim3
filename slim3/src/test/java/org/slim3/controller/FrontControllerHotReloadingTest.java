@@ -48,6 +48,6 @@ public class FrontControllerHotReloadingTest extends ControllerTestCase {
      * 
      */
     public void testInit() throws Exception {
-        assertTrue(controllerTester.frontController.hotReloading);
+        assertTrue(frontController.hotReloading);
     }
 }

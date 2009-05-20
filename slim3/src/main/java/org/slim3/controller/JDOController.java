@@ -15,7 +15,11 @@
  */
 package org.slim3.controller;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.jdo.PersistenceManager;
+import javax.jdo.Transaction;
 
 import org.slim3.jdo.ModelMeta;
 import org.slim3.jdo.PMF;
@@ -25,6 +29,10 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
 /**
+ * @author li0934
+ *
+ */
+/**
  * A controller class for JDO.
  * 
  * @author higa
@@ -33,10 +41,18 @@ import com.google.appengine.api.datastore.KeyFactory;
  */
 public abstract class JDOController extends Controller {
 
+    private static final Logger logger =
+        Logger.getLogger(JDOController.class.getName());
+
     /**
      * The persistence manager.
      */
     protected PersistenceManager pm;
+
+    /**
+     * The current transaction.
+     */
+    protected Transaction tx;
 
     /**
      * Creates a new key.
@@ -84,12 +100,31 @@ public abstract class JDOController extends Controller {
     protected void setUp() {
         super.setUp();
         pm = PMF.get().getPersistenceManager();
+        tx = pm.currentTransaction();
     }
 
     @Override
     protected void tearDown() {
-        pm.close();
-        pm = null;
+        try {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+        } catch (Throwable t) {
+            if (logger.isLoggable(Level.WARNING)) {
+                logger.log(Level.WARNING, t.getMessage(), t);
+            }
+        } finally {
+            tx = null;
+        }
+        try {
+            pm.close();
+        } catch (Throwable t) {
+            if (logger.isLoggable(Level.WARNING)) {
+                logger.log(Level.WARNING, t.getMessage(), t);
+            }
+        } finally {
+            pm = null;
+        }
         super.tearDown();
     }
 
@@ -104,5 +139,14 @@ public abstract class JDOController extends Controller {
      */
     protected <M> SelectQuery<M> from(ModelMeta<M> modelMeta) {
         return new SelectQuery<M>(modelMeta, pm);
+    }
+
+    /**
+     * Refreshes the current persistence manager.
+     */
+    protected void refreshPersistenceManager() {
+        pm.close();
+        pm = PMF.get().getPersistenceManager();
+        tx = pm.currentTransaction();
     }
 }

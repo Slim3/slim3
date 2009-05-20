@@ -182,9 +182,8 @@ public class FrontController implements Filter {
             return null;
         }
         request.setAttribute(ControllerConstants.CONTROLLER_KEY, controller);
-        controller.servletContext = servletContext;
-        RequestHandler requestHandler = createRequestHandler(request);
-        controller.request = requestHandler.handle();
+        controller.application = servletContext;
+        controller.request = request;
         controller.response = response;
         int pos = path.lastIndexOf('/');
         controller.basePath = path.substring(0, pos + 1);
@@ -268,6 +267,8 @@ public class FrontController implements Filter {
     protected void processController(HttpServletRequest request,
             HttpServletResponse response, Controller controller)
             throws IOException, ServletException {
+        RequestHandler requestHandler = createRequestHandler(request);
+        requestHandler.handle();
         Navigation navigation = controller.runBare();
         handleNavigation(request, response, controller, navigation);
     }

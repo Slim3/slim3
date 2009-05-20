@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.slim3.util.RuntimeExceptionUtil;
 
@@ -39,7 +40,7 @@ public abstract class Controller {
     /**
      * The servlet context.
      */
-    protected ServletContext servletContext;
+    protected ServletContext application;
 
     /**
      * The request.
@@ -143,5 +144,161 @@ public abstract class Controller {
      */
     protected Navigation redirect(String path) {
         return new Navigation(path, true);
+    }
+
+    /**
+     * Returns the request parameter.
+     * 
+     * @param name
+     *            the parameter name
+     * @return the parameter value
+     */
+    protected String param(String name) {
+        return request.getParameter(name);
+    }
+
+    /**
+     * Returns the request parameter.
+     * 
+     * @param name
+     *            the parameter name
+     * @return the parameter value
+     */
+    protected String[] paramValues(String name) {
+        return request.getParameterValues(name);
+    }
+
+    /**
+     * Returns the request attribute.
+     * 
+     * @param <T>
+     *            the return type
+     * @param name
+     *            the attribute name
+     * @return the request attribute
+     */
+    @SuppressWarnings("unchecked")
+    protected <T> T requestScope(String name) {
+        return (T) request.getAttribute(name);
+    }
+
+    /**
+     * Sets the request attribute.
+     * 
+     * @param name
+     *            the attribute name
+     * @param value
+     *            the attribute value
+     */
+    protected void requestScope(String name, Object value) {
+        request.setAttribute(name, value);
+    }
+
+    /**
+     * Removes the request attribute.
+     * 
+     * @param <T>
+     *            the return type
+     * @param name
+     *            the attribute name
+     * @return the removed value
+     */
+    @SuppressWarnings("unchecked")
+    protected <T> T removeRequestScope(String name) {
+        T value = (T) request.getAttribute(name);
+        request.removeAttribute(name);
+        return value;
+    }
+
+    /**
+     * Returns the session attribute.
+     * 
+     * @param <T>
+     *            the return type
+     * @param name
+     *            the attribute name
+     * @return the attribute value
+     */
+    @SuppressWarnings("unchecked")
+    protected <T> T sessionScope(String name) {
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            return null;
+        }
+        return (T) session.getAttribute(name);
+    }
+
+    /**
+     * Sets the session attribute.
+     * 
+     * @param name
+     *            the attribute name
+     * @param value
+     *            the attribute value
+     */
+    protected void sessionScope(String name, Object value) {
+        request.getSession().setAttribute(name, value);
+    }
+
+    /**
+     * Removes the session attribute.
+     * 
+     * @param <T>
+     *            the return type
+     * @param name
+     *            the attribute name
+     * @return the removed value
+     */
+    @SuppressWarnings("unchecked")
+    protected <T> T removeSessionScope(String name) {
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            return null;
+        }
+        T value = (T) session.getAttribute(name);
+        session.removeAttribute(name);
+        return value;
+    }
+
+    /**
+     * Returns the servlet context attribute.
+     * 
+     * @param <T>
+     *            the return type
+     * @param name
+     *            the attribute name
+     * @return the attribute value
+     */
+    @SuppressWarnings("unchecked")
+    protected <T> T applicationScope(String name) {
+        return (T) application.getAttribute(name);
+    }
+
+    /**
+     * Sets the servlet context attribute.
+     * 
+     * @param name
+     *            the attribute name
+     * @param value
+     *            the attribute value
+     */
+    protected void applicationScope(String name, Object value) {
+        application.setAttribute(name, value);
+    }
+
+    /**
+     * Removes the servlet context attribute.
+     * 
+     * @param <T>
+     *            the return type
+     * @param name
+     *            the attribute name
+     * @return the removed value
+     */
+    @SuppressWarnings("unchecked")
+    protected <T> T removeApplicationScope(String name) {
+        T value = (T) application.getAttribute(name);
+        application.removeAttribute(name);
+        return value;
     }
 }

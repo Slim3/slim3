@@ -35,7 +35,7 @@ public class ControllerTest extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
-        controller.servletContext = servletContext;
+        controller.application = servletContext;
         controller.request = request;
     }
 
@@ -67,6 +67,70 @@ public class ControllerTest extends TestCase {
         Navigation nav = controller.redirect("index");
         assertEquals("index", nav.getPath());
         assertTrue(nav.isRedirect());
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testParam() throws Exception {
+        request.setParameter("aaa", "111");
+        assertEquals("111", controller.param("aaa"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testParamValues() throws Exception {
+        String[] array = new String[] { "111" };
+        request.setParameter("aaa", array);
+        assertEquals(array, controller.paramValues("aaa"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testRequestScope() throws Exception {
+        Integer value = 1;
+        controller.requestScope("aaa", value);
+        Integer returnValue = controller.requestScope("aaa");
+        assertEquals(value, returnValue);
+        assertEquals(value, request.getAttribute("aaa"));
+        returnValue = controller.removeRequestScope("aaa");
+        assertEquals(value, returnValue);
+        assertNull(request.getAttribute("aaa"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testSessionScope() throws Exception {
+        Integer value = 1;
+        controller.sessionScope("aaa", value);
+        Integer returnValue = controller.sessionScope("aaa");
+        assertEquals(value, returnValue);
+        assertEquals(value, request.getSession().getAttribute("aaa"));
+        returnValue = controller.removeSessionScope("aaa");
+        assertEquals(value, returnValue);
+        assertNull(request.getSession().getAttribute("aaa"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testApplicationScope() throws Exception {
+        Integer value = 1;
+        controller.applicationScope("aaa", value);
+        Integer returnValue = controller.applicationScope("aaa");
+        assertEquals(value, returnValue);
+        assertEquals(value, servletContext.getAttribute("aaa"));
+        returnValue = controller.removeApplicationScope("aaa");
+        assertEquals(value, returnValue);
+        assertNull(servletContext.getAttribute("aaa"));
     }
 
     private static class IndexController extends Controller {

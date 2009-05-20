@@ -17,12 +17,22 @@ package org.slim3.tester;
 
 import java.io.IOException;
 
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import junit.framework.TestCase;
 
 import org.slim3.controller.Controller;
 import org.slim3.controller.ControllerConstants;
+import org.slim3.controller.FrontController;
+import org.slim3.controller.RequestLocator;
+import org.slim3.controller.ResponseLocator;
 
 /**
  * A test case for Slim3 Controller.
@@ -34,19 +44,59 @@ import org.slim3.controller.ControllerConstants;
 public abstract class ControllerTestCase extends TestCase {
 
     /**
-     * The tester for Slim3 Controller.
+     * The mock for {@link ServletContext}.
      */
-    protected ControllerTester controllerTester = new ControllerTester();
+    protected MockServletContext application;
 
     /**
-     * @throws Exception
-     * 
+     * The mock for {@link ServletConfig}.
      */
+    protected MockServletConfig config;
+
+    /**
+     * The mock for {@link FilterConfig}.
+     */
+    protected MockFilterConfig filterConfig;
+
+    /**
+     * The front controller.
+     */
+    protected FrontController frontController;
+
+    /**
+     * The mock for {@link HttpServletRequest}.
+     */
+    protected MockHttpServletRequest request;
+
+    /**
+     * The mock for {@link HttpServletResponse}.
+     */
+    protected MockHttpServletResponse response;
+
+    /**
+     * A mock for {@link FilterChain}.
+     */
+    protected MockFilterChain filterChain;
+
+    /**
+     * Whether "start" method was called.
+     */
+    protected boolean startCalled = false;
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         setUpControllerPackage();
-        controllerTester.setUp();
+        application = new MockServletContext();
+        config = new MockServletConfig(application);
+        filterConfig = new MockFilterConfig(application);
+        frontController = new FrontController();
+        frontController.init(filterConfig);
+        request = new MockHttpServletRequest(application);
+        response = new MockHttpServletResponse();
+        RequestLocator.setRequest(request);
+        ResponseLocator.setResponse(response);
+        filterChain = new MockFilterChain();
     }
 
     /**
@@ -67,13 +117,18 @@ public abstract class ControllerTestCase extends TestCase {
             packageName);
     }
 
-    /**
-     * @throws Exception
-     * 
-     */
     @Override
     protected void tearDown() throws Exception {
-        controllerTester.tearDown();
+        application = null;
+        config = null;
+        filterConfig = null;
+        frontController.destroy();
+        frontController = null;
+        request = null;
+        response = null;
+        RequestLocator.setRequest(null);
+        ResponseLocator.setResponse(null);
+        filterChain = null;
         tearDownControllerPackage();
         super.tearDown();
     }
@@ -92,8 +147,8 @@ public abstract class ControllerTestCase extends TestCase {
      *            the parameter name
      * @return the parameter value
      */
-    protected String getParameter(String name) {
-        return controllerTester.getParameter(name);
+    protected String param(String name) {
+        return request.getParameter(name);
     }
 
     /**
@@ -104,8 +159,8 @@ public abstract class ControllerTestCase extends TestCase {
      * @param value
      *            the parameter value
      */
-    protected void setParameter(String name, String value) {
-        controllerTester.setParameter(name, value);
+    protected void param(String name, String value) {
+        request.setParameter(name, value);
     }
 
     /**
@@ -115,8 +170,8 @@ public abstract class ControllerTestCase extends TestCase {
      *            the parameter name
      * @return the parameter value
      */
-    protected String[] getParameterValues(String name) {
-        return controllerTester.getParameterValues(name);
+    protected String[] paramValues(String name) {
+        return request.getParameterValues(name);
     }
 
     /**
@@ -127,8 +182,8 @@ public abstract class ControllerTestCase extends TestCase {
      * @param value
      *            the parameter value
      */
-    protected void setParameter(String name, String[] value) {
-        controllerTester.setParameter(name, value);
+    protected void paramValues(String name, String[] value) {
+        request.setParameter(name, value);
     }
 
     /**
@@ -141,20 +196,20 @@ public abstract class ControllerTestCase extends TestCase {
      * @return the request attribute
      */
     @SuppressWarnings("unchecked")
-    protected <T> T getAttribute(String name) {
-        return (T) controllerTester.getAttribute(name);
+    protected <T> T requestScope(String name) {
+        return (T) request.getAttribute(name);
     }
 
     /**
-     * Sets the request attribute
+     * Sets the request attribute.
      * 
      * @param name
      *            the attribute name
      * @param value
      *            the attribute value
      */
-    protected void setAttribute(String name, Object value) {
-        controllerTester.setAttribute(name, value);
+    protected void requestScope(String name, Object value) {
+        request.setAttribute(name, value);
     }
 
     /**
@@ -167,8 +222,12 @@ public abstract class ControllerTestCase extends TestCase {
      * @return the attribute value
      */
     @SuppressWarnings("unchecked")
-    protected <T> T getSessionAttribute(String name) {
-        return (T) controllerTester.getSessionAttribute(name);
+    protected <T> T sessionScope(String name) {
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            return null;
+        }
+        return (T) session.getAttribute(name);
     }
 
     /**
@@ -179,8 +238,8 @@ public abstract class ControllerTestCase extends TestCase {
      * @param value
      *            the attribute value
      */
-    protected void setSessionAttribute(String name, Object value) {
-        controllerTester.setSessionAttribute(name, value);
+    protected void sessionScope(String name, Object value) {
+        request.getSession().setAttribute(name, value);
     }
 
     /**
@@ -193,8 +252,8 @@ public abstract class ControllerTestCase extends TestCase {
      * @return the attribute value
      */
     @SuppressWarnings("unchecked")
-    protected <T> T getServletContextAttribute(String name) {
-        return (T) controllerTester.getServletContextAttribute(name);
+    protected <T> T applicationScope(String name) {
+        return (T) application.getAttribute(name);
     }
 
     /**
@@ -205,8 +264,8 @@ public abstract class ControllerTestCase extends TestCase {
      * @param value
      *            the attribute value
      */
-    protected void setServletContextAttribute(String name, Object value) {
-        controllerTester.setServletContextAttribute(name, value);
+    protected void applicationScope(String name, Object value) {
+        application.setAttribute(name, value);
     }
 
     /**
@@ -225,7 +284,17 @@ public abstract class ControllerTestCase extends TestCase {
      */
     protected void start(String path) throws NullPointerException,
             IllegalArgumentException, IOException, ServletException {
-        controllerTester.start(path);
+        if (path == null) {
+            throw new NullPointerException("The path parameter is null.");
+        }
+        if (!path.startsWith("/")) {
+            throw new IllegalArgumentException("The path("
+                + path
+                + ") must start with \"/\".");
+        }
+        request.setServletPath(path);
+        frontController.doFilter(request, response, filterChain);
+        startCalled = true;
     }
 
     /**
@@ -234,7 +303,7 @@ public abstract class ControllerTestCase extends TestCase {
      * @return whether the test result is "redirect"
      */
     protected boolean isRedirect() {
-        return controllerTester.isRedirect();
+        return response.getRedirectPath() != null;
     }
 
     /**
@@ -243,7 +312,16 @@ public abstract class ControllerTestCase extends TestCase {
      * @return the next path
      */
     protected String getNextPath() {
-        return controllerTester.getNextPath();
+        assertStartWasCalled();
+        MockRequestDispatcher dispatcher =
+            application.getLatestRequestDispatcher();
+        if (dispatcher != null) {
+            return dispatcher.getPath();
+        }
+        if (response.getRedirectPath() != null) {
+            return response.getRedirectPath();
+        }
+        return filterChain.getPath();
     }
 
     /**
@@ -255,6 +333,17 @@ public abstract class ControllerTestCase extends TestCase {
      */
     @SuppressWarnings("unchecked")
     protected <T extends Controller> T getController() {
-        return (T) controllerTester.getController();
+        assertStartWasCalled();
+        return (T) request.getAttribute(ControllerConstants.CONTROLLER_KEY);
+    }
+
+    /**
+     * Asserts that "start" method was called.
+     */
+    protected void assertStartWasCalled() {
+        if (!startCalled) {
+            throw new IllegalStateException(
+                "Call ControllerTester#start() before getting the test results.");
+        }
     }
 }

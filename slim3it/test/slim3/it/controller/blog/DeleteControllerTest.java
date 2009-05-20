@@ -16,7 +16,7 @@ public class DeleteControllerTest extends JDOControllerTestCase {
         pm.makePersistent(blog);
         refreshPersistenceManager();
         Key key = blog.getKey();
-        setParameter("id", String.valueOf(key.getId()));
+        param("id", String.valueOf(key.getId()));
         start("/blog/delete");
         DeleteController controller = getController();
         assertNotNull(controller);

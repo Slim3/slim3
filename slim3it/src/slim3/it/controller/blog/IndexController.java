@@ -24,7 +24,7 @@ public class IndexController extends JDOController {
             m.put("id", b.getKey().getId());
             blogList.add(m);
         }
-        request.setAttribute("blogList", blogList);
+        requestScope("blogList", blogList);
         return forward("/blog/index.jsp");
     }
 }

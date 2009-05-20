@@ -49,10 +49,9 @@ public class RequestHandler {
     /**
      * Handles the request.
      * 
-     * @return the handled request
      */
     @SuppressWarnings("unchecked")
-    public HttpServletRequest handle() {
+    public void handle() {
         for (Enumeration<String> e = request.getParameterNames(); e
             .hasMoreElements();) {
             String name = e.nextElement();
@@ -62,6 +61,5 @@ public class RequestHandler {
                 request.setAttribute(name, request.getParameter(name));
             }
         }
-        return request;
     }
 }

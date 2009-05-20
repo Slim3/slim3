@@ -16,6 +16,7 @@
 package org.slim3.tester;
 
 import javax.jdo.PersistenceManager;
+import javax.jdo.Transaction;
 
 import org.slim3.jdo.ModelMeta;
 import org.slim3.jdo.PMF;
@@ -35,14 +36,24 @@ public abstract class JDOTestCase extends DatastoreTestCase {
      */
     protected PersistenceManager pm;
 
+    /**
+     * The transaction.
+     */
+    protected Transaction tx;
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         pm = PMF.get().getPersistenceManager();
+        tx = pm.currentTransaction();
     }
 
     @Override
     protected void tearDown() throws Exception {
+        if (tx.isActive()) {
+            tx.rollback();
+        }
+        tx = null;
         pm.close();
         pm = null;
         super.tearDown();
@@ -67,5 +78,6 @@ public abstract class JDOTestCase extends DatastoreTestCase {
     protected void refreshPersistenceManager() {
         pm.close();
         pm = PMF.get().getPersistenceManager();
+        tx = pm.currentTransaction();
     }
 }

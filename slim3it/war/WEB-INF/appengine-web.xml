@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
 	<application>higayasuo</application>
-	<version>13</version>
+	<version>12</version>
 	<system-properties>
         <property name="slim3.controllerPackage" value="slim3.it.controller"/>
         <property name="java.util.logging.config.file" value="WEB-INF/classes/logging.properties"/>

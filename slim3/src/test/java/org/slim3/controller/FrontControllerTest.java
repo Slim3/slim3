@@ -48,15 +48,13 @@ public class FrontControllerTest extends ControllerTestCase {
      * 
      */
     public void testInit() throws Exception {
-        controllerTester.frontController.init(controllerTester.filterConfig);
+        frontController.init(filterConfig);
         assertEquals(
             ControllerConstants.DEFAULT_REQUEST_CHARSET,
-            controllerTester.frontController.charset);
+            frontController.charset);
         assertNotNull(ServletContextLocator.getServletContext());
-        assertFalse(controllerTester.frontController.hotReloading);
-        assertEquals(
-            CONTROLLER_PACKAGE,
-            controllerTester.frontController.controllerPackageName);
+        assertFalse(frontController.hotReloading);
+        assertEquals(CONTROLLER_PACKAGE, frontController.controllerPackageName);
     }
 
     /**
@@ -64,16 +62,12 @@ public class FrontControllerTest extends ControllerTestCase {
      * 
      */
     public void testToControllerClassName() throws Exception {
-        assertEquals(
-            ListController.class.getName(),
-            controllerTester.frontController
-                .toControllerClassName("/hello/list"));
-        assertEquals(
-            HogeController.class.getName(),
-            controllerTester.frontController.toControllerClassName("/hoge"));
-        assertEquals(
-            IndexController.class.getName(),
-            controllerTester.frontController.toControllerClassName("/"));
+        assertEquals(ListController.class.getName(), frontController
+            .toControllerClassName("/hello/list"));
+        assertEquals(HogeController.class.getName(), frontController
+            .toControllerClassName("/hoge"));
+        assertEquals(IndexController.class.getName(), frontController
+            .toControllerClassName("/"));
     }
 
     /**
@@ -81,8 +75,7 @@ public class FrontControllerTest extends ControllerTestCase {
      * 
      */
     public void testCreateController() throws Exception {
-        Controller controller =
-            controllerTester.frontController.createController("/hello/list");
+        Controller controller = frontController.createController("/hello/list");
         assertNotNull(controller);
         assertEquals(ListController.class, controller.getClass());
     }
@@ -92,8 +85,7 @@ public class FrontControllerTest extends ControllerTestCase {
      * 
      */
     public void testCreateControllerForRoot() throws Exception {
-        Controller controller =
-            controllerTester.frontController.createController("/hoge");
+        Controller controller = frontController.createController("/hoge");
         assertNotNull(controller);
         assertEquals(HogeController.class, controller.getClass());
     }
@@ -103,8 +95,7 @@ public class FrontControllerTest extends ControllerTestCase {
      * 
      */
     public void testCreateControllerForRootIndexController() throws Exception {
-        Controller controller =
-            controllerTester.frontController.createController("/");
+        Controller controller = frontController.createController("/");
         assertNotNull(controller);
         assertEquals(IndexController.class, controller.getClass());
     }
@@ -114,8 +105,7 @@ public class FrontControllerTest extends ControllerTestCase {
      * 
      */
     public void testCreateControllerForIndexController() throws Exception {
-        Controller controller =
-            controllerTester.frontController.createController("/hello/");
+        Controller controller = frontController.createController("/hello/");
         assertNotNull(controller);
         assertEquals(
             org.slim3.controller.controller.hello.IndexController.class,
@@ -128,7 +118,7 @@ public class FrontControllerTest extends ControllerTestCase {
      */
     public void testCreateControllerForBadController() throws Exception {
         try {
-            controllerTester.frontController.createController("/bad");
+            frontController.createController("/bad");
             fail();
         } catch (IllegalStateException e) {
             System.out.println(e.getMessage());
@@ -140,7 +130,7 @@ public class FrontControllerTest extends ControllerTestCase {
      * 
      */
     public void testCreateControllerForClassNotFound() throws Exception {
-        assertNull(controllerTester.frontController.createController("/xxx"));
+        assertNull(frontController.createController("/xxx"));
     }
 
     /**
@@ -148,19 +138,13 @@ public class FrontControllerTest extends ControllerTestCase {
      * 
      */
     public void testGetController() throws Exception {
-        setParameter("aaa", "111");
         Controller controller =
-            controllerTester.frontController.getController(
-                controllerTester.request,
-                controllerTester.response,
-                "/");
-        assertNotNull(controller.servletContext);
+            frontController.getController(request, response, "/");
+        assertNotNull(controller.application);
         assertNotNull(controller.request);
         assertNotNull(controller.response);
         assertEquals("/", controller.basePath);
-        assertSame(controller, controllerTester.request
-            .getAttribute(ControllerConstants.CONTROLLER_KEY));
-        assertEquals("111", getAttribute("aaa"));
+        assertSame(controller, requestScope(ControllerConstants.CONTROLLER_KEY));
     }
 
     /**
@@ -168,9 +152,9 @@ public class FrontControllerTest extends ControllerTestCase {
      * 
      */
     public void testGetControllerForJsp() throws Exception {
-        assertNull(controllerTester.frontController.getController(
-            controllerTester.request,
-            controllerTester.response,
+        assertNull(frontController.getController(
+            request,
+            response,
             "/index.jsp"));
     }
 
@@ -180,14 +164,9 @@ public class FrontControllerTest extends ControllerTestCase {
      */
     public void testDoRedirect() throws Exception {
         String path = "http://www.google.com";
-        Controller controller =
-            controllerTester.frontController.createController("/");
-        controllerTester.frontController.doRedirect(
-            controllerTester.request,
-            controllerTester.response,
-            controller,
-            path);
-        assertEquals(path, controllerTester.response.getRedirectPath());
+        Controller controller = frontController.createController("/");
+        frontController.doRedirect(request, response, controller, path);
+        assertEquals(path, response.getRedirectPath());
     }
 
     /**
@@ -195,16 +174,11 @@ public class FrontControllerTest extends ControllerTestCase {
      * 
      */
     public void testDoRedirectForContextRelativePath() throws Exception {
-        controllerTester.servletContext.setContextPath("/slim3-tutorial");
-        Controller controller =
-            controllerTester.frontController.createController("/");
-        controllerTester.frontController.doRedirect(
-            controllerTester.request,
-            controllerTester.response,
-            controller,
-            "/hello/list");
-        assertEquals("/slim3-tutorial/hello/list", controllerTester.response
-            .getRedirectPath());
+        application.setContextPath("/slim3-tutorial");
+        Controller controller = frontController.createController("/");
+        frontController
+            .doRedirect(request, response, controller, "/hello/list");
+        assertEquals("/slim3-tutorial/hello/list", response.getRedirectPath());
     }
 
     /**
@@ -213,16 +187,9 @@ public class FrontControllerTest extends ControllerTestCase {
      */
     public void testDoForward() throws Exception {
         Controller controller =
-            controllerTester.frontController.getController(
-                controllerTester.request,
-                controllerTester.response,
-                "/");
-        controllerTester.frontController.doForward(
-            controllerTester.request,
-            controllerTester.response,
-            controller,
-            "index.jsp");
-        assertEquals("/index.jsp", controllerTester.servletContext
+            frontController.getController(request, response, "/");
+        frontController.doForward(request, response, controller, "index.jsp");
+        assertEquals("/index.jsp", application
             .getLatestRequestDispatcher()
             .getPath());
     }
@@ -233,16 +200,9 @@ public class FrontControllerTest extends ControllerTestCase {
      */
     public void testDoForwardForApplicationRelativePath() throws Exception {
         Controller controller =
-            controllerTester.frontController.getController(
-                controllerTester.request,
-                controllerTester.response,
-                "/hoge");
-        controllerTester.frontController.doForward(
-            controllerTester.request,
-            controllerTester.response,
-            controller,
-            "index.jsp");
-        assertEquals("/index.jsp", controllerTester.servletContext
+            frontController.getController(request, response, "/hoge");
+        frontController.doForward(request, response, controller, "index.jsp");
+        assertEquals("/index.jsp", application
             .getLatestRequestDispatcher()
             .getPath());
     }
@@ -252,15 +212,10 @@ public class FrontControllerTest extends ControllerTestCase {
      * 
      */
     public void testHandleNavigationForNoNavigation() throws Exception {
-        Controller controller =
-            controllerTester.frontController.createController("/");
-        controllerTester.frontController.handleNavigation(
-            controllerTester.request,
-            controllerTester.response,
-            controller,
-            null);
-        assertNull(controllerTester.response.getRedirectPath());
-        assertNull(controllerTester.servletContext.getLatestRequestDispatcher());
+        Controller controller = frontController.createController("/");
+        frontController.handleNavigation(request, response, controller, null);
+        assertNull(response.getRedirectPath());
+        assertNull(application.getLatestRequestDispatcher());
     }
 
     /**
@@ -269,15 +224,14 @@ public class FrontControllerTest extends ControllerTestCase {
      */
     public void testHandleNavigationForRedirect() throws Exception {
         String path = "http://www.google.com";
-        Controller controller =
-            controllerTester.frontController.createController("/");
+        Controller controller = frontController.createController("/");
         Navigation navigation = controller.redirect(path);
-        controllerTester.frontController.handleNavigation(
-            controllerTester.request,
-            controllerTester.response,
+        frontController.handleNavigation(
+            request,
+            response,
             controller,
             navigation);
-        assertEquals(path, controllerTester.response.getRedirectPath());
+        assertEquals(path, response.getRedirectPath());
     }
 
     /**
@@ -286,17 +240,14 @@ public class FrontControllerTest extends ControllerTestCase {
      */
     public void testHandleNavigationForForward() throws Exception {
         Controller controller =
-            controllerTester.frontController.getController(
-                controllerTester.request,
-                controllerTester.response,
-                "/");
+            frontController.getController(request, response, "/");
         Navigation navigation = controller.forward("index.jsp");
-        controllerTester.frontController.handleNavigation(
-            controllerTester.request,
-            controllerTester.response,
+        frontController.handleNavigation(
+            request,
+            response,
             controller,
             navigation);
-        assertEquals("/index.jsp", controllerTester.servletContext
+        assertEquals("/index.jsp", application
             .getLatestRequestDispatcher()
             .getPath());
     }
@@ -306,21 +257,17 @@ public class FrontControllerTest extends ControllerTestCase {
      * 
      */
     public void testProcessController() throws Exception {
+        param("aaa", "111");
         Controller controller =
-            controllerTester.frontController.getController(
-                controllerTester.request,
-                controllerTester.response,
-                "/");
-        controllerTester.frontController.processController(
-            controllerTester.request,
-            controllerTester.response,
-            controller);
-        assertNotNull(controller.servletContext);
+            frontController.getController(request, response, "/");
+        frontController.processController(request, response, controller);
+        assertNotNull(controller.application);
         assertNotNull(controller.request);
         assertNotNull(controller.response);
-        assertEquals("/index.jsp", controllerTester.servletContext
+        assertEquals("/index.jsp", application
             .getLatestRequestDispatcher()
             .getPath());
+        assertEquals("111", requestScope("aaa"));
     }
 
     /**
@@ -328,13 +275,10 @@ public class FrontControllerTest extends ControllerTestCase {
      * 
      */
     public void testDoFilter() throws Exception {
-        controllerTester.request.setServletPath("/");
-        controllerTester.frontController.doFilter(
-            controllerTester.request,
-            controllerTester.response,
-            controllerTester.filterChain);
-        assertEquals("UTF-8", controllerTester.request.getCharacterEncoding());
-        assertEquals("/index.jsp", controllerTester.servletContext
+        request.setServletPath("/");
+        frontController.doFilter(request, response, filterChain);
+        assertEquals("UTF-8", request.getCharacterEncoding());
+        assertEquals("/index.jsp", application
             .getLatestRequestDispatcher()
             .getPath());
     }

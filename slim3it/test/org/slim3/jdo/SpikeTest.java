@@ -17,8 +17,6 @@ package org.slim3.jdo;
 
 import org.slim3.tester.JDOTestCase;
 
-import slim3.it.model.Sample;
-
 /**
  * @author higa
  * 
@@ -29,7 +27,5 @@ public class SpikeTest extends JDOTestCase {
      * @throws Exception
      */
     public void test() throws Exception {
-        Sample s = new Sample();
-        pm.makePersistent(s);
     }
 }

@@ -15,8 +15,6 @@
  */
 package org.slim3.controller;
 
-import javax.servlet.http.HttpServletRequest;
-
 import junit.framework.TestCase;
 
 import org.slim3.tester.MockHttpServletRequest;
@@ -41,9 +39,9 @@ public class RequestHandlerTest extends TestCase {
         request.setParameter("aaa", "111");
         request.setParameter("bbbArray", new String[] { "222" });
         RequestHandler handler = new RequestHandler(request);
-        HttpServletRequest request2 = handler.handle();
-        assertEquals("111", request2.getAttribute("aaa"));
-        String[] bbbArray = (String[]) request2.getAttribute("bbbArray");
+        handler.handle();
+        assertEquals("111", request.getAttribute("aaa"));
+        String[] bbbArray = (String[]) request.getAttribute("bbbArray");
         assertNotNull(bbbArray);
         assertEquals(1, bbbArray.length);
         assertEquals("222", bbbArray[0]);
