@@ -10,6 +10,7 @@
 </head>
 <body>
 <form action="${f:url('update')}" method="post">
+<input type="hidden" name="id" value="${f:h(id)}"/>
 Title<br />
 <input type="text" name="title" value="${f:h(title)}"/><br />
 Content<br />

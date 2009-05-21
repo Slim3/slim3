@@ -2,7 +2,7 @@ package slim3.it.controller.blog;
 
 import org.slim3.tester.JDOControllerTestCase;
 
-import slim3.it.model.BlogMeta;
+import slim3.it.model.Blog;
 
 public class InsertControllerTest extends JDOControllerTestCase {
 
@@ -16,7 +16,6 @@ public class InsertControllerTest extends JDOControllerTestCase {
         assertEquals("/blog/", getNextPath());
         assertEquals("aaa", requestScope("title"));
         assertEquals("bbb", requestScope("content"));
-        BlogMeta m = new BlogMeta();
-        assertEquals(1, from(m).getResultList().size());
+        assertEquals(1, count(Blog.class));
     }
 }

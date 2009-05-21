@@ -15,6 +15,8 @@
  */
 package slim3.it.model;
 
+import javax.jdo.annotations.Extension;
+import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
@@ -24,25 +26,26 @@ import javax.jdo.annotations.PrimaryKey;
  * @author higa
  * 
  */
-@PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
-public class Sample3 {
+@PersistenceCapable(identityType = IdentityType.APPLICATION)
+public class Parent {
 
     @PrimaryKey
-    @Persistent
-    private String name;
+    @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+    @Extension(vendorName = "datanucleus", key = "gae.encoded-pk", value = "true")
+    private String key;
 
     /**
-     * @param name
-     *            the name to set
+     * @return the key
      */
-    public void setName(String name) {
-        this.name = name;
+    public String getKey() {
+        return key;
     }
 
     /**
-     * @return the name
+     * @param key
+     *            the key to set
      */
-    public String getName() {
-        return name;
+    public void setKey(String key) {
+        this.key = key;
     }
 }

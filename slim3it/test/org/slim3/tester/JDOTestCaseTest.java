@@ -18,56 +18,49 @@ package org.slim3.tester;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Transaction;
 
-import junit.framework.TestCase;
+import slim3.it.model.Sample;
 import slim3.it.model.SampleMeta;
 
 /**
  * @author higa
  * 
  */
-public class JDOTestCaseTest extends TestCase {
-
-    private MyTestCase testCase = new MyTestCase();
-
-    /**
-     * @throws Exception
-     */
-    public void testSetup() throws Exception {
-        testCase.setUp();
-        assertNotNull(testCase.pm);
-        assertNotNull(testCase.tx);
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testTearDown() throws Exception {
-        testCase.setUp();
-        testCase.tearDown();
-        assertNull(testCase.pm);
-        assertNull(testCase.tx);
-    }
+public class JDOTestCaseTest extends JDOTestCase {
 
     /**
      * @throws Exception
      */
     public void testFrom() throws Exception {
-        testCase.setUp();
-        assertNotNull(testCase.from(new SampleMeta()));
+        assertNotNull(from(new SampleMeta()));
     }
 
     /**
      * @throws Exception
      */
     public void testRefreshPersistenceManager() throws Exception {
-        testCase.setUp();
-        PersistenceManager pm = testCase.pm;
-        Transaction tx = testCase.tx;
-        testCase.refreshPersistenceManager();
-        assertNotSame(pm, testCase.pm);
-        assertNotSame(tx, testCase.tx);
+        PersistenceManager pm2 = pm;
+        Transaction tx2 = tx;
+        refreshPersistenceManager();
+        assertNotSame(pm2, pm);
+        assertNotSame(tx2, tx);
     }
 
-    private static class MyTestCase extends JDOTestCase {
+    /**
+     * @throws Exception
+     */
+    public void testMakePersistentInTx() throws Exception {
+        Sample s = new Sample();
+        makePersistentInTx(s);
+        assertEquals(1, count(Sample.class));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testDeletePersistentInTx() throws Exception {
+        Sample s = new Sample();
+        makePersistentInTx(s);
+        deletePersistentInTx(s);
+        assertEquals(0, count(Sample.class));
     }
 }

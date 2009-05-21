@@ -14,7 +14,7 @@ public class DeleteController extends JDOController {
     public Navigation run() {
         Key key = key(Blog.class, LongUtil.toLong(requestScope("id")));
         Blog blog = pm.getObjectById(Blog.class, key);
-        pm.deletePersistent(blog);
+        deletePersistentInTx(blog);
         return redirect(basePath);
     }
 }

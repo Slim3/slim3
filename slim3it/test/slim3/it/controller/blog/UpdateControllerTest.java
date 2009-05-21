@@ -12,22 +12,21 @@ public class UpdateControllerTest extends JDOControllerTestCase {
         Blog blog = new Blog();
         blog.setTitle("aaa");
         blog.setContent("111");
-        pm.makePersistent(blog);
+        makePersistentInTx(blog);
         sessionScope("blog", blog);
         Key key = blog.getKey();
+        param("id", String.valueOf(key.getId()));
         param("title", "aaa2");
-        param("content", "111");
+        param("content", "222");
         refreshPersistenceManager();
         start("/blog/update");
         UpdateController controller = getController();
         assertNotNull(controller);
         assertTrue(isRedirect());
         assertEquals("/blog/", getNextPath());
-        assertEquals("aaa2", requestScope("title"));
-        assertEquals("111", requestScope("content"));
         blog = pm.getObjectById(Blog.class, key);
         assertNotNull(blog);
         assertEquals("aaa2", blog.getTitle());
-        assertEquals("111", blog.getContent());
+        assertEquals("222", blog.getContent());
     }
 }

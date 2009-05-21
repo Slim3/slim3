@@ -15,51 +15,29 @@
  */
 package slim3.it.model;
 
+import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
-import com.google.appengine.api.datastore.Blob;
-import com.google.appengine.api.datastore.Key;
-
 /**
  * @author higa
  * 
  */
-@PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
-public class Sample {
+@PersistenceCapable(identityType = IdentityType.APPLICATION)
+public class Child {
 
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-    private Key key;
-
-    @Persistent
-    private String name;
-
-    @Persistent
-    private Blob blob;
-
-    /**
-     * @return the blog
-     */
-    public Blob getBlob() {
-        return blob;
-    }
-
-    /**
-     * @param blog
-     *            the blog to set
-     */
-    public void setBlob(Blob blog) {
-        this.blob = blog;
-    }
+    @Extension(vendorName = "datanucleus", key = "gae.encoded-pk", value = "true")
+    private String key;
 
     /**
      * @return the key
      */
-    public Key getKey() {
+    public String getKey() {
         return key;
     }
 
@@ -67,22 +45,7 @@ public class Sample {
      * @param key
      *            the key to set
      */
-    public void setKey(Key key) {
+    public void setKey(String key) {
         this.key = key;
-    }
-
-    /**
-     * @param name
-     *            the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
     }
 }

@@ -20,6 +20,7 @@ import javax.jdo.Transaction;
 
 import org.slim3.tester.DatastoreTestCase;
 
+import slim3.it.model.Sample;
 import slim3.it.model.SampleMeta;
 
 /**
@@ -67,6 +68,27 @@ public class JDOControllerTest extends DatastoreTestCase {
         controller.refreshPersistenceManager();
         assertNotSame(pm, controller.pm);
         assertNotSame(tx, controller.tx);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testMakePersistentInTx() throws Exception {
+        controller.setUp();
+        Sample s = new Sample();
+        controller.makePersistentInTx(s);
+        assertEquals(1, count(Sample.class));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testDeletePersistentInTx() throws Exception {
+        controller.setUp();
+        Sample s = new Sample();
+        controller.makePersistentInTx(s);
+        controller.deletePersistentInTx(s);
+        assertEquals(0, count(Sample.class));
     }
 
     private static class MyController extends JDOController {

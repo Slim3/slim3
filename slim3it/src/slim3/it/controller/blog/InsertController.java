@@ -12,7 +12,7 @@ public class InsertController extends JDOController {
     public Navigation run() {
         Blog blog = new Blog();
         BeanUtil.copy(request, blog);
-        pm.makePersistent(blog);
+        makePersistentInTx(blog);
         return redirect(basePath);
     }
 }

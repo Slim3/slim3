@@ -15,7 +15,6 @@ public class EditController extends JDOController {
     public Navigation run() {
         Key key = key(Blog.class, LongUtil.toLong(requestScope("id")));
         Blog blog = pm.getObjectById(Blog.class, key);
-        sessionScope("blog", blog);
         BeanUtil.copy(blog, request);
         return forward("/blog/edit.jsp");
     }
