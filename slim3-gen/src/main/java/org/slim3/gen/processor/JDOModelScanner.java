@@ -40,6 +40,7 @@ import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.ElementScanner6;
 import javax.lang.model.util.SimpleElementVisitor6;
 import javax.lang.model.util.SimpleTypeVisitor6;
+import javax.lang.model.util.TypeKindVisitor6;
 
 import org.slim3.gen.ClassConstants;
 import org.slim3.gen.desc.AttributeDesc;
@@ -281,9 +282,64 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
 
         @Override
         public Void visitPrimitive(PrimitiveType t, LinkedList<String> p) {
-            String name = processingEnv.getTypeUtils().boxedClass(t)
-                    .getQualifiedName().toString();
-            p.add(name);
+            t.accept(new TypeKindVisitor6<Void, LinkedList<String>>() {
+
+                @Override
+                public Void visitPrimitiveAsBoolean(PrimitiveType t,
+                        LinkedList<String> p) {
+                    p.add(boolean.class.getSimpleName());
+                    return null;
+                }
+
+                @Override
+                public Void visitPrimitiveAsByte(PrimitiveType t,
+                        LinkedList<String> p) {
+                    p.add(byte.class.getSimpleName());
+                    return null;
+                }
+
+                @Override
+                public Void visitPrimitiveAsChar(PrimitiveType t,
+                        LinkedList<String> p) {
+                    p.add(char.class.getSimpleName());
+                    return null;
+                }
+
+                @Override
+                public Void visitPrimitiveAsDouble(PrimitiveType t,
+                        LinkedList<String> p) {
+                    p.add(double.class.getSimpleName());
+                    return null;
+                }
+
+                @Override
+                public Void visitPrimitiveAsFloat(PrimitiveType t,
+                        LinkedList<String> p) {
+                    p.add(float.class.getSimpleName());
+                    return null;
+                }
+
+                @Override
+                public Void visitPrimitiveAsInt(PrimitiveType t,
+                        LinkedList<String> p) {
+                    p.add(int.class.getSimpleName());
+                    return null;
+                }
+
+                @Override
+                public Void visitPrimitiveAsLong(PrimitiveType t,
+                        LinkedList<String> p) {
+                    p.add(long.class.getSimpleName());
+                    return null;
+                }
+
+                @Override
+                public Void visitPrimitiveAsShort(PrimitiveType t,
+                        LinkedList<String> p) {
+                    p.add(short.class.getSimpleName());
+                    return null;
+                }
+            }, p);
             return null;
         }
 
