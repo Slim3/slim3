@@ -42,4 +42,15 @@ public abstract class DatastoreTestCase extends TestCase {
         datastoreTester.tearDown();
         super.tearDown();
     }
+
+    /**
+     * Counts the number of the model.
+     * 
+     * @param modelClass
+     *            the model class
+     * @return the number of the model
+     */
+    protected int count(Class<?> modelClass) {
+        return datastoreTester.count(modelClass);
+    }
 }

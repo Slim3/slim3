@@ -149,4 +149,32 @@ public abstract class JDOController extends Controller {
         pm = PMF.get().getPersistenceManager();
         tx = pm.currentTransaction();
     }
+
+    /**
+     * Makes the model persistent in transaction.
+     * 
+     * @param <T>
+     *            the model type
+     * @param model
+     *            the model
+     * @return the persistent model
+     */
+    protected <T> T makePersistentInTx(T model) {
+        tx.begin();
+        T t = pm.makePersistent(model);
+        tx.commit();
+        return t;
+    }
+
+    /**
+     * Deletes the persistent model from the data store in transaction.
+     * 
+     * @param model
+     *            the model
+     */
+    protected void deletePersistentInTx(Object model) {
+        tx.begin();
+        pm.deletePersistent(model);
+        tx.commit();
+    }
 }

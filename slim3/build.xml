@@ -1,4 +1,4 @@
-<project name="slim3" default="dist" basedir=".">
+<project name="slim3" default="create-lib" basedir=".">
 
 	<property file="build.properties" />
 
@@ -12,9 +12,12 @@
 	    </fileset>
     </path>
 	
-    <target name="dist" depends="clean">
-    	<jar jarfile="target/slim3-${ver}.jar" basedir="build/classes"/>
-    	<jar jarfile="target/slim3-${ver}-sources.jar" basedir="src/main/java"/>
+	<target name="create-lib" depends="clean">
+	    <jar jarfile="target/slim3-${ver}.jar" basedir="build/classes"/>
+	    <jar jarfile="target/slim3-${ver}-sources.jar" basedir="src/main/java"/>
+	</target>
+	
+    <target name="dist" depends="clean, javadoc, create-lib">
     	<jar jarfile="target/slim3-${ver}-javadoc.jar" basedir="javadoc"/>
     	<zip zipfile="target/slim3-${ver}.zip" basedir="target"/>
     </target>
