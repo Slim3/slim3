@@ -15,6 +15,8 @@
  */
 package org.slim3.jdo;
 
+import java.util.Collection;
+
 import org.slim3.util.ConversionUtil;
 
 /**
@@ -117,7 +119,10 @@ public class AttributeMeta {
         if (isEmpty(parameter)) {
             return null;
         }
-        parameter = ConversionUtil.convert(parameter, attributeClass);
+        if (!parameter.getClass().isArray()
+            && !(parameter instanceof Collection)) {
+            parameter = ConversionUtil.convert(parameter, attributeClass);
+        }
         return new EqCriterion(name, name + "Param", parameter);
     }
 

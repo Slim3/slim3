@@ -15,6 +15,9 @@
  */
 package org.slim3.jdo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import junit.framework.TestCase;
 
 /**
@@ -48,6 +51,30 @@ public class AttributeMetaTest extends TestCase {
     public void testEqForEmpty() throws Exception {
         AttributeMeta aaa = new AttributeMeta("aaa", String.class);
         assertNull(aaa.eq(""));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testEqForArray() throws Exception {
+        AttributeMeta aaa = new AttributeMeta("aaa", String.class);
+        String[] parameter = new String[] { "111" };
+        EqCriterion criterion = aaa.eq(parameter);
+        assertEquals("aaaParam", criterion.getParameterName());
+        assertEquals("aaa == aaaParam", criterion.getQueryString());
+        assertEquals(parameter, criterion.getParameter());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testEqForCollection() throws Exception {
+        AttributeMeta aaa = new AttributeMeta("aaa", String.class);
+        List<String> parameter = new ArrayList<String>();
+        EqCriterion criterion = aaa.eq(parameter);
+        assertEquals("aaaParam", criterion.getParameterName());
+        assertEquals("aaa == aaaParam", criterion.getQueryString());
+        assertEquals(parameter, criterion.getParameter());
     }
 
     /**
