@@ -94,7 +94,6 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
         if (persistent == null) {
             return null;
         }
-        boolean modelType = isModelType(attribute);
         boolean serialized = false;
         for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : persistent
                 .getElementValues().entrySet()) {
@@ -106,14 +105,13 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
             } else if (element.getSimpleName().contentEquals(
                     ClassConstants.Persistent$mappedBy)) {
                 if (Options.isValidationEnabled(processingEnv)) {
-                    validateMappedBy(modelType, attribute, persistent,
-                            annotationValue);
+                    validateMappedBy(attribute, persistent, annotationValue);
                 }
             }
         }
         AttributeDesc attributeDesc = new AttributeDesc();
         attributeDesc.setName(attribute.getSimpleName().toString());
-        attributeDesc.setModelType(modelType);
+        attributeDesc.setModelType(isModelType(attribute));
         Iterator<String> classNames = new ClassNameCollector(attribute.asType())
                 .collect().iterator();
         if (classNames.hasNext()) {
@@ -150,8 +148,6 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
     /**
      * Validates mappdeBy element of {@code javax.jdo.annotations.Persistent}.
      * 
-     * @param modelType
-     *            {@code true} if the attribute type is a model type.
      * @param attribute
      *            the element of an attribute
      * @param persistent
@@ -159,20 +155,22 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
      * @param mappedBy
      *            the value of the mappdeBy element
      */
-    protected void validateMappedBy(boolean modelType, Element attribute,
+    protected void validateMappedBy(Element attribute,
             AnnotationMirror persistent, final AnnotationValue mappedBy) {
-        if (!modelType) {
+        TypeElement model = extractModelElement(attribute);
+        if (model == null) {
+            return;
+        }
+        if (ElementUtil.getAnnotationMirror(model,
+                ClassConstants.PersistenceCapable) == null) {
             Logger
                     .error(
                             processingEnv,
                             attribute,
-                            "[slim3-gen] The mappedBy element is unavailable for a non Entity property(%s).",
-                            attribute);
+                            "[slim3-gen] The mappedBy element is unavailable for a non Entity(%s).",
+                            model.getQualifiedName());
             return;
         }
-
-        Element model = processingEnv.getTypeUtils().asElement(
-                attribute.asType());
         boolean mapped = model.accept(
                 new ElementScanner6<Boolean, Void>(false) {
                     @Override
@@ -198,7 +196,6 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
                         return false;
                     }
                 }, null);
-
         if (!mapped) {
             Logger
                     .error(
@@ -207,8 +204,39 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
                             persistent,
                             mappedBy,
                             "[slim3-gen] The mappedBy property(%1$s) is not found in an Entity class(%2$s). The property(%1$s) must be annotated with a Persistent annotation.",
-                            mappedBy, model);
+                            mappedBy, model.getQualifiedName());
         }
+    }
+
+    /**
+     * Extracts the model element.
+     * 
+     * @param attribute
+     *            the attribute element.
+     * @return a model element.
+     */
+    protected TypeElement extractModelElement(Element attribute) {
+        Element e = attribute.asType().accept(
+                new SimpleTypeVisitor6<Element, Void>() {
+                    @Override
+                    public Element visitDeclared(DeclaredType t, Void p) {
+                        List<? extends TypeMirror> args = t.getTypeArguments();
+                        if (args.size() == 1) {
+                            TypeMirror arg = args.get(0);
+                            return processingEnv.getTypeUtils().asElement(arg);
+                        }
+                        return null;
+                    }
+                }, null);
+        if (e == null) {
+            e = processingEnv.getTypeUtils().asElement(attribute.asType());
+        }
+        return e.accept(new SimpleElementVisitor6<TypeElement, Void>() {
+            @Override
+            public TypeElement visitType(TypeElement e, Void p) {
+                return e;
+            }
+        }, null);
     }
 
     /**
