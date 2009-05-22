@@ -116,12 +116,16 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
                 .collect().iterator();
         if (classNames.hasNext()) {
             String className = classNames.next();
-            validateClassName(className, serialized, attribute);
+            if (Options.isValidationEnabled(processingEnv)) {
+                validateClassName(className, serialized, attribute);
+            }
             attributeDesc.setClassName(className);
         }
         if (classNames.hasNext()) {
             String elementClassName = classNames.next();
-            validateClassName(elementClassName, serialized, attribute);
+            if (Options.isValidationEnabled(processingEnv)) {
+                validateClassName(elementClassName, serialized, attribute);
+            }
             attributeDesc.setElementClassName(elementClassName);
         }
         p.addAttributeDesc(attributeDesc);
