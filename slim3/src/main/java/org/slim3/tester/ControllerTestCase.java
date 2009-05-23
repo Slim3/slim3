@@ -292,9 +292,26 @@ public abstract class ControllerTestCase extends TestCase {
                 + path
                 + ") must start with \"/\".");
         }
-        request.setServletPath(path);
-        frontController.doFilter(request, response, filterChain);
-        startCalled = true;
+        setUpStart();
+        try {
+            request.setServletPath(path);
+            frontController.doFilter(request, response, filterChain);
+            startCalled = true;
+        } finally {
+            tearDownStart();
+        }
+    }
+
+    /**
+     * Sets up the start process.
+     */
+    protected void setUpStart() {
+    }
+
+    /**
+     * Tears down the start process.
+     */
+    protected void tearDownStart() {
     }
 
     /**

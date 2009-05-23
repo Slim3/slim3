@@ -74,6 +74,12 @@ public abstract class JDOControllerTestCase extends ControllerTestCase {
         super.tearDown();
     }
 
+    @Override
+    protected void setUpStart() {
+        super.setUpStart();
+        refreshPersistenceManager();
+    }
+
     /**
      * Creates a new {@link SelectQuery}.
      * 

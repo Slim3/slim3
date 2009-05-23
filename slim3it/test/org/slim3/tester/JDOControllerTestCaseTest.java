@@ -53,6 +53,17 @@ public class JDOControllerTestCaseTest extends JDOControllerTestCase {
     /**
      * @throws Exception
      */
+    public void testSetUpStart() throws Exception {
+        PersistenceManager pm2 = pm;
+        Transaction tx2 = tx;
+        setUpStart();
+        assertNotSame(pm2, pm);
+        assertNotSame(tx2, tx);
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testRefreshPersistenceManager() throws Exception {
         PersistenceManager pm2 = pm;
         Transaction tx2 = tx;

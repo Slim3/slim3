@@ -58,11 +58,11 @@ public class DatastoreTester extends ServiceTester {
     }
 
     /**
-     * Counts the number of the model.
+     * Counts the number of the models.
      * 
      * @param modelClass
      *            the model class
-     * @return the number of the model
+     * @return the number of the models
      * @throws NullPointerException
      *             if the modelClass parameter is null
      */

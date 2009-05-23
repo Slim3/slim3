@@ -18,7 +18,6 @@ public class UpdateControllerTest extends JDOControllerTestCase {
         param("id", String.valueOf(key.getId()));
         param("title", "aaa2");
         param("content", "222");
-        refreshPersistenceManager();
         start("/blog/update");
         UpdateController controller = getController();
         assertNotNull(controller);
