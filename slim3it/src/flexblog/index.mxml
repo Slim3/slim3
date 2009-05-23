@@ -2,7 +2,39 @@
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"
 	creationComplete="listService.send()">
 	<mx:HTTPService id="listService" url="list" showBusyCursor="true"/>
-	
+	<mx:HTTPService id="updateService" url="update" method="post" showBusyCursor="true"
+		result="listService.send()">
+	   <mx:request>
+	       <id>
+	       	{dg.selectedItem.id}
+	       </id>
+	       <title>
+	       	{titleText.text}
+	       </title>
+	       <content>
+	       	{contentText.text}
+	       </content>
+	   </mx:request>
+	</mx:HTTPService>
+	<mx:HTTPService id="insertService" url="insert" method="post" showBusyCursor="true"
+        result="listService.send()">
+       <mx:request>
+           <title>
+            {titleText.text}
+           </title>
+           <content>
+            {contentText.text}
+           </content>
+       </mx:request>
+    </mx:HTTPService>
+	<mx:HTTPService id="deleteService" url="delete" method="post" showBusyCursor="true"
+        result="listService.send()">
+       <mx:request>
+           <id>
+            {dg.selectedItem.id}
+           </id>
+       </mx:request>
+    </mx:HTTPService>
 	
 	<mx:VBox x="0" y="0" height="100%">
 	<mx:DataGrid id="dg" width="471" left="0" top="0" height="200"
@@ -14,12 +46,18 @@
     </mx:DataGrid>
     <mx:Form x="0" y="100" width="100%" height="100">
        <mx:FormItem label="Title">
-            <mx:TextInput text="{dg.selectedItem.title}"/>
+            <mx:TextInput id="titleText" text="{dg.selectedItem.title}"/>
         </mx:FormItem>
-        <mx:FormItem label="Email">
-            <mx:TextInput text="{dg.selectedItem.content}"/>
+        <mx:FormItem label="Content">
+            <mx:TextInput id="contentText" text="{dg.selectedItem.content}"/>
         </mx:FormItem>
     </mx:Form>
+    
 	</mx:VBox>
+	<mx:HBox x="20" y="304" width="100%" height="34">
+		<mx:Button label="Insert" click="insertService.send()"/>
+		<mx:Button label="Update" click="updateService.send()"/>
+		<mx:Button label="Delete" click="deleteService.send()"/>
+	</mx:HBox>
 
 </mx:Application>
