@@ -24,9 +24,7 @@ import javax.jdo.Transaction;
 import org.slim3.jdo.ModelMeta;
 import org.slim3.jdo.PMF;
 import org.slim3.jdo.SelectQuery;
-
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
+import org.slim3.util.RuntimeExceptionUtil;
 
 /**
  * @author li0934
@@ -54,48 +52,6 @@ public abstract class JDOController extends Controller {
      */
     protected Transaction tx;
 
-    /**
-     * Creates a new key.
-     * 
-     * @param modelClass
-     *            the model class
-     * @param id
-     *            the identity
-     * @return a new key
-     * @throws NullPointerException
-     *             if the modelClass parameter is null
-     */
-    protected final static Key key(Class<?> modelClass, long id)
-            throws NullPointerException {
-        if (modelClass == null) {
-            throw new NullPointerException("The modelClass parameter is null.");
-        }
-        return KeyFactory.createKey(modelClass.getSimpleName(), id);
-    }
-
-    /**
-     * Creates a new key.
-     * 
-     * @param modelClass
-     *            the model class
-     * @param name
-     *            the name
-     * @return a new key
-     * @throws NullPointerException
-     *             if the modelClass parameter is null or if the name parameter
-     *             is null
-     */
-    protected final static Key key(Class<?> modelClass, String name)
-            throws NullPointerException {
-        if (modelClass == null) {
-            throw new NullPointerException("The modelClass parameter is null.");
-        }
-        if (name == null) {
-            throw new NullPointerException("The name parameter is null.");
-        }
-        return KeyFactory.createKey(modelClass.getSimpleName(), name);
-    }
-
     @Override
     protected void setUp() {
         super.setUp();
@@ -105,11 +61,13 @@ public abstract class JDOController extends Controller {
 
     @Override
     protected void tearDown() {
+        Throwable throwable = null;
         try {
             if (tx.isActive()) {
                 tx.rollback();
             }
         } catch (Throwable t) {
+            throwable = t;
             if (logger.isLoggable(Level.WARNING)) {
                 logger.log(Level.WARNING, t.getMessage(), t);
             }
@@ -119,11 +77,17 @@ public abstract class JDOController extends Controller {
         try {
             pm.close();
         } catch (Throwable t) {
+            if (throwable == null) {
+                throwable = t;
+            }
             if (logger.isLoggable(Level.WARNING)) {
                 logger.log(Level.WARNING, t.getMessage(), t);
             }
         } finally {
             pm = null;
+        }
+        if (throwable != null) {
+            RuntimeExceptionUtil.wrapAndThrow(throwable);
         }
         super.tearDown();
     }
