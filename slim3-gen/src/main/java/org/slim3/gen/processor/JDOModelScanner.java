@@ -21,14 +21,10 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
@@ -45,7 +41,6 @@ import javax.lang.model.util.TypeKindVisitor6;
 import org.slim3.gen.ClassConstants;
 import org.slim3.gen.desc.AttributeDesc;
 import org.slim3.gen.desc.ModelDesc;
-import org.slim3.gen.util.ClassUtil;
 import org.slim3.gen.util.ElementUtil;
 
 /**
@@ -94,21 +89,6 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
         if (persistent == null) {
             return null;
         }
-        boolean serialized = false;
-        for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : persistent
-                .getElementValues().entrySet()) {
-            ExecutableElement element = entry.getKey();
-            AnnotationValue annotationValue = entry.getValue();
-            if (element.getSimpleName().contentEquals(
-                    ClassConstants.Persistent$serialized)) {
-                serialized = Boolean.valueOf(annotationValue.toString());
-            } else if (element.getSimpleName().contentEquals(
-                    ClassConstants.Persistent$mappedBy)) {
-                if (Options.isValidationEnabled(processingEnv)) {
-                    validateMappedBy(attribute, persistent, annotationValue);
-                }
-            }
-        }
         AttributeDesc attributeDesc = new AttributeDesc();
         attributeDesc.setName(attribute.getSimpleName().toString());
         attributeDesc.setModelType(isModelType(attribute));
@@ -116,16 +96,10 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
                 .collect().iterator();
         if (classNames.hasNext()) {
             String className = classNames.next();
-            if (Options.isValidationEnabled(processingEnv)) {
-                validateClassName(className, serialized, attribute);
-            }
             attributeDesc.setClassName(className);
         }
         if (classNames.hasNext()) {
             String elementClassName = classNames.next();
-            if (Options.isValidationEnabled(processingEnv)) {
-                validateClassName(elementClassName, serialized, attribute);
-            }
             attributeDesc.setElementClassName(elementClassName);
         }
         p.addAttributeDesc(attributeDesc);
@@ -147,69 +121,6 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Validates mappdeBy element of {@code javax.jdo.annotations.Persistent}.
-     * 
-     * @param attribute
-     *            the element of an attribute
-     * @param persistent
-     *            the {@code javax.jdo.annotations.Persistent} annotation
-     * @param mappedBy
-     *            the value of the mappdeBy element
-     */
-    protected void validateMappedBy(Element attribute,
-            AnnotationMirror persistent, final AnnotationValue mappedBy) {
-        TypeElement model = extractModelElement(attribute);
-        if (model == null) {
-            return;
-        }
-        if (ElementUtil.getAnnotationMirror(model,
-                ClassConstants.PersistenceCapable) == null) {
-            Logger
-                    .error(
-                            processingEnv,
-                            attribute,
-                            "[slim3-gen] The mappedBy element is unavailable for a non Entity(%s).",
-                            model.getQualifiedName());
-            return;
-        }
-        boolean mapped = model.accept(
-                new ElementScanner6<Boolean, Void>(false) {
-                    @Override
-                    public Boolean visitType(TypeElement model, Void p) {
-                        for (Element e : model.getEnclosedElements()) {
-                            if (e.getKind() == ElementKind.FIELD) {
-                                if (scan(e, p)) {
-                                    return true;
-                                }
-                            }
-                        }
-                        return false;
-                    }
-
-                    @Override
-                    public Boolean visitVariable(VariableElement attribute,
-                            Void p) {
-                        if (ElementUtil.getAnnotationMirror(attribute,
-                                ClassConstants.Persistent) != null) {
-                            return attribute.getSimpleName().contentEquals(
-                                    mappedBy.toString());
-                        }
-                        return false;
-                    }
-                }, null);
-        if (!mapped) {
-            Logger
-                    .error(
-                            processingEnv,
-                            attribute,
-                            persistent,
-                            mappedBy,
-                            "[slim3-gen] The mappedBy property(%1$s) is not found in an Entity class(%2$s). The property(%1$s) must be annotated with a Persistent annotation.",
-                            mappedBy, model.getQualifiedName());
-        }
     }
 
     /**
@@ -241,37 +152,6 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
                 return e;
             }
         }, null);
-    }
-
-    /**
-     * Validates the className.
-     * 
-     * @param className
-     *            the class name
-     * @param serialized
-     *            {@code true} if the attribute element is marked as serialized
-     * @param attribute
-     *            the attribute element
-     */
-    protected void validateClassName(String className, boolean serialized,
-            Element attribute) {
-        String packageName = ClassUtil.getPackageName(className);
-        if (unsupportedPackageNameList.contains(packageName)) {
-            Logger
-                    .error(
-                            processingEnv,
-                            attribute,
-                            "[slim3-gen] Package(%s) is not supported on Google App Engine. See %s",
-                            packageName, documentURL);
-        }
-        if (unsupportedClassNameList.contains(className)) {
-            Logger
-                    .error(
-                            processingEnv,
-                            attribute,
-                            "[slim3-gen] Class(%s) is not supported on Google App Engine. See %s",
-                            className, documentURL);
-        }
     }
 
     /**
