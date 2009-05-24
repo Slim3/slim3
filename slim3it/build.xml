@@ -12,7 +12,7 @@
 
     <target name="copy-lib">
         <copy todir="war/WEB-INF/lib" file="../slim3/target/slim3-${ver}.jar"/>
-        <copy todir="war/WEB-INF/libsrc" file="../slim3/target/slim3-${ver}-sources.jar"/>
+        <copy todir="libsrc" file="../slim3/target/slim3-${ver}-sources.jar"/>
         <copy todir="lib" file="../slim3-gen/target/slim3-gen-${ver}.jar"/>
         <copy todir="libsrc" file="../slim3-gen/target/slim3-gen-${ver}-sources.jar"/>
     </target>

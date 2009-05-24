@@ -3,7 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" output="build/test-classes" path="test"/>
 	<classpathentry kind="lib" path="lib/junit-3.8.2.jar" sourcepath="libsrc/junit-3.8.2-sources.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/slim3-EA1-SNAPSHOT.jar" sourcepath="war/WEB-INF/libsrc/slim3-EA1-SNAPSHOT-sources.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/slim3-EA1-SNAPSHOT.jar" sourcepath="libsrc/slim3-EA1-SNAPSHOT-sources.jar"/>
 	<classpathentry kind="lib" path="lib/appengine-local-runtime.jar"/>
 	<classpathentry kind="lib" path="lib/appengine-api-stubs.jar"/>
 	<classpathentry kind="src" path=".apt_generated">
