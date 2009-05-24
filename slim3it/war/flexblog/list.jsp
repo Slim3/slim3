@@ -4,6 +4,6 @@
 
 <blogList>
 <c:forEach var="e" items="${blogList}">
-    <blog id="${e.id}" title="${e.title}" content="${e.content}"/>
+    <blog key="${e.key}" title="${e.title}" content="${e.content}"/>
 </c:forEach>
 </blogList>

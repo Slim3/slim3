@@ -11,7 +11,7 @@ public class UpdateControllerTest extends JDOControllerTestCase {
         blog.setTitle("aaa");
         blog.setContent("111");
         makePersistentInTx(blog);
-        param("id", String.valueOf(blog.getKey().getId()));
+        param("key", blog.getKey());
         param("title", "bbb");
         param("content", "222");
         start("/flexblog/update");

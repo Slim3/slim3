@@ -21,7 +21,6 @@ public class ListController extends JDOController {
         for (Blog b : list) {
             BeanMap m = new BeanMap();
             BeanUtil.copy(b, m);
-            m.put("id", b.getKey().getId());
             blogList.add(m);
         }
         requestScope("blogList", blogList);

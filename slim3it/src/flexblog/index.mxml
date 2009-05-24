@@ -5,9 +5,9 @@
 	<mx:HTTPService id="updateService" url="update" method="post" showBusyCursor="true"
 		result="listService.send()">
 	   <mx:request>
-	       <id>
-	       	{dg.selectedItem.id}
-	       </id>
+	       <key>
+	       	{dg.selectedItem.key}
+	       </key>
 	       <title>
 	       	{titleText.text}
 	       </title>
@@ -30,9 +30,9 @@
 	<mx:HTTPService id="deleteService" url="delete" method="post" showBusyCursor="true"
         result="listService.send()">
        <mx:request>
-           <id>
-            {dg.selectedItem.id}
-           </id>
+           <key>
+            {dg.selectedItem.key}
+           </key>
        </mx:request>
     </mx:HTTPService>
 	

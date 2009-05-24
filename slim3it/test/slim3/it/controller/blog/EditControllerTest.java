@@ -11,13 +11,13 @@ public class EditControllerTest extends JDOControllerTestCase {
         blog.setTitle("aaa");
         blog.setContent("111");
         makePersistentInTx(blog);
-        param("id", String.valueOf(blog.getKey().getId()));
+        param("key", blog.getKey());
         start("/blog/edit");
         EditController controller = getController();
         assertNotNull(controller);
         assertFalse(isRedirect());
         assertEquals("/blog/edit.jsp", getNextPath());
-        assertEquals(String.valueOf(blog.getKey().getId()), requestScope("id"));
+        assertEquals(blog.getKey(), requestScope("key"));
         assertEquals(blog.getTitle(), requestScope("title"));
         assertEquals(blog.getContent(), requestScope("content"));
         assertEquals(1, count(Blog.class));
