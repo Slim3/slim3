@@ -45,10 +45,4 @@ public final class ClassConstants {
     /** {@code javax.jdo.annotations.Persistent} */
     public static final String Persistent = "javax.jdo.annotations.Persistent";
 
-    /** mappedBy element of {@code javax.jdo.annotations.Persistent} */
-    public static final String Persistent$mappedBy = "mappedBy";
-
-    /** serialized element of {@code javax.jdo.annotations.Persistent} */
-    public static final String Persistent$serialized = "serialized";
-
 }

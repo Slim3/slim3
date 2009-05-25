@@ -15,9 +15,6 @@
  */
 package org.slim3.gen.processor;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -51,23 +48,6 @@ import org.slim3.gen.util.ElementUtil;
  * 
  */
 public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
-
-    /** the Google App Engine document URL */
-    protected static final String documentURL = "http://code.google.com/intl/en/appengine/docs/java/datastore/dataclasses.html";
-
-    /** the list of unsupported package names */
-    protected static final List<String> unsupportedPackageNameList = new ArrayList<String>();
-    static {
-        unsupportedPackageNameList.add("java.sql");
-    }
-
-    /** the list of unsupported class names */
-    protected static final List<String> unsupportedClassNameList = new ArrayList<String>();
-    static {
-        unsupportedClassNameList.add(Calendar.class.getName());
-        unsupportedClassNameList.add(Character.class.getName());
-        unsupportedClassNameList.add(BigInteger.class.getName());
-    }
 
     /** the processing environment */
     protected final ProcessingEnvironment processingEnv;
@@ -121,37 +101,6 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Extracts the model element.
-     * 
-     * @param attribute
-     *            the attribute element.
-     * @return a model element.
-     */
-    protected TypeElement extractModelElement(Element attribute) {
-        Element e = attribute.asType().accept(
-                new SimpleTypeVisitor6<Element, Void>() {
-                    @Override
-                    public Element visitDeclared(DeclaredType t, Void p) {
-                        List<? extends TypeMirror> args = t.getTypeArguments();
-                        if (args.size() == 1) {
-                            TypeMirror arg = args.get(0);
-                            return processingEnv.getTypeUtils().asElement(arg);
-                        }
-                        return null;
-                    }
-                }, null);
-        if (e == null) {
-            e = processingEnv.getTypeUtils().asElement(attribute.asType());
-        }
-        return e.accept(new SimpleElementVisitor6<TypeElement, Void>() {
-            @Override
-            public TypeElement visitType(TypeElement e, Void p) {
-                return e;
-            }
-        }, null);
     }
 
     /**

@@ -57,7 +57,6 @@ public class ModelMetaGenerator implements Generator {
             p.println("package %s;", modelDesc.getPackageName());
             p.println();
         }
-        p.println();
         p.println("@%s(value = { \"%s\", \"%s\" }, date = \"%tF %<tT\")",
                 Generated.class.getName(), ProductInfo.getName(), ProductInfo
                         .getVersion(), new Date());

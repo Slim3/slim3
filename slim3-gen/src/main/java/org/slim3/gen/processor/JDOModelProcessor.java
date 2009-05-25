@@ -48,7 +48,7 @@ import org.slim3.gen.printer.Printer;
  */
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 @SupportedAnnotationTypes(ClassConstants.PersistenceCapable)
-@SupportedOptions( { Options.DEBUG, Options.VALIDATION })
+@SupportedOptions( { Options.DEBUG })
 public class JDOModelProcessor extends AbstractProcessor {
 
     @Override

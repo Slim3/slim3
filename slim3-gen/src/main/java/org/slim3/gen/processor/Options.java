@@ -30,9 +30,6 @@ public final class Options {
     /** debug option */
     public static final String DEBUG = "debug";
 
-    /** validation option */
-    public static final String VALIDATION = "validation";
-
     /**
      * Returns {@code true} if debug enabled otherwirse {@code false}.
      * 
@@ -47,22 +44,6 @@ public final class Options {
             return false;
         }
         return Boolean.valueOf(debug).booleanValue();
-    }
-
-    /**
-     * Returns {@code true} if validation enabled otherwirse {@code false}.
-     * 
-     * @param env
-     *            the processing environment.
-     * @return {@code true} if the validation option enabled otherwirse {@code
-     *         false} .
-     */
-    public static boolean isValidationEnabled(ProcessingEnvironment env) {
-        String validation = env.getOptions().get(Options.VALIDATION);
-        if (validation == null) {
-            return true;
-        }
-        return Boolean.valueOf(validation).booleanValue();
     }
 
 }
