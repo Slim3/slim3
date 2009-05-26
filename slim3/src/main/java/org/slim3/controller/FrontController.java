@@ -84,9 +84,14 @@ public class FrontController implements Filter {
         if (charset == null) {
             charset = ControllerConstants.DEFAULT_REQUEST_CHARSET;
         }
-        hotReloading =
-            "true".equalsIgnoreCase(System
-                .getProperty(ControllerConstants.HOT_RELOADING_KEY));
+        String hotReloadingStr =
+            System.getProperty(ControllerConstants.HOT_RELOADING_KEY);
+        if (!StringUtil.isEmpty(hotReloadingStr)) {
+            hotReloading = "true".equalsIgnoreCase(hotReloadingStr);
+        } else {
+            hotReloading =
+                servletContext.getServerInfo().indexOf("Development") >= 0;
+        }
         if (logger.isLoggable(Level.INFO)) {
             logger.log(Level.INFO, "Slim3 hot reloading:" + hotReloading);
         }
