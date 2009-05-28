@@ -83,33 +83,6 @@ public class AttributeMeta {
     }
 
     /**
-     * Returns the name.
-     * 
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Returns the attribute class.
-     * 
-     * @return the attribute class
-     */
-    public Class<?> getAttributeClass() {
-        return attributeClass;
-    }
-
-    /**
-     * Returns the element class.
-     * 
-     * @return the element class
-     */
-    public Class<?> getElementClass() {
-        return elementClass;
-    }
-
-    /**
      * Returns the "equal" filter criterion.
      * 
      * @param parameter
@@ -123,7 +96,7 @@ public class AttributeMeta {
             && !(parameter instanceof Collection)) {
             parameter = ConversionUtil.convert(parameter, attributeClass);
         }
-        return new EqCriterion(name, name + "Param", parameter);
+        return new EqCriterion(name, parameter);
     }
 
     /**
@@ -137,7 +110,7 @@ public class AttributeMeta {
             return null;
         }
         parameter = ConversionUtil.convert(parameter, attributeClass);
-        return new LtCriterion(name, name + "LtParam", parameter);
+        return new LtCriterion(name, parameter);
     }
 
     /**
@@ -151,7 +124,7 @@ public class AttributeMeta {
             return null;
         }
         parameter = ConversionUtil.convert(parameter, attributeClass);
-        return new LeCriterion(name, name + "LeParam", parameter);
+        return new LeCriterion(name, parameter);
     }
 
     /**
@@ -165,7 +138,7 @@ public class AttributeMeta {
             return null;
         }
         parameter = ConversionUtil.convert(parameter, attributeClass);
-        return new GtCriterion(name, name + "GtParam", parameter);
+        return new GtCriterion(name, parameter);
     }
 
     /**
@@ -179,7 +152,7 @@ public class AttributeMeta {
             return null;
         }
         parameter = ConversionUtil.convert(parameter, attributeClass);
-        return new GeCriterion(name, name + "GeParam", parameter);
+        return new GeCriterion(name, parameter);
     }
 
     /**
@@ -195,7 +168,7 @@ public class AttributeMeta {
         if (elementClass != null) {
             parameter = ConversionUtil.convert(parameter, elementClass);
         }
-        return new ContainsCriterion(name, name + "Param", parameter);
+        return new ContainsCriterion(name, parameter);
     }
 
     /**

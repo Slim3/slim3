@@ -16,7 +16,7 @@
 package org.slim3.tester;
 
 import junit.framework.TestCase;
-import slim3.it.model.Sample;
+import slim3.it.model.Blog;
 
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -45,8 +45,8 @@ public class DatastoreTesterTest extends TestCase {
      * @throws Exception
      */
     public void testCount() throws Exception {
-        assertEquals(0, tester.count(Sample.class));
-        DatastoreServiceFactory.getDatastoreService().put(new Entity("Sample"));
-        assertEquals(1, tester.count(Sample.class));
+        assertEquals(0, tester.count(Blog.class));
+        DatastoreServiceFactory.getDatastoreService().put(new Entity("Blog"));
+        assertEquals(1, tester.count(Blog.class));
     }
 }

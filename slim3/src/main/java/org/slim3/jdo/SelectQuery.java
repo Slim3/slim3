@@ -39,14 +39,14 @@ public class SelectQuery<M> {
     protected static final Object[] ZERO_ARRAY = new Object[0];
 
     /**
-     * The meta data of model.
-     */
-    protected ModelMeta<M> modelMeta;
-
-    /**
      * The persistence manager.
      */
     protected PersistenceManager pm;
+
+    /**
+     * The model class.
+     */
+    protected Class<M> modelClass;
 
     /**
      * The filter criteria.
@@ -76,24 +76,25 @@ public class SelectQuery<M> {
     /**
      * Constructor.
      * 
-     * @param modelMeta
-     *            the meta data of model
      * @param pm
      *            the persistence manager
+     * @param modelClass
+     *            the model class
      * @throws NullPointerException
-     *             if the modelMeta parameter is null or if the pm parameter is
+     *             if the pm parameter is null or if the modelClass parameter is
      *             null
      */
-    public SelectQuery(ModelMeta<M> modelMeta, PersistenceManager pm)
+    public SelectQuery(PersistenceManager pm, Class<M> modelClass)
             throws NullPointerException {
-        if (modelMeta == null) {
-            throw new NullPointerException("The modelMeta parameter is null.");
-        }
+
         if (pm == null) {
             throw new NullPointerException("The pm parameter is null.");
         }
-        this.modelMeta = modelMeta;
+        if (modelClass == null) {
+            throw new NullPointerException("The modelClass parameter is null.");
+        }
         this.pm = pm;
+        this.modelClass = modelClass;
     }
 
     /**
@@ -149,71 +150,6 @@ public class SelectQuery<M> {
     }
 
     /**
-     * Creates a new query.
-     * 
-     * @return a new query.
-     */
-    public Query newQuery() {
-        Query query = pm.newQuery(modelMeta.getModelClass());
-        String filter = getFilter();
-        if (filter != null) {
-            query.setFilter(filter);
-        }
-        String parametersDeclaration = getParametersDeclaration();
-        if (parametersDeclaration != null) {
-            query.declareParameters(parametersDeclaration);
-        }
-        String ordering = getOrdering();
-        if (ordering != null) {
-            query.setOrdering(ordering);
-        }
-        if (startIndex > -1 && endIndex > -1) {
-            query.setRange(startIndex, endIndex);
-        }
-        if (timeoutMillis > -1) {
-            query.setTimeoutMillis(timeoutMillis);
-        }
-        return query;
-    }
-
-    /**
-     * Returns the query string.
-     * 
-     * @return the query string
-     */
-    public String getQueryString() {
-        StringBuilder sb = new StringBuilder(100);
-        sb.append("select from ").append(modelMeta.getModelClass().getName());
-        String filter = getFilter();
-        if (filter != null) {
-            sb.append(" where ").append(filter);
-        }
-        String ordering = getOrdering();
-        if (ordering != null) {
-            sb.append(" order by ").append(ordering);
-        }
-        String parametersDeclaration = getParametersDeclaration();
-        if (parametersDeclaration != null) {
-            sb.append(" parameters ").append(parametersDeclaration);
-        }
-
-        if (startIndex > -1 && endIndex > -1) {
-            sb.append(" range ").append(startIndex).append(", ").append(
-                endIndex);
-        }
-        return sb.toString();
-    }
-
-    /**
-     * Returns the query string with parameters.
-     * 
-     * @return the query string with parameters
-     */
-    public String getQueryStringWithParameters() {
-        return getQueryString() + " with " + Arrays.asList(getParameters());
-    }
-
-    /**
      * Returns the results as list.
      * 
      * @return the results as list
@@ -253,49 +189,80 @@ public class SelectQuery<M> {
     }
 
     /**
-     * Returns the filter for the query.
+     * Returns the query string.
      * 
-     * @return the filter for the query
+     * @return the query string
      */
-    public String getFilter() {
-        if (filterCriteria == null) {
-            return null;
-        }
+    public String getQueryString() {
         StringBuilder sb = new StringBuilder(100);
-        for (FilterCriterion c : filterCriteria) {
-            if (c == null) {
-                continue;
-            }
-            if (sb.length() == 0) {
-                sb.append(c.getQueryString());
-            } else {
-                sb.append(" && ").append(c.getQueryString());
-            }
+        sb.append("select from ").append(modelClass.getName());
+        String filter = getFilter();
+        if (filter != null) {
+            sb.append(" where ").append(filter);
         }
-        if (sb.length() == 0) {
-            return null;
+        String ordering = getOrdering();
+        if (ordering != null) {
+            sb.append(" order by ").append(ordering);
+        }
+        if (startIndex > -1 && endIndex > -1) {
+            sb.append(" range ").append(startIndex).append(", ").append(
+                endIndex);
         }
         return sb.toString();
     }
 
     /**
-     * Returns the declaration for parameters.
+     * Returns the query string with parameters.
      * 
-     * @return the declaration for parameters
+     * @return the query string with parameters
      */
-    public String getParametersDeclaration() {
+    public String getQueryStringWithParameters() {
+        return getQueryString() + " with " + Arrays.asList(getParameters());
+    }
+
+    /**
+     * Creates a new query.
+     * 
+     * @return a new query.
+     */
+    protected Query newQuery() {
+        Query query = pm.newQuery(modelClass);
+        String filter = getFilter();
+        if (filter != null) {
+            query.setFilter(filter);
+        }
+        String ordering = getOrdering();
+        if (ordering != null) {
+            query.setOrdering(ordering);
+        }
+        if (startIndex > -1 && endIndex > -1) {
+            query.setRange(startIndex, endIndex);
+        }
+        if (timeoutMillis > -1) {
+            query.setTimeoutMillis(timeoutMillis);
+        }
+        return query;
+    }
+
+    /**
+     * Returns the filter for the query.
+     * 
+     * @return the filter for the query
+     */
+    protected String getFilter() {
         if (filterCriteria == null) {
             return null;
         }
         StringBuilder sb = new StringBuilder(100);
+        int i = 0;
         for (FilterCriterion c : filterCriteria) {
             if (c == null) {
                 continue;
             }
             if (sb.length() == 0) {
-                sb.append(c.getParameterDeclaration());
+                sb.append(c.getQueryString(":" + i++));
             } else {
-                sb.append(", ").append(c.getParameterDeclaration());
+                sb.append(" && ").append(c.getQueryString(":" + i++));
             }
         }
         if (sb.length() == 0) {
@@ -309,7 +276,7 @@ public class SelectQuery<M> {
      * 
      * @return the specified parameters
      */
-    public Object[] getParameters() {
+    protected Object[] getParameters() {
         if (filterCriteria == null) {
             return ZERO_ARRAY;
         }
@@ -328,7 +295,7 @@ public class SelectQuery<M> {
      * 
      * @return the ordering specification
      */
-    public String getOrdering() {
+    protected String getOrdering() {
         if (orderCriteria == null) {
             return null;
         }
@@ -348,53 +315,5 @@ public class SelectQuery<M> {
             return null;
         }
         return sb.toString();
-    }
-
-    /**
-     * Returns the filter criteria.
-     * 
-     * @return the filter criteria
-     */
-    public FilterCriterion[] getFilterCriteria() {
-        return filterCriteria;
-    }
-
-    /**
-     * Returns the order criteria.
-     * 
-     * @return the order criteria
-     */
-    public OrderCriterion[] getOrderCriteria() {
-        return orderCriteria;
-    }
-
-    /**
-     * Returns the 0-based inclusive start index. If the start index is not set,
-     * returns -1.
-     * 
-     * @return the start index
-     */
-    public long getStartIndex() {
-        return startIndex;
-    }
-
-    /**
-     * Returns the 0-based exclusive end index. If the end index is not set,
-     * returns -1.
-     * 
-     * @return the end index
-     */
-    public long getEndIndex() {
-        return endIndex;
-    }
-
-    /**
-     * Returns the timeout interval (milliseconds). If the timeout interval is
-     * not set, returns -1.
-     * 
-     * @return the timeout interval (milliseconds)
-     */
-    public int getTimeoutMillis() {
-        return timeoutMillis;
     }
 }

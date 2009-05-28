@@ -30,11 +30,6 @@ public abstract class AbstractFilterCriterion implements FilterCriterion {
     protected String propertyName;
 
     /**
-     * The parameter name.
-     */
-    protected String parameterName;
-
-    /**
      * The parameter.
      */
     protected Object parameter;
@@ -44,48 +39,23 @@ public abstract class AbstractFilterCriterion implements FilterCriterion {
      * 
      * @param propertyName
      *            the property name
-     * @param parameterName
-     *            the parameter name
      * @param parameter
      *            the parameter
      * @throws NullPointerException
-     *             if the propertyName parameter is null or if the parameterName
-     *             parameter is null or if the parameter parameter is null
+     *             if the propertyName parameter is null or the parameter
+     *             parameter is null
      */
-    public AbstractFilterCriterion(String propertyName, String parameterName,
-            Object parameter) throws NullPointerException {
+    public AbstractFilterCriterion(String propertyName, Object parameter)
+            throws NullPointerException {
         if (propertyName == null) {
             throw new NullPointerException(
                 "The propertyName parameter is null.");
-        }
-        if (parameterName == null) {
-            throw new NullPointerException(
-                "The parameterName parameter is null.");
         }
         if (parameter == null) {
             throw new NullPointerException("The parameter parameter is null.");
         }
         this.propertyName = propertyName;
-        this.parameterName = parameterName;
         this.parameter = parameter;
-    }
-
-    /**
-     * Returns the property name.
-     * 
-     * @return the property name
-     */
-    public String getPropertyName() {
-        return propertyName;
-    }
-
-    /**
-     * Returns the parameter name.
-     * 
-     * @return the parameter name
-     */
-    public String getParameterName() {
-        return parameterName;
     }
 
     /**
@@ -95,10 +65,5 @@ public abstract class AbstractFilterCriterion implements FilterCriterion {
      */
     public Object getParameter() {
         return parameter;
-    }
-
-    @Override
-    public String getParameterDeclaration() {
-        return parameter.getClass().getName() + " " + parameterName;
     }
 }

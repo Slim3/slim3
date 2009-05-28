@@ -27,8 +27,7 @@ public class LeCriterionTest extends TestCase {
      * @throws Exception
      */
     public void testGetQueryString() throws Exception {
-        LeCriterion criterion =
-            new LeCriterion("id", "idLeParam", Long.valueOf(1));
-        assertEquals("id <= idLeParam", criterion.getQueryString());
+        LeCriterion criterion = new LeCriterion("aaa", Long.valueOf(1));
+        assertEquals("aaa <= :0", criterion.getQueryString(":0"));
     }
 }

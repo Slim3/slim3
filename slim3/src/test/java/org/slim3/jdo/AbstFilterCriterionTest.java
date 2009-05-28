@@ -28,36 +28,22 @@ public class AbstFilterCriterionTest extends TestCase {
      */
     public void testConstructor() throws Exception {
         MyFilterCriterion criterion =
-            new MyFilterCriterion("id", "idParam", Long.valueOf(1));
-        assertEquals("id", criterion.getPropertyName());
-        assertEquals("idParam", criterion.getParameterName());
+            new MyFilterCriterion("id", Long.valueOf(1));
+        assertEquals("id", criterion.propertyName);
         assertEquals(Long.valueOf(1), criterion.getParameter());
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testGetParameterDeclaration() throws Exception {
-        MyFilterCriterion criterion =
-            new MyFilterCriterion("id", "idParam", Long.valueOf(1));
-        assertEquals("java.lang.Long idParam", criterion
-            .getParameterDeclaration());
     }
 
     private static class MyFilterCriterion extends AbstractFilterCriterion {
 
         /**
          * @param propertyName
-         * @param parameterName
          * @param parameter
          */
-        public MyFilterCriterion(String propertyName, String parameterName,
-                Object parameter) {
-            super(propertyName, parameterName, parameter);
+        public MyFilterCriterion(String propertyName, Object parameter) {
+            super(propertyName, parameter);
         }
 
-        @Override
-        public String getQueryString() {
+        public String getQueryString(String parameterName) {
             return null;
         }
 

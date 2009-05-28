@@ -90,7 +90,20 @@ public abstract class JDOControllerTestCase extends ControllerTestCase {
      * @return a new {@link SelectQuery}
      */
     protected <M> SelectQuery<M> from(ModelMeta<M> modelMeta) {
-        return new SelectQuery<M>(modelMeta, pm);
+        return new SelectQuery<M>(pm, modelMeta.getModelClass());
+    }
+
+    /**
+     * Creates a new {@link SelectQuery}.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @return a new {@link SelectQuery}
+     */
+    protected <M> SelectQuery<M> from(Class<M> modelClass) {
+        return new SelectQuery<M>(pm, modelClass);
     }
 
     /**

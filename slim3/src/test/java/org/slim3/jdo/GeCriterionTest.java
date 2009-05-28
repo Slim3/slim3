@@ -27,8 +27,7 @@ public class GeCriterionTest extends TestCase {
      * @throws Exception
      */
     public void testGetQueryString() throws Exception {
-        GeCriterion criterion =
-            new GeCriterion("id", "idGeParam", Long.valueOf(1));
-        assertEquals("id >= idGeParam", criterion.getQueryString());
+        GeCriterion criterion = new GeCriterion("aaa", Long.valueOf(1));
+        assertEquals("aaa >= :0", criterion.getQueryString(":0"));
     }
 }

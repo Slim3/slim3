@@ -21,10 +21,8 @@ import javax.jdo.JDOUserException;
 
 import org.slim3.tester.JDOTestCase;
 
-import slim3.it.model.Sample;
-import slim3.it.model.Sample2;
-import slim3.it.model.Sample2Meta;
-import slim3.it.model.SampleMeta;
+import slim3.it.model.Blog;
+import slim3.it.model.BlogMeta;
 
 /**
  * @author higa
@@ -32,28 +30,34 @@ import slim3.it.model.SampleMeta;
  */
 public class SelectQueryTest extends JDOTestCase {
 
+    private BlogMeta b;
+
+    private SelectQuery<Blog> query;
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        b = new BlogMeta();
+        query = new SelectQuery<Blog>(pm, b.getModelClass());
+    }
+
     /**
      * @throws Exception
      */
     public void testWhere() throws Exception {
-        Sample2Meta s = new Sample2Meta();
-        SelectQuery<Sample2> query = new SelectQuery<Sample2>(s, pm);
-        assertNull(query.getFilterCriteria());
+        assertNull(query.filterCriteria);
         assertSame(query, query.where());
-        assertNotNull(query.getFilterCriteria());
-        query.where(s.id.eq(Long.valueOf(1)));
-        assertEquals(1, query.getFilterCriteria().length);
+        assertNotNull(query.filterCriteria);
+        query.where(b.key.eq("1"));
+        assertEquals(1, query.filterCriteria.length);
     }
 
     /**
      * @throws Exception
      */
     public void testEmptyFilterCriteria() throws Exception {
-        Sample2Meta s = new Sample2Meta();
-        SelectQuery<Sample2> query = new SelectQuery<Sample2>(s, pm);
         query.where();
         assertNull(query.getFilter());
-        assertNull(query.getParametersDeclaration());
         assertEquals(0, query.getParameters().length);
     }
 
@@ -61,10 +65,7 @@ public class SelectQueryTest extends JDOTestCase {
      * @throws Exception
      */
     public void testNoFilterCriteria() throws Exception {
-        Sample2Meta s = new Sample2Meta();
-        SelectQuery<Sample2> query = new SelectQuery<Sample2>(s, pm);
         assertNull(query.getFilter());
-        assertNull(query.getParametersDeclaration());
         assertEquals(0, query.getParameters().length);
     }
 
@@ -72,28 +73,20 @@ public class SelectQueryTest extends JDOTestCase {
      * @throws Exception
      */
     public void testSingleFilterCriteria() throws Exception {
-        Sample2Meta s = new Sample2Meta();
-        SelectQuery<Sample2> query = new SelectQuery<Sample2>(s, pm);
-        query.where(s.id.eq(Long.valueOf(1)));
-        assertEquals("id == idParam", query.getFilter());
-        assertEquals("java.lang.Long idParam", query.getParametersDeclaration());
+        query.where(b.key.eq("aaa"));
+        assertEquals("key == :0", query.getFilter());
         assertEquals(1, query.getParameters().length);
-        assertEquals(Long.valueOf(1), query.getParameters()[0]);
+        assertEquals("aaa", query.getParameters()[0]);
     }
 
     /**
      * @throws Exception
      */
     public void testMultiFilterCriteria() throws Exception {
-        Sample2Meta s = new Sample2Meta();
-        SelectQuery<Sample2> query = new SelectQuery<Sample2>(s, pm);
-        query.where(s.id.eq(Long.valueOf(1)), s.name.eq("hoge"));
-        assertEquals("id == idParam && name == nameParam", query.getFilter());
-        assertEquals(
-            "java.lang.Long idParam, java.lang.String nameParam",
-            query.getParametersDeclaration());
+        query.where(b.key.eq("aaa"), b.title.eq("hoge"));
+        assertEquals("key == :0 && title == :1", query.getFilter());
         assertEquals(2, query.getParameters().length);
-        assertEquals(Long.valueOf(1), query.getParameters()[0]);
+        assertEquals("aaa", query.getParameters()[0]);
         assertEquals("hoge", query.getParameters()[1]);
     }
 
@@ -101,21 +94,17 @@ public class SelectQueryTest extends JDOTestCase {
      * @throws Exception
      */
     public void testOrderBy() throws Exception {
-        Sample2Meta s = new Sample2Meta();
-        SelectQuery<Sample2> query = new SelectQuery<Sample2>(s, pm);
-        assertNull(query.getOrderCriteria());
+        assertNull(query.orderCriteria);
         assertSame(query, query.orderBy());
-        assertNotNull(query.getOrderCriteria());
-        query.orderBy(s.id.asc());
-        assertEquals(1, query.getOrderCriteria().length);
+        assertNotNull(query.orderCriteria);
+        query.orderBy(b.key.asc());
+        assertEquals(1, query.orderCriteria.length);
     }
 
     /**
      * @throws Exception
      */
     public void testEmptyOrderCriteria() throws Exception {
-        Sample2Meta s = new Sample2Meta();
-        SelectQuery<Sample2> query = new SelectQuery<Sample2>(s, pm);
         assertSame(query, query.orderBy());
         assertNull(query.getOrdering());
     }
@@ -124,8 +113,6 @@ public class SelectQueryTest extends JDOTestCase {
      * @throws Exception
      */
     public void testNoOrderCriterion() throws Exception {
-        Sample2Meta s = new Sample2Meta();
-        SelectQuery<Sample2> query = new SelectQuery<Sample2>(s, pm);
         assertNull(query.getOrdering());
     }
 
@@ -133,52 +120,39 @@ public class SelectQueryTest extends JDOTestCase {
      * @throws Exception
      */
     public void testSingleOrderCriteria() throws Exception {
-        Sample2Meta s = new Sample2Meta();
-        SelectQuery<Sample2> query = new SelectQuery<Sample2>(s, pm);
-        query.orderBy(s.id.asc());
-        assertEquals("id asc", query.getOrdering());
+        query.orderBy(b.key.asc());
+        assertEquals("key asc", query.getOrdering());
     }
 
     /**
      * @throws Exception
      */
     public void testMultiOrderCriteria() throws Exception {
-        Sample2Meta s = new Sample2Meta();
-        SelectQuery<Sample2> query = new SelectQuery<Sample2>(s, pm);
-        query.orderBy(s.id.asc(), s.name.desc());
-        assertEquals("id asc, name desc", query.getOrdering());
+        query.orderBy(b.key.asc(), b.title.desc());
+        assertEquals("key asc, title desc", query.getOrdering());
     }
 
     /**
      * @throws Exception
      */
     public void testRange() throws Exception {
-        Sample2Meta s = new Sample2Meta();
-        SelectQuery<Sample2> query = new SelectQuery<Sample2>(s, pm);
-        assertEquals(-1, query.getStartIndex());
-        assertEquals(-1, query.getEndIndex());
         assertSame(query, query.range(50, 70));
-        assertEquals(50, query.getStartIndex());
-        assertEquals(70, query.getEndIndex());
+        assertEquals(50, query.startIndex);
+        assertEquals(70, query.endIndex);
     }
 
     /**
      * @throws Exception
      */
     public void testTimeoutMillis() throws Exception {
-        Sample2Meta s = new Sample2Meta();
-        SelectQuery<Sample2> query = new SelectQuery<Sample2>(s, pm);
-        assertEquals(-1, query.getTimeoutMillis());
         assertSame(query, query.timeoutMillis(1000));
-        assertEquals(1000, query.getTimeoutMillis());
+        assertEquals(1000, query.timeoutMillis);
     }
 
     /**
      * @throws Exception
      */
     public void testNewQuery() throws Exception {
-        Sample2Meta s = new Sample2Meta();
-        SelectQuery<Sample2> query = new SelectQuery<Sample2>(s, pm);
         assertNotNull(query.newQuery());
     }
 
@@ -186,32 +160,24 @@ public class SelectQueryTest extends JDOTestCase {
      * @throws Exception
      */
     public void testGetQueryString() throws Exception {
-        Sample2Meta s = new Sample2Meta();
-        SelectQuery<Sample2> query = new SelectQuery<Sample2>(s, pm);
-        query.where(s.id.eq(Long.valueOf(1))).orderBy(s.id.asc()).range(0, 1);
+        query.where(b.key.eq("aaa")).orderBy(b.key.asc()).range(0, 1);
         String queryStr = query.getQueryString();
-        System.out.println(queryStr);
-        assertEquals(
-            "select from "
-                + Sample2.class.getName()
-                + " where id == idParam order by id asc parameters java.lang.Long idParam range 0, 1",
-            queryStr);
+        assertEquals("select from "
+            + Blog.class.getName()
+            + " where key == :0 order by key asc range 0, 1", queryStr);
     }
 
     /**
      * @throws Exception
      */
     public void testGetQueryStringWithParameters() throws Exception {
-        Sample2Meta s = new Sample2Meta();
-        SelectQuery<Sample2> query = new SelectQuery<Sample2>(s, pm);
-        query.where(s.id.eq(Long.valueOf(1))).orderBy(s.id.asc()).range(0, 1);
+        query.where(b.key.eq("aaa")).orderBy(b.key.asc()).range(0, 1);
         String queryStr = query.getQueryStringWithParameters();
         System.out.println(queryStr);
         assertEquals(
             "select from "
-                + Sample2.class.getName()
-                + " where id == idParam order by id asc parameters java.lang.Long idParam range 0, 1"
-                + " with [1]",
+                + Blog.class.getName()
+                + " where key == :0 order by key asc range 0, 1 with [aaa]",
             queryStr);
     }
 
@@ -219,10 +185,8 @@ public class SelectQueryTest extends JDOTestCase {
      * @throws Exception
      */
     public void testGetResultList() throws Exception {
-        SampleMeta s = new SampleMeta();
-        makePersistentInTx(new Sample());
-        SelectQuery<Sample> query = new SelectQuery<Sample>(s, pm);
-        List<Sample> list = query.getResultList();
+        makePersistentInTx(new Blog());
+        List<Blog> list = query.getResultList();
         assertEquals(1, list.size());
     }
 
@@ -230,21 +194,17 @@ public class SelectQueryTest extends JDOTestCase {
      * @throws Exception
      */
     public void testGetSingleResult() throws Exception {
-        SampleMeta s = new SampleMeta();
-        makePersistentInTx(new Sample());
-        SelectQuery<Sample> query = new SelectQuery<Sample>(s, pm);
-        Sample sample = query.getSingleResult();
-        assertNotNull(sample);
+        makePersistentInTx(new Blog());
+        Blog blog = query.getSingleResult();
+        assertNotNull(blog);
     }
 
     /**
      * @throws Exception
      */
     public void testGetSingleResultForTooMany() throws Exception {
-        SampleMeta s = new SampleMeta();
-        makePersistentInTx(new Sample());
-        makePersistentInTx(new Sample());
-        SelectQuery<Sample> query = new SelectQuery<Sample>(s, pm);
+        makePersistentInTx(new Blog());
+        makePersistentInTx(new Blog());
         try {
             query.getSingleResult();
             fail();
@@ -257,11 +217,9 @@ public class SelectQueryTest extends JDOTestCase {
      * @throws Exception
      */
     public void testGetFirstResult() throws Exception {
-        SampleMeta s = new SampleMeta();
-        makePersistentInTx(new Sample());
-        makePersistentInTx(new Sample());
-        SelectQuery<Sample> query = new SelectQuery<Sample>(s, pm);
-        Sample sample = query.getFirstResult();
-        assertNotNull(sample);
+        makePersistentInTx(new Blog());
+        makePersistentInTx(new Blog());
+        Blog blog = query.getFirstResult();
+        assertNotNull(blog);
     }
 }

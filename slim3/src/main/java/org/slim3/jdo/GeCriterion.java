@@ -29,19 +29,14 @@ public class GeCriterion extends AbstractFilterCriterion {
      * 
      * @param propertyName
      *            the property name
-     * @param parameterName
-     *            the parameter name
      * @param parameter
      *            the parameter
      */
-    public GeCriterion(String propertyName, String parameterName,
-            Object parameter) {
-        super(propertyName, parameterName, parameter);
+    public GeCriterion(String propertyName, Object parameter) {
+        super(propertyName, parameter);
     }
 
-    @Override
-    public String getQueryString() {
+    public String getQueryString(String parameterName) {
         return propertyName + " >= " + parameterName;
     }
-
 }

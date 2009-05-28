@@ -27,8 +27,7 @@ public class GtCriterionTest extends TestCase {
      * @throws Exception
      */
     public void testGetQueryString() throws Exception {
-        GtCriterion criterion =
-            new GtCriterion("id", "idGtParam", Long.valueOf(1));
-        assertEquals("id > idGtParam", criterion.getQueryString());
+        GtCriterion criterion = new GtCriterion("aaa", Long.valueOf(1));
+        assertEquals("aaa > :0", criterion.getQueryString(":0"));
     }
 }

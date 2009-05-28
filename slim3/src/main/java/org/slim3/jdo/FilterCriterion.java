@@ -27,16 +27,11 @@ public interface FilterCriterion {
     /**
      * Returns the query string.
      * 
+     * @param parameterName
+     *            the parameter name
      * @return the query string
      */
-    String getQueryString();
-
-    /**
-     * Returns the parameter declaration.
-     * 
-     * @return the parameter declaration
-     */
-    String getParameterDeclaration();
+    String getQueryString(String parameterName);
 
     /**
      * Returns the parameter.

@@ -4,6 +4,7 @@
 	<version>12</version>
 	<system-properties>
         <property name="slim3.controllerPackage" value="slim3.it.controller"/>
+        <property name="slim3.hotReloading" value="true"/>
         <property name="java.util.logging.config.file" value="WEB-INF/classes/logging.properties"/>
     </system-properties>
 	<sessions-enabled>true</sessions-enabled>

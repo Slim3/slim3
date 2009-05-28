@@ -28,8 +28,7 @@ public class ContainsCriterionTest extends TestCase {
      */
     public void testGetQueryString() throws Exception {
         ContainsCriterion criterion =
-            new ContainsCriterion("aaaList", "aaaListParam", Long.valueOf(1));
-        assertEquals("aaaList.contains(aaaListParam)", criterion
-            .getQueryString());
+            new ContainsCriterion("aaaList", Long.valueOf(1));
+        assertEquals("aaaList.contains(:0)", criterion.getQueryString(":0"));
     }
 }

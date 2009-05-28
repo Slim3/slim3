@@ -9,14 +9,12 @@ import org.slim3.util.BeanMap;
 import org.slim3.util.BeanUtil;
 
 import slim3.it.model.Blog;
-import slim3.it.model.BlogMeta;
 
 public class ListController extends JDOController {
 
     @Override
     public Navigation run() {
-        BlogMeta meta = new BlogMeta();
-        List<Blog> list = from(meta).getResultList();
+        List<Blog> list = from(Blog.class).getResultList();
         List<BeanMap> blogList = new ArrayList<BeanMap>(list.size());
         for (Blog b : list) {
             BeanMap m = new BeanMap();

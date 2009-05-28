@@ -20,8 +20,8 @@ import javax.jdo.Transaction;
 
 import org.slim3.tester.DatastoreTestCase;
 
-import slim3.it.model.Sample;
-import slim3.it.model.SampleMeta;
+import slim3.it.model.Blog;
+import slim3.it.model.BlogMeta;
 
 /**
  * @author higa
@@ -55,7 +55,8 @@ public class JDOControllerTest extends DatastoreTestCase {
      */
     public void testFrom() throws Exception {
         controller.setUp();
-        assertNotNull(controller.from(new SampleMeta()));
+        assertNotNull(controller.from(new BlogMeta()));
+        assertNotNull(controller.from(Blog.class));
     }
 
     /**
@@ -75,9 +76,9 @@ public class JDOControllerTest extends DatastoreTestCase {
      */
     public void testMakePersistentInTx() throws Exception {
         controller.setUp();
-        Sample s = new Sample();
-        controller.makePersistentInTx(s);
-        assertEquals(1, count(Sample.class));
+        Blog b = new Blog();
+        controller.makePersistentInTx(b);
+        assertEquals(1, count(Blog.class));
     }
 
     /**
@@ -85,10 +86,10 @@ public class JDOControllerTest extends DatastoreTestCase {
      */
     public void testDeletePersistentInTx() throws Exception {
         controller.setUp();
-        Sample s = new Sample();
-        controller.makePersistentInTx(s);
-        controller.deletePersistentInTx(s);
-        assertEquals(0, count(Sample.class));
+        Blog b = new Blog();
+        controller.makePersistentInTx(b);
+        controller.deletePersistentInTx(b);
+        assertEquals(0, count(Blog.class));
     }
 
     private static class MyController extends JDOController {

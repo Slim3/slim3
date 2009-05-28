@@ -20,8 +20,8 @@ import javax.jdo.Transaction;
 
 import org.slim3.controller.ControllerConstants;
 
-import slim3.it.model.Sample;
-import slim3.it.model.SampleMeta;
+import slim3.it.model.Blog;
+import slim3.it.model.BlogMeta;
 
 /**
  * @author higa
@@ -47,7 +47,8 @@ public class JDOControllerTestCaseTest extends JDOControllerTestCase {
      * @throws Exception
      */
     public void testFrom() throws Exception {
-        assertNotNull(from(new SampleMeta()));
+        assertNotNull(from(new BlogMeta()));
+        assertNotNull(from(Blog.class));
     }
 
     /**
@@ -76,18 +77,17 @@ public class JDOControllerTestCaseTest extends JDOControllerTestCase {
      * @throws Exception
      */
     public void testMakePersistentInTx() throws Exception {
-        Sample s = new Sample();
-        makePersistentInTx(s);
-        assertEquals(1, count(Sample.class));
+        makePersistentInTx(new Blog());
+        assertEquals(1, count(Blog.class));
     }
 
     /**
      * @throws Exception
      */
     public void testDeletePersistentInTx() throws Exception {
-        Sample s = new Sample();
-        makePersistentInTx(s);
-        deletePersistentInTx(s);
-        assertEquals(0, count(Sample.class));
+        Blog blog = new Blog();
+        makePersistentInTx(blog);
+        deletePersistentInTx(blog);
+        assertEquals(0, count(Blog.class));
     }
 }

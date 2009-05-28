@@ -27,8 +27,7 @@ public class LtCriterionTest extends TestCase {
      * @throws Exception
      */
     public void testGetQueryString() throws Exception {
-        LtCriterion criterion =
-            new LtCriterion("id", "idLtParam", Long.valueOf(1));
-        assertEquals("id < idLtParam", criterion.getQueryString());
+        LtCriterion criterion = new LtCriterion("aaa", Long.valueOf(1));
+        assertEquals("aaa < :0", criterion.getQueryString(":0"));
     }
 }

@@ -32,8 +32,7 @@ public class AttributeMetaTest extends TestCase {
     public void testEq() throws Exception {
         AttributeMeta aaa = new AttributeMeta("aaa", Long.class);
         EqCriterion criterion = aaa.eq("1");
-        assertEquals("aaaParam", criterion.getParameterName());
-        assertEquals("aaa == aaaParam", criterion.getQueryString());
+        assertEquals("aaa == :0", criterion.getQueryString(":0"));
         assertEquals(Long.valueOf(1), criterion.getParameter());
     }
 
@@ -60,8 +59,7 @@ public class AttributeMetaTest extends TestCase {
         AttributeMeta aaa = new AttributeMeta("aaa", String.class);
         String[] parameter = new String[] { "111" };
         EqCriterion criterion = aaa.eq(parameter);
-        assertEquals("aaaParam", criterion.getParameterName());
-        assertEquals("aaa == aaaParam", criterion.getQueryString());
+        assertEquals("aaa == :0", criterion.getQueryString(":0"));
         assertEquals(parameter, criterion.getParameter());
     }
 
@@ -72,8 +70,7 @@ public class AttributeMetaTest extends TestCase {
         AttributeMeta aaa = new AttributeMeta("aaa", String.class);
         List<String> parameter = new ArrayList<String>();
         EqCriterion criterion = aaa.eq(parameter);
-        assertEquals("aaaParam", criterion.getParameterName());
-        assertEquals("aaa == aaaParam", criterion.getQueryString());
+        assertEquals("aaa == :0", criterion.getQueryString(":0"));
         assertEquals(parameter, criterion.getParameter());
     }
 
@@ -83,8 +80,7 @@ public class AttributeMetaTest extends TestCase {
     public void testLt() throws Exception {
         AttributeMeta aaa = new AttributeMeta("aaa", Long.class);
         LtCriterion criterion = aaa.lt("1");
-        assertEquals("aaaLtParam", criterion.getParameterName());
-        assertEquals("aaa < aaaLtParam", criterion.getQueryString());
+        assertEquals("aaa < :0", criterion.getQueryString(":0"));
         assertEquals(Long.valueOf(1), criterion.getParameter());
     }
 
@@ -110,8 +106,7 @@ public class AttributeMetaTest extends TestCase {
     public void testLe() throws Exception {
         AttributeMeta aaa = new AttributeMeta("aaa", Long.class);
         LeCriterion criterion = aaa.le("1");
-        assertEquals("aaaLeParam", criterion.getParameterName());
-        assertEquals("aaa <= aaaLeParam", criterion.getQueryString());
+        assertEquals("aaa <= :0", criterion.getQueryString(":0"));
         assertEquals(Long.valueOf(1), criterion.getParameter());
     }
 
@@ -137,8 +132,7 @@ public class AttributeMetaTest extends TestCase {
     public void testGt() throws Exception {
         AttributeMeta aaa = new AttributeMeta("aaa", Long.class);
         GtCriterion criterion = aaa.gt("1");
-        assertEquals("aaaGtParam", criterion.getParameterName());
-        assertEquals("aaa > aaaGtParam", criterion.getQueryString());
+        assertEquals("aaa > :0", criterion.getQueryString(":0"));
         assertEquals(Long.valueOf(1), criterion.getParameter());
     }
 
@@ -164,8 +158,7 @@ public class AttributeMetaTest extends TestCase {
     public void testGe() throws Exception {
         AttributeMeta aaa = new AttributeMeta("aaa", Long.class);
         GeCriterion criterion = aaa.ge("1");
-        assertEquals("aaaGeParam", criterion.getParameterName());
-        assertEquals("aaa >= aaaGeParam", criterion.getQueryString());
+        assertEquals("aaa >= :0", criterion.getQueryString(":0"));
         assertEquals(Long.valueOf(1), criterion.getParameter());
     }
 
@@ -192,9 +185,7 @@ public class AttributeMetaTest extends TestCase {
         AttributeMeta aaaArray =
             new AttributeMeta("aaaArray", Long[].class, Long.class);
         ContainsCriterion criterion = aaaArray.contains("1");
-        assertEquals("aaaArrayParam", criterion.getParameterName());
-        assertEquals("aaaArray.contains(aaaArrayParam)", criterion
-            .getQueryString());
+        assertEquals("aaaArray.contains(:0)", criterion.getQueryString(":0"));
         assertEquals(Long.valueOf(1), criterion.getParameter());
     }
 
