@@ -202,6 +202,11 @@ public class MockHttpServletRequest implements HttpServletRequest {
     protected boolean secure = false;
 
     /**
+     * The user principal.
+     */
+    protected Principal userPrincipal;
+
+    /**
      * Constructor.
      * 
      * @param servletContext
@@ -430,12 +435,12 @@ public class MockHttpServletRequest implements HttpServletRequest {
         return System.getProperty("user.name");
     }
 
-    public boolean isUserInRole(String arg0) {
-        throw new UnsupportedOperationException();
+    public boolean isUserInRole(String role) {
+        return true;
     }
 
     public Principal getUserPrincipal() {
-        throw new UnsupportedOperationException();
+        return userPrincipal;
     }
 
     public String getRequestedSessionId() {
