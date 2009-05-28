@@ -14,7 +14,7 @@ public class IndexController extends JDOController {
 
     @Override
     public Navigation run() {
-        List<Blog> list = from(Blog.class).getResultList();
+        List<Blog> list = from(Blog.class).range(0, 10).getResultList();
         List<BeanMap> blogList = new ArrayList<BeanMap>(list.size());
         for (Blog b : list) {
             BeanMap m = new BeanMap();

@@ -20,7 +20,7 @@ input.err { background-color: orange; }
 
 #menu{
  width:160px;
- height:300px;
+ height:400px;
  text-align:left;
  vertical-align: top;
  float:left;
@@ -29,7 +29,7 @@ input.err { background-color: orange; }
 
 #body{
  width:600px;
- height:300px;
+ height:400px;
  float:left;
  background-color: white;
 }
