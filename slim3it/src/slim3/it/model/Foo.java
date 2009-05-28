@@ -15,20 +15,26 @@
  */
 package slim3.it.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.jdo.JDOHelper;
+import javax.jdo.PersistenceManager;
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+import javax.jdo.annotations.Version;
+import javax.jdo.annotations.VersionStrategy;
 
 /**
  * @author higa
  * 
  */
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
+@Version(strategy = VersionStrategy.VERSION_NUMBER)
 public class Foo {
 
     @PrimaryKey
@@ -36,22 +42,37 @@ public class Foo {
     @Extension(vendorName = "datanucleus", key = "gae.encoded-pk", value = "true")
     private String key;
 
-    @Persistent(mappedBy = "foo")
-    private List<Bar> barList;
+    @Persistent
+    private List<String> barKeyList;
 
     /**
-     * @return the barList
+     * @return the barKeyList
      */
-    public List<Bar> getBarList() {
-        return barList;
+    public List<String> getBarKeyList() {
+        return barKeyList;
     }
 
     /**
-     * @param barList
-     *            the barList to set
+     * @param barKeyList
+     *            the barKeyList to set
      */
+    public void setBarKeyList(List<String> barKeyList) {
+        this.barKeyList = barKeyList;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Bar> getBarList() {
+        PersistenceManager pm = JDOHelper.getPersistenceManager(this);
+        return (List<Bar>) pm.newQuery(Bar.class, "key == :key").execute(
+            barKeyList);
+    }
+
     public void setBarList(List<Bar> barList) {
-        this.barList = barList;
+        List<String> list = new ArrayList<String>(barList.size());
+        for (Bar bar : barList) {
+            list.add(bar.getKey());
+        }
+        setBarKeyList(list);
     }
 
     /**

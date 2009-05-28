@@ -199,7 +199,7 @@ public class SelectQuery<M> {
 
         if (startIndex > -1 && endIndex > -1) {
             sb.append(" range ").append(startIndex).append(", ").append(
-                    endIndex);
+                endIndex);
         }
         return sb.toString();
     }
@@ -228,20 +228,13 @@ public class SelectQuery<M> {
      * Returns the single result for the query.
      * 
      * @return the single result for the query
-     * @throws JDONonUniqueResultException
-     *             if the results for the query is not unique
+     * 
      */
-    public M getSingleResult() throws JDONonUniqueResultException {
-        range(0, 2);
-        List<M> list = getResultList();
-        if (list.size() > 1) {
-            throw new JDONonUniqueResultException("The results for the query("
-                    + getQueryStringWithParameters() + ") is not unique.");
-        }
-        if (list.size() == 1) {
-            return list.get(0);
-        }
-        return null;
+    @SuppressWarnings("unchecked")
+    public M getSingleResult() {
+        Query query = newQuery();
+        query.setUnique(true);
+        return (M) query.executeWithArray(getParameters());
     }
 
     /**
@@ -343,7 +336,7 @@ public class SelectQuery<M> {
         for (OrderCriterion c : orderCriteria) {
             if (c == null) {
                 throw new NullPointerException(
-                        "The order criterion must not be null.");
+                    "The order criterion must not be null.");
             }
             if (sb.length() == 0) {
                 sb.append(c.getQueryString());

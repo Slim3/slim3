@@ -15,35 +15,22 @@
  */
 package org.slim3.jdo;
 
-import javax.jdo.PersistenceManager;
+import java.util.List;
 
-import org.slim3.jdo.PMF;
-import org.slim3.jdo.SelectQuery;
-import org.slim3.tester.DatastoreTestCase;
+import javax.jdo.JDOUserException;
 
+import org.slim3.tester.JDOTestCase;
+
+import slim3.it.model.Sample;
 import slim3.it.model.Sample2;
 import slim3.it.model.Sample2Meta;
+import slim3.it.model.SampleMeta;
 
 /**
  * @author higa
  * 
  */
-public class SelectQueryTest extends DatastoreTestCase {
-
-    private PersistenceManager pm;
-
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        pm = PMF.get().getPersistenceManager();
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        pm.close();
-        pm = null;
-        super.tearDown();
-    }
+public class SelectQueryTest extends JDOTestCase {
 
     /**
      * @throws Exception
@@ -226,5 +213,55 @@ public class SelectQueryTest extends DatastoreTestCase {
                 + " where id == idParam order by id asc parameters java.lang.Long idParam range 0, 1"
                 + " with [1]",
             queryStr);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetResultList() throws Exception {
+        SampleMeta s = new SampleMeta();
+        makePersistentInTx(new Sample());
+        SelectQuery<Sample> query = new SelectQuery<Sample>(s, pm);
+        List<Sample> list = query.getResultList();
+        assertEquals(1, list.size());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetSingleResult() throws Exception {
+        SampleMeta s = new SampleMeta();
+        makePersistentInTx(new Sample());
+        SelectQuery<Sample> query = new SelectQuery<Sample>(s, pm);
+        Sample sample = query.getSingleResult();
+        assertNotNull(sample);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetSingleResultForTooMany() throws Exception {
+        SampleMeta s = new SampleMeta();
+        makePersistentInTx(new Sample());
+        makePersistentInTx(new Sample());
+        SelectQuery<Sample> query = new SelectQuery<Sample>(s, pm);
+        try {
+            query.getSingleResult();
+            fail();
+        } catch (JDOUserException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetFirstResult() throws Exception {
+        SampleMeta s = new SampleMeta();
+        makePersistentInTx(new Sample());
+        makePersistentInTx(new Sample());
+        SelectQuery<Sample> query = new SelectQuery<Sample>(s, pm);
+        Sample sample = query.getFirstResult();
+        assertNotNull(sample);
     }
 }
