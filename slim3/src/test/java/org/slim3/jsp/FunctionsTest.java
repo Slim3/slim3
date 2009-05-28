@@ -53,6 +53,13 @@ public class FunctionsTest extends TestCase {
     /**
      * @throws Exception
      */
+    public void testHForString() throws Exception {
+        assertEquals("&lt;a&gt;", Functions.h("<a>"));
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testHForCharArray() throws Exception {
         assertEquals("[1]", Functions.h(new char[] { '1' }));
     }

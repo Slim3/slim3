@@ -2,10 +2,17 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="f" uri="http://www.slim3.org/functions"%>
 
-<jsp:include page="/layout.jsp">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Blog(Slim3)</title>
+<link rel="stylesheet" type="text/css" href="/css/global.css" />
+</head>
+<body>
+<jsp:include page="/header.jsp">
     <jsp:param name="title" value="Blog"/>
-    <jsp:param name="content">
-    <jsp:attribute name="value">
+</jsp:include>
+<jsp:include page="/menu.jsp" />
+<div id="body">
 <a href="${f:url('create')}">Create</a>
 <table>
 <thead>
@@ -23,6 +30,8 @@
 </c:forEach>
 </tbody>
 </table>
-    </jsp:attribute>
-    </jsp:param>
-</jsp:include>
+
+</div>
+<jsp:include page="/footer.jsp" />
+</body>
+</html>
