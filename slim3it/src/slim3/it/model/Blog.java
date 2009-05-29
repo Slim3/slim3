@@ -1,5 +1,6 @@
 package slim3.it.model;
 
+import javax.jdo.annotations.Embedded;
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -23,6 +24,25 @@ public class Blog {
 
     @Persistent
     private String content;
+
+    @Persistent
+    @Embedded
+    private Baz baz;
+
+    /**
+     * @return the baz
+     */
+    public Baz getBaz() {
+        return baz;
+    }
+
+    /**
+     * @param baz
+     *            the baz to set
+     */
+    public void setBaz(Baz baz) {
+        this.baz = baz;
+    }
 
     /**
      * @return the key
