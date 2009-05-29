@@ -143,6 +143,15 @@ public class FrontController implements Filter {
         HttpServletResponse previousResponse = ResponseLocator.getResponse();
         RequestLocator.setRequest(request);
         ResponseLocator.setResponse(response);
+        ClassLoader previousLoader =
+            Thread.currentThread().getContextClassLoader();
+        if (hotReloading
+            && !(previousLoader instanceof HotReloadingClassLoader)) {
+            Thread.currentThread().setContextClassLoader(
+                new HotReloadingClassLoader(
+                    previousLoader,
+                    controllerPackageName));
+        }
         try {
             if (request.getCharacterEncoding() == null) {
                 request.setCharacterEncoding(charset);
@@ -165,6 +174,7 @@ public class FrontController implements Filter {
                 }
             }
         } finally {
+            Thread.currentThread().setContextClassLoader(previousLoader);
             RequestLocator.setRequest(previousRequest);
             ResponseLocator.setResponse(previousResponse);
         }
@@ -215,11 +225,8 @@ public class FrontController implements Filter {
         String className = toControllerClassName(path);
         Class<?> clazz = null;
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        if (hotReloading) {
-            loader = new HotReloadingClassLoader(loader, controllerPackageName);
-        }
         try {
-            clazz = loader.loadClass(className);
+            clazz = Class.forName(className, true, loader);
         } catch (Throwable t) {
             if (logger.isLoggable(Level.FINE)) {
                 logger.log(Level.FINE, t.getMessage(), t);
