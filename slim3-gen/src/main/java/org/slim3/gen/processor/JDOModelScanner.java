@@ -31,6 +31,7 @@ import javax.lang.model.type.ErrorType;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
+import javax.lang.model.util.ElementKindVisitor6;
 import javax.lang.model.util.ElementScanner6;
 import javax.lang.model.util.SimpleElementVisitor6;
 import javax.lang.model.util.SimpleTypeVisitor6;
@@ -80,6 +81,9 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
         if (persistent == null) {
             return null;
         }
+        if (!isTopLevelType(attribute)) {
+            return null;
+        }
         AttributeDesc attributeDesc = new AttributeDesc();
         attributeDesc.setName(attribute.getSimpleName().toString());
         attributeDesc.setModelType(isModelType(attribute));
@@ -95,6 +99,25 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
         }
         p.addAttributeDesc(attributeDesc);
         return null;
+    }
+
+    /**
+     * Returns {@code true} if the attribute type is a top level type.
+     * 
+     * @param attribute
+     *            the element of an attribute
+     * @return {@code true} if the attribute type is a top level type
+     */
+    protected boolean isTopLevelType(Element attribute) {
+        Element e = processingEnv.getTypeUtils().asElement(attribute.asType());
+        return e.accept(new ElementKindVisitor6<Boolean, Void>(false) {
+
+            @Override
+            public Boolean visitType(TypeElement e, Void p) {
+                return e.getNestingKind() == NestingKind.TOP_LEVEL;
+            }
+
+        }, null);
     }
 
     /**
