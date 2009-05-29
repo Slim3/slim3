@@ -22,6 +22,7 @@ import java.util.List;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
@@ -60,6 +61,16 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
      */
     public JDOModelScanner(ProcessingEnvironment processingEnv) {
         this.processingEnv = processingEnv;
+    }
+
+    @Override
+    public Void visitType(TypeElement e, ModelDesc p) {
+        if (e.getNestingKind() == NestingKind.TOP_LEVEL) {
+            p.setTopLevel(true);
+        } else {
+            return null;
+        }
+        return super.visitType(e, p);
     }
 
     @Override

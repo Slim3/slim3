@@ -85,7 +85,9 @@ public class JDOModelProcessor extends AbstractProcessor {
         }
         ModelDescFactory modelDescFactory = createModelDescFactory();
         ModelDesc modelDesc = modelDescFactory.createModelDesc(element);
-        generateModelMeta(modelDesc, element);
+        if (modelDesc.isTopLevel()) {
+            generateModelMeta(modelDesc, element);
+        }
         if (Options.isDebugEnabled(processingEnv)) {
             Logger.debug(processingEnv, "[%s] Element(%s) is handled.",
                     getClass().getName(), element.getQualifiedName());

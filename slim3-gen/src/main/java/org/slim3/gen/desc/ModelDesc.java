@@ -34,6 +34,9 @@ public class ModelDesc {
     /** the simple name */
     protected String simpleName;
 
+    /** {@code true} if the model class is top level element */
+    protected boolean topLevel;
+
     /** the list of attribute descriptions */
     protected List<AttributeDesc> attributeDescList = new ArrayList<AttributeDesc>();
 
@@ -73,6 +76,29 @@ public class ModelDesc {
      */
     public void setSimpleName(String simpleName) {
         this.simpleName = simpleName;
+    }
+
+    /**
+     * Returns {@code true} if the model class is top level element, otherwise
+     * {@code false}.
+     * 
+     * @return {@code true} if the model class is top level element, otherwise
+     *         {@code false}.
+     */
+    public boolean isTopLevel() {
+        return topLevel;
+    }
+
+    /**
+     * Sets {@code true} if the model class is top level element, otherwise
+     * {@code false}.
+     * 
+     * @param topLevel
+     *            {@code true} if the model class is top level element,
+     *            otherwise {@code false}.
+     */
+    public void setTopLevel(boolean topLevel) {
+        this.topLevel = topLevel;
     }
 
     /**
