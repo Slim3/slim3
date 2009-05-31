@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" version="2.4">
+	<context-param>
+        <param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
+        <param-value>application</param-value>
+    </context-param>
+	<filter>
+        <filter-name>frontController</filter-name>
+        <filter-class>org.slim3.controller.FrontController</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>frontController</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+        <dispatcher>INCLUDE</dispatcher>
+        <dispatcher>ERROR</dispatcher>
+    </filter-mapping>
+</web-app>
