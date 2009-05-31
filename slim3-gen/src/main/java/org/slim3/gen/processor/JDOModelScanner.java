@@ -86,7 +86,7 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
         }
         AttributeDesc attributeDesc = new AttributeDesc();
         attributeDesc.setName(attribute.getSimpleName().toString());
-        attributeDesc.setModelType(isModelType(attribute));
+        attributeDesc.setEmbedded(isEmbedded(attribute));
         Iterator<String> classNames = new ClassNameCollector(attribute.asType())
                 .collect().iterator();
         if (classNames.hasNext()) {
@@ -121,20 +121,15 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
     }
 
     /**
-     * Returns {@code true} if the attribute type is a model type.
+     * Returns {@code true} if this attribute is embedded.
      * 
      * @param attribute
      *            the element of an attribute
-     * @return {@code true} if the attribute type is a model type.
+     * @return {@code true} if this attribute is embedded.
      */
-    protected boolean isModelType(Element attribute) {
-        Element e = processingEnv.getTypeUtils().asElement(attribute.asType());
-        if (e != null
-                && ElementUtil.getAnnotationMirror(e,
-                        ClassConstants.PersistenceCapable) != null) {
-            return true;
-        }
-        return false;
+    protected boolean isEmbedded(Element attribute) {
+        return ElementUtil.getAnnotationMirror(attribute,
+                ClassConstants.Embedded) != null;
     }
 
     /**

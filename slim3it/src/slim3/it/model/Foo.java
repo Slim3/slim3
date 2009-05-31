@@ -15,11 +15,6 @@
  */
 package slim3.it.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.jdo.JDOHelper;
-import javax.jdo.PersistenceManager;
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -43,36 +38,21 @@ public class Foo {
     private String key;
 
     @Persistent
-    private List<String> barKeyList;
+    private Bar bar;
 
     /**
-     * @return the barKeyList
+     * @return the bar
      */
-    public List<String> getBarKeyList() {
-        return barKeyList;
+    public Bar getBar() {
+        return bar;
     }
 
     /**
-     * @param barKeyList
-     *            the barKeyList to set
+     * @param bar
+     *            the bar to set
      */
-    public void setBarKeyList(List<String> barKeyList) {
-        this.barKeyList = barKeyList;
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<Bar> getBarList() {
-        PersistenceManager pm = JDOHelper.getPersistenceManager(this);
-        return (List<Bar>) pm.newQuery(Bar.class, "key == :key").execute(
-            barKeyList);
-    }
-
-    public void setBarList(List<Bar> barList) {
-        List<String> list = new ArrayList<String>(barList.size());
-        for (Bar bar : barList) {
-            list.add(bar.getKey());
-        }
-        setBarKeyList(list);
+    public void setBar(Bar bar) {
+        this.bar = bar;
     }
 
     /**

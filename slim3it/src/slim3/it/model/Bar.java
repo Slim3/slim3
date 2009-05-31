@@ -34,6 +34,42 @@ public class Bar {
     @Extension(vendorName = "datanucleus", key = "gae.encoded-pk", value = "true")
     private String key;
 
+    @Persistent
+    private String name;
+
+    @Persistent(mappedBy = "bar")
+    private Foo foo;
+
+    /**
+     * @return the foo
+     */
+    public Foo getFoo() {
+        return foo;
+    }
+
+    /**
+     * @param foo
+     *            the foo to set
+     */
+    public void setFoo(Foo foo) {
+        this.foo = foo;
+    }
+
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @param name
+     *            the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
     /**
      * @return the key
      */

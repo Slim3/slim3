@@ -71,7 +71,7 @@ public class ModelMetaGenerator implements Generator {
         p.println("    }");
         p.println();
         for (AttributeDesc desc : modelDesc.getAttributeDescList()) {
-            if (desc.isModelType()) {
+            if (desc.isEmbedded()) {
                 p.println("    public %1$s%2$s %3$s = new %1$s%2$s();", desc
                         .getClassName(), Constants.META_SUFFIX, desc.getName());
             } else {

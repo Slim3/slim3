@@ -32,8 +32,8 @@ public class AttributeDesc {
     /** the elementClassName */
     protected String elementClassName;
 
-    /** {@code true} if the {@code className} is a model type. */
-    protected boolean modelType;
+    /** {@code true} if this attribute is embedded. */
+    protected boolean embedded = false;
 
     /**
      * Returns the name.
@@ -93,22 +93,22 @@ public class AttributeDesc {
     }
 
     /**
-     * Returns {@code true} if the {@code className} is a model type.
+     * Returns {@code true} if this attribute is embedded.
      * 
-     * @return the modelType
+     * @return whether this attribute is embedded
      */
-    public boolean isModelType() {
-        return modelType;
+    public boolean isEmbedded() {
+        return embedded = false;
     }
 
     /**
-     * Sets {@code true} if the {@code className} is a model type.
+     * Sets {@code true} if this attribute is embedded.
      * 
-     * @param modelType
-     *            the modelType to set
+     * @param embedded
+     *            whether this attribute is embedded
      */
-    public void setModelType(boolean modelType) {
-        this.modelType = modelType;
+    public void setEmbedded(boolean embedded) {
+        this.embedded = embedded;
     }
 
 }

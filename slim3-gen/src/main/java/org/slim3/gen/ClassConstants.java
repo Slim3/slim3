@@ -45,4 +45,7 @@ public final class ClassConstants {
     /** {@code javax.jdo.annotations.Persistent} */
     public static final String Persistent = "javax.jdo.annotations.Persistent";
 
+    /** {@code javax.jdo.annotations.Embedded} */
+    public static final String Embedded = "javax.jdo.annotations.Embedded";
+
 }
