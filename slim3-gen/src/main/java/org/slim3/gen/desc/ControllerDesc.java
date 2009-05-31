@@ -33,6 +33,9 @@ public class ControllerDesc {
     /** the name of view */
     protected String viewName;
 
+    /** the simple name of view */
+    protected String simpleViewName;
+
     /** the path of controller */
     protected String path;
 
@@ -91,6 +94,18 @@ public class ControllerDesc {
      */
     public void setViewName(String viewName) {
         this.viewName = viewName;
+        if (viewName != null) {
+            simpleViewName = viewName.substring(viewName.lastIndexOf('/') + 1);
+        }
+    }
+
+    /**
+     * Returns the simple name of view.
+     * 
+     * @return the simple name of view
+     */
+    public String getSimpleViewName() {
+        return simpleViewName;
     }
 
     /**
