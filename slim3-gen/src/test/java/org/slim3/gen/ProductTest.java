@@ -17,8 +17,17 @@ package org.slim3.gen;
 
 import junit.framework.TestCase;
 
+/**
+ * 
+ * @author taedium
+ * 
+ */
 public class ProductTest extends TestCase {
 
+    /**
+     * 
+     * @throws Exception
+     */
     public void test() throws Exception {
         assertEquals("Slim3-Gen", ProductInfo.getName());
         assertEquals("@VERSION@", ProductInfo.getVersion());

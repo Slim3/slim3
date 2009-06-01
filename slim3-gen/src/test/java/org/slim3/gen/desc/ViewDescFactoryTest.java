@@ -23,6 +23,10 @@ import junit.framework.TestCase;
  */
 public class ViewDescFactoryTest extends TestCase {
 
+    /**
+     * 
+     * @throws Exception
+     */
     public void testCreateViewDesc_slashOnly() throws Exception {
         ViewDescFactory factory = new ViewDescFactory();
         ViewDesc viewDesc = factory.createViewDesc("/");
@@ -32,6 +36,10 @@ public class ViewDescFactoryTest extends TestCase {
         assertEquals("Index", viewDesc.getTitle());
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     public void testCreateViewDesc_oneDepth() throws Exception {
         ViewDescFactory factory = new ViewDescFactory();
         ViewDesc viewDesc = factory.createViewDesc("/aaa");
@@ -41,6 +49,10 @@ public class ViewDescFactoryTest extends TestCase {
         assertEquals("Aaa", viewDesc.getTitle());
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     public void testCreateViewDesc_oneDepth_endsWithSlash() throws Exception {
         ViewDescFactory factory = new ViewDescFactory();
         ViewDesc viewDesc = factory.createViewDesc("/aaa/");
@@ -50,6 +62,10 @@ public class ViewDescFactoryTest extends TestCase {
         assertEquals("aaa Index", viewDesc.getTitle());
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     public void testCreateViewDesc_twoDepth() throws Exception {
         ViewDescFactory factory = new ViewDescFactory();
         ViewDesc viewDesc = factory.createViewDesc("/aaa/bbb");
@@ -59,6 +75,10 @@ public class ViewDescFactoryTest extends TestCase {
         assertEquals("aaa Bbb", viewDesc.getTitle());
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     public void testCreateViewDesc_twoDepth_endsWithSlash() throws Exception {
         ViewDescFactory factory = new ViewDescFactory();
         ViewDesc viewDesc = factory.createViewDesc("/aaa/bbb/");

@@ -23,6 +23,10 @@ import junit.framework.TestCase;
  */
 public class ControllerDescTest extends TestCase {
 
+    /**
+     * 
+     * @throws Exception
+     */
     public void testSimpleViewName() throws Exception {
         ControllerDesc controllerDesc = new ControllerDesc();
         controllerDesc.setViewName("/aaa/index.jsp");

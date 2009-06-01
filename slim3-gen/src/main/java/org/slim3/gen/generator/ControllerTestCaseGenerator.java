@@ -15,7 +15,6 @@
  */
 package org.slim3.gen.generator;
 
-import org.slim3.gen.ClassConstants;
 import org.slim3.gen.Constants;
 import org.slim3.gen.desc.ControllerDesc;
 import org.slim3.gen.printer.Printer;
@@ -51,11 +50,11 @@ public class ControllerTestCaseGenerator implements Generator {
     public void generate(Printer p) {
         p.println("package %s;", controllerDesc.getPackageName());
         p.println();
-        p.println("import %s;", ClassConstants.JDOControllerTestCase);
+        p.println("import %s;", controllerDesc.getTestCaseSuperclassName());
         p.println();
         p.println("public class %s%s extends %s {", controllerDesc
             .getSimpleName(), Constants.TEST_SUFFIX, ClassUtil
-            .getSimpleName(ClassConstants.JDOControllerTestCase));
+            .getSimpleName(controllerDesc.getTestCaseSuperclassName()));
         p.println();
         p.println("    public void testRun() throws Exception {");
         p.println("        start(\"%s\");", controllerDesc.getPath());

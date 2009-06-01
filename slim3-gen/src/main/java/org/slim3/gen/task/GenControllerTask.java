@@ -28,6 +28,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.slim3.gen.ClassConstants;
 import org.slim3.gen.Constants;
 import org.slim3.gen.desc.ControllerDesc;
 import org.slim3.gen.desc.ControllerDescFactory;
@@ -54,6 +55,13 @@ public class GenControllerTask extends AbstractTask {
     /** the test source directory */
     protected File testDir;
 
+    /** the superclass name */
+    protected String superclassName = ClassConstants.JDOController;
+
+    /** the superclass name of testcase */
+    protected String testCaseSuperclassName =
+        ClassConstants.JDOControllerTestCase;
+
     /**
      * Sets the srcDir.
      * 
@@ -72,6 +80,26 @@ public class GenControllerTask extends AbstractTask {
      */
     public void setTestDir(File testDir) {
         this.testDir = testDir;
+    }
+
+    /**
+     * Sets the superclassName.
+     * 
+     * @param superclassName
+     *            the superclassName to set
+     */
+    public void setSuperclassName(String superclassName) {
+        this.superclassName = superclassName;
+    }
+
+    /**
+     * Sets the testCaseSuperclassName.
+     * 
+     * @param testCaseSuperclassName
+     *            the testCaseSuperclassName to set
+     */
+    public void setTestCaseSuperclassName(String testCaseSuperclassName) {
+        this.testCaseSuperclassName = testCaseSuperclassName;
     }
 
     @Override
@@ -109,7 +137,10 @@ public class GenControllerTask extends AbstractTask {
      */
     protected ControllerDescFactory createControllerDescFactory(
             String controllerPackageName) {
-        return new ControllerDescFactory(controllerPackageName);
+        return new ControllerDescFactory(
+            controllerPackageName,
+            superclassName,
+            testCaseSuperclassName);
     }
 
     /**

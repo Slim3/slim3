@@ -76,6 +76,7 @@ public abstract class AbstractTask extends Task {
     /**
      * Executes this task.
      */
+    @Override
     public void execute() {
         try {
             doExecute();

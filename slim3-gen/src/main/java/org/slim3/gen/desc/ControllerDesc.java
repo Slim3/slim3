@@ -24,6 +24,12 @@ package org.slim3.gen.desc;
  */
 public class ControllerDesc {
 
+    /** the superclass name */
+    protected String superclassName;
+
+    /** the superclass name of testcase */
+    protected String testCaseSuperclassName;
+
     /** the package name of controller */
     protected String packageName;
 
@@ -38,6 +44,44 @@ public class ControllerDesc {
 
     /** the path of controller */
     protected String path;
+
+    /**
+     * Returns the superclassName.
+     * 
+     * @return the superclassName
+     */
+    public String getSuperclassName() {
+        return superclassName;
+    }
+
+    /**
+     * Sets the superclassName.
+     * 
+     * @param superclassName
+     *            the superclassName to set
+     */
+    public void setSuperclassName(String superclassName) {
+        this.superclassName = superclassName;
+    }
+
+    /**
+     * Returns the testCaseSuperclassName.
+     * 
+     * @return the testCaseSuperclassName
+     */
+    public String getTestCaseSuperclassName() {
+        return testCaseSuperclassName;
+    }
+
+    /**
+     * Sets the testCaseSuperclassName.
+     * 
+     * @param testCaseSuperclassName
+     *            the testCaseSuperclassName to set
+     */
+    public void setTestCaseSuperclassName(String testCaseSuperclassName) {
+        this.testCaseSuperclassName = testCaseSuperclassName;
+    }
 
     /**
      * Returns the packageName.

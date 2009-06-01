@@ -41,7 +41,7 @@ public class FilePrinter implements Printer {
      * Creates a new {@link FilePrinter}.
      * 
      * @param fileObject
-     *            the writer object.
+     *            the writer object
      * @throws IOException
      *             if an I/O error occurred
      */
@@ -52,6 +52,16 @@ public class FilePrinter implements Printer {
         formatter = new Formatter(new BufferedWriter(fileObject.openWriter()));
     }
 
+    /**
+     * Creates a new {@link FilePrinter}.
+     * 
+     * @param file
+     *            the file
+     * @param encoding
+     *            the encoding
+     * @throws IOException
+     *             if an I/O error occurred
+     */
     public FilePrinter(File file, String encoding) throws IOException {
         if (file == null) {
             throw new NullPointerException("The file parameter is null.");

@@ -23,11 +23,19 @@ import junit.framework.TestCase;
  */
 public class ClassUtilTest extends TestCase {
 
+    /**
+     * 
+     * @throws Exception
+     */
     public void testGetPackageName() throws Exception {
         assertEquals("aaa.bbb", ClassUtil.getPackageName("aaa.bbb.Ccc"));
         assertEquals("", ClassUtil.getPackageName("Ccc"));
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     public void testGetSimpleName() throws Exception {
         assertEquals("Ccc", ClassUtil.getSimpleName("aaa.bbb.Ccc"));
         assertEquals("Ccc", ClassUtil.getSimpleName("Ccc"));

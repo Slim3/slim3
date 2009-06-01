@@ -31,14 +31,39 @@ public class ControllerDescFactory {
     /** the base package name of controllers */
     protected final String controllerPackageName;
 
+    /** the superclass name */
+    protected final String superclassName;
+
+    /** the superclass name of testcase */
+    protected final String testCaseSuperclassName;
+
     /**
      * Creates a new {@link ControllerDescFactory}.
      * 
      * @param controllerPackageName
      *            the base package name of controllers
+     * @param superclassName
+     *            the superclass name
+     * @param testCaseSuperclassName
+     *            the superclass name of testcase
      */
-    public ControllerDescFactory(String controllerPackageName) {
+    public ControllerDescFactory(String controllerPackageName,
+            String superclassName, String testCaseSuperclassName) {
+        if (controllerPackageName == null) {
+            throw new NullPointerException(
+                "The controllerPackageName parameter is null.");
+        }
+        if (superclassName == null) {
+            throw new NullPointerException(
+                "The superclassName parameter is null.");
+        }
+        if (testCaseSuperclassName == null) {
+            throw new NullPointerException(
+                "The testCaseSuperclassName parameter is null.");
+        }
         this.controllerPackageName = controllerPackageName;
+        this.superclassName = superclassName;
+        this.testCaseSuperclassName = testCaseSuperclassName;
     }
 
     /**
@@ -57,6 +82,8 @@ public class ControllerDescFactory {
                 "The path does not start with '/'.");
         }
         ControllerDesc controllerDesc = new ControllerDesc();
+        controllerDesc.setSuperclassName(superclassName);
+        controllerDesc.setTestCaseSuperclassName(testCaseSuperclassName);
         String className = toControllerClassName(path);
         controllerDesc.setPackageName(ClassUtil.getPackageName(className));
         controllerDesc.setSimpleName(ClassUtil.getSimpleName(className));

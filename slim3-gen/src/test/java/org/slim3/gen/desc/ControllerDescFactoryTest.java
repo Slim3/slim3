@@ -23,14 +23,22 @@ import junit.framework.TestCase;
  */
 public class ControllerDescFactoryTest extends TestCase {
 
+    private ControllerDescFactory factory =
+        new ControllerDescFactory(
+            "aaa.bbb",
+            "MyController",
+            "MyControllerTestCase");
+
     /**
      * 
      * @throws Exception
      */
     public void testCreateControllerDesc() throws Exception {
-        ControllerDescFactory factory = new ControllerDescFactory("aaa.bbb");
         ControllerDesc controllerDesc =
             factory.createControllerDesc("/ccc/ddd");
+        assertEquals("MyController", controllerDesc.getSuperclassName());
+        assertEquals("MyControllerTestCase", controllerDesc
+            .getTestCaseSuperclassName());
         assertEquals("aaa.bbb.ccc", controllerDesc.getPackageName());
         assertEquals("DddController", controllerDesc.getSimpleName());
         assertEquals("/ccc/ddd.jsp", controllerDesc.getViewName());
@@ -42,8 +50,10 @@ public class ControllerDescFactoryTest extends TestCase {
      * @throws Exception
      */
     public void testCreateControllerDesc_slashOnly() throws Exception {
-        ControllerDescFactory factory = new ControllerDescFactory("aaa.bbb");
         ControllerDesc controllerDesc = factory.createControllerDesc("/");
+        assertEquals("MyController", controllerDesc.getSuperclassName());
+        assertEquals("MyControllerTestCase", controllerDesc
+            .getTestCaseSuperclassName());
         assertEquals("aaa.bbb", controllerDesc.getPackageName());
         assertEquals("IndexController", controllerDesc.getSimpleName());
         assertEquals("/index.jsp", controllerDesc.getViewName());
@@ -55,9 +65,11 @@ public class ControllerDescFactoryTest extends TestCase {
      * @throws Exception
      */
     public void testCreateControllerDesc_endsWithSlash() throws Exception {
-        ControllerDescFactory factory = new ControllerDescFactory("aaa.bbb");
         ControllerDesc controllerDesc =
             factory.createControllerDesc("/ccc/ddd/");
+        assertEquals("MyController", controllerDesc.getSuperclassName());
+        assertEquals("MyControllerTestCase", controllerDesc
+            .getTestCaseSuperclassName());
         assertEquals("aaa.bbb.ccc.ddd", controllerDesc.getPackageName());
         assertEquals("IndexController", controllerDesc.getSimpleName());
         assertEquals("/ccc/ddd/index.jsp", controllerDesc.getViewName());

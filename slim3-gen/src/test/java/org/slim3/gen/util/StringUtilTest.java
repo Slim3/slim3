@@ -23,12 +23,20 @@ import junit.framework.TestCase;
  */
 public class StringUtilTest extends TestCase {
 
+    /**
+     * 
+     * @throws Exception
+     */
     public void testIsEmpty() throws Exception {
         assertTrue(StringUtil.isEmpty(""));
         assertTrue(StringUtil.isEmpty(null));
         assertFalse(StringUtil.isEmpty("a"));
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     public void testCapitalize() throws Exception {
         assertEquals("Aaa", StringUtil.capitalize("aaa"));
         assertEquals("", StringUtil.capitalize(""));
