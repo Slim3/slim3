@@ -30,10 +30,12 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.slim3.util.ClassUtil;
 import org.slim3.util.Cleaner;
 import org.slim3.util.LocaleLocator;
+import org.slim3.util.LocaleUtil;
 import org.slim3.util.RequestLocator;
 import org.slim3.util.ResponseLocator;
 import org.slim3.util.ServletContextLocator;
@@ -120,21 +122,9 @@ public class FrontController implements Filter {
      * Initializes the default locale.
      */
     protected void initDefaultLocale() {
-        String s =
-            servletContext.getInitParameter(ControllerConstants.LOCALE_KEY);
-        if (s == null) {
-            return;
-        }
-        String[] array = StringUtil.split(s, "_");
-        if (array.length == 1) {
-            defaultLocale = new Locale(array[0]);
-        } else if (array.length == 2) {
-            defaultLocale = new Locale(array[0], array[1]);
-        } else if (array.length == 3) {
-            defaultLocale = new Locale(array[0], array[1], array[2]);
-        } else {
-            throw new IllegalStateException("Locale(" + s + ") is invalid.");
-        }
+        defaultLocale =
+            LocaleUtil.parse(servletContext
+                .getInitParameter(ControllerConstants.LOCALE_KEY));
     }
 
     /**
@@ -274,7 +264,19 @@ public class FrontController implements Filter {
      * @return the current locale
      */
     protected Locale processLocale(HttpServletRequest request) {
-        Locale locale = defaultLocale;
+        Locale locale = null;
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            Object o = session.getAttribute(ControllerConstants.LOCALE_KEY);
+            if (o instanceof String) {
+                locale = LocaleUtil.parse((String) o);
+            } else if (o instanceof Locale) {
+                locale = (Locale) o;
+            }
+        }
+        if (locale == null) {
+            locale = defaultLocale;
+        }
         if (locale == null) {
             locale = request.getLocale();
             if (locale == null) {

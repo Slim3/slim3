@@ -45,6 +45,22 @@ public class FrontControllerLocaleTest extends TestCase {
      * @throws Exception
      * 
      */
+    public void testProcessLocaleForSession() throws Exception {
+        MockServletContext servletContext = new MockServletContext();
+        MockHttpServletRequest request =
+            new MockHttpServletRequest(servletContext);
+        request.getSession().setAttribute(
+            ControllerConstants.LOCALE_KEY,
+            Locale.GERMAN);
+        FrontController frontController = new FrontController();
+        frontController.defaultLocale = Locale.FRENCH;
+        assertEquals(Locale.GERMAN, frontController.processLocale(request));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
     public void testProcessLocaleForDefaultLocale() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         MockHttpServletRequest request =
