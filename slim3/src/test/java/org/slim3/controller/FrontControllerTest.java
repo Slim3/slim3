@@ -19,6 +19,7 @@ import org.slim3.controller.controller.HogeController;
 import org.slim3.controller.controller.IndexController;
 import org.slim3.controller.controller.hello.ListController;
 import org.slim3.tester.ControllerTestCase;
+import org.slim3.util.ServletContextLocator;
 
 /**
  * @author higa
@@ -52,7 +53,7 @@ public class FrontControllerTest extends ControllerTestCase {
         assertEquals(
             ControllerConstants.DEFAULT_REQUEST_CHARSET,
             frontController.charset);
-        assertNotNull(ServletContextLocator.getServletContext());
+        assertNotNull(ServletContextLocator.get());
         assertFalse(frontController.hotReloading);
         assertEquals(CONTROLLER_PACKAGE, frontController.controllerPackageName);
     }

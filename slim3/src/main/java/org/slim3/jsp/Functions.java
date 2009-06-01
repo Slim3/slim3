@@ -19,8 +19,8 @@ import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.slim3.controller.RequestLocator;
-import org.slim3.controller.ResponseLocator;
+import org.slim3.util.RequestLocator;
+import org.slim3.util.ResponseLocator;
 import org.slim3.util.StringUtil;
 
 /**
@@ -138,7 +138,7 @@ public final class Functions {
         if (!empty && input.indexOf(':') >= 0) {
             return input;
         }
-        HttpServletRequest request = RequestLocator.getRequest();
+        HttpServletRequest request = RequestLocator.get();
         String contextPath = request.getContextPath();
         StringBuilder sb = new StringBuilder(50);
         if (contextPath.length() > 1) {
@@ -154,7 +154,7 @@ public final class Functions {
         } else {
             sb.append(path).append(input);
         }
-        return ResponseLocator.getResponse().encodeURL(sb.toString());
+        return ResponseLocator.get().encodeURL(sb.toString());
     }
 
     /**

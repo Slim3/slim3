@@ -18,10 +18,10 @@ package org.slim3.tester;
 import junit.framework.TestCase;
 
 import org.slim3.controller.ControllerConstants;
-import org.slim3.controller.RequestLocator;
-import org.slim3.controller.ResponseLocator;
-import org.slim3.controller.ServletContextLocator;
 import org.slim3.tester.controller.HelloController;
+import org.slim3.util.RequestLocator;
+import org.slim3.util.ResponseLocator;
+import org.slim3.util.ServletContextLocator;
 
 /**
  * @author higa
@@ -42,9 +42,9 @@ public class ControllerTestCaseTest extends TestCase {
     @Override
     protected void tearDown() throws Exception {
         System.clearProperty(ControllerConstants.CONTROLLER_PACKAGE_KEY);
-        ServletContextLocator.setServletContext(null);
-        RequestLocator.setRequest(null);
-        ResponseLocator.setResponse(null);
+        ServletContextLocator.set(null);
+        RequestLocator.set(null);
+        ResponseLocator.set(null);
         super.tearDown();
     }
 
@@ -77,8 +77,8 @@ public class ControllerTestCaseTest extends TestCase {
         assertNull(testCase.request);
         assertNull(testCase.response);
         assertNull(testCase.filterChain);
-        assertNull(RequestLocator.getRequest());
-        assertNull(ResponseLocator.getResponse());
+        assertNull(RequestLocator.get());
+        assertNull(ResponseLocator.get());
     }
 
     /**

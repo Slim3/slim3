@@ -19,11 +19,11 @@ import java.util.Date;
 
 import junit.framework.TestCase;
 
-import org.slim3.controller.RequestLocator;
-import org.slim3.controller.ResponseLocator;
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockHttpServletResponse;
 import org.slim3.tester.MockServletContext;
+import org.slim3.util.RequestLocator;
+import org.slim3.util.ResponseLocator;
 
 /**
  * @author higa
@@ -40,14 +40,14 @@ public class FunctionsTest extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
-        RequestLocator.setRequest(request);
-        ResponseLocator.setResponse(response);
+        RequestLocator.set(request);
+        ResponseLocator.set(response);
     }
 
     @Override
     protected void tearDown() throws Exception {
-        RequestLocator.setRequest(null);
-        ResponseLocator.setResponse(null);
+        RequestLocator.set(null);
+        ResponseLocator.set(null);
     }
 
     /**

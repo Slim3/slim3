@@ -13,41 +13,41 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.controller;
+package org.slim3.util;
 
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletRequest;
 
 /**
- * The locator for {@link HttpServletResponse}.
+ * The locator for {@link HttpServletRequest}.
  * 
  * @author higa
  * @since 3.0
  * 
  */
-public final class ResponseLocator {
+public final class RequestLocator {
 
-    private static ThreadLocal<HttpServletResponse> responses =
-        new ThreadLocal<HttpServletResponse>();
+    private static ThreadLocal<HttpServletRequest> requests =
+        new ThreadLocal<HttpServletRequest>();
 
     /**
-     * Returns the response attached to the current thread.
+     * Returns the request attached to the current thread.
      * 
-     * @return the response attached to the current thread
+     * @return the request attached to the current thread
      */
-    public static HttpServletResponse getResponse() {
-        return responses.get();
+    public static HttpServletRequest get() {
+        return requests.get();
     }
 
     /**
-     * Sets the response attached to the current thread.
+     * Sets the request attached to the current thread.
      * 
-     * @param response
-     *            the response attached to the current thread
+     * @param request
+     *            the request attached to the current thread
      */
-    public static void setResponse(HttpServletResponse response) {
-        responses.set(response);
+    public static void set(HttpServletRequest request) {
+        requests.set(request);
     }
 
-    private ResponseLocator() {
+    private RequestLocator() {
     }
 }

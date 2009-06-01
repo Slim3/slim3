@@ -13,22 +13,23 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.controller;
+package org.slim3.util;
 
 import junit.framework.TestCase;
 
-import org.slim3.controller.ResponseLocator;
-import org.slim3.tester.MockHttpServletResponse;
+import org.slim3.tester.MockHttpServletRequest;
+import org.slim3.tester.MockServletContext;
+import org.slim3.util.RequestLocator;
 
 /**
  * @author higa
  * 
  */
-public class ResponseLocatorTest extends TestCase {
+public class RequestLocatorTest extends TestCase {
 
     @Override
     protected void tearDown() throws Exception {
-        ResponseLocator.setResponse(null);
+        RequestLocator.set(null);
     }
 
     /**
@@ -36,8 +37,10 @@ public class ResponseLocatorTest extends TestCase {
      * 
      */
     public void test() throws Exception {
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        ResponseLocator.setResponse(response);
-        assertSame(response, ResponseLocator.getResponse());
+        MockServletContext servletContext = new MockServletContext();
+        MockHttpServletRequest request =
+            new MockHttpServletRequest(servletContext);
+        RequestLocator.set(request);
+        assertSame(request, RequestLocator.get());
     }
 }

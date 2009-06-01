@@ -34,6 +34,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.slim3.util.ClassUtil;
 import org.slim3.util.Cleaner;
 import org.slim3.util.LocaleLocator;
+import org.slim3.util.RequestLocator;
+import org.slim3.util.ResponseLocator;
+import org.slim3.util.ServletContextLocator;
 import org.slim3.util.StringUtil;
 
 /**
@@ -98,7 +101,7 @@ public class FrontController implements Filter {
      */
     protected void initServletContext(FilterConfig config) {
         servletContext = config.getServletContext();
-        ServletContextLocator.setServletContext(servletContext);
+        ServletContextLocator.set(servletContext);
     }
 
     /**
@@ -171,7 +174,7 @@ public class FrontController implements Filter {
 
     public void destroy() {
         Cleaner.cleanAll();
-        ServletContextLocator.setServletContext(null);
+        ServletContextLocator.set(null);
     }
 
     public void doFilter(ServletRequest request, ServletResponse response,
@@ -199,10 +202,10 @@ public class FrontController implements Filter {
     protected void doFilter(HttpServletRequest request,
             HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        HttpServletRequest previousRequest = RequestLocator.getRequest();
-        RequestLocator.setRequest(request);
-        HttpServletResponse previousResponse = ResponseLocator.getResponse();
-        ResponseLocator.setResponse(response);
+        HttpServletRequest previousRequest = RequestLocator.get();
+        RequestLocator.set(request);
+        HttpServletResponse previousResponse = ResponseLocator.get();
+        ResponseLocator.set(response);
         Locale previousLocale = LocaleLocator.get();
         LocaleLocator.set(processLocale(request));
         ClassLoader previousLoader =
@@ -219,8 +222,8 @@ public class FrontController implements Filter {
         } finally {
             Thread.currentThread().setContextClassLoader(previousLoader);
             LocaleLocator.set(previousLocale);
-            RequestLocator.setRequest(previousRequest);
-            ResponseLocator.setResponse(previousResponse);
+            RequestLocator.set(previousRequest);
+            ResponseLocator.set(previousResponse);
         }
     }
 

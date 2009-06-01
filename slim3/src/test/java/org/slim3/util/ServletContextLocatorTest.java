@@ -13,12 +13,12 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.controller;
+package org.slim3.util;
 
 import junit.framework.TestCase;
 
-import org.slim3.controller.ServletContextLocator;
 import org.slim3.tester.MockServletContext;
+import org.slim3.util.ServletContextLocator;
 
 /**
  * @author higa
@@ -28,7 +28,7 @@ public class ServletContextLocatorTest extends TestCase {
 
     @Override
     protected void tearDown() throws Exception {
-        ServletContextLocator.setServletContext(null);
+        ServletContextLocator.set(null);
     }
 
     /**
@@ -37,7 +37,7 @@ public class ServletContextLocatorTest extends TestCase {
      */
     public void test() throws Exception {
         MockServletContext servletContext = new MockServletContext();
-        ServletContextLocator.setServletContext(servletContext);
-        assertSame(servletContext, ServletContextLocator.getServletContext());
+        ServletContextLocator.set(servletContext);
+        assertSame(servletContext, ServletContextLocator.get());
     }
 }

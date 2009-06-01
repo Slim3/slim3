@@ -13,34 +13,40 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.controller;
+package org.slim3.util;
 
-import junit.framework.TestCase;
-
-import org.slim3.controller.RequestLocator;
-import org.slim3.tester.MockHttpServletRequest;
-import org.slim3.tester.MockServletContext;
+import javax.servlet.ServletContext;
 
 /**
+ * The locator for {@link ServletContext}.
+ * 
  * @author higa
+ * @since 3.0
  * 
  */
-public class RequestLocatorTest extends TestCase {
+public final class ServletContextLocator {
 
-    @Override
-    protected void tearDown() throws Exception {
-        RequestLocator.setRequest(null);
+    private static ServletContext servletContext;
+
+    /**
+     * Returns the servlet context.
+     * 
+     * @return the servlet context
+     */
+    public static ServletContext get() {
+        return servletContext;
     }
 
     /**
-     * @throws Exception
+     * Sets the servlet context.
      * 
+     * @param servletContext
+     *            the servlet context
      */
-    public void test() throws Exception {
-        MockServletContext servletContext = new MockServletContext();
-        MockHttpServletRequest request =
-            new MockHttpServletRequest(servletContext);
-        RequestLocator.setRequest(request);
-        assertSame(request, RequestLocator.getRequest());
+    public static void set(ServletContext servletContext) {
+        ServletContextLocator.servletContext = servletContext;
+    }
+
+    private ServletContextLocator() {
     }
 }

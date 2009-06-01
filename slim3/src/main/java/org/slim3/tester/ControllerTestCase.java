@@ -31,8 +31,8 @@ import junit.framework.TestCase;
 import org.slim3.controller.Controller;
 import org.slim3.controller.ControllerConstants;
 import org.slim3.controller.FrontController;
-import org.slim3.controller.RequestLocator;
-import org.slim3.controller.ResponseLocator;
+import org.slim3.util.RequestLocator;
+import org.slim3.util.ResponseLocator;
 
 /**
  * A test case for Slim3 Controller.
@@ -94,8 +94,8 @@ public abstract class ControllerTestCase extends TestCase {
         frontController.init(filterConfig);
         request = new MockHttpServletRequest(application);
         response = new MockHttpServletResponse();
-        RequestLocator.setRequest(request);
-        ResponseLocator.setResponse(response);
+        RequestLocator.set(request);
+        ResponseLocator.set(response);
         filterChain = new MockFilterChain();
     }
 
@@ -126,8 +126,8 @@ public abstract class ControllerTestCase extends TestCase {
         frontController = null;
         request = null;
         response = null;
-        RequestLocator.setRequest(null);
-        ResponseLocator.setResponse(null);
+        RequestLocator.set(null);
+        ResponseLocator.set(null);
         filterChain = null;
         tearDownControllerPackage();
         super.tearDown();
