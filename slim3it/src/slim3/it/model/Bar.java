@@ -34,24 +34,6 @@ public class Bar {
     @Extension(vendorName = "datanucleus", key = "gae.encoded-pk", value = "true")
     private String key;
 
-    @Persistent
-    private String name;
-
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @param name
-     *            the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
     /**
      * @return the key
      */

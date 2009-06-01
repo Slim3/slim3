@@ -46,4 +46,16 @@
       ${f:br(f:h(textarea))}
     </example>
   </function>
+  
+  <function>
+    <description>
+      Returns the current locale.
+    </description>
+    <name>locale</name>
+    <function-class>org.slim3.jsp.Functions</function-class>
+    <function-signature>java.lang.String locale()</function-signature>
+    <example>
+      &lt;fmt:setLocale value="${f:locale()}"/&gt;
+    </example>
+  </function>
 </taglib>

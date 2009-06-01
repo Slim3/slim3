@@ -208,7 +208,7 @@ public class FrontController implements Filter {
                     controllerPackageName));
         }
         try {
-            doFilterInternal(previousRequest, previousResponse, chain);
+            doFilterInternal(request, response, chain);
         } finally {
             Thread.currentThread().setContextClassLoader(previousLoader);
             LocaleLocator.set(previousLocale);

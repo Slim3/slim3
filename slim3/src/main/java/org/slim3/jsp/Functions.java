@@ -16,10 +16,12 @@
 package org.slim3.jsp;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.slim3.util.HtmlUtil;
+import org.slim3.util.LocaleLocator;
 import org.slim3.util.RequestLocator;
 import org.slim3.util.ResponseLocator;
 import org.slim3.util.StringUtil;
@@ -121,6 +123,15 @@ public final class Functions {
         return input.replaceAll("\r\n", BR).replaceAll("\r", BR).replaceAll(
             "\n",
             BR);
+    }
+
+    /**
+     * Returns the current locale.
+     * 
+     * @return the current locale.
+     */
+    public static Locale locale() {
+        return LocaleLocator.get();
     }
 
     private Functions() {

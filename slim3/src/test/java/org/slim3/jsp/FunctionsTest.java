@@ -213,4 +213,11 @@ public class FunctionsTest extends TestCase {
     public void testBrForNull() throws Exception {
         assertEquals("", Functions.br(null));
     }
+
+    /**
+     * @throws Exception
+     */
+    public void testLocale() throws Exception {
+        assertNotNull(Functions.locale());
+    }
 }
