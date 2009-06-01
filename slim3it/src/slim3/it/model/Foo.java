@@ -37,24 +37,6 @@ public class Foo {
     @Extension(vendorName = "datanucleus", key = "gae.encoded-pk", value = "true")
     private String key;
 
-    @Persistent
-    private Bar bar;
-
-    /**
-     * @return the bar
-     */
-    public Bar getBar() {
-        return bar;
-    }
-
-    /**
-     * @param bar
-     *            the bar to set
-     */
-    public void setBar(Bar bar) {
-        this.bar = bar;
-    }
-
     /**
      * @return the key
      */

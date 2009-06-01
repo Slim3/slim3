@@ -37,24 +37,6 @@ public class Bar {
     @Persistent
     private String name;
 
-    @Persistent(mappedBy = "bar")
-    private Foo foo;
-
-    /**
-     * @return the foo
-     */
-    public Foo getFoo() {
-        return foo;
-    }
-
-    /**
-     * @param foo
-     *            the foo to set
-     */
-    public void setFoo(Foo foo) {
-        this.foo = foo;
-    }
-
     /**
      * @return the name
      */
