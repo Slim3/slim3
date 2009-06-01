@@ -42,7 +42,7 @@ public class ControllerTestCaseGenerator implements Generator {
     public ControllerTestCaseGenerator(ControllerDesc controllerDesc) {
         if (controllerDesc == null) {
             throw new NullPointerException(
-                    "The controllerDesc parameter is null.");
+                "The controllerDesc parameter is null.");
         }
         this.controllerDesc = controllerDesc;
     }
@@ -54,17 +54,18 @@ public class ControllerTestCaseGenerator implements Generator {
         p.println("import %s;", ClassConstants.JDOControllerTestCase);
         p.println();
         p.println("public class %s%s extends %s {", controllerDesc
-                .getSimpleName(), Constants.TEST_SUFFIX, ClassUtil
-                .getSimpleName(ClassConstants.JDOControllerTestCase));
+            .getSimpleName(), Constants.TEST_SUFFIX, ClassUtil
+            .getSimpleName(ClassConstants.JDOControllerTestCase));
         p.println();
         p.println("    public void testRun() throws Exception {");
         p.println("        start(\"%s\");", controllerDesc.getPath());
         p.println("        %s controller = getController();", controllerDesc
-                .getSimpleName());
+            .getSimpleName());
         p.println("        assertNotNull(controller);");
         p.println("        assertFalse(isRedirect());");
-        p.println("        assertEquals(\"%s\", getNextPath());",
-                controllerDesc.getViewName());
+        p.println(
+            "        assertEquals(\"%s\", getNextPath());",
+            controllerDesc.getViewName());
         p.println("    }");
         p.println("}");
     }

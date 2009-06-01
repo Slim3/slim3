@@ -23,7 +23,7 @@ import java.util.List;
  * Represents an model description.
  * 
  * @author taedium
- * @see 3.0
+ * @since 3.0
  * 
  */
 public class ModelDesc {
@@ -38,7 +38,8 @@ public class ModelDesc {
     protected boolean topLevel;
 
     /** the list of attribute descriptions */
-    protected List<AttributeDesc> attributeDescList = new ArrayList<AttributeDesc>();
+    protected List<AttributeDesc> attributeDescList =
+        new ArrayList<AttributeDesc>();
 
     /**
      * Returns the packageName.

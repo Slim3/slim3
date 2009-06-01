@@ -39,9 +39,10 @@ public class GenViewTask extends AbstractTask {
         }
         if (controllerPath == null) {
             throw new IllegalStateException(
-                    "The controllerPath parameter is null.");
+                "The controllerPath parameter is null.");
         }
-        String path = controllerPath.startsWith("/") ? controllerPath : "/"
+        String path =
+            controllerPath.startsWith("/") ? controllerPath : "/"
                 + controllerPath;
         ViewDescFactory viewDescFactory = createViewDescFactory();
         ViewDesc viewDesc = viewDescFactory.createViewDesc(path);
@@ -93,7 +94,8 @@ public class GenViewTask extends AbstractTask {
     protected void generate(Generator generator, File file) throws IOException {
         if (file.exists()) {
             log("Already exists. Skipped generation. ("
-                    + file.getAbsolutePath() + ")");
+                + file.getAbsolutePath()
+                + ")");
             return;
         }
         Printer printer = null;

@@ -23,16 +23,24 @@ import junit.framework.TestCase;
  */
 public class ControllerDescFactoryTest extends TestCase {
 
+    /**
+     * 
+     * @throws Exception
+     */
     public void testCreateControllerDesc() throws Exception {
         ControllerDescFactory factory = new ControllerDescFactory("aaa.bbb");
-        ControllerDesc controllerDesc = factory
-                .createControllerDesc("/ccc/ddd");
+        ControllerDesc controllerDesc =
+            factory.createControllerDesc("/ccc/ddd");
         assertEquals("aaa.bbb.ccc", controllerDesc.getPackageName());
         assertEquals("DddController", controllerDesc.getSimpleName());
         assertEquals("/ccc/ddd.jsp", controllerDesc.getViewName());
         assertEquals("/ccc/ddd", controllerDesc.getPath());
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     public void testCreateControllerDesc_slashOnly() throws Exception {
         ControllerDescFactory factory = new ControllerDescFactory("aaa.bbb");
         ControllerDesc controllerDesc = factory.createControllerDesc("/");
@@ -42,10 +50,14 @@ public class ControllerDescFactoryTest extends TestCase {
         assertEquals("/", controllerDesc.getPath());
     }
 
+    /**
+     * 
+     * @throws Exception
+     */
     public void testCreateControllerDesc_endsWithSlash() throws Exception {
         ControllerDescFactory factory = new ControllerDescFactory("aaa.bbb");
-        ControllerDesc controllerDesc = factory
-                .createControllerDesc("/ccc/ddd/");
+        ControllerDesc controllerDesc =
+            factory.createControllerDesc("/ccc/ddd/");
         assertEquals("aaa.bbb.ccc.ddd", controllerDesc.getPackageName());
         assertEquals("IndexController", controllerDesc.getSimpleName());
         assertEquals("/ccc/ddd/index.jsp", controllerDesc.getViewName());

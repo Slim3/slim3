@@ -39,7 +39,7 @@ public class ViewDescFactory {
         }
         if (!path.startsWith("/")) {
             throw new IllegalArgumentException(
-                    "The path does not start with '/'.");
+                "The path does not start with '/'.");
         }
         int pos = path.lastIndexOf("/");
         String dirName = path.substring(0, pos);
@@ -79,14 +79,15 @@ public class ViewDescFactory {
     protected String toTitle(String path) {
         if (path.endsWith("/")) {
             return path.substring(1).replace("/", " ")
-                    + StringUtil.capitalize(Constants.INDEX);
+                + StringUtil.capitalize(Constants.INDEX);
         }
         int pos = path.lastIndexOf("/");
         if (pos == 0) {
             return StringUtil.capitalize(path.substring(1));
         } else if (pos > 0) {
-            return path.substring(1, pos).replace("/", " ") + " "
-                    + StringUtil.capitalize(path.substring(pos + 1));
+            return path.substring(1, pos).replace("/", " ")
+                + " "
+                + StringUtil.capitalize(path.substring(pos + 1));
         }
         throw new IllegalArgumentException("path");
     }

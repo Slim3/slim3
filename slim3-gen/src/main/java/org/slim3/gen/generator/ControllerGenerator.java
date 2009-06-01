@@ -41,7 +41,7 @@ public class ControllerGenerator implements Generator {
     public ControllerGenerator(ControllerDesc controllerDesc) {
         if (controllerDesc == null) {
             throw new NullPointerException(
-                    "The controllerDesc parameter is null.");
+                "The controllerDesc parameter is null.");
         }
         this.controllerDesc = controllerDesc;
     }
@@ -54,14 +54,14 @@ public class ControllerGenerator implements Generator {
         p.println("import %s;", ClassConstants.Navigation);
         p.println();
         p.println("public class %s extends %s {", controllerDesc
-                .getSimpleName(), ClassUtil
-                .getSimpleName(ClassConstants.JDOController));
+            .getSimpleName(), ClassUtil
+            .getSimpleName(ClassConstants.JDOController));
         p.println();
         p.println("    @Override");
         p.println("    public %s run() {", ClassUtil
-                .getSimpleName(ClassConstants.Navigation));
+            .getSimpleName(ClassConstants.Navigation));
         p.println("        return forward(\"%s\");", controllerDesc
-                .getSimpleViewName());
+            .getSimpleViewName());
         p.println("    }");
         p.println("}");
     }

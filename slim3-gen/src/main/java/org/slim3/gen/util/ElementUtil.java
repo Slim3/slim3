@@ -47,15 +47,14 @@ public final class ElementUtil {
         }
         for (AnnotationMirror mirror : element.getAnnotationMirrors()) {
             Element e = mirror.getAnnotationType().asElement();
-            boolean annotated = e.accept(
-                    new ElementKindVisitor6<Boolean, Void>() {
-                        @Override
-                        public Boolean visitTypeAsAnnotationType(TypeElement e,
-                                Void p) {
-                            return e.getQualifiedName().contentEquals(
-                                    annotation);
-                        }
-                    }, null);
+            boolean annotated =
+                e.accept(new ElementKindVisitor6<Boolean, Void>() {
+                    @Override
+                    public Boolean visitTypeAsAnnotationType(TypeElement e,
+                            Void p) {
+                        return e.getQualifiedName().contentEquals(annotation);
+                    }
+                }, null);
             if (annotated) {
                 return mirror;
             }

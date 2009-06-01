@@ -87,12 +87,14 @@ public class GenControllerTask extends AbstractTask {
         }
         if (controllerPath == null) {
             throw new IllegalStateException(
-                    "The controllerPath parameter is null.");
+                "The controllerPath parameter is null.");
         }
-        String path = controllerPath.startsWith("/") ? controllerPath : "/"
+        String path =
+            controllerPath.startsWith("/") ? controllerPath : "/"
                 + controllerPath;
         String controllerPackageName = findControllerPackageName();
-        ControllerDescFactory factory = createControllerDescFactory(controllerPackageName);
+        ControllerDescFactory factory =
+            createControllerDescFactory(controllerPackageName);
         ControllerDesc controllerDesc = factory.createControllerDesc(path);
         generateController(controllerDesc);
         generateControllerTestCase(controllerDesc);
@@ -125,7 +127,7 @@ public class GenControllerTask extends AbstractTask {
             public String getNamespaceURI(String prefix) {
                 if (prefix == null)
                     throw new NullPointerException(
-                            "The parameter prefix is null.");
+                        "The parameter prefix is null.");
                 else if ("pre".equals(prefix))
                     return "http://appengine.google.com/ns/1.0";
                 else if ("xml".equals(prefix))
@@ -144,13 +146,14 @@ public class GenControllerTask extends AbstractTask {
         File file = new File(new File(warDir, "WEB-INF"), "appengine-web.xml");
         InputStream inputStream = new FileInputStream(file);
         try {
-            String value = xpath
+            String value =
+                xpath
                     .evaluate(
-                            "/pre:appengine-web-app/pre:system-properties/pre:property[@name='slim3.controllerPackage']/@value",
-                            new InputSource(inputStream));
+                        "/pre:appengine-web-app/pre:system-properties/pre:property[@name='slim3.controllerPackage']/@value",
+                        new InputSource(inputStream));
             if (StringUtil.isEmpty(value)) {
                 throw new RuntimeException(
-                        "The system-property 'slim3.controllerPackage' is not found in appengine-web.xml or the system-property value is empty.");
+                    "The system-property 'slim3.controllerPackage' is not found in appengine-web.xml or the system-property value is empty.");
             }
             return value;
         } finally {
@@ -167,13 +170,19 @@ public class GenControllerTask extends AbstractTask {
      */
     protected void generateController(ControllerDesc controllerDesc)
             throws IOException {
-        File packageDir = new File(srcDir, controllerDesc.getPackageName()
-                .replace(".", File.separator));
+        File packageDir =
+            new File(srcDir, controllerDesc.getPackageName().replace(
+                ".",
+                File.separator));
         packageDir.mkdirs();
-        File javaFile = new File(packageDir, controllerDesc.getSimpleName()
-                .replace('.', '/')
+        File javaFile =
+            new File(packageDir, controllerDesc.getSimpleName().replace(
+                '.',
+                '/')
                 + ".java");
-        String className = controllerDesc.getPackageName() + "."
+        String className =
+            controllerDesc.getPackageName()
+                + "."
                 + controllerDesc.getSimpleName();
         Generator generator = careateControllerGenerator(controllerDesc);
         generate(generator, javaFile, className);
@@ -199,14 +208,22 @@ public class GenControllerTask extends AbstractTask {
      */
     protected void generateControllerTestCase(ControllerDesc controllerDesc)
             throws IOException {
-        File packageDir = new File(testDir, controllerDesc.getPackageName()
-                .replace(".", File.separator));
+        File packageDir =
+            new File(testDir, controllerDesc.getPackageName().replace(
+                ".",
+                File.separator));
         packageDir.mkdirs();
-        File javaFile = new File(packageDir, controllerDesc.getSimpleName()
-                + Constants.TEST_SUFFIX + ".java");
-        String className = controllerDesc.getPackageName() + "."
-                + controllerDesc.getSimpleName() + Constants.TEST_SUFFIX;
-        Generator generator = careateControllerTestCaseGenerator(controllerDesc);
+        File javaFile =
+            new File(packageDir, controllerDesc.getSimpleName()
+                + Constants.TEST_SUFFIX
+                + ".java");
+        String className =
+            controllerDesc.getPackageName()
+                + "."
+                + controllerDesc.getSimpleName()
+                + Constants.TEST_SUFFIX;
+        Generator generator =
+            careateControllerTestCaseGenerator(controllerDesc);
         generate(generator, javaFile, className);
     }
 
@@ -226,14 +243,17 @@ public class GenControllerTask extends AbstractTask {
      * Generates a file.
      * 
      * @param generator
+     *            the generator
      * @param file
+     *            the file to be generated
+     * @param className
+     *            the class name
      * @throws IOException
      */
     protected void generate(Generator generator, File file, String className)
             throws IOException {
         if (file.exists()) {
-            log("Already exists. Skipped generation. (" + className
-                    + ".java:0)");
+            log("Already exists. Skipped. (" + className + ".java:0)");
             return;
         }
         Printer printer = null;

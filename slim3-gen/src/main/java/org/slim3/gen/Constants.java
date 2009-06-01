@@ -41,8 +41,8 @@ public class Constants {
     public static final String INDEX = "index";
 
     /** the index controller. */
-    public static final String INDEX_CONTROLLER = StringUtil.capitalize(INDEX)
-            + CONTROLLER_SUFFIX;
+    public static final String INDEX_CONTROLLER =
+        StringUtil.capitalize(INDEX) + CONTROLLER_SUFFIX;
 
     /** the index view. */
     public static final String INDEX_VIEW = INDEX + VIEW_SUFFIX;

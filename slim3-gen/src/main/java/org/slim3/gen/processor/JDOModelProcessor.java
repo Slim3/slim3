@@ -61,13 +61,16 @@ public class JDOModelProcessor extends AbstractProcessor {
         }
         for (TypeElement annotation : annotations) {
             for (TypeElement element : ElementFilter.typesIn(roundEnv
-                    .getElementsAnnotatedWith(annotation))) {
+                .getElementsAnnotatedWith(annotation))) {
                 handleTypeElement(element);
             }
         }
         if (Options.isDebugEnabled(processingEnv)) {
-            Logger.debug(processingEnv, "[%s] Ended. elapsed=%d(nano)",
-                    getClass().getName(), System.nanoTime() - startTime);
+            Logger.debug(
+                processingEnv,
+                "[%s] Ended. elapsed=%d(nano)",
+                getClass().getName(),
+                System.nanoTime() - startTime);
         }
         return true;
     }
@@ -80,8 +83,11 @@ public class JDOModelProcessor extends AbstractProcessor {
      */
     protected void handleTypeElement(TypeElement element) {
         if (Options.isDebugEnabled(processingEnv)) {
-            Logger.debug(processingEnv, "[%s] Element(%s) is handling.",
-                    getClass().getName(), element.getQualifiedName());
+            Logger.debug(
+                processingEnv,
+                "[%s] Element(%s) is handling.",
+                getClass().getName(),
+                element.getQualifiedName());
         }
         ModelDescFactory modelDescFactory = createModelDescFactory();
         ModelDesc modelDesc = modelDescFactory.createModelDesc(element);
@@ -89,8 +95,11 @@ public class JDOModelProcessor extends AbstractProcessor {
             generateModelMeta(modelDesc, element);
         }
         if (Options.isDebugEnabled(processingEnv)) {
-            Logger.debug(processingEnv, "[%s] Element(%s) is handled.",
-                    getClass().getName(), element.getQualifiedName());
+            Logger.debug(
+                processingEnv,
+                "[%s] Element(%s) is handled.",
+                getClass().getName(),
+                element.getQualifiedName());
         }
     }
 
@@ -104,16 +113,22 @@ public class JDOModelProcessor extends AbstractProcessor {
      */
     protected void generateModelMeta(ModelDesc modelDesc, TypeElement model) {
         Filer filer = processingEnv.getFiler();
-        String name = modelDesc.getPackageName() + "."
-                + modelDesc.getSimpleName() + Constants.META_SUFFIX;
+        String name =
+            modelDesc.getPackageName()
+                + "."
+                + modelDesc.getSimpleName()
+                + Constants.META_SUFFIX;
         Printer printer = null;
         try {
             printer = createPrinter(filer.createSourceFile(name, model));
             Generator generator = createGenerator(modelDesc);
             generator.generate(printer);
         } catch (IOException e) {
-            Logger.error(processingEnv, model, "[%s] Failed to generate.",
-                    getClass().getName());
+            Logger.error(
+                processingEnv,
+                model,
+                "[%s] Failed to generate.",
+                getClass().getName());
             throw new RuntimeException(e);
         } finally {
             if (printer != null) {

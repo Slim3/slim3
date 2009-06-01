@@ -76,8 +76,10 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
 
     @Override
     public Void visitVariable(VariableElement attribute, ModelDesc p) {
-        AnnotationMirror persistent = ElementUtil.getAnnotationMirror(
-                attribute, ClassConstants.Persistent);
+        AnnotationMirror persistent =
+            ElementUtil.getAnnotationMirror(
+                attribute,
+                ClassConstants.Persistent);
         if (persistent == null) {
             return null;
         }
@@ -87,8 +89,8 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
         AttributeDesc attributeDesc = new AttributeDesc();
         attributeDesc.setName(attribute.getSimpleName().toString());
         attributeDesc.setEmbedded(isEmbedded(attribute));
-        Iterator<String> classNames = new ClassNameCollector(attribute.asType())
-                .collect().iterator();
+        Iterator<String> classNames =
+            new ClassNameCollector(attribute.asType()).collect().iterator();
         if (classNames.hasNext()) {
             String className = classNames.next();
             attributeDesc.setClassName(className);
@@ -128,8 +130,9 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
      * @return {@code true} if this attribute is embedded.
      */
     protected boolean isEmbedded(Element attribute) {
-        return ElementUtil.getAnnotationMirror(attribute,
-                ClassConstants.Embedded) != null;
+        return ElementUtil.getAnnotationMirror(
+            attribute,
+            ClassConstants.Embedded) != null;
     }
 
     /**
@@ -155,6 +158,11 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
             this.typeMirror = typeMirror;
         }
 
+        /**
+         * Collects the collection of class name.
+         * 
+         * @return the collection of class name
+         */
         public List<String> collect() {
             LinkedList<String> names = new LinkedList<String>();
             typeMirror.accept(this, names);
@@ -259,14 +267,14 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
         @Override
         public Void visitDeclared(DeclaredType t, LinkedList<String> p) {
             t.asElement().accept(
-                    new SimpleElementVisitor6<Void, LinkedList<String>>() {
-                        @Override
-                        public Void visitType(TypeElement e,
-                                LinkedList<String> p) {
-                            p.add(e.getQualifiedName().toString());
-                            return null;
-                        }
-                    }, p);
+                new SimpleElementVisitor6<Void, LinkedList<String>>() {
+                    @Override
+                    public Void visitType(TypeElement e, LinkedList<String> p) {
+                        p.add(e.getQualifiedName().toString());
+                        return null;
+                    }
+                },
+                p);
             for (TypeMirror arg : t.getTypeArguments()) {
                 LinkedList<String> names = new LinkedList<String>();
                 arg.accept(this, names);

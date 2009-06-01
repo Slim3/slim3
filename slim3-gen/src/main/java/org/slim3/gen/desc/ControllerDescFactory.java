@@ -54,7 +54,7 @@ public class ControllerDescFactory {
         }
         if (!path.startsWith("/")) {
             throw new IllegalArgumentException(
-                    "The path does not start with '/'.");
+                "The path does not start with '/'.");
         }
         ControllerDesc controllerDesc = new ControllerDesc();
         String className = toControllerClassName(path);
@@ -72,14 +72,14 @@ public class ControllerDescFactory {
      *            the path
      * @return a name of controller
      */
-    protected String toControllerClassName(String path)
-            throws IllegalStateException {
+    protected String toControllerClassName(String path) {
         String className = controllerPackageName + path.replace('/', '.');
         if (className.endsWith(".")) {
             className += Constants.INDEX_CONTROLLER;
         } else {
             int pos = className.lastIndexOf('.');
-            className = className.substring(0, pos + 1)
+            className =
+                className.substring(0, pos + 1)
                     + StringUtil.capitalize(className.substring(pos + 1))
                     + Constants.CONTROLLER_SUFFIX;
         }

@@ -34,7 +34,7 @@ public final class ClassUtil {
     public static String getPackageName(String qualifiedName) {
         if (qualifiedName == null) {
             throw new NullPointerException(
-                    "The qualifiedName parameter is null.");
+                "The qualifiedName parameter is null.");
         }
         int pos = qualifiedName.lastIndexOf('.');
         if (pos < 0) {
@@ -53,7 +53,7 @@ public final class ClassUtil {
     public static String getSimpleName(String qualifiedName) {
         if (qualifiedName == null) {
             throw new NullPointerException(
-                    "The qualifiedName parameter is null.");
+                "The qualifiedName parameter is null.");
         }
         int pos = qualifiedName.lastIndexOf('.');
         if (pos < 0) {

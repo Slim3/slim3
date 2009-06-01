@@ -55,7 +55,8 @@ public class ModelDescFactory {
         }
         ModelDesc modelDesc = new ModelDesc();
         modelDesc.setPackageName(ClassUtil.getPackageName(model
-                .getQualifiedName().toString()));
+            .getQualifiedName()
+            .toString()));
         modelDesc.setSimpleName(model.getSimpleName().toString());
         scanner.scan(model, modelDesc);
         return modelDesc;

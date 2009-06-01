@@ -41,8 +41,8 @@ public class ModelMetaGenerator implements Generator {
     /**
      * Creates a new {@link ModelMetaGenerator}.
      * 
-     * @param the
-     *            model description
+     * @param modelDesc
+     *            the model description
      */
     public ModelMetaGenerator(ModelDesc modelDesc) {
         if (modelDesc == null) {
@@ -57,37 +57,42 @@ public class ModelMetaGenerator implements Generator {
             p.println("package %s;", modelDesc.getPackageName());
             p.println();
         }
-        p.println("@%s(value = { \"%s\", \"%s\" }, date = \"%tF %<tT\")",
-                Generated.class.getName(), ProductInfo.getName(), ProductInfo
-                        .getVersion(), new Date());
+        p.println(
+            "@%s(value = { \"%s\", \"%s\" }, date = \"%tF %<tT\")",
+            Generated.class.getName(),
+            ProductInfo.getName(),
+            ProductInfo.getVersion(),
+            new Date());
         p.println("public final class %s extends %s<%s> {", modelDesc
-                .getSimpleName()
-                + Constants.META_SUFFIX, ClassConstants.ModelMeta, modelDesc
-                .getSimpleName());
+            .getSimpleName()
+            + Constants.META_SUFFIX, ClassConstants.ModelMeta, modelDesc
+            .getSimpleName());
         p.println();
         p.println("    public %s() {", modelDesc.getSimpleName()
-                + Constants.META_SUFFIX);
+            + Constants.META_SUFFIX);
         p.println("        super(%s.class);", modelDesc.getSimpleName());
         p.println("    }");
         p.println();
         for (AttributeDesc desc : modelDesc.getAttributeDescList()) {
             if (desc.isEmbedded()) {
                 p.println("    public %1$s%2$s %3$s = new %1$s%2$s();", desc
-                        .getClassName(), Constants.META_SUFFIX, desc.getName());
+                    .getClassName(), Constants.META_SUFFIX, desc.getName());
             } else {
                 if (desc.getElementClassName() == null) {
                     p
-                            .println(
-                                    "    public %1$s %2$s = new %1$s(\"%2$s\", %3$s.class);",
-                                    ClassConstants.AttributeMeta, desc
-                                            .getName(), desc.getClassName());
+                        .println(
+                            "    public %1$s %2$s = new %1$s(\"%2$s\", %3$s.class);",
+                            ClassConstants.AttributeMeta,
+                            desc.getName(),
+                            desc.getClassName());
                 } else {
                     p
-                            .println(
-                                    "    public %1$s %2$s = new %1$s(\"%2$s\", %3$s.class, %4$s.class);",
-                                    ClassConstants.AttributeMeta, desc
-                                            .getName(), desc.getClassName(),
-                                    desc.getElementClassName());
+                        .println(
+                            "    public %1$s %2$s = new %1$s(\"%2$s\", %3$s.class, %4$s.class);",
+                            ClassConstants.AttributeMeta,
+                            desc.getName(),
+                            desc.getClassName(),
+                            desc.getElementClassName());
                 }
             }
             p.println();

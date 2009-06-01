@@ -140,7 +140,11 @@ public final class Logger {
             String format, Object... args) {
         String msg = String.format(format, args);
         Messager messager = env.getMessager();
-        messager.printMessage(Kind.ERROR, msg, element, annotationMirror,
-                annotationValue);
+        messager.printMessage(
+            Kind.ERROR,
+            msg,
+            element,
+            annotationMirror,
+            annotationValue);
     }
 }

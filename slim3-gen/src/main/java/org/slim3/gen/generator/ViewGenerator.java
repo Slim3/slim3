@@ -44,21 +44,21 @@ public class ViewGenerator implements Generator {
     public void generate(Printer p) {
         p.println("<%%@page pageEncoding=\"UTF-8\"%%>");
         p
-                .println("<%%@taglib prefix=\"c\" uri=\"http://java.sun.com/jsp/jstl/core\"%%>");
+            .println("<%%@taglib prefix=\"c\" uri=\"http://java.sun.com/jsp/jstl/core\"%%>");
         p
-                .println("<%%@taglib prefix=\"f\" uri=\"http://www.slim3.org/functions\"%%>");
+            .println("<%%@taglib prefix=\"f\" uri=\"http://www.slim3.org/functions\"%%>");
         p.println();
         p.println("<html>");
         p.println("<head>");
         p
-                .println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />");
+            .println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />");
         p.println("<title>%s</title>", viewDesc.getTitle());
         p
-                .println("<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/global.css\" />");
+            .println("<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/global.css\" />");
         p.println("</head>");
         p.println("<body>");
         p.println("<a href=\"${f:url('%1$s')}\">${f:url('%1$s')}</a>", viewDesc
-                .getRelativePath());
+            .getRelativePath());
         p.println("</body>");
         p.println("</html>");
     }
