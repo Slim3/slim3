@@ -19,6 +19,7 @@ import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slim3.util.HtmlUtil;
 import org.slim3.util.RequestLocator;
 import org.slim3.util.ResponseLocator;
 import org.slim3.util.StringUtil;
@@ -32,21 +33,7 @@ import org.slim3.util.StringUtil;
  */
 public final class Functions {
 
-    private static final int HIGHEST_SPECIAL = '>';
-
     private static String BR = "<br />";
-
-    private static char[][] specialCharactersRepresentation =
-        new char[HIGHEST_SPECIAL + 1][];
-
-    static {
-        specialCharactersRepresentation['&'] = "&amp;".toCharArray();
-        specialCharactersRepresentation['<'] = "&lt;".toCharArray();
-        specialCharactersRepresentation['>'] = "&gt;".toCharArray();
-        specialCharactersRepresentation[' '] = "&nbsp;".toCharArray();
-        specialCharactersRepresentation['"'] = "&#034;".toCharArray();
-        specialCharactersRepresentation['\''] = "&#039;".toCharArray();
-    }
 
     /**
      * Escapes string that could be interpreted as HTML.
@@ -60,7 +47,7 @@ public final class Functions {
             return "";
         }
         if (input.getClass() == String.class) {
-            return escape(input.toString());
+            return HtmlUtil.escape(input.toString());
         }
         if (input.getClass().isArray()) {
             Class<?> clazz = input.getClass().getComponentType();
@@ -87,43 +74,6 @@ public final class Functions {
             }
         }
         return input.toString();
-    }
-
-    /**
-     * Escapes string that could be interpreted as HTML.
-     * 
-     * @param input
-     *            the input value
-     * @return the escaped value
-     */
-    private static String escape(String input) {
-        int start = 0;
-        char[] arrayBuffer = input.toCharArray();
-        int length = arrayBuffer.length;
-        StringBuilder escapedBuffer = null;
-        for (int i = 0; i < length; i++) {
-            char c = arrayBuffer[i];
-            if (c <= HIGHEST_SPECIAL) {
-                char[] escaped = specialCharactersRepresentation[c];
-                if (escaped != null) {
-                    if (start == 0) {
-                        escapedBuffer = new StringBuilder(length + 5);
-                    }
-                    if (start < i) {
-                        escapedBuffer.append(arrayBuffer, start, i - start);
-                    }
-                    start = i + 1;
-                    escapedBuffer.append(escaped);
-                }
-            }
-        }
-        if (start == 0) {
-            return input;
-        }
-        if (start < length) {
-            escapedBuffer.append(arrayBuffer, start, length - start);
-        }
-        return escapedBuffer.toString();
     }
 
     /**
