@@ -73,22 +73,32 @@ public class ModelMetaGenerator implements Generator {
         p.println("        super(%s.class);", modelDesc.getSimpleName());
         p.println("    }");
         p.println();
+        p.println("    public %s(String attributeName) {", modelDesc
+            .getSimpleName()
+            + Constants.META_SUFFIX);
+        p.println("        super(%s.class, attributeName);", modelDesc
+            .getSimpleName());
+        p.println("    }");
+        p.println();
         for (AttributeDesc desc : modelDesc.getAttributeDescList()) {
             if (desc.isEmbedded()) {
-                p.println("    public %1$s%2$s %3$s = new %1$s%2$s();", desc
-                    .getClassName(), Constants.META_SUFFIX, desc.getName());
+                p.println(
+                    "    public %1$s%2$s %3$s = new %1$s%2$s(\"%3$s\");",
+                    desc.getClassName(),
+                    Constants.META_SUFFIX,
+                    desc.getName());
             } else {
                 if (desc.getElementClassName() == null) {
                     p
                         .println(
-                            "    public %1$s %2$s = new %1$s(\"%2$s\", %3$s.class);",
+                            "    public %1$s %2$s = new %1$s(this, \"%2$s\", %3$s.class);",
                             ClassConstants.AttributeMeta,
                             desc.getName(),
                             desc.getClassName());
                 } else {
                     p
                         .println(
-                            "    public %1$s %2$s = new %1$s(\"%2$s\", %3$s.class, %4$s.class);",
+                            "    public %1$s %2$s = new %1$s(this,\"%2$s\", %3$s.class, %4$s.class);",
                             ClassConstants.AttributeMeta,
                             desc.getName(),
                             desc.getClassName(),

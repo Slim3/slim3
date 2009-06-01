@@ -98,7 +98,7 @@ public class AttributeDesc {
      * @return whether this attribute is embedded
      */
     public boolean isEmbedded() {
-        return embedded = false;
+        return embedded;
     }
 
     /**
