@@ -20,7 +20,7 @@ import java.util.Collection;
 import org.slim3.util.ConversionUtil;
 
 /**
- * A meta data for attribute.
+ * A meta data of attribute.
  * 
  * @author higa
  * @since 3.0
@@ -29,9 +29,19 @@ import org.slim3.util.ConversionUtil;
 public class AttributeMeta {
 
     /**
+     * The meta data of model.
+     */
+    protected ModelMeta<?> modelMeta;
+
+    /**
      * The name.
      */
     protected String name;
+
+    /**
+     * The full name.
+     */
+    protected String fullName;
 
     /**
      * The attribute class.
@@ -46,18 +56,23 @@ public class AttributeMeta {
     /**
      * Constructor.
      * 
+     * @param modelMeta
+     *            the meta data of model
      * @param name
      *            the name
      * @param attributeClass
      *            the attribute class
      */
-    public AttributeMeta(String name, Class<?> attributeClass) {
-        this(name, attributeClass, null);
+    public AttributeMeta(ModelMeta<?> modelMeta, String name,
+            Class<?> attributeClass) {
+        this(modelMeta, name, attributeClass, null);
     }
 
     /**
      * Constructor.
      * 
+     * @param modelMeta
+     *            the meta data of model
      * @param name
      *            the name
      * @param attributeClass
@@ -65,11 +80,15 @@ public class AttributeMeta {
      * @param elementClass
      *            the element class
      * @throws NullPointerException
-     *             if the name parameter is null or if the attributeClass
-     *             parameter is null
+     *             if the modelMeta parameter is null or if the name parameter
+     *             is null or if the attributeClass parameter is null
      */
-    public AttributeMeta(String name, Class<?> attributeClass,
-            Class<?> elementClass) throws NullPointerException {
+    public AttributeMeta(ModelMeta<?> modelMeta, String name,
+            Class<?> attributeClass, Class<?> elementClass)
+            throws NullPointerException {
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
+        }
         if (name == null) {
             throw new NullPointerException("The name parameter is null.");
         }
@@ -80,6 +99,11 @@ public class AttributeMeta {
         this.name = name;
         this.attributeClass = attributeClass;
         this.elementClass = elementClass;
+        if (modelMeta.attributeName == null) {
+            fullName = name;
+        } else {
+            fullName = modelMeta.attributeName + "." + name;
+        }
     }
 
     /**
@@ -96,7 +120,7 @@ public class AttributeMeta {
             && !(parameter instanceof Collection)) {
             parameter = ConversionUtil.convert(parameter, attributeClass);
         }
-        return new EqCriterion(name, parameter);
+        return new EqCriterion(fullName, parameter);
     }
 
     /**
@@ -110,7 +134,7 @@ public class AttributeMeta {
             return null;
         }
         parameter = ConversionUtil.convert(parameter, attributeClass);
-        return new LtCriterion(name, parameter);
+        return new LtCriterion(fullName, parameter);
     }
 
     /**
@@ -124,7 +148,7 @@ public class AttributeMeta {
             return null;
         }
         parameter = ConversionUtil.convert(parameter, attributeClass);
-        return new LeCriterion(name, parameter);
+        return new LeCriterion(fullName, parameter);
     }
 
     /**
@@ -138,7 +162,7 @@ public class AttributeMeta {
             return null;
         }
         parameter = ConversionUtil.convert(parameter, attributeClass);
-        return new GtCriterion(name, parameter);
+        return new GtCriterion(fullName, parameter);
     }
 
     /**
@@ -152,7 +176,7 @@ public class AttributeMeta {
             return null;
         }
         parameter = ConversionUtil.convert(parameter, attributeClass);
-        return new GeCriterion(name, parameter);
+        return new GeCriterion(fullName, parameter);
     }
 
     /**
@@ -168,7 +192,7 @@ public class AttributeMeta {
         if (elementClass != null) {
             parameter = ConversionUtil.convert(parameter, elementClass);
         }
-        return new ContainsCriterion(name, parameter);
+        return new ContainsCriterion(fullName, parameter);
     }
 
     /**
@@ -177,7 +201,7 @@ public class AttributeMeta {
      * @return the "ascending" order criterion
      */
     public AscCriterion asc() {
-        return new AscCriterion(name);
+        return new AscCriterion(fullName);
     }
 
     /**
@@ -186,7 +210,7 @@ public class AttributeMeta {
      * @return the "descending" order criterion
      */
     public DescCriterion desc() {
-        return new DescCriterion(name);
+        return new DescCriterion(fullName);
     }
 
     /**

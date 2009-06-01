@@ -32,18 +32,37 @@ public class ModelMeta<T> {
     protected Class<T> modelClass;
 
     /**
+     * The attribute name in case of embedded attribute.
+     */
+    protected String attributeName;
+
+    /**
      * Constructor.
      * 
      * @param modelClass
      *            the model class
+     */
+    public ModelMeta(Class<T> modelClass) {
+        this(modelClass, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param modelClass
+     *            the model class
+     * @param attributeName
+     *            the attribute name in case of embedded attribute
      * @throws NullPointerException
      *             if the modelClass parameter is null
      */
-    public ModelMeta(Class<T> modelClass) throws NullPointerException {
+    public ModelMeta(Class<T> modelClass, String attributeName)
+            throws NullPointerException {
         if (modelClass == null) {
             throw new NullPointerException("The modelClass parameter is null.");
         }
         this.modelClass = modelClass;
+        this.attributeName = attributeName;
     }
 
     /**

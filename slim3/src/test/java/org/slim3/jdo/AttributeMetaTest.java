@@ -30,7 +30,8 @@ public class AttributeMetaTest extends TestCase {
      * @throws Exception
      */
     public void testEq() throws Exception {
-        AttributeMeta aaa = new AttributeMeta("aaa", Long.class);
+        AttributeMeta aaa =
+            new AttributeMeta(new SampleMeta(), "aaa", Long.class);
         EqCriterion criterion = aaa.eq("1");
         assertEquals("aaa == :0", criterion.getQueryString(":0"));
         assertEquals(Long.valueOf(1), criterion.getParameter());
@@ -40,7 +41,8 @@ public class AttributeMetaTest extends TestCase {
      * @throws Exception
      */
     public void testEqForNull() throws Exception {
-        AttributeMeta aaa = new AttributeMeta("aaa", Long.class);
+        AttributeMeta aaa =
+            new AttributeMeta(new SampleMeta(), "aaa", Long.class);
         assertNull(aaa.eq(null));
     }
 
@@ -48,7 +50,8 @@ public class AttributeMetaTest extends TestCase {
      * @throws Exception
      */
     public void testEqForEmpty() throws Exception {
-        AttributeMeta aaa = new AttributeMeta("aaa", String.class);
+        AttributeMeta aaa =
+            new AttributeMeta(new SampleMeta(), "aaa", String.class);
         assertNull(aaa.eq(""));
     }
 
@@ -56,7 +59,8 @@ public class AttributeMetaTest extends TestCase {
      * @throws Exception
      */
     public void testEqForArray() throws Exception {
-        AttributeMeta aaa = new AttributeMeta("aaa", String.class);
+        AttributeMeta aaa =
+            new AttributeMeta(new SampleMeta(), "aaa", String.class);
         String[] parameter = new String[] { "111" };
         EqCriterion criterion = aaa.eq(parameter);
         assertEquals("aaa == :0", criterion.getQueryString(":0"));
@@ -67,7 +71,8 @@ public class AttributeMetaTest extends TestCase {
      * @throws Exception
      */
     public void testEqForCollection() throws Exception {
-        AttributeMeta aaa = new AttributeMeta("aaa", String.class);
+        AttributeMeta aaa =
+            new AttributeMeta(new SampleMeta(), "aaa", String.class);
         List<String> parameter = new ArrayList<String>();
         EqCriterion criterion = aaa.eq(parameter);
         assertEquals("aaa == :0", criterion.getQueryString(":0"));
@@ -77,8 +82,19 @@ public class AttributeMetaTest extends TestCase {
     /**
      * @throws Exception
      */
+    public void testEqForEmbedded() throws Exception {
+        AttributeMeta aaa =
+            new AttributeMeta(new SampleMeta("sample"), "aaa", String.class);
+        EqCriterion criterion = aaa.eq("1");
+        assertEquals("sample.aaa == :0", criterion.getQueryString(":0"));
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testLt() throws Exception {
-        AttributeMeta aaa = new AttributeMeta("aaa", Long.class);
+        AttributeMeta aaa =
+            new AttributeMeta(new SampleMeta(), "aaa", Long.class);
         LtCriterion criterion = aaa.lt("1");
         assertEquals("aaa < :0", criterion.getQueryString(":0"));
         assertEquals(Long.valueOf(1), criterion.getParameter());
@@ -88,7 +104,8 @@ public class AttributeMetaTest extends TestCase {
      * @throws Exception
      */
     public void testLtForNull() throws Exception {
-        AttributeMeta aaa = new AttributeMeta("aaa", Long.class);
+        AttributeMeta aaa =
+            new AttributeMeta(new SampleMeta(), "aaa", Long.class);
         assertNull(aaa.lt(null));
     }
 
@@ -96,15 +113,27 @@ public class AttributeMetaTest extends TestCase {
      * @throws Exception
      */
     public void testLtForEmpty() throws Exception {
-        AttributeMeta aaa = new AttributeMeta("aaa", String.class);
+        AttributeMeta aaa =
+            new AttributeMeta(new SampleMeta(), "aaa", String.class);
         assertNull(aaa.lt(""));
     }
 
     /**
      * @throws Exception
      */
+    public void testLtForEmbedded() throws Exception {
+        AttributeMeta aaa =
+            new AttributeMeta(new SampleMeta("sample"), "aaa", Long.class);
+        LtCriterion criterion = aaa.lt("1");
+        assertEquals("sample.aaa < :0", criterion.getQueryString(":0"));
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testLe() throws Exception {
-        AttributeMeta aaa = new AttributeMeta("aaa", Long.class);
+        AttributeMeta aaa =
+            new AttributeMeta(new SampleMeta(), "aaa", Long.class);
         LeCriterion criterion = aaa.le("1");
         assertEquals("aaa <= :0", criterion.getQueryString(":0"));
         assertEquals(Long.valueOf(1), criterion.getParameter());
@@ -114,7 +143,8 @@ public class AttributeMetaTest extends TestCase {
      * @throws Exception
      */
     public void testLeForNull() throws Exception {
-        AttributeMeta aaa = new AttributeMeta("aaa", Long.class);
+        AttributeMeta aaa =
+            new AttributeMeta(new SampleMeta(), "aaa", Long.class);
         assertNull(aaa.le(null));
     }
 
@@ -122,15 +152,27 @@ public class AttributeMetaTest extends TestCase {
      * @throws Exception
      */
     public void testLeForEmpty() throws Exception {
-        AttributeMeta aaa = new AttributeMeta("aaa", String.class);
+        AttributeMeta aaa =
+            new AttributeMeta(new SampleMeta(), "aaa", String.class);
         assertNull(aaa.le(""));
     }
 
     /**
      * @throws Exception
      */
+    public void testLeForEmbedded() throws Exception {
+        AttributeMeta aaa =
+            new AttributeMeta(new SampleMeta("sample"), "aaa", Long.class);
+        LeCriterion criterion = aaa.le("1");
+        assertEquals("sample.aaa <= :0", criterion.getQueryString(":0"));
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testGt() throws Exception {
-        AttributeMeta aaa = new AttributeMeta("aaa", Long.class);
+        AttributeMeta aaa =
+            new AttributeMeta(new SampleMeta(), "aaa", Long.class);
         GtCriterion criterion = aaa.gt("1");
         assertEquals("aaa > :0", criterion.getQueryString(":0"));
         assertEquals(Long.valueOf(1), criterion.getParameter());
@@ -140,7 +182,8 @@ public class AttributeMetaTest extends TestCase {
      * @throws Exception
      */
     public void testGtForNull() throws Exception {
-        AttributeMeta aaa = new AttributeMeta("aaa", Long.class);
+        AttributeMeta aaa =
+            new AttributeMeta(new SampleMeta(), "aaa", Long.class);
         assertNull(aaa.gt(null));
     }
 
@@ -148,15 +191,27 @@ public class AttributeMetaTest extends TestCase {
      * @throws Exception
      */
     public void testGtForEmpty() throws Exception {
-        AttributeMeta aaa = new AttributeMeta("aaa", String.class);
+        AttributeMeta aaa =
+            new AttributeMeta(new SampleMeta(), "aaa", String.class);
         assertNull(aaa.gt(""));
     }
 
     /**
      * @throws Exception
      */
+    public void testGtForEmbedded() throws Exception {
+        AttributeMeta aaa =
+            new AttributeMeta(new SampleMeta("sample"), "aaa", Long.class);
+        GtCriterion criterion = aaa.gt("1");
+        assertEquals("sample.aaa > :0", criterion.getQueryString(":0"));
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testGe() throws Exception {
-        AttributeMeta aaa = new AttributeMeta("aaa", Long.class);
+        AttributeMeta aaa =
+            new AttributeMeta(new SampleMeta(), "aaa", Long.class);
         GeCriterion criterion = aaa.ge("1");
         assertEquals("aaa >= :0", criterion.getQueryString(":0"));
         assertEquals(Long.valueOf(1), criterion.getParameter());
@@ -166,7 +221,8 @@ public class AttributeMetaTest extends TestCase {
      * @throws Exception
      */
     public void testGeForNull() throws Exception {
-        AttributeMeta aaa = new AttributeMeta("aaa", Long.class);
+        AttributeMeta aaa =
+            new AttributeMeta(new SampleMeta(), "aaa", Long.class);
         assertNull(aaa.ge(null));
     }
 
@@ -174,8 +230,19 @@ public class AttributeMetaTest extends TestCase {
      * @throws Exception
      */
     public void testGeForEmpty() throws Exception {
-        AttributeMeta aaa = new AttributeMeta("aaa", String.class);
+        AttributeMeta aaa =
+            new AttributeMeta(new SampleMeta(), "aaa", String.class);
         assertNull(aaa.ge(""));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGeForEmbedded() throws Exception {
+        AttributeMeta aaa =
+            new AttributeMeta(new SampleMeta("sample"), "aaa", Long.class);
+        GeCriterion criterion = aaa.ge("1");
+        assertEquals("sample.aaa >= :0", criterion.getQueryString(":0"));
     }
 
     /**
@@ -183,7 +250,11 @@ public class AttributeMetaTest extends TestCase {
      */
     public void testContains() throws Exception {
         AttributeMeta aaaArray =
-            new AttributeMeta("aaaArray", Long[].class, Long.class);
+            new AttributeMeta(
+                new SampleMeta(),
+                "aaaArray",
+                Long[].class,
+                Long.class);
         ContainsCriterion criterion = aaaArray.contains("1");
         assertEquals("aaaArray.contains(:0)", criterion.getQueryString(":0"));
         assertEquals(Long.valueOf(1), criterion.getParameter());
@@ -193,7 +264,8 @@ public class AttributeMetaTest extends TestCase {
      * @throws Exception
      */
     public void testContainsForNull() throws Exception {
-        AttributeMeta aaaArray = new AttributeMeta("aaaArray", Long[].class);
+        AttributeMeta aaaArray =
+            new AttributeMeta(new SampleMeta(), "aaaArray", Long[].class);
         assertNull(aaaArray.contains(null));
     }
 
@@ -201,15 +273,32 @@ public class AttributeMetaTest extends TestCase {
      * @throws Exception
      */
     public void testContainsForEmpty() throws Exception {
-        AttributeMeta aaaArray = new AttributeMeta("aaaArray", String[].class);
+        AttributeMeta aaaArray =
+            new AttributeMeta(new SampleMeta(), "aaaArray", String[].class);
         assertNull(aaaArray.contains(""));
     }
 
     /**
      * @throws Exception
      */
+    public void testContainsForEmbedded() throws Exception {
+        AttributeMeta aaaArray =
+            new AttributeMeta(
+                new SampleMeta("sample"),
+                "aaaArray",
+                Long[].class,
+                Long.class);
+        ContainsCriterion criterion = aaaArray.contains("1");
+        assertEquals("sample.aaaArray.contains(:0)", criterion
+            .getQueryString(":0"));
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testAsc() throws Exception {
-        AttributeMeta aaa = new AttributeMeta("aaa", Long.class);
+        AttributeMeta aaa =
+            new AttributeMeta(new SampleMeta(), "aaa", Long.class);
         AscCriterion criterion = aaa.asc();
         assertNotNull(criterion);
         assertEquals("aaa asc", criterion.getQueryString());
@@ -218,10 +307,33 @@ public class AttributeMetaTest extends TestCase {
     /**
      * @throws Exception
      */
+    public void testAscForEmbedded() throws Exception {
+        AttributeMeta aaa =
+            new AttributeMeta(new SampleMeta("sample"), "aaa", Long.class);
+        AscCriterion criterion = aaa.asc();
+        assertNotNull(criterion);
+        assertEquals("sample.aaa asc", criterion.getQueryString());
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testDesc() throws Exception {
-        AttributeMeta aaa = new AttributeMeta("aaa", Long.class);
+        AttributeMeta aaa =
+            new AttributeMeta(new SampleMeta(), "aaa", Long.class);
         DescCriterion criterion = aaa.desc();
         assertNotNull(criterion);
         assertEquals("aaa desc", criterion.getQueryString());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testDescForEmbedded() throws Exception {
+        AttributeMeta aaa =
+            new AttributeMeta(new SampleMeta("sample"), "aaa", Long.class);
+        DescCriterion criterion = aaa.desc();
+        assertNotNull(criterion);
+        assertEquals("sample.aaa desc", criterion.getQueryString());
     }
 }

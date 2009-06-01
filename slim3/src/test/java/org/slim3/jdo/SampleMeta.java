@@ -22,6 +22,15 @@ package org.slim3.jdo;
 public class SampleMeta extends ModelMeta<Sample> {
 
     /**
+     * @param attributeName
+     *            the attribute name
+     * 
+     */
+    public SampleMeta(String attributeName) {
+        super(Sample.class, attributeName);
+    }
+
+    /**
      * 
      */
     public SampleMeta() {
@@ -31,10 +40,10 @@ public class SampleMeta extends ModelMeta<Sample> {
     /**
      * 
      */
-    public AttributeMeta id = new AttributeMeta("id", Long.class);
+    public AttributeMeta id = new AttributeMeta(this, "id", Long.class);
 
     /**
      * 
      */
-    public AttributeMeta name = new AttributeMeta("name", String.class);
+    public AttributeMeta name = new AttributeMeta(this, "name", String.class);
 }
