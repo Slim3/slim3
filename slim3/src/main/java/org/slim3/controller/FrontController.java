@@ -16,6 +16,7 @@
 package org.slim3.controller;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slim3.util.ClassUtil;
 import org.slim3.util.Cleaner;
+import org.slim3.util.LocaleLocator;
 import org.slim3.util.StringUtil;
 
 /**
@@ -55,6 +57,11 @@ public class FrontController implements Filter {
     protected String charset;
 
     /**
+     * The default locale.
+     */
+    protected Locale defaultLocale;
+
+    /**
      * The servlet context.
      */
     protected ServletContext servletContext;
@@ -76,14 +83,61 @@ public class FrontController implements Filter {
     }
 
     public void init(FilterConfig config) throws ServletException {
+        initServletContext(config);
+        initCharset();
+        initDefaultLocale();
+        initHotReloading();
+        initControllerPackageName();
+    }
+
+    /**
+     * Initializes the servlet context.
+     * 
+     * @param config
+     *            the filter configuration.
+     */
+    protected void initServletContext(FilterConfig config) {
         servletContext = config.getServletContext();
         ServletContextLocator.setServletContext(servletContext);
+    }
+
+    /**
+     * Initializes the character set.
+     */
+    protected void initCharset() {
         charset =
             servletContext
                 .getInitParameter(ControllerConstants.REQUEST_CHARSET_KEY);
         if (charset == null) {
             charset = ControllerConstants.DEFAULT_REQUEST_CHARSET;
         }
+    }
+
+    /**
+     * Initializes the default locale.
+     */
+    protected void initDefaultLocale() {
+        String s =
+            servletContext.getInitParameter(ControllerConstants.LOCALE_KEY);
+        if (s == null) {
+            return;
+        }
+        String[] array = StringUtil.split(s, "_");
+        if (array.length == 1) {
+            defaultLocale = new Locale(array[0]);
+        } else if (array.length == 2) {
+            defaultLocale = new Locale(array[0], array[1]);
+        } else if (array.length == 3) {
+            defaultLocale = new Locale(array[0], array[1], array[2]);
+        } else {
+            throw new IllegalStateException("Locale(" + s + ") is invalid.");
+        }
+    }
+
+    /**
+     * Initializes the HOT reloading setting.
+     */
+    protected void initHotReloading() {
         boolean runningOnDevserver =
             servletContext.getServerInfo().indexOf("Development") >= 0;
         if (runningOnDevserver) {
@@ -100,6 +154,12 @@ public class FrontController implements Filter {
         if (logger.isLoggable(Level.INFO)) {
             logger.log(Level.INFO, "Slim3 hot reloading:" + hotReloading);
         }
+    }
+
+    /**
+     * Initializes the controller package name.
+     */
+    protected void initControllerPackageName() {
         controllerPackageName =
             System.getProperty(ControllerConstants.CONTROLLER_PACKAGE_KEY);
         if (StringUtil.isEmpty(controllerPackageName)) {
@@ -140,9 +200,11 @@ public class FrontController implements Filter {
             HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         HttpServletRequest previousRequest = RequestLocator.getRequest();
-        HttpServletResponse previousResponse = ResponseLocator.getResponse();
         RequestLocator.setRequest(request);
+        HttpServletResponse previousResponse = ResponseLocator.getResponse();
         ResponseLocator.setResponse(response);
+        Locale previousLocale = LocaleLocator.get();
+        LocaleLocator.set(processLocale(request));
         ClassLoader previousLoader =
             Thread.currentThread().getContextClassLoader();
         if (hotReloading
@@ -153,31 +215,70 @@ public class FrontController implements Filter {
                     controllerPackageName));
         }
         try {
-            if (request.getCharacterEncoding() == null) {
-                request.setCharacterEncoding(charset);
-            }
-            String path = request.getServletPath();
-            Controller controller = getController(request, response, path);
-            if (controller == null) {
-                chain.doFilter(request, response);
-            } else {
-                if (hotReloading) {
-                    synchronized (this) {
-                        try {
-                            processController(request, response, controller);
-                        } finally {
-                            Cleaner.cleanAll();
-                        }
-                    }
-                } else {
-                    processController(request, response, controller);
-                }
-            }
+            doFilterInternal(previousRequest, previousResponse, chain);
         } finally {
             Thread.currentThread().setContextClassLoader(previousLoader);
+            LocaleLocator.set(previousLocale);
             RequestLocator.setRequest(previousRequest);
             ResponseLocator.setResponse(previousResponse);
         }
+    }
+
+    /**
+     * Executes internal filtering process.
+     * 
+     * @param request
+     *            the request
+     * @param response
+     *            the response
+     * @param chain
+     *            the filter chain
+     * @throws IOException
+     *             if {@link IOException} is encountered
+     * @throws ServletException
+     *             if {@link ServletException} is encountered
+     */
+    protected void doFilterInternal(HttpServletRequest request,
+            HttpServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+        if (request.getCharacterEncoding() == null) {
+            request.setCharacterEncoding(charset);
+        }
+        String path = request.getServletPath();
+        Controller controller = getController(request, response, path);
+        if (controller == null) {
+            chain.doFilter(request, response);
+        } else {
+            if (hotReloading) {
+                synchronized (this) {
+                    try {
+                        processController(request, response, controller);
+                    } finally {
+                        Cleaner.cleanAll();
+                    }
+                }
+            } else {
+                processController(request, response, controller);
+            }
+        }
+    }
+
+    /**
+     * Processes the current locale.
+     * 
+     * @param request
+     *            the request
+     * @return the current locale
+     */
+    protected Locale processLocale(HttpServletRequest request) {
+        Locale locale = defaultLocale;
+        if (locale == null) {
+            locale = request.getLocale();
+            if (locale == null) {
+                locale = Locale.getDefault();
+            }
+        }
+        return locale;
     }
 
     /**

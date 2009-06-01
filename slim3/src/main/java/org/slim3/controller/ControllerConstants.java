@@ -68,7 +68,7 @@ public interface ControllerConstants {
     /**
      * The key of controller.
      */
-    String CONTROLLER_KEY = "c";
+    String CONTROLLER_KEY = "slim3.controller";
 
     /**
      * The suffix of controller.
