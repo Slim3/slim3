@@ -46,6 +46,8 @@ public class ViewGenerator implements Generator {
         p
             .println("<%%@taglib prefix=\"c\" uri=\"http://java.sun.com/jsp/jstl/core\"%%>");
         p
+            .println("<%%@taglib prefix=\"fmt\" uri=\"http://java.sun.com/jsp/jstl/fmt\"%%>");
+        p
             .println("<%%@taglib prefix=\"f\" uri=\"http://www.slim3.org/functions\"%%>");
         p.println();
         p.println("<html>");
