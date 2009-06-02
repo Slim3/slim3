@@ -17,17 +17,29 @@ package org.slim3.util;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 import junit.framework.TestCase;
 
 import org.slim3.exception.WrapRuntimeException;
-import org.slim3.util.DateUtil;
 
 /**
  * @author higa
  * 
  */
 public class DateUtilTest extends TestCase {
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        TimeZoneLocator.set(TimeZone.getTimeZone("UTC"));
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        TimeZoneLocator.set(null);
+        super.tearDown();
+    }
 
     /**
      * @throws Exception
@@ -108,7 +120,7 @@ public class DateUtilTest extends TestCase {
      * @throws Exception
      */
     public void testToDateWithPattern() throws Exception {
-        assertNotNull(DateUtil.toDate("02/01/2008", "MM/dd/yyyy"));
+        assertEquals(new Date(0), DateUtil.toDate("01/01/1970", "MM/dd/yyyy"));
     }
 
     /**
@@ -151,7 +163,7 @@ public class DateUtilTest extends TestCase {
      */
     public void testClearTimePartForDate() throws Exception {
         java.util.Date date = new java.util.Date();
-        Calendar cal = Calendar.getInstance();
+        Calendar cal = Calendar.getInstance(TimeZoneLocator.get());
         cal.setTime(date);
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
@@ -165,7 +177,7 @@ public class DateUtilTest extends TestCase {
      */
     public void testToDateAndClearTimePart() throws Exception {
         java.util.Date date = new java.util.Date();
-        Calendar cal = Calendar.getInstance();
+        Calendar cal = Calendar.getInstance(TimeZoneLocator.get());
         cal.setTime(date);
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);

@@ -111,6 +111,7 @@ public final class DateUtil {
         }
         try {
             SimpleDateFormat df = new SimpleDateFormat(pattern);
+            df.setTimeZone(TimeZoneLocator.get());
             return df.parse(text);
         } catch (ParseException cause) {
             throw new WrapRuntimeException(
@@ -133,7 +134,8 @@ public final class DateUtil {
         if (date == null) {
             return null;
         }
-        Calendar cal = Calendar.getInstance();
+        Calendar cal =
+            Calendar.getInstance(TimeZoneLocator.get(), LocaleLocator.get());
         cal.setTime(date);
         return cal;
     }
@@ -261,6 +263,7 @@ public final class DateUtil {
             return null;
         }
         SimpleDateFormat df = new SimpleDateFormat(pattern);
+        df.setTimeZone(TimeZoneLocator.get());
         return df.format(value);
     }
 
