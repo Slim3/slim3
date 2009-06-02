@@ -5,5 +5,6 @@
 <ul>
 <li><a href="${f:h('/blog/')}">Blog</a></li>
 <li><a href="${f:h('/flexblog/')}">Blog with Flex</a></li>
+<li><a href="${f:h('/locale/')}">Locale</a></li>
 </ul>
 </div>
