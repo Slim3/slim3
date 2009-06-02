@@ -42,10 +42,10 @@ public final class LocaleLocator {
     }
 
     /**
-     * Sets the {@link Locale} attached to the current thread.
+     * Sets the {@link Locale} to the current thread.
      * 
      * @param locale
-     *            the {@link Locale} attached to the current thread
+     *            the {@link Locale}
      */
     public static void set(Locale locale) {
         locales.set(locale);

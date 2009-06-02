@@ -220,4 +220,11 @@ public class FunctionsTest extends TestCase {
     public void testLocale() throws Exception {
         assertNotNull(Functions.locale());
     }
+
+    /**
+     * @throws Exception
+     */
+    public void testTimeZone() throws Exception {
+        assertNotNull(Functions.timeZone());
+    }
 }

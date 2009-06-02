@@ -53,9 +53,21 @@
     </description>
     <name>locale</name>
     <function-class>org.slim3.jsp.Functions</function-class>
-    <function-signature>java.lang.String locale()</function-signature>
+    <function-signature>java.utl.Locale locale()</function-signature>
     <example>
       &lt;fmt:setLocale value="${f:locale()}"/&gt;
+    </example>
+  </function>
+  
+  <function>
+    <description>
+      Returns the current time zone.
+    </description>
+    <name>timeZone</name>
+    <function-class>org.slim3.jsp.Functions</function-class>
+    <function-signature>java.util.TimeZone timeZone()</function-signature>
+    <example>
+      &lt;fmt:setTimeZone value="${f:timeZone()}"/&gt;
     </example>
   </function>
 </taglib>

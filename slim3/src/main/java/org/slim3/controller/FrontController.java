@@ -17,6 +17,7 @@ package org.slim3.controller;
 
 import java.io.IOException;
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,7 +41,12 @@ import org.slim3.util.RequestLocator;
 import org.slim3.util.ResponseLocator;
 import org.slim3.util.ServletContextLocator;
 import org.slim3.util.StringUtil;
+import org.slim3.util.TimeZoneLocator;
 
+/**
+ * @author li0934
+ *
+ */
 /**
  * The front controller of Slim3.
  * 
@@ -67,6 +73,11 @@ public class FrontController implements Filter {
     protected Locale defaultLocale;
 
     /**
+     * The default time zone.
+     */
+    protected TimeZone defaultTimeZone;
+
+    /**
      * The servlet context.
      */
     protected ServletContext servletContext;
@@ -91,6 +102,7 @@ public class FrontController implements Filter {
         initServletContext(config);
         initCharset();
         initDefaultLocale();
+        initDefaultTimeZone();
         initHotReloading();
         initControllerPackageName();
     }
@@ -125,6 +137,17 @@ public class FrontController implements Filter {
         defaultLocale =
             LocaleUtil.parse(servletContext
                 .getInitParameter(ControllerConstants.LOCALE_KEY));
+    }
+
+    /**
+     * Initializes the default time zone.
+     */
+    protected void initDefaultTimeZone() {
+        String s =
+            servletContext.getInitParameter(ControllerConstants.TIME_ZONE_KEY);
+        if (s != null) {
+            defaultTimeZone = TimeZone.getTimeZone(s);
+        }
     }
 
     /**
@@ -198,6 +221,8 @@ public class FrontController implements Filter {
         ResponseLocator.set(response);
         Locale previousLocale = LocaleLocator.get();
         LocaleLocator.set(processLocale(request));
+        TimeZone previousTimeZone = TimeZoneLocator.get();
+        TimeZoneLocator.set(processTimeZone(request));
         ClassLoader previousLoader =
             Thread.currentThread().getContextClassLoader();
         if (hotReloading
@@ -211,9 +236,10 @@ public class FrontController implements Filter {
             doFilterInternal(request, response, chain);
         } finally {
             Thread.currentThread().setContextClassLoader(previousLoader);
+            TimeZoneLocator.set(previousTimeZone);
             LocaleLocator.set(previousLocale);
-            RequestLocator.set(previousRequest);
             ResponseLocator.set(previousResponse);
+            RequestLocator.set(previousRequest);
         }
     }
 
@@ -284,6 +310,33 @@ public class FrontController implements Filter {
             }
         }
         return locale;
+    }
+
+    /**
+     * Processes the current time zone.
+     * 
+     * @param request
+     *            the request
+     * @return the current time zone
+     */
+    protected TimeZone processTimeZone(HttpServletRequest request) {
+        TimeZone timeZone = null;
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            Object o = session.getAttribute(ControllerConstants.TIME_ZONE_KEY);
+            if (o instanceof String) {
+                timeZone = TimeZone.getTimeZone((String) o);
+            } else if (o instanceof TimeZone) {
+                timeZone = (TimeZone) o;
+            }
+        }
+        if (timeZone == null) {
+            timeZone = defaultTimeZone;
+        }
+        if (timeZone == null) {
+            timeZone = TimeZone.getDefault();
+        }
+        return timeZone;
     }
 
     /**

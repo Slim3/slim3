@@ -15,7 +15,7 @@
  */
 package org.slim3.util;
 
-import java.util.Locale;
+import java.util.TimeZone;
 
 import junit.framework.TestCase;
 
@@ -23,11 +23,11 @@ import junit.framework.TestCase;
  * @author higa
  * 
  */
-public class LocaleLocatorTest extends TestCase {
+public class TimeZoneLocatorTest extends TestCase {
 
     @Override
     protected void tearDown() throws Exception {
-        LocaleLocator.set(null);
+        TimeZoneLocator.set(null);
         super.tearDown();
     }
 
@@ -35,15 +35,15 @@ public class LocaleLocatorTest extends TestCase {
      * @throws Exception
      */
     public void testSetAndGet() throws Exception {
-        Locale locale = Locale.GERMAN;
-        LocaleLocator.set(locale);
-        assertSame(locale, LocaleLocator.get());
+        TimeZone tz = TimeZone.getTimeZone("PST");
+        TimeZoneLocator.set(tz);
+        assertEquals(tz, TimeZoneLocator.get());
     }
 
     /**
      * @throws Exception
      */
     public void testGetForNoSetting() throws Exception {
-        assertEquals(Locale.getDefault(), LocaleLocator.get());
+        assertEquals(TimeZone.getDefault(), TimeZoneLocator.get());
     }
 }

@@ -17,6 +17,7 @@ package org.slim3.jsp;
 
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -25,6 +26,7 @@ import org.slim3.util.LocaleLocator;
 import org.slim3.util.RequestLocator;
 import org.slim3.util.ResponseLocator;
 import org.slim3.util.StringUtil;
+import org.slim3.util.TimeZoneLocator;
 
 /**
  * JSP functions of Slim3.
@@ -132,6 +134,15 @@ public final class Functions {
      */
     public static Locale locale() {
         return LocaleLocator.get();
+    }
+
+    /**
+     * Returns the current time zone.
+     * 
+     * @return the current time zone.
+     */
+    public static TimeZone timeZone() {
+        return TimeZoneLocator.get();
     }
 
     private Functions() {

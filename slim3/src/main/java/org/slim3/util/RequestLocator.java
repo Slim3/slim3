@@ -39,10 +39,10 @@ public final class RequestLocator {
     }
 
     /**
-     * Sets the request attached to the current thread.
+     * Sets the request to the current thread.
      * 
      * @param request
-     *            the request attached to the current thread
+     *            the request
      */
     public static void set(HttpServletRequest request) {
         requests.set(request);

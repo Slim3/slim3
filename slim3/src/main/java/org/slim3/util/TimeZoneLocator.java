@@ -15,39 +15,43 @@
  */
 package org.slim3.util;
 
-import javax.servlet.http.HttpServletResponse;
+import java.util.TimeZone;
 
 /**
- * The locator for {@link HttpServletResponse}.
+ * A class to access the current {@link TimeZone}.
  * 
  * @author higa
  * @since 3.0
  * 
  */
-public final class ResponseLocator {
+public final class TimeZoneLocator {
 
-    private static ThreadLocal<HttpServletResponse> responses =
-        new ThreadLocal<HttpServletResponse>();
+    private static ThreadLocal<TimeZone> timeZones =
+        new ThreadLocal<TimeZone>();
 
     /**
-     * Returns the response attached to the current thread.
+     * Returns the {@link TimeZone} attached to the current thread.
      * 
-     * @return the response attached to the current thread
+     * @return the {@link TimeZone} attached to the current thread
      */
-    public static HttpServletResponse get() {
-        return responses.get();
+    public static TimeZone get() {
+        TimeZone timeZone = timeZones.get();
+        if (timeZone != null) {
+            return timeZone;
+        }
+        return TimeZone.getDefault();
     }
 
     /**
-     * Sets the response to the current thread.
+     * Sets the {@link TimeZone} to the current thread.
      * 
-     * @param response
-     *            the response
+     * @param timeZone
+     *            the {@link TimeZone}
      */
-    public static void set(HttpServletResponse response) {
-        responses.set(response);
+    public static void set(TimeZone timeZone) {
+        timeZones.set(timeZone);
     }
 
-    private ResponseLocator() {
+    private TimeZoneLocator() {
     }
 }
