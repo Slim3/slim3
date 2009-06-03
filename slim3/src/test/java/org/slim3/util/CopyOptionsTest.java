@@ -113,7 +113,9 @@ public class CopyOptionsTest extends TestCase {
      * @throws Exception
      */
     public void testFindConvererForDate() throws Exception {
-        Converter converter = options.findConverter(java.sql.Date.class);
+        Converter converter =
+            options.dateConverter("MM/dd/yyyy").findConverter(
+                java.sql.Date.class);
         assertNotNull(converter);
         assertEquals(DateConverter.class, converter.getClass());
     }
@@ -147,7 +149,7 @@ public class CopyOptionsTest extends TestCase {
     public void testConvertObjectForDestClassNullWithConverter()
             throws Exception {
         Object value =
-            options.dateConverter("yyyy").convertObject(
+            options.dateConverter("yyyy", "aaa").convertObject(
                 new Date(0),
                 "aaa",
                 null);

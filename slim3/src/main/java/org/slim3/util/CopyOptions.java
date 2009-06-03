@@ -38,12 +38,6 @@ public class CopyOptions {
     protected static final String[] EMPTY_STRINGS = new String[0];
 
     /**
-     * The default converter for {@link java.util.Date}.
-     */
-    protected static final Converter DEFAULT_DATE_CONVERTER =
-        new DateConverter(DateUtil.ISO_DATE_PATTERN);
-
-    /**
      * The included property names.
      */
     protected String[] includedPropertyNames = EMPTY_STRINGS;
@@ -331,9 +325,6 @@ public class CopyOptions {
                     return c;
                 }
             }
-        }
-        if (java.util.Date.class.isAssignableFrom(targetClass)) {
-            return DEFAULT_DATE_CONVERTER;
         }
         return null;
     }
