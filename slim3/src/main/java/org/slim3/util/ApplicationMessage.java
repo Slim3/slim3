@@ -17,6 +17,7 @@ package org.slim3.util;
 
 import java.text.MessageFormat;
 import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 /**
@@ -77,8 +78,12 @@ public final class ApplicationMessage {
             throw new IllegalStateException(
                 "The bundle attached to the current thread is not found.");
         }
-        String pattern = bundle.getString(key);
-        return MessageFormat.format(pattern, args);
+        try {
+            String pattern = bundle.getString(key);
+            return MessageFormat.format(pattern, args);
+        } catch (MissingResourceException ignore) {
+            return null;
+        }
     }
 
     private ApplicationMessage() {

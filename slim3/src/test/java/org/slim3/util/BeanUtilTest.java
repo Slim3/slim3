@@ -15,6 +15,7 @@
  */
 package org.slim3.util;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -417,9 +418,12 @@ public class BeanUtilTest extends TestCase {
     public void testCopyMM() throws Exception {
         Map<String, Object> src = new HashMap<String, Object>();
         src.put("aaa", "111");
+        Date date = new Date();
+        src.put("bbb", date);
         Map<String, Object> dest = new HashMap<String, Object>();
         BeanUtil.copy(src, dest);
         assertEquals("111", dest.get("aaa"));
+        assertEquals(date, dest.get("bbb"));
     }
 
     /**

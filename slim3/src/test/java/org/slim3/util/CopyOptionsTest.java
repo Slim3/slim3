@@ -171,8 +171,14 @@ public class CopyOptionsTest extends TestCase {
      * @throws Exception
      */
     public void testConvertObjectForDestNullNoConverter() throws Exception {
-        Object value = options.convertObject(new Integer(0), "aaa", null);
-        assertEquals(new Integer(0), value);
+        assertEquals(new Integer(0), options.convertObject(
+            new Integer(0),
+            "aaa",
+            null));
+        assertEquals(new Date(0), options.convertObject(
+            new Date(0),
+            "aaa",
+            null));
     }
 
     /**

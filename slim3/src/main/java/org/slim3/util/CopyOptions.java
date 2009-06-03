@@ -304,10 +304,6 @@ public class CopyOptions {
             return converter.getAsString(value);
         }
         if (destPropertyClass == null) {
-            converter = findConverter(value.getClass());
-            if (converter != null) {
-                return converter.getAsString(value);
-            }
             return value;
         }
         if (destPropertyClass != String.class) {

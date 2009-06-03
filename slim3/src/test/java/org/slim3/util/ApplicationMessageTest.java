@@ -28,7 +28,7 @@ public class ApplicationMessageTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        ApplicationMessage.setBundle("application", Locale.ENGLISH);
+        ApplicationMessage.setBundle("test", Locale.ENGLISH);
     }
 
     @Override
@@ -42,5 +42,12 @@ public class ApplicationMessageTest extends TestCase {
      */
     public void testGet() throws Exception {
         assertEquals("hoge is required.", ApplicationMessage.get("aaa", "hoge"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetForKeyNotFound() throws Exception {
+        assertNull(ApplicationMessage.get("xxx"));
     }
 }
