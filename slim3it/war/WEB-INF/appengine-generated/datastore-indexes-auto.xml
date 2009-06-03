@@ -1,8 +1,4 @@
-<!-- Indices written at Mon, 1 Jun 2009 15:42:00 JST -->
+<!-- Indices written at Thu, 4 Jun 2009 00:01:13 JST -->
 
-<datastore-indexes>
+<datastore-indexes/>
 
-    <!-- Used 1 time in query history -->
-    <datastore-index kind="Bar" ancestor="true" source="auto"/>
-
-</datastore-indexes>

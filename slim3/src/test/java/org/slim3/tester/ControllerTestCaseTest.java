@@ -18,6 +18,7 @@ package org.slim3.tester;
 import junit.framework.TestCase;
 
 import org.slim3.controller.ControllerConstants;
+import org.slim3.controller.Errors;
 import org.slim3.tester.controller.HelloController;
 import org.slim3.util.RequestLocator;
 import org.slim3.util.ResponseLocator;
@@ -235,6 +236,19 @@ public class ControllerTestCaseTest extends TestCase {
         } catch (IllegalStateException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testGetErrors() throws Exception {
+        testCase.setUp();
+        testCase.request.setAttribute(
+            ControllerConstants.ERRORS_KEY,
+            new Errors());
+        Errors errors = testCase.getErrors();
+        assertNotNull(errors);
     }
 
     private static class MyTestCase extends ControllerTestCase {

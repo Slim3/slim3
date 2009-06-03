@@ -71,6 +71,10 @@ public interface ControllerConstants {
     String CONTROLLER_KEY = "slim3.controller";
 
     /**
+     * The key of errors.
+     */
+    String ERRORS_KEY = "errors";
+    /**
      * The suffix of controller.
      */
     String CONTROLLER_SUFFIX = "Controller";

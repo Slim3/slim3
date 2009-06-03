@@ -30,6 +30,7 @@ import junit.framework.TestCase;
 
 import org.slim3.controller.Controller;
 import org.slim3.controller.ControllerConstants;
+import org.slim3.controller.Errors;
 import org.slim3.controller.FrontController;
 import org.slim3.util.RequestLocator;
 import org.slim3.util.ResponseLocator;
@@ -352,6 +353,15 @@ public abstract class ControllerTestCase extends TestCase {
     protected <T extends Controller> T getController() {
         assertStartWasCalled();
         return (T) request.getAttribute(ControllerConstants.CONTROLLER_KEY);
+    }
+
+    /**
+     * Returns the error messages.
+     * 
+     * @return the error messages
+     */
+    protected Errors getErrors() {
+        return requestScope(ControllerConstants.ERRORS_KEY);
     }
 
     /**

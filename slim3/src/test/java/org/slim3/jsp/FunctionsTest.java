@@ -16,9 +16,12 @@
 package org.slim3.jsp;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
+import org.slim3.controller.ControllerConstants;
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockHttpServletResponse;
 import org.slim3.tester.MockServletContext;
@@ -226,5 +229,22 @@ public class FunctionsTest extends TestCase {
      */
     public void testTimeZone() throws Exception {
         assertNotNull(Functions.timeZone());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testErrorStyle() throws Exception {
+        Map<String, String> errors = new HashMap<String, String>();
+        errors.put("aaa", "Aaa is required.");
+        request.setAttribute(ControllerConstants.ERRORS_KEY, errors);
+        assertEquals("error", Functions.errorClass("aaa", "error"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testErrorStyleForNoError() throws Exception {
+        assertEquals("", Functions.errorClass("aaa", "error"));
     }
 }

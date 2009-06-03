@@ -1,5 +1,7 @@
 @CHARSET "utf-8";
 
+.error { border-style: solid; border-width: medium; border-color: red; }
+
 #header{
  width:760px;
  background-color: orange;

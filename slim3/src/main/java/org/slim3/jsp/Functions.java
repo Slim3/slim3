@@ -17,10 +17,12 @@ package org.slim3.jsp;
 
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slim3.controller.ControllerConstants;
 import org.slim3.util.HtmlUtil;
 import org.slim3.util.LocaleLocator;
 import org.slim3.util.RequestLocator;
@@ -143,6 +145,27 @@ public final class Functions {
      */
     public static TimeZone timeZone() {
         return TimeZoneLocator.get();
+    }
+
+    /**
+     * Returns the error style class
+     * 
+     * @param name
+     *            the name
+     * @param styleClass
+     *            the error style class
+     * @return the error style class
+     */
+    @SuppressWarnings("unchecked")
+    public static String errorClass(String name, String styleClass) {
+        HttpServletRequest request = RequestLocator.get();
+        Map<String, String> errors =
+            (Map<String, String>) request
+                .getAttribute(ControllerConstants.ERRORS_KEY);
+        if (errors != null && errors.containsKey(name)) {
+            return styleClass;
+        }
+        return "";
     }
 
     private Functions() {

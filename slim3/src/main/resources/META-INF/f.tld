@@ -70,4 +70,16 @@
       &lt;fmt:setTimeZone value="${f:timeZone()}"/&gt;
     </example>
   </function>
+  
+  <function>
+    <description>
+      Returns the error style class.
+    </description>
+    <name>errorClass</name>
+    <function-class>org.slim3.jsp.Functions</function-class>
+    <function-signature>java.lang.String errorClass(java.lang.String, java.lang.String)</function-signature>
+    <example>
+      &lt;input type="text" name="aaa" class="${f:errorClass('aaa', 'error')}" value="${f:h(aaa)}"/&gt;
+    </example>
+  </function>
 </taglib>

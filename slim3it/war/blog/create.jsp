@@ -16,9 +16,9 @@
 
 <form action="${f:url('insert')}" method="post">
 Title<br />
-<input type="text" name="title"/><br />
+<input type="text" name="title" value="${f:h(title)}" class="${f:errorClass('title', 'error')}"/>${f:h(errors.title)}<br />
 Content<br />
-<textarea name="content"></textarea><br />
+<textarea name="content" class="${f:errorClass('content', 'error')}">${f:h(content)}</textarea>${f:h(errors.content)}<br />
 <input type="submit" value="Insert"/>
 </form>
 
