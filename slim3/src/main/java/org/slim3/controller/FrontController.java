@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.slim3.util.ApplicationMessage;
 import org.slim3.util.ClassUtil;
 import org.slim3.util.Cleaner;
 import org.slim3.util.LocaleLocator;
@@ -43,10 +44,6 @@ import org.slim3.util.ServletContextLocator;
 import org.slim3.util.StringUtil;
 import org.slim3.util.TimeZoneLocator;
 
-/**
- * @author li0934
- *
- */
 /**
  * The front controller of Slim3.
  * 
@@ -66,6 +63,11 @@ public class FrontController implements Filter {
      * The character set.
      */
     protected String charset;
+
+    /**
+     * The bundle name.
+     */
+    protected String bundleName;
 
     /**
      * The default locale.
@@ -101,6 +103,7 @@ public class FrontController implements Filter {
     public void init(FilterConfig config) throws ServletException {
         initServletContext(config);
         initCharset();
+        initBundleName();
         initDefaultLocale();
         initDefaultTimeZone();
         initHotReloading();
@@ -127,6 +130,18 @@ public class FrontController implements Filter {
                 .getInitParameter(ControllerConstants.REQUEST_CHARSET_KEY);
         if (charset == null) {
             charset = ControllerConstants.DEFAULT_REQUEST_CHARSET;
+        }
+    }
+
+    /**
+     * Initializes the default time zone.
+     */
+    protected void initBundleName() {
+        bundleName =
+            servletContext
+                .getInitParameter(ControllerConstants.LOCALIZATION_CONTEXT_KEY);
+        if (bundleName == null) {
+            bundleName = ControllerConstants.DEFAULT_LOCALIZATION_CONTEXT;
         }
     }
 
@@ -223,6 +238,7 @@ public class FrontController implements Filter {
         LocaleLocator.set(processLocale(request));
         TimeZone previousTimeZone = TimeZoneLocator.get();
         TimeZoneLocator.set(processTimeZone(request));
+        ApplicationMessage.setBundle(bundleName, LocaleLocator.get());
         ClassLoader previousLoader =
             Thread.currentThread().getContextClassLoader();
         if (hotReloading
@@ -236,6 +252,7 @@ public class FrontController implements Filter {
             doFilterInternal(request, response, chain);
         } finally {
             Thread.currentThread().setContextClassLoader(previousLoader);
+            ApplicationMessage.clearBundle();
             TimeZoneLocator.set(previousTimeZone);
             LocaleLocator.set(previousLocale);
             ResponseLocator.set(previousResponse);

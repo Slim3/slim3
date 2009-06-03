@@ -35,7 +35,7 @@ public interface ControllerConstants {
     String REQUEST_CHARSET_KEY = "javax.servlet.jsp.jstl.fmt.request.charset";
 
     /**
-     * The default value of configuration setting for request character set.
+     * The default request character set.
      */
     String DEFAULT_REQUEST_CHARSET = "UTF-8";
 

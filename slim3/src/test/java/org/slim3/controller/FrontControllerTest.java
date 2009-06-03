@@ -53,6 +53,9 @@ public class FrontControllerTest extends ControllerTestCase {
         assertEquals(
             ControllerConstants.DEFAULT_REQUEST_CHARSET,
             frontController.charset);
+        assertEquals(
+            ControllerConstants.DEFAULT_LOCALIZATION_CONTEXT,
+            frontController.bundleName);
         assertNotNull(ServletContextLocator.get());
         assertFalse(frontController.hotReloading);
         assertEquals(CONTROLLER_PACKAGE, frontController.controllerPackageName);
