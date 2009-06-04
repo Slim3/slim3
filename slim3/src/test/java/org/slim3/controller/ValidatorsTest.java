@@ -145,4 +145,12 @@ public class ValidatorsTest extends TestCase {
             .dateType("MM/dd/yyyy")
             .getClass());
     }
+
+    /**
+     * @throws Exception
+     */
+    public void testMinlength() throws Exception {
+        Validators v = new Validators(request);
+        assertEquals(MinlengthValidator.class, v.minlength(3).getClass());
+    }
 }

@@ -200,4 +200,16 @@ public class Validators {
     public DateTypeValidator dateType(String pattern) {
         return new DateTypeValidator(pattern);
     }
+
+    /**
+     * Returns {@link MinlengthValidator}.
+     * 
+     * @param minlength
+     *            the minimum length
+     * 
+     * @return {@link MinlengthValidator}
+     */
+    public MinlengthValidator minlength(int minlength) {
+        return new MinlengthValidator(minlength);
+    }
 }
