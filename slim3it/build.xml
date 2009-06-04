@@ -3,6 +3,8 @@
     <property name="srcdir" value="src"/>
     <property name="testdir" value="test"/>
     <property name="wardir" value="war"/>
+	<property name="superclassName" value="org.slim3.controller.Controller"/>
+	<property name="testCaseSuperclassName" value="org.slim3.tester.ControllerTestCase"/>
 
     <path id="classpath">
         <fileset dir="lib">
@@ -21,7 +23,8 @@
         <taskdef name="gen-controller" classname="org.slim3.gen.task.GenControllerTask" classpathref="classpath"/>
         <taskdef name="gen-view" classname="org.slim3.gen.task.GenViewTask" classpathref="classpath"/>
         <input message="Input a controller path." addproperty="controllerpath"/>
-        <gen-controller srcdir="${srcdir}" testdir="${testdir}" wardir="${wardir}" controllerpath="${controllerpath}"/>
+        <gen-controller srcdir="${srcdir}" testdir="${testdir}" wardir="${wardir}" controllerpath="${controllerpath}"
+        	superclassName="${superclassName}" testCaseSuperclassName="${testCaseSuperclassName}"/>
         <gen-view wardir="${wardir}" controllerpath="${controllerpath}"/>
     </target>
 </project>
