@@ -33,6 +33,8 @@ public class ValidatorsTest extends TestCase {
 
     private MockHttpServletRequest request =
         new MockHttpServletRequest(servletContext);
+    
+    private Validators v = new Validators(request);
 
     @Override
     protected void setUp() throws Exception {
@@ -51,7 +53,6 @@ public class ValidatorsTest extends TestCase {
      */
     public void testValidateForValid() throws Exception {
         request.setAttribute("aaa", "1");
-        Validators v = new Validators(request);
         v.add("aaa", v.required(), v.byteType());
         assertTrue(v.validate());
         assertNotNull(request.getAttribute(ControllerConstants.ERRORS_KEY));
@@ -65,7 +66,6 @@ public class ValidatorsTest extends TestCase {
      * @throws Exception
      */
     public void testValidateForInvalid() throws Exception {
-        Validators v = new Validators(request);
         v.add("aaa", v.required(), v.byteType());
         assertFalse(v.validate());
         assertNotNull(request.getAttribute(ControllerConstants.ERRORS_KEY));
@@ -76,7 +76,6 @@ public class ValidatorsTest extends TestCase {
      * @throws Exception
      */
     public void testRequired() throws Exception {
-        Validators v = new Validators(request);
         assertEquals(RequiredValidator.class, v.required().getClass());
     }
 
@@ -84,7 +83,6 @@ public class ValidatorsTest extends TestCase {
      * @throws Exception
      */
     public void testByteType() throws Exception {
-        Validators v = new Validators(request);
         assertEquals(ByteTypeValidator.class, v.byteType().getClass());
     }
 
@@ -92,7 +90,6 @@ public class ValidatorsTest extends TestCase {
      * @throws Exception
      */
     public void testShortType() throws Exception {
-        Validators v = new Validators(request);
         assertEquals(ShortTypeValidator.class, v.shortType().getClass());
     }
 
@@ -100,7 +97,6 @@ public class ValidatorsTest extends TestCase {
      * @throws Exception
      */
     public void testIntegerType() throws Exception {
-        Validators v = new Validators(request);
         assertEquals(IntegerTypeValidator.class, v.integerType().getClass());
     }
 
@@ -108,7 +104,6 @@ public class ValidatorsTest extends TestCase {
      * @throws Exception
      */
     public void testLongType() throws Exception {
-        Validators v = new Validators(request);
         assertEquals(LongTypeValidator.class, v.longType().getClass());
     }
 
@@ -116,7 +111,6 @@ public class ValidatorsTest extends TestCase {
      * @throws Exception
      */
     public void testFloatType() throws Exception {
-        Validators v = new Validators(request);
         assertEquals(FloatTypeValidator.class, v.floatType().getClass());
     }
 
@@ -124,7 +118,6 @@ public class ValidatorsTest extends TestCase {
      * @throws Exception
      */
     public void testDoubleType() throws Exception {
-        Validators v = new Validators(request);
         assertEquals(DoubleTypeValidator.class, v.doubleType().getClass());
     }
 
@@ -140,7 +133,6 @@ public class ValidatorsTest extends TestCase {
      * @throws Exception
      */
     public void testDateType() throws Exception {
-        Validators v = new Validators(request);
         assertEquals(DateTypeValidator.class, v
             .dateType("MM/dd/yyyy")
             .getClass());
@@ -150,7 +142,13 @@ public class ValidatorsTest extends TestCase {
      * @throws Exception
      */
     public void testMinlength() throws Exception {
-        Validators v = new Validators(request);
         assertEquals(MinlengthValidator.class, v.minlength(3).getClass());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testMaxlength() throws Exception {
+        assertEquals(MaxlengthValidator.class, v.maxlength(3).getClass());
     }
 }

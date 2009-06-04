@@ -212,4 +212,16 @@ public class Validators {
     public MinlengthValidator minlength(int minlength) {
         return new MinlengthValidator(minlength);
     }
+
+    /**
+     * Returns {@link MaxlengthValidator}.
+     * 
+     * @param maxlength
+     *            the maximum length
+     * 
+     * @return {@link MaxlengthValidator}
+     */
+    public MaxlengthValidator maxlength(int maxlength) {
+        return new MaxlengthValidator(maxlength);
+    }
 }
