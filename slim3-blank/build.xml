@@ -1,4 +1,4 @@
-<project name="slim3it" default="copy-lib" basedir=".">
+<project name="slim3it" default="gen-controller" basedir=".">
     <property name="ver" value="EA1-SNAPSHOT"/>
     <property name="srcdir" value="src"/>
     <property name="testdir" value="test"/>
