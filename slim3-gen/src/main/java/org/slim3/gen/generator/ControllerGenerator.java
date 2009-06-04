@@ -54,8 +54,7 @@ public class ControllerGenerator implements Generator {
         p.println("import %s;", ClassConstants.Navigation);
         p.println();
         p.println("public class %s extends %s {", controllerDesc
-            .getSimpleName(), ClassUtil.getSimpleName(controllerDesc
-            .getSuperclassName()));
+            .getSimpleName(), controllerDesc.getSuperclassName());
         p.println();
         p.println("    @Override");
         p.println("    public %s run() {", ClassUtil
