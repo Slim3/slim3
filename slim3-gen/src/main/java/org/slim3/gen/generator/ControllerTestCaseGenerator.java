@@ -18,6 +18,7 @@ package org.slim3.gen.generator;
 import org.slim3.gen.Constants;
 import org.slim3.gen.desc.ControllerDesc;
 import org.slim3.gen.printer.Printer;
+import org.slim3.gen.util.ClassUtil;
 
 /**
  * Generates source codes of a controller test case java file.
@@ -52,8 +53,8 @@ public class ControllerTestCaseGenerator implements Generator {
         p.println("import %s;", controllerDesc.getTestCaseSuperclassName());
         p.println();
         p.println("public class %s%s extends %s {", controllerDesc
-            .getSimpleName(), Constants.TEST_SUFFIX, controllerDesc
-            .getTestCaseSuperclassName());
+            .getSimpleName(), Constants.TEST_SUFFIX, ClassUtil
+            .getSimpleName(controllerDesc.getTestCaseSuperclassName()));
         p.println();
         p.println("    public void testRun() throws Exception {");
         p.println("        start(\"%s\");", controllerDesc.getPath());
