@@ -6,7 +6,7 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/slim3-EA1-SNAPSHOT.jar" sourcepath="libsrc/slim3-EA1-SNAPSHOT-sources.jar"/>
 	<classpathentry kind="lib" path="lib/appengine-local-runtime.jar"/>
 	<classpathentry kind="lib" path="lib/appengine-api-stubs.jar"/>
-	<classpathentry kind="lib" path="lib/repackaged-appengine-jakarta-standard-1.1.2.jar"/>
+	<classpathentry kind="lib" path="lib/tools/jsp/repackaged-appengine-jakarta-standard-1.1.2.jar"/>
 	<classpathentry kind="src" path=".apt_generated">
 		<attributes>
 			<attribute name="optional" value="true"/>
