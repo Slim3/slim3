@@ -2,7 +2,7 @@ package slim3.it.controller.blog;
 
 import org.slim3.controller.JDOController;
 import org.slim3.controller.Navigation;
-import org.slim3.controller.Validators;
+import org.slim3.controller.validator.Validators;
 import org.slim3.util.BeanUtil;
 
 import slim3.it.model.Blog;
