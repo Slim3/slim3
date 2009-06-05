@@ -9,7 +9,6 @@
 			<attribute name="javadoc_location" value="http://www.junit.org/junit/javadoc/3.8.1/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/commons-validator-1.2.0.jar" sourcepath="libsrc/commons-validator-1.2.0-src.zip"/>
 	<classpathentry kind="lib" path="lib/struts-1.2.9.jar" sourcepath="libsrc/struts-1.2.9-sources.jar"/>
 	<classpathentry kind="lib" path="lib/commons-fileupload-1.2.1.jar" sourcepath="libsrc/commons-fileupload-1.2.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/appengine-api-stubs.jar"/>
