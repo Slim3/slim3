@@ -224,4 +224,30 @@ public class Validators {
     public MaxlengthValidator maxlength(int maxlength) {
         return new MaxlengthValidator(maxlength);
     }
+
+    /**
+     * Returns {@link LongRangeValidator}.
+     * 
+     * @param minimum
+     *            the minimum value
+     * @param maximum
+     *            the maximum value
+     * @return {@link LongRangeValidator}
+     */
+    public LongRangeValidator longRange(long minimum, long maximum) {
+        return new LongRangeValidator(minimum, maximum);
+    }
+
+    /**
+     * Returns {@link DoubleRangeValidator}.
+     * 
+     * @param minimum
+     *            the minimum value
+     * @param maximum
+     *            the maximum value
+     * @return {@link DoubleRangeValidator}
+     */
+    public DoubleRangeValidator doubleRange(double minimum, double maximum) {
+        return new DoubleRangeValidator(minimum, maximum);
+    }
 }

@@ -33,7 +33,7 @@ public class ValidatorsTest extends TestCase {
 
     private MockHttpServletRequest request =
         new MockHttpServletRequest(servletContext);
-    
+
     private Validators v = new Validators(request);
 
     @Override
@@ -127,6 +127,8 @@ public class ValidatorsTest extends TestCase {
     public void testNumberType() throws Exception {
         Validators v = new Validators(request);
         assertEquals(NumberTypeValidator.class, v.numberType("###").getClass());
+        request.setAttribute("aaa", "123");
+        assertNull(v.numberType("####").validate(request, "aaa"));
     }
 
     /**
@@ -136,6 +138,8 @@ public class ValidatorsTest extends TestCase {
         assertEquals(DateTypeValidator.class, v
             .dateType("MM/dd/yyyy")
             .getClass());
+        request.setAttribute("aaa", "01/01/1970");
+        assertNull(v.dateType("MM/dd/yyyy").validate(request, "aaa"));
     }
 
     /**
@@ -143,6 +147,8 @@ public class ValidatorsTest extends TestCase {
      */
     public void testMinlength() throws Exception {
         assertEquals(MinlengthValidator.class, v.minlength(3).getClass());
+        request.setAttribute("aaa", "xxxx");
+        assertNull(v.minlength(3).validate(request, "aaa"));
     }
 
     /**
@@ -150,5 +156,25 @@ public class ValidatorsTest extends TestCase {
      */
     public void testMaxlength() throws Exception {
         assertEquals(MaxlengthValidator.class, v.maxlength(3).getClass());
+        request.setAttribute("aaa", "xx");
+        assertNull(v.maxlength(3).validate(request, "aaa"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testLongRange() throws Exception {
+        assertEquals(LongRangeValidator.class, v.longRange(3, 5).getClass());
+        request.setAttribute("aaa", "4");
+        assertNull(v.longRange(3, 5).validate(request, "aaa"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testDoubleRange() throws Exception {
+        assertEquals(DoubleRangeValidator.class, v.doubleRange(3, 5).getClass());
+        request.setAttribute("aaa", "4.1");
+        assertNull(v.doubleRange(3, 5).validate(request, "aaa"));
     }
 }
