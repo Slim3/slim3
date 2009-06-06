@@ -15,10 +15,8 @@ public class UpdateController extends JDOController {
             return forward("edit.jsp");
         }
         Blog blog = pm.getObjectById(Blog.class, requestScope("key"));
-        tx.begin();
         BeanUtil.copy(request, blog);
         pm.makePersistent(blog);
-        tx.commit();
         return redirect(basePath);
     }
 

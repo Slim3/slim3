@@ -10,7 +10,7 @@ public class DeleteController extends JDOController {
     @Override
     public Navigation run() {
         Blog blog = pm.getObjectById(Blog.class, requestScope("key"));
-        deletePersistentInTx(blog);
+        pm.deletePersistent(blog);
         return redirect(basePath);
     }
 }
