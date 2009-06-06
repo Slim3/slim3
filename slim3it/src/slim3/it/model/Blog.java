@@ -9,7 +9,7 @@ import javax.jdo.annotations.PrimaryKey;
 import javax.jdo.annotations.Version;
 import javax.jdo.annotations.VersionStrategy;
 
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
+@PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
 @Version(strategy = VersionStrategy.VERSION_NUMBER)
 public class Blog {
 
