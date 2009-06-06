@@ -21,7 +21,6 @@ import java.text.SimpleDateFormat;
 import javax.servlet.http.HttpServletRequest;
 
 import org.slim3.controller.ControllerConstants;
-import org.slim3.controller.Errors;
 import org.slim3.util.ArrayMap;
 
 /**

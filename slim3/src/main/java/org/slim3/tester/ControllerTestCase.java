@@ -30,8 +30,8 @@ import junit.framework.TestCase;
 
 import org.slim3.controller.Controller;
 import org.slim3.controller.ControllerConstants;
-import org.slim3.controller.Errors;
 import org.slim3.controller.FrontController;
+import org.slim3.controller.validator.Errors;
 import org.slim3.util.RequestLocator;
 import org.slim3.util.ResponseLocator;
 
