@@ -301,4 +301,13 @@ public abstract class Controller {
         application.removeAttribute(name);
         return value;
     }
+
+    /**
+     * Determines if this application is running on the development server.
+     * 
+     * @return whether this application is running on the development server
+     */
+    protected boolean isDevelopment() {
+        return application.getServerInfo().indexOf("Development") >= 0;
+    }
 }

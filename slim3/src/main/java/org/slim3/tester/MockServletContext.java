@@ -53,11 +53,6 @@ public class MockServletContext implements ServletContext, Serializable {
     public static final int MINOR_VERSION = 4;
 
     /**
-     * Server Info
-     */
-    public static final String SERVER_INFO = "slim/3.0";
-
-    /**
      * The servlet context name.
      */
     protected String servletContextName = "";
@@ -67,6 +62,10 @@ public class MockServletContext implements ServletContext, Serializable {
      */
     protected String contextPath = "";
 
+    /**
+     * The server information.
+     */
+    protected String serverInfo = "Slim3";
     /**
      * The map for the initial parameters.
      */
@@ -235,7 +234,17 @@ public class MockServletContext implements ServletContext, Serializable {
     }
 
     public String getServerInfo() {
-        return SERVER_INFO;
+        return serverInfo;
+    }
+
+    /**
+     * Sets the server information.
+     * 
+     * @param serverInfo
+     *            the server information
+     */
+    public void setServerInfo(String serverInfo) {
+        this.serverInfo = serverInfo;
     }
 
     public String getInitParameter(String name) {

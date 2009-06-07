@@ -133,6 +133,16 @@ public class ControllerTest extends TestCase {
         assertNull(servletContext.getAttribute("aaa"));
     }
 
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testIsDevelopment() throws Exception {
+        assertFalse(controller.isDevelopment());
+        servletContext.setServerInfo("Development");
+        assertTrue(controller.isDevelopment());
+    }
+
     private static class IndexController extends Controller {
 
         @Override
