@@ -18,6 +18,7 @@ package org.slim3.controller;
 import org.slim3.controller.controller.HogeController;
 import org.slim3.controller.controller.IndexController;
 import org.slim3.controller.controller.hello.ListController;
+import org.slim3.controller.validator.Errors;
 import org.slim3.tester.ControllerTestCase;
 import org.slim3.util.ServletContextLocator;
 
@@ -149,6 +150,9 @@ public class FrontControllerTest extends ControllerTestCase {
         assertNotNull(controller.response);
         assertEquals("/", controller.basePath);
         assertSame(controller, requestScope(ControllerConstants.CONTROLLER_KEY));
+        Errors errors = controller.errors;
+        assertNotNull(errors);
+        assertSame(errors, requestScope(ControllerConstants.ERRORS_KEY));
     }
 
     /**

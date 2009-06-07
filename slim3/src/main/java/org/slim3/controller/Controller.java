@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.slim3.controller.validator.Errors;
 import org.slim3.util.RuntimeExceptionUtil;
 
 /**
@@ -56,6 +57,11 @@ public abstract class Controller {
      * The base path.
      */
     protected String basePath;
+
+    /**
+     * The error messages.
+     */
+    protected Errors errors;
 
     /**
      * Runs the bare controller process.

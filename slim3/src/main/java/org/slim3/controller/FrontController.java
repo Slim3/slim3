@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.slim3.controller.validator.Errors;
 import org.slim3.util.ApplicationMessage;
 import org.slim3.util.ClassUtil;
 import org.slim3.util.Cleaner;
@@ -383,6 +384,9 @@ public class FrontController implements Filter {
         controller.response = response;
         int pos = path.lastIndexOf('/');
         controller.basePath = path.substring(0, pos + 1);
+        Errors errors = new Errors();
+        controller.errors = errors;
+        request.setAttribute(ControllerConstants.ERRORS_KEY, errors);
         return controller;
     }
 
