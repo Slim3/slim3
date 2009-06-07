@@ -20,20 +20,6 @@ import java.util.Locale;
 import junit.framework.TestCase;
 
 import org.slim3.controller.ControllerConstants;
-import org.slim3.controller.validator.ByteTypeValidator;
-import org.slim3.controller.validator.DateTypeValidator;
-import org.slim3.controller.validator.DoubleRangeValidator;
-import org.slim3.controller.validator.DoubleTypeValidator;
-import org.slim3.controller.validator.FloatTypeValidator;
-import org.slim3.controller.validator.IntegerTypeValidator;
-import org.slim3.controller.validator.LongRangeValidator;
-import org.slim3.controller.validator.LongTypeValidator;
-import org.slim3.controller.validator.MaxlengthValidator;
-import org.slim3.controller.validator.MinlengthValidator;
-import org.slim3.controller.validator.NumberTypeValidator;
-import org.slim3.controller.validator.RequiredValidator;
-import org.slim3.controller.validator.ShortTypeValidator;
-import org.slim3.controller.validator.Validators;
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
 import org.slim3.util.ApplicationMessage;
@@ -44,16 +30,20 @@ import org.slim3.util.ApplicationMessage;
  */
 public class ValidatorsTest extends TestCase {
 
-    private MockServletContext servletContext = new MockServletContext();
+    private MockServletContext servletContext;
 
-    private MockHttpServletRequest request =
-        new MockHttpServletRequest(servletContext);
+    private MockHttpServletRequest request;
 
-    private Validators v = new Validators(request);
+    private Validators v;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        servletContext = new MockServletContext();
+        request = new MockHttpServletRequest(servletContext);
+        request.setAttribute(ControllerConstants.ERRORS_KEY, new Errors());
+        v = new Validators(request);
+
         ApplicationMessage.setBundle("test", Locale.ENGLISH);
     }
 

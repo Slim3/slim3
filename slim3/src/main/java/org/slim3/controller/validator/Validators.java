@@ -46,7 +46,7 @@ public class Validators {
     /**
      * The error messages.
      */
-    protected Errors errors = new Errors();
+    protected Errors errors;
 
     /**
      * Constructor.
@@ -55,12 +55,20 @@ public class Validators {
      *            the request
      * @throws NullPointerException
      *             if the request parameter is null
+     * @throws IllegalStateException
+     *             if the errors is not found in request
      */
-    public Validators(HttpServletRequest request) throws NullPointerException {
+    public Validators(HttpServletRequest request) throws NullPointerException,
+            IllegalStateException {
         if (request == null) {
             throw new NullPointerException("The request parameter is null.");
         }
         this.request = request;
+        errors = (Errors) request.getAttribute(ControllerConstants.ERRORS_KEY);
+        if (errors == null) {
+            throw new IllegalStateException(
+                "The errors is not found in request.");
+        }
     }
 
     /**
@@ -100,7 +108,6 @@ public class Validators {
                 }
             }
         }
-        request.setAttribute(ControllerConstants.ERRORS_KEY, errors);
         return errors.isEmpty();
     }
 
