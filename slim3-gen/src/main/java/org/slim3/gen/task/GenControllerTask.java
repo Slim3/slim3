@@ -200,8 +200,8 @@ public class GenControllerTask extends AbstractTask {
             JavaFileCreator javaFileCreator, ClassNameCreator classNameCreator)
             throws IOException {
         Generator generator = createControllerTestCaseGenerator(controllerDesc);
-        File javaFile = javaFileCreator.createJavaFile();
-        String className = classNameCreator.createClassName();
+        File javaFile = javaFileCreator.createTestCaseJavaFile();
+        String className = classNameCreator.createTestCaseClassName();
         generate(generator, javaFile, className);
     }
 

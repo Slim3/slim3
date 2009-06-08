@@ -60,7 +60,7 @@ public class ModelTestCaseGenerator implements Generator {
         p.println();
         p.println("    public void test() throws Exception {");
         p.println(
-            "        %1$s %2$s = new %1$s;",
+            "        %1$s %2$s = new %1$s();",
             modelDesc.getSimpleName(),
             StringUtil.decapitalize(modelDesc.getSimpleName()));
         p.println("    }");

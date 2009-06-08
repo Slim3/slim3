@@ -55,7 +55,7 @@ public class ModelGenerator implements Generator {
         p.println(" */");
         p
             .println("@PersistenceCapable(identityType = IdentityType.APPLICATION)");
-        p.println("public class %s  {", modelDesc.getSimpleName());
+        p.println("public class %s {", modelDesc.getSimpleName());
         p.println();
         p.println("    @PrimaryKey");
         p
