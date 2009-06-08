@@ -15,42 +15,21 @@
  */
 package org.slim3.controller.upload;
 
+import junit.framework.TestCase;
+
 /**
- * This exception is thrown while parsing multipart request.
- * 
  * @author higa
- * @since 3.0
  * 
  */
-public class FileUploadException extends RuntimeException {
-
-    private static final long serialVersionUID = 1L;
+public class SizeLimitExceededExceptionTest extends TestCase {
 
     /**
-     * Constructor.
+     * @throws Exception
      */
-    public FileUploadException() {
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param msg
-     *            the error message.
-     */
-    public FileUploadException(String msg) {
-        super(msg);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param msg
-     *            The exceptions detail message.
-     * @param cause
-     *            The exceptions cause.
-     */
-    public FileUploadException(String msg, Throwable cause) {
-        super(msg, cause);
+    public void test() throws Exception {
+        SizeLimitExceededException e =
+            new SizeLimitExceededException("Hoge", 101, 100);
+        assertEquals(101, e.getActualSize());
+        assertEquals(100, e.getPermittedSize());
     }
 }

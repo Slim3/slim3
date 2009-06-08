@@ -23,7 +23,6 @@ import java.util.NoSuchElementException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.fileupload.FileUploadBase;
 import org.apache.commons.fileupload.ParameterParser;
 import org.apache.commons.fileupload.util.LimitedInputStream;
 import org.slim3.controller.upload.MultipartStream.ItemInputStream;
@@ -425,10 +424,10 @@ public class FileUpload {
     }
 
     /**
-     * The iterator, which is returned by
-     * {@link FileUploadBase#getItemIterator(RequestContext)}.
+     * The default implementation of {@link FileItemIterator}.
      */
     private class FileItemIteratorImpl implements FileItemIterator {
+
         /**
          * Default implementation of {@link FileItemStream}.
          */
@@ -489,27 +488,23 @@ public class FileUpload {
                 InputStream istream = itemStream;
                 if (fileSizeMax != -1) {
                     if (pContentLength != -1 && pContentLength > fileSizeMax) {
-                        FileUploadException e =
-                            new FileSizeLimitExceededException("The field "
-                                + fieldName
-                                + " exceeds its maximum permitted "
-                                + " size of "
-                                + fileSizeMax
-                                + " characters.", pContentLength, fileSizeMax);
-                        throw new FileUploadIOException(e);
+                        throw new SizeLimitExceededException("The field "
+                            + fieldName
+                            + " exceeds its maximum permitted "
+                            + " size of "
+                            + fileSizeMax
+                            + " characters.", pContentLength, fileSizeMax);
                     }
                     istream = new LimitedInputStream(istream, fileSizeMax) {
                         protected void raiseError(long pSizeMax, long pCount)
                                 throws IOException {
                             itemStream.close(true);
-                            FileUploadException e =
-                                new FileSizeLimitExceededException("The field "
-                                    + fieldName
-                                    + " exceeds its maximum permitted "
-                                    + " size of "
-                                    + pSizeMax
-                                    + " characters.", pCount, pSizeMax);
-                            throw new FileUploadIOException(e);
+                            throw new SizeLimitExceededException("The field "
+                                + fieldName
+                                + " exceeds its maximum permitted "
+                                + " size of "
+                                + pSizeMax
+                                + " characters.", pCount, pSizeMax);
                         }
                     };
                 }
@@ -647,8 +642,8 @@ public class FileUpload {
             String contentType = request.getContentType();
             if ((contentType == null)
                 || (!contentType.toLowerCase().startsWith(MULTIPART))) {
-                throw new InvalidContentTypeException(
-                    "the request doesn't contain a "
+                throw new IllegalStateException(
+                    "The request doesn't contain a "
                         + MULTIPART_FORM_DATA
                         + " or "
                         + MULTIPART_MIXED
@@ -667,18 +662,16 @@ public class FileUpload {
                     input = new LimitedInputStream(input, sizeMax) {
                         protected void raiseError(long pSizeMax, long pCount)
                                 throws IOException {
-                            FileUploadException ex =
-                                new SizeLimitExceededException(
-                                    "the request was rejected because"
-                                        + " its size ("
-                                        + pCount
-                                        + ") exceeds the configured maximum"
-                                        + " ("
-                                        + pSizeMax
-                                        + ")",
-                                    pCount,
-                                    pSizeMax);
-                            throw new FileUploadIOException(ex);
+                            throw new SizeLimitExceededException(
+                                "the request was rejected because"
+                                    + " its size ("
+                                    + pCount
+                                    + ") exceeds the configured maximum"
+                                    + " ("
+                                    + pSizeMax
+                                    + ")",
+                                pCount,
+                                pSizeMax);
                         }
                     };
                 } else {
@@ -688,7 +681,7 @@ public class FileUpload {
                                 + requestSize
                                 + ") exceeds the configured maximum ("
                                 + sizeMax
-                                + ")",
+                                + ").",
                             requestSize,
                             sizeMax);
                     }
@@ -703,11 +696,10 @@ public class FileUpload {
             boundary = getBoundary(contentType);
             if (boundary == null) {
                 throw new FileUploadException(
-                    "the request was rejected because "
-                        + "no multipart boundary was found");
+                    "The request was rejected because "
+                        + "no multipart boundary was found.");
             }
-            multi =
-                new org.slim3.controller.upload.MultipartStream(input, boundary);
+            multi = new MultipartStream(input, boundary);
             multi.setHeaderEncoding(charEncoding);
 
             skipPreamble = true;
@@ -840,261 +832,6 @@ public class FileUpload {
             }
             itemValid = false;
             return currentItem;
-        }
-    }
-
-    /**
-     * This exception is thrown for hiding an inner {@link FileUploadException}
-     * in an {@link IOException}.
-     */
-    public static class FileUploadIOException extends IOException {
-        /**
-         * The exceptions UID, for serializing an instance.
-         */
-        private static final long serialVersionUID = -7047616958165584154L;
-        /**
-         * The exceptions cause; we overwrite the parent classes field, which is
-         * available since Java 1.4 only.
-         */
-        private final FileUploadException cause;
-
-        /**
-         * Creates a <code>FileUploadIOException</code> with the given cause.
-         * 
-         * @param pCause
-         *            The exceptions cause, if any, or null.
-         */
-        public FileUploadIOException(FileUploadException pCause) {
-            // We're not doing super(pCause) cause of 1.3 compatibility.
-            cause = pCause;
-        }
-
-        /**
-         * Returns the exceptions cause.
-         * 
-         * @return The exceptions cause, if any, or null.
-         */
-        public Throwable getCause() {
-            return cause;
-        }
-    }
-
-    /**
-     * Thrown to indicate that the request is not a multipart request.
-     */
-    public static class InvalidContentTypeException extends FileUploadException {
-        /**
-         * The exceptions UID, for serializing an instance.
-         */
-        private static final long serialVersionUID = -9073026332015646668L;
-
-        /**
-         * Constructs a <code>InvalidContentTypeException</code> with no detail
-         * message.
-         */
-        public InvalidContentTypeException() {
-            // Nothing to do.
-        }
-
-        /**
-         * Constructs an <code>InvalidContentTypeException</code> with the
-         * specified detail message.
-         * 
-         * @param message
-         *            The detail message.
-         */
-        public InvalidContentTypeException(String message) {
-            super(message);
-        }
-    }
-
-    /**
-     * Thrown to indicate an IOException.
-     */
-    public static class IOFileUploadException extends FileUploadException {
-        /**
-         * The exceptions UID, for serializing an instance.
-         */
-        private static final long serialVersionUID = 1749796615868477269L;
-        /**
-         * The exceptions cause; we overwrite the parent classes field, which is
-         * available since Java 1.4 only.
-         */
-        private final IOException cause;
-
-        /**
-         * Creates a new instance with the given cause.
-         * 
-         * @param pMsg
-         *            The detail message.
-         * @param pException
-         *            The exceptions cause.
-         */
-        public IOFileUploadException(String pMsg, IOException pException) {
-            super(pMsg);
-            cause = pException;
-        }
-
-        /**
-         * Returns the exceptions cause.
-         * 
-         * @return The exceptions cause, if any, or null.
-         */
-        public Throwable getCause() {
-            return cause;
-        }
-    }
-
-    /**
-     * This exception is thrown, if a requests permitted size is exceeded.
-     */
-    protected abstract static class SizeException extends FileUploadException {
-        /**
-         * The actual size of the request.
-         */
-        private final long actual;
-
-        /**
-         * The maximum permitted size of the request.
-         */
-        private final long permitted;
-
-        /**
-         * Creates a new instance.
-         * 
-         * @param message
-         *            The detail message.
-         * @param actual
-         *            The actual number of bytes in the request.
-         * @param permitted
-         *            The requests size limit, in bytes.
-         */
-        protected SizeException(String message, long actual, long permitted) {
-            super(message);
-            this.actual = actual;
-            this.permitted = permitted;
-        }
-
-        /**
-         * Retrieves the actual size of the request.
-         * 
-         * @return The actual size of the request.
-         */
-        public long getActualSize() {
-            return actual;
-        }
-
-        /**
-         * Retrieves the permitted size of the request.
-         * 
-         * @return The permitted size of the request.
-         */
-        public long getPermittedSize() {
-            return permitted;
-        }
-    }
-
-    /**
-     * Thrown to indicate that the request size is not specified. In other
-     * words, it is thrown, if the content-length header is missing or contains
-     * the value -1.
-     * 
-     * @deprecated As of commons-fileupload 1.2, the presence of a
-     *             content-length header is no longer required.
-     */
-    public static class UnknownSizeException extends FileUploadException {
-        /**
-         * The exceptions UID, for serializing an instance.
-         */
-        private static final long serialVersionUID = 7062279004812015273L;
-
-        /**
-         * Constructs a <code>UnknownSizeException</code> with no detail
-         * message.
-         */
-        public UnknownSizeException() {
-            super();
-        }
-
-        /**
-         * Constructs an <code>UnknownSizeException</code> with the specified
-         * detail message.
-         * 
-         * @param message
-         *            The detail message.
-         */
-        public UnknownSizeException(String message) {
-            super(message);
-        }
-    }
-
-    /**
-     * Thrown to indicate that the request size exceeds the configured maximum.
-     */
-    public static class SizeLimitExceededException extends SizeException {
-        /**
-         * The exceptions UID, for serializing an instance.
-         */
-        private static final long serialVersionUID = -2474893167098052828L;
-
-        /**
-         * @deprecated Replaced by
-         *             {@link #SizeLimitExceededException(String, long, long)}
-         */
-        public SizeLimitExceededException() {
-            this(null, 0, 0);
-        }
-
-        /**
-         * @deprecated Replaced by
-         *             {@link #SizeLimitExceededException(String, long, long)}
-         * @param message
-         *            The exceptions detail message.
-         */
-        public SizeLimitExceededException(String message) {
-            this(message, 0, 0);
-        }
-
-        /**
-         * Constructs a <code>SizeExceededException</code> with the specified
-         * detail message, and actual and permitted sizes.
-         * 
-         * @param message
-         *            The detail message.
-         * @param actual
-         *            The actual request size.
-         * @param permitted
-         *            The maximum permitted request size.
-         */
-        public SizeLimitExceededException(String message, long actual,
-                long permitted) {
-            super(message, actual, permitted);
-        }
-    }
-
-    /**
-     * Thrown to indicate that A files size exceeds the configured maximum.
-     */
-    public static class FileSizeLimitExceededException extends SizeException {
-        /**
-         * The exceptions UID, for serializing an instance.
-         */
-        private static final long serialVersionUID = 8150776562029630058L;
-
-        /**
-         * Constructs a <code>SizeExceededException</code> with the specified
-         * detail message, and actual and permitted sizes.
-         * 
-         * @param message
-         *            The detail message.
-         * @param actual
-         *            The actual request size.
-         * @param permitted
-         *            The maximum permitted request size.
-         */
-        public FileSizeLimitExceededException(String message, long actual,
-                long permitted) {
-            super(message, actual, permitted);
         }
     }
 }

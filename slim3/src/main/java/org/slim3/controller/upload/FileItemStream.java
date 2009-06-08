@@ -18,6 +18,8 @@ package org.slim3.controller.upload;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.fileupload.FileItemStream.ItemSkippedException;
+
 /**
  * This interface provides access to a file or form item that was received
  * within a <code>multipart/form-data</code> POST request.
@@ -27,18 +29,6 @@ import java.io.InputStream;
  * 
  */
 public interface FileItemStream {
-
-    /**
-     * This exception is thrown, if an attempt is made to read data from the
-     * {@link InputStream}, which has been returned by
-     * {@link FileItemStream#openStream()}, after
-     * {@link java.util.Iterator#hasNext()} has been invoked on the iterator,
-     * which created the {@link FileItemStream}.
-     */
-    public static class ItemSkippedException extends IOException {
-
-        private static final long serialVersionUID = 1L;
-    }
 
     /**
      * Creates an {@link InputStream}, which allows to read the items contents.

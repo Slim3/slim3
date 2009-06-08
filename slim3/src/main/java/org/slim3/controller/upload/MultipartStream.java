@@ -664,7 +664,8 @@ public class MultipartStream {
         @Override
         public int read() throws IOException {
             if (closed) {
-                throw new FileItemStream.ItemSkippedException();
+                throw new IllegalStateException(
+                    "This stream has already closed.");
             }
             if (available() == 0) {
                 if (makeAvailable() == 0) {
@@ -696,7 +697,8 @@ public class MultipartStream {
         @Override
         public int read(byte[] b, int off, int len) throws IOException {
             if (closed) {
-                throw new FileItemStream.ItemSkippedException();
+                throw new IllegalStateException(
+                    "This stream has already closed.");
             }
             if (len == 0) {
                 return 0;
@@ -768,7 +770,8 @@ public class MultipartStream {
         @Override
         public long skip(long bytes) throws IOException {
             if (closed) {
-                throw new FileItemStream.ItemSkippedException();
+                throw new IllegalStateException(
+                    "This stream has already closed.");
             }
             int av = available();
             if (av == 0) {
