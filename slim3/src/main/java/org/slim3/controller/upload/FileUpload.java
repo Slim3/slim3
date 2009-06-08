@@ -26,10 +26,7 @@ import java.util.NoSuchElementException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItemHeaders;
-import org.apache.commons.fileupload.FileItemIterator;
-import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadBase;
-import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.ParameterParser;
 import org.apache.commons.fileupload.util.FileItemHeadersImpl;
 import org.apache.commons.fileupload.util.LimitedInputStream;
@@ -693,12 +690,12 @@ public class FileUpload {
         /**
          * The multi part stream to process.
          */
-        private final MultipartStream multi;
+        private MultipartStream multi;
 
         /**
          * The boundary, which separates the various parts.
          */
-        private final byte[] boundary;
+        private byte[] boundary;
         /**
          * The item, which we currently process.
          */
@@ -749,7 +746,10 @@ public class FileUpload {
             }
 
             InputStream input = request.getInputStream();
-
+            if (input == null) {
+                eof = true;
+                return;
+            }
             if (sizeMax >= 0) {
                 int requestSize = request.getContentLength();
                 if (requestSize == -1) {
