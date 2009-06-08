@@ -1,5 +1,7 @@
 package slim3.it.model;
 
+import java.io.Serializable;
+
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -11,7 +13,9 @@ import javax.jdo.annotations.VersionStrategy;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
 @Version(strategy = VersionStrategy.VERSION_NUMBER)
-public class Blog {
+public class Blog implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
