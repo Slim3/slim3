@@ -40,8 +40,8 @@ public class ModelMetaDesc {
     /** {@code true} if the model class is top level element */
     protected boolean topLevel;
 
-    /** the list of attribute descriptions */
-    protected List<AttributeMetaDesc> attributeDescList =
+    /** the list of attribute meta descriptions */
+    protected List<AttributeMetaDesc> attributeMetaDescList =
         new ArrayList<AttributeMetaDesc>();
 
     /**
@@ -125,22 +125,22 @@ public class ModelMetaDesc {
     }
 
     /**
-     * Adds the attribute description.
+     * Adds the attribute meta description.
      * 
      * @param attributeMetaDesc
-     *            the attribute description.
+     *            the attribute meta description.
      */
-    public void addAttributeDesc(AttributeMetaDesc attributeMetaDesc) {
-        this.attributeDescList.add(attributeMetaDesc);
+    public void addAttributeMetaDesc(AttributeMetaDesc attributeMetaDesc) {
+        this.attributeMetaDescList.add(attributeMetaDesc);
     }
 
     /**
-     * Returns the list of attribute descriptions.
+     * Returns the list of attribute meta descriptions.
      * 
-     * @return the list of attribute descriptions
+     * @return the list of attribute meta descriptions
      */
-    public List<AttributeMetaDesc> getAttributeDescList() {
-        return Collections.unmodifiableList(attributeDescList);
+    public List<AttributeMetaDesc> getAttributeMetaDescList() {
+        return Collections.unmodifiableList(attributeMetaDescList);
     }
 
 }

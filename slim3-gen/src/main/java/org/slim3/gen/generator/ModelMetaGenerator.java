@@ -79,7 +79,7 @@ public class ModelMetaGenerator implements Generator {
             .getModelClassName());
         p.println("    }");
         p.println();
-        for (AttributeMetaDesc attr : modelMetaDesc.getAttributeDescList()) {
+        for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
             if (attr.isEmbedded()) {
                 p.println(
                     "    public %1$s%2$s %3$s = new %1$s%2$s(\"%3$s\");",

@@ -99,7 +99,7 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelMetaDesc> {
             String elementClassName = classNames.next();
             attributeMetaDesc.setAttributeElementClassName(elementClassName);
         }
-        p.addAttributeDesc(attributeMetaDesc);
+        p.addAttributeMetaDesc(attributeMetaDesc);
         return null;
     }
 
