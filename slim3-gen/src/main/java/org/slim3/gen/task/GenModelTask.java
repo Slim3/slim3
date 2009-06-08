@@ -149,7 +149,7 @@ public class GenModelTask extends AbstractTask {
         String rootPackageName =
             pos > 0 ? controllerPackageName.substring(0, pos) : null;
         if (rootPackageName != null) {
-            return controllerPackageName + "." + Constants.MODEL_SUB_PACKAGE;
+            return rootPackageName + "." + Constants.MODEL_SUB_PACKAGE;
         }
         return Constants.MODEL_SUB_PACKAGE;
     }
