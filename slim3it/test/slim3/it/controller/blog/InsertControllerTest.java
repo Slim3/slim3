@@ -1,6 +1,6 @@
 package slim3.it.controller.blog;
 
-import org.slim3.controller.Errors;
+import org.slim3.controller.validator.Errors;
 import org.slim3.tester.JDOControllerTestCase;
 
 import slim3.it.model.Blog;

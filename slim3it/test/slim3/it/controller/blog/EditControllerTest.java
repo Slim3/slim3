@@ -10,7 +10,7 @@ public class EditControllerTest extends JDOControllerTestCase {
         Blog blog = new Blog();
         blog.setTitle("aaa");
         blog.setContent("111");
-        makePersistentInTx(blog);
+        pm.makePersistent(blog);
         param("key", blog.getKey());
         start("/blog/edit");
         EditController controller = getController();

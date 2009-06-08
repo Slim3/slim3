@@ -1,6 +1,6 @@
 package slim3.it.controller.blog;
 
-import org.slim3.controller.Errors;
+import org.slim3.controller.validator.Errors;
 import org.slim3.tester.JDOControllerTestCase;
 
 import slim3.it.model.Blog;
@@ -11,7 +11,7 @@ public class UpdateControllerTest extends JDOControllerTestCase {
         Blog blog = new Blog();
         blog.setTitle("aaa");
         blog.setContent("111");
-        makePersistentInTx(blog);
+        pm.makePersistent(blog);
         param("key", blog.getKey());
         param("title", "aaa2");
         param("content", "222");

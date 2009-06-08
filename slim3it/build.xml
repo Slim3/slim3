@@ -1,4 +1,4 @@
-<project name="slim3it" default="copy-lib" basedir=".">
+<project name="slim3it" default="copy" basedir=".">
     <property name="ver" value="EA1-SNAPSHOT"/>
     <property name="srcDir" value="src"/>
     <property name="testDir" value="test"/>
@@ -58,7 +58,7 @@
         </enhance>
     </target>  
 
-    <target name="copy-lib">
+    <target name="copy">
         <copy todir="war/WEB-INF/lib" file="../slim3/target/slim3-${ver}.jar"/>
         <copy todir="libsrc" file="../slim3/target/slim3-${ver}-sources.jar"/>
         <copy todir="lib" file="../slim3-gen/target/slim3-gen-${ver}.jar"/>
