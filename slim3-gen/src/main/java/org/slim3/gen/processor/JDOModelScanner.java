@@ -38,8 +38,8 @@ import javax.lang.model.util.SimpleTypeVisitor6;
 import javax.lang.model.util.TypeKindVisitor6;
 
 import org.slim3.gen.ClassConstants;
-import org.slim3.gen.desc.AttributeDesc;
-import org.slim3.gen.desc.ModelDesc;
+import org.slim3.gen.desc.AttributeMetaDesc;
+import org.slim3.gen.desc.ModelMetaDesc;
 import org.slim3.gen.util.ElementUtil;
 
 /**
@@ -49,7 +49,7 @@ import org.slim3.gen.util.ElementUtil;
  * @since 3.0
  * 
  */
-public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
+public class JDOModelScanner extends ElementScanner6<Void, ModelMetaDesc> {
 
     /** the processing environment */
     protected final ProcessingEnvironment processingEnv;
@@ -65,7 +65,7 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
     }
 
     @Override
-    public Void visitType(TypeElement e, ModelDesc p) {
+    public Void visitType(TypeElement e, ModelMetaDesc p) {
         if (e.getNestingKind() == NestingKind.TOP_LEVEL) {
             p.setTopLevel(true);
         } else {
@@ -75,7 +75,7 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
     }
 
     @Override
-    public Void visitVariable(VariableElement attribute, ModelDesc p) {
+    public Void visitVariable(VariableElement attribute, ModelMetaDesc p) {
         AnnotationMirror persistent =
             ElementUtil.getAnnotationMirror(
                 attribute,
@@ -86,20 +86,20 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelDesc> {
         if (!isTopLevelType(attribute)) {
             return null;
         }
-        AttributeDesc attributeDesc = new AttributeDesc();
-        attributeDesc.setName(attribute.getSimpleName().toString());
-        attributeDesc.setEmbedded(isEmbedded(attribute));
+        AttributeMetaDesc attributeMetaDesc = new AttributeMetaDesc();
+        attributeMetaDesc.setName(attribute.getSimpleName().toString());
+        attributeMetaDesc.setEmbedded(isEmbedded(attribute));
         Iterator<String> classNames =
             new ClassNameCollector(attribute.asType()).collect().iterator();
         if (classNames.hasNext()) {
             String className = classNames.next();
-            attributeDesc.setClassName(className);
+            attributeMetaDesc.setAttributeClassName(className);
         }
         if (classNames.hasNext()) {
             String elementClassName = classNames.next();
-            attributeDesc.setElementClassName(elementClassName);
+            attributeMetaDesc.setAttributeElementClassName(elementClassName);
         }
-        p.addAttributeDesc(attributeDesc);
+        p.addAttributeDesc(attributeMetaDesc);
         return null;
     }
 

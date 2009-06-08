@@ -41,6 +41,9 @@ public final class ClassConstants {
     public static final String JDOControllerTestCase =
         "org.slim3.tester.JDOControllerTestCase";
 
+    /** {@code org.slim3.tester.JDOTestCase} */
+    public static final String JDOTestCase = "org.slim3.tester.JDOTestCase";
+
     /** {@code javax.jdo.annotations.PersistenceCapable} */
     public static final String PersistenceCapable =
         "javax.jdo.annotations.PersistenceCapable";

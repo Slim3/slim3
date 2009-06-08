@@ -18,47 +18,53 @@ package org.slim3.gen.desc;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementScanner6;
 
+import org.slim3.gen.Constants;
 import org.slim3.gen.util.ClassUtil;
 
 /**
- * Creates a model description.
+ * Creates a model meta description.
  * 
  * @author taedium
  * @since 3.0
  * 
  */
-public class ModelDescFactory {
+public class ModelMetaDescFactory {
 
     /** the element scanner */
-    protected final ElementScanner6<Void, ModelDesc> scanner;
+    protected final ElementScanner6<Void, ModelMetaDesc> scanner;
 
     /**
-     * Creates a new {@link ModelDescFactory}.
+     * Creates a new {@link ModelMetaDescFactory}.
      * 
      * @param scanner
      *            the element scanner
      */
-    public ModelDescFactory(ElementScanner6<Void, ModelDesc> scanner) {
+    public ModelMetaDescFactory(ElementScanner6<Void, ModelMetaDesc> scanner) {
         this.scanner = scanner;
     }
 
     /**
-     * Creates a model description.
+     * Creates a model meta description.
      * 
-     * @param model
+     * @param modelElement
      *            the model element.
      * @return a model description
      */
-    public ModelDesc createModelDesc(TypeElement model) {
-        if (model == null) {
-            throw new NullPointerException("The model parameter is null.");
+    public ModelMetaDesc createModelMetaDesc(TypeElement modelElement) {
+        if (modelElement == null) {
+            throw new NullPointerException(
+                "The modelElement parameter is null.");
         }
-        ModelDesc modelDesc = new ModelDesc();
-        modelDesc.setPackageName(ClassUtil.getPackageName(model
+        ModelMetaDesc modelMetaDesc = new ModelMetaDesc();
+        modelMetaDesc.setPackageName(ClassUtil.getPackageName(modelElement
             .getQualifiedName()
             .toString()));
-        modelDesc.setSimpleName(model.getSimpleName().toString());
-        scanner.scan(model, modelDesc);
-        return modelDesc;
+        modelMetaDesc.setSimpleName(modelElement.getSimpleName()
+            + Constants.META_SUFFIX);
+        modelMetaDesc.setModelClassName(modelElement
+            .getQualifiedName()
+            .toString());
+        scanner.scan(modelElement, modelMetaDesc);
+        return modelMetaDesc;
     }
 }

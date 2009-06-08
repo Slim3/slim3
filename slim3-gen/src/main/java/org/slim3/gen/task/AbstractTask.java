@@ -15,15 +15,11 @@
  */
 package org.slim3.gen.task;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
-import org.slim3.gen.printer.FilePrinter;
-import org.slim3.gen.printer.Printer;
 
 /**
  * An abstract class for Ant tasks.
@@ -33,45 +29,6 @@ import org.slim3.gen.printer.Printer;
  * 
  */
 public abstract class AbstractTask extends Task {
-
-    /** the war directory */
-    protected File warDir;
-
-    /** the controller path */
-    protected String controllerPath;
-
-    /** the file encoding */
-    protected String encoding = "UTF-8";
-
-    /**
-     * Sets the warDir.
-     * 
-     * @param warDir
-     *            the warDir to set
-     */
-    public void setWarDir(File warDir) {
-        this.warDir = warDir;
-    }
-
-    /**
-     * Sets the controllerPath.
-     * 
-     * @param controllerPath
-     *            the controllerPath to set
-     */
-    public void setControllerPath(String controllerPath) {
-        this.controllerPath = controllerPath;
-    }
-
-    /**
-     * Sets the encoding.
-     * 
-     * @param encoding
-     *            the encoding to set
-     */
-    public void setEncoding(String encoding) {
-        this.encoding = encoding;
-    }
 
     /**
      * Executes this task.
@@ -94,15 +51,4 @@ public abstract class AbstractTask extends Task {
      */
     protected abstract void doExecute() throws Exception;
 
-    /**
-     * Creates a printer.
-     * 
-     * @param file
-     *            the file
-     * @return a printer.
-     * @throws IOException
-     */
-    protected Printer createPrinter(File file) throws IOException {
-        return new FilePrinter(file, encoding);
-    }
 }

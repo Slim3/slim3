@@ -22,6 +22,7 @@ import org.slim3.gen.desc.ViewDesc;
 import org.slim3.gen.desc.ViewDescFactory;
 import org.slim3.gen.generator.Generator;
 import org.slim3.gen.generator.ViewGenerator;
+import org.slim3.gen.printer.FilePrinter;
 import org.slim3.gen.printer.Printer;
 
 /**
@@ -31,6 +32,45 @@ import org.slim3.gen.printer.Printer;
  * @since 3.0
  */
 public class GenViewTask extends AbstractTask {
+
+    /** the war directory */
+    protected File warDir;
+
+    /** the controller path */
+    protected String controllerPath;
+
+    /** the file encoding */
+    protected String encoding = "UTF-8";
+
+    /**
+     * Sets the warDir.
+     * 
+     * @param warDir
+     *            the warDir to set
+     */
+    public void setWarDir(File warDir) {
+        this.warDir = warDir;
+    }
+
+    /**
+     * Sets the controllerPath.
+     * 
+     * @param controllerPath
+     *            the controllerPath to set
+     */
+    public void setControllerPath(String controllerPath) {
+        this.controllerPath = controllerPath;
+    }
+
+    /**
+     * Sets the encoding.
+     * 
+     * @param encoding
+     *            the encoding to set
+     */
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
 
     @Override
     public void doExecute() throws IOException {
@@ -108,6 +148,18 @@ public class GenViewTask extends AbstractTask {
             }
         }
         log("Generated. (" + file.getAbsolutePath() + ")");
+    }
+
+    /**
+     * Creates a printer.
+     * 
+     * @param file
+     *            the file
+     * @return a printer.
+     * @throws IOException
+     */
+    protected Printer createPrinter(File file) throws IOException {
+        return new FilePrinter(file, encoding);
     }
 
 }

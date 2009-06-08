@@ -20,13 +20,13 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Represents an model description.
+ * Represents a model meta description.
  * 
  * @author taedium
  * @since 3.0
  * 
  */
-public class ModelDesc {
+public class ModelMetaDesc {
 
     /** the package name */
     protected String packageName;
@@ -34,12 +34,15 @@ public class ModelDesc {
     /** the simple name */
     protected String simpleName;
 
+    /** the modelClassName */
+    protected String modelClassName;
+
     /** {@code true} if the model class is top level element */
     protected boolean topLevel;
 
     /** the list of attribute descriptions */
-    protected List<AttributeDesc> attributeDescList =
-        new ArrayList<AttributeDesc>();
+    protected List<AttributeMetaDesc> attributeDescList =
+        new ArrayList<AttributeMetaDesc>();
 
     /**
      * Returns the packageName.
@@ -80,6 +83,25 @@ public class ModelDesc {
     }
 
     /**
+     * Returns the modelClassName.
+     * 
+     * @return the modelClassName
+     */
+    public String getModelClassName() {
+        return modelClassName;
+    }
+
+    /**
+     * Sets the modelClassName.
+     * 
+     * @param modelClassName
+     *            the modelClassName to set
+     */
+    public void setModelClassName(String modelClassName) {
+        this.modelClassName = modelClassName;
+    }
+
+    /**
      * Returns {@code true} if the model class is top level element, otherwise
      * {@code false}.
      * 
@@ -105,11 +127,11 @@ public class ModelDesc {
     /**
      * Adds the attribute description.
      * 
-     * @param attributeDesc
+     * @param attributeMetaDesc
      *            the attribute description.
      */
-    public void addAttributeDesc(AttributeDesc attributeDesc) {
-        this.attributeDescList.add(attributeDesc);
+    public void addAttributeDesc(AttributeMetaDesc attributeMetaDesc) {
+        this.attributeDescList.add(attributeMetaDesc);
     }
 
     /**
@@ -117,7 +139,7 @@ public class ModelDesc {
      * 
      * @return the list of attribute descriptions
      */
-    public List<AttributeDesc> getAttributeDescList() {
+    public List<AttributeMetaDesc> getAttributeDescList() {
         return Collections.unmodifiableList(attributeDescList);
     }
 

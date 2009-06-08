@@ -16,21 +16,21 @@
 package org.slim3.gen.desc;
 
 /**
- * Represents an attribute description.
+ * Represents an attribute meta description.
  * 
  * @author taedium
  * @since 3.0
  */
-public class AttributeDesc {
+public class AttributeMetaDesc {
 
     /** the name */
     protected String name;
 
-    /** the className */
-    protected String className;
+    /** the attributeClassName */
+    protected String attributeClassName;
 
-    /** the elementClassName */
-    protected String elementClassName;
+    /** the attributeElementClassName */
+    protected String attributeElementClassName;
 
     /** {@code true} if this attribute is embedded. */
     protected boolean embedded = false;
@@ -55,41 +55,41 @@ public class AttributeDesc {
     }
 
     /**
-     * Returns the className.
+     * Returns the attributeClassName.
      * 
-     * @return the className
+     * @return the attributeClassName
      */
-    public String getClassName() {
-        return className;
+    public String getAttributeClassName() {
+        return attributeClassName;
     }
 
     /**
-     * Sets the className.
+     * Sets the attributeClassName.
      * 
-     * @param className
-     *            the className to set
+     * @param attributeClassName
+     *            the attributeClassName to set
      */
-    public void setClassName(String className) {
-        this.className = className;
+    public void setAttributeClassName(String attributeClassName) {
+        this.attributeClassName = attributeClassName;
     }
 
     /**
-     * Returns the elementClassName.
+     * Returns the attributeElementClassName.
      * 
-     * @return the elementClassName
+     * @return the attributeElementClassName
      */
-    public String getElementClassName() {
-        return elementClassName;
+    public String getAttributeElementClassName() {
+        return attributeElementClassName;
     }
 
     /**
-     * Sets the elementClassName.
+     * Sets the attributeElementClassName.
      * 
-     * @param elementClassName
-     *            the elementClassName to set
+     * @param attributeElementClassName
+     *            the attributeElementClassName to set
      */
-    public void setElementClassName(String elementClassName) {
-        this.elementClassName = elementClassName;
+    public void setAttributeElementClassName(String attributeElementClassName) {
+        this.attributeElementClassName = attributeElementClassName;
     }
 
     /**

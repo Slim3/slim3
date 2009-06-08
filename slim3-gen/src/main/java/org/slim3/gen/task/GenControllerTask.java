@@ -16,17 +16,9 @@
 package org.slim3.gen.task;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Iterator;
 
-import javax.xml.XMLConstants;
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
 import org.slim3.gen.ClassConstants;
 import org.slim3.gen.Constants;
@@ -35,10 +27,8 @@ import org.slim3.gen.desc.ControllerDescFactory;
 import org.slim3.gen.generator.ControllerGenerator;
 import org.slim3.gen.generator.ControllerTestCaseGenerator;
 import org.slim3.gen.generator.Generator;
+import org.slim3.gen.printer.FilePrinter;
 import org.slim3.gen.printer.Printer;
-import org.slim3.gen.util.CloseableUtil;
-import org.slim3.gen.util.StringUtil;
-import org.xml.sax.InputSource;
 
 /**
  * Represents a task to generate a controller java file.
@@ -54,6 +44,15 @@ public class GenControllerTask extends AbstractTask {
 
     /** the test source directory */
     protected File testDir;
+
+    /** the war directory */
+    protected File warDir;
+
+    /** the controller path */
+    protected String controllerPath;
+
+    /** the file encoding */
+    protected String encoding = "UTF-8";
 
     /** the superclass name */
     protected String superclassName = ClassConstants.JDOController;
@@ -80,6 +79,36 @@ public class GenControllerTask extends AbstractTask {
      */
     public void setTestDir(File testDir) {
         this.testDir = testDir;
+    }
+
+    /**
+     * Sets the warDir.
+     * 
+     * @param warDir
+     *            the warDir to set
+     */
+    public void setWarDir(File warDir) {
+        this.warDir = warDir;
+    }
+
+    /**
+     * Sets the controllerPath.
+     * 
+     * @param controllerPath
+     *            the controllerPath to set
+     */
+    public void setControllerPath(String controllerPath) {
+        this.controllerPath = controllerPath;
+    }
+
+    /**
+     * Sets the encoding.
+     * 
+     * @param encoding
+     *            the encoding to set
+     */
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
     }
 
     /**
@@ -120,7 +149,8 @@ public class GenControllerTask extends AbstractTask {
         String path =
             controllerPath.startsWith("/") ? controllerPath : "/"
                 + controllerPath;
-        String controllerPackageName = findControllerPackageName();
+        AppEngineConfig config = new AppEngineConfig(warDir);
+        String controllerPackageName = config.getControllerPackageName();
         ControllerDescFactory factory =
             createControllerDescFactory(controllerPackageName);
         ControllerDesc controllerDesc = factory.createControllerDesc(path);
@@ -141,55 +171,6 @@ public class GenControllerTask extends AbstractTask {
             controllerPackageName,
             superclassName,
             testCaseSuperclassName);
-    }
-
-    /**
-     * Finds a base package name of controllers.
-     * 
-     * @return a base package name of controlle
-     * @throws FileNotFoundException
-     * @throws XPathExpressionException
-     */
-    protected String findControllerPackageName() throws FileNotFoundException,
-            XPathExpressionException {
-        XPathFactory factory = XPathFactory.newInstance();
-        XPath xpath = factory.newXPath();
-        xpath.setNamespaceContext(new NamespaceContext() {
-            public String getNamespaceURI(String prefix) {
-                if (prefix == null)
-                    throw new NullPointerException(
-                        "The parameter prefix is null.");
-                else if ("pre".equals(prefix))
-                    return "http://appengine.google.com/ns/1.0";
-                else if ("xml".equals(prefix))
-                    return XMLConstants.XML_NS_URI;
-                return XMLConstants.NULL_NS_URI;
-            }
-
-            public String getPrefix(String uri) {
-                throw new UnsupportedOperationException("getPrefix");
-            }
-
-            public Iterator<?> getPrefixes(String uri) {
-                throw new UnsupportedOperationException("getPrefixes");
-            }
-        });
-        File file = new File(new File(warDir, "WEB-INF"), "appengine-web.xml");
-        InputStream inputStream = new FileInputStream(file);
-        try {
-            String value =
-                xpath
-                    .evaluate(
-                        "/pre:appengine-web-app/pre:system-properties/pre:property[@name='slim3.controllerPackage']/@value",
-                        new InputSource(inputStream));
-            if (StringUtil.isEmpty(value)) {
-                throw new RuntimeException(
-                    "The system-property 'slim3.controllerPackage' is not found in appengine-web.xml or the system-property value is empty.");
-            }
-            return value;
-        } finally {
-            CloseableUtil.close(inputStream);
-        }
     }
 
     /**
@@ -297,5 +278,17 @@ public class GenControllerTask extends AbstractTask {
             }
         }
         log("Generated. (" + className + ".java:0)");
+    }
+
+    /**
+     * Creates a printer.
+     * 
+     * @param file
+     *            the file
+     * @return a printer.
+     * @throws IOException
+     */
+    protected Printer createPrinter(File file) throws IOException {
+        return new FilePrinter(file, encoding);
     }
 }

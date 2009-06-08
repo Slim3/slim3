@@ -30,13 +30,13 @@ import javax.lang.model.util.ElementFilter;
 import javax.tools.FileObject;
 
 import org.slim3.gen.ClassConstants;
-import org.slim3.gen.Constants;
-import org.slim3.gen.desc.ModelDesc;
-import org.slim3.gen.desc.ModelDescFactory;
+import org.slim3.gen.desc.ModelMetaDesc;
+import org.slim3.gen.desc.ModelMetaDescFactory;
 import org.slim3.gen.generator.Generator;
 import org.slim3.gen.generator.ModelMetaGenerator;
 import org.slim3.gen.printer.FilePrinter;
 import org.slim3.gen.printer.Printer;
+import org.slim3.gen.util.StringUtil;
 
 /**
  * Processes JDO model classes which annotated with the {@code
@@ -89,10 +89,12 @@ public class JDOModelProcessor extends AbstractProcessor {
                 getClass().getName(),
                 element.getQualifiedName());
         }
-        ModelDescFactory modelDescFactory = createModelDescFactory();
-        ModelDesc modelDesc = modelDescFactory.createModelDesc(element);
-        if (modelDesc.isTopLevel()) {
-            generateModelMeta(modelDesc, element);
+        ModelMetaDescFactory modelMetaDescFactory =
+            createModelMetaDescFactory();
+        ModelMetaDesc modelMetaDesc =
+            modelMetaDescFactory.createModelMetaDesc(element);
+        if (modelMetaDesc.isTopLevel()) {
+            generateModelMeta(modelMetaDesc, element);
         }
         if (Options.isDebugEnabled(processingEnv)) {
             Logger.debug(
@@ -106,22 +108,27 @@ public class JDOModelProcessor extends AbstractProcessor {
     /**
      * Generates a model meta java file.
      * 
-     * @param modelDesc
-     *            the model description.
+     * @param modelMetaDesc
+     *            the model meta description.
      * @param model
      *            the element represents a JDO model class.
      */
-    protected void generateModelMeta(ModelDesc modelDesc, TypeElement model) {
+    protected void generateModelMeta(ModelMetaDesc modelMetaDesc,
+            TypeElement model) {
         Filer filer = processingEnv.getFiler();
-        String name =
-            modelDesc.getPackageName()
-                + "."
-                + modelDesc.getSimpleName()
-                + Constants.META_SUFFIX;
+        String name = null;
+        if (StringUtil.isEmpty(modelMetaDesc.getPackageName())) {
+            name = modelMetaDesc.getSimpleName();
+        } else {
+            name =
+                modelMetaDesc.getPackageName()
+                    + "."
+                    + modelMetaDesc.getSimpleName();
+        }
         Printer printer = null;
         try {
             printer = createPrinter(filer.createSourceFile(name, model));
-            Generator generator = createGenerator(modelDesc);
+            Generator generator = createGenerator(modelMetaDesc);
             generator.generate(printer);
         } catch (IOException e) {
             Logger.error(
@@ -138,12 +145,12 @@ public class JDOModelProcessor extends AbstractProcessor {
     }
 
     /**
-     * Creates a model description factory.
+     * Creates a model meta description factory.
      * 
-     * @return a model description factory
+     * @return a model meta description factory
      */
-    protected ModelDescFactory createModelDescFactory() {
-        return new ModelDescFactory(new JDOModelScanner(processingEnv));
+    protected ModelMetaDescFactory createModelMetaDescFactory() {
+        return new ModelMetaDescFactory(new JDOModelScanner(processingEnv));
     }
 
     /**
@@ -162,11 +169,11 @@ public class JDOModelProcessor extends AbstractProcessor {
     /**
      * Creates a generator object.
      * 
-     * @param modelDesc
+     * @param modelMetaDesc
      *            the model description.
      * @return a generator object.
      */
-    protected Generator createGenerator(ModelDesc modelDesc) {
-        return new ModelMetaGenerator(modelDesc);
+    protected Generator createGenerator(ModelMetaDesc modelMetaDesc) {
+        return new ModelMetaGenerator(modelMetaDesc);
     }
 }
