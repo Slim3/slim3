@@ -26,13 +26,31 @@ import javax.jdo.annotations.PrimaryKey;
  * @author higa
  * 
  */
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
+@PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
 public class Foo {
 
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     @Extension(vendorName = "datanucleus", key = "gae.encoded-pk", value = "true")
     private String key;
+
+    @Persistent
+    private Blog blog;
+
+    /**
+     * @return the blog
+     */
+    public Blog getBlog() {
+        return blog;
+    }
+
+    /**
+     * @param blog
+     *            the blog to set
+     */
+    public void setBlog(Blog blog) {
+        this.blog = blog;
+    }
 
     /**
      * @return the key
