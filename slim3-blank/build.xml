@@ -1,4 +1,4 @@
-<project name="slim3it" default="gen-controller" basedir=".">
+<project name="slim3-blank" default="gen-controller" basedir=".">
     <property name="ver" value="EA1-SNAPSHOT"/>
     <property name="srcdir" value="src"/>
     <property name="testdir" value="test"/>
@@ -74,5 +74,11 @@
         <gen-controller srcdir="${srcdir}" testdir="${testdir}" wardir="${wardir}" controllerpath="${controllerpath}"
         	superclassName="${superclassName}" testCaseSuperclassName="${testCaseSuperclassName}"/>
         <gen-view wardir="${wardir}" controllerpath="${controllerpath}"/>
+    </target>
+	
+	<target name="gen-model">
+        <taskdef name="gen-model" classname="org.slim3.gen.task.GenModelTask" classpathref="classpath"/>
+        <input message="Input a model simple name." addproperty="modelSimpleName"/>
+        <gen-model srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" simpleName="${modelSimpleName}"/>
     </target>
 </project>
