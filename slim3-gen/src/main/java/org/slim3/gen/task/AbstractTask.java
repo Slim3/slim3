@@ -15,11 +15,16 @@
  */
 package org.slim3.gen.task;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
+import org.slim3.gen.generator.Generator;
+import org.slim3.gen.printer.FilePrinter;
+import org.slim3.gen.printer.Printer;
 
 /**
  * An abstract class for Ant tasks.
@@ -29,6 +34,32 @@ import org.apache.tools.ant.Task;
  * 
  */
 public abstract class AbstractTask extends Task {
+
+    /** the war directory */
+    protected File warDir;
+
+    /** the file encoding */
+    protected String encoding = "UTF-8";
+
+    /**
+     * Sets the warDir.
+     * 
+     * @param warDir
+     *            the warDir to set
+     */
+    public void setWarDir(File warDir) {
+        this.warDir = warDir;
+    }
+
+    /**
+     * Sets the encoding.
+     * 
+     * @param encoding
+     *            the encoding to set
+     */
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
+    }
 
     /**
      * Executes this task.
@@ -51,4 +82,70 @@ public abstract class AbstractTask extends Task {
      */
     protected abstract void doExecute() throws Exception;
 
+    /**
+     * Generates a file.
+     * 
+     * @param generator
+     *            the generator
+     * @param file
+     *            the file to be generated
+     * @param className
+     *            the class name
+     * @throws IOException
+     */
+    protected void generate(Generator generator, File file, String className)
+            throws IOException {
+        if (file.exists()) {
+            log("Already exists. Skipped. (" + className + ".java:0)");
+            return;
+        }
+        Printer printer = null;
+        try {
+            printer = createPrinter(file);
+            generator.generate(printer);
+        } finally {
+            if (printer != null) {
+                printer.close();
+            }
+        }
+        log("Generated. (" + className + ".java:0)");
+    }
+
+    /**
+     * Generates a file.
+     * 
+     * @param generator
+     * @param file
+     * @throws IOException
+     */
+    protected void generate(Generator generator, File file) throws IOException {
+        if (file.exists()) {
+            log("Already exists. Skipped generation. ("
+                + file.getAbsolutePath()
+                + ")");
+            return;
+        }
+        Printer printer = null;
+        try {
+            printer = createPrinter(file);
+            generator.generate(printer);
+        } finally {
+            if (printer != null) {
+                printer.close();
+            }
+        }
+        log("Generated. (" + file.getAbsolutePath() + ")");
+    }
+
+    /**
+     * Creates a printer.
+     * 
+     * @param file
+     *            the file
+     * @return a printer.
+     * @throws IOException
+     */
+    protected Printer createPrinter(File file) throws IOException {
+        return new FilePrinter(file, encoding);
+    }
 }

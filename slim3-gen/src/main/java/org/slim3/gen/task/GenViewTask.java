@@ -22,8 +22,6 @@ import org.slim3.gen.desc.ViewDesc;
 import org.slim3.gen.desc.ViewDescFactory;
 import org.slim3.gen.generator.Generator;
 import org.slim3.gen.generator.ViewGenerator;
-import org.slim3.gen.printer.FilePrinter;
-import org.slim3.gen.printer.Printer;
 
 /**
  * Represents a task to generate a view file.
@@ -33,24 +31,8 @@ import org.slim3.gen.printer.Printer;
  */
 public class GenViewTask extends AbstractTask {
 
-    /** the war directory */
-    protected File warDir;
-
     /** the controller path */
     protected String controllerPath;
-
-    /** the file encoding */
-    protected String encoding = "UTF-8";
-
-    /**
-     * Sets the warDir.
-     * 
-     * @param warDir
-     *            the warDir to set
-     */
-    public void setWarDir(File warDir) {
-        this.warDir = warDir;
-    }
 
     /**
      * Sets the controllerPath.
@@ -60,16 +42,6 @@ public class GenViewTask extends AbstractTask {
      */
     public void setControllerPath(String controllerPath) {
         this.controllerPath = controllerPath;
-    }
-
-    /**
-     * Sets the encoding.
-     * 
-     * @param encoding
-     *            the encoding to set
-     */
-    public void setEncoding(String encoding) {
-        this.encoding = encoding;
     }
 
     @Override
@@ -122,44 +94,6 @@ public class GenViewTask extends AbstractTask {
      */
     protected Generator careateViewGenerator(ViewDesc viewDesc) {
         return new ViewGenerator(viewDesc);
-    }
-
-    /**
-     * Generates a file.
-     * 
-     * @param generator
-     * @param file
-     * @throws IOException
-     */
-    protected void generate(Generator generator, File file) throws IOException {
-        if (file.exists()) {
-            log("Already exists. Skipped generation. ("
-                + file.getAbsolutePath()
-                + ")");
-            return;
-        }
-        Printer printer = null;
-        try {
-            printer = createPrinter(file);
-            generator.generate(printer);
-        } finally {
-            if (printer != null) {
-                printer.close();
-            }
-        }
-        log("Generated. (" + file.getAbsolutePath() + ")");
-    }
-
-    /**
-     * Creates a printer.
-     * 
-     * @param file
-     *            the file
-     * @return a printer.
-     * @throws IOException
-     */
-    protected Printer createPrinter(File file) throws IOException {
-        return new FilePrinter(file, encoding);
     }
 
 }

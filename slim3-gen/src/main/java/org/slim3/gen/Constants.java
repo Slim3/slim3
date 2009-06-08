@@ -46,4 +46,7 @@ public class Constants {
 
     /** the index view. */
     public static final String INDEX_VIEW = INDEX + VIEW_SUFFIX;
+
+    /** the sub package name for model */
+    public static final String MODEL_SUB_PACKAGE = "model";
 }

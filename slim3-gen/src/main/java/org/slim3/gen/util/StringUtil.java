@@ -52,4 +52,21 @@ public final class StringUtil {
         return new String(chars);
     }
 
+    /**
+     * Decapitalizes the text according to JavaBeans specification.
+     * 
+     * @param text
+     *            the text
+     * 
+     * @return the decapitalized text
+     */
+    public static String decapitalize(String text) {
+        if (isEmpty(text)) {
+            return text;
+        }
+        char chars[] = text.toCharArray();
+        chars[0] = Character.toLowerCase(chars[0]);
+        return new String(chars);
+    }
+
 }

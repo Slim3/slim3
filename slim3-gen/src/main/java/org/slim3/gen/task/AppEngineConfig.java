@@ -32,14 +32,26 @@ import org.slim3.gen.util.StringUtil;
 import org.xml.sax.InputSource;
 
 /**
- * @author taedium
+ * Represents a Google App Engine configuration file.
  * 
+ * @author taedium
+ * @since 3.0
  */
 public class AppEngineConfig {
 
+    /** the war directory */
     protected final File warDir;
 
+    /**
+     * Creates a new {@link AppEngineConfig}.
+     * 
+     * @param warDir
+     *            the war directory
+     */
     public AppEngineConfig(File warDir) {
+        if (warDir == null) {
+            throw new NullPointerException("The warDir parameter is null.");
+        }
         this.warDir = warDir;
     }
 

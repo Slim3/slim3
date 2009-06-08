@@ -28,8 +28,8 @@ import org.slim3.gen.util.StringUtil;
  */
 public class ControllerDescFactory {
 
-    /** the base package name of controllers */
-    protected final String controllerPackageName;
+    /** the base package name of controller */
+    protected final String packageName;
 
     /** the superclass name */
     protected final String superclassName;
@@ -40,18 +40,17 @@ public class ControllerDescFactory {
     /**
      * Creates a new {@link ControllerDescFactory}.
      * 
-     * @param controllerPackageName
-     *            the base package name of controllers
+     * @param packageName
+     *            the base package name of controller
      * @param superclassName
      *            the superclass name
      * @param testCaseSuperclassName
      *            the superclass name of testcase
      */
-    public ControllerDescFactory(String controllerPackageName,
-            String superclassName, String testCaseSuperclassName) {
-        if (controllerPackageName == null) {
-            throw new NullPointerException(
-                "The controllerPackageName parameter is null.");
+    public ControllerDescFactory(String packageName, String superclassName,
+            String testCaseSuperclassName) {
+        if (packageName == null) {
+            throw new NullPointerException("The packageName parameter is null.");
         }
         if (superclassName == null) {
             throw new NullPointerException(
@@ -61,7 +60,7 @@ public class ControllerDescFactory {
             throw new NullPointerException(
                 "The testCaseSuperclassName parameter is null.");
         }
-        this.controllerPackageName = controllerPackageName;
+        this.packageName = packageName;
         this.superclassName = superclassName;
         this.testCaseSuperclassName = testCaseSuperclassName;
     }
@@ -100,7 +99,7 @@ public class ControllerDescFactory {
      * @return a name of controller
      */
     protected String toControllerClassName(String path) {
-        String className = controllerPackageName + path.replace('/', '.');
+        String className = packageName + path.replace('/', '.');
         if (className.endsWith(".")) {
             className += Constants.INDEX_CONTROLLER;
         } else {

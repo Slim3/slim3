@@ -21,10 +21,18 @@ import java.io.IOException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.slim3.gen.ClassConstants;
+import org.slim3.gen.Constants;
+import org.slim3.gen.desc.ModelDesc;
+import org.slim3.gen.desc.ModelDescFactory;
+import org.slim3.gen.generator.Generator;
+import org.slim3.gen.generator.ModelGenerator;
+import org.slim3.gen.generator.ModelTestCaseGenerator;
 
 /**
- * @author taedium
+ * Represents a task to generate a model java file.
  * 
+ * @author taedium
+ * @since 3.0
  */
 public class GenModelTask extends AbstractTask {
 
@@ -34,15 +42,11 @@ public class GenModelTask extends AbstractTask {
     /** the test source directory */
     protected File testDir;
 
-    /** the war directory */
-    protected File warDir;
-
+    /** the packageName */
     protected String packageName;
 
+    /** the simpleName */
     protected String simpleName;
-
-    /** the file encoding */
-    protected String encoding = "UTF-8";
 
     /** the superclass name of testcase */
     protected String testCaseSuperclassName = ClassConstants.JDOTestCase;
@@ -68,16 +72,6 @@ public class GenModelTask extends AbstractTask {
     }
 
     /**
-     * Sets the warDir.
-     * 
-     * @param warDir
-     *            the warDir to set
-     */
-    public void setWarDir(File warDir) {
-        this.warDir = warDir;
-    }
-
-    /**
      * Sets the packageName.
      * 
      * @param packageName
@@ -95,16 +89,6 @@ public class GenModelTask extends AbstractTask {
      */
     public void setSimpleName(String simpleName) {
         this.simpleName = simpleName;
-    }
-
-    /**
-     * Sets the encoding.
-     * 
-     * @param encoding
-     *            the encoding to set
-     */
-    public void setEncoding(String encoding) {
-        this.encoding = encoding;
     }
 
     /**
@@ -132,13 +116,28 @@ public class GenModelTask extends AbstractTask {
             throw new IllegalStateException("The simpleName parameter is null.");
         }
         String modelPackageName = getModelPackageName();
-        // ControllerDescFactory factory =
-        // createControllerDescFactory(controllerPackageName);
-        // ControllerDesc controllerDesc = factory.createControllerDesc(path);
-        // generateController(controllerDesc);
-        // generateControllerTestCase(controllerDesc);
+        ModelDescFactory factory = createModelDescFactory(modelPackageName);
+        ModelDesc modelDesc = factory.createModelDesc();
+        JavaFileCreator javaFileCreator =
+            new JavaFileCreator(
+                srcDir,
+                testDir,
+                modelDesc.getPackageName(),
+                modelDesc.getSimpleName());
+        ClassNameCreator classNameCreator =
+            new ClassNameCreator(modelDesc.getPackageName(), modelDesc
+                .getSimpleName());
+        generateModel(modelDesc, javaFileCreator, classNameCreator);
+        generateModelTestCase(modelDesc, javaFileCreator, classNameCreator);
     }
 
+    /**
+     * Returns the model package name.
+     * 
+     * @return the model package name.
+     * @throws IOException
+     * @throws XPathExpressionException
+     */
     protected String getModelPackageName() throws IOException,
             XPathExpressionException {
         if (packageName != null) {
@@ -150,9 +149,85 @@ public class GenModelTask extends AbstractTask {
         String rootPackageName =
             pos > 0 ? controllerPackageName.substring(0, pos) : null;
         if (rootPackageName != null) {
-            return controllerPackageName + ".model";
+            return controllerPackageName + "." + Constants.MODEL_SUB_PACKAGE;
         }
-        return "model";
+        return Constants.MODEL_SUB_PACKAGE;
+    }
+
+    /**
+     * Creates a {@link ModelDescFactory}.
+     * 
+     * @param packageName
+     *            the package name
+     * @return a factory of model description.
+     */
+    protected ModelDescFactory createModelDescFactory(String packageName) {
+        return new ModelDescFactory(
+            packageName,
+            simpleName,
+            testCaseSuperclassName);
+    }
+
+    /**
+     * Generates a model.
+     * 
+     * @param modelDesc
+     *            the model description
+     * @param javaFileCreator
+     *            the java file creator
+     * @param classNameCreator
+     *            the class name creator
+     * @throws IOException
+     */
+    protected void generateModel(ModelDesc modelDesc,
+            JavaFileCreator javaFileCreator, ClassNameCreator classNameCreator)
+            throws IOException {
+        Generator generator = createModelGenerator(modelDesc);
+        File javaFile = javaFileCreator.createJavaFile();
+        String className = classNameCreator.createClassName();
+        generate(generator, javaFile, className);
+    }
+
+    /**
+     * Creates a {@link Generator}.
+     * 
+     * @param modelDesc
+     *            the controller description
+     * @return a generator
+     */
+    protected Generator createModelGenerator(ModelDesc modelDesc) {
+        return new ModelGenerator(modelDesc);
+    }
+
+    /**
+     * Generates a model test case.
+     * 
+     * @param modelDesc
+     *            the model description
+     * @param javaFileCreator
+     *            the java file creator
+     * @param classNameCreator
+     *            the class name creator
+     * @throws IOException
+     */
+    protected void generateModelTestCase(ModelDesc modelDesc,
+            JavaFileCreator javaFileCreator, ClassNameCreator classNameCreator)
+            throws IOException {
+        Generator generator = createModelTestCaseGenerator(modelDesc);
+        File javaFile = javaFileCreator.createTestCaseJavaFile();
+        String className = classNameCreator.createTestCaseClassName();
+        generate(generator, javaFile, className);
+    }
+
+    /**
+     * Creates a {@link Generator}.
+     * 
+     * @param modelDesc
+     *            the model description
+     * @return a generator
+     */
+    protected Generator createModelTestCaseGenerator(ModelDesc modelDesc) {
+        return new ModelTestCaseGenerator(modelDesc);
     }
 
 }

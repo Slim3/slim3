@@ -21,14 +21,11 @@ import java.io.IOException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.slim3.gen.ClassConstants;
-import org.slim3.gen.Constants;
 import org.slim3.gen.desc.ControllerDesc;
 import org.slim3.gen.desc.ControllerDescFactory;
 import org.slim3.gen.generator.ControllerGenerator;
 import org.slim3.gen.generator.ControllerTestCaseGenerator;
 import org.slim3.gen.generator.Generator;
-import org.slim3.gen.printer.FilePrinter;
-import org.slim3.gen.printer.Printer;
 
 /**
  * Represents a task to generate a controller java file.
@@ -45,14 +42,8 @@ public class GenControllerTask extends AbstractTask {
     /** the test source directory */
     protected File testDir;
 
-    /** the war directory */
-    protected File warDir;
-
     /** the controller path */
     protected String controllerPath;
-
-    /** the file encoding */
-    protected String encoding = "UTF-8";
 
     /** the superclass name */
     protected String superclassName = ClassConstants.JDOController;
@@ -82,16 +73,6 @@ public class GenControllerTask extends AbstractTask {
     }
 
     /**
-     * Sets the warDir.
-     * 
-     * @param warDir
-     *            the warDir to set
-     */
-    public void setWarDir(File warDir) {
-        this.warDir = warDir;
-    }
-
-    /**
      * Sets the controllerPath.
      * 
      * @param controllerPath
@@ -99,16 +80,6 @@ public class GenControllerTask extends AbstractTask {
      */
     public void setControllerPath(String controllerPath) {
         this.controllerPath = controllerPath;
-    }
-
-    /**
-     * Sets the encoding.
-     * 
-     * @param encoding
-     *            the encoding to set
-     */
-    public void setEncoding(String encoding) {
-        this.encoding = encoding;
     }
 
     /**
@@ -154,8 +125,18 @@ public class GenControllerTask extends AbstractTask {
         ControllerDescFactory factory =
             createControllerDescFactory(controllerPackageName);
         ControllerDesc controllerDesc = factory.createControllerDesc(path);
-        generateController(controllerDesc);
-        generateControllerTestCase(controllerDesc);
+        JavaFileCreator javaFileCreator =
+            new JavaFileCreator(srcDir, testDir, controllerDesc
+                .getPackageName(), controllerDesc.getSimpleName());
+        ClassNameCreator classNameCreator =
+            new ClassNameCreator(
+                controllerDesc.getPackageName(),
+                controllerDesc.getSimpleName());
+        generateController(controllerDesc, javaFileCreator, classNameCreator);
+        generateControllerTestCase(
+            controllerDesc,
+            javaFileCreator,
+            classNameCreator);
     }
 
     /**
@@ -178,25 +159,18 @@ public class GenControllerTask extends AbstractTask {
      * 
      * @param controllerDesc
      *            the controller description
+     * @param javaFileCreator
+     *            the java file creator
+     * @param classNameCreator
+     *            the class name creator
      * @throws IOException
      */
-    protected void generateController(ControllerDesc controllerDesc)
+    protected void generateController(ControllerDesc controllerDesc,
+            JavaFileCreator javaFileCreator, ClassNameCreator classNameCreator)
             throws IOException {
-        File packageDir =
-            new File(srcDir, controllerDesc.getPackageName().replace(
-                ".",
-                File.separator));
-        packageDir.mkdirs();
-        File javaFile =
-            new File(packageDir, controllerDesc.getSimpleName().replace(
-                '.',
-                '/')
-                + ".java");
-        String className =
-            controllerDesc.getPackageName()
-                + "."
-                + controllerDesc.getSimpleName();
-        Generator generator = careateControllerGenerator(controllerDesc);
+        Generator generator = createControllerGenerator(controllerDesc);
+        File javaFile = javaFileCreator.createJavaFile();
+        String className = classNameCreator.createClassName();
         generate(generator, javaFile, className);
     }
 
@@ -207,7 +181,7 @@ public class GenControllerTask extends AbstractTask {
      *            the controller description
      * @return a generator
      */
-    protected Generator careateControllerGenerator(ControllerDesc controllerDesc) {
+    protected Generator createControllerGenerator(ControllerDesc controllerDesc) {
         return new ControllerGenerator(controllerDesc);
     }
 
@@ -216,26 +190,18 @@ public class GenControllerTask extends AbstractTask {
      * 
      * @param controllerDesc
      *            the controller description
+     * @param javaFileCreator
+     *            the java file creator
+     * @param classNameCreator
+     *            the class name creator
      * @throws IOException
      */
-    protected void generateControllerTestCase(ControllerDesc controllerDesc)
+    protected void generateControllerTestCase(ControllerDesc controllerDesc,
+            JavaFileCreator javaFileCreator, ClassNameCreator classNameCreator)
             throws IOException {
-        File packageDir =
-            new File(testDir, controllerDesc.getPackageName().replace(
-                ".",
-                File.separator));
-        packageDir.mkdirs();
-        File javaFile =
-            new File(packageDir, controllerDesc.getSimpleName()
-                + Constants.TEST_SUFFIX
-                + ".java");
-        String className =
-            controllerDesc.getPackageName()
-                + "."
-                + controllerDesc.getSimpleName()
-                + Constants.TEST_SUFFIX;
-        Generator generator =
-            careateControllerTestCaseGenerator(controllerDesc);
+        Generator generator = createControllerTestCaseGenerator(controllerDesc);
+        File javaFile = javaFileCreator.createJavaFile();
+        String className = classNameCreator.createClassName();
         generate(generator, javaFile, className);
     }
 
@@ -246,49 +212,9 @@ public class GenControllerTask extends AbstractTask {
      *            the controller description
      * @return a generator
      */
-    protected Generator careateControllerTestCaseGenerator(
+    protected Generator createControllerTestCaseGenerator(
             ControllerDesc controllerDesc) {
         return new ControllerTestCaseGenerator(controllerDesc);
     }
 
-    /**
-     * Generates a file.
-     * 
-     * @param generator
-     *            the generator
-     * @param file
-     *            the file to be generated
-     * @param className
-     *            the class name
-     * @throws IOException
-     */
-    protected void generate(Generator generator, File file, String className)
-            throws IOException {
-        if (file.exists()) {
-            log("Already exists. Skipped. (" + className + ".java:0)");
-            return;
-        }
-        Printer printer = null;
-        try {
-            printer = createPrinter(file);
-            generator.generate(printer);
-        } finally {
-            if (printer != null) {
-                printer.close();
-            }
-        }
-        log("Generated. (" + className + ".java:0)");
-    }
-
-    /**
-     * Creates a printer.
-     * 
-     * @param file
-     *            the file
-     * @return a printer.
-     * @throws IOException
-     */
-    protected Printer createPrinter(File file) throws IOException {
-        return new FilePrinter(file, encoding);
-    }
 }

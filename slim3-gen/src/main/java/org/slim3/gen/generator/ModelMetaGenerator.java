@@ -27,7 +27,7 @@ import org.slim3.gen.desc.ModelMetaDesc;
 import org.slim3.gen.printer.Printer;
 
 /**
- * Generates source codes of a JDO model meta class.
+ * Generates source codes of a JDO model meta java file.
  * 
  * @author taedium
  * @since 3.0
