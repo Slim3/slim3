@@ -43,19 +43,27 @@ public class ModelGenerator implements Generator {
     public void generate(Printer p) {
         p.println("package %s;", modelDesc.getPackageName());
         p.println();
+        p.println("import java.io.Serializable;");
+        p.println();
         p.println("import javax.jdo.annotations.Extension;");
         p.println("import javax.jdo.annotations.IdGeneratorStrategy;");
         p.println("import javax.jdo.annotations.IdentityType;");
         p.println("import javax.jdo.annotations.PersistenceCapable;");
         p.println("import javax.jdo.annotations.Persistent;");
         p.println("import javax.jdo.annotations.PrimaryKey;");
+        p.println("import javax.jdo.annotations.Version;");
+        p.println("import javax.jdo.annotations.VersionStrategy;");
         p.println();
         p.println("/**");
         p.println(" *");
         p.println(" */");
         p
             .println("@PersistenceCapable(identityType = IdentityType.APPLICATION)");
-        p.println("public class %s {", modelDesc.getSimpleName());
+        p.println("@Version(strategy = VersionStrategy.VERSION_NUMBER)");
+        p.println("public class %s implements Serializable {", modelDesc
+            .getSimpleName());
+        p.println();
+        p.println("    private static final long serialVersionUID = 1L;");
         p.println();
         p.println("    @PrimaryKey");
         p
