@@ -33,6 +33,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.slim3.util.ArrayMap;
 import org.slim3.util.IteratorEnumeration;
 
 /**
@@ -67,8 +68,8 @@ public class MockHttpServletRequest implements HttpServletRequest {
     /**
      * The map for the request header.
      */
-    protected Map<String, List<String>> headerMap =
-        new HashMap<String, List<String>>();
+    protected ArrayMap<String, List<String>> headerMap =
+        new ArrayMap<String, List<String>>();
 
     /**
      * The method.

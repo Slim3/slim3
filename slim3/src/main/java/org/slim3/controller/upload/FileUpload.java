@@ -18,17 +18,13 @@ package org.slim3.controller.upload;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.fileupload.FileItemHeaders;
 import org.apache.commons.fileupload.FileUploadBase;
 import org.apache.commons.fileupload.ParameterParser;
-import org.apache.commons.fileupload.util.FileItemHeadersImpl;
 import org.apache.commons.fileupload.util.LimitedInputStream;
 import org.slim3.controller.upload.MultipartStream.ItemInputStream;
 
@@ -263,19 +259,6 @@ public class FileUpload {
      * Retrieves the file name from the <code>Content-disposition</code> header.
      * 
      * @param headers
-     *            A <code>Map</code> containing the HTTP request headers.
-     * 
-     * @return The file name for the current <code>encapsulation</code>.
-     * @deprecated Use {@link #getFileName(FileItemHeaders)}.
-     */
-    protected String getFileName(Map /* String, String */headers) {
-        return getFileName(getHeader(headers, CONTENT_DISPOSITION));
-    }
-
-    /**
-     * Retrieves the file name from the <code>Content-disposition</code> header.
-     * 
-     * @param headers
      *            The HTTP headers object.
      * 
      * @return The file name for the current <code>encapsulation</code>.
@@ -353,20 +336,6 @@ public class FileUpload {
     }
 
     /**
-     * Retrieves the field name from the <code>Content-disposition</code>
-     * header.
-     * 
-     * @param headers
-     *            A <code>Map</code> containing the HTTP request headers.
-     * 
-     * @return The field name for the current <code>encapsulation</code>.
-     * @deprecated Use {@link #getFieldName(FileItemHeaders)}.
-     */
-    protected String getFieldName(Map /* String, String */headers) {
-        return getFieldName(getHeader(headers, CONTENT_DISPOSITION));
-    }
-
-    /**
      * <p>
      * Parses the <code>header-part</code> and returns as key/value pairs.
      * 
@@ -382,7 +351,7 @@ public class FileUpload {
      */
     protected FileItemHeaders getParsedHeaders(String headerPart) {
         final int len = headerPart.length();
-        FileItemHeadersImpl headers = newFileItemHeaders();
+        FileItemHeaders headers = new FileItemHeaders();
         int start = 0;
         for (;;) {
             int end = parseEndOfLine(headerPart, start);
@@ -411,45 +380,6 @@ public class FileUpload {
             parseHeaderLine(headers, header);
         }
         return headers;
-    }
-
-    /**
-     * Creates a new instance of {@link FileItemHeaders}.
-     * 
-     * @return The new instance.
-     */
-    protected FileItemHeadersImpl newFileItemHeaders() {
-        return new FileItemHeadersImpl();
-    }
-
-    /**
-     * <p>
-     * Parses the <code>header-part</code> and returns as key/value pairs.
-     * 
-     * <p>
-     * If there are multiple headers of the same names, the name will map to a
-     * comma-separated list containing the values.
-     * 
-     * @param headerPart
-     *            The <code>header-part</code> of the current
-     *            <code>encapsulation</code>.
-     * 
-     * @return A <code>Map</code> containing the parsed HTTP request headers.
-     * @deprecated Use {@link #getParsedHeaders(String)}
-     */
-    protected Map /* String, String */parseHeaders(String headerPart) {
-        FileItemHeaders headers = getParsedHeaders(headerPart);
-        Map result = new HashMap();
-        for (Iterator iter = headers.getHeaderNames(); iter.hasNext();) {
-            String headerName = (String) iter.next();
-            Iterator iter2 = headers.getHeaders(headerName);
-            String headerValue = (String) iter2.next();
-            while (iter2.hasNext()) {
-                headerValue += "," + iter2.next();
-            }
-            result.put(headerName, headerValue);
-        }
-        return result;
     }
 
     /**
@@ -484,33 +414,14 @@ public class FileUpload {
      * @param header
      *            Map where to store the current header.
      */
-    private void parseHeaderLine(FileItemHeadersImpl headers, String header) {
-        final int colonOffset = header.indexOf(':');
+    protected void parseHeaderLine(FileItemHeaders headers, String header) {
+        int colonOffset = header.indexOf(':');
         if (colonOffset == -1) {
-            // This header line is malformed, skip it.
             return;
         }
         String headerName = header.substring(0, colonOffset).trim();
         String headerValue = header.substring(header.indexOf(':') + 1).trim();
         headers.addHeader(headerName, headerValue);
-    }
-
-    /**
-     * Returns the header with the specified name from the supplied map. The
-     * header lookup is case-insensitive.
-     * 
-     * @param headers
-     *            A <code>Map</code> containing the HTTP request headers.
-     * @param name
-     *            The name of the header to return.
-     * 
-     * @return The value of specified header, or a comma-separated list if there
-     *         were multiple headers of that name.
-     * @deprecated Use {@link FileItemHeaders#getHeader(String)}.
-     */
-    protected final String getHeader(Map /* String, String */headers,
-            String name) {
-        return (String) headers.get(name.toLowerCase());
     }
 
     /**
