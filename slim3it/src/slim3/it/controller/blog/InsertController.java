@@ -6,7 +6,6 @@ import org.slim3.controller.validator.Validators;
 import org.slim3.util.BeanUtil;
 
 import slim3.it.model.Blog;
-import slim3.it.model.Foo;
 
 public class InsertController extends JDOController {
 
@@ -17,10 +16,7 @@ public class InsertController extends JDOController {
         }
         Blog blog = new Blog();
         BeanUtil.copy(request, blog);
-        Foo foo = new Foo();
-        blog.getFooList().add(foo);
-        foo.setBlog(blog);
-        makePersistentInTx(blog);
+        pm.makePersistent(blog);
         return redirect(basePath);
     }
 

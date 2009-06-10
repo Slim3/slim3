@@ -1,8 +1,6 @@
 package slim3.it.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -29,24 +27,6 @@ public class Blog implements Serializable {
 
     @Persistent
     private String content;
-
-    @Persistent(mappedBy = "blog")
-    private List<Foo> fooList = new ArrayList<Foo>();
-
-    /**
-     * @return the fooList
-     */
-    public List<Foo> getFooList() {
-        return fooList;
-    }
-
-    /**
-     * @param fooList
-     *            the fooList to set
-     */
-    public void setFooList(List<Foo> fooList) {
-        this.fooList = fooList;
-    }
 
     /**
      * @return the key

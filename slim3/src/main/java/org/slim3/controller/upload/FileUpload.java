@@ -558,7 +558,7 @@ public class FileUpload {
             public InputStream openStream() throws IOException {
                 if (opened) {
                     throw new IllegalStateException(
-                        "The stream was already opened.");
+                        "The stream has bean already opened.");
                 }
                 return stream;
             }

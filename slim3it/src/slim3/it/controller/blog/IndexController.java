@@ -21,7 +21,6 @@ public class IndexController extends JDOController {
         for (Blog blog : list) {
             BeanMap m = new BeanMap();
             BeanUtil.copy(blog, m);
-            System.out.println(blog.getFooList());
             blogList.add(m);
         }
         requestScope("blogList", blogList);

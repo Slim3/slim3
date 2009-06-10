@@ -665,7 +665,7 @@ public class MultipartStream {
         public int read() throws IOException {
             if (closed) {
                 throw new IllegalStateException(
-                    "This stream has already closed.");
+                    "This stream has bean already closed.");
             }
             if (available() == 0) {
                 if (makeAvailable() == 0) {
@@ -698,7 +698,7 @@ public class MultipartStream {
         public int read(byte[] b, int off, int len) throws IOException {
             if (closed) {
                 throw new IllegalStateException(
-                    "This stream has already closed.");
+                    "This stream has bean already closed.");
             }
             if (len == 0) {
                 return 0;
@@ -771,7 +771,7 @@ public class MultipartStream {
         public long skip(long bytes) throws IOException {
             if (closed) {
                 throw new IllegalStateException(
-                    "This stream has already closed.");
+                    "This stream has bean already closed.");
             }
             int av = available();
             if (av == 0) {

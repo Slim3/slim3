@@ -173,6 +173,7 @@ public class FrontController implements Filter {
         boolean runningOnDevserver =
             servletContext.getServerInfo().indexOf("Development") >= 0;
         if (runningOnDevserver) {
+            System.setSecurityManager(null);
             String hotReloadingStr =
                 System.getProperty(ControllerConstants.HOT_RELOADING_KEY);
             if (!StringUtil.isEmpty(hotReloadingStr)) {

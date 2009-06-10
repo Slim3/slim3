@@ -38,15 +38,15 @@ class TestEnvironment implements ApiProxy.Environment {
     }
 
     public String getRequestNamespace() {
-        return null;
+        return "gmail.com";
     }
 
     public String getDefaultNamespace() {
-        return null;
+        return "";
     }
 
     public String getAuthDomain() {
-        return null;
+        return "gmail.com";
     }
 
     public boolean isLoggedIn() {
@@ -54,7 +54,7 @@ class TestEnvironment implements ApiProxy.Environment {
     }
 
     public String getEmail() {
-        return null;
+        return "";
     }
 
     public boolean isAdmin() {
