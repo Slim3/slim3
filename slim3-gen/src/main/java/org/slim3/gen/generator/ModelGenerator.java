@@ -58,7 +58,7 @@ public class ModelGenerator implements Generator {
         p.println(" *");
         p.println(" */");
         p
-            .println("@PersistenceCapable(identityType = IdentityType.APPLICATION)");
+            .println("@PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = \"true\")");
         p.println("@Version(strategy = VersionStrategy.VERSION_NUMBER)");
         p.println("public class %s implements Serializable {", modelDesc
             .getSimpleName());
