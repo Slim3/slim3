@@ -3,8 +3,8 @@
     <property name="srcdir" value="src"/>
     <property name="testdir" value="test"/>
     <property name="wardir" value="war"/>
-	<property name="superclassName" value="org.slim3.controller.Controller"/>
-	<property name="testCaseSuperclassName" value="org.slim3.tester.ControllerTestCase"/>
+	<property name="superclassName" value="org.slim3.controller.JDOController"/>
+	<property name="testCaseSuperclassName" value="org.slim3.tester.JDOControllerTestCase"/>
 
     <path id="classpath">
         <fileset dir="war/WEB-INF/classes">
@@ -91,7 +91,7 @@
 	
 	<target name="gen-model">
         <taskdef name="gen-model" classname="org.slim3.gen.task.GenModelTask" classpathref="classpath"/>
-        <input message="Input a model simple name." addproperty="modelSimpleName"/>
-        <gen-model srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" simpleName="${modelSimpleName}"/>
+        <input message="Input a simple model name." addproperty="modelSimpleName"/>
+        <gen-model srcdir="${srcdir}" testdir="${testdir}" wardir="${wardir}" simpleName="${modelSimpleName}"/>
     </target>
 </project>
