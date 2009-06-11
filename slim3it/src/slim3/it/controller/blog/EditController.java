@@ -4,14 +4,13 @@ import org.slim3.controller.JDOController;
 import org.slim3.controller.Navigation;
 import org.slim3.util.BeanUtil;
 
+import slim3.it.model.Blog;
+
 public class EditController extends JDOController {
 
     @Override
     public Navigation run() {
-        pm.evictAll();
-        Object blog = pm.getObjectById(Blog2.class, requestScope("key"));
-        System.out.println(blog.getClass().getClassLoader());
-        System.out.println(Blog2.class.getClassLoader());
+        Blog blog = pm.getObjectById(Blog.class, requestScope("key"));
         BeanUtil.copy(blog, request);
         return forward("/blog/edit.jsp");
     }

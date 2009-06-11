@@ -1,11 +1,11 @@
 package slim3.it.controller.blog;
 
-import java.util.Date;
-
 import org.slim3.controller.JDOController;
 import org.slim3.controller.Navigation;
 import org.slim3.controller.validator.Validators;
 import org.slim3.util.BeanUtil;
+
+import slim3.it.model.Blog;
 
 public class InsertController extends JDOController {
 
@@ -14,9 +14,8 @@ public class InsertController extends JDOController {
         if (!validate()) {
             return forward("create");
         }
-        Blog2 blog = new Blog2();
+        Blog blog = new Blog();
         BeanUtil.copy(request, blog);
-        blog.setCreatedAt(new Date());
         pm.makePersistent(blog);
         return redirect(basePath);
     }
