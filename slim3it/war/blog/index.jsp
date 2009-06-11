@@ -16,12 +16,12 @@
 <a href="${f:url('create')}">Create</a>
 <table>
 <thead>
-<tr><th>Title</th><th>Content</th></tr>
+<tr><th>Title</th><th>Content</th><th>CreatedAt</th></tr>
 </thead>
 <tbody>
 <c:forEach var="e" items="${blogList}">
 <tr>
-<td>${f:h(e.title)}</td><td>${f:h(e.content)}</td>
+<td>${f:h(e.title)}</td><td>${f:h(e.content)}</td><td>${f:h(e.createdAt)}</td>
 <c:set var="editUrl" value="edit?key=${e.key}"/>
 <c:set var="deleteUrl" value="delete?key=${e.key}"/>
 <td><a href="${f:url(editUrl)}">Edit</a></td>

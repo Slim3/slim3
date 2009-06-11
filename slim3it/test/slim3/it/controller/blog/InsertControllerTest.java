@@ -7,6 +7,11 @@ import slim3.it.model.Blog;
 
 public class InsertControllerTest extends JDOControllerTestCase {
 
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+    }
+
     public void testRun() throws Exception {
         param("title", "aaa");
         param("content", "bbb");
@@ -19,6 +24,9 @@ public class InsertControllerTest extends JDOControllerTestCase {
     }
 
     public void testValidate() throws Exception {
+        System.setProperty(
+            "appengine.orm.disable.duplicate.pmf.exception",
+            "true");
         start("/blog/insert");
         InsertController controller = getController();
         assertNotNull(controller);

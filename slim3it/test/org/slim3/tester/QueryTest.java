@@ -13,6 +13,6 @@ public class QueryTest extends JDOTestCase {
 
     public void testTypeSafe() throws Exception {
         BlogMeta b = new BlogMeta();
-        from(b).orderBy(b.key.asc()).getResultList();
+        from(b).where(b.title.eq("aaa")).orderBy(b.key.asc()).getResultList();
     }
 }
