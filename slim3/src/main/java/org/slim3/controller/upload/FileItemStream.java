@@ -18,8 +18,6 @@ package org.slim3.controller.upload;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.fileupload.FileItemStream.ItemSkippedException;
-
 /**
  * This interface provides access to a file or form item that was received
  * within a <code>multipart/form-data</code> POST request.
@@ -39,7 +37,6 @@ public interface FileItemStream {
      *             possible to recreate the data stream.
      * @throws IOException
      *             An I/O error occurred.
-     * @see ItemSkippedException
      */
     InputStream openStream() throws IOException;
 
