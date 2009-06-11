@@ -34,6 +34,8 @@ import org.slim3.gen.desc.ModelMetaDesc;
 import org.slim3.gen.desc.ModelMetaDescFactory;
 import org.slim3.gen.generator.Generator;
 import org.slim3.gen.generator.ModelMetaGenerator;
+import org.slim3.gen.message.MessageCode;
+import org.slim3.gen.message.MessageFormatter;
 import org.slim3.gen.printer.FilePrinter;
 import org.slim3.gen.printer.Printer;
 import org.slim3.gen.util.StringUtil;
@@ -54,23 +56,17 @@ public class JDOModelProcessor extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> annotations,
             RoundEnvironment roundEnv) {
-        long startTime = 0L;
-        if (Options.isDebugEnabled(processingEnv)) {
-            Logger.debug(processingEnv, "[%s] Started.", getClass().getName());
-            startTime = System.nanoTime();
-        }
         for (TypeElement annotation : annotations) {
             for (TypeElement element : ElementFilter.typesIn(roundEnv
                 .getElementsAnnotatedWith(annotation))) {
-                handleTypeElement(element);
+                try {
+                    handleTypeElement(element);
+                } catch (RuntimeException e) {
+                    Logger.error(processingEnv, element, MessageFormatter
+                        .getMessage(MessageCode.SILM3GEN0001));
+                    throw e;
+                }
             }
-        }
-        if (Options.isDebugEnabled(processingEnv)) {
-            Logger.debug(
-                processingEnv,
-                "[%s] Ended. elapsed=%d(nano)",
-                getClass().getName(),
-                System.nanoTime() - startTime);
         }
         return true;
     }
@@ -83,11 +79,9 @@ public class JDOModelProcessor extends AbstractProcessor {
      */
     protected void handleTypeElement(TypeElement element) {
         if (Options.isDebugEnabled(processingEnv)) {
-            Logger.debug(
-                processingEnv,
-                "[%s] Element(%s) is handling.",
-                getClass().getName(),
-                element.getQualifiedName());
+            Logger.debug(processingEnv, MessageFormatter.getMessage(
+                MessageCode.SILM3GEN0002,
+                element));
         }
         ModelMetaDescFactory modelMetaDescFactory =
             createModelMetaDescFactory();
@@ -97,11 +91,9 @@ public class JDOModelProcessor extends AbstractProcessor {
             generateModelMeta(modelMetaDesc, element);
         }
         if (Options.isDebugEnabled(processingEnv)) {
-            Logger.debug(
-                processingEnv,
-                "[%s] Element(%s) is handled.",
-                getClass().getName(),
-                element.getQualifiedName());
+            Logger.debug(processingEnv, MessageFormatter.getMessage(
+                MessageCode.SILM3GEN0003,
+                element));
         }
     }
 
@@ -131,11 +123,6 @@ public class JDOModelProcessor extends AbstractProcessor {
             Generator generator = createGenerator(modelMetaDesc);
             generator.generate(printer);
         } catch (IOException e) {
-            Logger.error(
-                processingEnv,
-                model,
-                "[%s] Failed to generate.",
-                getClass().getName());
             throw new RuntimeException(e);
         } finally {
             if (printer != null) {

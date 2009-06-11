@@ -15,12 +15,8 @@
  */
 package org.slim3.gen.processor;
 
-import java.util.Formatter;
-
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.tools.Diagnostic.Kind;
 
@@ -38,39 +34,12 @@ public final class Logger {
      * 
      * @param env
      *            the processing environment.
-     * @param format
-     *            the format string.
-     * @param args
-     *            arguments referenced by the format specifiers in the format
-     *            string.
-     * @see Formatter
+     * @param message
+     *            the message.
      */
-    public static void debug(ProcessingEnvironment env, String format,
-            Object... args) {
-        String msg = String.format(format, args);
+    public static void debug(ProcessingEnvironment env, String message) {
         Messager messager = env.getMessager();
-        messager.printMessage(Kind.NOTE, msg);
-    }
-
-    /**
-     * Logs a warning message.
-     * 
-     * @param env
-     *            the processing environment.
-     * @param element
-     *            the element to use as a position hint
-     * @param format
-     *            the format string.
-     * @param args
-     *            arguments referenced by the format specifiers in the format
-     *            string.
-     * @see Formatter
-     */
-    public static void warn(ProcessingEnvironment env, Element element,
-            String format, Object... args) {
-        String msg = String.format(format, args);
-        Messager messager = env.getMessager();
-        messager.printMessage(Kind.WARNING, msg, element);
+        messager.printMessage(Kind.NOTE, message);
     }
 
     /**
@@ -80,71 +49,13 @@ public final class Logger {
      *            the processing environment.
      * @param element
      *            the element to use as a position hint
-     * @param format
-     *            the format string.
-     * @param args
-     *            arguments referenced by the format specifiers in the format
-     *            string.
-     * @see Formatter
+     * @param message
+     *            the message.
      */
     public static void error(ProcessingEnvironment env, Element element,
-            String format, Object... args) {
-        String msg = String.format(format, args);
+            String message) {
         Messager messager = env.getMessager();
-        messager.printMessage(Kind.ERROR, msg, element);
+        messager.printMessage(Kind.ERROR, message, element);
     }
 
-    /**
-     * Logs an error message.
-     * 
-     * @param env
-     *            the processing environment.
-     * @param element
-     *            the annotated element
-     * @param annotationMirror
-     *            the annotation to use as a position hint
-     * @param format
-     *            the format string.
-     * @param args
-     *            arguments referenced by the format specifiers in the format
-     *            string.
-     * @see Formatter
-     */
-    public static void error(ProcessingEnvironment env, Element element,
-            AnnotationMirror annotationMirror, String format, Object... args) {
-        String msg = String.format(format, args);
-        Messager messager = env.getMessager();
-        messager.printMessage(Kind.ERROR, msg, element, annotationMirror);
-    }
-
-    /**
-     * Logs an error message.
-     * 
-     * @param env
-     *            the processing environment.
-     * @param element
-     *            the annotated element
-     * @param annotationMirror
-     *            the annotation containing the annotation value
-     * @param annotationValue
-     *            the annotation value to use as a position hint
-     * @param format
-     *            the format string.
-     * @param args
-     *            arguments referenced by the format specifiers in the format
-     *            string.
-     * @see Formatter
-     */
-    public static void error(ProcessingEnvironment env, Element element,
-            AnnotationMirror annotationMirror, AnnotationValue annotationValue,
-            String format, Object... args) {
-        String msg = String.format(format, args);
-        Messager messager = env.getMessager();
-        messager.printMessage(
-            Kind.ERROR,
-            msg,
-            element,
-            annotationMirror,
-            annotationValue);
-    }
 }

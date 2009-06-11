@@ -23,6 +23,8 @@ import java.io.StringWriter;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 import org.slim3.gen.generator.Generator;
+import org.slim3.gen.message.MessageCode;
+import org.slim3.gen.message.MessageFormatter;
 import org.slim3.gen.printer.FilePrinter;
 import org.slim3.gen.printer.Printer;
 
@@ -96,7 +98,9 @@ public abstract class AbstractTask extends Task {
     protected void generate(Generator generator, File file, String className)
             throws IOException {
         if (file.exists()) {
-            log("Already exists. Skipped. (" + className + ".java:0)");
+            log(MessageFormatter.getSimpleMessage(
+                MessageCode.SILM3GEN0004,
+                className));
             return;
         }
         Printer printer = null;
@@ -108,7 +112,9 @@ public abstract class AbstractTask extends Task {
                 printer.close();
             }
         }
-        log("Generated. (" + className + ".java:0)");
+        log(MessageFormatter.getSimpleMessage(
+            MessageCode.SILM3GEN0005,
+            className));
     }
 
     /**
@@ -120,9 +126,9 @@ public abstract class AbstractTask extends Task {
      */
     protected void generate(Generator generator, File file) throws IOException {
         if (file.exists()) {
-            log("Already exists. Skipped generation. ("
-                + file.getAbsolutePath()
-                + ")");
+            log(MessageFormatter.getSimpleMessage(
+                MessageCode.SILM3GEN0006,
+                file.getAbsolutePath()));
             return;
         }
         Printer printer = null;
@@ -134,7 +140,8 @@ public abstract class AbstractTask extends Task {
                 printer.close();
             }
         }
-        log("Generated. (" + file.getAbsolutePath() + ")");
+        log(MessageFormatter.getSimpleMessage(MessageCode.SILM3GEN0007, file
+            .getAbsolutePath()));
     }
 
     /**

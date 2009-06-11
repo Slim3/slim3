@@ -20,7 +20,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.TypeElement;
@@ -76,14 +75,10 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelMetaDesc> {
 
     @Override
     public Void visitVariable(VariableElement attribute, ModelMetaDesc p) {
-        AnnotationMirror persistent =
-            ElementUtil.getAnnotationMirror(
-                attribute,
-                ClassConstants.Persistent);
-        if (persistent == null) {
+        if (!isPersistent(attribute)) {
             return null;
         }
-        if (!isTopLevelType(attribute)) {
+        if (isNestedType(attribute)) {
             return null;
         }
         AttributeMetaDesc attributeMetaDesc = new AttributeMetaDesc();
@@ -104,22 +99,52 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelMetaDesc> {
     }
 
     /**
-     * Returns {@code true} if the attribute type is a top level type.
+     * Returns {@code true} if the attribute type is a nested type.
      * 
      * @param attribute
      *            the element of an attribute
-     * @return {@code true} if the attribute type is a top level type
+     * @return {@code true} if the attribute type is a nested type
      */
-    protected boolean isTopLevelType(Element attribute) {
-        Element e = processingEnv.getTypeUtils().asElement(attribute.asType());
+    protected boolean isNestedType(Element attribute) {
+        TypeMirror typeMirror =
+            attribute.asType().accept(new TypeKindVisitor6<TypeMirror, Void>() {
+
+                @Override
+                public TypeMirror visitArray(ArrayType t, Void p) {
+                    return t.getComponentType().accept(this, p);
+                }
+
+                @Override
+                protected TypeMirror defaultAction(TypeMirror e, Void p) {
+                    return e;
+                }
+
+            }, null);
+        Element e = processingEnv.getTypeUtils().asElement(typeMirror);
+        if (e == null) {
+            return false;
+        }
         return e.accept(new ElementKindVisitor6<Boolean, Void>(false) {
 
             @Override
             public Boolean visitType(TypeElement e, Void p) {
-                return e.getNestingKind() == NestingKind.TOP_LEVEL;
+                return e.getNestingKind().isNested();
             }
 
         }, null);
+    }
+
+    /**
+     * Returns {@code true} if this attribute is persistent.
+     * 
+     * @param attribute
+     *            the element of an attribute
+     * @return {@code true} if this attribute is persistent.
+     */
+    protected boolean isPersistent(Element attribute) {
+        return ElementUtil.getAnnotationMirror(
+            attribute,
+            ClassConstants.Persistent) != null;
     }
 
     /**
