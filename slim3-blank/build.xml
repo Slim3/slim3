@@ -67,6 +67,19 @@
     	<copy todir="src" file="../slim3/src/main/resources/application_ja.properties"/>
     </target>
 
+	<target name="dist">
+        <delete includeemptydirs="true" failonerror="false">
+            <fileset dir="target"/>
+        </delete>
+        <mkdir dir="target"/>
+        <zip zipfile="target/slim3-blank-${ver}.zip">
+            <zipfileset prefix="slim3-blank" dir=".">
+                <exclude name="target/**"/>
+                <exclude name="war/WEB-INF/classes/**"/>
+            </zipfileset>
+        </zip>
+    </target>
+
     <target name="gen-controller">
         <taskdef name="gen-controller" classname="org.slim3.gen.task.GenControllerTask" classpathref="classpath"/>
         <taskdef name="gen-view" classname="org.slim3.gen.task.GenViewTask" classpathref="classpath"/>
