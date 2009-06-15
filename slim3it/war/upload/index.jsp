@@ -12,6 +12,8 @@
 <body>
 <form action="${f:url('upload')}" method="post" enctype="multipart/form-data">
 <input type="file" name="formFile" /><br />
+<input type="text" name="aaaArray" /><br />
+<input type="text" name="aaaArray" /><br />
 <input type="submit" value="Upload"/>
 </s:form>
 </body>

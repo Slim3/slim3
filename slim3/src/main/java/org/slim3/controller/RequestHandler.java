@@ -29,6 +29,11 @@ import javax.servlet.http.HttpServletRequest;
 public class RequestHandler {
 
     /**
+     * The array suffix.
+     */
+    protected static final String ARRAY_SUFFIX = "Array";
+
+    /**
      * The request.
      */
     protected HttpServletRequest request;
@@ -55,7 +60,7 @@ public class RequestHandler {
         for (Enumeration<String> e = request.getParameterNames(); e
             .hasMoreElements();) {
             String name = e.nextElement();
-            if (name.endsWith("Array")) {
+            if (name.endsWith(ARRAY_SUFFIX)) {
                 request.setAttribute(name, request.getParameterValues(name));
             } else {
                 request.setAttribute(name, request.getParameter(name));

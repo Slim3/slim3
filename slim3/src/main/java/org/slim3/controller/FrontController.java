@@ -33,6 +33,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.slim3.controller.upload.FileUpload;
+import org.slim3.controller.upload.MultipartRequestHandler;
 import org.slim3.controller.validator.Errors;
 import org.slim3.util.ApplicationMessage;
 import org.slim3.util.ClassUtil;
@@ -480,6 +482,9 @@ public class FrontController implements Filter {
      * 
      */
     protected RequestHandler createRequestHandler(HttpServletRequest request) {
+        if (FileUpload.isMultipartContent(request)) {
+            return new MultipartRequestHandler(request);
+        }
         return new RequestHandler(request);
     }
 

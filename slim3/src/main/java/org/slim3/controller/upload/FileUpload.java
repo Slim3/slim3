@@ -1,17 +1,18 @@
 /*
- * Copyright 2004-2009 the original author or authors.
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the specific language
- * governing permissions and limitations under the License.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.slim3.controller.upload;
 
@@ -23,13 +24,17 @@ import java.util.NoSuchElementException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.fileupload.ParameterParser;
-import org.apache.commons.fileupload.util.LimitedInputStream;
 import org.slim3.controller.upload.MultipartStream.ItemInputStream;
 
 /**
  * High level API for processing file uploads.
  * 
+ * @author <a href="mailto:Rafal.Krzewski@e-point.pl">Rafal Krzewski</a>
+ * @author <a href="mailto:dlr@collab.net">Daniel Rall</a>
+ * @author <a href="mailto:jvanzyl@apache.org">Jason van Zyl</a>
+ * @author <a href="mailto:jmcnally@collab.net">John McNally</a>
+ * @author <a href="mailto:martinc@apache.org">Martin Cooper</a>
+ * @author Sean C. Sullivan
  * @author higa
  * @since 3.0
  * 
@@ -207,8 +212,8 @@ public class FileUpload {
      * Processes an <a href="http://www.ietf.org/rfc/rfc1867.txt">RFC 1867</a>
      * compliant <code>multipart/form-data</code> stream.
      * 
-     * @param ctx
-     *            The context for the request to be parsed.
+     * @param request
+     *            The request.
      * 
      * @return An iterator to instances of <code>FileItemStream</code> parsed
      *         from the request, in the order that they were transmitted.
@@ -239,8 +244,9 @@ public class FileUpload {
         ParameterParser parser = new ParameterParser();
         parser.setLowerCaseNames(true);
         // Parameter parser can handle null input
-        Map params = parser.parse(contentType, new char[] { ';', ',' });
-        String boundaryStr = (String) params.get("boundary");
+        Map<String, String> params =
+            parser.parse(contentType, new char[] { ';', ',' });
+        String boundaryStr = params.get("boundary");
 
         if (boundaryStr == null) {
             return null;
@@ -273,7 +279,7 @@ public class FileUpload {
      *            The content-disposition headers value.
      * @return The file name
      */
-    private String getFileName(String pContentDisposition) {
+    protected String getFileName(String pContentDisposition) {
         String fileName = null;
         if (pContentDisposition != null) {
             String cdl = pContentDisposition.toLowerCase();
@@ -281,9 +287,10 @@ public class FileUpload {
                 ParameterParser parser = new ParameterParser();
                 parser.setLowerCaseNames(true);
                 // Parameter parser can handle null input
-                Map params = parser.parse(pContentDisposition, ';');
+                Map<String, String> params =
+                    parser.parse(pContentDisposition, ';');
                 if (params.containsKey("filename")) {
-                    fileName = (String) params.get("filename");
+                    fileName = params.get("filename");
                     if (fileName != null) {
                         fileName = fileName.trim();
                     } else {
@@ -318,15 +325,15 @@ public class FileUpload {
      *            The content-dispositions header value.
      * @return The field jake
      */
-    private String getFieldName(String pContentDisposition) {
+    protected String getFieldName(String pContentDisposition) {
         String fieldName = null;
         if (pContentDisposition != null
             && pContentDisposition.toLowerCase().startsWith(FORM_DATA)) {
             ParameterParser parser = new ParameterParser();
             parser.setLowerCaseNames(true);
             // Parameter parser can handle null input
-            Map params = parser.parse(pContentDisposition, ';');
-            fieldName = (String) params.get("name");
+            Map<String, String> params = parser.parse(pContentDisposition, ';');
+            fieldName = params.get("name");
             if (fieldName != null) {
                 fieldName = fieldName.trim();
             }
@@ -390,7 +397,7 @@ public class FileUpload {
      *            Index of the last byte, which has yet been processed.
      * @return Index of the \r\n sequence, which indicates end of line.
      */
-    private int parseEndOfLine(String headerPart, int end) {
+    protected int parseEndOfLine(String headerPart, int end) {
         int index = end;
         for (;;) {
             int offset = headerPart.indexOf('\r', index);
@@ -426,12 +433,12 @@ public class FileUpload {
     /**
      * The default implementation of {@link FileItemIterator}.
      */
-    private class FileItemIteratorImpl implements FileItemIterator {
+    protected class FileItemIteratorImpl implements FileItemIterator {
 
         /**
          * Default implementation of {@link FileItemStream}.
          */
-        private class FileItemStreamImpl implements FileItemStream {
+        protected class FileItemStreamImpl implements FileItemStream {
             /**
              * The file items content type.
              */
@@ -496,6 +503,7 @@ public class FileUpload {
                             + " characters.", pContentLength, fileSizeMax);
                     }
                     istream = new LimitedInputStream(istream, fileSizeMax) {
+                        @Override
                         protected void raiseError(long pSizeMax, long pCount)
                                 throws IOException {
                             itemStream.close(true);
@@ -596,32 +604,37 @@ public class FileUpload {
         /**
          * The multi part stream to process.
          */
-        private MultipartStream multi;
+        protected MultipartStream multi;
 
         /**
          * The boundary, which separates the various parts.
          */
-        private byte[] boundary;
+        protected byte[] boundary;
+
         /**
          * The item, which we currently process.
          */
-        private FileItemStreamImpl currentItem;
+        protected FileItemStreamImpl currentItem;
+
         /**
          * The current items field name.
          */
-        private String currentFieldName;
+        protected String currentFieldName;
+
         /**
          * Whether we are currently skipping the preamble.
          */
-        private boolean skipPreamble;
+        protected boolean skipPreamble;
+
         /**
          * Whether the current item may still be read.
          */
         private boolean itemValid;
+
         /**
          * Whether we have seen the end of the file.
          */
-        private boolean eof;
+        protected boolean eof;
 
         /**
          * Creates a new instance.
@@ -660,6 +673,7 @@ public class FileUpload {
                 int requestSize = request.getContentLength();
                 if (requestSize == -1) {
                     input = new LimitedInputStream(input, sizeMax) {
+                        @Override
                         protected void raiseError(long pSizeMax, long pCount)
                                 throws IOException {
                             throw new SizeLimitExceededException(
@@ -713,7 +727,7 @@ public class FileUpload {
          * @throws IOException
          *             An I/O error occurred.
          */
-        private boolean findNextItem() throws IOException {
+        protected boolean findNextItem() throws IOException {
             if (eof) {
                 return false;
             }
@@ -784,7 +798,14 @@ public class FileUpload {
             }
         }
 
-        private long getContentLength(FileItemHeaders pHeaders) {
+        /**
+         * Returns the content length.
+         * 
+         * @param pHeaders
+         *            the headers
+         * @return the content length
+         */
+        protected long getContentLength(FileItemHeaders pHeaders) {
             try {
                 return Long.parseLong(pHeaders.getHeader(CONTENT_LENGTH));
             } catch (Exception e) {
