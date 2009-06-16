@@ -58,7 +58,7 @@ public interface FileItemStream {
      * 
      * @return The original filename in the client's filesystem.
      */
-    String getName();
+    String getFileName();
 
     /**
      * Returns the name of the field in the multipart form corresponding to this

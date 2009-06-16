@@ -1,23 +1,33 @@
 package slim3.it.controller.upload;
 
-import org.slim3.controller.Controller;
+import org.slim3.controller.JDOController;
 import org.slim3.controller.Navigation;
-import org.slim3.util.RuntimeExceptionUtil;
+import org.slim3.controller.upload.FileItem;
+import org.slim3.util.ByteUtil;
 
-public class UploadController extends Controller {
+import slim3.it.model.Upload;
+import slim3.it.model.UploadData;
+
+import com.google.appengine.api.datastore.Blob;
+
+public class UploadController extends JDOController {
+
+    private static final int SIZE = 9000000;
 
     @Override
     public Navigation run() {
-        try {
-            byte[] formFile = requestScope("formFile");
-            System.out.println("formFile:" + new String(formFile, "Shift_JIS"));
-            String[] aaaArray = requestScope("aaaArray");
-            for (String aaa : aaaArray) {
-                System.out.println("aaa:" + aaa);
-            }
-        } catch (Exception e) {
-            RuntimeExceptionUtil.wrapAndThrow(e);
+        FileItem formFile = requestScope("formFile");
+        Upload upload = new Upload();
+        upload.setFileName(formFile.getFileName());
+        upload.setLength(formFile.getData().length);
+        byte[] bytes = formFile.getData();
+        byte[][] bytesArray = ByteUtil.split(bytes, SIZE);
+        for (byte[] data : bytesArray) {
+            UploadData uploadData = new UploadData();
+            uploadData.setBlob(new Blob(data));
+            upload.getDataList().add(uploadData);
         }
-        return forward("index.jsp");
+        pm.makePersistent(upload);
+        return redirect(basePath);
     }
 }

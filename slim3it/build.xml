@@ -3,8 +3,8 @@
     <property name="srcDir" value="src"/>
     <property name="testDir" value="test"/>
     <property name="warDir" value="war"/>
-	<property name="superclassName" value="org.slim3.controller.Controller"/>
-	<property name="testCaseSuperclassName" value="org.slim3.tester.ControllerTestCase"/>
+	<property name="superclassName" value="org.slim3.controller.JDOController"/>
+	<property name="testCaseSuperclassName" value="org.slim3.tester.JDOControllerTestCase"/>
 
 	<path id="classpath">
 		<fileset dir="war/WEB-INF/classes">

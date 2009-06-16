@@ -15,8 +15,6 @@
  */
 package org.slim3.util;
 
-import org.slim3.util.ByteUtil;
-
 import junit.framework.TestCase;
 
 /**
@@ -141,5 +139,71 @@ public class ByteUtilTest extends TestCase {
         } catch (NumberFormatException e) {
             System.out.println(e);
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testToByteArray() throws Exception {
+        assertNull(ByteUtil.toByteArray(null));
+        assertNotNull(ByteUtil.toByteArray("aaa"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testToObject() throws Exception {
+        assertNull(ByteUtil.toObject(null));
+        assertEquals("aaa", ByteUtil.toObject(ByteUtil.toByteArray("aaa")));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testSplitForNoMod() throws Exception {
+        byte[] bytes = new byte[] { 1, 2, 3, 4 };
+        byte[][] ret = ByteUtil.split(bytes, 2);
+        assertEquals(2, ret.length);
+        assertEquals(2, ret[0].length);
+        assertEquals(1, ret[0][0]);
+        assertEquals(2, ret[0][1]);
+        assertEquals(2, ret[1].length);
+        assertEquals(3, ret[1][0]);
+        assertEquals(4, ret[1][1]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testSplitForMod() throws Exception {
+        byte[] bytes = new byte[] { 1, 2, 3, 4, 5 };
+        byte[][] ret = ByteUtil.split(bytes, 2);
+        assertEquals(3, ret.length);
+        assertEquals(2, ret[0].length);
+        assertEquals(1, ret[0][0]);
+        assertEquals(2, ret[0][1]);
+        assertEquals(2, ret[1].length);
+        assertEquals(3, ret[1][0]);
+        assertEquals(4, ret[1][1]);
+        assertEquals(1, ret[2].length);
+        assertEquals(5, ret[2][0]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testJoin() throws Exception {
+        byte[][] bytesArray =
+            new byte[][] {
+                new byte[] { 1, 2 },
+                new byte[] { 3, 4 },
+                new byte[] { 5 } };
+        byte[] bytes = ByteUtil.join(bytesArray);
+        assertEquals(5, bytes.length);
+        assertEquals(1, bytes[0]);
+        assertEquals(2, bytes[1]);
+        assertEquals(3, bytes[2]);
+        assertEquals(4, bytes[3]);
+        assertEquals(5, bytes[4]);
     }
 }

@@ -1,16 +1,32 @@
 package slim3.it.controller.upload;
 
-import org.slim3.tester.ControllerTestCase;
+import java.util.List;
 
-public class UploadControllerTest extends ControllerTestCase {
+import org.slim3.controller.upload.FileItem;
+import org.slim3.tester.JDOControllerTestCase;
+
+import slim3.it.model.Upload;
+import slim3.it.model.UploadData;
+
+public class UploadControllerTest extends JDOControllerTestCase {
 
     public void testRun() throws Exception {
-        request
-            .setContentType("multipart/form-data; boundary=---------------------------253022096932392");
+        FileItem fileItem = new FileItem("aaa", "bbb", new byte[] { 1 });
+        requestScope("formFile", fileItem);
         start("/upload/upload");
         UploadController controller = getController();
         assertNotNull(controller);
-        assertFalse(isRedirect());
-        assertNull(getNextPath());
+        assertTrue(isRedirect());
+        assertEquals("/upload/", getNextPath());
+        Upload upload = from(Upload.class).getSingleResult();
+        assertNotNull(upload);
+        assertEquals(1, upload.getLength());
+        List<UploadData> dataList = upload.getDataList();
+        assertNotNull(dataList);
+        assertEquals(1, dataList.size());
+        UploadData uploadData = dataList.get(0);
+        byte[] bytes = uploadData.getBlob().getBytes();
+        assertEquals(1, bytes.length);
+        assertEquals(1, bytes[0]);
     }
 }

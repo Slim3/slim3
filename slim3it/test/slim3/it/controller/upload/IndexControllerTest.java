@@ -1,8 +1,8 @@
 package slim3.it.controller.upload;
 
-import org.slim3.tester.ControllerTestCase;
+import org.slim3.tester.JDOControllerTestCase;
 
-public class IndexControllerTest extends ControllerTestCase {
+public class IndexControllerTest extends JDOControllerTestCase {
 
     public void testRun() throws Exception {
         start("/upload/");
@@ -10,5 +10,6 @@ public class IndexControllerTest extends ControllerTestCase {
         assertNotNull(controller);
         assertFalse(isRedirect());
         assertEquals("/upload/index.jsp", getNextPath());
+        assertNotNull(requestScope("uploadList"));
     }
 }

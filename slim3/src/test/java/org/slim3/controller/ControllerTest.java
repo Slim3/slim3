@@ -18,6 +18,7 @@ package org.slim3.controller;
 import junit.framework.TestCase;
 
 import org.slim3.tester.MockHttpServletRequest;
+import org.slim3.tester.MockHttpServletResponse;
 import org.slim3.tester.MockServletContext;
 
 /**
@@ -33,10 +34,13 @@ public class ControllerTest extends TestCase {
     private MockHttpServletRequest request =
         new MockHttpServletRequest(servletContext);
 
+    private MockHttpServletResponse response = new MockHttpServletResponse();
+
     @Override
     protected void setUp() throws Exception {
         controller.application = servletContext;
         controller.request = request;
+        controller.response = response;
     }
 
     /**
@@ -141,6 +145,17 @@ public class ControllerTest extends TestCase {
         assertFalse(controller.isDevelopment());
         servletContext.setServerInfo("Development");
         assertTrue(controller.isDevelopment());
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testDownload() throws Exception {
+        controller.download("aaa.txt", new byte[] { 1 });
+        byte[] bytes = response.getOutputAsByteArray();
+        assertEquals(1, bytes.length);
+        assertEquals(1, bytes[0]);
     }
 
     private static class IndexController extends Controller {

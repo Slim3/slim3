@@ -12,9 +12,23 @@
 <body>
 <form action="${f:url('upload')}" method="post" enctype="multipart/form-data">
 <input type="file" name="formFile" /><br />
-<input type="text" name="aaaArray" /><br />
-<input type="text" name="aaaArray" /><br />
 <input type="submit" value="Upload"/>
-</s:form>
+</form>
+<table>
+<thead>
+<tr><th>FileName</th><th>Bytes</th></tr>
+</thead>
+<tbody>
+<c:forEach var="e" items="${uploadList}">
+<tr>
+<td>${f:h(e.fileName)}</td><td>${f:h(e.length)}</td>
+<c:set var="downloadUrl" value="download?key=${e.key}"/>
+<c:set var="deleteUrl" value="delete?key=${e.key}"/>
+<td><a href="${f:url(downloadUrl)}">Download</a></td>
+<td><a href="${f:url(deleteUrl)}" onclick="return confirm('delete OK?')">Delete</a></td>
+</tr>
+</c:forEach>
+</tbody>
+</table>
 </body>
 </html>

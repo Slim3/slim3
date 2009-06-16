@@ -15,6 +15,8 @@
  */
 package org.slim3.controller;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -315,5 +317,30 @@ public abstract class Controller {
      */
     protected boolean isDevelopment() {
         return application.getServerInfo().indexOf("Development") >= 0;
+    }
+
+    /**
+     * Downloads the data.
+     * 
+     * @param fileName
+     *            the file name
+     * @param data
+     *            the data
+     */
+    protected void download(String fileName, byte[] data) {
+        try {
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-disposition", "attachment; filename=\""
+                + fileName
+                + "\"");
+            OutputStream out = response.getOutputStream();
+            try {
+                out.write(data);
+            } finally {
+                out.close();
+            }
+        } catch (IOException e) {
+            RuntimeExceptionUtil.wrapAndThrow(e);
+        }
     }
 }

@@ -67,9 +67,15 @@ public class MultipartRequestHandler extends RequestHandler {
                     ByteArrayOutputStream baos =
                         new ByteArrayOutputStream(BYTE_ARRAY_SIZE);
                     Streams.copy(stream, baos, true);
-                    byte[] value = baos.toByteArray();
+                    byte[] data = baos.toByteArray();
+                    FileItem value =
+                        new FileItem(
+                            item.getFileName(),
+                            item.getContentType(),
+                            data);
                     if (name.endsWith(ARRAY_SUFFIX)) {
-                        byte[][] array = (byte[][]) request.getAttribute(name);
+                        FileItem[] array =
+                            (FileItem[]) request.getAttribute(name);
                         request.setAttribute(name, ArrayUtil.add(array, value));
                     } else {
                         request.setAttribute(name, value);

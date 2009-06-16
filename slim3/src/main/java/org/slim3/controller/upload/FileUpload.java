@@ -542,7 +542,7 @@ public class FileUpload {
              * 
              * @return File name, if known, or null.
              */
-            public String getName() {
+            public String getFileName() {
                 return name;
             }
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
 	<application>higayasuo</application>
-	<version>12</version>
+	<version>13</version>
 	<system-properties>
         <property name="slim3.controllerPackage" value="slim3.it.controller"/>
         <!--  <property name="slim3.hotReloading" value="false"/> -->
