@@ -1,8 +1,8 @@
 <project name="slim3-blank" default="gen-controller" basedir=".">
-    <property name="ver" value="EA1-SNAPSHOT"/>
-    <property name="srcdir" value="src"/>
-    <property name="testdir" value="test"/>
-    <property name="wardir" value="war"/>
+	<property name="ver" value="EA1-SNAPSHOT"/>
+    <property name="srcDir" value="src"/>
+    <property name="testDir" value="test"/>
+    <property name="warDir" value="war"/>
 	<property name="superclassName" value="org.slim3.controller.JDOController"/>
 	<property name="testCaseSuperclassName" value="org.slim3.tester.JDOControllerTestCase"/>
 
@@ -17,6 +17,10 @@
             <include name="**/*.jar" />
         </fileset>
     </path>
+
+	<taskdef name="gen-model" classname="org.slim3.gen.task.GenModelTask" classpathref="classpath"/>
+    <taskdef name="gen-view" classname="org.slim3.gen.task.GenViewTask" classpathref="classpath"/>
+    <taskdef name="gen-controller" classname="org.slim3.gen.task.GenControllerTask" classpathref="classpath"/>
 
     <target name="compile">
         <delete dir="war/WEB-INF/classes" failonerror="false"/>
@@ -80,18 +84,21 @@
         </zip>
     </target>
 
-    <target name="gen-controller">
-        <taskdef name="gen-controller" classname="org.slim3.gen.task.GenControllerTask" classpathref="classpath"/>
-        <taskdef name="gen-view" classname="org.slim3.gen.task.GenViewTask" classpathref="classpath"/>
-        <input message="Input a controller path." addproperty="controllerpath"/>
-        <gen-controller srcdir="${srcdir}" testdir="${testdir}" wardir="${wardir}" controllerpath="${controllerpath}"
-        	superclassName="${superclassName}" testCaseSuperclassName="${testCaseSuperclassName}"/>
-        <gen-view wardir="${wardir}" controllerpath="${controllerpath}"/>
+	<target name="gen-controller">
+        <input message="Input a controller path." addproperty="controllerPath"/>
+        <gen-controller srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" controllerpath="${controllerPath}"
+            superclassName="${superclassName}" testCaseSuperclassName="${testCaseSuperclassName}" useView="true"/>
+        <gen-view wardir="${warDir}" controllerPath="${controllerPath}"/>
     </target>
-	
-	<target name="gen-model">
-        <taskdef name="gen-model" classname="org.slim3.gen.task.GenModelTask" classpathref="classpath"/>
-        <input message="Input a simple model name." addproperty="modelSimpleName"/>
-        <gen-model srcdir="${srcdir}" testdir="${testdir}" wardir="${wardir}" simpleName="${modelSimpleName}"/>
+
+    <target name="gen-controller-without-view">
+        <input message="Input a controller path." addproperty="controllerPath"/>
+        <gen-controller srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" controllerpath="${controllerPath}"
+            superclassName="${superclassName}" testCaseSuperclassName="${testCaseSuperclassName}" useView="false"/>
+    </target>
+
+    <target name="gen-model">
+        <input message="Input a model simple name." addproperty="modelSimpleName"/>
+        <gen-model srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" simpleName="${modelSimpleName}"/>
     </target>
 </project>
