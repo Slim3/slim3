@@ -17,17 +17,19 @@ public class UploadController extends JDOController {
     @Override
     public Navigation run() {
         FileItem formFile = requestScope("formFile");
-        Upload upload = new Upload();
-        upload.setFileName(formFile.getFileName());
-        upload.setLength(formFile.getData().length);
-        byte[] bytes = formFile.getData();
-        byte[][] bytesArray = ByteUtil.split(bytes, SIZE);
-        for (byte[] data : bytesArray) {
-            UploadData uploadData = new UploadData();
-            uploadData.setBlob(new Blob(data));
-            upload.getDataList().add(uploadData);
+        if (formFile != null && formFile.getData().length > 0) {
+            Upload upload = new Upload();
+            upload.setFileName(formFile.getFileName());
+            upload.setLength(formFile.getData().length);
+            byte[] bytes = formFile.getData();
+            byte[][] bytesArray = ByteUtil.split(bytes, SIZE);
+            for (byte[] data : bytesArray) {
+                UploadData uploadData = new UploadData();
+                uploadData.setBlob(new Blob(data));
+                upload.getDataList().add(uploadData);
+            }
+            pm.makePersistent(upload);
         }
-        pm.makePersistent(upload);
         return redirect(basePath);
     }
 }

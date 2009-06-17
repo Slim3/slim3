@@ -19,7 +19,6 @@ import java.util.Locale;
 
 import junit.framework.TestCase;
 
-import org.slim3.controller.validator.FloatTypeValidator;
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
 import org.slim3.util.ApplicationMessage;
@@ -77,5 +76,15 @@ public class FloatTypeValidatorTest extends TestCase {
         request.setAttribute("aaa", "xxx");
         assertEquals("Aaa must be a float.", FloatTypeValidator.INSTANCE
             .validate(request, "aaa"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testValidateForInvalidAndMessage() throws Exception {
+        request.setAttribute("aaa", "xxx");
+        assertEquals("hoge", new FloatTypeValidator("hoge").validate(
+            request,
+            "aaa"));
     }
 }

@@ -387,9 +387,13 @@ public class FrontController implements Filter {
         controller.response = response;
         int pos = path.lastIndexOf('/');
         controller.basePath = path.substring(0, pos + 1);
-        Errors errors = new Errors();
+        Errors errors =
+            (Errors) request.getAttribute(ControllerConstants.ERRORS_KEY);
+        if (errors == null) {
+            errors = new Errors();
+            request.setAttribute(ControllerConstants.ERRORS_KEY, errors);
+        }
         controller.errors = errors;
-        request.setAttribute(ControllerConstants.ERRORS_KEY, errors);
         return controller;
     }
 

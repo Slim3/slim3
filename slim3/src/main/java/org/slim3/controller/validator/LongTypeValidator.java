@@ -33,6 +33,23 @@ public class LongTypeValidator extends AbstractValidator {
      */
     public static LongTypeValidator INSTANCE = new LongTypeValidator();
 
+    /**
+     * Constructor.
+     */
+    public LongTypeValidator() {
+        super();
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param message
+     *            the error message
+     */
+    public LongTypeValidator(String message) {
+        super(message);
+    }
+
     @Override
     public String validate(HttpServletRequest request, String name) {
         Object value = request.getAttribute(name);
@@ -44,6 +61,9 @@ public class LongTypeValidator extends AbstractValidator {
             Long.valueOf(s);
             return null;
         } catch (Throwable ignore) {
+            if (message != null) {
+                return message;
+            }
             return ApplicationMessage.get("validator.longType", getLabel(name));
         }
     }

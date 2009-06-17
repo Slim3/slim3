@@ -19,7 +19,6 @@ import java.util.Locale;
 
 import junit.framework.TestCase;
 
-import org.slim3.controller.validator.NumberTypeValidator;
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
 import org.slim3.util.ApplicationMessage;
@@ -78,6 +77,16 @@ public class NumberTypeValidatorTest extends TestCase {
     public void testValidateForInvalid() throws Exception {
         request.setAttribute("aaa", "xxx");
         assertEquals("Aaa is not a number(####).", validator.validate(
+            request,
+            "aaa"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testValidateForInvalidAndMessage() throws Exception {
+        request.setAttribute("aaa", "xxx");
+        assertEquals("hoge", new NumberTypeValidator("###", "hoge").validate(
             request,
             "aaa"));
     }

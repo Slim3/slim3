@@ -19,7 +19,6 @@ import java.util.Locale;
 
 import junit.framework.TestCase;
 
-import org.slim3.controller.validator.DateTypeValidator;
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
 import org.slim3.util.ApplicationMessage;
@@ -80,5 +79,14 @@ public class DateTypeValidatorTest extends TestCase {
         assertEquals("Aaa is not a date(MM/dd/yyyy).", validator.validate(
             request,
             "aaa"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testValidateForInvalidAndMessage() throws Exception {
+        request.setAttribute("aaa", "01/32/1970");
+        assertEquals("hoge", new DateTypeValidator("MM/dd/yyyy", "hoge")
+            .validate(request, "aaa"));
     }
 }

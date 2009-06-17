@@ -19,7 +19,6 @@ import java.util.Locale;
 
 import junit.framework.TestCase;
 
-import org.slim3.controller.validator.LongRangeValidator;
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
 import org.slim3.util.ApplicationMessage;
@@ -90,6 +89,16 @@ public class LongRangeValidatorTest extends TestCase {
             "aaa"));
         request.setAttribute("aaa", "xxx");
         assertEquals("Aaa is not in the 3 to 5 range.", validator.validate(
+            request,
+            "aaa"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testValidateForInvalidAndMessage() throws Exception {
+        request.setAttribute("aaa", "xxx");
+        assertEquals("hoge", new LongRangeValidator(3, 5, "hoge").validate(
             request,
             "aaa"));
     }

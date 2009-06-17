@@ -33,6 +33,22 @@ public class ByteTypeValidator extends AbstractValidator {
      */
     public static ByteTypeValidator INSTANCE = new ByteTypeValidator();
 
+    /**
+     * Constructor.
+     */
+    public ByteTypeValidator() {
+        super();
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param message
+     */
+    public ByteTypeValidator(String message) {
+        super(message);
+    }
+
     @Override
     public String validate(HttpServletRequest request, String name) {
         Object value = request.getAttribute(name);
@@ -44,6 +60,9 @@ public class ByteTypeValidator extends AbstractValidator {
             Byte.valueOf(s);
             return null;
         } catch (Throwable ignore) {
+            if (message != null) {
+                return message;
+            }
             return ApplicationMessage.get("validator.byteType", getLabel(name));
         }
     }

@@ -33,6 +33,23 @@ public class ShortTypeValidator extends AbstractValidator {
      */
     public static ShortTypeValidator INSTANCE = new ShortTypeValidator();
 
+    /**
+     * Constructor.
+     */
+    public ShortTypeValidator() {
+        super();
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param message
+     *            the error message
+     */
+    public ShortTypeValidator(String message) {
+        super(message);
+    }
+
     @Override
     public String validate(HttpServletRequest request, String name) {
         Object value = request.getAttribute(name);
@@ -44,6 +61,9 @@ public class ShortTypeValidator extends AbstractValidator {
             Short.valueOf(s);
             return null;
         } catch (Throwable ignore) {
+            if (message != null) {
+                return message;
+            }
             return ApplicationMessage
                 .get("validator.shortType", getLabel(name));
         }

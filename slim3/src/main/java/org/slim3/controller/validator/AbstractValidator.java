@@ -27,6 +27,27 @@ import org.slim3.util.ApplicationMessage;
 public abstract class AbstractValidator implements Validator {
 
     /**
+     * The error message.
+     */
+    protected String message;
+
+    /**
+     * Constructor.
+     */
+    public AbstractValidator() {
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param message
+     *            the error message
+     */
+    public AbstractValidator(String message) {
+        this.message = message;
+    }
+
+    /**
      * Returns the label.
      * 
      * @param name

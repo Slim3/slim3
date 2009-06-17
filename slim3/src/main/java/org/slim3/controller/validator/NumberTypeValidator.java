@@ -40,10 +40,24 @@ public class NumberTypeValidator extends AbstractValidator {
      * 
      * @param pattern
      *            the pattern of {@link DecimalFormat}
+     */
+    public NumberTypeValidator(String pattern) {
+        this(pattern, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param pattern
+     *            the pattern of {@link DecimalFormat}
+     * @param message
+     *            the error message
      * @throws NullPointerException
      *             if the pattern parameter is null
      */
-    public NumberTypeValidator(String pattern) throws NullPointerException {
+    public NumberTypeValidator(String pattern, String message)
+            throws NullPointerException {
+        super(message);
         if (pattern == null) {
             throw new NullPointerException("The pattern parameter is null.");
         }
@@ -61,6 +75,9 @@ public class NumberTypeValidator extends AbstractValidator {
             new DecimalFormat(pattern).parse(s);
             return null;
         } catch (Throwable ignore) {
+            if (message != null) {
+                return message;
+            }
             return ApplicationMessage.get(
                 "validator.numberType",
                 getLabel(name),

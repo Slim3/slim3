@@ -33,6 +33,23 @@ public class DoubleTypeValidator extends AbstractValidator {
      */
     public static DoubleTypeValidator INSTANCE = new DoubleTypeValidator();
 
+    /**
+     * Constructor.
+     */
+    public DoubleTypeValidator() {
+        super();
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param message
+     *            the error message
+     */
+    public DoubleTypeValidator(String message) {
+        super(message);
+    }
+
     @Override
     public String validate(HttpServletRequest request, String name) {
         Object value = request.getAttribute(name);
@@ -44,6 +61,9 @@ public class DoubleTypeValidator extends AbstractValidator {
             Double.valueOf(s);
             return null;
         } catch (Throwable ignore) {
+            if (message != null) {
+                return message;
+            }
             return ApplicationMessage.get(
                 "validator.doubleType",
                 getLabel(name));

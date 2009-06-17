@@ -159,6 +159,19 @@ public class FrontControllerTest extends ControllerTestCase {
      * @throws Exception
      * 
      */
+    public void testGetControllerForErrors() throws Exception {
+        Errors errors = new Errors();
+        requestScope(ControllerConstants.ERRORS_KEY, errors);
+        Controller controller =
+            frontController.getController(request, response, "/");
+        assertSame(errors, controller.errors);
+        assertSame(errors, requestScope(ControllerConstants.ERRORS_KEY));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
     public void testGetControllerForJsp() throws Exception {
         assertNull(frontController.getController(
             request,

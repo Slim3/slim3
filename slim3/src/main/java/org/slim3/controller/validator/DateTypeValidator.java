@@ -40,10 +40,24 @@ public class DateTypeValidator extends AbstractValidator {
      * 
      * @param pattern
      *            the pattern of {@link SimpleDateFormat}
+     */
+    public DateTypeValidator(String pattern) {
+        this(pattern, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param pattern
+     *            the pattern of {@link SimpleDateFormat}
+     * @param message
+     *            the error message
      * @throws NullPointerException
      *             if the pattern parameter is null
      */
-    public DateTypeValidator(String pattern) throws NullPointerException {
+    public DateTypeValidator(String pattern, String message)
+            throws NullPointerException {
+        super(message);
         if (pattern == null) {
             throw new NullPointerException("The pattern parameter is null.");
         }
@@ -63,6 +77,9 @@ public class DateTypeValidator extends AbstractValidator {
             format.parse(s);
             return null;
         } catch (Throwable ignore) {
+            if (message != null) {
+                return message;
+            }
             return ApplicationMessage.get(
                 "validator.dateType",
                 getLabel(name),

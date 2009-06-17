@@ -19,7 +19,6 @@ import java.util.Locale;
 
 import junit.framework.TestCase;
 
-import org.slim3.controller.validator.MinlengthValidator;
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
 import org.slim3.util.ApplicationMessage;
@@ -79,5 +78,15 @@ public class MinlengthValidatorTest extends TestCase {
         request.setAttribute("aaa", "xx");
         assertEquals("Aaa can not be less than 3 characters.", validator
             .validate(request, "aaa"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testValidateForInvalidAndMessage() throws Exception {
+        request.setAttribute("aaa", "xx");
+        assertEquals("hoge", new MinlengthValidator(3, "hoge").validate(
+            request,
+            "aaa"));
     }
 }

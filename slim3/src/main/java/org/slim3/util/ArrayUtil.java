@@ -39,11 +39,13 @@ public final class ArrayUtil {
      */
     @SuppressWarnings("unchecked")
     public static <T> T[] add(T[] array, T obj) {
-        if (obj == null) {
-            throw new NullPointerException("The obj parameter is null.");
+        if (array == null && obj == null) {
+            return null;
         }
+        Class<?> clazz =
+            obj != null ? obj.getClass() : array.getClass().getComponentType();
         int length = array != null ? array.length : 0;
-        T[] newArray = (T[]) Array.newInstance(obj.getClass(), length + 1);
+        T[] newArray = (T[]) Array.newInstance(clazz, length + 1);
         if (array != null) {
             System.arraycopy(array, 0, newArray, 0, length);
         }

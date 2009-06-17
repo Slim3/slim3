@@ -33,6 +33,23 @@ public class IntegerTypeValidator extends AbstractValidator {
      */
     public static IntegerTypeValidator INSTANCE = new IntegerTypeValidator();
 
+    /**
+     * Constructor.
+     */
+    public IntegerTypeValidator() {
+        super();
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param message
+     *            the error message
+     */
+    public IntegerTypeValidator(String message) {
+        super(message);
+    }
+
     @Override
     public String validate(HttpServletRequest request, String name) {
         Object value = request.getAttribute(name);
@@ -44,6 +61,9 @@ public class IntegerTypeValidator extends AbstractValidator {
             Integer.valueOf(s);
             return null;
         } catch (Throwable ignore) {
+            if (message != null) {
+                return message;
+            }
             return ApplicationMessage.get(
                 "validator.integerType",
                 getLabel(name));

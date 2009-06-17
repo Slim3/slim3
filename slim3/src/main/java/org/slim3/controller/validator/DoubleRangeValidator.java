@@ -47,6 +47,21 @@ public class DoubleRangeValidator extends AbstractValidator {
      *            the maximum value
      */
     public DoubleRangeValidator(double minimum, double maximum) {
+        this(minimum, maximum, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param minimum
+     *            the minimum value
+     * @param maximum
+     *            the maximum value
+     * @param message
+     *            the error message
+     */
+    public DoubleRangeValidator(double minimum, double maximum, String message) {
+        super(message);
         this.minimum = minimum;
         this.maximum = maximum;
     }
@@ -64,6 +79,9 @@ public class DoubleRangeValidator extends AbstractValidator {
                 return null;
             }
         } catch (Throwable ignore) {
+        }
+        if (message != null) {
+            return message;
         }
         return ApplicationMessage.get(
             "validator.range",

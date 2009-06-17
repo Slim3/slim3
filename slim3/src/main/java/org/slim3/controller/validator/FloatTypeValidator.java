@@ -33,6 +33,23 @@ public class FloatTypeValidator extends AbstractValidator {
      */
     public static FloatTypeValidator INSTANCE = new FloatTypeValidator();
 
+    /**
+     * Constructor.
+     */
+    public FloatTypeValidator() {
+        super();
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param message
+     *            the error message
+     */
+    public FloatTypeValidator(String message) {
+        super(message);
+    }
+
     @Override
     public String validate(HttpServletRequest request, String name) {
         Object value = request.getAttribute(name);
@@ -44,6 +61,9 @@ public class FloatTypeValidator extends AbstractValidator {
             Float.valueOf(s);
             return null;
         } catch (Throwable ignore) {
+            if (message != null) {
+                return message;
+            }
             return ApplicationMessage
                 .get("validator.floatType", getLabel(name));
         }

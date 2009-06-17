@@ -40,6 +40,19 @@ public class MinlengthValidator extends AbstractValidator {
      *            the minimum length
      */
     public MinlengthValidator(int minlength) {
+        this(minlength, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param minlength
+     *            the minimum length
+     * @param message
+     *            the error message
+     */
+    public MinlengthValidator(int minlength, String message) {
+        super(message);
         this.minlength = minlength;
     }
 
@@ -55,6 +68,9 @@ public class MinlengthValidator extends AbstractValidator {
                 return null;
             }
         } catch (Throwable ignore) {
+        }
+        if (message != null) {
+            return message;
         }
         return ApplicationMessage.get(
             "validator.minlength",

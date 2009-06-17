@@ -19,7 +19,6 @@ import java.util.Locale;
 
 import junit.framework.TestCase;
 
-import org.slim3.controller.validator.MaxlengthValidator;
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
 import org.slim3.util.ApplicationMessage;
@@ -79,5 +78,15 @@ public class MaxlengthValidatorTest extends TestCase {
         request.setAttribute("aaa", "xxxx");
         assertEquals("Aaa can not be greater than 3 characters.", validator
             .validate(request, "aaa"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testValidateForInvalidAndMessage() throws Exception {
+        request.setAttribute("aaa", "xxxx");
+        assertEquals("hoge", new MaxlengthValidator(3, "hoge").validate(
+            request,
+            "aaa"));
     }
 }

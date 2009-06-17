@@ -19,7 +19,6 @@ import java.util.Locale;
 
 import junit.framework.TestCase;
 
-import org.slim3.controller.validator.LongTypeValidator;
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
 import org.slim3.util.ApplicationMessage;
@@ -77,5 +76,15 @@ public class LongTypeValidatorTest extends TestCase {
         request.setAttribute("aaa", "xxx");
         assertEquals("Aaa must be a long.", LongTypeValidator.INSTANCE
             .validate(request, "aaa"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testValidateForInvalidAndMessage() throws Exception {
+        request.setAttribute("aaa", "xxx");
+        assertEquals("hoge", new LongTypeValidator("hoge").validate(
+            request,
+            "aaa"));
     }
 }

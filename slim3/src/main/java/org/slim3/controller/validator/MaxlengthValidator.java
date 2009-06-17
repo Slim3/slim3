@@ -40,6 +40,19 @@ public class MaxlengthValidator extends AbstractValidator {
      *            the maximum length
      */
     public MaxlengthValidator(int maxlength) {
+        this(maxlength, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param maxlength
+     *            the maximum length
+     * @param message
+     *            the error message
+     */
+    public MaxlengthValidator(int maxlength, String message) {
+        super(message);
         this.maxlength = maxlength;
     }
 
@@ -55,6 +68,9 @@ public class MaxlengthValidator extends AbstractValidator {
                 return null;
             }
         } catch (Throwable ignore) {
+        }
+        if (message != null) {
+            return message;
         }
         return ApplicationMessage.get(
             "validator.maxlength",

@@ -47,6 +47,21 @@ public class LongRangeValidator extends AbstractValidator {
      *            the maximum value
      */
     public LongRangeValidator(long minimum, long maximum) {
+        this(minimum, maximum, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param minimum
+     *            the minimum value
+     * @param maximum
+     *            the maximum value
+     * @param message
+     *            the error message
+     */
+    public LongRangeValidator(long minimum, long maximum, String message) {
+        super(message);
         this.minimum = minimum;
         this.maximum = maximum;
     }
@@ -64,6 +79,9 @@ public class LongRangeValidator extends AbstractValidator {
                 return null;
             }
         } catch (Throwable ignore) {
+        }
+        if (message != null) {
+            return message;
         }
         return ApplicationMessage.get(
             "validator.range",

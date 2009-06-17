@@ -130,12 +130,34 @@ public class Validators {
     }
 
     /**
+     * Returns {@link RequiredValidator}.
+     * 
+     * @param message
+     *            the error message
+     * @return {@link RequiredValidator}
+     */
+    public RequiredValidator required(String message) {
+        return new RequiredValidator(message);
+    }
+
+    /**
      * Returns {@link ByteTypeValidator}.
      * 
      * @return {@link ByteTypeValidator}
      */
     public ByteTypeValidator byteType() {
         return ByteTypeValidator.INSTANCE;
+    }
+
+    /**
+     * Returns {@link ByteTypeValidator}.
+     * 
+     * @param message
+     *            the error message
+     * @return {@link ByteTypeValidator}
+     */
+    public ByteTypeValidator byteType(String message) {
+        return new ByteTypeValidator(message);
     }
 
     /**
@@ -148,12 +170,34 @@ public class Validators {
     }
 
     /**
+     * Returns {@link ShortTypeValidator}.
+     * 
+     * @param message
+     *            the error message
+     * @return {@link ShortTypeValidator}
+     */
+    public ShortTypeValidator shortType(String message) {
+        return new ShortTypeValidator(message);
+    }
+
+    /**
      * Returns {@link IntegerTypeValidator}.
      * 
      * @return {@link IntegerTypeValidator}
      */
     public IntegerTypeValidator integerType() {
         return IntegerTypeValidator.INSTANCE;
+    }
+
+    /**
+     * Returns {@link IntegerTypeValidator}.
+     * 
+     * @param message
+     *            the error message
+     * @return {@link IntegerTypeValidator}
+     */
+    public IntegerTypeValidator integerType(String message) {
+        return new IntegerTypeValidator(message);
     }
 
     /**
@@ -166,12 +210,34 @@ public class Validators {
     }
 
     /**
+     * Returns {@link LongTypeValidator}.
+     * 
+     * @param message
+     *            the error message
+     * @return {@link LongTypeValidator}
+     */
+    public LongTypeValidator longType(String message) {
+        return new LongTypeValidator(message);
+    }
+
+    /**
      * Returns {@link FloatTypeValidator}.
      * 
      * @return {@link FloatTypeValidator}
      */
     public FloatTypeValidator floatType() {
         return FloatTypeValidator.INSTANCE;
+    }
+
+    /**
+     * Returns {@link FloatTypeValidator}.
+     * 
+     * @param message
+     *            the error message
+     * @return {@link FloatTypeValidator}
+     */
+    public FloatTypeValidator floatType(String message) {
+        return new FloatTypeValidator(message);
     }
 
     /**
@@ -184,16 +250,40 @@ public class Validators {
     }
 
     /**
+     * Returns {@link DoubleTypeValidator}.
+     * 
+     * @param message
+     *            the error message
+     * @return {@link DoubleTypeValidator}
+     */
+    public DoubleTypeValidator doubleType(String message) {
+        return new DoubleTypeValidator(message);
+    }
+
+    /**
      * Returns {@link NumberTypeValidator}.
      * 
      * @param pattern
      *            the pattern of {@link DecimalFormat}
      * 
      * @return {@link NumberTypeValidator}
-     * @see NumberTypeValidator#NumberTypeValidator(String)
      */
     public NumberTypeValidator numberType(String pattern) {
         return new NumberTypeValidator(pattern);
+    }
+
+    /**
+     * Returns {@link NumberTypeValidator}.
+     * 
+     * @param pattern
+     *            the pattern of {@link DecimalFormat}
+     * @param message
+     *            the error message
+     * 
+     * @return {@link NumberTypeValidator}
+     */
+    public NumberTypeValidator numberType(String pattern, String message) {
+        return new NumberTypeValidator(pattern, message);
     }
 
     /**
@@ -203,10 +293,22 @@ public class Validators {
      *            the pattern of {@link SimpleDateFormat}
      * 
      * @return {@link DateTypeValidator}
-     * @see DateTypeValidator#DateTypeValidator(String)
      */
     public DateTypeValidator dateType(String pattern) {
         return new DateTypeValidator(pattern);
+    }
+
+    /**
+     * Returns {@link DateTypeValidator}.
+     * 
+     * @param pattern
+     *            the pattern of {@link SimpleDateFormat}
+     * @param message
+     *            the error message
+     * @return {@link DateTypeValidator}
+     */
+    public DateTypeValidator dateType(String pattern, String message) {
+        return new DateTypeValidator(pattern, message);
     }
 
     /**
@@ -222,6 +324,19 @@ public class Validators {
     }
 
     /**
+     * Returns {@link MinlengthValidator}.
+     * 
+     * @param minlength
+     *            the minimum length
+     * @param message
+     *            the error message
+     * @return {@link MinlengthValidator}
+     */
+    public MinlengthValidator minlength(int minlength, String message) {
+        return new MinlengthValidator(minlength, message);
+    }
+
+    /**
      * Returns {@link MaxlengthValidator}.
      * 
      * @param maxlength
@@ -231,6 +346,19 @@ public class Validators {
      */
     public MaxlengthValidator maxlength(int maxlength) {
         return new MaxlengthValidator(maxlength);
+    }
+
+    /**
+     * Returns {@link MaxlengthValidator}.
+     * 
+     * @param maxlength
+     *            the maximum length
+     * @param message
+     *            the error message
+     * @return {@link MaxlengthValidator}
+     */
+    public MaxlengthValidator maxlength(int maxlength, String message) {
+        return new MaxlengthValidator(maxlength, message);
     }
 
     /**
@@ -247,6 +375,22 @@ public class Validators {
     }
 
     /**
+     * Returns {@link LongRangeValidator}.
+     * 
+     * @param minimum
+     *            the minimum value
+     * @param maximum
+     *            the maximum value
+     * @param message
+     *            the error message
+     * @return {@link LongRangeValidator}
+     */
+    public LongRangeValidator longRange(long minimum, long maximum,
+            String message) {
+        return new LongRangeValidator(minimum, maximum, message);
+    }
+
+    /**
      * Returns {@link DoubleRangeValidator}.
      * 
      * @param minimum
@@ -257,5 +401,21 @@ public class Validators {
      */
     public DoubleRangeValidator doubleRange(double minimum, double maximum) {
         return new DoubleRangeValidator(minimum, maximum);
+    }
+
+    /**
+     * Returns {@link DoubleRangeValidator}.
+     * 
+     * @param minimum
+     *            the minimum value
+     * @param maximum
+     *            the maximum value
+     * @param message
+     *            the error message
+     * @return {@link DoubleRangeValidator}
+     */
+    public DoubleRangeValidator doubleRange(double minimum, double maximum,
+            String message) {
+        return new DoubleRangeValidator(minimum, maximum, message);
     }
 }

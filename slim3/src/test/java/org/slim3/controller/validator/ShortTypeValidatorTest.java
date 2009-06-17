@@ -19,7 +19,6 @@ import java.util.Locale;
 
 import junit.framework.TestCase;
 
-import org.slim3.controller.validator.ShortTypeValidator;
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
 import org.slim3.util.ApplicationMessage;
@@ -77,5 +76,15 @@ public class ShortTypeValidatorTest extends TestCase {
         request.setAttribute("aaa", "xxx");
         assertEquals("Aaa must be a short.", ShortTypeValidator.INSTANCE
             .validate(request, "aaa"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testValidateForInvalidAndMessage() throws Exception {
+        request.setAttribute("aaa", "xxx");
+        assertEquals("hoge", new ShortTypeValidator("hoge").validate(
+            request,
+            "aaa"));
     }
 }

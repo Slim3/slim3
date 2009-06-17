@@ -19,7 +19,6 @@ import java.util.Locale;
 
 import junit.framework.TestCase;
 
-import org.slim3.controller.validator.RequiredValidator;
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
 import org.slim3.util.ApplicationMessage;
@@ -62,6 +61,16 @@ public class RequiredValidatorTest extends TestCase {
     public void testValidateForEmptyString() throws Exception {
         request.setAttribute("aaa", "");
         assertEquals("Aaa is required.", RequiredValidator.INSTANCE.validate(
+            request,
+            "aaa"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testValidateForMessage() throws Exception {
+        request.setAttribute("aaa", "");
+        assertEquals("hoge", new RequiredValidator("hoge").validate(
             request,
             "aaa"));
     }

@@ -82,6 +82,9 @@ public class ValidatorsTest extends TestCase {
      */
     public void testRequired() throws Exception {
         assertEquals(RequiredValidator.class, v.required().getClass());
+        assertEquals(RequiredValidator.class, v.required("hoge").getClass());
+        request.setAttribute("aaa", "123");
+        assertNull(v.required().validate(request, "aaa"));
     }
 
     /**
@@ -89,6 +92,9 @@ public class ValidatorsTest extends TestCase {
      */
     public void testByteType() throws Exception {
         assertEquals(ByteTypeValidator.class, v.byteType().getClass());
+        assertEquals(ByteTypeValidator.class, v.byteType("hoge").getClass());
+        request.setAttribute("aaa", "123");
+        assertNull(v.byteType().validate(request, "aaa"));
     }
 
     /**
@@ -96,6 +102,9 @@ public class ValidatorsTest extends TestCase {
      */
     public void testShortType() throws Exception {
         assertEquals(ShortTypeValidator.class, v.shortType().getClass());
+        assertEquals(ShortTypeValidator.class, v.shortType("hoge").getClass());
+        request.setAttribute("aaa", "123");
+        assertNull(v.shortType().validate(request, "aaa"));
     }
 
     /**
@@ -103,6 +112,11 @@ public class ValidatorsTest extends TestCase {
      */
     public void testIntegerType() throws Exception {
         assertEquals(IntegerTypeValidator.class, v.integerType().getClass());
+        assertEquals(IntegerTypeValidator.class, v
+            .integerType("hoge")
+            .getClass());
+        request.setAttribute("aaa", "123");
+        assertNull(v.integerType().validate(request, "aaa"));
     }
 
     /**
@@ -110,6 +124,9 @@ public class ValidatorsTest extends TestCase {
      */
     public void testLongType() throws Exception {
         assertEquals(LongTypeValidator.class, v.longType().getClass());
+        assertEquals(LongTypeValidator.class, v.longType("hoge").getClass());
+        request.setAttribute("aaa", "123");
+        assertNull(v.longType().validate(request, "aaa"));
     }
 
     /**
@@ -117,6 +134,9 @@ public class ValidatorsTest extends TestCase {
      */
     public void testFloatType() throws Exception {
         assertEquals(FloatTypeValidator.class, v.floatType().getClass());
+        assertEquals(FloatTypeValidator.class, v.floatType("hoge").getClass());
+        request.setAttribute("aaa", "123");
+        assertNull(v.floatType().validate(request, "aaa"));
     }
 
     /**
@@ -124,6 +144,9 @@ public class ValidatorsTest extends TestCase {
      */
     public void testDoubleType() throws Exception {
         assertEquals(DoubleTypeValidator.class, v.doubleType().getClass());
+        assertEquals(DoubleTypeValidator.class, v.doubleType("hoge").getClass());
+        request.setAttribute("aaa", "123");
+        assertNull(v.doubleType().validate(request, "aaa"));
     }
 
     /**
@@ -132,6 +155,9 @@ public class ValidatorsTest extends TestCase {
     public void testNumberType() throws Exception {
         Validators v = new Validators(request);
         assertEquals(NumberTypeValidator.class, v.numberType("###").getClass());
+        assertEquals(NumberTypeValidator.class, v
+            .numberType("###", "hoge")
+            .getClass());
         request.setAttribute("aaa", "123");
         assertNull(v.numberType("####").validate(request, "aaa"));
     }
@@ -143,6 +169,9 @@ public class ValidatorsTest extends TestCase {
         assertEquals(DateTypeValidator.class, v
             .dateType("MM/dd/yyyy")
             .getClass());
+        assertEquals(DateTypeValidator.class, v
+            .dateType("MM/dd/yyyy", "hoge")
+            .getClass());
         request.setAttribute("aaa", "01/01/1970");
         assertNull(v.dateType("MM/dd/yyyy").validate(request, "aaa"));
     }
@@ -152,6 +181,9 @@ public class ValidatorsTest extends TestCase {
      */
     public void testMinlength() throws Exception {
         assertEquals(MinlengthValidator.class, v.minlength(3).getClass());
+        assertEquals(MinlengthValidator.class, v
+            .minlength(3, "hoge")
+            .getClass());
         request.setAttribute("aaa", "xxxx");
         assertNull(v.minlength(3).validate(request, "aaa"));
     }
@@ -161,6 +193,9 @@ public class ValidatorsTest extends TestCase {
      */
     public void testMaxlength() throws Exception {
         assertEquals(MaxlengthValidator.class, v.maxlength(3).getClass());
+        assertEquals(MaxlengthValidator.class, v
+            .maxlength(3, "hoge")
+            .getClass());
         request.setAttribute("aaa", "xx");
         assertNull(v.maxlength(3).validate(request, "aaa"));
     }
@@ -170,6 +205,9 @@ public class ValidatorsTest extends TestCase {
      */
     public void testLongRange() throws Exception {
         assertEquals(LongRangeValidator.class, v.longRange(3, 5).getClass());
+        assertEquals(LongRangeValidator.class, v
+            .longRange(3, 5, "hoge")
+            .getClass());
         request.setAttribute("aaa", "4");
         assertNull(v.longRange(3, 5).validate(request, "aaa"));
     }
@@ -179,6 +217,9 @@ public class ValidatorsTest extends TestCase {
      */
     public void testDoubleRange() throws Exception {
         assertEquals(DoubleRangeValidator.class, v.doubleRange(3, 5).getClass());
+        assertEquals(DoubleRangeValidator.class, v
+            .doubleRange(3, 5, "hoge")
+            .getClass());
         request.setAttribute("aaa", "4.1");
         assertNull(v.doubleRange(3, 5).validate(request, "aaa"));
     }

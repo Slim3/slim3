@@ -33,10 +33,30 @@ public class RequiredValidator extends AbstractValidator {
      */
     public static RequiredValidator INSTANCE = new RequiredValidator();
 
+    /**
+     * Constructor.
+     */
+    public RequiredValidator() {
+        super();
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param message
+     *            the error message
+     */
+    public RequiredValidator(String message) {
+        super(message);
+    }
+
     @Override
     public String validate(HttpServletRequest request, String name) {
         Object value = request.getAttribute(name);
         if (value == null || "".equals(value)) {
+            if (message != null) {
+                return message;
+            }
             return ApplicationMessage.get("validator.required", getLabel(name));
         }
         return null;
