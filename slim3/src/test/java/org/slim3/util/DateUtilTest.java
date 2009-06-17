@@ -121,6 +121,7 @@ public class DateUtilTest extends TestCase {
      */
     public void testToDateWithPattern() throws Exception {
         assertEquals(new Date(0), DateUtil.toDate("01/01/1970", "MM/dd/yyyy"));
+        System.out.println(DateUtil.toDate("00:00:00", "hh:mm:ss"));
     }
 
     /**

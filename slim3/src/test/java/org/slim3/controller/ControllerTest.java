@@ -15,11 +15,16 @@
  */
 package org.slim3.controller;
 
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.TimeZone;
+
 import junit.framework.TestCase;
 
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockHttpServletResponse;
 import org.slim3.tester.MockServletContext;
+import org.slim3.util.TimeZoneLocator;
 
 /**
  * @author higa
@@ -41,6 +46,13 @@ public class ControllerTest extends TestCase {
         controller.application = servletContext;
         controller.request = request;
         controller.response = response;
+        TimeZoneLocator.set(TimeZone.getTimeZone("UTC"));
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        TimeZoneLocator.set(null);
+        super.tearDown();
     }
 
     /**
@@ -156,6 +168,94 @@ public class ControllerTest extends TestCase {
         byte[] bytes = response.getOutputAsByteArray();
         assertEquals(1, bytes.length);
         assertEquals(1, bytes[0]);
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testAsByte() throws Exception {
+        request.setAttribute("aaa", "1");
+        assertEquals(new Byte("1"), controller.asByte("aaa"));
+        assertEquals(new Byte("1"), controller.asByte("aaa", "###"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testAsShort() throws Exception {
+        request.setAttribute("aaa", "1");
+        assertEquals(new Short("1"), controller.asShort("aaa"));
+        assertEquals(new Short("1"), controller.asShort("aaa", "###"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testAsInteger() throws Exception {
+        request.setAttribute("aaa", "1");
+        assertEquals(new Integer("1"), controller.asInteger("aaa"));
+        assertEquals(new Integer("1"), controller.asInteger("aaa", "###"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testAsLong() throws Exception {
+        request.setAttribute("aaa", "1");
+        assertEquals(new Long("1"), controller.asLong("aaa"));
+        assertEquals(new Long("1"), controller.asLong("aaa", "###"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testAsFloat() throws Exception {
+        request.setAttribute("aaa", "1");
+        assertEquals(new Float("1"), controller.asFloat("aaa"));
+        assertEquals(new Float("1"), controller.asFloat("aaa", "###"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testAsDouble() throws Exception {
+        request.setAttribute("aaa", "1");
+        assertEquals(new Double("1"), controller.asDouble("aaa"));
+        assertEquals(new Double("1"), controller.asDouble("aaa", "###"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testAsBigDecimal() throws Exception {
+        request.setAttribute("aaa", "1");
+        assertEquals(new BigDecimal("1"), controller.asBigDecimal("aaa"));
+        assertEquals(new BigDecimal("1"), controller.asBigDecimal("aaa", "###"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testAsDateForDate() throws Exception {
+        request.setAttribute("aaa", "19700101");
+        assertEquals(new Date(0), controller.asDate("aaa", "yyyyMMdd"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testAsDateForTime() throws Exception {
+        request.setAttribute("aaa", "000000");
+        assertEquals(new Date(0), controller.asDate("aaa", "hhmmss"));
     }
 
     private static class IndexController extends Controller {

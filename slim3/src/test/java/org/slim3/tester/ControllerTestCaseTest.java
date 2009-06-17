@@ -15,6 +15,10 @@
  */
 package org.slim3.tester;
 
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.TimeZone;
+
 import junit.framework.TestCase;
 
 import org.slim3.controller.ControllerConstants;
@@ -23,6 +27,7 @@ import org.slim3.tester.controller.HelloController;
 import org.slim3.util.RequestLocator;
 import org.slim3.util.ResponseLocator;
 import org.slim3.util.ServletContextLocator;
+import org.slim3.util.TimeZoneLocator;
 
 /**
  * @author higa
@@ -38,6 +43,7 @@ public class ControllerTestCaseTest extends TestCase {
             ControllerConstants.CONTROLLER_PACKAGE_KEY,
             getClass().getPackage().getName() + ".controller");
         super.setUp();
+        TimeZoneLocator.set(TimeZone.getTimeZone("UTC"));
     }
 
     @Override
@@ -46,6 +52,7 @@ public class ControllerTestCaseTest extends TestCase {
         ServletContextLocator.set(null);
         RequestLocator.set(null);
         ResponseLocator.set(null);
+        TimeZoneLocator.set(null);
         super.tearDown();
     }
 
@@ -114,6 +121,103 @@ public class ControllerTestCaseTest extends TestCase {
         Integer returnValue = testCase.requestScope("aaa");
         assertEquals(value, returnValue);
         assertEquals(value, testCase.request.getAttribute("aaa"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testAsByte() throws Exception {
+        testCase.setUp();
+        testCase.request.setAttribute("aaa", "1");
+        assertEquals(new Byte("1"), testCase.asByte("aaa"));
+        assertEquals(new Byte("1"), testCase.asByte("aaa", "###"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testAsShort() throws Exception {
+        testCase.setUp();
+        testCase.request.setAttribute("aaa", "1");
+        assertEquals(new Short("1"), testCase.asShort("aaa"));
+        assertEquals(new Short("1"), testCase.asShort("aaa", "###"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testAsInteger() throws Exception {
+        testCase.setUp();
+        testCase.request.setAttribute("aaa", "1");
+        assertEquals(new Integer("1"), testCase.asInteger("aaa"));
+        assertEquals(new Integer("1"), testCase.asInteger("aaa", "###"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testAsLong() throws Exception {
+        testCase.setUp();
+        testCase.request.setAttribute("aaa", "1");
+        assertEquals(new Long("1"), testCase.asLong("aaa"));
+        assertEquals(new Long("1"), testCase.asLong("aaa", "###"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testAsFloat() throws Exception {
+        testCase.setUp();
+        testCase.request.setAttribute("aaa", "1");
+        assertEquals(new Float("1"), testCase.asFloat("aaa"));
+        assertEquals(new Float("1"), testCase.asFloat("aaa", "###"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testAsDouble() throws Exception {
+        testCase.setUp();
+        testCase.request.setAttribute("aaa", "1");
+        assertEquals(new Double("1"), testCase.asDouble("aaa"));
+        assertEquals(new Double("1"), testCase.asDouble("aaa", "###"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testAsBigDecimal() throws Exception {
+        testCase.setUp();
+        testCase.request.setAttribute("aaa", "1");
+        assertEquals(new BigDecimal("1"), testCase.asBigDecimal("aaa"));
+        assertEquals(new BigDecimal("1"), testCase.asBigDecimal("aaa", "###"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testAsDateForDate() throws Exception {
+        testCase.setUp();
+        testCase.request.setAttribute("aaa", "19700101");
+        assertEquals(new Date(0), testCase.asDate("aaa", "yyyyMMdd"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testAsDateForTime() throws Exception {
+        testCase.setUp();
+        testCase.request.setAttribute("aaa", "000000");
+        assertEquals(new Date(0), testCase.asDate("aaa", "hhmmss"));
     }
 
     /**

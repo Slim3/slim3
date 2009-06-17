@@ -17,6 +17,10 @@ package org.slim3.controller;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,7 +30,18 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.slim3.controller.validator.Errors;
+import org.slim3.util.BigDecimalUtil;
+import org.slim3.util.BooleanUtil;
+import org.slim3.util.ByteUtil;
+import org.slim3.util.DateUtil;
+import org.slim3.util.DoubleUtil;
+import org.slim3.util.FloatUtil;
+import org.slim3.util.IntegerUtil;
+import org.slim3.util.LongUtil;
+import org.slim3.util.NumberUtil;
 import org.slim3.util.RuntimeExceptionUtil;
+import org.slim3.util.ShortUtil;
+import org.slim3.util.StringUtil;
 
 /**
  * A base controller. This controller is created each request.
@@ -188,6 +203,214 @@ public abstract class Controller {
     @SuppressWarnings("unchecked")
     protected <T> T requestScope(String name) {
         return (T) request.getAttribute(name);
+    }
+
+    /**
+     * Returns the request attribute value as byte.
+     * 
+     * @param name
+     *            the attribute name
+     * @return the byte attribute value
+     */
+    protected Byte asByte(String name) {
+        return ByteUtil.toByte(request.getAttribute(name));
+    }
+
+    /**
+     * Returns the request attribute value as byte.
+     * 
+     * @param name
+     *            the attribute name
+     * @param pattern
+     *            the pattern for {@link DecimalFormat}
+     * @return the byte attribute value
+     */
+    protected Byte asByte(String name, String pattern) {
+        return ByteUtil.toByte(NumberUtil.toNumber(asString(name), pattern));
+    }
+
+    /**
+     * Returns the request attribute value as short.
+     * 
+     * @param name
+     *            the attribute name
+     * @return the short attribute value
+     */
+    protected Short asShort(String name) {
+        return ShortUtil.toShort(request.getAttribute(name));
+    }
+
+    /**
+     * Returns the request attribute value as short.
+     * 
+     * @param name
+     *            the attribute name
+     * @param pattern
+     *            the pattern for {@link DecimalFormat}
+     * @return the short attribute value
+     */
+    protected Short asShort(String name, String pattern) {
+        return ShortUtil.toShort(NumberUtil.toNumber(asString(name), pattern));
+    }
+
+    /**
+     * Returns the request attribute value as integer.
+     * 
+     * @param name
+     *            the attribute name
+     * @return the integer attribute value
+     */
+    protected Integer asInteger(String name) {
+        return IntegerUtil.toInteger(request.getAttribute(name));
+    }
+
+    /**
+     * Returns the request attribute value as integer.
+     * 
+     * @param name
+     *            the attribute name
+     * @param pattern
+     *            the pattern for {@link DecimalFormat}
+     * @return the integer attribute value
+     */
+    protected Integer asInteger(String name, String pattern) {
+        return IntegerUtil.toInteger(NumberUtil.toNumber(
+            asString(name),
+            pattern));
+    }
+
+    /**
+     * Returns the request attribute value as long.
+     * 
+     * @param name
+     *            the attribute name
+     * @return the long attribute value
+     */
+    protected Long asLong(String name) {
+        return LongUtil.toLong(request.getAttribute(name));
+    }
+
+    /**
+     * Returns the request attribute value as long.
+     * 
+     * @param name
+     *            the attribute name
+     * @param pattern
+     *            the pattern for {@link DecimalFormat}
+     * @return the long attribute value
+     */
+    protected Long asLong(String name, String pattern) {
+        return LongUtil.toLong(NumberUtil.toNumber(asString(name), pattern));
+    }
+
+    /**
+     * Returns the request attribute value as float.
+     * 
+     * @param name
+     *            the attribute name
+     * @return the float attribute value
+     */
+    protected Float asFloat(String name) {
+        return FloatUtil.toFloat(request.getAttribute(name));
+    }
+
+    /**
+     * Returns the request attribute value as float.
+     * 
+     * @param name
+     *            the attribute name
+     * @param pattern
+     *            the pattern for {@link DecimalFormat}
+     * @return the float attribute value
+     */
+    protected Float asFloat(String name, String pattern) {
+        return FloatUtil.toFloat(NumberUtil.toNumber(asString(name), pattern));
+    }
+
+    /**
+     * Returns the request attribute value as double.
+     * 
+     * @param name
+     *            the attribute name
+     * @return the double attribute value
+     */
+    protected Double asDouble(String name) {
+        return DoubleUtil.toDouble(request.getAttribute(name));
+    }
+
+    /**
+     * Returns the request attribute value as double.
+     * 
+     * @param name
+     *            the attribute name
+     * @param pattern
+     *            the pattern for {@link DecimalFormat}
+     * @return the double attribute value
+     */
+    protected Double asDouble(String name, String pattern) {
+        return DoubleUtil
+            .toDouble(NumberUtil.toNumber(asString(name), pattern));
+    }
+
+    /**
+     * Returns the request attribute value as big decimal.
+     * 
+     * @param name
+     *            the attribute name
+     * @return the big decimal attribute value
+     */
+    protected BigDecimal asBigDecimal(String name) {
+        return BigDecimalUtil.toBigDecimal(request.getAttribute(name));
+    }
+
+    /**
+     * Returns the request attribute value as big decimal.
+     * 
+     * @param name
+     *            the attribute name
+     * @param pattern
+     *            the pattern for {@link DecimalFormat}
+     * @return the big decimal attribute value
+     */
+    protected BigDecimal asBigDecimal(String name, String pattern) {
+        return BigDecimalUtil.toBigDecimal(NumberUtil.toNumber(
+            asString(name),
+            pattern));
+    }
+
+    /**
+     * Returns the request attribute value as string.
+     * 
+     * @param name
+     *            the attribute name
+     * @return the string attribute value
+     */
+    protected String asString(String name) {
+        return StringUtil.toString(request.getAttribute(name));
+    }
+
+    /**
+     * Returns the request attribute value as boolean.
+     * 
+     * @param name
+     *            the attribute name
+     * @return the boolean attribute value
+     */
+    protected Boolean asBoolean(String name) {
+        return BooleanUtil.toBoolean(request.getAttribute(name));
+    }
+
+    /**
+     * Returns the request attribute value as date.
+     * 
+     * @param name
+     *            the attribute name
+     * @param pattern
+     *            the pattern for {@link SimpleDateFormat}
+     * @return the date attribute value
+     */
+    protected Date asDate(String name, String pattern) {
+        return DateUtil.toDate(asString(name), pattern);
     }
 
     /**
