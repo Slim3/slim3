@@ -5,6 +5,7 @@
 	
 	<system-properties>
 	    <property name="slim3.controllerPackage" value="slim3.controller"/>
+		<!--  <property name="slim3.hotReloading" value="false"/> -->
 		<property name="java.util.logging.config.file" value="WEB-INF/classes/logging.properties"/>
 	</system-properties>
 	
