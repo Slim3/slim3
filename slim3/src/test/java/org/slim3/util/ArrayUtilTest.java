@@ -38,10 +38,29 @@ public class ArrayUtilTest extends TestCase {
     /**
      * @throws Exception
      */
-    public void testAddForNull() throws Exception {
+    public void testAddForArrayNull() throws Exception {
         String[] ret = ArrayUtil.add(null, "aaa");
         assertEquals(1, ret.length);
         assertEquals("aaa", ret[0]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testAddForValueNull() throws Exception {
+        String[] array = new String[] { "aaa", "bbb" };
+        String[] ret = ArrayUtil.add(array, null);
+        assertEquals(3, ret.length);
+        assertEquals("aaa", ret[0]);
+        assertEquals("bbb", ret[1]);
+        assertNull(ret[2]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testAddForArrayNullAndValueNull() throws Exception {
+        assertNull(ArrayUtil.add(null, null));
     }
 
     /**

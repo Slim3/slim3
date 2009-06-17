@@ -46,4 +46,29 @@ public class RequestHandlerTest extends TestCase {
         assertEquals(1, bbbArray.length);
         assertEquals("222", bbbArray[0]);
     }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testNormalizeValue() throws Exception {
+        RequestHandler handler = new RequestHandler(request);
+        assertNull(handler.normalize((String) null));
+        assertNull(handler.normalize(""));
+        assertEquals("aaa", handler.normalize("aaa"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testNormalizeValues() throws Exception {
+        String[] values = new String[] { "", "aaa", null };
+        RequestHandler handler = new RequestHandler(request);
+        String[] ret = handler.normalize(values);
+        assertEquals(3, ret.length);
+        assertNull(ret[0]);
+        assertEquals("aaa", ret[1]);
+        assertNull(ret[2]);
+    }
 }

@@ -56,9 +56,12 @@ public class MultipartRequestHandler extends RequestHandler {
                 String name = item.getFieldName();
                 InputStream stream = item.openStream();
                 if (item.isFormField()) {
-                    String value = Streams.asString(stream);
+                    String value = normalize(Streams.asString(stream));
                     if (name.endsWith(ARRAY_SUFFIX)) {
                         String[] array = (String[]) request.getAttribute(name);
+                        if (array == null) {
+                            array = new String[0];
+                        }
                         request.setAttribute(name, ArrayUtil.add(array, value));
                     } else {
                         request.setAttribute(name, value);
@@ -69,13 +72,14 @@ public class MultipartRequestHandler extends RequestHandler {
                     Streams.copy(stream, baos, true);
                     byte[] data = baos.toByteArray();
                     FileItem value =
-                        new FileItem(
-                            item.getFileName(),
-                            item.getContentType(),
-                            data);
+                        data.length > 0 ? new FileItem(item.getFileName(), item
+                            .getContentType(), data) : null;
                     if (name.endsWith(ARRAY_SUFFIX)) {
                         FileItem[] array =
                             (FileItem[]) request.getAttribute(name);
+                        if (array == null) {
+                            array = new FileItem[0];
+                        }
                         request.setAttribute(name, ArrayUtil.add(array, value));
                     } else {
                         request.setAttribute(name, value);

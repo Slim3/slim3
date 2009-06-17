@@ -61,10 +61,45 @@ public class RequestHandler {
             .hasMoreElements();) {
             String name = e.nextElement();
             if (name.endsWith(ARRAY_SUFFIX)) {
-                request.setAttribute(name, request.getParameterValues(name));
+                request.setAttribute(name, normalize(request
+                    .getParameterValues(name)));
             } else {
-                request.setAttribute(name, request.getParameter(name));
+                request.setAttribute(
+                    name,
+                    normalize(request.getParameter(name)));
             }
         }
+    }
+
+    /**
+     * Normalizes the value.
+     * 
+     * @param value
+     *            the value
+     * @return the normalized value
+     */
+    protected String normalize(String value) {
+        if ("".equals(value)) {
+            return null;
+        }
+        return value;
+    }
+
+    /**
+     * Normalizes the values.
+     * 
+     * @param values
+     *            the values
+     * @return the normalized values
+     */
+    protected String[] normalize(String[] values) {
+        if (values == null) {
+            return new String[0];
+        }
+        String[] ret = new String[values.length];
+        for (int i = 0; i < values.length; i++) {
+            ret[i] = normalize(values[i]);
+        }
+        return ret;
     }
 }
