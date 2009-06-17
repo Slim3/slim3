@@ -27,7 +27,8 @@ public class ControllerDescFactoryTest extends TestCase {
         new ControllerDescFactory(
             "aaa.bbb",
             "MyController",
-            "MyControllerTestCase");
+            "MyControllerTestCase",
+            true);
 
     /**
      * 
@@ -43,6 +44,22 @@ public class ControllerDescFactoryTest extends TestCase {
         assertEquals("DddController", controllerDesc.getSimpleName());
         assertEquals("/ccc/ddd.jsp", controllerDesc.getViewName());
         assertEquals("/ccc/ddd", controllerDesc.getPath());
+    }
+
+    /**
+     * 
+     * @throws Exception
+     */
+    public void testCreateControllerDesc_withoutView() throws Exception {
+        factory =
+            new ControllerDescFactory(
+                "aaa.bbb",
+                "MyController",
+                "MyControllerTestCase",
+                false);
+        ControllerDesc controllerDesc =
+            factory.createControllerDesc("/ccc/ddd");
+        assertNull(controllerDesc.getViewName());
     }
 
     /**

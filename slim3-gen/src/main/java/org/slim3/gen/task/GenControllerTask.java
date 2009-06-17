@@ -52,6 +52,9 @@ public class GenControllerTask extends AbstractTask {
     protected String testCaseSuperclassName =
         ClassConstants.JDOControllerTestCase;
 
+    /** {@code true} if the controller uses a view */
+    protected boolean useView;
+
     /**
      * Sets the srcDir.
      * 
@@ -100,6 +103,16 @@ public class GenControllerTask extends AbstractTask {
      */
     public void setTestCaseSuperclassName(String testCaseSuperclassName) {
         this.testCaseSuperclassName = testCaseSuperclassName;
+    }
+
+    /**
+     * Sets the useView.
+     * 
+     * @param useView
+     *            the useView to set
+     */
+    public void setUseView(boolean useView) {
+        this.useView = useView;
     }
 
     @Override
@@ -151,7 +164,8 @@ public class GenControllerTask extends AbstractTask {
         return new ControllerDescFactory(
             controllerPackageName,
             superclassName,
-            testCaseSuperclassName);
+            testCaseSuperclassName,
+            useView);
     }
 
     /**

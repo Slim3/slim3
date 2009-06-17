@@ -37,6 +37,9 @@ public class ControllerDescFactory {
     /** the superclass name of testcase */
     protected final String testCaseSuperclassName;
 
+    /** {@code true} if the controller uses a view */
+    protected final boolean useView;
+
     /**
      * Creates a new {@link ControllerDescFactory}.
      * 
@@ -46,9 +49,12 @@ public class ControllerDescFactory {
      *            the superclass name
      * @param testCaseSuperclassName
      *            the superclass name of testcase
+     * @param useView
+     *            {@code true} if the controller uses a view, otherwise {@code
+     *            false}
      */
     public ControllerDescFactory(String packageName, String superclassName,
-            String testCaseSuperclassName) {
+            String testCaseSuperclassName, boolean useView) {
         if (packageName == null) {
             throw new NullPointerException("The packageName parameter is null.");
         }
@@ -63,6 +69,7 @@ public class ControllerDescFactory {
         this.packageName = packageName;
         this.superclassName = superclassName;
         this.testCaseSuperclassName = testCaseSuperclassName;
+        this.useView = useView;
     }
 
     /**
@@ -86,7 +93,9 @@ public class ControllerDescFactory {
         String className = toControllerClassName(path);
         controllerDesc.setPackageName(ClassUtil.getPackageName(className));
         controllerDesc.setSimpleName(ClassUtil.getSimpleName(className));
-        controllerDesc.setViewName(toViewName(path));
+        if (useView) {
+            controllerDesc.setViewName(toViewName(path));
+        }
         controllerDesc.setPath(path);
         return controllerDesc;
     }
