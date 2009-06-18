@@ -60,11 +60,11 @@ public class ControllerGenerator implements Generator {
         p.println("    @Override");
         p.println("    public %s run() {", ClassUtil
             .getSimpleName(ClassConstants.Navigation));
-        if (controllerDesc.getSimpleViewName() != null) {
+        if (controllerDesc.isUseView()) {
             p.println("        return forward(\"%s\");", controllerDesc
                 .getSimpleViewName());
         } else {
-            p.println("        return null;");
+            p.println("        return redirect(basePath);");
         }
         p.println("    }");
         p.println("}");

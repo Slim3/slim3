@@ -61,13 +61,16 @@ public class ControllerTestCaseGenerator implements Generator {
         p.println("        %s controller = getController();", controllerDesc
             .getSimpleName());
         p.println("        assertNotNull(controller);");
-        p.println("        assertFalse(isRedirect());");
-        if (controllerDesc.getViewName() != null) {
+        if (controllerDesc.isUseView()) {
+            p.println("        assertFalse(isRedirect());");
             p.println(
                 "        assertEquals(\"%s\", getNextPath());",
                 controllerDesc.getViewName());
         } else {
-            p.println("        assertNull(getNextPath());");
+            p.println("        assertTrue(isRedirect());");
+            p.println(
+                "        assertEquals(\"%s\", getNextPath());",
+                controllerDesc.getBasePath());
         }
         p.println("    }");
         p.println("}");

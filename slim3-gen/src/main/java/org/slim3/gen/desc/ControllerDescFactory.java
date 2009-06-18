@@ -93,10 +93,9 @@ public class ControllerDescFactory {
         String className = toControllerClassName(path);
         controllerDesc.setPackageName(ClassUtil.getPackageName(className));
         controllerDesc.setSimpleName(ClassUtil.getSimpleName(className));
-        if (useView) {
-            controllerDesc.setViewName(toViewName(path));
-        }
+        controllerDesc.setViewName(toViewName(path));
         controllerDesc.setPath(path);
+        controllerDesc.setUseView(useView);
         return controllerDesc;
     }
 

@@ -45,6 +45,12 @@ public class ControllerDesc {
     /** the path of controller */
     protected String path;
 
+    /** the base path of controller */
+    protected String basePath;
+
+    /** Whether the controller uses view */
+    protected boolean useView = true;
+
     /**
      * Returns the superclassName.
      * 
@@ -169,6 +175,37 @@ public class ControllerDesc {
      */
     public void setPath(String path) {
         this.path = path;
+        if (path != null) {
+            int pos = path.lastIndexOf('/');
+            basePath = path.substring(0, pos + 1);
+        }
     }
 
+    /**
+     * Returns the base path.
+     * 
+     * @return the base path
+     */
+    public String getBasePath() {
+        return basePath;
+    }
+
+    /**
+     * Determines if this controller uses view.
+     * 
+     * @return whether this controller uses view
+     */
+    public boolean isUseView() {
+        return useView;
+    }
+
+    /**
+     * Sets whether this controller uses view.
+     * 
+     * @param useView
+     *            whether this controller uses view
+     */
+    public void setUseView(boolean useView) {
+        this.useView = useView;
+    }
 }

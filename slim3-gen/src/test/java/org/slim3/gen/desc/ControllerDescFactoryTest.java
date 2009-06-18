@@ -59,7 +59,7 @@ public class ControllerDescFactoryTest extends TestCase {
                 false);
         ControllerDesc controllerDesc =
             factory.createControllerDesc("/ccc/ddd");
-        assertNull(controllerDesc.getViewName());
+        assertFalse(controllerDesc.isUseView());
     }
 
     /**

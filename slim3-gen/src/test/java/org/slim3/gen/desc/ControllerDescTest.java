@@ -32,4 +32,24 @@ public class ControllerDescTest extends TestCase {
         controllerDesc.setViewName("/aaa/index.jsp");
         assertEquals("index.jsp", controllerDesc.getSimpleViewName());
     }
+
+    /**
+     * 
+     * @throws Exception
+     */
+    public void testBasePathForIndex() throws Exception {
+        ControllerDesc controllerDesc = new ControllerDesc();
+        controllerDesc.setPath("/aaa/");
+        assertEquals("/aaa/", controllerDesc.getBasePath());
+    }
+
+    /**
+     * 
+     * @throws Exception
+     */
+    public void testBasePath() throws Exception {
+        ControllerDesc controllerDesc = new ControllerDesc();
+        controllerDesc.setPath("/aaa/bbb");
+        assertEquals("/aaa/", controllerDesc.getBasePath());
+    }
 }
