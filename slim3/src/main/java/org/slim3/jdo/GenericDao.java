@@ -70,4 +70,8 @@ public class GenericDao<T> {
     public void delete(T model) {
         pm.deletePersistent(model);
     }
+
+    protected SelectQuery<T> from() {
+        return new SelectQuery<T>(pm, modelClass);
+    }
 }
