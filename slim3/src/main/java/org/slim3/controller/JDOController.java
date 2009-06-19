@@ -27,10 +27,6 @@ import org.slim3.jdo.SelectQuery;
 import org.slim3.util.RuntimeExceptionUtil;
 
 /**
- * @author li0934
- *
- */
-/**
  * A controller class for JDO.
  * 
  * @author higa

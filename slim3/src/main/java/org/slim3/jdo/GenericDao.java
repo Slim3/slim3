@@ -16,6 +16,7 @@
 package org.slim3.jdo;
 
 import javax.jdo.PersistenceManager;
+import javax.jdo.Transaction;
 
 /**
  * A generic dao.
@@ -34,6 +35,11 @@ public class GenericDao<T> {
     protected PersistenceManager pm;
 
     /**
+     * The transaction.
+     */
+    protected Transaction tx;
+
+    /**
      * The model class.
      */
     protected Class<T> modelClass;
@@ -43,6 +49,8 @@ public class GenericDao<T> {
      * 
      * @param pm
      *            the persistence manager
+     * @param modelClass
+     *            the model class
      */
     public GenericDao(PersistenceManager pm, Class<T> modelClass) {
         if (pm == null) {
@@ -52,25 +60,98 @@ public class GenericDao<T> {
             throw new NullPointerException("The modelClass parameter is null.");
         }
         this.pm = pm;
+        tx = pm.currentTransaction();
         this.modelClass = modelClass;
     }
 
+    /**
+     * Finds a model by key.
+     * 
+     * @param key
+     *            the key
+     * @return a model
+     */
     public T find(String key) {
         return pm.getObjectById(modelClass, key);
     }
 
+    /**
+     * Inserts the model.
+     * 
+     * @param model
+     *            the model
+     * @return the persisted model
+     */
     public T insert(T model) {
         return pm.makePersistent(model);
     }
 
+    /**
+     * Inserts the model in transaction.
+     * 
+     * @param model
+     *            the model
+     * @return the persisted model
+     */
+    public T insertInTx(T model) {
+        tx.begin();
+        T t = pm.makePersistent(model);
+        tx.commit();
+        return t;
+    }
+
+    /**
+     * Updates the model
+     * 
+     * @param model
+     *            the model
+     * @return the persisted model
+     */
     public T update(T model) {
         return pm.makePersistent(model);
     }
 
+    /**
+     * Updates the model in transaction.
+     * 
+     * @param model
+     *            the model
+     * @return the persisted model
+     */
+    public T updateInTx(T model) {
+        tx.begin();
+        T t = pm.makePersistent(model);
+        tx.commit();
+        return t;
+    }
+
+    /**
+     * Deletes the model.
+     * 
+     * @param model
+     *            the model
+     */
     public void delete(T model) {
         pm.deletePersistent(model);
     }
 
+    /**
+     * Deletes the model in transaction.
+     * 
+     * @param model
+     *            the model
+     */
+    public void deleteInTx(T model) {
+        tx.begin();
+        pm.deletePersistent(model);
+        tx.commit();
+    }
+
+    /**
+     * Creates {@link SelectQuery}.
+     * 
+     * @return {@link SelectQuery}
+     */
     protected SelectQuery<T> from() {
         return new SelectQuery<T>(pm, modelClass);
     }
