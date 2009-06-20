@@ -17,7 +17,7 @@
 <form action="${f:url('update')}" method="post">
 <input type="hidden" name="key" value="${key}"/>
 Title<br />
-<input type="text" name="title" value="${f:h(title)}" class="${f:errorClass('title', 'error')}"/>${f:h(errors.title)}<br />
+<input type="text" ${f:text("title")} class="${f:errorClass('title', 'error')}"/>${f:h(errors.title)}<br />
 Content<br />
 <textarea name="content" class="${f:errorClass('content', 'error')}">${f:h(content)}</textarea>${f:h(errors.content)}<br />
 <input type="submit" value="Update"/>
