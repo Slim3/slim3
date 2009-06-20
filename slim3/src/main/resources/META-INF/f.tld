@@ -82,4 +82,16 @@
       &lt;input type="text" name="aaa" class="${f:errorClass('aaa', 'error')}" value="${f:h(aaa)}"/&gt;
     </example>
   </function>
+  
+  <function>
+    <description>
+      Returns the name and value attribute representation.
+    </description>
+    <name>property</name>
+    <function-class>org.slim3.jsp.Functions</function-class>
+    <function-signature>java.lang.String property(java.lang.String)</function-signature>
+    <example>
+      &lt;input type="text" ${f:property("aaa")}/&gt;
+    </example>
+  </function>
 </taglib>

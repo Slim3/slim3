@@ -168,6 +168,22 @@ public final class Functions {
         return "";
     }
 
+    /**
+     * Returns name and value attribute representation.
+     * 
+     * @param name
+     *            the property name
+     * @return name and value attribute representation
+     */
+    public static String property(String name) {
+        HttpServletRequest request = RequestLocator.get();
+        return "name = \""
+            + name
+            + "\" value = \""
+            + h(request.getAttribute(name))
+            + "\"";
+    }
+
     private Functions() {
     }
 }

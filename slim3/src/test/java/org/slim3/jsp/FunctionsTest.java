@@ -247,4 +247,13 @@ public class FunctionsTest extends TestCase {
     public void testErrorStyleForNoError() throws Exception {
         assertEquals("", Functions.errorClass("aaa", "error"));
     }
+
+    /**
+     * @throws Exception
+     */
+    public void testProperty() throws Exception {
+        request.setAttribute("aaa", "111");
+        assertEquals("name = \"aaa\" value = \"111\"", Functions
+            .property("aaa"));
+    }
 }
