@@ -15,7 +15,6 @@
  */
 package org.slim3.gen.task;
 
-import java.io.File;
 import java.io.IOException;
 
 import javax.xml.xpath.XPathExpressionException;
@@ -36,13 +35,7 @@ import org.slim3.gen.message.MessageFormatter;
  * @author taedium
  * @since 3.0
  */
-public class GenModelTask extends AbstractTask {
-
-    /** the source directory */
-    protected File srcDir;
-
-    /** the test source directory */
-    protected File testDir;
+public class GenModelTask extends AbstractGenJavaFileTask {
 
     /** the packageName */
     protected String packageName;
@@ -55,26 +48,6 @@ public class GenModelTask extends AbstractTask {
 
     /** the property which represents a model class name */
     protected String modelClassNameProperty;
-
-    /**
-     * Sets the srcDir.
-     * 
-     * @param srcDir
-     *            the srcDir to set
-     */
-    public void setSrcDir(File srcDir) {
-        this.srcDir = srcDir;
-    }
-
-    /**
-     * Sets the testDir.
-     * 
-     * @param testDir
-     *            the testDir to set
-     */
-    public void setTestDir(File testDir) {
-        this.testDir = testDir;
-    }
 
     /**
      * Sets the packageName.
@@ -117,16 +90,8 @@ public class GenModelTask extends AbstractTask {
     }
 
     @Override
-    public void doExecute() throws IOException, XPathExpressionException {
-        if (srcDir == null) {
-            throw new IllegalStateException("The srcDir parameter is null.");
-        }
-        if (testDir == null) {
-            throw new IllegalStateException("The testDir parameter is null.");
-        }
-        if (warDir == null) {
-            throw new IllegalStateException("The warDir parameter is null.");
-        }
+    public void doExecute() throws Exception {
+        super.doExecute();
         if (simpleName == null) {
             throw new IllegalStateException("The simpleName parameter is null.");
         }
@@ -142,20 +107,18 @@ public class GenModelTask extends AbstractTask {
         String modelPackageName = getModelPackageName();
         ModelDescFactory factory = createModelDescFactory(modelPackageName);
         ModelDesc modelDesc = factory.createModelDesc();
-        JavaFileCreator javaFileCreator =
-            new JavaFileCreator(
-                srcDir,
-                testDir,
-                modelDesc.getPackageName(),
-                modelDesc.getSimpleName());
-        ClassNameCreator classNameCreator =
-            new ClassNameCreator(modelDesc.getPackageName(), modelDesc
-                .getSimpleName());
-        generateModel(modelDesc, javaFileCreator, classNameCreator);
-        generateModelTestCase(modelDesc, javaFileCreator, classNameCreator);
+
+        JavaFile javaFile = createJavaFile(modelDesc);
+        Generator generator = createModelGenerator(modelDesc);
+        generateJavaFile(generator, javaFile);
+
+        JavaFile testCaseJavaFile = createTestCaseJavaFile(modelDesc);
+        Generator testCaseGenerator = createModelTestCaseGenerator(modelDesc);
+        generateJavaFile(testCaseGenerator, testCaseJavaFile);
+
         getProject().setNewProperty(
             modelClassNameProperty,
-            classNameCreator.createClassName());
+            modelDesc.getQualifiedName());
     }
 
     /**
@@ -170,7 +133,7 @@ public class GenModelTask extends AbstractTask {
         if (packageName != null) {
             return packageName;
         }
-        AppEngineConfig config = new AppEngineConfig(warDir);
+        AppEngineConfig config = createAppEngineConfig();
         String controllerPackageName = config.getControllerPackageName();
         int pos = controllerPackageName.lastIndexOf(".");
         String rootPackageName =
@@ -196,26 +159,6 @@ public class GenModelTask extends AbstractTask {
     }
 
     /**
-     * Generates a model.
-     * 
-     * @param modelDesc
-     *            the model description
-     * @param javaFileCreator
-     *            the java file creator
-     * @param classNameCreator
-     *            the class name creator
-     * @throws IOException
-     */
-    protected void generateModel(ModelDesc modelDesc,
-            JavaFileCreator javaFileCreator, ClassNameCreator classNameCreator)
-            throws IOException {
-        Generator generator = createModelGenerator(modelDesc);
-        File javaFile = javaFileCreator.createJavaFile();
-        String className = classNameCreator.createClassName();
-        generate(generator, javaFile, className);
-    }
-
-    /**
      * Creates a {@link Generator}.
      * 
      * @param modelDesc
@@ -224,26 +167,6 @@ public class GenModelTask extends AbstractTask {
      */
     protected Generator createModelGenerator(ModelDesc modelDesc) {
         return new ModelGenerator(modelDesc);
-    }
-
-    /**
-     * Generates a model test case.
-     * 
-     * @param modelDesc
-     *            the model description
-     * @param javaFileCreator
-     *            the java file creator
-     * @param classNameCreator
-     *            the class name creator
-     * @throws IOException
-     */
-    protected void generateModelTestCase(ModelDesc modelDesc,
-            JavaFileCreator javaFileCreator, ClassNameCreator classNameCreator)
-            throws IOException {
-        Generator generator = createModelTestCaseGenerator(modelDesc);
-        File javaFile = javaFileCreator.createTestCaseJavaFile();
-        String className = classNameCreator.createTestCaseClassName();
-        generate(generator, javaFile, className);
     }
 
     /**

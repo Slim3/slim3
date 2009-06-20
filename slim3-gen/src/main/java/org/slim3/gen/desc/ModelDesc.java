@@ -15,13 +15,15 @@
  */
 package org.slim3.gen.desc;
 
+import org.slim3.gen.util.ClassUtil;
+
 /**
  * Represents a model description.
  * 
  * @author taedium
  * @since 3.0
  */
-public class ModelDesc {
+public class ModelDesc implements ClassDesc {
 
     /** the packageName */
     protected String packageName;
@@ -68,6 +70,11 @@ public class ModelDesc {
      */
     public void setSimpleName(String simpleName) {
         this.simpleName = simpleName;
+    }
+
+    @Override
+    public String getQualifiedName() {
+        return ClassUtil.getQualifiedName(packageName, simpleName);
     }
 
     /**

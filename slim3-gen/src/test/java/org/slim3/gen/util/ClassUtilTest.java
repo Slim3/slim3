@@ -40,4 +40,14 @@ public class ClassUtilTest extends TestCase {
         assertEquals("Ccc", ClassUtil.getSimpleName("aaa.bbb.Ccc"));
         assertEquals("Ccc", ClassUtil.getSimpleName("Ccc"));
     }
+
+    /**
+     * 
+     * @throws Exception
+     */
+    public void testGetQualifiedName() throws Exception {
+        assertEquals("aaa.Bbb", ClassUtil.getQualifiedName("aaa", "Bbb"));
+        assertEquals("Bbb", ClassUtil.getQualifiedName("", "Bbb"));
+        assertEquals("Bbb", ClassUtil.getQualifiedName(null, "Bbb"));
+    }
 }

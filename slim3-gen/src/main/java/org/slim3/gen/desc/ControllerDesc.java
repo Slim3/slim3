@@ -15,6 +15,8 @@
  */
 package org.slim3.gen.desc;
 
+import org.slim3.gen.util.ClassUtil;
+
 /**
  * Represents a controller description.
  * 
@@ -22,7 +24,7 @@ package org.slim3.gen.desc;
  * @since 3.0
  * 
  */
-public class ControllerDesc {
+public class ControllerDesc implements ClassDesc {
 
     /** the superclass name */
     protected String superclassName;
@@ -115,6 +117,11 @@ public class ControllerDesc {
      */
     public String getSimpleName() {
         return simpleName;
+    }
+
+    @Override
+    public String getQualifiedName() {
+        return ClassUtil.getQualifiedName(packageName, simpleName);
     }
 
     /**

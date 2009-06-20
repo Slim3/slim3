@@ -47,6 +47,7 @@ public class ModelGenerator implements Generator {
         p.println("package %s;", modelDesc.getPackageName());
         p.println();
         p.println("import java.io.Serializable;");
+        p.println("import java.util.logging.Logger;");
         p.println();
         p.println("import javax.jdo.annotations.Extension;");
         p.println("import javax.jdo.annotations.IdGeneratorStrategy;");
@@ -64,6 +65,11 @@ public class ModelGenerator implements Generator {
             .getSimpleName());
         p.println();
         p.println("    private static final long serialVersionUID = 1L;");
+        p.println();
+        p
+            .println(
+                "    private static final Logger logger = Logger.getLogger(%s.class.getName());",
+                modelDesc.getSimpleName());
         p.println();
         p.println("    @PrimaryKey");
         p

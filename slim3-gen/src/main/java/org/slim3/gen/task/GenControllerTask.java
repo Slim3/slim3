@@ -15,11 +15,6 @@
  */
 package org.slim3.gen.task;
 
-import java.io.File;
-import java.io.IOException;
-
-import javax.xml.xpath.XPathExpressionException;
-
 import org.slim3.gen.ClassConstants;
 import org.slim3.gen.desc.ControllerDesc;
 import org.slim3.gen.desc.ControllerDescFactory;
@@ -34,13 +29,7 @@ import org.slim3.gen.generator.Generator;
  * @since 3.0
  * 
  */
-public class GenControllerTask extends AbstractTask {
-
-    /** the source directory */
-    protected File srcDir;
-
-    /** the test source directory */
-    protected File testDir;
+public class GenControllerTask extends AbstractGenJavaFileTask {
 
     /** the controller path */
     protected String controllerPath;
@@ -54,26 +43,6 @@ public class GenControllerTask extends AbstractTask {
 
     /** {@code true} if the controller uses a view */
     protected boolean useView;
-
-    /**
-     * Sets the srcDir.
-     * 
-     * @param srcDir
-     *            the srcDir to set
-     */
-    public void setSrcDir(File srcDir) {
-        this.srcDir = srcDir;
-    }
-
-    /**
-     * Sets the testDir.
-     * 
-     * @param testDir
-     *            the testDir to set
-     */
-    public void setTestDir(File testDir) {
-        this.testDir = testDir;
-    }
 
     /**
      * Sets the controllerPath.
@@ -116,16 +85,8 @@ public class GenControllerTask extends AbstractTask {
     }
 
     @Override
-    public void doExecute() throws IOException, XPathExpressionException {
-        if (srcDir == null) {
-            throw new IllegalStateException("The srcDir parameter is null.");
-        }
-        if (testDir == null) {
-            throw new IllegalStateException("The testDir parameter is null.");
-        }
-        if (warDir == null) {
-            throw new IllegalStateException("The warDir parameter is null.");
-        }
+    public void doExecute() throws Exception {
+        super.doExecute();
         if (controllerPath == null) {
             throw new IllegalStateException(
                 "The controllerPath parameter is null.");
@@ -133,23 +94,20 @@ public class GenControllerTask extends AbstractTask {
         String path =
             controllerPath.startsWith("/") ? controllerPath : "/"
                 + controllerPath;
-        AppEngineConfig config = new AppEngineConfig(warDir);
+        AppEngineConfig config = createAppEngineConfig();
         String controllerPackageName = config.getControllerPackageName();
         ControllerDescFactory factory =
             createControllerDescFactory(controllerPackageName);
         ControllerDesc controllerDesc = factory.createControllerDesc(path);
-        JavaFileCreator javaFileCreator =
-            new JavaFileCreator(srcDir, testDir, controllerDesc
-                .getPackageName(), controllerDesc.getSimpleName());
-        ClassNameCreator classNameCreator =
-            new ClassNameCreator(
-                controllerDesc.getPackageName(),
-                controllerDesc.getSimpleName());
-        generateController(controllerDesc, javaFileCreator, classNameCreator);
-        generateControllerTestCase(
-            controllerDesc,
-            javaFileCreator,
-            classNameCreator);
+
+        JavaFile javaFile = createJavaFile(controllerDesc);
+        Generator generator = createControllerGenerator(controllerDesc);
+        generateJavaFile(generator, javaFile);
+
+        JavaFile testCaseJavaFile = createTestCaseJavaFile(controllerDesc);
+        Generator testCaseGenerator =
+            createControllerTestCaseGenerator(controllerDesc);
+        generateJavaFile(testCaseGenerator, testCaseJavaFile);
     }
 
     /**
@@ -169,26 +127,6 @@ public class GenControllerTask extends AbstractTask {
     }
 
     /**
-     * Generates a controller.
-     * 
-     * @param controllerDesc
-     *            the controller description
-     * @param javaFileCreator
-     *            the java file creator
-     * @param classNameCreator
-     *            the class name creator
-     * @throws IOException
-     */
-    protected void generateController(ControllerDesc controllerDesc,
-            JavaFileCreator javaFileCreator, ClassNameCreator classNameCreator)
-            throws IOException {
-        Generator generator = createControllerGenerator(controllerDesc);
-        File javaFile = javaFileCreator.createJavaFile();
-        String className = classNameCreator.createClassName();
-        generate(generator, javaFile, className);
-    }
-
-    /**
      * Creates a {@link Generator}.
      * 
      * @param controllerDesc
@@ -197,26 +135,6 @@ public class GenControllerTask extends AbstractTask {
      */
     protected Generator createControllerGenerator(ControllerDesc controllerDesc) {
         return new ControllerGenerator(controllerDesc);
-    }
-
-    /**
-     * Generates a controller test case.
-     * 
-     * @param controllerDesc
-     *            the controller description
-     * @param javaFileCreator
-     *            the java file creator
-     * @param classNameCreator
-     *            the class name creator
-     * @throws IOException
-     */
-    protected void generateControllerTestCase(ControllerDesc controllerDesc,
-            JavaFileCreator javaFileCreator, ClassNameCreator classNameCreator)
-            throws IOException {
-        Generator generator = createControllerTestCaseGenerator(controllerDesc);
-        File javaFile = javaFileCreator.createTestCaseJavaFile();
-        String className = classNameCreator.createTestCaseClassName();
-        generate(generator, javaFile, className);
     }
 
     /**

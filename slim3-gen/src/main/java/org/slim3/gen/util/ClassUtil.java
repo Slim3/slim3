@@ -25,7 +25,7 @@ package org.slim3.gen.util;
 public final class ClassUtil {
 
     /**
-     * Returns a package name of the qualifiedName.
+     * Returns the package name of the qualifiedName.
      * 
      * @param qualifiedName
      *            the qualifiedName.
@@ -44,7 +44,7 @@ public final class ClassUtil {
     }
 
     /**
-     * Returns a simple name of the qualifiedName.
+     * Returns the simple name of the qualifiedName.
      * 
      * @param qualifiedName
      *            the qualifiedName.
@@ -60,5 +60,24 @@ public final class ClassUtil {
             return qualifiedName;
         }
         return qualifiedName.substring(pos + 1);
+    }
+
+    /**
+     * Returns the qualifiedName.
+     * 
+     * @param packageName
+     *            the packageName
+     * @param simpleName
+     *            the simpleName
+     * @return a qualifiedName
+     */
+    public static String getQualifiedName(String packageName, String simpleName) {
+        if (simpleName == null) {
+            throw new NullPointerException("The simpleName parameter is null.");
+        }
+        if (StringUtil.isEmpty(packageName)) {
+            return simpleName;
+        }
+        return packageName + "." + simpleName;
     }
 }

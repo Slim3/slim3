@@ -15,7 +15,6 @@
  */
 package org.slim3.gen.task;
 
-import java.io.File;
 import java.io.IOException;
 
 import javax.xml.xpath.XPathExpressionException;
@@ -34,13 +33,7 @@ import org.slim3.gen.generator.Generator;
  * @author taedium
  * @since 3.0
  */
-public class GenDaoTask extends AbstractTask {
-
-    /** the source directory */
-    protected File srcDir;
-
-    /** the test source directory */
-    protected File testDir;
+public class GenDaoTask extends AbstractGenJavaFileTask {
 
     /** the packageName */
     protected String packageName;
@@ -53,26 +46,6 @@ public class GenDaoTask extends AbstractTask {
 
     /** the modelClassName */
     protected String modelClassName;
-
-    /**
-     * Sets the srcDir.
-     * 
-     * @param srcDir
-     *            the srcDir to set
-     */
-    public void setSrcDir(File srcDir) {
-        this.srcDir = srcDir;
-    }
-
-    /**
-     * Sets the testDir.
-     * 
-     * @param testDir
-     *            the testDir to set
-     */
-    public void setTestDir(File testDir) {
-        this.testDir = testDir;
-    }
 
     /**
      * Sets the packageName.
@@ -115,16 +88,8 @@ public class GenDaoTask extends AbstractTask {
     }
 
     @Override
-    public void doExecute() throws IOException, XPathExpressionException {
-        if (srcDir == null) {
-            throw new IllegalStateException("The srcDir parameter is null.");
-        }
-        if (testDir == null) {
-            throw new IllegalStateException("The testDir parameter is null.");
-        }
-        if (warDir == null) {
-            throw new IllegalStateException("The warDir parameter is null.");
-        }
+    public void doExecute() throws Exception {
+        super.doExecute();
         if (modelClassName == null) {
             throw new IllegalStateException(
                 "The modelClassName parameter is null.");
@@ -132,17 +97,14 @@ public class GenDaoTask extends AbstractTask {
         String daoPackageName = getDaoPackageName();
         DaoDescFactory factory = createDaoDescFactory(daoPackageName);
         DaoDesc daoDesc = factory.createDaoDesc();
-        JavaFileCreator javaFileCreator =
-            new JavaFileCreator(
-                srcDir,
-                testDir,
-                daoDesc.getPackageName(),
-                daoDesc.getSimpleName());
-        ClassNameCreator classNameCreator =
-            new ClassNameCreator(daoDesc.getPackageName(), daoDesc
-                .getSimpleName());
-        generateDao(daoDesc, javaFileCreator, classNameCreator);
-        generateDaoTestCase(daoDesc, javaFileCreator, classNameCreator);
+
+        JavaFile javaFile = createJavaFile(daoDesc);
+        Generator generator = createDaoGenerator(daoDesc);
+        generateJavaFile(generator, javaFile);
+
+        JavaFile testCaseJavaFile = createTestCaseJavaFile(daoDesc);
+        Generator testCaseGenerator = createDaoTestCaseGenerator(daoDesc);
+        generateJavaFile(testCaseGenerator, testCaseJavaFile);
     }
 
     /**
@@ -157,7 +119,7 @@ public class GenDaoTask extends AbstractTask {
         if (packageName != null) {
             return packageName;
         }
-        AppEngineConfig config = new AppEngineConfig(warDir);
+        AppEngineConfig config = createAppEngineConfig();
         String controllerPackageName = config.getControllerPackageName();
         int pos = controllerPackageName.lastIndexOf(".");
         String rootPackageName =
@@ -184,26 +146,6 @@ public class GenDaoTask extends AbstractTask {
     }
 
     /**
-     * Generates a dao.
-     * 
-     * @param daoDesc
-     *            the dao description
-     * @param javaFileCreator
-     *            the java file creator
-     * @param classNameCreator
-     *            the class name creator
-     * @throws IOException
-     */
-    protected void generateDao(DaoDesc daoDesc,
-            JavaFileCreator javaFileCreator, ClassNameCreator classNameCreator)
-            throws IOException {
-        Generator generator = createDaoGenerator(daoDesc);
-        File javaFile = javaFileCreator.createJavaFile();
-        String className = classNameCreator.createClassName();
-        generate(generator, javaFile, className);
-    }
-
-    /**
      * Creates a {@link Generator}.
      * 
      * @param daoDesc
@@ -212,26 +154,6 @@ public class GenDaoTask extends AbstractTask {
      */
     protected Generator createDaoGenerator(DaoDesc daoDesc) {
         return new DaoGenerator(daoDesc);
-    }
-
-    /**
-     * Generates a dao test case.
-     * 
-     * @param daoDesc
-     *            the dao description
-     * @param javaFileCreator
-     *            the java file creator
-     * @param classNameCreator
-     *            the class name creator
-     * @throws IOException
-     */
-    protected void generateDaoTestCase(DaoDesc daoDesc,
-            JavaFileCreator javaFileCreator, ClassNameCreator classNameCreator)
-            throws IOException {
-        Generator generator = createDaoTestCaseGenerator(daoDesc);
-        File javaFile = javaFileCreator.createTestCaseJavaFile();
-        String className = classNameCreator.createTestCaseClassName();
-        generate(generator, javaFile, className);
     }
 
     /**

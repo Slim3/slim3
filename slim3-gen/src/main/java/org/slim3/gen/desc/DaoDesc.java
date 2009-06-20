@@ -15,13 +15,15 @@
  */
 package org.slim3.gen.desc;
 
+import org.slim3.gen.util.ClassUtil;
+
 /**
  * Represents a dao description.
  * 
  * @author taedium
  * @since 3.0
  */
-public class DaoDesc {
+public class DaoDesc implements ClassDesc {
 
     /** the packageName */
     protected String packageName;
@@ -74,6 +76,11 @@ public class DaoDesc {
      */
     public void setSimpleName(String simpleName) {
         this.simpleName = simpleName;
+    }
+
+    @Override
+    public String getQualifiedName() {
+        return ClassUtil.getQualifiedName(packageName, simpleName);
     }
 
     /**

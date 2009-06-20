@@ -29,7 +29,7 @@ import org.slim3.gen.generator.ViewGenerator;
  * @author taedium
  * @since 3.0
  */
-public class GenViewTask extends AbstractTask {
+public class GenViewTask extends AbstractGenFileTask {
 
     /** the controller path */
     protected String controllerPath;
@@ -45,10 +45,8 @@ public class GenViewTask extends AbstractTask {
     }
 
     @Override
-    public void doExecute() throws IOException {
-        if (warDir == null) {
-            throw new IllegalStateException("The warDir parameter is null.");
-        }
+    public void doExecute() throws Exception {
+        super.doExecute();
         if (controllerPath == null) {
             throw new IllegalStateException(
                 "The controllerPath parameter is null.");
@@ -82,7 +80,7 @@ public class GenViewTask extends AbstractTask {
         viewDir.mkdirs();
         File viewFile = new File(viewDir, viewDesc.getFileName());
         Generator generator = careateViewGenerator(viewDesc);
-        generate(generator, viewFile);
+        generateFile(generator, viewFile);
     }
 
     /**

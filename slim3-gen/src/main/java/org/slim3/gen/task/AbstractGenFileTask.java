@@ -29,13 +29,12 @@ import org.slim3.gen.printer.FilePrinter;
 import org.slim3.gen.printer.Printer;
 
 /**
- * An abstract class for Ant tasks.
+ * Represents an abstract task to generate a file.
  * 
  * @author taedium
  * @since 3.0
- * 
  */
-public abstract class AbstractTask extends Task {
+public abstract class AbstractGenFileTask extends Task {
 
     /** the war directory */
     protected File warDir;
@@ -82,39 +81,10 @@ public abstract class AbstractTask extends Task {
      * 
      * @throws Exception
      */
-    protected abstract void doExecute() throws Exception;
-
-    /**
-     * Generates a file.
-     * 
-     * @param generator
-     *            the generator
-     * @param file
-     *            the file to be generated
-     * @param className
-     *            the class name
-     * @throws IOException
-     */
-    protected void generate(Generator generator, File file, String className)
-            throws IOException {
-        if (file.exists()) {
-            log(MessageFormatter.getSimpleMessage(
-                MessageCode.SILM3GEN0004,
-                className));
-            return;
+    protected void doExecute() throws Exception {
+        if (warDir == null) {
+            throw new IllegalStateException("The warDir parameter is null.");
         }
-        Printer printer = null;
-        try {
-            printer = createPrinter(file);
-            generator.generate(printer);
-        } finally {
-            if (printer != null) {
-                printer.close();
-            }
-        }
-        log(MessageFormatter.getSimpleMessage(
-            MessageCode.SILM3GEN0005,
-            className));
     }
 
     /**
@@ -124,7 +94,8 @@ public abstract class AbstractTask extends Task {
      * @param file
      * @throws IOException
      */
-    protected void generate(Generator generator, File file) throws IOException {
+    protected void generateFile(Generator generator, File file)
+            throws IOException {
         if (file.exists()) {
             log(MessageFormatter.getSimpleMessage(
                 MessageCode.SILM3GEN0006,
@@ -154,5 +125,14 @@ public abstract class AbstractTask extends Task {
      */
     protected Printer createPrinter(File file) throws IOException {
         return new FilePrinter(file, encoding);
+    }
+
+    /**
+     * Creates a app engine config.
+     * 
+     * @return a app engine config
+     */
+    protected AppEngineConfig createAppEngineConfig() {
+        return new AppEngineConfig(warDir);
     }
 }

@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.slim3.gen.util.ClassUtil;
+
 /**
  * Represents a model meta description.
  * 
@@ -26,7 +28,7 @@ import java.util.List;
  * @since 3.0
  * 
  */
-public class ModelMetaDesc {
+public class ModelMetaDesc implements ClassDesc {
 
     /** the package name */
     protected String packageName;
@@ -80,6 +82,11 @@ public class ModelMetaDesc {
      */
     public void setSimpleName(String simpleName) {
         this.simpleName = simpleName;
+    }
+
+    @Override
+    public String getQualifiedName() {
+        return ClassUtil.getQualifiedName(packageName, simpleName);
     }
 
     /**
