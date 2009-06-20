@@ -49,6 +49,8 @@ public final class BooleanUtil {
                 return Boolean.FALSE;
             } else if ("0".equalsIgnoreCase(s)) {
                 return Boolean.FALSE;
+            } else if ("on".equalsIgnoreCase(s)) {
+                return Boolean.TRUE;
             } else {
                 return Boolean.TRUE;
             }

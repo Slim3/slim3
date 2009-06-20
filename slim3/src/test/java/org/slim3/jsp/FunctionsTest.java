@@ -251,9 +251,18 @@ public class FunctionsTest extends TestCase {
     /**
      * @throws Exception
      */
-    public void testProperty() throws Exception {
+    public void testText() throws Exception {
         request.setAttribute("aaa", "111");
-        assertEquals("name = \"aaa\" value = \"111\"", Functions
-            .property("aaa"));
+        assertEquals("name = \"aaa\" value = \"111\"", Functions.text("aaa"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testCheckbox() throws Exception {
+        request.setAttribute("aaa", "111");
+        assertEquals("name = \"aaa\" checked = \"checked\"", Functions
+            .checkbox("aaa"));
+        assertEquals("name = \"bbb\"", Functions.checkbox("bbb"));
     }
 }

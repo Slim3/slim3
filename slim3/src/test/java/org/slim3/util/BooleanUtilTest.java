@@ -15,8 +15,6 @@
  */
 package org.slim3.util;
 
-import org.slim3.util.BooleanUtil;
-
 import junit.framework.TestCase;
 
 /**
@@ -54,6 +52,7 @@ public class BooleanUtilTest extends TestCase {
         assertEquals(Boolean.FALSE, BooleanUtil.toBoolean("0"));
         assertEquals(Boolean.TRUE, BooleanUtil.toBoolean("true"));
         assertEquals(Boolean.FALSE, BooleanUtil.toBoolean("false"));
+        assertEquals(Boolean.TRUE, BooleanUtil.toBoolean("on"));
     }
 
     /**

@@ -85,13 +85,25 @@
   
   <function>
     <description>
-      Returns the name and value attribute representation.
+      Returns the text tag representation.
     </description>
-    <name>property</name>
+    <name>text</name>
     <function-class>org.slim3.jsp.Functions</function-class>
-    <function-signature>java.lang.String property(java.lang.String)</function-signature>
+    <function-signature>java.lang.String text(java.lang.String)</function-signature>
     <example>
-      &lt;input type="text" ${f:property("aaa")}/&gt;
+      &lt;input type="text" ${f:text("aaa")}/&gt;
+    </example>
+  </function>
+  
+  <function>
+    <description>
+      Returns the checkbox tag representation.
+    </description>
+    <name>checkbox</name>
+    <function-class>org.slim3.jsp.Functions</function-class>
+    <function-signature>java.lang.String checkbox(java.lang.String)</function-signature>
+    <example>
+      &lt;input type="checkbox" ${f:checkbox("aaa")}/&gt;
     </example>
   </function>
 </taglib>

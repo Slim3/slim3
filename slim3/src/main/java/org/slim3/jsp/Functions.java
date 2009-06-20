@@ -169,19 +169,36 @@ public final class Functions {
     }
 
     /**
-     * Returns name and value attribute representation.
+     * Returns the text tag representation.
      * 
      * @param name
      *            the property name
-     * @return name and value attribute representation
+     * @return the text tag representation
      */
-    public static String property(String name) {
+    public static String text(String name) {
         HttpServletRequest request = RequestLocator.get();
         return "name = \""
             + name
             + "\" value = \""
             + h(request.getAttribute(name))
             + "\"";
+    }
+
+    /**
+     * Returns the checkbox tag representation.
+     * 
+     * @param name
+     *            the property name
+     * @return the checkbox tag representation
+     */
+    public static String checkbox(String name) {
+        HttpServletRequest request = RequestLocator.get();
+        return "name = \""
+            + name
+            + "\""
+            + (request.getAttribute(name) != null
+                ? " checked = \"checked\""
+                : "");
     }
 
     private Functions() {
