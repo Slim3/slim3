@@ -21,6 +21,7 @@
     <taskdef name="gen-model" classname="org.slim3.gen.task.GenModelTask" classpathref="classpath"/>
     <taskdef name="gen-view" classname="org.slim3.gen.task.GenViewTask" classpathref="classpath"/>
     <taskdef name="gen-controller" classname="org.slim3.gen.task.GenControllerTask" classpathref="classpath"/>
+    <taskdef name="gen-dao" classname="org.slim3.gen.task.GenDaoTask" classpathref="classpath"/>
 
     <target name="compile">
     	<delete dir="war/WEB-INF/classes" failonerror="false"/>
@@ -84,7 +85,8 @@
 
     <target name="gen-model">
         <input message="Input a model simple name." addproperty="modelSimpleName"/>
-        <gen-model srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" simpleName="${modelSimpleName}"/>
+        <gen-model srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" simpleName="${modelSimpleName}" modelClassNameProperty="modelClassName"/>
+        <gen-dao srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" modelClassName="${modelClassName}"/>
     </target>
 
 </project>
