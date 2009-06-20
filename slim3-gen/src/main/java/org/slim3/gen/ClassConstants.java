@@ -44,6 +44,9 @@ public final class ClassConstants {
     /** {@code org.slim3.tester.JDOTestCase} */
     public static final String JDOTestCase = "org.slim3.tester.JDOTestCase";
 
+    /** {@code org.slim3.jdo.GenericDao} */
+    public static final String GenericDao = "org.slim3.jdo.GenericDao";
+
     /** {@code javax.jdo.annotations.PersistenceCapable} */
     public static final String PersistenceCapable =
         "javax.jdo.annotations.PersistenceCapable";

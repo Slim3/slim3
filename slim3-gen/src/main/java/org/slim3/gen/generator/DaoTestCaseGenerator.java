@@ -16,7 +16,7 @@
 package org.slim3.gen.generator;
 
 import org.slim3.gen.Constants;
-import org.slim3.gen.desc.ModelDesc;
+import org.slim3.gen.desc.DaoDesc;
 import org.slim3.gen.printer.Printer;
 import org.slim3.gen.util.ClassUtil;
 import org.slim3.gen.util.StringUtil;
@@ -28,41 +28,41 @@ import org.slim3.gen.util.StringUtil;
  * @since 3.0
  * 
  */
-public class ModelTestCaseGenerator implements Generator {
+public class DaoTestCaseGenerator implements Generator {
 
-    /** the model description */
-    protected final ModelDesc modelDesc;
+    /** the dao description */
+    protected final DaoDesc daoDesc;
 
     /**
-     * Creates a new {@link ModelTestCaseGenerator}.
+     * Creates a new {@link DaoTestCaseGenerator}.
      * 
-     * @param modelDesc
-     *            the model description
+     * @param daoDesc
+     *            the dao description
      */
-    public ModelTestCaseGenerator(ModelDesc modelDesc) {
-        if (modelDesc == null) {
-            throw new NullPointerException("The modelDesc parameter is null.");
+    public DaoTestCaseGenerator(DaoDesc daoDesc) {
+        if (daoDesc == null) {
+            throw new NullPointerException("The daoDesc parameter is null.");
         }
-        this.modelDesc = modelDesc;
+        this.daoDesc = daoDesc;
     }
 
     @Override
     public void generate(Printer p) {
-        p.println("package %s;", modelDesc.getPackageName());
+        p.println("package %s;", daoDesc.getPackageName());
         p.println();
-        p.println("import %s;", modelDesc.getTestCaseSuperclassName());
+        p.println("import %s;", daoDesc.getTestCaseSuperclassName());
         p.println();
         p.println(
             "public class %s%s extends %s {",
-            modelDesc.getSimpleName(),
+            daoDesc.getSimpleName(),
             Constants.TEST_SUFFIX,
-            ClassUtil.getSimpleName(modelDesc.getTestCaseSuperclassName()));
+            ClassUtil.getSimpleName(daoDesc.getTestCaseSuperclassName()));
         p.println();
         p.println("    public void test() throws Exception {");
         p.println(
-            "        %1$s %2$s = new %1$s();",
-            modelDesc.getSimpleName(),
-            StringUtil.decapitalize(modelDesc.getSimpleName()));
+            "        %1$s %2$s = new %1$s(pm);",
+            daoDesc.getSimpleName(),
+            StringUtil.decapitalize(daoDesc.getSimpleName()));
         p.println("    }");
         p.println("}");
     }

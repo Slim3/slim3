@@ -34,9 +34,6 @@ public class FilePrinter implements Printer {
     /** the formatter object */
     protected final Formatter formatter;
 
-    /** the line delimiter */
-    protected String lineDelimiter = System.getProperty("line.separator");
-
     /**
      * Creates a new {@link FilePrinter}.
      * 
@@ -78,11 +75,11 @@ public class FilePrinter implements Printer {
 
     public void println(String format, Object... args) {
         formatter.format(format, args);
-        formatter.format(lineDelimiter);
+        formatter.format("%n");
     }
 
     public void println() {
-        formatter.format(lineDelimiter);
+        formatter.format("%n");
     }
 
     public void close() {

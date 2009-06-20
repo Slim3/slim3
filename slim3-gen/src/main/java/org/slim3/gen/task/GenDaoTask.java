@@ -22,21 +22,19 @@ import javax.xml.xpath.XPathExpressionException;
 
 import org.slim3.gen.ClassConstants;
 import org.slim3.gen.Constants;
-import org.slim3.gen.desc.ModelDesc;
-import org.slim3.gen.desc.ModelDescFactory;
+import org.slim3.gen.desc.DaoDesc;
+import org.slim3.gen.desc.DaoDescFactory;
+import org.slim3.gen.generator.DaoGenerator;
+import org.slim3.gen.generator.DaoTestCaseGenerator;
 import org.slim3.gen.generator.Generator;
-import org.slim3.gen.generator.ModelGenerator;
-import org.slim3.gen.generator.ModelTestCaseGenerator;
-import org.slim3.gen.message.MessageCode;
-import org.slim3.gen.message.MessageFormatter;
 
 /**
- * Represents a task to generate a model java file.
+ * Represents a task to generate a dao java file.
  * 
  * @author taedium
  * @since 3.0
  */
-public class GenModelTask extends AbstractTask {
+public class GenDaoTask extends AbstractTask {
 
     /** the source directory */
     protected File srcDir;
@@ -47,14 +45,14 @@ public class GenModelTask extends AbstractTask {
     /** the packageName */
     protected String packageName;
 
-    /** the simpleName */
-    protected String simpleName;
+    /** the superclassName */
+    protected String superclassName = ClassConstants.GenericDao;
 
     /** the superclass name of testcase */
     protected String testCaseSuperclassName = ClassConstants.JDOTestCase;
 
-    /** the property which represents a model class name */
-    protected String modelClassNameProperty;
+    /** the modelClassName */
+    protected String modelClassName;
 
     /**
      * Sets the srcDir.
@@ -87,13 +85,13 @@ public class GenModelTask extends AbstractTask {
     }
 
     /**
-     * Sets the simpleName.
+     * Sets the superclassName.
      * 
-     * @param simpleName
-     *            the simpleName to set
+     * @param superclassName
+     *            the superclassName to set
      */
-    public void setSimpleName(String simpleName) {
-        this.simpleName = simpleName;
+    public void setSuperclassName(String superclassName) {
+        this.superclassName = superclassName;
     }
 
     /**
@@ -107,13 +105,13 @@ public class GenModelTask extends AbstractTask {
     }
 
     /**
-     * Sets the modelClassNameProperty.
+     * Sets the modelClassName.
      * 
-     * @param modelClassNameProperty
-     *            the modelClassNameProperty to set
+     * @param modelClassName
+     *            the modelClassName to set
      */
-    public void setModelClassNameProperty(String modelClassNameProperty) {
-        this.modelClassNameProperty = modelClassNameProperty;
+    public void setModelClassName(String modelClassName) {
+        this.modelClassName = modelClassName;
     }
 
     @Override
@@ -127,45 +125,34 @@ public class GenModelTask extends AbstractTask {
         if (warDir == null) {
             throw new IllegalStateException("The warDir parameter is null.");
         }
-        if (simpleName == null) {
-            throw new IllegalStateException("The simpleName parameter is null.");
-        }
-        if (modelClassNameProperty == null) {
+        if (modelClassName == null) {
             throw new IllegalStateException(
-                "The modelClassNameProperty parameter is null.");
+                "The modelClassName parameter is null.");
         }
-        if (getProject().getProperty(modelClassNameProperty) != null) {
-            throw new IllegalStateException(MessageFormatter.getMessage(
-                MessageCode.SILM3GEN0009,
-                modelClassNameProperty));
-        }
-        String modelPackageName = getModelPackageName();
-        ModelDescFactory factory = createModelDescFactory(modelPackageName);
-        ModelDesc modelDesc = factory.createModelDesc();
+        String daoPackageName = getDaoPackageName();
+        DaoDescFactory factory = createDaoDescFactory(daoPackageName);
+        DaoDesc daoDesc = factory.createDaoDesc();
         JavaFileCreator javaFileCreator =
             new JavaFileCreator(
                 srcDir,
                 testDir,
-                modelDesc.getPackageName(),
-                modelDesc.getSimpleName());
+                daoDesc.getPackageName(),
+                daoDesc.getSimpleName());
         ClassNameCreator classNameCreator =
-            new ClassNameCreator(modelDesc.getPackageName(), modelDesc
+            new ClassNameCreator(daoDesc.getPackageName(), daoDesc
                 .getSimpleName());
-        generateModel(modelDesc, javaFileCreator, classNameCreator);
-        generateModelTestCase(modelDesc, javaFileCreator, classNameCreator);
-        getProject().setNewProperty(
-            modelClassNameProperty,
-            classNameCreator.createClassName());
+        generateDao(daoDesc, javaFileCreator, classNameCreator);
+        generateDaoTestCase(daoDesc, javaFileCreator, classNameCreator);
     }
 
     /**
-     * Returns the model package name.
+     * Returns the dao package name.
      * 
-     * @return the model package name.
+     * @return the dao package name.
      * @throws IOException
      * @throws XPathExpressionException
      */
-    protected String getModelPackageName() throws IOException,
+    protected String getDaoPackageName() throws IOException,
             XPathExpressionException {
         if (packageName != null) {
             return packageName;
@@ -176,40 +163,41 @@ public class GenModelTask extends AbstractTask {
         String rootPackageName =
             pos > 0 ? controllerPackageName.substring(0, pos) : null;
         if (rootPackageName != null) {
-            return rootPackageName + "." + Constants.MODEL_SUB_PACKAGE;
+            return rootPackageName + "." + Constants.DAO_SUB_PACKAGE;
         }
-        return Constants.MODEL_SUB_PACKAGE;
+        return Constants.DAO_SUB_PACKAGE;
     }
 
     /**
-     * Creates a {@link ModelDescFactory}.
+     * Creates a {@link DaoDescFactory}.
      * 
      * @param packageName
      *            the package name
-     * @return a factory of model description.
+     * @return a factory of dao description.
      */
-    protected ModelDescFactory createModelDescFactory(String packageName) {
-        return new ModelDescFactory(
+    protected DaoDescFactory createDaoDescFactory(String packageName) {
+        return new DaoDescFactory(
             packageName,
-            simpleName,
-            testCaseSuperclassName);
+            superclassName,
+            testCaseSuperclassName,
+            modelClassName);
     }
 
     /**
-     * Generates a model.
+     * Generates a dao.
      * 
-     * @param modelDesc
-     *            the model description
+     * @param daoDesc
+     *            the dao description
      * @param javaFileCreator
      *            the java file creator
      * @param classNameCreator
      *            the class name creator
      * @throws IOException
      */
-    protected void generateModel(ModelDesc modelDesc,
+    protected void generateDao(DaoDesc daoDesc,
             JavaFileCreator javaFileCreator, ClassNameCreator classNameCreator)
             throws IOException {
-        Generator generator = createModelGenerator(modelDesc);
+        Generator generator = createDaoGenerator(daoDesc);
         File javaFile = javaFileCreator.createJavaFile();
         String className = classNameCreator.createClassName();
         generate(generator, javaFile, className);
@@ -218,29 +206,29 @@ public class GenModelTask extends AbstractTask {
     /**
      * Creates a {@link Generator}.
      * 
-     * @param modelDesc
-     *            the model description
+     * @param daoDesc
+     *            the dao description
      * @return a generator
      */
-    protected Generator createModelGenerator(ModelDesc modelDesc) {
-        return new ModelGenerator(modelDesc);
+    protected Generator createDaoGenerator(DaoDesc daoDesc) {
+        return new DaoGenerator(daoDesc);
     }
 
     /**
-     * Generates a model test case.
+     * Generates a dao test case.
      * 
-     * @param modelDesc
-     *            the model description
+     * @param daoDesc
+     *            the dao description
      * @param javaFileCreator
      *            the java file creator
      * @param classNameCreator
      *            the class name creator
      * @throws IOException
      */
-    protected void generateModelTestCase(ModelDesc modelDesc,
+    protected void generateDaoTestCase(DaoDesc daoDesc,
             JavaFileCreator javaFileCreator, ClassNameCreator classNameCreator)
             throws IOException {
-        Generator generator = createModelTestCaseGenerator(modelDesc);
+        Generator generator = createDaoTestCaseGenerator(daoDesc);
         File javaFile = javaFileCreator.createTestCaseJavaFile();
         String className = classNameCreator.createTestCaseClassName();
         generate(generator, javaFile, className);
@@ -249,12 +237,12 @@ public class GenModelTask extends AbstractTask {
     /**
      * Creates a {@link Generator}.
      * 
-     * @param modelDesc
-     *            the model description
+     * @param daoDesc
+     *            the dao description
      * @return a generator
      */
-    protected Generator createModelTestCaseGenerator(ModelDesc modelDesc) {
-        return new ModelTestCaseGenerator(modelDesc);
+    protected Generator createDaoTestCaseGenerator(DaoDesc daoDesc) {
+        return new DaoTestCaseGenerator(daoDesc);
     }
 
 }

@@ -27,6 +27,8 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.slim3.gen.message.MessageCode;
+import org.slim3.gen.message.MessageFormatter;
 import org.slim3.gen.util.CloseableUtil;
 import org.slim3.gen.util.StringUtil;
 import org.xml.sax.InputSource;
@@ -95,8 +97,8 @@ public class AppEngineConfig {
                         "/pre:appengine-web-app/pre:system-properties/pre:property[@name='slim3.controllerPackage']/@value",
                         new InputSource(inputStream));
             if (StringUtil.isEmpty(value)) {
-                throw new RuntimeException(
-                    "The system-property 'slim3.controllerPackage' is not found in appengine-web.xml or the system-property value is empty.");
+                throw new RuntimeException(MessageFormatter
+                    .getMessage(MessageCode.SILM3GEN0008));
             }
             return value;
         } finally {

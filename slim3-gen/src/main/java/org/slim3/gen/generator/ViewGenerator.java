@@ -19,7 +19,7 @@ import org.slim3.gen.desc.ViewDesc;
 import org.slim3.gen.printer.Printer;
 
 /**
- * Generates source codes of a view file.
+ * Generates a view file.
  * 
  * @author taedium
  * @since 3.0

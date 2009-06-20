@@ -19,7 +19,7 @@ import org.slim3.gen.desc.ModelDesc;
 import org.slim3.gen.printer.Printer;
 
 /**
- * Generates source codes of a JDO model java file.
+ * Generates a JDO model java file.
  * 
  * @author taedium
  * 
@@ -30,7 +30,10 @@ public class ModelGenerator implements Generator {
     protected final ModelDesc modelDesc;
 
     /**
+     * Creates a new {@link ModelGenerator}.
+     * 
      * @param modelDesc
+     *            the model description
      */
     public ModelGenerator(ModelDesc modelDesc) {
         if (modelDesc == null) {
@@ -54,9 +57,6 @@ public class ModelGenerator implements Generator {
         p.println("import javax.jdo.annotations.Version;");
         p.println("import javax.jdo.annotations.VersionStrategy;");
         p.println();
-        p.println("/**");
-        p.println(" *");
-        p.println(" */");
         p
             .println("@PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = \"true\")");
         p.println("@Version(strategy = VersionStrategy.VERSION_NUMBER)");

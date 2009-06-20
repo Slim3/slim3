@@ -34,6 +34,9 @@ public class Constants {
     /** the suffix of controller. */
     public static final String CONTROLLER_SUFFIX = "Controller";
 
+    /** the suffix of dao. */
+    public static final String DAO_SUFFIX = "Dao";
+
     /** the suffix of view. */
     public static final String VIEW_SUFFIX = ".jsp";
 
@@ -49,4 +52,8 @@ public class Constants {
 
     /** the sub package name for model */
     public static final String MODEL_SUB_PACKAGE = "model";
+
+    /** the sub package name for dao */
+    public static final String DAO_SUB_PACKAGE = "dao";
+
 }

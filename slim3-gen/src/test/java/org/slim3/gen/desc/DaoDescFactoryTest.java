@@ -13,23 +13,28 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.gen;
+package org.slim3.gen.desc;
 
 import junit.framework.TestCase;
 
 /**
- * 
  * @author taedium
  * 
  */
-public class ProductTest extends TestCase {
+public class DaoDescFactoryTest extends TestCase {
 
     /**
      * 
      * @throws Exception
      */
-    public void test() throws Exception {
-        assertEquals("Slim3-Gen", ProductInfo.getName());
-        assertEquals("@VERSION@", ProductInfo.getVersion());
+    public void testCreateDaoDesc() throws Exception {
+        DaoDescFactory factory =
+            new DaoDescFactory("aaa", "bbb.Ccc", "ddd.Eee", "fff.Ddd");
+        DaoDesc daoDesc = factory.createDaoDesc();
+        assertEquals("aaa", daoDesc.getPackageName());
+        assertEquals("DddDao", daoDesc.getSimpleName());
+        assertEquals("bbb.Ccc", daoDesc.getSuperclassName());
+        assertEquals("ddd.Eee", daoDesc.getTestCaseSuperclassName());
+        assertEquals("fff.Ddd", daoDesc.getModelClassName());
     }
 }

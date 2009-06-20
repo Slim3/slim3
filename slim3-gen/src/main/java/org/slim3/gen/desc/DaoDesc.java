@@ -16,12 +16,12 @@
 package org.slim3.gen.desc;
 
 /**
- * Represents a model description.
+ * Represents a dao description.
  * 
  * @author taedium
  * @since 3.0
  */
-public class ModelDesc {
+public class DaoDesc {
 
     /** the packageName */
     protected String packageName;
@@ -29,8 +29,14 @@ public class ModelDesc {
     /** the simpleName */
     protected String simpleName;
 
+    /** the superclassName */
+    protected String superclassName;
+
     /** the testCaseSuperclassName */
     protected String testCaseSuperclassName;
+
+    /** the modelClassName */
+    protected String modelClassName;
 
     /**
      * Returns the packageName.
@@ -71,6 +77,25 @@ public class ModelDesc {
     }
 
     /**
+     * Returns the superclassName.
+     * 
+     * @return the superclassName
+     */
+    public String getSuperclassName() {
+        return superclassName;
+    }
+
+    /**
+     * Set the superclassName.
+     * 
+     * @param superclassName
+     *            the superclassName to set
+     */
+    public void setSuperclassName(String superclassName) {
+        this.superclassName = superclassName;
+    }
+
+    /**
      * Returns the testCaseSuperclassName.
      * 
      * @return the testCaseSuperclassName
@@ -87,6 +112,25 @@ public class ModelDesc {
      */
     public void setTestCaseSuperclassName(String testCaseSuperclassName) {
         this.testCaseSuperclassName = testCaseSuperclassName;
+    }
+
+    /**
+     * Returns the modelClassName
+     * 
+     * @return the modelClassName
+     */
+    public String getModelClassName() {
+        return modelClassName;
+    }
+
+    /**
+     * Sets the modelClassName.
+     * 
+     * @param modelClassName
+     *            the modelClassName to set
+     */
+    public void setModelClassName(String modelClassName) {
+        this.modelClassName = modelClassName;
     }
 
 }

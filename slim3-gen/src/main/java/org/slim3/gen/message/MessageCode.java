@@ -36,7 +36,11 @@ public enum MessageCode {
     /** */
     SILM3GEN0006("Already exists. Generation Skipped. ({0})"),
     /** */
-    SILM3GEN0007("Generated. ({0})");
+    SILM3GEN0007("Generated. ({0})"),
+    /** */
+    SILM3GEN0008("The system-property 'slim3.controllerPackage' is not found in appengine-web.xml or the system-property value is empty."),
+    /** */
+    SILM3GEN0009("The property[{0}] has already been set.");
 
     /** the message */
     public final String message;
