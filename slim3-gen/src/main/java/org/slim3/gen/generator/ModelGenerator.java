@@ -66,6 +66,7 @@ public class ModelGenerator implements Generator {
         p.println();
         p.println("    private static final long serialVersionUID = 1L;");
         p.println();
+        p.println("    @SuppressWarnings(\"unused\")");
         p
             .println(
                 "    private static final Logger logger = Logger.getLogger(%s.class.getName());",

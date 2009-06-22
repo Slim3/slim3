@@ -67,6 +67,7 @@ public class DaoGenerator implements Generator {
                 "    private static final %1$s m = new %1$s();",
                 (ClassUtil.getSimpleName(daoDesc.getModelClassName()) + Constants.META_SUFFIX));
         p.println();
+        p.println("    @SuppressWarnings(\"unused\")");
         p
             .println(
                 "    private static final Logger logger = Logger.getLogger(%s.class.getName());",

@@ -58,6 +58,7 @@ public class ControllerGenerator implements Generator {
             .getSimpleName(), ClassUtil.getSimpleName(controllerDesc
             .getSuperclassName()));
         p.println();
+        p.println("    @SuppressWarnings(\"unused\")");
         p
             .println(
                 "    private static final Logger logger = Logger.getLogger(%s.class.getName());",
