@@ -9,5 +9,7 @@
 <li><a href="${f:url('/timezone/')}">TimeZone</a></li>
 <li><a href="${f:url('/checkbox/')}">Checkbox</a></li>
 <li><a href="${f:url('/multibox/')}">Multibox</a></li>
+<li><a href="${f:url('/radio/')}">Radio</a></li>
+<li><a href="${f:url('/select/')}">Select</a></li>
 </ul>
 </div>

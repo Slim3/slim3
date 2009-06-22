@@ -298,6 +298,34 @@ public final class Functions {
                 : "");
     }
 
+    /**
+     * Returns the select option tag representation.
+     * 
+     * @param name
+     *            the property name
+     * @param value
+     *            the value
+     * @return the select option tag representation
+     * @throws IllegalArgumentException
+     *             if the property name ends with "Array"
+     */
+    public static String select(String name, String value)
+            throws IllegalArgumentException {
+        if (name.endsWith(ARRAY_SUFFIX)) {
+            throw new IllegalArgumentException("The select property name("
+                + name
+                + ") must not end with \"Array\".");
+        }
+        HttpServletRequest request = RequestLocator.get();
+        String s = StringUtil.toString(request.getAttribute(name));
+        return "value = \""
+            + h(value)
+            + "\""
+            + (value == null && s == null || value != null && value.equals(s)
+                ? " selected = \"selected\""
+                : "");
+    }
+
     private Functions() {
     }
 }

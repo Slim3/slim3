@@ -130,4 +130,16 @@
       &lt;input type="radio" ${f:radio("aaa", "111")}/&gt;
     </example>
   </function>
+  
+  <function>
+    <description>
+      Represents the select option tag.
+    </description>
+    <name>select</name>
+    <function-class>org.slim3.jsp.Functions</function-class>
+    <function-signature>java.lang.String select(java.lang.String,java.lang.String)</function-signature>
+    <example>
+      &lt;option ${f:select("aaa", "1")}&gt;One&lt;/option&gt;;
+    </example>
+  </function>
 </taglib>

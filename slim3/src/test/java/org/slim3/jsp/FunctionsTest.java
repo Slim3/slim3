@@ -379,4 +379,26 @@ public class FunctionsTest extends TestCase {
             System.out.println(e.getMessage());
         }
     }
+
+    /**
+     * @throws Exception
+     */
+    public void testSelect() throws Exception {
+        request.setAttribute("aaa", new Integer(111));
+        assertEquals("value = \"111\" selected = \"selected\"", Functions
+            .select("aaa", "111"));
+        assertEquals("value = \"222\"", Functions.select("aaa", "222"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testSelectForBadName() throws Exception {
+        try {
+            Functions.select("aaaArray", "111");
+            fail();
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 }
