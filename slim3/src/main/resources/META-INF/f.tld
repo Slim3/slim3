@@ -85,7 +85,7 @@
   
   <function>
     <description>
-      Returns the text tag representation.
+      Represents the text tag.
     </description>
     <name>text</name>
     <function-class>org.slim3.jsp.Functions</function-class>
@@ -97,7 +97,7 @@
   
   <function>
     <description>
-      Returns the checkbox tag representation.
+      Represents the checkbox tag.
     </description>
     <name>checkbox</name>
     <function-class>org.slim3.jsp.Functions</function-class>
@@ -109,13 +109,25 @@
   
   <function>
     <description>
-      Returns the multibox tag representation.
+      Represents the multibox tag.
     </description>
     <name>multibox</name>
     <function-class>org.slim3.jsp.Functions</function-class>
     <function-signature>java.lang.String multibox(java.lang.String,java.lang.String)</function-signature>
     <example>
       &lt;input type="checkbox" ${f:multibox("aaaArray", "111")}/&gt;
+    </example>
+  </function>
+  
+  <function>
+    <description>
+      Represents the radio tag.
+    </description>
+    <name>radio</name>
+    <function-class>org.slim3.jsp.Functions</function-class>
+    <function-signature>java.lang.String radio(java.lang.String,java.lang.String)</function-signature>
+    <example>
+      &lt;input type="radio" ${f:radio("aaa", "111")}/&gt;
     </example>
   </function>
 </taglib>

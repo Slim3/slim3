@@ -180,8 +180,15 @@ public final class Functions {
      * @param name
      *            the property name
      * @return the text tag representation
+     * @throws IllegalArgumentException
+     *             if the property name ends with "Array"
      */
-    public static String text(String name) {
+    public static String text(String name) throws IllegalArgumentException {
+        if (name.endsWith(ARRAY_SUFFIX)) {
+            throw new IllegalArgumentException("The text property name("
+                + name
+                + ") must not end with \"Array\".");
+        }
         HttpServletRequest request = RequestLocator.get();
         return "name = \""
             + name
@@ -196,8 +203,15 @@ public final class Functions {
      * @param name
      *            the property name
      * @return the checkbox tag representation
+     * @throws IllegalArgumentException
+     *             if the property name ends with "Array"
      */
-    public static String checkbox(String name) {
+    public static String checkbox(String name) throws IllegalArgumentException {
+        if (name.endsWith(ARRAY_SUFFIX)) {
+            throw new IllegalArgumentException("The checkbox property name("
+                + name
+                + ") must not end with \"Array\".");
+        }
         HttpServletRequest request = RequestLocator.get();
         return "name = \""
             + name
@@ -215,8 +229,14 @@ public final class Functions {
      * @param value
      *            the value
      * @return the multibox tag representation
+     * @throws IllegalArgumentException
+     *             if the property name does not end with "Array"
+     * @throws IllegalStateException
+     *             if the property is not an array or if the property is not a
+     *             string array
      */
-    public static String multibox(String name, String value) {
+    public static String multibox(String name, String value)
+            throws IllegalArgumentException, IllegalStateException {
         if (!name.endsWith(ARRAY_SUFFIX)) {
             throw new IllegalArgumentException("The multibox property name("
                 + name
@@ -246,6 +266,36 @@ public final class Functions {
             + h(value)
             + "\""
             + (list.contains(value) ? " checked = \"checked\"" : "");
+    }
+
+    /**
+     * Returns the radio tag representation.
+     * 
+     * @param name
+     *            the property name
+     * @param value
+     *            the value
+     * @return the radio tag representation
+     * @throws IllegalArgumentException
+     *             if the property name ends with "Array"
+     */
+    public static String radio(String name, String value)
+            throws IllegalArgumentException {
+        if (name.endsWith(ARRAY_SUFFIX)) {
+            throw new IllegalArgumentException("The radio property name("
+                + name
+                + ") must not end with \"Array\".");
+        }
+        HttpServletRequest request = RequestLocator.get();
+        String s = StringUtil.toString(request.getAttribute(name));
+        return "name = \""
+            + name
+            + "\" value = \""
+            + h(value)
+            + "\""
+            + (value == null && s == null || value != null && value.equals(s)
+                ? " checked = \"checked\""
+                : "");
     }
 
     private Functions() {

@@ -259,11 +259,35 @@ public class FunctionsTest extends TestCase {
     /**
      * @throws Exception
      */
+    public void testTextForBadName() throws Exception {
+        try {
+            Functions.text("aaaArray");
+            fail();
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testCheckbox() throws Exception {
         request.setAttribute("aaa", "111");
         assertEquals("name = \"aaa\" checked = \"checked\"", Functions
             .checkbox("aaa"));
         assertEquals("name = \"bbb\"", Functions.checkbox("bbb"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testCheckboxForBadName() throws Exception {
+        try {
+            Functions.checkbox("aaaArray");
+            fail();
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     /**
@@ -327,6 +351,31 @@ public class FunctionsTest extends TestCase {
             Functions.multibox("aaaArray", "111");
             fail();
         } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testRadio() throws Exception {
+        request.setAttribute("aaa", "111");
+        assertEquals(
+            "name = \"aaa\" value = \"111\" checked = \"checked\"",
+            Functions.radio("aaa", "111"));
+        assertEquals("name = \"aaa\" value = \"222\"", Functions.radio(
+            "aaa",
+            "222"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testRadioForBadName() throws Exception {
+        try {
+            Functions.radio("aaaArray", "111");
+            fail();
+        } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
         }
     }
