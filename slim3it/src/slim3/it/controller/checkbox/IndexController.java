@@ -7,6 +7,9 @@ public class IndexController extends JDOController {
 
     @Override
     public Navigation run() {
+        if (isGet()) {
+            requestScope("aaa", "on");
+        }
         return forward("index.jsp");
     }
 }

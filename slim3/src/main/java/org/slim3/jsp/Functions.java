@@ -15,7 +15,9 @@
  */
 package org.slim3.jsp;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
@@ -40,6 +42,10 @@ import org.slim3.util.TimeZoneLocator;
 public final class Functions {
 
     private static String BR = "<br />";
+
+    private static String ARRAY_SUFFIX = "Array";
+
+    private static List<String> EMPTY_STRING_LIST = new ArrayList<String>(0);
 
     /**
      * Escapes string that could be interpreted as HTML.
@@ -199,6 +205,47 @@ public final class Functions {
             + (request.getAttribute(name) != null
                 ? " checked = \"checked\""
                 : "");
+    }
+
+    /**
+     * Returns the multibox tag representation.
+     * 
+     * @param name
+     *            the property name
+     * @param value
+     *            the value
+     * @return the multibox tag representation
+     */
+    public static String multibox(String name, String value) {
+        if (!name.endsWith(ARRAY_SUFFIX)) {
+            throw new IllegalArgumentException("The multibox property name("
+                + name
+                + ") must end with \"Array\".");
+        }
+        HttpServletRequest request = RequestLocator.get();
+        Object o = request.getAttribute(name);
+        List<String> list = null;
+        if (o != null) {
+            if (!o.getClass().isArray()) {
+                throw new IllegalStateException("The multibox property("
+                    + name
+                    + ") must be an array.");
+            }
+            if (o.getClass().getComponentType() != String.class) {
+                throw new IllegalStateException("The multibox property("
+                    + name
+                    + ") must be a string array.");
+            }
+            list = Arrays.asList((String[]) o);
+        } else {
+            list = EMPTY_STRING_LIST;
+        }
+        return "name = \""
+            + name
+            + "\" value = \""
+            + h(value)
+            + "\""
+            + (list.contains(value) ? " checked = \"checked\"" : "");
     }
 
     private Functions() {

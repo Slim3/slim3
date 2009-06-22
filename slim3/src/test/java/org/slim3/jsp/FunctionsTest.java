@@ -265,4 +265,69 @@ public class FunctionsTest extends TestCase {
             .checkbox("aaa"));
         assertEquals("name = \"bbb\"", Functions.checkbox("bbb"));
     }
+
+    /**
+     * @throws Exception
+     */
+    public void testMultibox() throws Exception {
+        String[] aaaArray = new String[] { "111" };
+        request.setAttribute("aaaArray", aaaArray);
+        assertEquals(
+            "name = \"aaaArray\" value = \"111\" checked = \"checked\"",
+            Functions.multibox("aaaArray", "111"));
+        assertEquals("name = \"aaaArray\" value = \"222\"", Functions.multibox(
+            "aaaArray",
+            "222"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testMultiboxForNull() throws Exception {
+        assertEquals("name = \"aaaArray\" value = \"111\"", Functions.multibox(
+            "aaaArray",
+            "111"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testMultiboxForBadName() throws Exception {
+        String[] aaaArray = new String[] { "111" };
+        request.setAttribute("aaa", aaaArray);
+        try {
+            Functions.multibox("aaa", "111");
+            fail();
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testMultiboxForNotArray() throws Exception {
+        String aaaArray = "111";
+        request.setAttribute("aaaArray", aaaArray);
+        try {
+            Functions.multibox("aaaArray", "111");
+            fail();
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testMultiboxForNotStringArray() throws Exception {
+        int[] aaaArray = new int[] { 1 };
+        request.setAttribute("aaaArray", aaaArray);
+        try {
+            Functions.multibox("aaaArray", "111");
+            fail();
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 }

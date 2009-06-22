@@ -106,4 +106,16 @@
       &lt;input type="checkbox" ${f:checkbox("aaa")}/&gt;
     </example>
   </function>
+  
+  <function>
+    <description>
+      Returns the multibox tag representation.
+    </description>
+    <name>multibox</name>
+    <function-class>org.slim3.jsp.Functions</function-class>
+    <function-signature>java.lang.String multibox(java.lang.String,java.lang.String)</function-signature>
+    <example>
+      &lt;input type="checkbox" ${f:multibox("aaaArray", "111")}/&gt;
+    </example>
+  </function>
 </taglib>

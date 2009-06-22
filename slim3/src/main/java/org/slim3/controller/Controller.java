@@ -566,4 +566,22 @@ public abstract class Controller {
             RuntimeExceptionUtil.wrapAndThrow(e);
         }
     }
+
+    /**
+     * Determines if this request is get method.
+     * 
+     * @return whether this request is get method
+     */
+    protected boolean isGet() {
+        return "get".equalsIgnoreCase(request.getMethod());
+    }
+
+    /**
+     * Determines if this request is post method.
+     * 
+     * @return whether this request is post method
+     */
+    protected boolean isPost() {
+        return "post".equalsIgnoreCase(request.getMethod());
+    }
 }

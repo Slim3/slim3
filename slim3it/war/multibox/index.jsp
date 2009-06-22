@@ -6,12 +6,14 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>checkbox Index</title>
+<title>multibox Index</title>
 <link rel="stylesheet" type="text/css" href="/css/global.css" />
 </head>
 <body>
 <form method="post" action="${f:url('')}">
-aaa: <input type="checkbox" ${f:checkbox("aaa")}/><br />
+aaaArray:<br />
+<input type="checkbox" ${f:multibox("aaaArray", "111")}/>111<br />
+<input type="checkbox" ${f:multibox("aaaArray", "222")}/>222<br />
 <input type="submit" value="Submit"/>
 </form>
 </body>

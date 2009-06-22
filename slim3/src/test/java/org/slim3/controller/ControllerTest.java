@@ -258,6 +258,28 @@ public class ControllerTest extends TestCase {
         assertEquals(new Date(0), controller.asDate("aaa", "hhmmss"));
     }
 
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testIsGet() throws Exception {
+        request.setMethod("get");
+        assertTrue(controller.isGet());
+        request.setMethod("post");
+        assertFalse(controller.isGet());
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testIsPost() throws Exception {
+        request.setMethod("post");
+        assertTrue(controller.isPost());
+        request.setMethod("get");
+        assertFalse(controller.isPost());
+    }
+
     private static class IndexController extends Controller {
 
         @Override
