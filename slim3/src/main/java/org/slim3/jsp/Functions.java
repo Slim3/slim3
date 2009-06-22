@@ -326,6 +326,51 @@ public final class Functions {
                 : "");
     }
 
+    /**
+     * Returns the multiselect option tag representation.
+     * 
+     * @param name
+     *            the property name
+     * @param value
+     *            the value
+     * @return the multiselect option tag representation
+     * @throws IllegalArgumentException
+     *             if the property name does not end with "Array"
+     * @throws IllegalStateException
+     *             if the property is not an array or if the property is not a
+     *             string array
+     */
+    public static String multiselect(String name, String value)
+            throws IllegalArgumentException, IllegalStateException {
+        if (!name.endsWith(ARRAY_SUFFIX)) {
+            throw new IllegalArgumentException("The multiselect property name("
+                + name
+                + ") must end with \"Array\".");
+        }
+        HttpServletRequest request = RequestLocator.get();
+        Object o = request.getAttribute(name);
+        List<String> list = null;
+        if (o != null) {
+            if (!o.getClass().isArray()) {
+                throw new IllegalStateException("The multiselect property("
+                    + name
+                    + ") must be an array.");
+            }
+            if (o.getClass().getComponentType() != String.class) {
+                throw new IllegalStateException("The multiselect property("
+                    + name
+                    + ") must be a string array.");
+            }
+            list = Arrays.asList((String[]) o);
+        } else {
+            list = EMPTY_STRING_LIST;
+        }
+        return "value = \""
+            + h(value)
+            + "\""
+            + (list.contains(value) ? " selected = \"selected\"" : "");
+    }
+
     private Functions() {
     }
 }

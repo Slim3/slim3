@@ -142,4 +142,16 @@
       &lt;option ${f:select("aaa", "1")}&gt;One&lt;/option&gt;;
     </example>
   </function>
+  
+  <function>
+    <description>
+      Represents the multiselect option tag.
+    </description>
+    <name>multiselect</name>
+    <function-class>org.slim3.jsp.Functions</function-class>
+    <function-signature>java.lang.String multiselect(java.lang.String,java.lang.String)</function-signature>
+    <example>
+      &lt;option ${f:multiselect("aaa", "1")}&gt;One&lt;/option&gt;;
+    </example>
+  </function>
 </taglib>

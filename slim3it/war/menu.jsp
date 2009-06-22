@@ -11,5 +11,6 @@
 <li><a href="${f:url('/multibox/')}">Multibox</a></li>
 <li><a href="${f:url('/radio/')}">Radio</a></li>
 <li><a href="${f:url('/select/')}">Select</a></li>
+<li><a href="${f:url('/multiselect/')}">Multiselect</a></li>
 </ul>
 </div>

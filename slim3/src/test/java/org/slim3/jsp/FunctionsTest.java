@@ -401,4 +401,66 @@ public class FunctionsTest extends TestCase {
             System.out.println(e.getMessage());
         }
     }
+
+    /**
+     * @throws Exception
+     */
+    public void testMultiselect() throws Exception {
+        String[] aaaArray = new String[] { "111" };
+        request.setAttribute("aaaArray", aaaArray);
+        assertEquals("value = \"111\" selected = \"selected\"", Functions
+            .multiselect("aaaArray", "111"));
+        assertEquals("value = \"222\"", Functions
+            .multiselect("aaaArray", "222"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testMultiselectForNull() throws Exception {
+        assertEquals("value = \"111\"", Functions
+            .multiselect("aaaArray", "111"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testMultiselectForBadName() throws Exception {
+        String[] aaaArray = new String[] { "111" };
+        request.setAttribute("aaa", aaaArray);
+        try {
+            Functions.multiselect("aaa", "111");
+            fail();
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testMultiselectForNotArray() throws Exception {
+        String aaaArray = "111";
+        request.setAttribute("aaaArray", aaaArray);
+        try {
+            Functions.multiselect("aaaArray", "111");
+            fail();
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testMultiselectForNotStringArray() throws Exception {
+        int[] aaaArray = new int[] { 1 };
+        request.setAttribute("aaaArray", aaaArray);
+        try {
+            Functions.multiselect("aaaArray", "111");
+            fail();
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 }
