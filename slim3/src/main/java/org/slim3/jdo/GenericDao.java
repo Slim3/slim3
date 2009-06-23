@@ -15,19 +15,38 @@
  */
 package org.slim3.jdo;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.jdo.JDOHelper;
+import javax.jdo.JDOOptimisticVerificationException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Transaction;
+
+import org.slim3.util.BeanMap;
+import org.slim3.util.BeanUtil;
+import org.slim3.util.LongUtil;
 
 /**
  * A generic dao.
  * 
  * @author higa
- * @param <T>
+ * @param <M>
  *            the model type.
  * @since 3.0
  * 
  */
-public class GenericDao<T> {
+public class GenericDao<M> {
+
+    /**
+     * The class to copy model attributes to map.
+     */
+    protected CopyModelToMap<M> modelToMap = new CopyModelToMap<M>() {
+        @Override
+        public void copy(M model, BeanMap map) {
+            BeanUtil.copy(model, map);
+        }
+    };
 
     /**
      * The persistence manager.
@@ -42,7 +61,7 @@ public class GenericDao<T> {
     /**
      * The model class.
      */
-    protected Class<T> modelClass;
+    protected Class<M> modelClass;
 
     /**
      * Constructor.
@@ -52,7 +71,7 @@ public class GenericDao<T> {
      * @param modelClass
      *            the model class
      */
-    public GenericDao(PersistenceManager pm, Class<T> modelClass) {
+    public GenericDao(PersistenceManager pm, Class<M> modelClass) {
         if (pm == null) {
             throw new NullPointerException("The pm parameter is null.");
         }
@@ -71,8 +90,49 @@ public class GenericDao<T> {
      *            the key
      * @return a model
      */
-    public T find(String key) {
+    public M find(String key) {
         return pm.getObjectById(modelClass, key);
+    }
+
+    /**
+     * Finds a model by key and checks the version.
+     * 
+     * @param key
+     *            the key
+     * @param version
+     *            the version
+     * @return a model
+     */
+    public M find(String key, long version) {
+        M model = pm.getObjectById(modelClass, key);
+        if (version != LongUtil.toPrimitiveLong(JDOHelper.getVersion(model))) {
+            throw new JDOOptimisticVerificationException(
+                "Failed optimistic lock by key("
+                    + key
+                    + ") and version("
+                    + version
+                    + ").",
+                model);
+        }
+        return model;
+    }
+
+    /**
+     * Finds all models.
+     * 
+     * @return all models
+     */
+    public List<M> findAll() {
+        return from().getResultList();
+    }
+
+    /**
+     * Finds all models.
+     * 
+     * @return all models
+     */
+    public List<BeanMap> findAllAsMapList() {
+        return toMapList(from().getResultList());
     }
 
     /**
@@ -82,7 +142,7 @@ public class GenericDao<T> {
      *            the model
      * @return the persisted model
      */
-    public T insert(T model) {
+    public M insert(M model) {
         return pm.makePersistent(model);
     }
 
@@ -93,9 +153,9 @@ public class GenericDao<T> {
      *            the model
      * @return the persisted model
      */
-    public T insertInTx(T model) {
+    public M insertInTx(M model) {
         tx.begin();
-        T t = pm.makePersistent(model);
+        M t = pm.makePersistent(model);
         tx.commit();
         return t;
     }
@@ -107,7 +167,7 @@ public class GenericDao<T> {
      *            the model
      * @return the persisted model
      */
-    public T update(T model) {
+    public M update(M model) {
         return pm.makePersistent(model);
     }
 
@@ -118,9 +178,9 @@ public class GenericDao<T> {
      *            the model
      * @return the persisted model
      */
-    public T updateInTx(T model) {
+    public M updateInTx(M model) {
         tx.begin();
-        T t = pm.makePersistent(model);
+        M t = pm.makePersistent(model);
         tx.commit();
         return t;
     }
@@ -131,7 +191,7 @@ public class GenericDao<T> {
      * @param model
      *            the model
      */
-    public void delete(T model) {
+    public void delete(M model) {
         pm.deletePersistent(model);
     }
 
@@ -141,7 +201,7 @@ public class GenericDao<T> {
      * @param model
      *            the model
      */
-    public void deleteInTx(T model) {
+    public void deleteInTx(M model) {
         tx.begin();
         pm.deletePersistent(model);
         tx.commit();
@@ -152,7 +212,43 @@ public class GenericDao<T> {
      * 
      * @return {@link SelectQuery}
      */
-    protected SelectQuery<T> from() {
-        return new SelectQuery<T>(pm, modelClass);
+    protected SelectQuery<M> from() {
+        return new SelectQuery<M>(pm, modelClass);
+    }
+
+    /**
+     * Converts the model list to the map list.
+     * 
+     * @param modelList
+     *            the model list
+     * @return the map list
+     */
+    protected List<BeanMap> toMapList(List<M> modelList) {
+        return toMapList(modelList, null);
+    }
+
+    /**
+     * Converts the model list to the map list.
+     * 
+     * @param modelList
+     *            the model list
+     * @param copy
+     *            the class to copy model attributes to map
+     * @return the map list
+     */
+    protected List<BeanMap> toMapList(List<M> modelList, CopyModelToMap<M> copy) {
+        if (modelList == null) {
+            throw new NullPointerException("The modelList parameter is null.");
+        }
+        if (copy == null) {
+            copy = modelToMap;
+        }
+        List<BeanMap> mapList = new ArrayList<BeanMap>(modelList.size());
+        for (M model : modelList) {
+            BeanMap map = new BeanMap();
+            copy.copy(model, map);
+            mapList.add(map);
+        }
+        return mapList;
     }
 }

@@ -48,7 +48,6 @@ public class DaoGenerator implements Generator {
     public void generate(Printer p) {
         p.println("package %s;", daoDesc.getPackageName());
         p.println();
-        p.println("import java.util.List;");
         p.println("import java.util.logging.Logger;");
         p.println("import javax.jdo.PersistenceManager;");
         p.println("import %s;", daoDesc.getModelClassName());
@@ -62,6 +61,7 @@ public class DaoGenerator implements Generator {
             ClassUtil.getSimpleName(daoDesc.getSuperclassName()),
             ClassUtil.getSimpleName(daoDesc.getModelClassName()));
         p.println();
+        p.println("    @SuppressWarnings(\"unused\")");
         p
             .println(
                 "    private static final %1$s m = new %1$s();",
@@ -77,11 +77,6 @@ public class DaoGenerator implements Generator {
             .getSimpleName());
         p.println("        super(pm, %s.class);", ClassUtil
             .getSimpleName(daoDesc.getModelClassName()));
-        p.println("    }");
-        p.println();
-        p.println("    public List<%s> findAll() {", ClassUtil
-            .getSimpleName(daoDesc.getModelClassName()));
-        p.println("        return from().getResultList();");
         p.println("    }");
         p.println();
         p.println("}");
