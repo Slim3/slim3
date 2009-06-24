@@ -2,6 +2,7 @@ package slim3.it.model;
 
 import java.io.Serializable;
 
+import javax.jdo.JDOHelper;
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -71,5 +72,9 @@ public class Blog implements Serializable {
      */
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public long getVersion() {
+        return (Long) JDOHelper.getVersion(this);
     }
 }

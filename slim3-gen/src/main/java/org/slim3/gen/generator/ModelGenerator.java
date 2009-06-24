@@ -49,6 +49,7 @@ public class ModelGenerator implements Generator {
         p.println("import java.io.Serializable;");
         p.println("import java.util.logging.Logger;");
         p.println();
+        p.println("import javax.jdo.JDOHelper;");
         p.println("import javax.jdo.annotations.Extension;");
         p.println("import javax.jdo.annotations.IdGeneratorStrategy;");
         p.println("import javax.jdo.annotations.IdentityType;");
@@ -92,6 +93,13 @@ public class ModelGenerator implements Generator {
         p.println("     */");
         p.println("    public void setKey(String key) {");
         p.println("        this.key = key;");
+        p.println("    }");
+        p.println();
+        p.println("    /**");
+        p.println("     * @return the version");
+        p.println("     */");
+        p.println("    public long getVersion() {");
+        p.println("        return (Long) JDOHelper.getVersion(this);");
         p.println("    }");
         p.println("}");
     }
