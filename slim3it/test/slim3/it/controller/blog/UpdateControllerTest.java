@@ -11,10 +11,11 @@ public class UpdateControllerTest extends JDOControllerTestCase {
         Blog blog = new Blog();
         blog.setTitle("aaa");
         blog.setContent("111");
-        pm.makePersistent(blog);
+        makePersistentInTx(blog);
         param("key", blog.getKey());
         param("title", "aaa2");
         param("content", "222");
+        param("version", blog.getVersion());
         start("/blog/update");
         UpdateController controller = getController();
         assertNotNull(controller);

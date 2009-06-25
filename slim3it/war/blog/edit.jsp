@@ -15,7 +15,8 @@
 <div id="body">
 
 <form action="${f:url('update')}" method="post">
-<input type="hidden" name="key" value="${key}"/>
+<input type="hidden" ${f:hidden("key")}/>
+<input type="hidden" ${f:hidden("version")}/>
 Title<br />
 <input type="text" ${f:text("title")} class="${f:errorClass('title', 'error')}"/>${f:h(errors.title)}<br />
 Content<br />

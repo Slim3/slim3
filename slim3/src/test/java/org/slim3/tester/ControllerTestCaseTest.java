@@ -19,23 +19,16 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.TimeZone;
 
-import junit.framework.TestCase;
-
 import org.slim3.controller.ControllerConstants;
 import org.slim3.controller.validator.Errors;
 import org.slim3.tester.controller.HelloController;
-import org.slim3.util.RequestLocator;
-import org.slim3.util.ResponseLocator;
-import org.slim3.util.ServletContextLocator;
 import org.slim3.util.TimeZoneLocator;
 
 /**
  * @author higa
  * 
  */
-public class ControllerTestCaseTest extends TestCase {
-
-    private ControllerTestCase testCase = new MyTestCase();
+public class ControllerTestCaseTest extends ControllerTestCase {
 
     @Override
     protected void setUp() throws Exception {
@@ -46,57 +39,13 @@ public class ControllerTestCaseTest extends TestCase {
         TimeZoneLocator.set(TimeZone.getTimeZone("UTC"));
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        System.clearProperty(ControllerConstants.CONTROLLER_PACKAGE_KEY);
-        ServletContextLocator.set(null);
-        RequestLocator.set(null);
-        ResponseLocator.set(null);
-        TimeZoneLocator.set(null);
-        super.tearDown();
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testSetUp() throws Exception {
-        testCase.setUp();
-        assertNotNull(testCase.application);
-        assertNotNull(testCase.config);
-        assertNotNull(testCase.filterConfig);
-        assertNotNull(testCase.frontController);
-        assertNotNull(testCase.request);
-        assertNotNull(testCase.response);
-        assertNotNull(testCase.filterChain);
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testTearDown() throws Exception {
-        testCase.setUp();
-        testCase.tearDown();
-        assertNull(testCase.application);
-        assertNull(testCase.config);
-        assertNull(testCase.filterConfig);
-        assertNull(testCase.frontController);
-        assertNull(testCase.request);
-        assertNull(testCase.response);
-        assertNull(testCase.filterChain);
-        assertNull(RequestLocator.get());
-        assertNull(ResponseLocator.get());
-    }
-
     /**
      * @throws Exception
      * 
      */
     public void testParam() throws Exception {
-        testCase.setUp();
-        testCase.param("aaa", "111");
-        assertEquals("111", testCase.param("aaa"));
+        param("aaa", "111");
+        assertEquals("111", param("aaa"));
     }
 
     /**
@@ -105,9 +54,8 @@ public class ControllerTestCaseTest extends TestCase {
      */
     public void testParamValues() throws Exception {
         String[] array = new String[] { "111" };
-        testCase.setUp();
-        testCase.paramValues("aaa", array);
-        assertEquals(array, testCase.paramValues("aaa"));
+        paramValues("aaa", array);
+        assertEquals(array, paramValues("aaa"));
     }
 
     /**
@@ -115,12 +63,11 @@ public class ControllerTestCaseTest extends TestCase {
      * 
      */
     public void testRequestScope() throws Exception {
-        testCase.setUp();
         Integer value = 1;
-        testCase.requestScope("aaa", value);
-        Integer returnValue = testCase.requestScope("aaa");
+        requestScope("aaa", value);
+        Integer returnValue = requestScope("aaa");
         assertEquals(value, returnValue);
-        assertEquals(value, testCase.request.getAttribute("aaa"));
+        assertEquals(value, request.getAttribute("aaa"));
     }
 
     /**
@@ -128,10 +75,9 @@ public class ControllerTestCaseTest extends TestCase {
      * 
      */
     public void testAsByte() throws Exception {
-        testCase.setUp();
-        testCase.request.setAttribute("aaa", "1");
-        assertEquals(new Byte("1"), testCase.asByte("aaa"));
-        assertEquals(new Byte("1"), testCase.asByte("aaa", "###"));
+        request.setAttribute("aaa", "1");
+        assertEquals(new Byte("1"), asByte("aaa"));
+        assertEquals(new Byte("1"), asByte("aaa", "###"));
     }
 
     /**
@@ -139,10 +85,9 @@ public class ControllerTestCaseTest extends TestCase {
      * 
      */
     public void testAsShort() throws Exception {
-        testCase.setUp();
-        testCase.request.setAttribute("aaa", "1");
-        assertEquals(new Short("1"), testCase.asShort("aaa"));
-        assertEquals(new Short("1"), testCase.asShort("aaa", "###"));
+        request.setAttribute("aaa", "1");
+        assertEquals(new Short("1"), asShort("aaa"));
+        assertEquals(new Short("1"), asShort("aaa", "###"));
     }
 
     /**
@@ -150,10 +95,9 @@ public class ControllerTestCaseTest extends TestCase {
      * 
      */
     public void testAsInteger() throws Exception {
-        testCase.setUp();
-        testCase.request.setAttribute("aaa", "1");
-        assertEquals(new Integer("1"), testCase.asInteger("aaa"));
-        assertEquals(new Integer("1"), testCase.asInteger("aaa", "###"));
+        request.setAttribute("aaa", "1");
+        assertEquals(new Integer("1"), asInteger("aaa"));
+        assertEquals(new Integer("1"), asInteger("aaa", "###"));
     }
 
     /**
@@ -161,10 +105,9 @@ public class ControllerTestCaseTest extends TestCase {
      * 
      */
     public void testAsLong() throws Exception {
-        testCase.setUp();
-        testCase.request.setAttribute("aaa", "1");
-        assertEquals(new Long("1"), testCase.asLong("aaa"));
-        assertEquals(new Long("1"), testCase.asLong("aaa", "###"));
+        request.setAttribute("aaa", "1");
+        assertEquals(new Long("1"), asLong("aaa"));
+        assertEquals(new Long("1"), asLong("aaa", "###"));
     }
 
     /**
@@ -172,10 +115,9 @@ public class ControllerTestCaseTest extends TestCase {
      * 
      */
     public void testAsFloat() throws Exception {
-        testCase.setUp();
-        testCase.request.setAttribute("aaa", "1");
-        assertEquals(new Float("1"), testCase.asFloat("aaa"));
-        assertEquals(new Float("1"), testCase.asFloat("aaa", "###"));
+        request.setAttribute("aaa", "1");
+        assertEquals(new Float("1"), asFloat("aaa"));
+        assertEquals(new Float("1"), asFloat("aaa", "###"));
     }
 
     /**
@@ -183,10 +125,9 @@ public class ControllerTestCaseTest extends TestCase {
      * 
      */
     public void testAsDouble() throws Exception {
-        testCase.setUp();
-        testCase.request.setAttribute("aaa", "1");
-        assertEquals(new Double("1"), testCase.asDouble("aaa"));
-        assertEquals(new Double("1"), testCase.asDouble("aaa", "###"));
+        request.setAttribute("aaa", "1");
+        assertEquals(new Double("1"), asDouble("aaa"));
+        assertEquals(new Double("1"), asDouble("aaa", "###"));
     }
 
     /**
@@ -194,10 +135,9 @@ public class ControllerTestCaseTest extends TestCase {
      * 
      */
     public void testAsBigDecimal() throws Exception {
-        testCase.setUp();
-        testCase.request.setAttribute("aaa", "1");
-        assertEquals(new BigDecimal("1"), testCase.asBigDecimal("aaa"));
-        assertEquals(new BigDecimal("1"), testCase.asBigDecimal("aaa", "###"));
+        request.setAttribute("aaa", "1");
+        assertEquals(new BigDecimal("1"), asBigDecimal("aaa"));
+        assertEquals(new BigDecimal("1"), asBigDecimal("aaa", "###"));
     }
 
     /**
@@ -205,9 +145,8 @@ public class ControllerTestCaseTest extends TestCase {
      * 
      */
     public void testAsDateForDate() throws Exception {
-        testCase.setUp();
-        testCase.request.setAttribute("aaa", "19700101");
-        assertEquals(new Date(0), testCase.asDate("aaa", "yyyyMMdd"));
+        request.setAttribute("aaa", "19700101");
+        assertEquals(new Date(0), asDate("aaa", "yyyyMMdd"));
     }
 
     /**
@@ -215,9 +154,52 @@ public class ControllerTestCaseTest extends TestCase {
      * 
      */
     public void testAsDateForTime() throws Exception {
-        testCase.setUp();
-        testCase.request.setAttribute("aaa", "000000");
-        assertEquals(new Date(0), testCase.asDate("aaa", "hhmmss"));
+        request.setAttribute("aaa", "000000");
+        assertEquals(new Date(0), asDate("aaa", "hhmmss"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testKey() throws Exception {
+        request.setAttribute("key", "111");
+        assertEquals("111", key());
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testKeyForKeyNotFound() throws Exception {
+        try {
+            key();
+            fail();
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testVersion() throws Exception {
+        request.setAttribute("version", "111");
+        assertEquals(111, version());
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testVersionForVersionNotFound() throws Exception {
+        try {
+            version();
+            fail();
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     /**
@@ -225,12 +207,11 @@ public class ControllerTestCaseTest extends TestCase {
      * 
      */
     public void testSessionScope() throws Exception {
-        testCase.setUp();
         Integer value = 1;
-        testCase.sessionScope("aaa", value);
-        Integer returnValue = testCase.sessionScope("aaa");
+        sessionScope("aaa", value);
+        Integer returnValue = sessionScope("aaa");
         assertEquals(value, returnValue);
-        assertEquals(value, testCase.request.getSession().getAttribute("aaa"));
+        assertEquals(value, request.getSession().getAttribute("aaa"));
     }
 
     /**
@@ -238,12 +219,11 @@ public class ControllerTestCaseTest extends TestCase {
      * 
      */
     public void testApplicationScope() throws Exception {
-        testCase.setUp();
         Integer value = 1;
-        testCase.applicationScope("aaa", value);
-        Integer returnValue = testCase.applicationScope("aaa");
+        applicationScope("aaa", value);
+        Integer returnValue = applicationScope("aaa");
         assertEquals(value, returnValue);
-        assertEquals(value, testCase.application.getAttribute("aaa"));
+        assertEquals(value, application.getAttribute("aaa"));
     }
 
     /**
@@ -251,9 +231,8 @@ public class ControllerTestCaseTest extends TestCase {
      * 
      */
     public void testStartForPath() throws Exception {
-        testCase.setUp();
-        testCase.start("/");
-        assertEquals("/", testCase.request.getServletPath());
+        start("/");
+        assertEquals("/", request.getServletPath());
     }
 
     /**
@@ -261,9 +240,8 @@ public class ControllerTestCaseTest extends TestCase {
      * 
      */
     public void testStartForBadPath() throws Exception {
-        testCase.setUp();
         try {
-            testCase.start("xxx");
+            start("xxx");
             fail();
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
@@ -275,10 +253,9 @@ public class ControllerTestCaseTest extends TestCase {
      * 
      */
     public void testStartForForward() throws Exception {
-        testCase.setUp();
-        testCase.start("/");
-        assertFalse(testCase.isRedirect());
-        assertEquals("/index.jsp", testCase.getNextPath());
+        start("/");
+        assertFalse(isRedirect());
+        assertEquals("/index.jsp", getNextPath());
     }
 
     /**
@@ -286,10 +263,9 @@ public class ControllerTestCaseTest extends TestCase {
      * 
      */
     public void testStartForRedirect() throws Exception {
-        testCase.setUp();
-        testCase.start("/redirect");
-        assertTrue(testCase.isRedirect());
-        assertEquals("http://www.google.com", testCase.getNextPath());
+        start("/redirect");
+        assertTrue(isRedirect());
+        assertEquals("http://www.google.com", getNextPath());
     }
 
     /**
@@ -297,10 +273,9 @@ public class ControllerTestCaseTest extends TestCase {
      * 
      */
     public void testStartForJSP() throws Exception {
-        testCase.setUp();
-        testCase.start("/index.jsp");
-        assertFalse(testCase.isRedirect());
-        assertEquals("/index.jsp", testCase.getNextPath());
+        start("/index.jsp");
+        assertFalse(isRedirect());
+        assertEquals("/index.jsp", getNextPath());
     }
 
     /**
@@ -308,9 +283,8 @@ public class ControllerTestCaseTest extends TestCase {
      * 
      */
     public void testGetNextPathBeforStarting() throws Exception {
-        testCase.setUp();
         try {
-            testCase.getNextPath();
+            getNextPath();
             fail();
         } catch (IllegalStateException e) {
             System.out.println(e.getMessage());
@@ -322,9 +296,8 @@ public class ControllerTestCaseTest extends TestCase {
      * 
      */
     public void testGetController() throws Exception {
-        testCase.setUp();
-        testCase.start("/hello");
-        HelloController controller = testCase.getController();
+        start("/hello");
+        HelloController controller = getController();
         assertNotNull(controller);
     }
 
@@ -333,9 +306,8 @@ public class ControllerTestCaseTest extends TestCase {
      * 
      */
     public void testGetControllerBeforStarting() throws Exception {
-        testCase.setUp();
         try {
-            testCase.getController();
+            getController();
             fail();
         } catch (IllegalStateException e) {
             System.out.println(e.getMessage());
@@ -347,15 +319,8 @@ public class ControllerTestCaseTest extends TestCase {
      * 
      */
     public void testGetErrors() throws Exception {
-        testCase.setUp();
-        testCase.request.setAttribute(
-            ControllerConstants.ERRORS_KEY,
-            new Errors());
-        Errors errors = testCase.getErrors();
+        request.setAttribute(ControllerConstants.ERRORS_KEY, new Errors());
+        Errors errors = getErrors();
         assertNotNull(errors);
-    }
-
-    private static class MyTestCase extends ControllerTestCase {
-
     }
 }

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.jdo.JDOHelper;
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -94,5 +95,9 @@ public class Upload implements Serializable {
      */
     public void setDataList(List<UploadData> dataList) {
         this.dataList = dataList;
+    }
+
+    public long getVersion() {
+        return (Long) JDOHelper.getVersion(this);
     }
 }

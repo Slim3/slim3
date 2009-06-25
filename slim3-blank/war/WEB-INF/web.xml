@@ -7,7 +7,7 @@
     </context-param>
 	<filter>
         <filter-name>frontController</filter-name>
-        <filter-class>org.slim3.controller.FrontController</filter-class>
+        <filter-class>org.slim3.controller.JDOFrontController</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>frontController</filter-name>

@@ -24,9 +24,6 @@ public class InsertControllerTest extends JDOControllerTestCase {
     }
 
     public void testValidate() throws Exception {
-        System.setProperty(
-            "appengine.orm.disable.duplicate.pmf.exception",
-            "true");
         start("/blog/insert");
         InsertController controller = getController();
         assertNotNull(controller);

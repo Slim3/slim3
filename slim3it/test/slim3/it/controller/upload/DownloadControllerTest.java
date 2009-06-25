@@ -14,8 +14,9 @@ public class DownloadControllerTest extends JDOControllerTestCase {
         UploadData uploadData = new UploadData();
         uploadData.setBlob(new Blob(new byte[] { 1 }));
         upload.getDataList().add(uploadData);
-        pm.makePersistent(upload);
+        makePersistentInTx(upload);
         param("key", upload.getKey());
+        param("version", upload.getVersion());
         start("/upload/download");
         DownloadController controller = getController();
         assertNotNull(controller);

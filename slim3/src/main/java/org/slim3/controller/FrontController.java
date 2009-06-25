@@ -59,7 +59,7 @@ public class FrontController implements Filter {
     /**
      * The logger.
      */
-    protected static final Logger logger =
+    private static final Logger logger =
         Logger.getLogger(FrontController.class.getName());
 
     /**

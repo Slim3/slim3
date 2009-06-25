@@ -1,6 +1,6 @@
 package slim3.it.controller.blog;
 
-import org.slim3.controller.JDOController;
+import org.slim3.controller.Controller;
 import org.slim3.controller.Navigation;
 import org.slim3.controller.validator.Validators;
 import org.slim3.util.BeanUtil;
@@ -8,16 +8,19 @@ import org.slim3.util.BeanUtil;
 import slim3.it.dao.BlogDao;
 import slim3.it.model.Blog;
 
-public class UpdateController extends JDOController {
+public class UpdateController extends Controller {
+
+    private BlogDao dao = new BlogDao();
 
     @Override
     public Navigation run() {
         if (!validate()) {
             return forward("edit.jsp");
         }
-        BlogDao dao = new BlogDao(pm);
-        Blog blog = dao.find(asString("key"));
+        dao.begin();
+        Blog blog = dao.find(key(), version());
         BeanUtil.copy(request, blog);
+        dao.commit();
         return redirect(basePath);
     }
 

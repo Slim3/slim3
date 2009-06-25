@@ -97,6 +97,18 @@
   
   <function>
     <description>
+      Represents the hidden tag.
+    </description>
+    <name>hidden</name>
+    <function-class>org.slim3.jsp.Functions</function-class>
+    <function-signature>java.lang.String hidden(java.lang.String)</function-signature>
+    <example>
+      &lt;input type="hidden" ${f:hidden("aaa")}/&gt;
+    </example>
+  </function>
+  
+  <function>
+    <description>
       Represents the checkbox tag.
     </description>
     <name>checkbox</name>

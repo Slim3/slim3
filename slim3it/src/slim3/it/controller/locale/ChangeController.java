@@ -1,10 +1,10 @@
 package slim3.it.controller.locale;
 
+import org.slim3.controller.Controller;
 import org.slim3.controller.ControllerConstants;
-import org.slim3.controller.JDOController;
 import org.slim3.controller.Navigation;
 
-public class ChangeController extends JDOController {
+public class ChangeController extends Controller {
 
     @Override
     public Navigation run() {

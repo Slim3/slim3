@@ -15,26 +15,26 @@
  */
 package org.slim3.jdo;
 
-import org.slim3.util.BeanMap;
+import junit.framework.TestCase;
 
 /**
- * An interface to copy model attributes to map.
- * 
  * @author higa
- * @param <M>
- *            the model type
- * @since 3.0
  * 
  */
-public interface CopyModelToMap<M> {
+public class CurrentPersistenceManagerTest extends TestCase {
+
+    @Override
+    protected void tearDown() throws Exception {
+        CurrentPersistenceManager.set(null);
+        super.tearDown();
+    }
 
     /**
-     * Copies the model attributes to the map.
-     * 
-     * @param model
-     *            the model
-     * @param map
-     *            the map
+     * @throws Exception
      */
-    void copy(M model, BeanMap map);
+    public void testGetAndSet() throws Exception {
+        MockPersistenceManager pm = new MockPersistenceManager();
+        CurrentPersistenceManager.set(pm);
+        assertSame(pm, CurrentPersistenceManager.getAndCheckPresence());
+    }
 }

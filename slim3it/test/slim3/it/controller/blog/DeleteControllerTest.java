@@ -10,8 +10,9 @@ public class DeleteControllerTest extends JDOControllerTestCase {
         Blog blog = new Blog();
         blog.setTitle("aaa");
         blog.setContent("111");
-        pm.makePersistent(blog);
+        makePersistentInTx(blog);
         param("key", blog.getKey());
+        param("version", blog.getVersion());
         start("/blog/delete");
         DeleteController controller = getController();
         assertNotNull(controller);

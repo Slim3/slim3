@@ -271,6 +271,26 @@ public class FunctionsTest extends TestCase {
     /**
      * @throws Exception
      */
+    public void testHidden() throws Exception {
+        request.setAttribute("aaa", "111");
+        assertEquals("name = \"aaa\" value = \"111\"", Functions.hidden("aaa"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testHiddenForBadName() throws Exception {
+        try {
+            Functions.hidden("aaaArray");
+            fail();
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testCheckbox() throws Exception {
         request.setAttribute("aaa", "111");
         assertEquals("name = \"aaa\" checked = \"checked\"", Functions

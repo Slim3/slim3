@@ -15,78 +15,32 @@
  */
 package org.slim3.controller;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import javax.jdo.PersistenceManager;
 import javax.jdo.Transaction;
 
 import org.slim3.jdo.ModelMeta;
-import org.slim3.jdo.PMF;
+import org.slim3.jdo.CurrentPersistenceManager;
 import org.slim3.jdo.SelectQuery;
-import org.slim3.util.RuntimeExceptionUtil;
 
 /**
  * A controller class for JDO.
  * 
  * @author higa
  * @since 3.0
- * 
+ * @deprecated Use dao. This class will be removed when releasing version 3.0.
  */
+@Deprecated
 public abstract class JDOController extends Controller {
-
-    private static final Logger logger =
-        Logger.getLogger(JDOController.class.getName());
 
     /**
      * The persistence manager.
      */
-    protected PersistenceManager pm;
+    protected PersistenceManager pm = CurrentPersistenceManager.getAndCheckPresence();
 
     /**
      * The current transaction.
      */
-    protected Transaction tx;
-
-    @Override
-    protected void setUp() {
-        super.setUp();
-        pm = PMF.get().getPersistenceManager();
-        tx = pm.currentTransaction();
-    }
-
-    @Override
-    protected void tearDown() {
-        Throwable throwable = null;
-        try {
-            if (tx.isActive()) {
-                tx.rollback();
-            }
-        } catch (Throwable t) {
-            throwable = t;
-            if (logger.isLoggable(Level.WARNING)) {
-                logger.log(Level.WARNING, t.getMessage(), t);
-            }
-        } finally {
-            tx = null;
-        }
-        try {
-            pm.close();
-        } catch (Throwable t) {
-            if (throwable == null) {
-                throwable = t;
-            }
-            if (logger.isLoggable(Level.WARNING)) {
-                logger.log(Level.WARNING, t.getMessage(), t);
-            }
-        } finally {
-            pm = null;
-        }
-        if (throwable != null) {
-            RuntimeExceptionUtil.wrapAndThrow(throwable);
-        }
-        super.tearDown();
-    }
+    protected Transaction tx = pm.currentTransaction();
 
     /**
      * Creates a new {@link SelectQuery}.
@@ -112,15 +66,6 @@ public abstract class JDOController extends Controller {
      */
     protected <M> SelectQuery<M> from(Class<M> modelClass) {
         return new SelectQuery<M>(pm, modelClass);
-    }
-
-    /**
-     * Refreshes the current persistence manager.
-     */
-    protected void refreshPersistenceManager() {
-        pm.close();
-        pm = PMF.get().getPersistenceManager();
-        tx = pm.currentTransaction();
     }
 
     /**

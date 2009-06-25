@@ -18,6 +18,7 @@ package org.slim3.tester;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Transaction;
 
+import org.slim3.jdo.CurrentPersistenceManager;
 import org.slim3.jdo.ModelMeta;
 import org.slim3.jdo.PMF;
 import org.slim3.jdo.SelectQuery;
@@ -55,6 +56,7 @@ public abstract class JDOControllerTestCase extends ControllerTestCase {
         super.setUp();
         datastoreTester.setUp();
         pm = PMF.get().getPersistenceManager();
+        CurrentPersistenceManager.set(pm);
         tx = pm.currentTransaction();
     }
 
@@ -70,14 +72,9 @@ public abstract class JDOControllerTestCase extends ControllerTestCase {
         tx = null;
         pm.close();
         pm = null;
+        CurrentPersistenceManager.set(null);
         datastoreTester.tearDown();
         super.tearDown();
-    }
-
-    @Override
-    protected void setUpStart() {
-        super.setUpStart();
-        refreshPersistenceManager();
     }
 
     /**
@@ -104,15 +101,6 @@ public abstract class JDOControllerTestCase extends ControllerTestCase {
      */
     protected <M> SelectQuery<M> from(Class<M> modelClass) {
         return new SelectQuery<M>(pm, modelClass);
-    }
-
-    /**
-     * Refreshes the current persistence manager.
-     */
-    protected void refreshPersistenceManager() {
-        pm.close();
-        pm = PMF.get().getPersistenceManager();
-        tx = pm.currentTransaction();
     }
 
     /**

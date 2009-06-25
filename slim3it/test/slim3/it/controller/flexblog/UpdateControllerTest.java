@@ -14,6 +14,7 @@ public class UpdateControllerTest extends JDOControllerTestCase {
         param("key", blog.getKey());
         param("title", "bbb");
         param("content", "222");
+        param("version", String.valueOf(blog.getVersion()));
         start("/flexblog/update");
         UpdateController controller = getController();
         assertNotNull(controller);

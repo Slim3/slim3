@@ -15,7 +15,6 @@
  */
 package org.slim3.jdo;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.jdo.JDOHelper;
@@ -23,8 +22,6 @@ import javax.jdo.JDOOptimisticVerificationException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Transaction;
 
-import org.slim3.util.BeanMap;
-import org.slim3.util.BeanUtil;
 import org.slim3.util.LongUtil;
 
 /**
@@ -37,16 +34,6 @@ import org.slim3.util.LongUtil;
  * 
  */
 public class GenericDao<M> {
-
-    /**
-     * The class to copy model attributes to map.
-     */
-    protected CopyModelToMap<M> modelToMap = new CopyModelToMap<M>() {
-        @Override
-        public void copy(M model, BeanMap map) {
-            BeanUtil.copy(model, map);
-        }
-    };
 
     /**
      * The persistence manager.
@@ -66,21 +53,35 @@ public class GenericDao<M> {
     /**
      * Constructor.
      * 
-     * @param pm
-     *            the persistence manager
      * @param modelClass
      *            the model class
      */
-    public GenericDao(PersistenceManager pm, Class<M> modelClass) {
-        if (pm == null) {
-            throw new NullPointerException("The pm parameter is null.");
-        }
+    public GenericDao(Class<M> modelClass) {
+        this(modelClass, CurrentPersistenceManager.getAndCheckPresence());
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param modelClass
+     *            the model class
+     * @param pm
+     *            the persistence manager
+     * @throws NullPointerException
+     *             if the modelClass parameter is null or if the pm parameter is
+     *             null
+     */
+    public GenericDao(Class<M> modelClass, PersistenceManager pm)
+            throws NullPointerException {
         if (modelClass == null) {
             throw new NullPointerException("The modelClass parameter is null.");
         }
+        if (pm == null) {
+            throw new NullPointerException("The pm parameter is null.");
+        }
+        this.modelClass = modelClass;
         this.pm = pm;
         tx = pm.currentTransaction();
-        this.modelClass = modelClass;
     }
 
     /**
@@ -127,84 +128,73 @@ public class GenericDao<M> {
     }
 
     /**
-     * Finds all models.
-     * 
-     * @return all models
-     */
-    public List<BeanMap> findAllAsMapList() {
-        return toMapList(from().getResultList());
-    }
-
-    /**
-     * Inserts the model.
+     * Makes the model persistent.
      * 
      * @param model
      *            the model
      * @return the persisted model
      */
-    public M insert(M model) {
+    public M makePersistent(M model) {
         return pm.makePersistent(model);
     }
 
     /**
-     * Inserts the model in transaction.
+     * Makes the model persistent in transaction.
      * 
      * @param model
      *            the model
      * @return the persisted model
      */
-    public M insertInTx(M model) {
-        tx.begin();
-        M t = pm.makePersistent(model);
-        tx.commit();
+    public M makePersistentInTx(M model) {
+        begin();
+        M t = makePersistent(model);
+        commit();
         return t;
     }
 
     /**
-     * Updates the model
-     * 
-     * @param model
-     *            the model
-     * @return the persisted model
-     */
-    public M update(M model) {
-        return pm.makePersistent(model);
-    }
-
-    /**
-     * Updates the model in transaction.
-     * 
-     * @param model
-     *            the model
-     * @return the persisted model
-     */
-    public M updateInTx(M model) {
-        tx.begin();
-        M t = pm.makePersistent(model);
-        tx.commit();
-        return t;
-    }
-
-    /**
-     * Deletes the model.
+     * Deletes the persistent model from the data store.
      * 
      * @param model
      *            the model
      */
-    public void delete(M model) {
+    public void deletePersistent(M model) {
         pm.deletePersistent(model);
     }
 
     /**
-     * Deletes the model in transaction.
+     * Deletes the persistent model from the data store in transaction.
      * 
      * @param model
      *            the model
      */
-    public void deleteInTx(M model) {
+    public void deletePersistentInTx(M model) {
+        begin();
+        deletePersistent(model);
+        commit();
+    }
+
+    /**
+     * Begins transaction.
+     */
+    public void begin() {
         tx.begin();
-        pm.deletePersistent(model);
+    }
+
+    /**
+     * Commits transaction.
+     */
+    public void commit() {
         tx.commit();
+    }
+
+    /**
+     * Rolls back transaction.
+     */
+    public void rollback() {
+        if (tx.isActive()) {
+            tx.rollback();
+        }
     }
 
     /**
@@ -214,41 +204,5 @@ public class GenericDao<M> {
      */
     protected SelectQuery<M> from() {
         return new SelectQuery<M>(pm, modelClass);
-    }
-
-    /**
-     * Converts the model list to the map list.
-     * 
-     * @param modelList
-     *            the model list
-     * @return the map list
-     */
-    protected List<BeanMap> toMapList(List<M> modelList) {
-        return toMapList(modelList, null);
-    }
-
-    /**
-     * Converts the model list to the map list.
-     * 
-     * @param modelList
-     *            the model list
-     * @param copy
-     *            the class to copy model attributes to map
-     * @return the map list
-     */
-    protected List<BeanMap> toMapList(List<M> modelList, CopyModelToMap<M> copy) {
-        if (modelList == null) {
-            throw new NullPointerException("The modelList parameter is null.");
-        }
-        if (copy == null) {
-            copy = modelToMap;
-        }
-        List<BeanMap> mapList = new ArrayList<BeanMap>(modelList.size());
-        for (M model : modelList) {
-            BeanMap map = new BeanMap();
-            copy.copy(model, map);
-            mapList.add(map);
-        }
-        return mapList;
     }
 }

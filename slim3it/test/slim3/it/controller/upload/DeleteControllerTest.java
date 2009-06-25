@@ -8,8 +8,9 @@ public class DeleteControllerTest extends JDOControllerTestCase {
 
     public void testRun() throws Exception {
         Upload upload = new Upload();
-        pm.makePersistent(upload);
+        makePersistentInTx(upload);
         param("key", upload.getKey());
+        param("version", upload.getVersion());
         start("/upload/delete");
         DeleteController controller = getController();
         assertNotNull(controller);

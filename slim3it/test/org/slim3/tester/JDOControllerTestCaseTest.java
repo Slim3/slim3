@@ -15,9 +15,6 @@
  */
 package org.slim3.tester;
 
-import javax.jdo.PersistenceManager;
-import javax.jdo.Transaction;
-
 import org.slim3.controller.ControllerConstants;
 
 import slim3.it.model.Blog;
@@ -49,28 +46,6 @@ public class JDOControllerTestCaseTest extends JDOControllerTestCase {
     public void testFrom() throws Exception {
         assertNotNull(from(new BlogMeta()));
         assertNotNull(from(Blog.class));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testSetUpStart() throws Exception {
-        PersistenceManager pm2 = pm;
-        Transaction tx2 = tx;
-        setUpStart();
-        assertNotSame(pm2, pm);
-        assertNotSame(tx2, tx);
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testRefreshPersistenceManager() throws Exception {
-        PersistenceManager pm2 = pm;
-        Transaction tx2 = tx;
-        refreshPersistenceManager();
-        assertNotSame(pm2, pm);
-        assertNotSame(tx2, tx);
     }
 
     /**

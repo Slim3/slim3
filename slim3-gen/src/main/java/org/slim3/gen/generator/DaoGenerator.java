@@ -73,9 +73,15 @@ public class DaoGenerator implements Generator {
                 "    private static final Logger logger = Logger.getLogger(%s.class.getName());",
                 daoDesc.getSimpleName());
         p.println();
+        p.println("    public %s() {", daoDesc.getSimpleName());
+        p.println("        super(%s.class);", ClassUtil.getSimpleName(daoDesc
+            .getModelClassName()));
+        p.println("    }");
+        p.println();
+        p.println();
         p.println("    public %s(PersistenceManager pm) {", daoDesc
             .getSimpleName());
-        p.println("        super(pm, %s.class);", ClassUtil
+        p.println("        super(%s.class, pm);", ClassUtil
             .getSimpleName(daoDesc.getModelClassName()));
         p.println("    }");
         p.println();

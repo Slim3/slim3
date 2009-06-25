@@ -12,6 +12,7 @@ public class DeleteControllerTest extends JDOControllerTestCase {
         blog.setContent("111");
         makePersistentInTx(blog);
         param("key", blog.getKey());
+        param("version", blog.getVersion());
         start("/flexblog/delete");
         DeleteController controller = getController();
         assertNotNull(controller);

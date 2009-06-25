@@ -21,7 +21,6 @@ import javax.jdo.JDOHelper;
 import javax.jdo.JDOOptimisticVerificationException;
 
 import org.slim3.tester.JDOTestCase;
-import org.slim3.util.BeanMap;
 
 import slim3.it.dao.BlogDao;
 import slim3.it.model.Blog;
@@ -36,9 +35,9 @@ public class GenericDaoTest extends JDOTestCase {
      * @throws Exception
      */
     public void testFind() throws Exception {
-        BlogDao dao = new BlogDao(pm);
+        BlogDao dao = new BlogDao();
         Blog blog = new Blog();
-        dao.insert(blog);
+        dao.makePersistentInTx(blog);
         assertNotNull(dao.find(blog.getKey()));
     }
 
@@ -46,9 +45,9 @@ public class GenericDaoTest extends JDOTestCase {
      * @throws Exception
      */
     public void testFindByVersion() throws Exception {
-        BlogDao dao = new BlogDao(pm);
+        BlogDao dao = new BlogDao();
         Blog blog = new Blog();
-        dao.insert(blog);
+        dao.makePersistentInTx(blog);
         long version = (Long) JDOHelper.getVersion(blog);
         assertNotNull(dao.find(blog.getKey(), version));
     }
@@ -57,9 +56,9 @@ public class GenericDaoTest extends JDOTestCase {
      * @throws Exception
      */
     public void testFindForOptimisticException() throws Exception {
-        BlogDao dao = new BlogDao(pm);
+        BlogDao dao = new BlogDao();
         Blog blog = new Blog();
-        dao.insert(blog);
+        dao.makePersistentInTx(blog);
         long version = (Long) JDOHelper.getVersion(blog) + 1;
         try {
             dao.find(blog.getKey(), version);
@@ -73,21 +72,10 @@ public class GenericDaoTest extends JDOTestCase {
      * @throws Exception
      */
     public void testFindAll() throws Exception {
-        BlogDao dao = new BlogDao(pm);
+        BlogDao dao = new BlogDao();
         Blog blog = new Blog();
-        dao.insert(blog);
+        dao.makePersistentInTx(blog);
         List<Blog> list = dao.findAll();
-        assertEquals(1, list.size());
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testFindAllAsMapList() throws Exception {
-        BlogDao dao = new BlogDao(pm);
-        Blog blog = new Blog();
-        dao.insert(blog);
-        List<BeanMap> list = dao.findAllAsMapList();
         assertEquals(1, list.size());
     }
 }

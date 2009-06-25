@@ -14,6 +14,9 @@
 	       <content>
 	       	{contentText.text}
 	       </content>
+	       <version>
+            {dg.selectedItem.version}
+           </version>
 	   </mx:request>
 	</mx:HTTPService>
 	<mx:HTTPService id="insertService" url="insert" method="post" showBusyCursor="true"
@@ -33,6 +36,9 @@
            <key>
             {dg.selectedItem.key}
            </key>
+           <version>
+            {dg.selectedItem.version}
+           </version>
        </mx:request>
     </mx:HTTPService>
 	

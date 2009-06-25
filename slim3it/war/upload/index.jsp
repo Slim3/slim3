@@ -22,8 +22,8 @@
 <c:forEach var="e" items="${uploadList}">
 <tr>
 <td>${f:h(e.fileName)}</td><td>${f:h(e.length)}</td>
-<c:set var="downloadUrl" value="download?key=${e.key}"/>
-<c:set var="deleteUrl" value="delete?key=${e.key}"/>
+<c:set var="downloadUrl" value="download?key=${e.key}&version=${e.version}"/>
+<c:set var="deleteUrl" value="delete?key=${e.key}&version=${e.version}"/>
 <td><a href="${f:url(downloadUrl)}">Download</a></td>
 <td><a href="${f:url(deleteUrl)}" onclick="return confirm('delete OK?')">Delete</a></td>
 </tr>

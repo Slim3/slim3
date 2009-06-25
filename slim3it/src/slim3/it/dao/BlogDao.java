@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 import javax.jdo.PersistenceManager;
 
 import org.slim3.jdo.GenericDao;
-import org.slim3.util.BeanMap;
 
 import slim3.it.model.Blog;
 import slim3.it.model.BlogMeta;
@@ -20,11 +19,15 @@ public class BlogDao extends GenericDao<Blog> {
     private static final Logger logger =
         Logger.getLogger(BlogDao.class.getName());
 
-    public BlogDao(PersistenceManager pm) {
-        super(pm, Blog.class);
+    public BlogDao() {
+        super(Blog.class);
     }
 
-    public List<BeanMap> findTopTenAsMapList() {
-        return toMapList(from().range(0, 10).getResultList());
+    public BlogDao(PersistenceManager pm) {
+        super(Blog.class, pm);
+    }
+
+    public List<Blog> findTopTen() {
+        return from().range(0, 10).getResultList();
     }
 }

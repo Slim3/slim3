@@ -1,23 +1,26 @@
 package slim3.it.controller.upload;
 
-import org.slim3.controller.JDOController;
+import org.slim3.controller.Controller;
 import org.slim3.controller.Navigation;
 import org.slim3.controller.upload.FileItem;
 import org.slim3.util.ByteUtil;
 
+import slim3.it.dao.UploadDao;
 import slim3.it.model.Upload;
 import slim3.it.model.UploadData;
 
 import com.google.appengine.api.datastore.Blob;
 
-public class UploadController extends JDOController {
+public class UploadController extends Controller {
 
     private static final int SIZE = 9000000;
+
+    private UploadDao dao = new UploadDao();
 
     @Override
     public Navigation run() {
         FileItem formFile = requestScope("formFile");
-        if (formFile != null && formFile.getData().length > 0) {
+        if (formFile != null) {
             Upload upload = new Upload();
             upload.setFileName(formFile.getFileName());
             upload.setLength(formFile.getData().length);
@@ -28,7 +31,7 @@ public class UploadController extends JDOController {
                 uploadData.setBlob(new Blob(data));
                 upload.getDataList().add(uploadData);
             }
-            pm.makePersistent(upload);
+            dao.makePersistentInTx(upload);
         }
         return redirect(basePath);
     }

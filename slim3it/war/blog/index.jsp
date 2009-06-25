@@ -22,8 +22,8 @@
 <c:forEach var="e" items="${blogList}">
 <tr>
 <td>${f:h(e.title)}</td><td>${f:h(e.content)}</td>
-<c:set var="editUrl" value="edit?key=${e.key}"/>
-<c:set var="deleteUrl" value="delete?key=${e.key}"/>
+<c:set var="editUrl" value="edit?key=${e.key}&version=${e.version}"/>
+<c:set var="deleteUrl" value="delete?key=${e.key}&version=${e.version}"/>
 <td><a href="${f:url(editUrl)}">Edit</a></td>
 <td><a href="${f:url(deleteUrl)}" onclick="return confirm('delete OK?')">Delete</a></td>
 </tr>

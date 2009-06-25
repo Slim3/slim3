@@ -1,4 +1,10 @@
-<!-- Indices written at Tue, 23 Jun 2009 11:37:18 UTC -->
+<!-- Indices written at Thu, 25 Jun 2009 09:46:17 UTC -->
 
-<datastore-indexes/>
+<datastore-indexes>
 
+    <!-- Used 1 time in query history -->
+    <datastore-index kind="UploadData" ancestor="true" source="auto">
+        <property name="dataList_INTEGER_IDX" direction="asc"/>
+    </datastore-index>
+
+</datastore-indexes>

@@ -43,12 +43,14 @@ import org.slim3.util.DateUtil;
 import org.slim3.util.DoubleUtil;
 import org.slim3.util.FloatUtil;
 import org.slim3.util.IntegerUtil;
+import org.slim3.util.LocaleLocator;
 import org.slim3.util.LongUtil;
 import org.slim3.util.NumberUtil;
 import org.slim3.util.RequestLocator;
 import org.slim3.util.ResponseLocator;
 import org.slim3.util.ShortUtil;
 import org.slim3.util.StringUtil;
+import org.slim3.util.TimeZoneLocator;
 
 /**
  * A test case for Slim3 Controller.
@@ -146,6 +148,8 @@ public abstract class ControllerTestCase extends TestCase {
         ResponseLocator.set(null);
         filterChain = null;
         tearDownControllerPackage();
+        LocaleLocator.set(null);
+        TimeZoneLocator.set(null);
         super.tearDown();
     }
 
@@ -175,8 +179,8 @@ public abstract class ControllerTestCase extends TestCase {
      * @param value
      *            the parameter value
      */
-    protected void param(String name, String value) {
-        request.setParameter(name, value);
+    protected void param(String name, Object value) {
+        request.setParameter(name, StringUtil.toString(value));
     }
 
     /**
@@ -399,6 +403,34 @@ public abstract class ControllerTestCase extends TestCase {
     }
 
     /**
+     * Returns the key attribute value.
+     * 
+     * @return the key attribute value
+     */
+    protected String key() {
+        String key = asString("key");
+        if (key == null) {
+            throw new IllegalStateException(
+                "The key attribute value is not found.");
+        }
+        return key;
+    }
+
+    /**
+     * Returns the version attribute value.
+     * 
+     * @return the version attribute value
+     */
+    protected long version() {
+        Long version = asLong("version");
+        if (version == null) {
+            throw new IllegalStateException(
+                "The version attribute value is not found.");
+        }
+        return version.longValue();
+    }
+
+    /**
      * Sets the request parameter.
      * 
      * @param name
@@ -516,26 +548,9 @@ public abstract class ControllerTestCase extends TestCase {
                 + path
                 + ") must start with \"/\".");
         }
-        setUpStart();
-        try {
-            request.setServletPath(path);
-            frontController.doFilter(request, response, filterChain);
-            startCalled = true;
-        } finally {
-            tearDownStart();
-        }
-    }
-
-    /**
-     * Sets up the start process.
-     */
-    protected void setUpStart() {
-    }
-
-    /**
-     * Tears down the start process.
-     */
-    protected void tearDownStart() {
+        request.setServletPath(path);
+        frontController.doFilter(request, response, filterChain);
+        startCalled = true;
     }
 
     /**

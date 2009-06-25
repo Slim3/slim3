@@ -198,6 +198,29 @@ public final class Functions {
     }
 
     /**
+     * Returns the hidden tag representation.
+     * 
+     * @param name
+     *            the property name
+     * @return the hidden tag representation
+     * @throws IllegalArgumentException
+     *             if the property name ends with "Array"
+     */
+    public static String hidden(String name) throws IllegalArgumentException {
+        if (name.endsWith(ARRAY_SUFFIX)) {
+            throw new IllegalArgumentException("The hidden property name("
+                + name
+                + ") must not end with \"Array\".");
+        }
+        HttpServletRequest request = RequestLocator.get();
+        return "name = \""
+            + name
+            + "\" value = \""
+            + h(request.getAttribute(name))
+            + "\"";
+    }
+
+    /**
      * Returns the checkbox tag representation.
      * 
      * @param name
