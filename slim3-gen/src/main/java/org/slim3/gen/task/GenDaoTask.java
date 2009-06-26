@@ -120,14 +120,7 @@ public class GenDaoTask extends AbstractGenJavaFileTask {
             return packageName;
         }
         AppEngineConfig config = createAppEngineConfig();
-        String controllerPackageName = config.getControllerPackageName();
-        int pos = controllerPackageName.lastIndexOf(".");
-        String rootPackageName =
-            pos > 0 ? controllerPackageName.substring(0, pos) : null;
-        if (rootPackageName != null) {
-            return rootPackageName + "." + Constants.DAO_SUB_PACKAGE;
-        }
-        return Constants.DAO_SUB_PACKAGE;
+        return config.getRootPackageName() + "." + Constants.DAO_SUB_PACKAGE;
     }
 
     /**

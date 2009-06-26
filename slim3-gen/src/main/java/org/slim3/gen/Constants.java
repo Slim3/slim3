@@ -50,6 +50,9 @@ public class Constants {
     /** the index view. */
     public static final String INDEX_VIEW = INDEX + VIEW_SUFFIX;
 
+    /** the sub package name for controller */
+    public static final String CONTROLLER_SUB_PACKAGE = "controller";
+
     /** the sub package name for model */
     public static final String MODEL_SUB_PACKAGE = "model";
 

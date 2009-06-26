@@ -23,14 +23,13 @@ import junit.framework.TestCase;
  */
 public class HotReloadingClassLoaderTest extends TestCase {
 
-    private static final String CONTROLLER_PACKAGE =
-        HotReloadingClassLoaderTest.class.getPackage().getName()
-            + ".controller";
+    private static final String ROOT_PACKAGE =
+        HotReloadingClassLoaderTest.class.getPackage().getName();
     /**
      * 
      */
     protected static final String CONTROLLER_CLASS_NAME =
-        CONTROLLER_PACKAGE + ".HogeController";
+        ROOT_PACKAGE + ".controller.HogeController";
 
     /**
      * 
@@ -44,20 +43,19 @@ public class HotReloadingClassLoaderTest extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
-        System.setProperty(
-            ControllerConstants.CONTROLLER_PACKAGE_KEY,
-            CONTROLLER_PACKAGE);
         super.setUp();
         originalClassLoader = Thread.currentThread().getContextClassLoader();
         hotClassLoader =
-            new HotReloadingClassLoader(originalClassLoader, CONTROLLER_PACKAGE);
+            new HotReloadingClassLoader(
+                originalClassLoader,
+                ROOT_PACKAGE,
+                new String[] { "model" });
     }
 
     @Override
     protected void tearDown() throws Exception {
         originalClassLoader = null;
         hotClassLoader = null;
-        System.clearProperty(ControllerConstants.CONTROLLER_PACKAGE_KEY);
         super.tearDown();
     }
 
@@ -78,6 +76,7 @@ public class HotReloadingClassLoaderTest extends TestCase {
      */
     public void testIsTarget() throws Exception {
         assertTrue(hotClassLoader.isTarget(CONTROLLER_CLASS_NAME));
+        assertFalse(hotClassLoader.isTarget(ROOT_PACKAGE + ".model.Aaa"));
         assertFalse(hotClassLoader.isTarget(String.class.getName()));
     }
 }

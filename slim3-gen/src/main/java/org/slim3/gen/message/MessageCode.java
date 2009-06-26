@@ -38,7 +38,7 @@ public enum MessageCode {
     /** */
     SILM3GEN0007("Generated. ({0})"),
     /** */
-    SILM3GEN0008("The system-property 'slim3.controllerPackage' is not found in appengine-web.xml or the system-property value is empty."),
+    SILM3GEN0008("The context-param 'slim3.rootPackage' is not found in web.xml."),
     /** */
     SILM3GEN0009("The property[{0}] has already been set.");
 

@@ -16,6 +16,7 @@
 package org.slim3.gen.task;
 
 import org.slim3.gen.ClassConstants;
+import org.slim3.gen.Constants;
 import org.slim3.gen.desc.ControllerDesc;
 import org.slim3.gen.desc.ControllerDescFactory;
 import org.slim3.gen.generator.ControllerGenerator;
@@ -95,7 +96,10 @@ public class GenControllerTask extends AbstractGenJavaFileTask {
             controllerPath.startsWith("/") ? controllerPath : "/"
                 + controllerPath;
         AppEngineConfig config = createAppEngineConfig();
-        String controllerPackageName = config.getControllerPackageName();
+        String controllerPackageName =
+            config.getRootPackageName()
+                + "."
+                + Constants.CONTROLLER_SUB_PACKAGE;
         ControllerDescFactory factory =
             createControllerDescFactory(controllerPackageName);
         ControllerDesc controllerDesc = factory.createControllerDesc(path);

@@ -32,26 +32,42 @@ import org.slim3.exception.WrapRuntimeException;
 public class HotReloadingClassLoader extends ClassLoader {
 
     /**
-     * The controller package name.
+     * The root package name.
      */
-    protected String controllerPackageName;
+    protected String rootPackageName;
+
+    /**
+     * The static package names.
+     */
+    protected String[] staticPackageNames;
 
     /**
      * Constructor
      * 
      * @param parentClassLoader
      *            the parent class loader.
-     * @param controllerPackageName
-     *            the controller package name
+     * @param rootPackageName
+     *            the root package name
+     * @param staticPackageNames
+     *            the static package names
+     * @throws NullPointerException
+     *             if the rootPackageName parameter is null or if the
+     *             staticPackageNames parameter is null
      */
     public HotReloadingClassLoader(ClassLoader parentClassLoader,
-            String controllerPackageName) {
+            String rootPackageName, String[] staticPackageNames)
+            throws NullPointerException {
         super(parentClassLoader);
-        if (controllerPackageName == null) {
+        if (rootPackageName == null) {
             throw new NullPointerException(
-                "The controllerPackageName parameter is null.");
+                "The rootPackageName parameter is null.");
         }
-        this.controllerPackageName = controllerPackageName;
+        if (staticPackageNames == null) {
+            throw new NullPointerException(
+                "The staticPackageNames parameter is null.");
+        }
+        this.rootPackageName = rootPackageName;
+        this.staticPackageNames = staticPackageNames;
     }
 
     @Override
@@ -197,6 +213,14 @@ public class HotReloadingClassLoader extends ClassLoader {
      * @return whether the class is the target of hot deployment
      */
     protected boolean isTarget(String className) {
-        return className.startsWith(controllerPackageName + ".");
+        if (!className.startsWith(rootPackageName + ".")) {
+            return false;
+        }
+        for (String p : staticPackageNames) {
+            if (className.startsWith(rootPackageName + "." + p + ".")) {
+                return false;
+            }
+        }
+        return true;
     }
 }

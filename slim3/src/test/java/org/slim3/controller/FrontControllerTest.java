@@ -28,21 +28,15 @@ import org.slim3.util.ServletContextLocator;
  */
 public class FrontControllerTest extends ControllerTestCase {
 
-    private static final String CONTROLLER_PACKAGE =
-        FrontControllerTest.class.getPackage().getName() + ".controller";
+    private static final String ROOT_PACKAGE =
+        FrontControllerTest.class.getPackage().getName();
 
     @Override
-    protected void setUp() throws Exception {
-        System.setProperty(
-            ControllerConstants.CONTROLLER_PACKAGE_KEY,
-            CONTROLLER_PACKAGE);
-        super.setUp();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        System.clearProperty(ControllerConstants.CONTROLLER_PACKAGE_KEY);
-        super.tearDown();
+    protected void setUpContextParameter() {
+        super.setUpContextParameter();
+        application.setInitParameter(
+            ControllerConstants.ROOT_PACKAGE_KEY,
+            ROOT_PACKAGE);
     }
 
     /**
@@ -50,7 +44,6 @@ public class FrontControllerTest extends ControllerTestCase {
      * 
      */
     public void testInit() throws Exception {
-        frontController.init(filterConfig);
         assertEquals(
             ControllerConstants.DEFAULT_REQUEST_CHARSET,
             frontController.charset);
@@ -59,7 +52,10 @@ public class FrontControllerTest extends ControllerTestCase {
             frontController.bundleName);
         assertNotNull(ServletContextLocator.get());
         assertFalse(frontController.hotReloading);
-        assertEquals(CONTROLLER_PACKAGE, frontController.controllerPackageName);
+        assertEquals(ROOT_PACKAGE, frontController.rootPackageName);
+        String[] names = frontController.staticPackageNames;
+        assertEquals(1, names.length);
+        assertEquals("model", names[0]);
     }
 
     /**

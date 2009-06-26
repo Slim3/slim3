@@ -64,7 +64,7 @@ public class AppEngineConfig {
      * @throws FileNotFoundException
      * @throws XPathExpressionException
      */
-    protected String getControllerPackageName() throws FileNotFoundException,
+    protected String getRootPackageName() throws FileNotFoundException,
             XPathExpressionException {
         XPathFactory factory = XPathFactory.newInstance();
         XPath xpath = factory.newXPath();
@@ -74,7 +74,7 @@ public class AppEngineConfig {
                     throw new NullPointerException(
                         "The parameter prefix is null.");
                 else if ("pre".equals(prefix))
-                    return "http://appengine.google.com/ns/1.0";
+                    return "http://java.sun.com/xml/ns/javaee";
                 else if ("xml".equals(prefix))
                     return XMLConstants.XML_NS_URI;
                 return XMLConstants.NULL_NS_URI;
@@ -88,14 +88,13 @@ public class AppEngineConfig {
                 throw new UnsupportedOperationException("getPrefixes");
             }
         });
-        File file = new File(new File(warDir, "WEB-INF"), "appengine-web.xml");
+        File file = new File(new File(warDir, "WEB-INF"), "web.xml");
         InputStream inputStream = new FileInputStream(file);
         try {
             String value =
-                xpath
-                    .evaluate(
-                        "/pre:appengine-web-app/pre:system-properties/pre:property[@name='slim3.controllerPackage']/@value",
-                        new InputSource(inputStream));
+                xpath.evaluate(
+                    "/pre:web-app/pre:context-param[1]/pre:param-value",
+                    new InputSource(inputStream));
             if (StringUtil.isEmpty(value)) {
                 throw new RuntimeException(MessageFormatter
                     .getMessage(MessageCode.SILM3GEN0008));

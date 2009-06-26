@@ -12,6 +12,7 @@ public class EditControllerTest extends JDOControllerTestCase {
         blog.setContent("111");
         makePersistentInTx(blog);
         param("key", blog.getKey());
+        param("version", blog.getVersion());
         start("/blog/edit");
         EditController controller = getController();
         assertNotNull(controller);

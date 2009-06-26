@@ -66,6 +66,16 @@ public interface ControllerConstants {
     String CONTROLLER_PACKAGE_KEY = "slim3.controllerPackage";
 
     /**
+     * The key of root package.
+     */
+    String ROOT_PACKAGE_KEY = "slim3.rootPackage";
+
+    /**
+     * The key of static packages.
+     */
+    String STATIC_PACKAGES_KEY = "slim3.staticPackages";
+
+    /**
      * The key of controller.
      */
     String CONTROLLER_KEY = "slim3.controller";
@@ -74,6 +84,7 @@ public interface ControllerConstants {
      * The key of errors.
      */
     String ERRORS_KEY = "errors";
+
     /**
      * The suffix of controller.
      */
@@ -83,4 +94,19 @@ public interface ControllerConstants {
      * The index controller.
      */
     String INDEX_CONTROLLER = "Index" + CONTROLLER_SUFFIX;
+
+    /**
+     * The controller package name.
+     */
+    String CONTROLLER_PACKAGE = "controller";
+
+    /**
+     * The model package name.
+     */
+    String MODEL_PACKAGE = "model";
+
+    /**
+     * The dao package name.
+     */
+    String DAO_PACKAGE = "dao";
 }

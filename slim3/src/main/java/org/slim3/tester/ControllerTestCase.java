@@ -104,8 +104,8 @@ public abstract class ControllerTestCase extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        setUpControllerPackage();
         application = new MockServletContext();
+        setUpContextParameter();
         config = new MockServletConfig(application);
         filterConfig = new MockFilterConfig(application);
         frontController = new FrontController();
@@ -118,21 +118,22 @@ public abstract class ControllerTestCase extends TestCase {
     }
 
     /**
-     * Sets up the controller package automatically.
+     * Sets up the servlet context initParameter.
      */
-    protected void setUpControllerPackage() {
-        if (System.getProperty(ControllerConstants.CONTROLLER_PACKAGE_KEY) != null) {
-            return;
-        }
+    protected void setUpContextParameter() {
         String className = getClass().getName();
-        int pos = className.indexOf(".controller.");
+        int pos = className.lastIndexOf(".controller.");
         if (pos < 0) {
-            return;
+            pos = className.lastIndexOf('.');
         }
-        String packageName = className.substring(0, pos + 11);
-        System.setProperty(
-            ControllerConstants.CONTROLLER_PACKAGE_KEY,
-            packageName);
+        String rootPackageName = className.substring(0, pos);
+        application.setInitParameter(
+            ControllerConstants.ROOT_PACKAGE_KEY,
+            rootPackageName);
+        application.setInitParameter(
+            ControllerConstants.STATIC_PACKAGES_KEY,
+            ControllerConstants.MODEL_PACKAGE);
+
     }
 
     @Override

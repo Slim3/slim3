@@ -93,9 +93,14 @@ public class FrontController implements Filter {
     protected boolean hotReloading = false;
 
     /**
-     * The controller package name.
+     * The root package name.
      */
-    protected String controllerPackageName;
+    protected String rootPackageName;
+
+    /**
+     * The static package names.
+     */
+    protected String[] staticPackageNames;
 
     /**
      * Constructor.
@@ -110,7 +115,8 @@ public class FrontController implements Filter {
         initDefaultLocale();
         initDefaultTimeZone();
         initHotReloading();
-        initControllerPackageName();
+        initRootPackageName();
+        initStaticPackageNames();
     }
 
     /**
@@ -172,19 +178,21 @@ public class FrontController implements Filter {
      * Initializes the HOT reloading setting.
      */
     protected void initHotReloading() {
-        boolean runningOnDevserver =
-            servletContext.getServerInfo().indexOf("Development") >= 0;
-        if (runningOnDevserver) {
-            System.setSecurityManager(null);
-            String hotReloadingStr =
-                System.getProperty(ControllerConstants.HOT_RELOADING_KEY);
-            if (!StringUtil.isEmpty(hotReloadingStr)) {
-                hotReloading = "true".equalsIgnoreCase(hotReloadingStr);
-            } else {
-                hotReloading = true;
-            }
+        String hotReloadingStr =
+            System.getProperty(ControllerConstants.HOT_RELOADING_KEY);
+        if (!StringUtil.isEmpty(hotReloadingStr)) {
+            hotReloading = "true".equalsIgnoreCase(hotReloadingStr);
         } else {
-            hotReloading = false;
+            boolean runningOnDevserver =
+                servletContext.getServerInfo().indexOf("Development") >= 0;
+            if (runningOnDevserver) {
+                hotReloading = true;
+            } else {
+                hotReloading = false;
+            }
+        }
+        if (hotReloading) {
+            System.setSecurityManager(null);
         }
         if (logger.isLoggable(Level.INFO)) {
             logger.log(Level.INFO, "Slim3 hot reloading:" + hotReloading);
@@ -192,16 +200,57 @@ public class FrontController implements Filter {
     }
 
     /**
-     * Initializes the controller package name.
+     * Initializes the root package name.
      */
-    protected void initControllerPackageName() {
-        controllerPackageName =
-            System.getProperty(ControllerConstants.CONTROLLER_PACKAGE_KEY);
-        if (StringUtil.isEmpty(controllerPackageName)) {
-            throw new IllegalStateException("The system property("
-                + ControllerConstants.CONTROLLER_PACKAGE_KEY
-                + ") is not found.");
+    protected void initRootPackageName() {
+        rootPackageName =
+            servletContext
+                .getInitParameter(ControllerConstants.ROOT_PACKAGE_KEY);
+        if (StringUtil.isEmpty(rootPackageName)) {
+            String controllerPackageName =
+                System.getProperty(ControllerConstants.CONTROLLER_PACKAGE_KEY);
+            if (controllerPackageName != null) {
+                String s = controllerPackageName;
+                int pos = controllerPackageName.lastIndexOf('.');
+                if (pos > 0) {
+                    s = s.substring(0, pos);
+                }
+                throw new IllegalStateException("Set "
+                    + s
+                    + " to context-param("
+                    + ControllerConstants.ROOT_PACKAGE_KEY
+                    + ") in web.xml instead of system property("
+                    + ControllerConstants.CONTROLLER_PACKAGE_KEY
+                    + ").");
+            }
+            throw new IllegalStateException("The context-param("
+                + ControllerConstants.ROOT_PACKAGE_KEY
+                + ") is not found in web.xml.");
         }
+    }
+
+    /**
+     * Initializes the static package names.
+     */
+    protected void initStaticPackageNames() {
+        String s =
+            servletContext
+                .getInitParameter(ControllerConstants.STATIC_PACKAGES_KEY);
+        if (StringUtil.isEmpty(s)) {
+            throw new IllegalStateException("The context-param("
+                + ControllerConstants.STATIC_PACKAGES_KEY
+                + ") is not found in web.xml.");
+        }
+        staticPackageNames = StringUtil.split(s, ", ");
+        for (String name : staticPackageNames) {
+            if (name.equals(ControllerConstants.MODEL_PACKAGE)) {
+                return;
+            }
+        }
+        throw new IllegalStateException(
+            "The model package is not found in slim3.staticPackages("
+                + s
+                + ").");
     }
 
     public void destroy() {
@@ -250,7 +299,8 @@ public class FrontController implements Filter {
             Thread.currentThread().setContextClassLoader(
                 new HotReloadingClassLoader(
                     previousLoader,
-                    controllerPackageName));
+                    rootPackageName,
+                    staticPackageNames));
         }
         try {
             doFilterInternal(request, response, chain);
@@ -441,7 +491,11 @@ public class FrontController implements Filter {
      */
     protected String toControllerClassName(String path)
             throws IllegalStateException {
-        String className = controllerPackageName + path.replace('/', '.');
+        String className =
+            rootPackageName
+                + "."
+                + ControllerConstants.CONTROLLER_PACKAGE
+                + path.replace('/', '.');
         if (className.endsWith(".")) {
             className += ControllerConstants.INDEX_CONTROLLER;
         } else {
