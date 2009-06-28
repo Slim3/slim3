@@ -25,6 +25,8 @@ import java.util.TimeZone;
 import javax.servlet.http.HttpServletRequest;
 
 import org.slim3.controller.ControllerConstants;
+import org.slim3.util.ClassUtil;
+import org.slim3.util.Converter;
 import org.slim3.util.HtmlUtil;
 import org.slim3.util.LocaleLocator;
 import org.slim3.util.RequestLocator;
@@ -46,6 +48,18 @@ public final class Functions {
     private static String ARRAY_SUFFIX = "Array";
 
     private static List<String> EMPTY_STRING_LIST = new ArrayList<String>(0);
+
+    private static Converter textConverter;
+
+    static {
+        try {
+            textConverter =
+                (Converter) ClassUtil.newInstance(
+                    "org.slim3.util.TextConverter",
+                    Thread.currentThread().getContextClassLoader());
+        } catch (Throwable ignore) {
+        }
+    }
 
     /**
      * Escapes string that could be interpreted as HTML.
@@ -84,6 +98,9 @@ public final class Functions {
             } else {
                 return Arrays.toString((Object[]) input);
             }
+        }
+        if (textConverter != null && textConverter.isTarget(input.getClass())) {
+            return HtmlUtil.escape(textConverter.getAsString(input));
         }
         return input.toString();
     }
