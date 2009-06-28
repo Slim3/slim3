@@ -139,6 +139,17 @@ public class GenericDao<M> {
     }
 
     /**
+     * Makes the models persistent.
+     * 
+     * @param models
+     *            the models
+     * @return the persisted model
+     */
+    public List<M> makePersistentAll(List<M> models) {
+        return (List<M>) pm.makePersistentAll(models);
+    }
+
+    /**
      * Makes the model persistent in transaction.
      * 
      * @param model
@@ -153,6 +164,20 @@ public class GenericDao<M> {
     }
 
     /**
+     * Makes the models persistent in transaction.
+     * 
+     * @param models
+     *            the models
+     * @return the persisted model
+     */
+    public List<M> makePersistentInTx(List<M> models) {
+        begin();
+        List<M> list = makePersistentAll(models);
+        commit();
+        return list;
+    }
+
+    /**
      * Deletes the persistent model from the data store.
      * 
      * @param model
@@ -160,6 +185,16 @@ public class GenericDao<M> {
      */
     public void deletePersistent(M model) {
         pm.deletePersistent(model);
+    }
+
+    /**
+     * Deletes the persistent models from the data store.
+     * 
+     * @param models
+     *            the models
+     */
+    public void deletePersistentAll(List<M> models) {
+        pm.deletePersistentAll(models);
     }
 
     /**
@@ -171,6 +206,18 @@ public class GenericDao<M> {
     public void deletePersistentInTx(M model) {
         begin();
         deletePersistent(model);
+        commit();
+    }
+
+    /**
+     * Deletes the persistent models from the data store in transaction.
+     * 
+     * @param models
+     *            the models
+     */
+    public void deletePersistentInTx(List<M> models) {
+        begin();
+        deletePersistentAll(models);
         commit();
     }
 
