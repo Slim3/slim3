@@ -6,13 +6,13 @@ import java.util.logging.Logger;
 import javax.jdo.PersistenceManager;
 
 import org.slim3.jdo.GenericDao;
+import org.slim3.jdo.SelectQuery;
 
 import slim3.it.model.Blog;
 import slim3.it.model.BlogMeta;
 
 public class BlogDao extends GenericDao<Blog> {
 
-    @SuppressWarnings("unused")
     private static final BlogMeta m = new BlogMeta();
 
     @SuppressWarnings("unused")
@@ -29,5 +29,10 @@ public class BlogDao extends GenericDao<Blog> {
 
     public List<Blog> findTopTen() {
         return from().range(0, 10).getResultList();
+    }
+
+    @Override
+    protected SelectQuery<Blog> from() {
+        return new SelectQuery<Blog>(pm, m.getModelClass());
     }
 }

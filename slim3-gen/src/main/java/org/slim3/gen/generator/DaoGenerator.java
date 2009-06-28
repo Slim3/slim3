@@ -50,6 +50,7 @@ public class DaoGenerator implements Generator {
         p.println();
         p.println("import java.util.logging.Logger;");
         p.println("import javax.jdo.PersistenceManager;");
+        p.println("import org.slim3.jdo.SelectQuery;");
         p.println("import %s;", daoDesc.getModelClassName());
         p.println("import %s;", daoDesc.getModelClassName()
             + Constants.META_SUFFIX);
@@ -61,7 +62,6 @@ public class DaoGenerator implements Generator {
             ClassUtil.getSimpleName(daoDesc.getSuperclassName()),
             ClassUtil.getSimpleName(daoDesc.getModelClassName()));
         p.println();
-        p.println("    @SuppressWarnings(\"unused\")");
         p
             .println(
                 "    private static final %1$s m = new %1$s();",
@@ -83,6 +83,14 @@ public class DaoGenerator implements Generator {
             .getSimpleName());
         p.println("        super(%s.class, pm);", ClassUtil
             .getSimpleName(daoDesc.getModelClassName()));
+        p.println("    }");
+        p.println();
+        p.println("    @Override");
+        p.println("    protected SelectQuery<%s> from() {", ClassUtil
+            .getSimpleName(daoDesc.getModelClassName()));
+        p.println(
+            "        return new SelectQuery<%s>(pm, m.getModelClass());",
+            ClassUtil.getSimpleName(daoDesc.getModelClassName()));
         p.println("    }");
         p.println();
         p.println("}");
