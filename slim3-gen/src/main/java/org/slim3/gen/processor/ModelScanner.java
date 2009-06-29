@@ -21,6 +21,7 @@ import java.util.List;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
@@ -39,6 +40,8 @@ import javax.lang.model.util.TypeKindVisitor6;
 import org.slim3.gen.ClassConstants;
 import org.slim3.gen.desc.AttributeMetaDesc;
 import org.slim3.gen.desc.ModelMetaDesc;
+import org.slim3.gen.message.MessageCode;
+import org.slim3.gen.message.MessageFormatter;
 import org.slim3.gen.util.ElementUtil;
 
 /**
@@ -48,18 +51,18 @@ import org.slim3.gen.util.ElementUtil;
  * @since 3.0
  * 
  */
-public class JDOModelScanner extends ElementScanner6<Void, ModelMetaDesc> {
+public class ModelScanner extends ElementScanner6<Void, ModelMetaDesc> {
 
     /** the processing environment */
     protected final ProcessingEnvironment processingEnv;
 
     /**
-     * Creates a new {@link JDOModelScanner}.
+     * Creates a new {@link ModelScanner}.
      * 
      * @param processingEnv
      *            the processing environment
      */
-    public JDOModelScanner(ProcessingEnvironment processingEnv) {
+    public ModelScanner(ProcessingEnvironment processingEnv) {
         this.processingEnv = processingEnv;
     }
 
@@ -76,6 +79,10 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelMetaDesc> {
     @Override
     public Void visitVariable(VariableElement attribute, ModelMetaDesc p) {
         if (!isPersistent(attribute)) {
+            if (isInstanceVariable(attribute) && !isNotPersistent(attribute)) {
+                Logger.warning(processingEnv, attribute, MessageFormatter
+                    .getMessage(MessageCode.SILM3GEN0010));
+            }
             return null;
         }
         if (isNestedType(attribute)) {
@@ -135,11 +142,11 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelMetaDesc> {
     }
 
     /**
-     * Returns {@code true} if this attribute is persistent.
+     * Returns {@code true} if the attribute is persistent.
      * 
      * @param attribute
      *            the element of an attribute
-     * @return {@code true} if this attribute is persistent.
+     * @return {@code true} if the attribute is persistent.
      */
     protected boolean isPersistent(Element attribute) {
         return ElementUtil.getAnnotationMirror(
@@ -148,16 +155,40 @@ public class JDOModelScanner extends ElementScanner6<Void, ModelMetaDesc> {
     }
 
     /**
-     * Returns {@code true} if this attribute is embedded.
+     * Returns {@code true} if the attribute is not persistent.
      * 
      * @param attribute
      *            the element of an attribute
-     * @return {@code true} if this attribute is embedded.
+     * @return {@code true} if the attribute is persistent.
+     */
+    protected boolean isNotPersistent(Element attribute) {
+        return ElementUtil.getAnnotationMirror(
+            attribute,
+            ClassConstants.NotPersistent) != null;
+    }
+
+    /**
+     * Returns {@code true} if the attribute is embedded.
+     * 
+     * @param attribute
+     *            the element of an attribute
+     * @return {@code true} if the attribute is embedded.
      */
     protected boolean isEmbedded(Element attribute) {
         return ElementUtil.getAnnotationMirror(
             attribute,
             ClassConstants.Embedded) != null;
+    }
+
+    /**
+     * Returns {@code true} if the attribute is an instance variable.
+     * 
+     * @param attribute
+     *            the element of an attribute
+     * @return {@code true} if the attribute is an instance variable.
+     */
+    protected boolean isInstanceVariable(VariableElement attribute) {
+        return !attribute.getModifiers().contains(Modifier.STATIC);
     }
 
     /**

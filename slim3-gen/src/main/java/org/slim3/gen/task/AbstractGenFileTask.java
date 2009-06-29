@@ -128,11 +128,11 @@ public abstract class AbstractGenFileTask extends Task {
     }
 
     /**
-     * Creates a app engine config.
+     * Creates a web config.
      * 
-     * @return a app engine config
+     * @return a web config
      */
-    protected AppEngineConfig createAppEngineConfig() {
-        return new AppEngineConfig(warDir);
+    protected WebConfig createWebConfig() {
+        return new WebConfig(warDir);
     }
 }

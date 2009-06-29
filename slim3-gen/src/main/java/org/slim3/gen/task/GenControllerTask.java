@@ -95,7 +95,7 @@ public class GenControllerTask extends AbstractGenJavaFileTask {
         String path =
             controllerPath.startsWith("/") ? controllerPath : "/"
                 + controllerPath;
-        AppEngineConfig config = createAppEngineConfig();
+        WebConfig config = createWebConfig();
         String controllerPackageName =
             config.getRootPackageName()
                 + "."

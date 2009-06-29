@@ -43,6 +43,22 @@ public final class Logger {
     }
 
     /**
+     * Logs a warning message.
+     * 
+     * @param env
+     *            the processing environment.
+     * @param element
+     *            the element to use as a position hint
+     * @param message
+     *            the message.
+     */
+    public static void warning(ProcessingEnvironment env, Element element,
+            String message) {
+        Messager messager = env.getMessager();
+        messager.printMessage(Kind.WARNING, message, element);
+    }
+
+    /**
      * Logs an error message.
      * 
      * @param env

@@ -34,23 +34,23 @@ import org.slim3.gen.util.StringUtil;
 import org.xml.sax.InputSource;
 
 /**
- * Represents a Google App Engine configuration file.
+ * Represents a web configuration file.
  * 
  * @author taedium
  * @since 3.0
  */
-public class AppEngineConfig {
+public class WebConfig {
 
     /** the war directory */
     protected final File warDir;
 
     /**
-     * Creates a new {@link AppEngineConfig}.
+     * Creates a new {@link WebConfig}.
      * 
      * @param warDir
      *            the war directory
      */
-    public AppEngineConfig(File warDir) {
+    public WebConfig(File warDir) {
         if (warDir == null) {
             throw new NullPointerException("The warDir parameter is null.");
         }
@@ -58,9 +58,9 @@ public class AppEngineConfig {
     }
 
     /**
-     * Returns a base package name of controllers.
+     * Returns a root package name.
      * 
-     * @return a base package name of controlle
+     * @return a root package name
      * @throws FileNotFoundException
      * @throws XPathExpressionException
      */

@@ -133,7 +133,7 @@ public class GenModelTask extends AbstractGenJavaFileTask {
         if (packageName != null) {
             return packageName;
         }
-        AppEngineConfig config = createAppEngineConfig();
+        WebConfig config = createWebConfig();
         return config.getRootPackageName() + "." + Constants.MODEL_SUB_PACKAGE;
     }
 

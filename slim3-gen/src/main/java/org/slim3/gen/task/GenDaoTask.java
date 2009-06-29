@@ -119,7 +119,7 @@ public class GenDaoTask extends AbstractGenJavaFileTask {
         if (packageName != null) {
             return packageName;
         }
-        AppEngineConfig config = createAppEngineConfig();
+        WebConfig config = createWebConfig();
         return config.getRootPackageName() + "." + Constants.DAO_SUB_PACKAGE;
     }
 

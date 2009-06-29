@@ -51,7 +51,7 @@ import org.slim3.gen.util.StringUtil;
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 @SupportedAnnotationTypes(ClassConstants.PersistenceCapable)
 @SupportedOptions( { Options.DEBUG })
-public class JDOModelProcessor extends AbstractProcessor {
+public class ModelProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations,
@@ -137,7 +137,7 @@ public class JDOModelProcessor extends AbstractProcessor {
      * @return a model meta description factory
      */
     protected ModelMetaDescFactory createModelMetaDescFactory() {
-        return new ModelMetaDescFactory(new JDOModelScanner(processingEnv));
+        return new ModelMetaDescFactory(new ModelScanner(processingEnv));
     }
 
     /**
