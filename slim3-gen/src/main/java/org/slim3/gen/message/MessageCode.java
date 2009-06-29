@@ -42,7 +42,7 @@ public enum MessageCode {
     /** */
     SILM3GEN0009("The property[{0}] has already been set."),
     /** */
-    SILM3GEN0010("Neither @javax.jdo.annotations.Persistent nor @javax.jdo.annotations.NotPersistent are found.");
+    SILM3GEN0010("Neither @javax.jdo.annotations.Persistent nor @javax.jdo.annotations.NotPersistent is found.");
 
     /** the message */
     public final String message;

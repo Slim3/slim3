@@ -81,7 +81,7 @@ public class ModelScanner extends ElementScanner6<Void, ModelMetaDesc> {
         if (!isPersistent(attribute)) {
             if (isInstanceVariable(attribute) && !isNotPersistent(attribute)) {
                 Logger.warning(processingEnv, attribute, MessageFormatter
-                    .getMessage(MessageCode.SILM3GEN0010));
+                    .getSimpleMessage(MessageCode.SILM3GEN0010));
             }
             return null;
         }
