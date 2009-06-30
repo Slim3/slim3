@@ -1,4 +1,4 @@
-<%@page pageEncoding="UTF-8"%>
+<%@page pageEncoding="UTF-8" isELIgnored="false"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="f" uri="http://www.slim3.org/functions"%>
 
@@ -8,11 +8,6 @@
 <link rel="stylesheet" type="text/css" href="/css/global.css" />
 </head>
 <body>
-<jsp:include page="/header.jsp">
-    <jsp:param name="title" value="Blog"/>
-</jsp:include>
-<jsp:include page="/menu.jsp" />
-<div id="body">
 <a href="${f:url('create')}">Create</a>
 <table>
 <thead>
@@ -30,8 +25,5 @@
 </c:forEach>
 </tbody>
 </table>
-
-</div>
-<jsp:include page="/footer.jsp" />
 </body>
 </html>

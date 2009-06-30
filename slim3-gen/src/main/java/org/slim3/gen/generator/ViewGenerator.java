@@ -42,7 +42,7 @@ public class ViewGenerator implements Generator {
 
     @Override
     public void generate(Printer p) {
-        p.println("<%%@page pageEncoding=\"UTF-8\"%%>");
+        p.println("<%%@page pageEncoding=\"UTF-8\" isELIgnored=\"false\"%%>");
         p
             .println("<%%@taglib prefix=\"c\" uri=\"http://java.sun.com/jsp/jstl/core\"%%>");
         p

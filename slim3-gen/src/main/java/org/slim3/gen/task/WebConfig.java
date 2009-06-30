@@ -70,13 +70,16 @@ public class WebConfig {
         XPath xpath = factory.newXPath();
         xpath.setNamespaceContext(new NamespaceContext() {
             public String getNamespaceURI(String prefix) {
-                if (prefix == null)
+                if (prefix == null) {
                     throw new NullPointerException(
                         "The parameter prefix is null.");
-                else if ("pre".equals(prefix))
+                } else if ("javaee".equals(prefix)) {
                     return "http://java.sun.com/xml/ns/javaee";
-                else if ("xml".equals(prefix))
+                } else if ("j2ee".equals(prefix)) {
+                    return "http://java.sun.com/xml/ns/j2ee";
+                } else if ("xml".equals(prefix)) {
                     return XMLConstants.XML_NS_URI;
+                }
                 return XMLConstants.NULL_NS_URI;
             }
 
@@ -90,19 +93,34 @@ public class WebConfig {
         });
         File file = new File(new File(warDir, "WEB-INF"), "web.xml");
         InputStream inputStream = new FileInputStream(file);
+        String value = null;
         try {
-            String value =
-                xpath.evaluate(
-                    "/pre:web-app/pre:context-param[1]/pre:param-value",
-                    new InputSource(inputStream));
-            if (StringUtil.isEmpty(value)) {
-                throw new RuntimeException(MessageFormatter
-                    .getMessage(MessageCode.SILM3GEN0008));
-            }
-            return value;
+            value =
+                xpath
+                    .evaluate(
+                        "/javaee:web-app/javaee:context-param[1]/javaee:param-value",
+                        new InputSource(inputStream));
         } finally {
             CloseableUtil.close(inputStream);
         }
+        if (!StringUtil.isEmpty(value)) {
+            return value;
+        }
+        inputStream = new FileInputStream(file);
+        try {
+            value =
+                xpath.evaluate(
+                    "/j2ee:web-app/j2ee:context-param[1]/j2ee:param-value",
+                    new InputSource(inputStream));
+        } finally {
+            CloseableUtil.close(inputStream);
+        }
+        if (!StringUtil.isEmpty(value)) {
+            return value;
+        }
+        throw new RuntimeException(MessageFormatter
+            .getMessage(MessageCode.SILM3GEN0008));
+
     }
 
 }

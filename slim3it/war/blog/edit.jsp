@@ -1,4 +1,4 @@
-<%@page pageEncoding="UTF-8"%>
+<%@page pageEncoding="UTF-8" isELIgnored="false"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="f" uri="http://www.slim3.org/functions"%>
 
@@ -8,12 +8,6 @@
 <link rel="stylesheet" type="text/css" href="/css/global.css" />
 </head>
 <body>
-<jsp:include page="/header.jsp">
-    <jsp:param name="title" value="Blog"/>
-</jsp:include>
-<jsp:include page="/menu.jsp" />
-<div id="body">
-
 <form action="${f:url('update')}" method="post">
 <input type="hidden" ${f:hidden("key")}/>
 <input type="hidden" ${f:hidden("version")}/>
@@ -23,8 +17,5 @@ Content<br />
 <textarea name="content" class="${f:errorClass('content', 'error')}">${f:h(content)}</textarea>${f:h(errors.content)}<br />
 <input type="submit" value="Update"/>
 </form>
-
-</div>
-<jsp:include page="/footer.jsp" />
 </body>
 </html>
