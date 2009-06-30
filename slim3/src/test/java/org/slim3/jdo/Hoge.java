@@ -15,46 +15,51 @@
  */
 package org.slim3.jdo;
 
+import javax.jdo.annotations.EmbeddedOnly;
+import javax.jdo.annotations.PersistenceCapable;
+import javax.jdo.annotations.Persistent;
+
 /**
  * @author higa
  * 
  */
-public class SampleMeta extends ModelMeta<Sample> {
+@PersistenceCapable
+@EmbeddedOnly
+public class Hoge {
+
+    @Persistent
+    private String name;
+
+    @Persistent
+    private Long[] aaaArray;
 
     /**
-     * @param attributeName
-     *            the attribute name
-     * 
+     * @return the aaaArray
      */
-    public SampleMeta(String attributeName) {
-        super(Sample.class, attributeName);
+    public Long[] getAaaArray() {
+        return aaaArray;
     }
 
     /**
-     * 
+     * @param aaaArray
+     *            the aaaArray to set
      */
-    public SampleMeta() {
-        super(Sample.class);
+    public void setAaaArray(Long[] aaaArray) {
+        this.aaaArray = aaaArray;
     }
 
     /**
-     * 
+     * @param name
+     *            the name to set
      */
-    public AttributeMeta id = new AttributeMeta(this, "id", Long.class);
+    public void setName(String name) {
+        this.name = name;
+    }
 
     /**
-     * 
+     * @return the name
      */
-    public AttributeMeta name = new AttributeMeta(this, "name", String.class);
-
-    /**
-     * 
-     */
-    public AttributeMeta aaaArray =
-        new AttributeMeta(this, "aaaArray", Long[].class, Long.class);
-
-    /**
-     * 
-     */
-    public HogeMeta hoge = new HogeMeta("hoge");
+    public String getName() {
+        return name;
+    }
 }

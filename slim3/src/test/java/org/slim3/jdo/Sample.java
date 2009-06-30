@@ -15,6 +15,7 @@
  */
 package org.slim3.jdo;
 
+import javax.jdo.annotations.Embedded;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
@@ -34,6 +35,43 @@ public class Sample {
 
     @Persistent
     private String name;
+
+    @Persistent
+    @Embedded
+    private Hoge hoge;
+
+    @Persistent
+    private Long[] aaaArray;
+
+    /**
+     * @return the aaaArray
+     */
+    public Long[] getAaaArray() {
+        return aaaArray;
+    }
+
+    /**
+     * @param aaaArray
+     *            the aaaArray to set
+     */
+    public void setAaaArray(Long[] aaaArray) {
+        this.aaaArray = aaaArray;
+    }
+
+    /**
+     * @return the hoge
+     */
+    public Hoge getHoge() {
+        return hoge;
+    }
+
+    /**
+     * @param hoge
+     *            the hoge to set
+     */
+    public void setHoge(Hoge hoge) {
+        this.hoge = hoge;
+    }
 
     /**
      * @param id

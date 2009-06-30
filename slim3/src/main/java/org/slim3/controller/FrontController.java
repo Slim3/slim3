@@ -34,7 +34,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.slim3.controller.upload.FileUpload;
-import org.slim3.controller.upload.MultipartRequestHandler;
 import org.slim3.controller.validator.Errors;
 import org.slim3.util.ApplicationMessage;
 import org.slim3.util.ClassUtil;

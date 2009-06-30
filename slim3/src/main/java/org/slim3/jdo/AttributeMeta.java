@@ -18,6 +18,7 @@ package org.slim3.jdo;
 import java.util.Collection;
 
 import org.slim3.util.ConversionUtil;
+import org.slim3.util.PropertyDesc;
 
 /**
  * A meta data of attribute.
@@ -54,6 +55,11 @@ public class AttributeMeta {
     protected Class<?> elementClass;
 
     /**
+     * The property descriptor.
+     */
+    protected PropertyDesc propertyDesc;
+
+    /**
      * Constructor.
      * 
      * @param modelMeta
@@ -82,10 +88,12 @@ public class AttributeMeta {
      * @throws NullPointerException
      *             if the modelMeta parameter is null or if the name parameter
      *             is null or if the attributeClass parameter is null
+     * @throws IllegalArgumentException
+     *             if the property is not found
      */
     public AttributeMeta(ModelMeta<?> modelMeta, String name,
             Class<?> attributeClass, Class<?> elementClass)
-            throws NullPointerException {
+            throws NullPointerException, IllegalArgumentException {
         if (modelMeta == null) {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
@@ -96,6 +104,7 @@ public class AttributeMeta {
             throw new NullPointerException(
                 "The attributeClass parameter is null.");
         }
+        this.modelMeta = modelMeta;
         this.name = name;
         this.attributeClass = attributeClass;
         this.elementClass = elementClass;
@@ -103,6 +112,14 @@ public class AttributeMeta {
             fullName = name;
         } else {
             fullName = modelMeta.attributeName + "." + name;
+        }
+        propertyDesc = modelMeta.getBeanDesc().getPropertyDesc(name);
+        if (propertyDesc == null) {
+            throw new IllegalArgumentException("The property("
+                + name
+                + ") of model("
+                + modelMeta.getModelClass().getName()
+                + ") is not found.");
         }
     }
 
@@ -201,7 +218,7 @@ public class AttributeMeta {
      * @return the "ascending" order criterion
      */
     public AscCriterion asc() {
-        return new AscCriterion(fullName);
+        return new AscCriterion(this, fullName);
     }
 
     /**
@@ -210,7 +227,16 @@ public class AttributeMeta {
      * @return the "descending" order criterion
      */
     public DescCriterion desc() {
-        return new DescCriterion(fullName);
+        return new DescCriterion(this, fullName);
+    }
+
+    /**
+     * Returns the property descriptor.
+     * 
+     * @return the property descriptor
+     */
+    public PropertyDesc getPropertyDesc() {
+        return propertyDesc;
     }
 
     /**

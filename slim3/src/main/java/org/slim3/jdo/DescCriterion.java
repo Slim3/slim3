@@ -27,11 +27,13 @@ public class DescCriterion extends AbstractOrderCriterion {
     /**
      * Constructor.
      * 
+     * @param attributeMeta
+     *            the meta data of attribute
      * @param propertyName
      *            the property name
      */
-    public DescCriterion(String propertyName) {
-        super(propertyName);
+    public DescCriterion(AttributeMeta attributeMeta, String propertyName) {
+        super(attributeMeta, propertyName);
     }
 
     @Override
@@ -39,4 +41,33 @@ public class DescCriterion extends AbstractOrderCriterion {
         return propertyName + " desc";
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public int compare(Object o1, Object o2) {
+        if (attributeMeta.modelMeta.attributeName != null) {
+            throw new IllegalStateException(
+                "Sort operation is not supported for embedded model("
+                    + attributeMeta.modelMeta.getModelClass().getName()
+                    + ").");
+        }
+        Object v1 = attributeMeta.getPropertyDesc().getValue(o1);
+        Object v2 = attributeMeta.getPropertyDesc().getValue(o2);
+        if (v1 == null && v2 == null) {
+            return 0;
+        }
+        if (v1 == null) {
+            return -1;
+        }
+        if (v2 == null) {
+            return 1;
+        }
+        if (!(v1 instanceof Comparable)) {
+            throw new IllegalStateException("The property("
+                + propertyName
+                + ") of model("
+                + attributeMeta.modelMeta.getModelClass().getName()
+                + ") is not comparable.");
+        }
+        return -1 * Comparable.class.cast(v1).compareTo(v2);
+    }
 }

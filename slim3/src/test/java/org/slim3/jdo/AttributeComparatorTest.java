@@ -21,31 +21,28 @@ import junit.framework.TestCase;
  * @author higa
  * 
  */
-public class DescCriterionTest extends TestCase {
-
-    /**
-     * @throws Exception
-     */
-    public void testGetQueryString() throws Exception {
-        SampleMeta m = new SampleMeta();
-        DescCriterion criterion = new DescCriterion(m.id, "id");
-        assertEquals("id desc", criterion.getQueryString());
-    }
+public class AttributeComparatorTest extends TestCase {
 
     /**
      * @throws Exception
      */
     public void testCompare() throws Exception {
         SampleMeta m = new SampleMeta();
-        OrderCriterion criterion = m.name.desc();
-        assertEquals(0, criterion.compare(new Sample(), new Sample()));
+        AttributeComparator comparator =
+            new AttributeComparator(m.id.asc(), m.name.desc());
+        assertEquals(0, comparator.compare(null, null));
+        assertEquals(-1, comparator.compare(new Sample(), null));
+        assertEquals(1, comparator.compare(null, new Sample()));
         Sample sample = new Sample();
+        sample.setId(1L);
         sample.setName("aaa");
-        assertEquals(-1, criterion.compare(new Sample(), sample));
-        assertEquals(1, criterion.compare(sample, new Sample()));
+        assertEquals(0, comparator.compare(sample, sample));
         Sample sample2 = new Sample();
+        sample2.setId(2L);
         sample2.setName("bbb");
-        assertEquals(1, criterion.compare(sample, sample2));
-        assertEquals(-1, criterion.compare(sample2, sample));
+        assertEquals(-1, comparator.compare(sample, sample2));
+        assertEquals(1, comparator.compare(sample2, sample));
+        sample2.setId(1L);
+        assertEquals(1, comparator.compare(sample, sample2));
     }
 }

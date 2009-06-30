@@ -26,14 +26,14 @@ import junit.framework.TestCase;
  */
 public class AttributeMetaTest extends TestCase {
 
+    private SampleMeta m = new SampleMeta();
+
     /**
      * @throws Exception
      */
     public void testEq() throws Exception {
-        AttributeMeta aaa =
-            new AttributeMeta(new SampleMeta(), "aaa", Long.class);
-        EqCriterion criterion = aaa.eq("1");
-        assertEquals("aaa == :0", criterion.getQueryString(":0"));
+        EqCriterion criterion = m.id.eq("1");
+        assertEquals("id == :0", criterion.getQueryString(":0"));
         assertEquals(Long.valueOf(1), criterion.getParameter());
     }
 
@@ -41,29 +41,23 @@ public class AttributeMetaTest extends TestCase {
      * @throws Exception
      */
     public void testEqForNull() throws Exception {
-        AttributeMeta aaa =
-            new AttributeMeta(new SampleMeta(), "aaa", Long.class);
-        assertNull(aaa.eq(null));
+        assertNull(m.id.eq(null));
     }
 
     /**
      * @throws Exception
      */
     public void testEqForEmpty() throws Exception {
-        AttributeMeta aaa =
-            new AttributeMeta(new SampleMeta(), "aaa", String.class);
-        assertNull(aaa.eq(""));
+        assertNull(m.name.eq(""));
     }
 
     /**
      * @throws Exception
      */
     public void testEqForArray() throws Exception {
-        AttributeMeta aaa =
-            new AttributeMeta(new SampleMeta(), "aaa", String.class);
-        String[] parameter = new String[] { "111" };
-        EqCriterion criterion = aaa.eq(parameter);
-        assertEquals("aaa == :0", criterion.getQueryString(":0"));
+        Long[] parameter = new Long[] { 1L };
+        EqCriterion criterion = m.id.eq(parameter);
+        assertEquals("id == :0", criterion.getQueryString(":0"));
         assertEquals(parameter, criterion.getParameter());
     }
 
@@ -71,11 +65,9 @@ public class AttributeMetaTest extends TestCase {
      * @throws Exception
      */
     public void testEqForCollection() throws Exception {
-        AttributeMeta aaa =
-            new AttributeMeta(new SampleMeta(), "aaa", String.class);
         List<String> parameter = new ArrayList<String>();
-        EqCriterion criterion = aaa.eq(parameter);
-        assertEquals("aaa == :0", criterion.getQueryString(":0"));
+        EqCriterion criterion = m.id.eq(parameter);
+        assertEquals("id == :0", criterion.getQueryString(":0"));
         assertEquals(parameter, criterion.getParameter());
     }
 
@@ -83,20 +75,16 @@ public class AttributeMetaTest extends TestCase {
      * @throws Exception
      */
     public void testEqForEmbedded() throws Exception {
-        AttributeMeta aaa =
-            new AttributeMeta(new SampleMeta("sample"), "aaa", String.class);
-        EqCriterion criterion = aaa.eq("1");
-        assertEquals("sample.aaa == :0", criterion.getQueryString(":0"));
+        EqCriterion criterion = m.hoge.name.eq("1");
+        assertEquals("hoge.name == :0", criterion.getQueryString(":0"));
     }
 
     /**
      * @throws Exception
      */
     public void testLt() throws Exception {
-        AttributeMeta aaa =
-            new AttributeMeta(new SampleMeta(), "aaa", Long.class);
-        LtCriterion criterion = aaa.lt("1");
-        assertEquals("aaa < :0", criterion.getQueryString(":0"));
+        LtCriterion criterion = m.id.lt("1");
+        assertEquals("id < :0", criterion.getQueryString(":0"));
         assertEquals(Long.valueOf(1), criterion.getParameter());
     }
 
@@ -104,38 +92,30 @@ public class AttributeMetaTest extends TestCase {
      * @throws Exception
      */
     public void testLtForNull() throws Exception {
-        AttributeMeta aaa =
-            new AttributeMeta(new SampleMeta(), "aaa", Long.class);
-        assertNull(aaa.lt(null));
+        assertNull(m.id.lt(null));
     }
 
     /**
      * @throws Exception
      */
     public void testLtForEmpty() throws Exception {
-        AttributeMeta aaa =
-            new AttributeMeta(new SampleMeta(), "aaa", String.class);
-        assertNull(aaa.lt(""));
+        assertNull(m.id.lt(""));
     }
 
     /**
      * @throws Exception
      */
     public void testLtForEmbedded() throws Exception {
-        AttributeMeta aaa =
-            new AttributeMeta(new SampleMeta("sample"), "aaa", Long.class);
-        LtCriterion criterion = aaa.lt("1");
-        assertEquals("sample.aaa < :0", criterion.getQueryString(":0"));
+        LtCriterion criterion = m.hoge.name.lt("1");
+        assertEquals("hoge.name < :0", criterion.getQueryString(":0"));
     }
 
     /**
      * @throws Exception
      */
     public void testLe() throws Exception {
-        AttributeMeta aaa =
-            new AttributeMeta(new SampleMeta(), "aaa", Long.class);
-        LeCriterion criterion = aaa.le("1");
-        assertEquals("aaa <= :0", criterion.getQueryString(":0"));
+        LeCriterion criterion = m.id.le("1");
+        assertEquals("id <= :0", criterion.getQueryString(":0"));
         assertEquals(Long.valueOf(1), criterion.getParameter());
     }
 
@@ -143,38 +123,30 @@ public class AttributeMetaTest extends TestCase {
      * @throws Exception
      */
     public void testLeForNull() throws Exception {
-        AttributeMeta aaa =
-            new AttributeMeta(new SampleMeta(), "aaa", Long.class);
-        assertNull(aaa.le(null));
+        assertNull(m.name.le(null));
     }
 
     /**
      * @throws Exception
      */
     public void testLeForEmpty() throws Exception {
-        AttributeMeta aaa =
-            new AttributeMeta(new SampleMeta(), "aaa", String.class);
-        assertNull(aaa.le(""));
+        assertNull(m.name.le(""));
     }
 
     /**
      * @throws Exception
      */
     public void testLeForEmbedded() throws Exception {
-        AttributeMeta aaa =
-            new AttributeMeta(new SampleMeta("sample"), "aaa", Long.class);
-        LeCriterion criterion = aaa.le("1");
-        assertEquals("sample.aaa <= :0", criterion.getQueryString(":0"));
+        LeCriterion criterion = m.hoge.name.le("1");
+        assertEquals("hoge.name <= :0", criterion.getQueryString(":0"));
     }
 
     /**
      * @throws Exception
      */
     public void testGt() throws Exception {
-        AttributeMeta aaa =
-            new AttributeMeta(new SampleMeta(), "aaa", Long.class);
-        GtCriterion criterion = aaa.gt("1");
-        assertEquals("aaa > :0", criterion.getQueryString(":0"));
+        GtCriterion criterion = m.id.gt("1");
+        assertEquals("id > :0", criterion.getQueryString(":0"));
         assertEquals(Long.valueOf(1), criterion.getParameter());
     }
 
@@ -182,38 +154,30 @@ public class AttributeMetaTest extends TestCase {
      * @throws Exception
      */
     public void testGtForNull() throws Exception {
-        AttributeMeta aaa =
-            new AttributeMeta(new SampleMeta(), "aaa", Long.class);
-        assertNull(aaa.gt(null));
+        assertNull(m.id.gt(null));
     }
 
     /**
      * @throws Exception
      */
     public void testGtForEmpty() throws Exception {
-        AttributeMeta aaa =
-            new AttributeMeta(new SampleMeta(), "aaa", String.class);
-        assertNull(aaa.gt(""));
+        assertNull(m.id.gt(""));
     }
 
     /**
      * @throws Exception
      */
     public void testGtForEmbedded() throws Exception {
-        AttributeMeta aaa =
-            new AttributeMeta(new SampleMeta("sample"), "aaa", Long.class);
-        GtCriterion criterion = aaa.gt("1");
-        assertEquals("sample.aaa > :0", criterion.getQueryString(":0"));
+        GtCriterion criterion = m.hoge.name.gt("1");
+        assertEquals("hoge.name > :0", criterion.getQueryString(":0"));
     }
 
     /**
      * @throws Exception
      */
     public void testGe() throws Exception {
-        AttributeMeta aaa =
-            new AttributeMeta(new SampleMeta(), "aaa", Long.class);
-        GeCriterion criterion = aaa.ge("1");
-        assertEquals("aaa >= :0", criterion.getQueryString(":0"));
+        GeCriterion criterion = m.id.ge("1");
+        assertEquals("id >= :0", criterion.getQueryString(":0"));
         assertEquals(Long.valueOf(1), criterion.getParameter());
     }
 
@@ -221,41 +185,29 @@ public class AttributeMetaTest extends TestCase {
      * @throws Exception
      */
     public void testGeForNull() throws Exception {
-        AttributeMeta aaa =
-            new AttributeMeta(new SampleMeta(), "aaa", Long.class);
-        assertNull(aaa.ge(null));
+        assertNull(m.id.ge(null));
     }
 
     /**
      * @throws Exception
      */
     public void testGeForEmpty() throws Exception {
-        AttributeMeta aaa =
-            new AttributeMeta(new SampleMeta(), "aaa", String.class);
-        assertNull(aaa.ge(""));
+        assertNull(m.id.ge(""));
     }
 
     /**
      * @throws Exception
      */
     public void testGeForEmbedded() throws Exception {
-        AttributeMeta aaa =
-            new AttributeMeta(new SampleMeta("sample"), "aaa", Long.class);
-        GeCriterion criterion = aaa.ge("1");
-        assertEquals("sample.aaa >= :0", criterion.getQueryString(":0"));
+        GeCriterion criterion = m.hoge.name.ge("1");
+        assertEquals("hoge.name >= :0", criterion.getQueryString(":0"));
     }
 
     /**
      * @throws Exception
      */
     public void testContains() throws Exception {
-        AttributeMeta aaaArray =
-            new AttributeMeta(
-                new SampleMeta(),
-                "aaaArray",
-                Long[].class,
-                Long.class);
-        ContainsCriterion criterion = aaaArray.contains("1");
+        ContainsCriterion criterion = m.aaaArray.contains("1");
         assertEquals("aaaArray.contains(:0)", criterion.getQueryString(":0"));
         assertEquals(Long.valueOf(1), criterion.getParameter());
     }
@@ -264,32 +216,22 @@ public class AttributeMetaTest extends TestCase {
      * @throws Exception
      */
     public void testContainsForNull() throws Exception {
-        AttributeMeta aaaArray =
-            new AttributeMeta(new SampleMeta(), "aaaArray", Long[].class);
-        assertNull(aaaArray.contains(null));
+        assertNull(m.aaaArray.contains(null));
     }
 
     /**
      * @throws Exception
      */
     public void testContainsForEmpty() throws Exception {
-        AttributeMeta aaaArray =
-            new AttributeMeta(new SampleMeta(), "aaaArray", String[].class);
-        assertNull(aaaArray.contains(""));
+        assertNull(m.aaaArray.contains(""));
     }
 
     /**
      * @throws Exception
      */
     public void testContainsForEmbedded() throws Exception {
-        AttributeMeta aaaArray =
-            new AttributeMeta(
-                new SampleMeta("sample"),
-                "aaaArray",
-                Long[].class,
-                Long.class);
-        ContainsCriterion criterion = aaaArray.contains("1");
-        assertEquals("sample.aaaArray.contains(:0)", criterion
+        ContainsCriterion criterion = m.hoge.aaaArray.contains("1");
+        assertEquals("hoge.aaaArray.contains(:0)", criterion
             .getQueryString(":0"));
     }
 
@@ -297,43 +239,35 @@ public class AttributeMetaTest extends TestCase {
      * @throws Exception
      */
     public void testAsc() throws Exception {
-        AttributeMeta aaa =
-            new AttributeMeta(new SampleMeta(), "aaa", Long.class);
-        AscCriterion criterion = aaa.asc();
+        AscCriterion criterion = m.id.asc();
         assertNotNull(criterion);
-        assertEquals("aaa asc", criterion.getQueryString());
+        assertEquals("id asc", criterion.getQueryString());
     }
 
     /**
      * @throws Exception
      */
     public void testAscForEmbedded() throws Exception {
-        AttributeMeta aaa =
-            new AttributeMeta(new SampleMeta("sample"), "aaa", Long.class);
-        AscCriterion criterion = aaa.asc();
+        AscCriterion criterion = m.hoge.name.asc();
         assertNotNull(criterion);
-        assertEquals("sample.aaa asc", criterion.getQueryString());
+        assertEquals("hoge.name asc", criterion.getQueryString());
     }
 
     /**
      * @throws Exception
      */
     public void testDesc() throws Exception {
-        AttributeMeta aaa =
-            new AttributeMeta(new SampleMeta(), "aaa", Long.class);
-        DescCriterion criterion = aaa.desc();
+        DescCriterion criterion = m.id.desc();
         assertNotNull(criterion);
-        assertEquals("aaa desc", criterion.getQueryString());
+        assertEquals("id desc", criterion.getQueryString());
     }
 
     /**
      * @throws Exception
      */
     public void testDescForEmbedded() throws Exception {
-        AttributeMeta aaa =
-            new AttributeMeta(new SampleMeta("sample"), "aaa", Long.class);
-        DescCriterion criterion = aaa.desc();
+        DescCriterion criterion = m.hoge.name.desc();
         assertNotNull(criterion);
-        assertEquals("sample.aaa desc", criterion.getQueryString());
+        assertEquals("hoge.name desc", criterion.getQueryString());
     }
 }

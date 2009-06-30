@@ -15,6 +15,7 @@
  */
 package org.slim3.jdo;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.jdo.JDOHelper;
@@ -164,20 +165,6 @@ public class GenericDao<M> {
     }
 
     /**
-     * Makes the models persistent in transaction.
-     * 
-     * @param models
-     *            the models
-     * @return the persisted model
-     */
-    public List<M> makePersistentInTx(List<M> models) {
-        begin();
-        List<M> list = makePersistentAll(models);
-        commit();
-        return list;
-    }
-
-    /**
      * Deletes the persistent model from the data store.
      * 
      * @param model
@@ -210,15 +197,25 @@ public class GenericDao<M> {
     }
 
     /**
-     * Deletes the persistent models from the data store in transaction.
+     * Sorts the list.
      * 
-     * @param models
-     *            the models
+     * @param list
+     *            the list
+     * @param criteria
+     *            criteria to sort
+     * @throws NullPointerException
+     *             the list parameter is null
      */
-    public void deletePersistentInTx(List<M> models) {
-        begin();
-        deletePersistentAll(models);
-        commit();
+    @SuppressWarnings("unchecked")
+    public void sort(List<M> list, OrderCriterion... criteria)
+            throws NullPointerException {
+        if (list == null) {
+            throw new NullPointerException("The list parameter is null.");
+        }
+        if (criteria.length == 0) {
+            return;
+        }
+        Collections.sort(list, new AttributeComparator(criteria));
     }
 
     /**

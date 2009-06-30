@@ -25,6 +25,11 @@ package org.slim3.jdo;
 public abstract class AbstractOrderCriterion implements OrderCriterion {
 
     /**
+     * The meta data of attribute.
+     */
+    protected AttributeMeta attributeMeta;
+
+    /**
      * The property name.
      */
     protected String propertyName;
@@ -32,17 +37,24 @@ public abstract class AbstractOrderCriterion implements OrderCriterion {
     /**
      * Constructor.
      * 
+     * @param attributeMeta
+     *            the meta data of attribute
      * @param propertyName
      *            the property name
      * @throws NullPointerException
      *             if the propertyName parameter is null
      */
-    public AbstractOrderCriterion(String propertyName)
-            throws NullPointerException {
+    public AbstractOrderCriterion(AttributeMeta attributeMeta,
+            String propertyName) throws NullPointerException {
+        if (attributeMeta == null) {
+            throw new NullPointerException(
+                "The attributeMeta parameter is null.");
+        }
         if (propertyName == null) {
             throw new NullPointerException(
-                    "The propertyName parameter is null.");
+                "The propertyName parameter is null.");
         }
+        this.attributeMeta = attributeMeta;
         this.propertyName = propertyName;
     }
 

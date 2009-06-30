@@ -13,14 +13,18 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.controller.upload;
+package org.slim3.controller;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.slim3.controller.RequestHandler;
+import org.slim3.controller.upload.FileItem;
+import org.slim3.controller.upload.FileItemIterator;
+import org.slim3.controller.upload.FileItemStream;
+import org.slim3.controller.upload.FileUpload;
+import org.slim3.controller.upload.Streams;
 import org.slim3.util.ArrayUtil;
 import org.slim3.util.RuntimeExceptionUtil;
 

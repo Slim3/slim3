@@ -15,6 +15,9 @@
  */
 package org.slim3.jdo;
 
+import org.slim3.util.BeanDesc;
+import org.slim3.util.BeanUtil;
+
 /**
  * A meta data of model.
  * 
@@ -30,6 +33,11 @@ public class ModelMeta<T> {
      * The model class.
      */
     protected Class<T> modelClass;
+
+    /**
+     * The bean descriptor.
+     */
+    protected BeanDesc beanDesc;
 
     /**
      * The attribute name in case of embedded attribute.
@@ -62,6 +70,7 @@ public class ModelMeta<T> {
             throw new NullPointerException("The modelClass parameter is null.");
         }
         this.modelClass = modelClass;
+        beanDesc = BeanUtil.getBeanDesc(modelClass);
         this.attributeName = attributeName;
     }
 
@@ -72,5 +81,14 @@ public class ModelMeta<T> {
      */
     public Class<T> getModelClass() {
         return modelClass;
+    }
+
+    /**
+     * Returns the bean descriptor.
+     * 
+     * @return the bean descriptor
+     */
+    public BeanDesc getBeanDesc() {
+        return beanDesc;
     }
 }

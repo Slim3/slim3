@@ -16,34 +16,35 @@
 package org.slim3.jdo;
 
 /**
- * A criterion interface for order.
- * 
  * @author higa
- * @since 3.0
  * 
  */
-public interface OrderCriterion {
+public class HogeMeta extends ModelMeta<Hoge> {
 
     /**
-     * Returns the query string.
+     * @param attributeName
+     *            the attribute name
      * 
-     * @return the query string
      */
-    String getQueryString();
+    public HogeMeta(String attributeName) {
+        super(Hoge.class, attributeName);
+    }
 
     /**
-     * Compares its two arguments for order. Returns a negative integer, zero,
-     * or a positive integer as the first argument is less than, equal to, or
-     * greater than the second.
      * 
-     * @param o1
-     *            the first model
-     * @param o2
-     *            the second model
-     * @return the compared result
-     * @throws IllegalStateException
-     *             if the model is embedded or if the attribute is not
-     *             comparable
      */
-    int compare(Object o1, Object o2) throws IllegalStateException;
+    public HogeMeta() {
+        super(Hoge.class);
+    }
+
+    /**
+     * 
+     */
+    public AttributeMeta name = new AttributeMeta(this, "name", String.class);
+
+    /**
+     * 
+     */
+    public AttributeMeta aaaArray =
+        new AttributeMeta(this, "aaaArray", Long[].class, Long.class);
 }

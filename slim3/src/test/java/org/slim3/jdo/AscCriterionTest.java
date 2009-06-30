@@ -27,7 +27,25 @@ public class AscCriterionTest extends TestCase {
      * @throws Exception
      */
     public void testGetQueryString() throws Exception {
-        AscCriterion criterion = new AscCriterion("id");
+        SampleMeta m = new SampleMeta();
+        AscCriterion criterion = m.id.asc();
         assertEquals("id asc", criterion.getQueryString());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testCompare() throws Exception {
+        SampleMeta m = new SampleMeta();
+        OrderCriterion criterion = m.name.asc();
+        assertEquals(0, criterion.compare(new Sample(), new Sample()));
+        Sample sample = new Sample();
+        sample.setName("aaa");
+        assertEquals(1, criterion.compare(new Sample(), sample));
+        assertEquals(-1, criterion.compare(sample, new Sample()));
+        Sample sample2 = new Sample();
+        sample2.setName("bbb");
+        assertEquals(-1, criterion.compare(sample, sample2));
+        assertEquals(1, criterion.compare(sample2, sample));
     }
 }
