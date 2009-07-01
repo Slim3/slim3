@@ -203,19 +203,21 @@ public class GenericDao<M> {
      *            the list
      * @param criteria
      *            criteria to sort
+     * @return the sorted list
      * @throws NullPointerException
      *             the list parameter is null
      */
     @SuppressWarnings("unchecked")
-    public void sort(List<M> list, OrderCriterion... criteria)
+    public List<M> sort(List<M> list, OrderCriterion... criteria)
             throws NullPointerException {
         if (list == null) {
             throw new NullPointerException("The list parameter is null.");
         }
         if (criteria.length == 0) {
-            return;
+            return list;
         }
         Collections.sort(list, new AttributeComparator(criteria));
+        return list;
     }
 
     /**

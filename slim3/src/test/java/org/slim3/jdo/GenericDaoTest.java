@@ -44,9 +44,36 @@ public class GenericDaoTest extends TestCase {
         list.add(sample);
 
         SampleMeta m = new SampleMeta();
-        dao.sort(list, m.id.asc());
-        assertEquals(new Long(1), list.get(0).getId());
-        assertEquals(new Long(2), list.get(1).getId());
-        assertEquals(new Long(3), list.get(2).getId());
+        List<Sample> sorted = dao.sort(list, m.id.asc());
+        assertEquals(3, sorted.size());
+        assertEquals(new Long(1), sorted.get(0).getId());
+        assertEquals(new Long(2), sorted.get(1).getId());
+        assertEquals(new Long(3), sorted.get(2).getId());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testSortForMultiProperty() throws Exception {
+        List<Sample> list = new ArrayList<Sample>();
+        Sample sample = new Sample();
+        sample.setId(1L);
+        sample.setName("aaa");
+        list.add(sample);
+        sample = new Sample();
+        sample.setId(1L);
+        sample.setName("ccc");
+        list.add(sample);
+        sample = new Sample();
+        sample.setId(1L);
+        sample.setName("bbb");
+        list.add(sample);
+
+        SampleMeta m = new SampleMeta();
+        List<Sample> sorted = dao.sort(list, m.id.asc(), m.name.desc());
+        assertEquals(3, sorted.size());
+        assertEquals("ccc", sorted.get(0).getName());
+        assertEquals("bbb", sorted.get(1).getName());
+        assertEquals("aaa", sorted.get(2).getName());
     }
 }
