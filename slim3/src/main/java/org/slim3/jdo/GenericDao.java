@@ -278,6 +278,9 @@ public class GenericDao<M> {
                 throw new NullPointerException("The model is null.");
             }
             for (FilterCriterion c : criteria) {
+                if (c == null) {
+                    continue;
+                }
                 if (!c.accept(model)) {
                     continue outer;
                 }
