@@ -34,7 +34,7 @@ public class AttributeMetaTest extends TestCase {
     public void testEq() throws Exception {
         EqCriterion criterion = m.id.eq("1");
         assertEquals("id == :0", criterion.getQueryString(":0"));
-        assertEquals(Long.valueOf(1), criterion.getParameter());
+        assertEquals(Long.valueOf(1), criterion.getParameters()[0]);
     }
 
     /**
@@ -58,7 +58,7 @@ public class AttributeMetaTest extends TestCase {
         Long[] parameter = new Long[] { 1L };
         EqCriterion criterion = m.id.eq(parameter);
         assertEquals("id == :0", criterion.getQueryString(":0"));
-        assertEquals(parameter, criterion.getParameter());
+        assertEquals(parameter, criterion.getParameters()[0]);
     }
 
     /**
@@ -68,7 +68,7 @@ public class AttributeMetaTest extends TestCase {
         List<String> parameter = new ArrayList<String>();
         EqCriterion criterion = m.id.eq(parameter);
         assertEquals("id == :0", criterion.getQueryString(":0"));
-        assertEquals(parameter, criterion.getParameter());
+        assertEquals(parameter, criterion.getParameters()[0]);
     }
 
     /**
@@ -85,7 +85,7 @@ public class AttributeMetaTest extends TestCase {
     public void testLt() throws Exception {
         LtCriterion criterion = m.id.lt("1");
         assertEquals("id < :0", criterion.getQueryString(":0"));
-        assertEquals(Long.valueOf(1), criterion.getParameter());
+        assertEquals(Long.valueOf(1), criterion.getParameters()[0]);
     }
 
     /**
@@ -116,7 +116,7 @@ public class AttributeMetaTest extends TestCase {
     public void testLe() throws Exception {
         LeCriterion criterion = m.id.le("1");
         assertEquals("id <= :0", criterion.getQueryString(":0"));
-        assertEquals(Long.valueOf(1), criterion.getParameter());
+        assertEquals(Long.valueOf(1), criterion.getParameters()[0]);
     }
 
     /**
@@ -147,7 +147,7 @@ public class AttributeMetaTest extends TestCase {
     public void testGt() throws Exception {
         GtCriterion criterion = m.id.gt("1");
         assertEquals("id > :0", criterion.getQueryString(":0"));
-        assertEquals(Long.valueOf(1), criterion.getParameter());
+        assertEquals(Long.valueOf(1), criterion.getParameters()[0]);
     }
 
     /**
@@ -178,7 +178,7 @@ public class AttributeMetaTest extends TestCase {
     public void testGe() throws Exception {
         GeCriterion criterion = m.id.ge("1");
         assertEquals("id >= :0", criterion.getQueryString(":0"));
-        assertEquals(Long.valueOf(1), criterion.getParameter());
+        assertEquals(Long.valueOf(1), criterion.getParameters()[0]);
     }
 
     /**
@@ -209,7 +209,7 @@ public class AttributeMetaTest extends TestCase {
     public void testContains() throws Exception {
         ContainsCriterion criterion = m.aaaArray.contains("1");
         assertEquals("aaaArray.contains(:0)", criterion.getQueryString(":0"));
-        assertEquals(Long.valueOf(1), criterion.getParameter());
+        assertEquals(Long.valueOf(1), criterion.getParameters()[0]);
     }
 
     /**

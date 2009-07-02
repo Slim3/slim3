@@ -285,7 +285,9 @@ public class SelectQuery<M> {
             if (c == null) {
                 continue;
             }
-            params.add(c.getParameter());
+            for (Object param : c.getParameters()) {
+                params.add(param);
+            }
         }
         return params.toArray();
     }

@@ -22,26 +22,23 @@ package org.slim3.jdo;
  * @since 3.0
  * 
  */
-public class DescCriterion extends AbstractOrderCriterion {
+public class DescCriterion extends AbstractCriterion implements OrderCriterion {
 
     /**
      * Constructor.
      * 
      * @param attributeMeta
      *            the meta data of attribute
-     * @param propertyName
-     *            the property name
      */
-    public DescCriterion(AttributeMeta attributeMeta, String propertyName) {
-        super(attributeMeta, propertyName);
+    public DescCriterion(AttributeMeta attributeMeta) {
+        super(attributeMeta);
     }
 
     @Override
     public String getQueryString() {
-        return propertyName + " desc";
+        return attributeMeta.fullName + " desc";
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public int compare(Object o1, Object o2) {
         if (attributeMeta.modelMeta.attributeName != null) {
@@ -61,13 +58,6 @@ public class DescCriterion extends AbstractOrderCriterion {
         if (v2 == null) {
             return 1;
         }
-        if (!(v1 instanceof Comparable)) {
-            throw new IllegalStateException("The property("
-                + propertyName
-                + ") of model("
-                + attributeMeta.modelMeta.getModelClass().getName()
-                + ") is not comparable.");
-        }
-        return -1 * Comparable.class.cast(v1).compareTo(v2);
+        return -1 * compareValue(v1, v2);
     }
 }

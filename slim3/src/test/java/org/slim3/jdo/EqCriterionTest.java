@@ -23,11 +23,25 @@ import junit.framework.TestCase;
  */
 public class EqCriterionTest extends TestCase {
 
+    private SampleMeta m = new SampleMeta();
+
     /**
      * @throws Exception
      */
     public void testGetQueryString() throws Exception {
-        EqCriterion criterion = new EqCriterion("aaa", Long.valueOf(1));
-        assertEquals("aaa == :0", criterion.getQueryString(":0"));
+        EqCriterion criterion = m.id.eq(1);
+        assertEquals("id == :0", criterion.getQueryString(":0"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testAccept() throws Exception {
+        Sample sample = new Sample();
+        sample.setId(1L);
+        EqCriterion criterion = m.id.eq(1);
+        assertTrue(criterion.accept(sample));
+        sample.setId(2L);
+        assertFalse(criterion.accept(sample));
     }
 }

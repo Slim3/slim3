@@ -15,6 +15,9 @@
  */
 package org.slim3.jdo;
 
+import java.lang.reflect.Array;
+import java.util.Collection;
+
 /**
  * An implementation class for "contains" filter criterion.
  * 
@@ -22,21 +25,60 @@ package org.slim3.jdo;
  * @since 3.0
  * 
  */
-public class ContainsCriterion extends AbstractFilterCriterion {
+public class ContainsCriterion extends AbstractCriterion implements
+        FilterCriterion {
+
+    /**
+     * The parameter;
+     */
+    protected Object parameter;
 
     /**
      * Constructor.
      * 
-     * @param propertyName
-     *            the property name
+     * @param attributeMeta
+     *            the meta data of attribute
      * @param parameter
      *            the parameter
+     * @throws NullPointerException
+     *             if the parameter parameter is null
      */
-    public ContainsCriterion(String propertyName, Object parameter) {
-        super(propertyName, parameter);
+    public ContainsCriterion(AttributeMeta attributeMeta, Object parameter)
+            throws NullPointerException {
+        super(attributeMeta);
+        if (parameter == null) {
+            throw new NullPointerException("The parameter parameter is null.");
+        }
+        this.parameter = parameter;
     }
 
+    @Override
     public String getQueryString(String parameterName) {
-        return propertyName + ".contains(" + parameterName + ")";
+        return attributeMeta.fullName + ".contains(" + parameterName + ")";
+    }
+
+    @Override
+    public Object[] getParameters() {
+        return new Object[] { parameter };
+    }
+
+    @Override
+    public boolean accept(Object model) {
+        Object value = attributeMeta.getPropertyDesc().getValue(model);
+        if (value == null) {
+            return false;
+        }
+        if (value instanceof Collection) {
+            return Collection.class.cast(value).contains(parameter);
+        }
+        if (value.getClass().isArray()) {
+            int length = Array.getLength(value);
+            for (int i = 0; i < length; i++) {
+                if (parameter.equals(Array.get(value, i))) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

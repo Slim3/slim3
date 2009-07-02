@@ -76,4 +76,25 @@ public class GenericDaoTest extends TestCase {
         assertEquals("bbb", sorted.get(1).getName());
         assertEquals("aaa", sorted.get(2).getName());
     }
+
+    /**
+     * @throws Exception
+     */
+    public void testFilter() throws Exception {
+        List<Sample> list = new ArrayList<Sample>();
+        Sample sample = new Sample();
+        sample.setId(1L);
+        list.add(sample);
+        sample = new Sample();
+        sample.setId(3L);
+        list.add(sample);
+        sample = new Sample();
+        sample.setId(2L);
+        list.add(sample);
+
+        SampleMeta m = new SampleMeta();
+        List<Sample> filtered = dao.filter(list, m.id.ge(2), m.id.lt(3));
+        assertEquals(1, filtered.size());
+        assertEquals(new Long(2), filtered.get(0).getId());
+    }
 }

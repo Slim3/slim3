@@ -23,11 +23,27 @@ import junit.framework.TestCase;
  */
 public class LtCriterionTest extends TestCase {
 
+    private SampleMeta m = new SampleMeta();
+
     /**
      * @throws Exception
      */
     public void testGetQueryString() throws Exception {
-        LtCriterion criterion = new LtCriterion("aaa", Long.valueOf(1));
-        assertEquals("aaa < :0", criterion.getQueryString(":0"));
+        FilterCriterion criterion = m.id.lt(1);
+        assertEquals("id < :0", criterion.getQueryString(":0"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testAccept() throws Exception {
+        Sample sample = new Sample();
+        sample.setId(2L);
+        FilterCriterion criterion = m.id.lt(1);
+        assertFalse(criterion.accept(sample));
+        sample.setId(1L);
+        assertFalse(criterion.accept(sample));
+        sample.setId(0L);
+        assertTrue(criterion.accept(sample));
     }
 }

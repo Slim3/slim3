@@ -16,13 +16,13 @@
 package org.slim3.jdo;
 
 /**
- * An abstract class for filter criterion.
+ * An abstract class for criterion.
  * 
  * @author higa
  * @since 3.0
  * 
  */
-public abstract class AbstractOrderCriterion implements OrderCriterion {
+public abstract class AbstractCriterion {
 
     /**
      * The meta data of attribute.
@@ -30,40 +30,44 @@ public abstract class AbstractOrderCriterion implements OrderCriterion {
     protected AttributeMeta attributeMeta;
 
     /**
-     * The property name.
-     */
-    protected String propertyName;
-
-    /**
      * Constructor.
      * 
      * @param attributeMeta
      *            the meta data of attribute
-     * @param propertyName
-     *            the property name
      * @throws NullPointerException
-     *             if the propertyName parameter is null
+     *             if the attributeMeta parameter is null
      */
-    public AbstractOrderCriterion(AttributeMeta attributeMeta,
-            String propertyName) throws NullPointerException {
+    public AbstractCriterion(AttributeMeta attributeMeta)
+            throws NullPointerException {
         if (attributeMeta == null) {
             throw new NullPointerException(
                 "The attributeMeta parameter is null.");
         }
-        if (propertyName == null) {
-            throw new NullPointerException(
-                "The propertyName parameter is null.");
-        }
         this.attributeMeta = attributeMeta;
-        this.propertyName = propertyName;
     }
 
     /**
-     * Returns the property name.
+     * Compares its two arguments for order. Returns a negative integer, zero,
+     * or a positive integer as the first argument is less than, equal to, or
+     * greater than the second.
      * 
-     * @return the property name
+     * @param v1
+     *            the attribute value
+     * @param v2
+     *            the compared value
+     * @return the compared result
+     * @throws IllegalStateException
+     *             if the attribute value is not comparable
      */
-    public String getPropertyName() {
-        return propertyName;
+    @SuppressWarnings("unchecked")
+    protected int compareValue(Object v1, Object v2) {
+        if (!(v1 instanceof Comparable)) {
+            throw new IllegalStateException("The property("
+                + attributeMeta.name
+                + ") of model("
+                + attributeMeta.modelMeta.getModelClass().getName()
+                + ") is not comparable.");
+        }
+        return Comparable.class.cast(v1).compareTo(v2);
     }
 }

@@ -137,7 +137,7 @@ public class AttributeMeta {
             && !(parameter instanceof Collection)) {
             parameter = ConversionUtil.convert(parameter, attributeClass);
         }
-        return new EqCriterion(fullName, parameter);
+        return new EqCriterion(this, parameter);
     }
 
     /**
@@ -151,7 +151,7 @@ public class AttributeMeta {
             return null;
         }
         parameter = ConversionUtil.convert(parameter, attributeClass);
-        return new LtCriterion(fullName, parameter);
+        return new LtCriterion(this, parameter);
     }
 
     /**
@@ -165,7 +165,7 @@ public class AttributeMeta {
             return null;
         }
         parameter = ConversionUtil.convert(parameter, attributeClass);
-        return new LeCriterion(fullName, parameter);
+        return new LeCriterion(this, parameter);
     }
 
     /**
@@ -179,7 +179,7 @@ public class AttributeMeta {
             return null;
         }
         parameter = ConversionUtil.convert(parameter, attributeClass);
-        return new GtCriterion(fullName, parameter);
+        return new GtCriterion(this, parameter);
     }
 
     /**
@@ -193,7 +193,7 @@ public class AttributeMeta {
             return null;
         }
         parameter = ConversionUtil.convert(parameter, attributeClass);
-        return new GeCriterion(fullName, parameter);
+        return new GeCriterion(this, parameter);
     }
 
     /**
@@ -209,7 +209,7 @@ public class AttributeMeta {
         if (elementClass != null) {
             parameter = ConversionUtil.convert(parameter, elementClass);
         }
-        return new ContainsCriterion(fullName, parameter);
+        return new ContainsCriterion(this, parameter);
     }
 
     /**
@@ -218,7 +218,7 @@ public class AttributeMeta {
      * @return the "ascending" order criterion
      */
     public AscCriterion asc() {
-        return new AscCriterion(this, fullName);
+        return new AscCriterion(this);
     }
 
     /**
@@ -227,7 +227,7 @@ public class AttributeMeta {
      * @return the "descending" order criterion
      */
     public DescCriterion desc() {
-        return new DescCriterion(this, fullName);
+        return new DescCriterion(this);
     }
 
     /**

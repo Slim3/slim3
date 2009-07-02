@@ -48,14 +48,8 @@ public class AttributeComparator implements Comparator {
 
     @Override
     public int compare(Object o1, Object o2) {
-        if (o1 == null && o2 == null) {
-            return 0;
-        }
-        if (o1 == null) {
-            return 1;
-        }
-        if (o2 == null) {
-            return -1;
+        if (o1 == null || o2 == null) {
+            throw new NullPointerException("The model is null.");
         }
         for (OrderCriterion c : orderCriteria) {
             int compared = c.compare(o1, o2);

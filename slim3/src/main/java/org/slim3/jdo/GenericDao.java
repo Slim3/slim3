@@ -15,6 +15,7 @@
  */
 package org.slim3.jdo;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -197,30 +198,6 @@ public class GenericDao<M> {
     }
 
     /**
-     * Sorts the list.
-     * 
-     * @param list
-     *            the list
-     * @param criteria
-     *            criteria to sort
-     * @return the sorted list
-     * @throws NullPointerException
-     *             the list parameter is null
-     */
-    @SuppressWarnings("unchecked")
-    public List<M> sort(List<M> list, OrderCriterion... criteria)
-            throws NullPointerException {
-        if (list == null) {
-            throw new NullPointerException("The list parameter is null.");
-        }
-        if (criteria.length == 0) {
-            return list;
-        }
-        Collections.sort(list, new AttributeComparator(criteria));
-        return list;
-    }
-
-    /**
      * Begins transaction.
      */
     public void begin() {
@@ -250,5 +227,63 @@ public class GenericDao<M> {
      */
     protected SelectQuery<M> from() {
         return new SelectQuery<M>(pm, modelClass);
+    }
+
+    /**
+     * Sorts the list.
+     * 
+     * @param list
+     *            the list
+     * @param criteria
+     *            criteria to sort
+     * @return the sorted list
+     * @throws NullPointerException
+     *             if the list parameter is null
+     */
+    @SuppressWarnings("unchecked")
+    protected List<M> sort(List<M> list, OrderCriterion... criteria)
+            throws NullPointerException {
+        if (list == null) {
+            throw new NullPointerException("The list parameter is null.");
+        }
+        if (criteria.length == 0) {
+            return list;
+        }
+        Collections.sort(list, new AttributeComparator(criteria));
+        return list;
+    }
+
+    /**
+     * Filters the list.
+     * 
+     * @param list
+     *            the list
+     * @param criteria
+     *            the filter criteria
+     * @return the filtered list.
+     * @throws NullPointerException
+     *             if the list parameter is null or if the model is null
+     */
+    protected List<M> filter(List<M> list, FilterCriterion... criteria)
+            throws NullPointerException {
+        if (list == null) {
+            throw new NullPointerException("The list parameter is null.");
+        }
+        if (criteria.length == 0) {
+            return list;
+        }
+        List<M> newList = new ArrayList<M>(list.size());
+        outer: for (M model : list) {
+            if (model == null) {
+                throw new NullPointerException("The model is null.");
+            }
+            for (FilterCriterion c : criteria) {
+                if (!c.accept(model)) {
+                    continue outer;
+                }
+            }
+            newList.add(model);
+        }
+        return newList;
     }
 }

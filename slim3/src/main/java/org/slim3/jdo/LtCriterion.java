@@ -22,21 +22,48 @@ package org.slim3.jdo;
  * @since 3.0
  * 
  */
-public class LtCriterion extends AbstractFilterCriterion {
+public class LtCriterion extends AbstractCriterion implements FilterCriterion {
+
+    /**
+     * The parameter;
+     */
+    protected Object parameter;
 
     /**
      * Constructor.
      * 
-     * @param propertyName
-     *            the property name
+     * @param attributeMeta
+     *            the meta data of attribute
      * @param parameter
      *            the parameter
+     * @throws NullPointerException
+     *             if the parameter parameter is null
      */
-    public LtCriterion(String propertyName, Object parameter) {
-        super(propertyName, parameter);
+    public LtCriterion(AttributeMeta attributeMeta, Object parameter)
+            throws NullPointerException {
+        super(attributeMeta);
+        if (parameter == null) {
+            throw new NullPointerException("The parameter parameter is null.");
+        }
+        this.parameter = parameter;
     }
 
+    @Override
     public String getQueryString(String parameterName) {
-        return propertyName + " < " + parameterName;
+        return attributeMeta.fullName + " < " + parameterName;
+    }
+
+    @Override
+    public Object[] getParameters() {
+        return new Object[] { parameter };
+    }
+
+    @Override
+    public boolean accept(Object model) {
+        Object value = attributeMeta.getPropertyDesc().getValue(model);
+        if (value == null) {
+            return false;
+        }
+        return compareValue(value, parameter) < 0;
     }
 }

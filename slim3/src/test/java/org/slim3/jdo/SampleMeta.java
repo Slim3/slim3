@@ -15,6 +15,8 @@
  */
 package org.slim3.jdo;
 
+import java.util.List;
+
 /**
  * @author higa
  * 
@@ -52,6 +54,18 @@ public class SampleMeta extends ModelMeta<Sample> {
      */
     public AttributeMeta aaaArray =
         new AttributeMeta(this, "aaaArray", Long[].class, Long.class);
+
+    /**
+     * 
+     */
+    public AttributeMeta intArray =
+        new AttributeMeta(this, "intArray", int[].class, int.class);
+
+    /**
+     * 
+     */
+    public AttributeMeta aaaList =
+        new AttributeMeta(this, "aaaList", List.class, Long.class);
 
     /**
      * 

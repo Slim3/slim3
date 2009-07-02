@@ -30,9 +30,6 @@ public class AttributeComparatorTest extends TestCase {
         SampleMeta m = new SampleMeta();
         AttributeComparator comparator =
             new AttributeComparator(m.id.asc(), m.name.desc());
-        assertEquals(0, comparator.compare(null, null));
-        assertEquals(-1, comparator.compare(new Sample(), null));
-        assertEquals(1, comparator.compare(null, new Sample()));
         Sample sample = new Sample();
         sample.setId(1L);
         sample.setName("aaa");

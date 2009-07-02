@@ -15,6 +15,8 @@
  */
 package org.slim3.jdo;
 
+import java.util.List;
+
 import javax.jdo.annotations.Embedded;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -42,6 +44,42 @@ public class Sample {
 
     @Persistent
     private Long[] aaaArray;
+
+    @Persistent
+    private int[] intArray;
+
+    @Persistent
+    private List<Long> aaaList;
+
+    /**
+     * @return the aaaList
+     */
+    public List<Long> getAaaList() {
+        return aaaList;
+    }
+
+    /**
+     * @param aaaList
+     *            the aaaList to set
+     */
+    public void setAaaList(List<Long> aaaList) {
+        this.aaaList = aaaList;
+    }
+
+    /**
+     * @return the intArray
+     */
+    public int[] getIntArray() {
+        return intArray;
+    }
+
+    /**
+     * @param intArray
+     *            the intArray to set
+     */
+    public void setIntArray(int[] intArray) {
+        this.intArray = intArray;
+    }
 
     /**
      * @return the aaaArray

@@ -34,9 +34,18 @@ public interface FilterCriterion {
     String getQueryString(String parameterName);
 
     /**
-     * Returns the parameter.
+     * Returns the parameters.
      * 
-     * @return the parameter
+     * @return the parameters
      */
-    Object getParameter();
+    Object[] getParameters();
+
+    /**
+     * Determines if the model is accepted.
+     * 
+     * @param model
+     *            the model
+     * @return whether the model is accepted
+     */
+    boolean accept(Object model);
 }

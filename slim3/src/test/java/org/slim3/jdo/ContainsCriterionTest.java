@@ -15,6 +15,8 @@
  */
 package org.slim3.jdo;
 
+import java.util.Arrays;
+
 import junit.framework.TestCase;
 
 /**
@@ -23,12 +25,49 @@ import junit.framework.TestCase;
  */
 public class ContainsCriterionTest extends TestCase {
 
+    private SampleMeta m = new SampleMeta();
+
     /**
      * @throws Exception
      */
     public void testGetQueryString() throws Exception {
-        ContainsCriterion criterion =
-            new ContainsCriterion("aaaList", Long.valueOf(1));
-        assertEquals("aaaList.contains(:0)", criterion.getQueryString(":0"));
+        ContainsCriterion criterion = m.aaaArray.contains(1);
+        assertEquals("aaaArray.contains(:0)", criterion.getQueryString(":0"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testAccept() throws Exception {
+        Sample sample = new Sample();
+        sample.setAaaArray(new Long[] { 1L });
+        ContainsCriterion criterion = m.aaaArray.contains(1);
+        assertTrue(criterion.accept(sample));
+        sample.setAaaArray(new Long[] { 2L });
+        assertFalse(criterion.accept(sample));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testAcceptForPrimitiveArray() throws Exception {
+        Sample sample = new Sample();
+        sample.setIntArray(new int[] { 1 });
+        ContainsCriterion criterion = m.intArray.contains(1);
+        assertTrue(criterion.accept(sample));
+        sample.setIntArray(new int[] { 2 });
+        assertFalse(criterion.accept(sample));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testAcceptForList() throws Exception {
+        Sample sample = new Sample();
+        sample.setAaaList(Arrays.asList(1L));
+        ContainsCriterion criterion = m.aaaList.contains(1);
+        assertTrue(criterion.accept(sample));
+        sample.setAaaList(Arrays.asList(2L));
+        assertFalse(criterion.accept(sample));
     }
 }

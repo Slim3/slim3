@@ -23,11 +23,27 @@ import junit.framework.TestCase;
  */
 public class GeCriterionTest extends TestCase {
 
+    private SampleMeta m = new SampleMeta();
+
     /**
      * @throws Exception
      */
     public void testGetQueryString() throws Exception {
-        GeCriterion criterion = new GeCriterion("aaa", Long.valueOf(1));
-        assertEquals("aaa >= :0", criterion.getQueryString(":0"));
+        FilterCriterion criterion = m.id.ge(1);
+        assertEquals("id >= :0", criterion.getQueryString(":0"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testAccept() throws Exception {
+        Sample sample = new Sample();
+        sample.setId(1L);
+        FilterCriterion criterion = m.id.ge(1);
+        assertTrue(criterion.accept(sample));
+        sample.setId(2L);
+        assertTrue(criterion.accept(sample));
+        sample.setId(0L);
+        assertFalse(criterion.accept(sample));
     }
 }

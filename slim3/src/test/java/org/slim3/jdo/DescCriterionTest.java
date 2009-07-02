@@ -28,7 +28,7 @@ public class DescCriterionTest extends TestCase {
      */
     public void testGetQueryString() throws Exception {
         SampleMeta m = new SampleMeta();
-        DescCriterion criterion = new DescCriterion(m.id, "id");
+        DescCriterion criterion = m.id.desc();
         assertEquals("id desc", criterion.getQueryString());
     }
 
