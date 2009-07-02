@@ -98,7 +98,7 @@ public class WebConfig {
             value =
                 xpath
                     .evaluate(
-                        "/javaee:web-app/javaee:context-param[1]/javaee:param-value",
+                        "/javaee:web-app/javaee:context-param/javaee:param-name[text()='slim3.rootPackage']/../javaee:param-value",
                         new InputSource(inputStream));
         } finally {
             CloseableUtil.close(inputStream);
@@ -109,9 +109,10 @@ public class WebConfig {
         inputStream = new FileInputStream(file);
         try {
             value =
-                xpath.evaluate(
-                    "/j2ee:web-app/j2ee:context-param[1]/j2ee:param-value",
-                    new InputSource(inputStream));
+                xpath
+                    .evaluate(
+                        "/j2ee:web-app/j2ee:context-param/j2ee:param-name[text()='slim3.rootPackage']/../j2ee:param-value",
+                        new InputSource(inputStream));
         } finally {
             CloseableUtil.close(inputStream);
         }
