@@ -75,10 +75,10 @@ public class CopyOptions {
 
     static {
         try {
-            textConverter =
-                (Converter) ClassUtil.newInstance(
-                    "org.slim3.util.TextConverter",
-                    Thread.currentThread().getContextClassLoader());
+            ClassUtil.forName("com.google.appengine.api.datastore.Text", Thread
+                .currentThread()
+                .getContextClassLoader());
+            textConverter = new TextConverter();
         } catch (Throwable ignore) {
         }
     }

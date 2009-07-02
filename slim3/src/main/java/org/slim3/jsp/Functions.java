@@ -32,6 +32,7 @@ import org.slim3.util.LocaleLocator;
 import org.slim3.util.RequestLocator;
 import org.slim3.util.ResponseLocator;
 import org.slim3.util.StringUtil;
+import org.slim3.util.TextConverter;
 import org.slim3.util.TimeZoneLocator;
 
 /**
@@ -53,10 +54,10 @@ public final class Functions {
 
     static {
         try {
-            textConverter =
-                (Converter) ClassUtil.newInstance(
-                    "org.slim3.util.TextConverter",
-                    Thread.currentThread().getContextClassLoader());
+            ClassUtil.forName("com.google.appengine.api.datastore.Text", Thread
+                .currentThread()
+                .getContextClassLoader());
+            textConverter = new TextConverter();
         } catch (Throwable ignore) {
         }
     }
