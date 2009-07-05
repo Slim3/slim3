@@ -17,6 +17,7 @@ package org.slim3.jsp;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import junit.framework.TestCase;
@@ -243,7 +244,7 @@ public class FunctionsTest extends TestCase {
     /**
      * @throws Exception
      */
-    public void testErrorStyle() throws Exception {
+    public void testErrorClass() throws Exception {
         Map<String, String> errors = new HashMap<String, String>();
         errors.put("aaa", "Aaa is required.");
         request.setAttribute(ControllerConstants.ERRORS_KEY, errors);
@@ -253,8 +254,27 @@ public class FunctionsTest extends TestCase {
     /**
      * @throws Exception
      */
-    public void testErrorStyleForNoError() throws Exception {
+    public void testErrorClassForNoError() throws Exception {
         assertEquals("", Functions.errorClass("aaa", "error"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testErrors() throws Exception {
+        Map<String, String> errors = new HashMap<String, String>();
+        errors.put("aaa", "Aaa is required.");
+        request.setAttribute(ControllerConstants.ERRORS_KEY, errors);
+        Iterator<String> iterator = Functions.errors();
+        assertNotNull(iterator);
+        assertEquals("Aaa is required.", iterator.next());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testErrorsForNoErrors() throws Exception {
+        assertNull(Functions.errors());
     }
 
     /**

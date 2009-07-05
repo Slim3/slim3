@@ -74,7 +74,7 @@ public class MockHttpServletRequest implements HttpServletRequest {
     /**
      * The method.
      */
-    protected String method = "POST";
+    protected String method = "get";
 
     /**
      * The path information.

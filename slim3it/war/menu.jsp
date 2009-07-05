@@ -3,6 +3,7 @@
 <%@taglib prefix="f" uri="http://www.slim3.org/functions"%>
 <div id="menu">
 <ul>
+<li><a href="${f:url('/add/')}">Add</a></li>
 <li><a href="${f:url('/blog/')}">Blog</a></li>
 <li><a href="${f:url('/flexblog/')}">Blog with Flex</a></li>
 <li><a href="${f:url('/locale/')}">Locale</a></li>

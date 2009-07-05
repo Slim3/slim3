@@ -85,6 +85,18 @@
   
   <function>
     <description>
+      Returns the errors iterator.
+    </description>
+    <name>errors</name>
+    <function-class>org.slim3.jsp.Functions</function-class>
+    <function-signature>java.util.Iterator errors()</function-signature>
+    <example>
+      &lt;c:forEach var="e" items="${f:errors()}"&gt;
+    </example>
+  </function>
+  
+  <function>
+    <description>
       Represents the text tag.
     </description>
     <name>text</name>

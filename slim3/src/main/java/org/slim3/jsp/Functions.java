@@ -17,6 +17,7 @@ package org.slim3.jsp;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -190,6 +191,23 @@ public final class Functions {
             return styleClass;
         }
         return "";
+    }
+
+    /**
+     * Returns errors iterator.
+     * 
+     * @return errors iterator
+     */
+    @SuppressWarnings("unchecked")
+    public static Iterator<String> errors() {
+        HttpServletRequest request = RequestLocator.get();
+        Map<String, String> errors =
+            (Map<String, String>) request
+                .getAttribute(ControllerConstants.ERRORS_KEY);
+        if (errors != null) {
+            return errors.values().iterator();
+        }
+        return null;
     }
 
     /**

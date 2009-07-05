@@ -17,9 +17,6 @@ package org.slim3.tester;
 
 import java.util.Enumeration;
 
-import org.slim3.tester.MockHttpServletRequest;
-import org.slim3.tester.MockServletContext;
-
 import junit.framework.TestCase;
 
 /**
@@ -30,8 +27,8 @@ public class MockHttpServletRequestTest extends TestCase {
 
     private MockServletContext servletContext = new MockServletContext();
 
-    private MockHttpServletRequest request = new MockHttpServletRequest(
-            servletContext);
+    private MockHttpServletRequest request =
+        new MockHttpServletRequest(servletContext);
 
     /**
      * @throws Exception
@@ -133,5 +130,13 @@ public class MockHttpServletRequestTest extends TestCase {
         request.setDateHeader("aaa", 1000);
         System.out.println(request.getHeader("aaa"));
         assertEquals(1000, request.getDateHeader("aaa"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testDefaultMethod() throws Exception {
+        assertEquals("get", request.getMethod());
     }
 }
