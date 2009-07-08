@@ -63,6 +63,8 @@ public class ModelTestCaseGenerator implements Generator {
             "        %1$s %2$s = new %1$s();",
             modelDesc.getSimpleName(),
             StringUtil.decapitalize(modelDesc.getSimpleName()));
+        p.println("        assertNotNull(%s);", StringUtil
+            .decapitalize(modelDesc.getSimpleName()));
         p.println("    }");
         p.println("}");
     }

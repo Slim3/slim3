@@ -60,9 +60,11 @@ public class DaoTestCaseGenerator implements Generator {
         p.println();
         p.println("    public void test() throws Exception {");
         p.println(
-            "        %1$s %2$s = new %1$s(pm);",
+            "        %1$s %2$s = new %1$s();",
             daoDesc.getSimpleName(),
             StringUtil.decapitalize(daoDesc.getSimpleName()));
+        p.println("        assertNotNull(%s);", StringUtil.decapitalize(daoDesc
+            .getSimpleName()));
         p.println("    }");
         p.println("}");
     }
