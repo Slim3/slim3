@@ -157,7 +157,9 @@ public class SelectQuery<M> {
     @SuppressWarnings("unchecked")
     public List<M> getResultList() {
         Query query = newQuery();
-        return (List<M>) query.executeWithArray(getParameters());
+        List<M> ret = (List<M>) query.executeWithArray(getParameters());
+        query.closeAll();
+        return ret;
     }
 
     /**
@@ -170,7 +172,9 @@ public class SelectQuery<M> {
     public M getSingleResult() {
         Query query = newQuery();
         query.setUnique(true);
-        return (M) query.executeWithArray(getParameters());
+        M ret = (M) query.executeWithArray(getParameters());
+        query.closeAll();
+        return ret;
     }
 
     /**
