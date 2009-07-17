@@ -15,6 +15,9 @@
  */
 package org.slim3.tester;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.google.apphosting.api.ApiProxy;
 
 /**
@@ -38,7 +41,7 @@ class TestEnvironment implements ApiProxy.Environment {
     }
 
     public String getRequestNamespace() {
-        return "gmail.com";
+        return "";
     }
 
     public String getDefaultNamespace() {
@@ -59,5 +62,9 @@ class TestEnvironment implements ApiProxy.Environment {
 
     public boolean isAdmin() {
         return false;
+    }
+
+    public Map<String, Object> getAttributes() {
+        return new HashMap<String, Object>();
     }
 }

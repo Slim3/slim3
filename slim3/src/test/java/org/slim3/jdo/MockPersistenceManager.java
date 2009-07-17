@@ -503,4 +503,13 @@ public class MockPersistenceManager implements PersistenceManager {
     @Override
     public void setUserObject(Object o) {
     }
+
+    @Override
+    public Integer getQueryTimeoutMillis() {
+        return null;
+    }
+
+    @Override
+    public void setQueryTimeoutMillis(Integer arg0) {
+    }
 }
