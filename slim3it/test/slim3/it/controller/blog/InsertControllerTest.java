@@ -20,7 +20,8 @@ public class InsertControllerTest extends JDOControllerTestCase {
         assertNotNull(controller);
         assertTrue(isRedirect());
         assertEquals("/blog/", getNextPath());
-        assertEquals(1, count(Blog.class));
+        assertNotNull(from(Blog.class).getSingleResult());
+        // assertEquals(1, count(Blog.class));
     }
 
     public void testValidate() throws Exception {
