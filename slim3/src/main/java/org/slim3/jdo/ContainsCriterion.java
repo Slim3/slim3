@@ -64,7 +64,7 @@ public class ContainsCriterion extends AbstractCriterion implements
 
     @Override
     public boolean accept(Object model) {
-        Object value = attributeMeta.getPropertyDesc().getValue(model);
+        Object value = attributeMeta.getValue(model);
         if (value == null) {
             return false;
         }

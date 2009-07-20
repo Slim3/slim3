@@ -270,4 +270,13 @@ public class AttributeMetaTest extends TestCase {
         assertNotNull(criterion);
         assertEquals("hoge.name desc", criterion.getQueryString());
     }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetValue() throws Exception {
+        Sample sample = new Sample();
+        sample.setId(1L);
+        assertEquals(1L, m.id.getValue(sample));
+    }
 }

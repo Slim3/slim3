@@ -47,8 +47,8 @@ public class DescCriterion extends AbstractCriterion implements OrderCriterion {
                     + attributeMeta.modelMeta.getModelClass().getName()
                     + ").");
         }
-        Object v1 = attributeMeta.getPropertyDesc().getValue(o1);
-        Object v2 = attributeMeta.getPropertyDesc().getValue(o2);
+        Object v1 = attributeMeta.getValue(o1);
+        Object v2 = attributeMeta.getValue(o2);
         if (v1 == null && v2 == null) {
             return 0;
         }

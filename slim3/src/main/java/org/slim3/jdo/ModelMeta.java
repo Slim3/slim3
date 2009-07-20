@@ -70,7 +70,6 @@ public class ModelMeta<T> {
             throw new NullPointerException("The modelClass parameter is null.");
         }
         this.modelClass = modelClass;
-        beanDesc = BeanUtil.getBeanDesc(modelClass);
         this.attributeName = attributeName;
     }
 
@@ -88,7 +87,11 @@ public class ModelMeta<T> {
      * 
      * @return the bean descriptor
      */
-    public BeanDesc getBeanDesc() {
+    protected BeanDesc getBeanDesc() {
+        if (beanDesc != null) {
+            return beanDesc;
+        }
+        beanDesc = BeanUtil.getBeanDesc(modelClass);
         return beanDesc;
     }
 }

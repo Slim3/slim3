@@ -88,12 +88,10 @@ public class AttributeMeta {
      * @throws NullPointerException
      *             if the modelMeta parameter is null or if the name parameter
      *             is null or if the attributeClass parameter is null
-     * @throws IllegalArgumentException
-     *             if the property is not found
      */
     public AttributeMeta(ModelMeta<?> modelMeta, String name,
             Class<?> attributeClass, Class<?> elementClass)
-            throws NullPointerException, IllegalArgumentException {
+            throws NullPointerException {
         if (modelMeta == null) {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
@@ -112,14 +110,6 @@ public class AttributeMeta {
             fullName = name;
         } else {
             fullName = modelMeta.attributeName + "." + name;
-        }
-        propertyDesc = modelMeta.getBeanDesc().getPropertyDesc(name);
-        if (propertyDesc == null) {
-            throw new IllegalArgumentException("The property("
-                + name
-                + ") of model("
-                + modelMeta.getModelClass().getName()
-                + ") is not found.");
         }
     }
 
@@ -231,12 +221,26 @@ public class AttributeMeta {
     }
 
     /**
-     * Returns the property descriptor.
+     * Returns the property value.
      * 
-     * @return the property descriptor
+     * @param model
+     *            the model
+     * @return the property value
+     * @throws IllegalArgumentException
+     *             if the property is not found
      */
-    public PropertyDesc getPropertyDesc() {
-        return propertyDesc;
+    protected Object getValue(Object model) throws IllegalArgumentException {
+        if (propertyDesc == null) {
+            propertyDesc = modelMeta.getBeanDesc().getPropertyDesc(name);
+        }
+        if (propertyDesc == null) {
+            throw new IllegalArgumentException("The property("
+                + name
+                + ") of model("
+                + modelMeta.getModelClass().getName()
+                + ") is not found.");
+        }
+        return propertyDesc.getValue(model);
     }
 
     /**

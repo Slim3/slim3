@@ -60,7 +60,7 @@ public class LtCriterion extends AbstractCriterion implements FilterCriterion {
 
     @Override
     public boolean accept(Object model) {
-        Object value = attributeMeta.getPropertyDesc().getValue(model);
+        Object value = attributeMeta.getValue(model);
         if (value == null) {
             return false;
         }
