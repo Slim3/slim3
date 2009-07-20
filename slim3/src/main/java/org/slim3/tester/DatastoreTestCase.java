@@ -29,28 +29,25 @@ public abstract class DatastoreTestCase extends TestCase {
     /**
      * The tester for local data store.
      */
-    protected DatastoreTester datastoreTester = new DatastoreTester();
+    protected DatastoreTester datastoreTester;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        datastoreTester.setUp();
+        try {
+            Class
+                .forName("com.google.appengine.tools.development.ApiProxyLocal");
+            datastoreTester = new DatastoreTester();
+            datastoreTester.setUp();
+        } catch (Throwable ignore) {
+        }
     }
 
     @Override
     protected void tearDown() throws Exception {
-        datastoreTester.tearDown();
+        if (datastoreTester != null) {
+            datastoreTester.tearDown();
+        }
         super.tearDown();
-    }
-
-    /**
-     * Counts the number of the model.
-     * 
-     * @param modelClass
-     *            the model class
-     * @return the number of the model
-     */
-    protected int count(Class<?> modelClass) {
-        return datastoreTester.count(modelClass);
     }
 }

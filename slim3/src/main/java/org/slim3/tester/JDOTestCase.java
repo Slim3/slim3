@@ -115,4 +115,15 @@ public abstract class JDOTestCase extends DatastoreTestCase {
         pm.deletePersistent(model);
         tx.commit();
     }
+
+    /**
+     * Counts the number of the model.
+     * 
+     * @param modelClass
+     *            the model class
+     * @return the number of the model
+     */
+    protected int count(Class<?> modelClass) {
+        return from(modelClass).getResultList().size();
+    }
 }

@@ -16,10 +16,6 @@
 package org.slim3.tester;
 
 import junit.framework.TestCase;
-import slim3.it.model.Blog;
-
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
 
 /**
  * @author higa
@@ -27,26 +23,10 @@ import com.google.appengine.api.datastore.Entity;
  */
 public class DatastoreTesterTest extends TestCase {
 
-    private DatastoreTester tester = new DatastoreTester();
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        tester.setUp();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        tester.tearDown();
-        super.tearDown();
-    }
-
     /**
      * @throws Exception
      */
-    public void testCount() throws Exception {
-        assertEquals(0, tester.count(Blog.class));
-        DatastoreServiceFactory.getDatastoreService().put(new Entity("Blog"));
-        assertEquals(1, tester.count(Blog.class));
+    public void testNew() throws Exception {
+        assertNotNull(new DatastoreTester());
     }
 }

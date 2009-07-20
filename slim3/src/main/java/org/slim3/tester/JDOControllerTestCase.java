@@ -35,7 +35,7 @@ public abstract class JDOControllerTestCase extends ControllerTestCase {
     /**
      * The tester for local data store.
      */
-    protected DatastoreTester datastoreTester = new DatastoreTester();
+    protected DatastoreTester datastoreTester;
 
     /**
      * The persistence manager.
@@ -54,7 +54,13 @@ public abstract class JDOControllerTestCase extends ControllerTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        datastoreTester.setUp();
+        try {
+            Class
+                .forName("com.google.appengine.tools.development.ApiProxyLocal");
+            datastoreTester = new DatastoreTester();
+            datastoreTester.setUp();
+        } catch (Throwable ignore) {
+        }
         pm = PMF.get().getPersistenceManager();
         CurrentPersistenceManager.set(pm);
         tx = pm.currentTransaction();
@@ -73,7 +79,9 @@ public abstract class JDOControllerTestCase extends ControllerTestCase {
         pm.close();
         pm = null;
         CurrentPersistenceManager.set(null);
-        datastoreTester.tearDown();
+        if (datastoreTester != null) {
+            datastoreTester.tearDown();
+        }
         super.tearDown();
     }
 
@@ -139,6 +147,6 @@ public abstract class JDOControllerTestCase extends ControllerTestCase {
      * @return the number of the model
      */
     protected int count(Class<?> modelClass) {
-        return datastoreTester.count(modelClass);
+        return from(modelClass).getResultList().size();
     }
 }
