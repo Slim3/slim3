@@ -38,11 +38,6 @@ public class CopyOptions {
     protected static final String[] EMPTY_STRINGS = new String[0];
 
     /**
-     * The text converter.
-     */
-    protected static Converter textConverter;
-
-    /**
      * The included property names.
      */
     protected String[] includedPropertyNames = EMPTY_STRINGS;
@@ -72,16 +67,6 @@ public class CopyOptions {
      * The converters that are not bound to any properties.
      */
     protected List<Converter> converters = new ArrayList<Converter>();
-
-    static {
-        try {
-            ClassUtil.forName("com.google.appengine.api.datastore.Text", Thread
-                .currentThread()
-                .getContextClassLoader());
-            textConverter = new TextConverter();
-        } catch (Throwable ignore) {
-        }
-    }
 
     /**
      * Specifies the included property names.
@@ -340,9 +325,6 @@ public class CopyOptions {
                     return c;
                 }
             }
-        }
-        if (textConverter != null && textConverter.isTarget(targetClass)) {
-            return textConverter;
         }
         return null;
     }

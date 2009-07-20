@@ -19,8 +19,6 @@ import java.util.Date;
 
 import junit.framework.TestCase;
 
-import com.google.appengine.api.datastore.Text;
-
 /**
  * @author higa
  */
@@ -135,15 +133,6 @@ public class CopyOptionsTest extends TestCase {
     /**
      * @throws Exception
      */
-    public void testFindConvererForText() throws Exception {
-        Converter converter = options.findConverter(Text.class);
-        assertNotNull(converter);
-        assertEquals(TextConverter.class, converter.getClass());
-    }
-
-    /**
-     * @throws Exception
-     */
     public void testConvertObjectForConverterSpecifiedByProperty()
             throws Exception {
         Object value =
@@ -209,15 +198,6 @@ public class CopyOptionsTest extends TestCase {
     /**
      * @throws Exception
      */
-    public void testConvertObjectForText() throws Exception {
-        Object value =
-            options.convertObject(new Text("111"), "aaa", String.class);
-        assertEquals("111", value);
-    }
-
-    /**
-     * @throws Exception
-     */
     public void testConvertStringForConverterSpecifiedByProperty()
             throws Exception {
         Object value =
@@ -260,14 +240,6 @@ public class CopyOptionsTest extends TestCase {
                 "aaa",
                 Long.class);
         assertEquals(new Long(111), value);
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testConvertStringForText() throws Exception {
-        Object value = options.convertString("111", "aaa", Text.class);
-        assertEquals(new Text("111"), value);
     }
 
     /**

@@ -9,8 +9,6 @@ import slim3.it.dao.UploadDao;
 import slim3.it.model.Upload;
 import slim3.it.model.UploadData;
 
-import com.google.appengine.api.datastore.Blob;
-
 public class UploadController extends Controller {
 
     private static final int SIZE = 9000000;
@@ -28,7 +26,7 @@ public class UploadController extends Controller {
             byte[][] bytesArray = ByteUtil.split(bytes, SIZE);
             for (byte[] data : bytesArray) {
                 UploadData uploadData = new UploadData();
-                uploadData.setBlob(new Blob(data));
+                uploadData.setBytes(data);
                 upload.getDataList().add(uploadData);
             }
             dao.makePersistentInTx(upload);

@@ -25,7 +25,7 @@ public class UploadControllerTest extends JDOControllerTestCase {
         assertNotNull(dataList);
         assertEquals(1, dataList.size());
         UploadData uploadData = dataList.get(0);
-        byte[] bytes = uploadData.getBlob().getBytes();
+        byte[] bytes = uploadData.getBytes();
         assertEquals(1, bytes.length);
         assertEquals(1, bytes[0]);
     }

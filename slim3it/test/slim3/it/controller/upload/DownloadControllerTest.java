@@ -5,14 +5,12 @@ import org.slim3.tester.JDOControllerTestCase;
 import slim3.it.model.Upload;
 import slim3.it.model.UploadData;
 
-import com.google.appengine.api.datastore.Blob;
-
 public class DownloadControllerTest extends JDOControllerTestCase {
 
     public void testRun() throws Exception {
         Upload upload = new Upload();
         UploadData uploadData = new UploadData();
-        uploadData.setBlob(new Blob(new byte[] { 1 }));
+        uploadData.setBytes(new byte[] { 1 });
         upload.getDataList().add(uploadData);
         makePersistentInTx(upload);
         param("key", upload.getKey());

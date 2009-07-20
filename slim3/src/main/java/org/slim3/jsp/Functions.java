@@ -26,14 +26,11 @@ import java.util.TimeZone;
 import javax.servlet.http.HttpServletRequest;
 
 import org.slim3.controller.ControllerConstants;
-import org.slim3.util.ClassUtil;
-import org.slim3.util.Converter;
 import org.slim3.util.HtmlUtil;
 import org.slim3.util.LocaleLocator;
 import org.slim3.util.RequestLocator;
 import org.slim3.util.ResponseLocator;
 import org.slim3.util.StringUtil;
-import org.slim3.util.TextConverter;
 import org.slim3.util.TimeZoneLocator;
 
 /**
@@ -50,18 +47,6 @@ public final class Functions {
     private static String ARRAY_SUFFIX = "Array";
 
     private static List<String> EMPTY_STRING_LIST = new ArrayList<String>(0);
-
-    private static Converter textConverter;
-
-    static {
-        try {
-            ClassUtil.forName("com.google.appengine.api.datastore.Text", Thread
-                .currentThread()
-                .getContextClassLoader());
-            textConverter = new TextConverter();
-        } catch (Throwable ignore) {
-        }
-    }
 
     /**
      * Escapes string that could be interpreted as HTML.
@@ -100,9 +85,6 @@ public final class Functions {
             } else {
                 return Arrays.toString((Object[]) input);
             }
-        }
-        if (textConverter != null && textConverter.isTarget(input.getClass())) {
-            return HtmlUtil.escape(textConverter.getAsString(input));
         }
         return input.toString();
     }

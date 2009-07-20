@@ -48,15 +48,18 @@ public class UploadData implements Serializable {
     /**
      * @return the blob
      */
-    public Blob getBlob() {
-        return blob;
+    public byte[] getBytes() {
+        if (blob == null) {
+            return null;
+        }
+        return blob.getBytes();
     }
 
     /**
-     * @param blob
-     *            the blob to set
+     * @param bytes
+     *            the array of bytes
      */
-    public void setBlob(Blob blob) {
-        this.blob = blob;
+    public void setBytes(byte[] bytes) {
+        this.blob = new Blob(bytes);
     }
 }

@@ -21,7 +21,7 @@ public class DownloadController extends Controller {
         byte[][] bytesArray = new byte[dataList.size()][0];
         for (int i = 0; i < dataList.size(); i++) {
             UploadData data = dataList.get(i);
-            bytesArray[i] = data.getBlob().getBytes();
+            bytesArray[i] = data.getBytes();
         }
         byte[] bytes = ByteUtil.join(bytesArray);
         download(upload.getFileName(), bytes);

@@ -29,8 +29,6 @@ import org.slim3.tester.MockServletContext;
 import org.slim3.util.RequestLocator;
 import org.slim3.util.ResponseLocator;
 
-import com.google.appengine.api.datastore.Text;
-
 /**
  * @author higa
  * 
@@ -149,13 +147,6 @@ public class FunctionsTest extends TestCase {
         String s = Functions.h(1.123);
         System.out.println(s);
         assertNotNull(s);
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testHForText() throws Exception {
-        assertEquals("&nbsp;", Functions.h(new Text(" ")));
     }
 
     /**
