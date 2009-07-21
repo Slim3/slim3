@@ -37,8 +37,6 @@ public final class PropertyDesc {
 
     private Method writeMethod;
 
-    private ParameterizedClassDesc parameterizedClassDesc;
-
     /**
      * Constructor.
      * 
@@ -116,11 +114,6 @@ public final class PropertyDesc {
 
     void setReadMethod(Method readMethod) {
         this.readMethod = readMethod;
-        if (parameterizedClassDesc == null) {
-            parameterizedClassDesc =
-                ParameterizedClassDesc
-                    .create(readMethod.getGenericReturnType());
-        }
     }
 
     /**
@@ -143,11 +136,6 @@ public final class PropertyDesc {
 
     void setWriteMethod(Method writeMethod) {
         this.writeMethod = writeMethod;
-        if (parameterizedClassDesc == null) {
-            parameterizedClassDesc =
-                ParameterizedClassDesc.create(writeMethod
-                    .getGenericParameterTypes()[0]);
-        }
     }
 
     /**
@@ -216,14 +204,5 @@ public final class PropertyDesc {
                 + ") is a failure. Error message: "
                 + cause.getMessage(), cause);
         }
-    }
-
-    /**
-     * Returns the parameterized class descriptor.
-     * 
-     * @return the parameterized class descriptor
-     */
-    public ParameterizedClassDesc getParameterizedClassDesc() {
-        return parameterizedClassDesc;
     }
 }

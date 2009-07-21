@@ -20,7 +20,6 @@ import java.lang.reflect.Method;
 import junit.framework.TestCase;
 
 import org.slim3.exception.WrapRuntimeException;
-import org.slim3.util.PropertyDesc;
 
 /**
  * @author higa
@@ -56,7 +55,6 @@ public class PropertyDescTest extends TestCase {
         assertSame(m, pd.getReadMethod());
         assertTrue(pd.isReadable());
         assertFalse(pd.isWritable());
-        assertNotNull(pd.getParameterizedClassDesc());
     }
 
     /**
@@ -70,7 +68,6 @@ public class PropertyDescTest extends TestCase {
         assertSame(m, pd.getWriteMethod());
         assertFalse(pd.isReadable());
         assertTrue(pd.isWritable());
-        assertNotNull(pd.getParameterizedClassDesc());
     }
 
     /**
