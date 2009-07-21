@@ -271,13 +271,8 @@ public class ControllerTest extends TestCase {
      * @throws Exception
      * 
      */
-    public void testKeyForKeyNotFound() throws Exception {
-        try {
-            controller.key();
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
+    public void testKeyForKeyIsNull() throws Exception {
+        assertNull(controller.key());
     }
 
     /**
@@ -286,20 +281,15 @@ public class ControllerTest extends TestCase {
      */
     public void testVersion() throws Exception {
         request.setAttribute("version", "111");
-        assertEquals(111, controller.version());
+        assertEquals(Long.valueOf(111), controller.version());
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testVersionForVersionNotFound() throws Exception {
-        try {
-            controller.version();
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
+    public void testVersionForVersionIsNull() throws Exception {
+        assertNull(controller.version());
     }
 
     /**

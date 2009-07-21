@@ -419,12 +419,7 @@ public abstract class Controller {
      * @return the key attribute value
      */
     protected String key() {
-        String key = asString("key");
-        if (key == null) {
-            throw new IllegalStateException(
-                "The key attribute value is not found.");
-        }
-        return key;
+        return asString("key");
     }
 
     /**
@@ -432,13 +427,8 @@ public abstract class Controller {
      * 
      * @return the version attribute value
      */
-    protected long version() {
-        Long version = asLong("version");
-        if (version == null) {
-            throw new IllegalStateException(
-                "The version attribute value is not found.");
-        }
-        return version.longValue();
+    protected Long version() {
+        return asLong("version");
     }
 
     /**
