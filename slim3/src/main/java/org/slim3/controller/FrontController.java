@@ -16,6 +16,8 @@
 package org.slim3.controller;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.Enumeration;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.logging.Level;
@@ -35,6 +37,7 @@ import javax.servlet.http.HttpSession;
 
 import org.slim3.controller.upload.FileUpload;
 import org.slim3.controller.validator.Errors;
+import org.slim3.exception.WrapRuntimeException;
 import org.slim3.util.ApplicationMessage;
 import org.slim3.util.ClassUtil;
 import org.slim3.util.LocaleLocator;
@@ -97,12 +100,39 @@ public class FrontController implements Filter {
     }
 
     public void init(FilterConfig config) throws ServletException {
+        checkDuplicateClasses();
         initServletContext(config);
         initCharset();
         initBundleName();
         initDefaultLocale();
         initDefaultTimeZone();
         initRootPackageName();
+    }
+
+    /**
+     * Checks if multiple front controllers are registered in the classpath. If
+     * so, {@link IllegalStateException} is thrown.
+     * 
+     * @throws IllegalStateException
+     *             if multiple front controllers are registered in the classpath
+     */
+    protected void checkDuplicateClasses() throws IllegalStateException {
+        try {
+            Enumeration<URL> resources =
+                Thread.currentThread().getContextClassLoader().getResources(
+                    getClass().getName().replace('.', '/') + ".class");
+            int count = 0;
+            while (resources.hasMoreElements()) {
+                resources.nextElement();
+                count++;
+            }
+            if (count > 1) {
+                throw new IllegalStateException(
+                    "slim3-xxx.jar files are duplicate in the classpath.");
+            }
+        } catch (IOException e) {
+            throw new WrapRuntimeException(e);
+        }
     }
 
     /**
