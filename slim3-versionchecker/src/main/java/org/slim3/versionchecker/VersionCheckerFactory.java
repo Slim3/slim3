@@ -59,7 +59,7 @@ public class VersionCheckerFactory implements AnnotationProcessorFactory {
         private final AnnotationProcessorEnvironment env;
 
         private static final String message =
-            "If your IDE is Eclipse, you can specify java version using -vm boot option.";
+            "In order to use Slim3 JDO, IDE requires greater than or equal to JDK 1.6. If your IDE is Eclipse, you can specify java version using -vm boot option.";
 
         private static Double version;
 
