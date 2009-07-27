@@ -13,7 +13,7 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.controller;
+package org.slim3.jdo;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -21,13 +21,14 @@ import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Transaction;
+import javax.servlet.Filter;
 import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.slim3.jdo.CurrentPersistenceManager;
-import org.slim3.jdo.PMF;
+import org.slim3.controller.FrontController;
 
 /**
  * {@link FrontController} for JDO.
@@ -36,10 +37,18 @@ import org.slim3.jdo.PMF;
  * @since 3.0
  * 
  */
-public class JDOFrontController extends FrontController {
+public class JDOFilter implements Filter {
 
     private static final Logger logger =
-        Logger.getLogger(JDOFrontController.class.getName());
+        Logger.getLogger(JDOFilter.class.getName());
+
+    @Override
+    public void init(FilterConfig arg0) throws ServletException {
+    }
+
+    @Override
+    public void destroy() {
+    }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response,
@@ -49,7 +58,7 @@ public class JDOFrontController extends FrontController {
             pm = PMF.get().getPersistenceManager();
             CurrentPersistenceManager.set(pm);
             try {
-                super.doFilter(request, response, chain);
+                chain.doFilter(request, response);
             } finally {
                 try {
                     Transaction tx = pm.currentTransaction();
@@ -67,7 +76,7 @@ public class JDOFrontController extends FrontController {
                 CurrentPersistenceManager.set(null);
             }
         } else {
-            super.doFilter(request, response, chain);
+            chain.doFilter(request, response);
         }
     }
 }

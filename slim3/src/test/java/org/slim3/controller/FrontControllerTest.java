@@ -51,11 +51,7 @@ public class FrontControllerTest extends ControllerTestCase {
             ControllerConstants.DEFAULT_LOCALIZATION_CONTEXT,
             frontController.bundleName);
         assertNotNull(ServletContextLocator.get());
-        assertFalse(frontController.hotReloading);
         assertEquals(ROOT_PACKAGE, frontController.rootPackageName);
-        String[] names = frontController.staticPackageNames;
-        assertEquals(1, names.length);
-        assertEquals("model", names[0]);
     }
 
     /**

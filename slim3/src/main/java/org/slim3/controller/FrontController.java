@@ -37,7 +37,6 @@ import org.slim3.controller.upload.FileUpload;
 import org.slim3.controller.validator.Errors;
 import org.slim3.util.ApplicationMessage;
 import org.slim3.util.ClassUtil;
-import org.slim3.util.Cleaner;
 import org.slim3.util.LocaleLocator;
 import org.slim3.util.LocaleUtil;
 import org.slim3.util.RequestLocator;
@@ -87,19 +86,9 @@ public class FrontController implements Filter {
     protected ServletContext servletContext;
 
     /**
-     * Whether this filter supports hot reloading.
-     */
-    protected boolean hotReloading = false;
-
-    /**
      * The root package name.
      */
     protected String rootPackageName;
-
-    /**
-     * The static package names.
-     */
-    protected String[] staticPackageNames;
 
     /**
      * Constructor.
@@ -113,9 +102,7 @@ public class FrontController implements Filter {
         initBundleName();
         initDefaultLocale();
         initDefaultTimeZone();
-        initHotReloading();
         initRootPackageName();
-        initStaticPackageNames();
     }
 
     /**
@@ -174,31 +161,6 @@ public class FrontController implements Filter {
     }
 
     /**
-     * Initializes the HOT reloading setting.
-     */
-    protected void initHotReloading() {
-        String hotReloadingStr =
-            System.getProperty(ControllerConstants.HOT_RELOADING_KEY);
-        if (!StringUtil.isEmpty(hotReloadingStr)) {
-            hotReloading = "true".equalsIgnoreCase(hotReloadingStr);
-        } else {
-            boolean runningOnDevserver =
-                servletContext.getServerInfo().indexOf("Development") >= 0;
-            if (runningOnDevserver) {
-                hotReloading = true;
-            } else {
-                hotReloading = false;
-            }
-        }
-        if (hotReloading) {
-            System.setSecurityManager(null);
-        }
-        if (logger.isLoggable(Level.INFO)) {
-            logger.log(Level.INFO, "Slim3 hot reloading:" + hotReloading);
-        }
-    }
-
-    /**
      * Initializes the root package name.
      */
     protected void initRootPackageName() {
@@ -206,54 +168,13 @@ public class FrontController implements Filter {
             servletContext
                 .getInitParameter(ControllerConstants.ROOT_PACKAGE_KEY);
         if (StringUtil.isEmpty(rootPackageName)) {
-            String controllerPackageName =
-                System.getProperty(ControllerConstants.CONTROLLER_PACKAGE_KEY);
-            if (controllerPackageName != null) {
-                String s = controllerPackageName;
-                int pos = controllerPackageName.lastIndexOf('.');
-                if (pos > 0) {
-                    s = s.substring(0, pos);
-                }
-                throw new IllegalStateException("Set "
-                    + s
-                    + " to context-param("
-                    + ControllerConstants.ROOT_PACKAGE_KEY
-                    + ") in web.xml instead of system property("
-                    + ControllerConstants.CONTROLLER_PACKAGE_KEY
-                    + ").");
-            }
             throw new IllegalStateException("The context-param("
                 + ControllerConstants.ROOT_PACKAGE_KEY
                 + ") is not found in web.xml.");
         }
     }
 
-    /**
-     * Initializes the static package names.
-     */
-    protected void initStaticPackageNames() {
-        String s =
-            servletContext
-                .getInitParameter(ControllerConstants.STATIC_PACKAGES_KEY);
-        if (StringUtil.isEmpty(s)) {
-            throw new IllegalStateException("The context-param("
-                + ControllerConstants.STATIC_PACKAGES_KEY
-                + ") is not found in web.xml.");
-        }
-        staticPackageNames = StringUtil.split(s, ", ");
-        for (String name : staticPackageNames) {
-            if (name.equals(ControllerConstants.MODEL_PACKAGE)) {
-                return;
-            }
-        }
-        throw new IllegalStateException(
-            "The model package is not found in slim3.staticPackages("
-                + s
-                + ").");
-    }
-
     public void destroy() {
-        Cleaner.cleanAll();
         ServletContextLocator.set(null);
     }
 
@@ -291,20 +212,9 @@ public class FrontController implements Filter {
         TimeZone previousTimeZone = TimeZoneLocator.get();
         TimeZoneLocator.set(processTimeZone(request));
         ApplicationMessage.setBundle(bundleName, LocaleLocator.get());
-        ClassLoader previousLoader =
-            Thread.currentThread().getContextClassLoader();
-        if (hotReloading
-            && !(previousLoader instanceof HotReloadingClassLoader)) {
-            Thread.currentThread().setContextClassLoader(
-                new HotReloadingClassLoader(
-                    previousLoader,
-                    rootPackageName,
-                    staticPackageNames));
-        }
         try {
             doFilterInternal(request, response, chain);
         } finally {
-            Thread.currentThread().setContextClassLoader(previousLoader);
             ApplicationMessage.clearBundle();
             TimeZoneLocator.set(previousTimeZone);
             LocaleLocator.set(previousLocale);
@@ -338,17 +248,7 @@ public class FrontController implements Filter {
         if (controller == null) {
             chain.doFilter(request, response);
         } else {
-            if (hotReloading) {
-                synchronized (this) {
-                    try {
-                        processController(request, response, controller);
-                    } finally {
-                        Cleaner.cleanAll();
-                    }
-                }
-            } else {
-                processController(request, response, controller);
-            }
+            processController(request, response, controller);
         }
     }
 

@@ -26,7 +26,7 @@ import org.slim3.controller.upload.FileItemStream;
 import org.slim3.controller.upload.FileUpload;
 import org.slim3.controller.upload.Streams;
 import org.slim3.util.ArrayUtil;
-import org.slim3.util.RuntimeExceptionUtil;
+import org.slim3.util.ThrowableUtil;
 
 /**
  * {@link RequestHandler} for multipart request.
@@ -91,7 +91,7 @@ public class MultipartRequestHandler extends RequestHandler {
                 }
             }
         } catch (Exception e) {
-            RuntimeExceptionUtil.wrapAndThrow(e);
+            ThrowableUtil.wrapAndThrow(e);
         }
     }
 }

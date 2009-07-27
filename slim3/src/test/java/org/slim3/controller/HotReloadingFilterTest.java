@@ -23,36 +23,33 @@ import org.slim3.tester.MockServletContext;
  * @author higa
  * 
  */
-public class FrontControllerStaticPackagesTest extends TestCase {
+public class HotReloadingFilterTest extends TestCase {
+
+    private HotReloadingFilter filter = new HotReloadingFilter();
 
     /**
      * @throws Exception
      * 
      */
-    public void testNormal() throws Exception {
+    public void testRootPackage() throws Exception {
         MockServletContext servletContext = new MockServletContext();
-        FrontController frontController = new FrontController();
-        frontController.servletContext = servletContext;
+        filter.servletContext = servletContext;
         servletContext.setInitParameter(
-            ControllerConstants.STATIC_PACKAGES_KEY,
-            "model, filter");
-        frontController.initStaticPackageNames();
-        String[] names = frontController.staticPackageNames;
-        assertEquals(2, names.length);
-        assertEquals("model", names[0]);
-        assertEquals("filter", names[1]);
+            ControllerConstants.ROOT_PACKAGE_KEY,
+            "aaa");
+        filter.initRootPackageName();
+        assertEquals("aaa", filter.rootPackageName);
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testNotFound() throws Exception {
+    public void testRootPackageNotFound() throws Exception {
         MockServletContext servletContext = new MockServletContext();
-        FrontController frontController = new FrontController();
-        frontController.servletContext = servletContext;
+        filter.servletContext = servletContext;
         try {
-            frontController.initStaticPackageNames();
+            filter.initRootPackageName();
             fail();
         } catch (IllegalStateException e) {
             System.out.println(e.getMessage());
@@ -63,15 +60,30 @@ public class FrontControllerStaticPackagesTest extends TestCase {
      * @throws Exception
      * 
      */
-    public void testNotFoundForModel() throws Exception {
+    public void testStaticPackages() throws Exception {
         MockServletContext servletContext = new MockServletContext();
-        FrontController frontController = new FrontController();
-        frontController.servletContext = servletContext;
+        filter.servletContext = servletContext;
         servletContext.setInitParameter(
             ControllerConstants.STATIC_PACKAGES_KEY,
-            "filter");
+            "model, aaa");
+        filter.initStaticPackageNames();
+        assertEquals(2, filter.staticPackageNames.length);
+        assertEquals("model", filter.staticPackageNames[0]);
+        assertEquals("aaa", filter.staticPackageNames[1]);
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testStaticPackagesForModelIsNotFound() throws Exception {
+        MockServletContext servletContext = new MockServletContext();
+        filter.servletContext = servletContext;
+        servletContext.setInitParameter(
+            ControllerConstants.STATIC_PACKAGES_KEY,
+            "aaa");
         try {
-            frontController.initStaticPackageNames();
+            filter.initStaticPackageNames();
             fail();
         } catch (IllegalStateException e) {
             System.out.println(e.getMessage());

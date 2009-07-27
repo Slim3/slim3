@@ -207,7 +207,7 @@ public class DateUtilTest extends TestCase {
      */
     public void testClearDatePartForDate() throws Exception {
         java.util.Date date = new java.util.Date();
-        Calendar cal = Calendar.getInstance();
+        Calendar cal = Calendar.getInstance(TimeZoneLocator.get());
         cal.setTime(date);
         cal.set(Calendar.YEAR, 1970);
         cal.set(Calendar.MONTH, Calendar.JANUARY);
@@ -220,7 +220,7 @@ public class DateUtilTest extends TestCase {
      */
     public void testToDateAndClearDatePart() throws Exception {
         java.util.Date date = new java.util.Date();
-        Calendar cal = Calendar.getInstance();
+        Calendar cal = Calendar.getInstance(TimeZoneLocator.get());
         cal.setTime(date);
         cal.set(Calendar.YEAR, 1970);
         cal.set(Calendar.MONTH, Calendar.JANUARY);

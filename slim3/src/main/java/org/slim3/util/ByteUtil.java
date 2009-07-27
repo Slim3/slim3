@@ -22,6 +22,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamClass;
 
+import org.slim3.exception.WrapRuntimeException;
+
 /**
  * A utility class for {@link Byte}.
  * 
@@ -97,7 +99,7 @@ public final class ByteUtil {
             }
             return baos.toByteArray();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new WrapRuntimeException(e);
         }
     }
 
@@ -109,8 +111,27 @@ public final class ByteUtil {
      * @return object
      */
     public static Object toObject(byte[] bytes) {
+        return toObject(bytes, Thread.currentThread().getContextClassLoader());
+    }
+
+    /**
+     * Converts array of bytes to object.
+     * 
+     * @param bytes
+     *            array of bytes
+     * @param classLoader
+     *            the class loader
+     * @return object
+     * @throws NullPointerException
+     *             if the classLoader parameter is null
+     */
+    public static Object toObject(byte[] bytes, final ClassLoader classLoader)
+            throws NullPointerException {
         if (bytes == null) {
             return null;
+        }
+        if (classLoader == null) {
+            throw new NullPointerException("The classLoader parameter is null.");
         }
         try {
             ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
@@ -120,9 +141,7 @@ public final class ByteUtil {
                         throws IOException, ClassNotFoundException {
                     String name = desc.getName();
                     try {
-                        return Class.forName(name, false, Thread
-                            .currentThread()
-                            .getContextClassLoader());
+                        return Class.forName(name, false, classLoader);
                     } catch (ClassNotFoundException ex) {
                         return super.resolveClass(desc);
                     }
@@ -136,9 +155,9 @@ public final class ByteUtil {
             }
             return o;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new WrapRuntimeException(e);
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new WrapRuntimeException(e);
         }
     }
 

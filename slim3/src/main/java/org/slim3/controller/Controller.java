@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.slim3.controller.validator.Errors;
+import org.slim3.exception.WrapRuntimeException;
 import org.slim3.util.BigDecimalUtil;
 import org.slim3.util.BooleanUtil;
 import org.slim3.util.ByteUtil;
@@ -39,9 +40,9 @@ import org.slim3.util.FloatUtil;
 import org.slim3.util.IntegerUtil;
 import org.slim3.util.LongUtil;
 import org.slim3.util.NumberUtil;
-import org.slim3.util.RuntimeExceptionUtil;
 import org.slim3.util.ShortUtil;
 import org.slim3.util.StringUtil;
+import org.slim3.util.ThrowableUtil;
 
 /**
  * A base controller. This controller is created each request.
@@ -144,7 +145,13 @@ public abstract class Controller {
      * @return the navigation.
      */
     protected Navigation handleError(Throwable error) {
-        throw RuntimeExceptionUtil.convert(error);
+        if (error instanceof Error) {
+            throw (Error) error;
+        }
+        if (error instanceof RuntimeException) {
+            throw (RuntimeException) error;
+        }
+        throw new WrapRuntimeException(error);
     }
 
     /**
@@ -581,7 +588,7 @@ public abstract class Controller {
                 out.close();
             }
         } catch (IOException e) {
-            RuntimeExceptionUtil.wrapAndThrow(e);
+            ThrowableUtil.wrapAndThrow(e);
         }
     }
 

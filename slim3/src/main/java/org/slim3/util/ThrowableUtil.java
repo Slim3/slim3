@@ -23,41 +23,38 @@ import org.slim3.exception.WrapRuntimeException;
  * @author higa
  * @version 3.0
  */
-public final class RuntimeExceptionUtil {
+public final class ThrowableUtil {
 
     /**
-     * Converts the exception to {@link RuntimeException}.
-     * 
-     * @param exception
-     *            the exception
-     * @return {@link RuntimeException}
-     * @throws NullPointerException
-     *             if the exception parameter is null
-     */
-    public static RuntimeException convert(Throwable exception)
-            throws NullPointerException {
-        if (exception == null) {
-            throw new NullPointerException("The exception parameter is null.");
-        }
-        if (exception instanceof RuntimeException) {
-            return (RuntimeException) exception;
-        }
-        return new WrapRuntimeException(exception);
-    }
-
-    /**
-     * Wraps and throws {@link RuntimeException}.
+     * Wraps and throws the exception.
      * 
      * @param throwable
      *            the exception
+     * @throws NullPointerException
+     *             if the throwable parameter is null
+     * @throws RuntimeException
+     *             if the exception is {@link RuntimeException}
+     * @throws Error
+     *             if the exception is {@link Error}
      * @throws WrapRuntimeException
-     *             if the exception except {@link RuntimeException} has occurred
+     *             if the exception except {@link RuntimeException} and
+     *             {@link Error} occurred
      */
     public static void wrapAndThrow(Throwable throwable)
-            throws WrapRuntimeException {
-        throw convert(throwable);
+            throws NullPointerException, RuntimeException, Error,
+            WrapRuntimeException {
+        if (throwable == null) {
+            throw new NullPointerException("The throwable parameter is null.");
+        }
+        if (throwable instanceof RuntimeException) {
+            throw (RuntimeException) throwable;
+        }
+        if (throwable instanceof Error) {
+            throw (Error) throwable;
+        }
+        throw new WrapRuntimeException(throwable);
     }
 
-    private RuntimeExceptionUtil() {
+    private ThrowableUtil() {
     }
 }

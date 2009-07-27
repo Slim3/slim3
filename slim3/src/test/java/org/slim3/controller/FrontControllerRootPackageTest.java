@@ -55,25 +55,4 @@ public class FrontControllerRootPackageTest extends TestCase {
             System.out.println(e.getMessage());
         }
     }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testNotFoundForControllerPackage() throws Exception {
-        MockServletContext servletContext = new MockServletContext();
-        FrontController frontController = new FrontController();
-        frontController.servletContext = servletContext;
-        try {
-            System.setProperty(
-                ControllerConstants.CONTROLLER_PACKAGE_KEY,
-                "aaa.controller");
-            frontController.initRootPackageName();
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        } finally {
-            System.clearProperty(ControllerConstants.CONTROLLER_PACKAGE_KEY);
-        }
-    }
 }
