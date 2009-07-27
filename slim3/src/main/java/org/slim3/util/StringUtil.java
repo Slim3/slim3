@@ -104,6 +104,69 @@ public final class StringUtil {
     }
 
     /**
+     * Splits the array of bytes.
+     * 
+     * @param str
+     *            the string
+     * @param size
+     *            the piece size
+     * @return the split result.
+     * @throws NullPointerException
+     *             if the str parameter is null
+     * @throws IllegalArgumentException
+     *             if the size parameter is less than 1
+     */
+    public static String[] split(String str, int size)
+            throws NullPointerException, IllegalArgumentException {
+        if (str == null) {
+            throw new NullPointerException("The str parameter is null.");
+        }
+        if (size <= 0) {
+            throw new IllegalArgumentException(
+                "The size parameter must be more than 0.");
+        }
+        int num = str.length() / size;
+        int mod = str.length() % size;
+        String[] ret = mod > 0 ? new String[num + 1] : new String[num];
+        for (int i = 0; i < num; i++) {
+            ret[i] = str.substring(i * size, (i + 1) * size);
+        }
+        if (mod > 0) {
+            ret[num] = str.substring(num * size);
+        }
+        return ret;
+    }
+
+    /**
+     * Joins the array of strings.
+     * 
+     * @param array
+     *            the array of strings
+     * @return the joined string
+     * @throws NullPointerException
+     *             if the array parameter is null or if the array contains null
+     *             element
+     */
+    public static String join(String[] array) throws NullPointerException {
+        if (array == null) {
+            throw new NullPointerException("The array parameter is null.");
+        }
+        int count = 0;
+        for (String s : array) {
+            if (s == null) {
+                throw new NullPointerException(
+                    "The array contains null element.");
+            }
+            count += s.length();
+        }
+        StringBuilder sb = new StringBuilder(count);
+        for (String s : array) {
+            sb.append(s);
+        }
+        return sb.toString();
+    }
+
+    /**
      * Converts the object into string.
      * 
      * @param o

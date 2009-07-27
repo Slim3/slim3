@@ -15,8 +15,6 @@
  */
 package org.slim3.util;
 
-import org.slim3.util.StringUtil;
-
 import junit.framework.TestCase;
 
 /**
@@ -113,6 +111,27 @@ public class StringUtilTest extends TestCase {
         assertEquals(2, array.length);
         assertEquals("aaa", array[0]);
         assertEquals("bbb", array[1]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testSplitBySize() throws Exception {
+        String[] array = StringUtil.split("abc", 2);
+        assertEquals(2, array.length);
+        assertEquals("ab", array[0]);
+        assertEquals("c", array[1]);
+        array = StringUtil.split("abcd", 2);
+        assertEquals(2, array.length);
+        assertEquals("ab", array[0]);
+        assertEquals("cd", array[1]);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testJoin() throws Exception {
+        assertEquals("abc", StringUtil.join(new String[] { "ab", "c" }));
     }
 
     /**
