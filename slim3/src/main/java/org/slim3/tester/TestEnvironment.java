@@ -18,6 +18,8 @@ package org.slim3.tester;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slim3.util.StringUtil;
+
 import com.google.apphosting.api.ApiProxy;
 
 /**
@@ -27,44 +29,161 @@ import com.google.apphosting.api.ApiProxy;
  * @since 3.0
  * 
  */
-class TestEnvironment implements ApiProxy.Environment {
+public class TestEnvironment implements ApiProxy.Environment {
+
+    /**
+     * The application identifier.
+     */
+    protected String appId = "Unit Tests";
+
+    /**
+     * The version identifier.
+     */
+    protected String versionId = "1.0";
+
+    /**
+     * The request namespace.
+     */
+    protected String requestNamespace = "";
+
+    /**
+     * The authority domain.
+     */
+    protected String authDomain = "gmail.com";
+
+    /**
+     * The email address.
+     */
+    protected String email;
+
+    /**
+     * Whether the current user is an administrator.
+     */
+    protected boolean admin = false;
+
+    /**
+     * The environment attributes.
+     */
+    protected Map<String, Object> attributes = new HashMap<String, Object>();
+
+    /**
+     * Constructor.
+     */
+    public TestEnvironment() {
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param email
+     *            the email address
+     */
+    public TestEnvironment(String email) {
+        this(email, true);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param email
+     *            the email address
+     * @param admin
+     *            whether the current user is an administrator
+     */
+    public TestEnvironment(String email, boolean admin) {
+        setEmail(email);
+        setAdmin(admin);
+    }
 
     public String getAppId() {
-        return "Unit Tests";
+        return appId;
+    }
+
+    /**
+     * Sets the application identifier.
+     * 
+     * @param appId
+     *            the application identifier
+     */
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 
     public String getVersionId() {
-        return "1.0";
+        return versionId;
     }
 
-    public void setDefaultNamespace(String s) {
+    /**
+     * Sets the version identifier.
+     * 
+     * @param versionId
+     *            the version identifier
+     */
+    public void setVersionId(String versionId) {
+        this.versionId = versionId;
     }
 
     public String getRequestNamespace() {
-        return "";
+        return requestNamespace;
     }
 
-    public String getDefaultNamespace() {
-        return "";
+    /**
+     * Sets the request namespace.
+     * 
+     * @param requestNamespace
+     *            the request namespace
+     */
+    public void setRequestNamespace(String requestNamespace) {
+        this.requestNamespace = requestNamespace;
     }
 
     public String getAuthDomain() {
-        return "gmail.com";
+        return authDomain;
     }
 
-    public boolean isLoggedIn() {
-        return false;
+    /**
+     * Sets the authority domain.
+     * 
+     * @param authDomain
+     *            the authority domain
+     */
+    public void setAuthDomain(String authDomain) {
+        this.authDomain = authDomain;
     }
 
     public String getEmail() {
-        return "";
+        return email;
+    }
+
+    /**
+     * Sets the email address.
+     * 
+     * @param email
+     *            the email address
+     */
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public boolean isLoggedIn() {
+        return !StringUtil.isEmpty(email);
     }
 
     public boolean isAdmin() {
-        return false;
+        return admin;
+    }
+
+    /**
+     * Sets whether the current user is an administrator.
+     * 
+     * @param admin
+     *            whether the current user is an administrator
+     */
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
     }
 
     public Map<String, Object> getAttributes() {
-        return new HashMap<String, Object>();
+        return attributes;
     }
 }

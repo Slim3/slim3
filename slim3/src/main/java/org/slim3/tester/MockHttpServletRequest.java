@@ -444,6 +444,16 @@ public class MockHttpServletRequest implements HttpServletRequest {
         return userPrincipal;
     }
 
+    /**
+     * Sets the user principal.
+     * 
+     * @param userPrincipal
+     *            the user principal
+     */
+    public void setUserPrincipal(Principal userPrincipal) {
+        this.userPrincipal = userPrincipal;
+    }
+
     public String getRequestedSessionId() {
         return requestedSessionId;
     }
