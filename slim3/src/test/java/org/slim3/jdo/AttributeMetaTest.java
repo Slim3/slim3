@@ -238,6 +238,15 @@ public class AttributeMetaTest extends TestCase {
     /**
      * @throws Exception
      */
+    public void testStartsWith() throws Exception {
+        StartsWithCriterion criterion = m.name.startsWith("a");
+        assertEquals("name.startsWith(:0)", criterion.getQueryString(":0"));
+        assertEquals("a", criterion.getParameters()[0]);
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testAsc() throws Exception {
         AscCriterion criterion = m.id.asc();
         assertNotNull(criterion);

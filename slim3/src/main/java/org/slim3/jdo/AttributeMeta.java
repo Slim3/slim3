@@ -203,6 +203,20 @@ public class AttributeMeta {
     }
 
     /**
+     * Returns the "startsWith" filter criterion.
+     * 
+     * @param parameter
+     * @return the "startsWith" filter criterion
+     */
+    public StartsWithCriterion startsWith(Object parameter) {
+        if (isEmpty(parameter)) {
+            return null;
+        }
+        parameter = ConversionUtil.convert(parameter, attributeClass);
+        return new StartsWithCriterion(this, parameter);
+    }
+
+    /**
      * Returns the "ascending" order criterion.
      * 
      * @return the "ascending" order criterion
