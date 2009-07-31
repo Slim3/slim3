@@ -51,15 +51,6 @@ public class FileItem {
      *            the data
      */
     public FileItem(String fileName, String contentType, byte[] data) {
-        if (fileName == null) {
-            throw new NullPointerException("The fileName parameter is null.");
-        }
-        if (contentType == null) {
-            throw new NullPointerException("The contentType parameter is null.");
-        }
-        if (data == null) {
-            throw new NullPointerException("The data parameter is null.");
-        }
         this.fileName = fileName;
         this.contentType = contentType;
         this.data = data;
