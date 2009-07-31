@@ -124,7 +124,7 @@ public class AttributeMeta {
             return null;
         }
         if (!parameter.getClass().isArray()
-            && !(parameter instanceof Collection)) {
+            && !(parameter instanceof Collection<?>)) {
             parameter = ConversionUtil.convert(parameter, attributeClass);
         }
         return new EqCriterion(this, parameter);

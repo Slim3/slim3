@@ -781,6 +781,7 @@ public class BeanUtilTest extends TestCase {
     /**
      * 
      */
+    @SuppressWarnings("unused")
     private static class SrcBB {
 
         private String aaa;
@@ -789,10 +790,8 @@ public class BeanUtilTest extends TestCase {
 
         private String ccc;
 
-        @SuppressWarnings("unused")
         private String ddd;
 
-        @SuppressWarnings("unused")
         private String eee;
 
         private String fff;
@@ -860,6 +859,7 @@ public class BeanUtilTest extends TestCase {
     /**
      * 
      */
+    @SuppressWarnings("unused")
     private static class DestBB {
 
         private String aaa;
@@ -955,13 +955,13 @@ public class BeanUtilTest extends TestCase {
     /**
      * 
      */
+    @SuppressWarnings("unused")
     private static class SrcBM {
 
         private String aaa;
 
         private String bbb;
 
-        @SuppressWarnings("unused")
         private String ccc;
 
         /**
@@ -997,6 +997,7 @@ public class BeanUtilTest extends TestCase {
     /**
      * 
      */
+    @SuppressWarnings("unused")
     private static class DestMB {
 
         private String aaa;
@@ -1055,6 +1056,7 @@ public class BeanUtilTest extends TestCase {
     /**
      * 
      */
+    @SuppressWarnings("unused")
     private static class DestRB {
 
         private String aaa;
@@ -1113,13 +1115,13 @@ public class BeanUtilTest extends TestCase {
     /**
      * 
      */
+    @SuppressWarnings("unused")
     private static class SrcBR {
 
         private String aaa;
 
         private String bbb;
 
-        @SuppressWarnings("unused")
         private String ccc;
 
         /**

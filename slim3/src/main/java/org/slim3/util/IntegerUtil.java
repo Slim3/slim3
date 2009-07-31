@@ -49,7 +49,7 @@ public final class IntegerUtil {
         } else if (o.getClass() == Boolean.class) {
             return ((Boolean) o).booleanValue() ? Integer.valueOf(1) : Integer
                 .valueOf(0);
-        } else if (o instanceof Enum) {
+        } else if (o instanceof Enum<?>) {
             return Enum.class.cast(o).ordinal();
         } else {
             return Integer.valueOf(o.toString());

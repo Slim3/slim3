@@ -68,7 +68,7 @@ public class ContainsCriterion extends AbstractCriterion implements
         if (value == null) {
             return false;
         }
-        if (value instanceof Collection) {
+        if (value instanceof Collection<?>) {
             return Collection.class.cast(value).contains(parameter);
         }
         if (value.getClass().isArray()) {

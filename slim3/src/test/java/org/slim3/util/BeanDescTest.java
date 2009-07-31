@@ -15,9 +15,6 @@
  */
 package org.slim3.util;
 
-import org.slim3.util.BeanDesc;
-import org.slim3.util.PropertyDesc;
-
 import junit.framework.TestCase;
 
 /**
@@ -107,12 +104,12 @@ public class BeanDescTest extends TestCase {
         assertNull(beanDesc.getPropertyDesc("hhh"));
     }
 
+    @SuppressWarnings("unused")
     private static class MyBean {
         private String aaa;
 
         private String bbb;
 
-        @SuppressWarnings("unused")
         private String ccc;
 
         private boolean ddd;
