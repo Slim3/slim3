@@ -16,12 +16,14 @@
 package org.slim3.controller.validator;
 
 import java.util.Locale;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
 import org.slim3.util.ApplicationMessage;
+import org.slim3.util.RequestMap;
 
 /**
  * @author higa
@@ -33,6 +35,8 @@ public class RequiredValidatorTest extends TestCase {
 
     private MockHttpServletRequest request =
         new MockHttpServletRequest(servletContext);
+
+    private Map<String, Object> parameters = new RequestMap(request);
 
     @Override
     protected void setUp() throws Exception {
@@ -51,7 +55,7 @@ public class RequiredValidatorTest extends TestCase {
      */
     public void testValidateForNull() throws Exception {
         assertEquals("Aaa is required.", RequiredValidator.INSTANCE.validate(
-            request,
+            parameters,
             "aaa"));
     }
 
@@ -59,9 +63,9 @@ public class RequiredValidatorTest extends TestCase {
      * @throws Exception
      */
     public void testValidateForEmptyString() throws Exception {
-        request.setAttribute("aaa", "");
+        parameters.put("aaa", "");
         assertEquals("Aaa is required.", RequiredValidator.INSTANCE.validate(
-            request,
+            parameters,
             "aaa"));
     }
 
@@ -69,9 +73,9 @@ public class RequiredValidatorTest extends TestCase {
      * @throws Exception
      */
     public void testValidateForMessage() throws Exception {
-        request.setAttribute("aaa", "");
+        parameters.put("aaa", "");
         assertEquals("hoge", new RequiredValidator("hoge").validate(
-            request,
+            parameters,
             "aaa"));
     }
 
@@ -79,7 +83,7 @@ public class RequiredValidatorTest extends TestCase {
      * @throws Exception
      */
     public void testValidateForValid() throws Exception {
-        request.setAttribute("aaa", "111");
-        assertNull(RequiredValidator.INSTANCE.validate(request, "aaa"));
+        parameters.put("aaa", "111");
+        assertNull(RequiredValidator.INSTANCE.validate(parameters, "aaa"));
     }
 }

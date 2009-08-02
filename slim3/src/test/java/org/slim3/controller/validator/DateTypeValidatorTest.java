@@ -16,12 +16,14 @@
 package org.slim3.controller.validator;
 
 import java.util.Locale;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
 import org.slim3.util.ApplicationMessage;
+import org.slim3.util.RequestMap;
 
 /**
  * @author higa
@@ -33,6 +35,8 @@ public class DateTypeValidatorTest extends TestCase {
 
     private MockHttpServletRequest request =
         new MockHttpServletRequest(servletContext);
+
+    private Map<String, Object> parameters = new RequestMap(request);
 
     private DateTypeValidator validator = new DateTypeValidator("MM/dd/yyyy");
 
@@ -52,32 +56,32 @@ public class DateTypeValidatorTest extends TestCase {
      * @throws Exception
      */
     public void testValidateForNull() throws Exception {
-        assertNull(validator.validate(request, "aaa"));
+        assertNull(validator.validate(parameters, "aaa"));
     }
 
     /**
      * @throws Exception
      */
     public void testValidateForEmptyString() throws Exception {
-        request.setAttribute("aaa", "");
-        assertNull(validator.validate(request, "aaa"));
+        parameters.put("aaa", "");
+        assertNull(validator.validate(parameters, "aaa"));
     }
 
     /**
      * @throws Exception
      */
     public void testValidateForValid() throws Exception {
-        request.setAttribute("aaa", "01/01/1970");
-        assertNull(validator.validate(request, "aaa"));
+        parameters.put("aaa", "01/01/1970");
+        assertNull(validator.validate(parameters, "aaa"));
     }
 
     /**
      * @throws Exception
      */
     public void testValidateForInvalid() throws Exception {
-        request.setAttribute("aaa", "01/32/1970");
+        parameters.put("aaa", "01/32/1970");
         assertEquals("Aaa is not a date(MM/dd/yyyy).", validator.validate(
-            request,
+            parameters,
             "aaa"));
     }
 
@@ -85,8 +89,8 @@ public class DateTypeValidatorTest extends TestCase {
      * @throws Exception
      */
     public void testValidateForInvalidAndMessage() throws Exception {
-        request.setAttribute("aaa", "01/32/1970");
+        parameters.put("aaa", "01/32/1970");
         assertEquals("hoge", new DateTypeValidator("MM/dd/yyyy", "hoge")
-            .validate(request, "aaa"));
+            .validate(parameters, "aaa"));
     }
 }

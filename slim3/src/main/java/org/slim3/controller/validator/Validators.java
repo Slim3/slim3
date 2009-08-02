@@ -17,11 +17,13 @@ package org.slim3.controller.validator;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.slim3.controller.ControllerConstants;
 import org.slim3.util.ArrayMap;
+import org.slim3.util.RequestMap;
 
 /**
  * A class to control validation process.
@@ -39,9 +41,9 @@ public class Validators {
         new ArrayMap<String, Validator[]>();
 
     /**
-     * The request.
+     * The parameters.
      */
-    protected HttpServletRequest request;
+    protected Map<String, Object> parameters;
 
     /**
      * The error messages.
@@ -53,18 +55,28 @@ public class Validators {
      * 
      * @param request
      *            the request
-     * @throws NullPointerException
-     *             if the request parameter is null
-     * @throws IllegalStateException
-     *             if the errors is not found in request
      */
-    public Validators(HttpServletRequest request) throws NullPointerException,
-            IllegalStateException {
-        if (request == null) {
-            throw new NullPointerException("The request parameter is null.");
+    public Validators(HttpServletRequest request) {
+        this(new RequestMap(request));
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param parameters
+     *            the parameters
+     * @throws NullPointerException
+     *             if the parameters parameter is null
+     * @throws IllegalStateException
+     *             if the errors is not found in parameters
+     */
+    public Validators(Map<String, Object> parameters)
+            throws NullPointerException, IllegalStateException {
+        if (parameters == null) {
+            throw new NullPointerException("The parameters parameter is null.");
         }
-        this.request = request;
-        errors = (Errors) request.getAttribute(ControllerConstants.ERRORS_KEY);
+        this.parameters = parameters;
+        errors = (Errors) parameters.get(ControllerConstants.ERRORS_KEY);
         if (errors == null) {
             throw new IllegalStateException(
                 "The errors is not found in request.");
@@ -101,7 +113,7 @@ public class Validators {
         for (int i = 0; i < validatorsMap.size(); i++) {
             String name = validatorsMap.getKey(i);
             for (Validator v : validatorsMap.get(i)) {
-                String message = v.validate(request, name);
+                String message = v.validate(parameters, name);
                 if (message != null) {
                     errors.put(name, message);
                     break;

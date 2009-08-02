@@ -16,6 +16,7 @@
 package org.slim3.controller.validator;
 
 import java.util.Locale;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -23,6 +24,7 @@ import org.slim3.controller.ControllerConstants;
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
 import org.slim3.util.ApplicationMessage;
+import org.slim3.util.RequestMap;
 
 /**
  * @author higa
@@ -34,6 +36,8 @@ public class ValidatorsTest extends TestCase {
 
     private MockHttpServletRequest request;
 
+    private Map<String, Object> parameters;
+
     private Validators v;
 
     @Override
@@ -41,8 +45,9 @@ public class ValidatorsTest extends TestCase {
         super.setUp();
         servletContext = new MockServletContext();
         request = new MockHttpServletRequest(servletContext);
-        request.setAttribute(ControllerConstants.ERRORS_KEY, new Errors());
-        v = new Validators(request);
+        parameters = new RequestMap(request);
+        parameters.put(ControllerConstants.ERRORS_KEY, new Errors());
+        v = new Validators(parameters);
 
         ApplicationMessage.setBundle("test", Locale.ENGLISH);
     }
@@ -57,14 +62,12 @@ public class ValidatorsTest extends TestCase {
      * @throws Exception
      */
     public void testValidateForValid() throws Exception {
-        request.setAttribute("aaa", "1");
+        parameters.put("aaa", "1");
         v.add("aaa", v.required(), v.byteType());
         assertTrue(v.validate());
-        assertNotNull(request.getAttribute(ControllerConstants.ERRORS_KEY));
+        assertNotNull(parameters.get(ControllerConstants.ERRORS_KEY));
         assertTrue(v.errors.isEmpty());
-        assertSame(
-            request.getAttribute(ControllerConstants.ERRORS_KEY),
-            v.errors);
+        assertSame(parameters.get(ControllerConstants.ERRORS_KEY), v.errors);
     }
 
     /**
@@ -73,7 +76,7 @@ public class ValidatorsTest extends TestCase {
     public void testValidateForInvalid() throws Exception {
         v.add("aaa", v.required(), v.byteType());
         assertFalse(v.validate());
-        assertNotNull(request.getAttribute(ControllerConstants.ERRORS_KEY));
+        assertNotNull(parameters.get(ControllerConstants.ERRORS_KEY));
         assertEquals("Aaa is required.", v.errors.get("aaa"));
     }
 
@@ -83,8 +86,8 @@ public class ValidatorsTest extends TestCase {
     public void testRequired() throws Exception {
         assertEquals(RequiredValidator.class, v.required().getClass());
         assertEquals(RequiredValidator.class, v.required("hoge").getClass());
-        request.setAttribute("aaa", "123");
-        assertNull(v.required().validate(request, "aaa"));
+        parameters.put("aaa", "123");
+        assertNull(v.required().validate(parameters, "aaa"));
     }
 
     /**
@@ -93,8 +96,8 @@ public class ValidatorsTest extends TestCase {
     public void testByteType() throws Exception {
         assertEquals(ByteTypeValidator.class, v.byteType().getClass());
         assertEquals(ByteTypeValidator.class, v.byteType("hoge").getClass());
-        request.setAttribute("aaa", "123");
-        assertNull(v.byteType().validate(request, "aaa"));
+        parameters.put("aaa", "123");
+        assertNull(v.byteType().validate(parameters, "aaa"));
     }
 
     /**
@@ -103,8 +106,8 @@ public class ValidatorsTest extends TestCase {
     public void testShortType() throws Exception {
         assertEquals(ShortTypeValidator.class, v.shortType().getClass());
         assertEquals(ShortTypeValidator.class, v.shortType("hoge").getClass());
-        request.setAttribute("aaa", "123");
-        assertNull(v.shortType().validate(request, "aaa"));
+        parameters.put("aaa", "123");
+        assertNull(v.shortType().validate(parameters, "aaa"));
     }
 
     /**
@@ -115,8 +118,8 @@ public class ValidatorsTest extends TestCase {
         assertEquals(IntegerTypeValidator.class, v
             .integerType("hoge")
             .getClass());
-        request.setAttribute("aaa", "123");
-        assertNull(v.integerType().validate(request, "aaa"));
+        parameters.put("aaa", "123");
+        assertNull(v.integerType().validate(parameters, "aaa"));
     }
 
     /**
@@ -125,8 +128,8 @@ public class ValidatorsTest extends TestCase {
     public void testLongType() throws Exception {
         assertEquals(LongTypeValidator.class, v.longType().getClass());
         assertEquals(LongTypeValidator.class, v.longType("hoge").getClass());
-        request.setAttribute("aaa", "123");
-        assertNull(v.longType().validate(request, "aaa"));
+        parameters.put("aaa", "123");
+        assertNull(v.longType().validate(parameters, "aaa"));
     }
 
     /**
@@ -135,8 +138,8 @@ public class ValidatorsTest extends TestCase {
     public void testFloatType() throws Exception {
         assertEquals(FloatTypeValidator.class, v.floatType().getClass());
         assertEquals(FloatTypeValidator.class, v.floatType("hoge").getClass());
-        request.setAttribute("aaa", "123");
-        assertNull(v.floatType().validate(request, "aaa"));
+        parameters.put("aaa", "123");
+        assertNull(v.floatType().validate(parameters, "aaa"));
     }
 
     /**
@@ -145,21 +148,21 @@ public class ValidatorsTest extends TestCase {
     public void testDoubleType() throws Exception {
         assertEquals(DoubleTypeValidator.class, v.doubleType().getClass());
         assertEquals(DoubleTypeValidator.class, v.doubleType("hoge").getClass());
-        request.setAttribute("aaa", "123");
-        assertNull(v.doubleType().validate(request, "aaa"));
+        parameters.put("aaa", "123");
+        assertNull(v.doubleType().validate(parameters, "aaa"));
     }
 
     /**
      * @throws Exception
      */
     public void testNumberType() throws Exception {
-        Validators v = new Validators(request);
+        Validators v = new Validators(parameters);
         assertEquals(NumberTypeValidator.class, v.numberType("###").getClass());
         assertEquals(NumberTypeValidator.class, v
             .numberType("###", "hoge")
             .getClass());
-        request.setAttribute("aaa", "123");
-        assertNull(v.numberType("####").validate(request, "aaa"));
+        parameters.put("aaa", "123");
+        assertNull(v.numberType("####").validate(parameters, "aaa"));
     }
 
     /**
@@ -172,8 +175,8 @@ public class ValidatorsTest extends TestCase {
         assertEquals(DateTypeValidator.class, v
             .dateType("MM/dd/yyyy", "hoge")
             .getClass());
-        request.setAttribute("aaa", "01/01/1970");
-        assertNull(v.dateType("MM/dd/yyyy").validate(request, "aaa"));
+        parameters.put("aaa", "01/01/1970");
+        assertNull(v.dateType("MM/dd/yyyy").validate(parameters, "aaa"));
     }
 
     /**
@@ -184,8 +187,8 @@ public class ValidatorsTest extends TestCase {
         assertEquals(MinlengthValidator.class, v
             .minlength(3, "hoge")
             .getClass());
-        request.setAttribute("aaa", "xxxx");
-        assertNull(v.minlength(3).validate(request, "aaa"));
+        parameters.put("aaa", "xxxx");
+        assertNull(v.minlength(3).validate(parameters, "aaa"));
     }
 
     /**
@@ -196,8 +199,8 @@ public class ValidatorsTest extends TestCase {
         assertEquals(MaxlengthValidator.class, v
             .maxlength(3, "hoge")
             .getClass());
-        request.setAttribute("aaa", "xx");
-        assertNull(v.maxlength(3).validate(request, "aaa"));
+        parameters.put("aaa", "xx");
+        assertNull(v.maxlength(3).validate(parameters, "aaa"));
     }
 
     /**
@@ -208,8 +211,8 @@ public class ValidatorsTest extends TestCase {
         assertEquals(LongRangeValidator.class, v
             .longRange(3, 5, "hoge")
             .getClass());
-        request.setAttribute("aaa", "4");
-        assertNull(v.longRange(3, 5).validate(request, "aaa"));
+        parameters.put("aaa", "4");
+        assertNull(v.longRange(3, 5).validate(parameters, "aaa"));
     }
 
     /**
@@ -220,7 +223,7 @@ public class ValidatorsTest extends TestCase {
         assertEquals(DoubleRangeValidator.class, v
             .doubleRange(3, 5, "hoge")
             .getClass());
-        request.setAttribute("aaa", "4.1");
-        assertNull(v.doubleRange(3, 5).validate(request, "aaa"));
+        parameters.put("aaa", "4.1");
+        assertNull(v.doubleRange(3, 5).validate(parameters, "aaa"));
     }
 }

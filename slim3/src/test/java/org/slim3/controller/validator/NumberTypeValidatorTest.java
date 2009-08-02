@@ -16,12 +16,14 @@
 package org.slim3.controller.validator;
 
 import java.util.Locale;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
 import org.slim3.util.ApplicationMessage;
+import org.slim3.util.RequestMap;
 
 /**
  * @author higa
@@ -33,6 +35,8 @@ public class NumberTypeValidatorTest extends TestCase {
 
     private MockHttpServletRequest request =
         new MockHttpServletRequest(servletContext);
+
+    private Map<String, Object> parameters = new RequestMap(request);
 
     private NumberTypeValidator validator = new NumberTypeValidator("####");
 
@@ -52,32 +56,32 @@ public class NumberTypeValidatorTest extends TestCase {
      * @throws Exception
      */
     public void testValidateForNull() throws Exception {
-        assertNull(validator.validate(request, "aaa"));
+        assertNull(validator.validate(parameters, "aaa"));
     }
 
     /**
      * @throws Exception
      */
     public void testValidateForEmptyString() throws Exception {
-        request.setAttribute("aaa", "");
-        assertNull(validator.validate(request, "aaa"));
+        parameters.put("aaa", "");
+        assertNull(validator.validate(parameters, "aaa"));
     }
 
     /**
      * @throws Exception
      */
     public void testValidateForValid() throws Exception {
-        request.setAttribute("aaa", "111");
-        assertNull(validator.validate(request, "aaa"));
+        parameters.put("aaa", "111");
+        assertNull(validator.validate(parameters, "aaa"));
     }
 
     /**
      * @throws Exception
      */
     public void testValidateForInvalid() throws Exception {
-        request.setAttribute("aaa", "xxx");
+        parameters.put("aaa", "xxx");
         assertEquals("Aaa is not a number(####).", validator.validate(
-            request,
+            parameters,
             "aaa"));
     }
 
@@ -85,9 +89,9 @@ public class NumberTypeValidatorTest extends TestCase {
      * @throws Exception
      */
     public void testValidateForInvalidAndMessage() throws Exception {
-        request.setAttribute("aaa", "xxx");
+        parameters.put("aaa", "xxx");
         assertEquals("hoge", new NumberTypeValidator("###", "hoge").validate(
-            request,
+            parameters,
             "aaa"));
     }
 }

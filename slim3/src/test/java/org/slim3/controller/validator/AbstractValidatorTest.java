@@ -16,12 +16,10 @@
 package org.slim3.controller.validator;
 
 import java.util.Locale;
-
-import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.slim3.controller.validator.AbstractValidator;
 import org.slim3.util.ApplicationMessage;
 
 /**
@@ -52,7 +50,7 @@ public class AbstractValidatorTest extends TestCase {
     private static class MyValidator extends AbstractValidator {
 
         @Override
-        public String validate(HttpServletRequest request, String name) {
+        public String validate(Map<String, Object> parameters, String name) {
             return null;
         }
     }

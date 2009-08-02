@@ -16,12 +16,14 @@
 package org.slim3.controller.validator;
 
 import java.util.Locale;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
 import org.slim3.util.ApplicationMessage;
+import org.slim3.util.RequestMap;
 
 /**
  * @author higa
@@ -33,6 +35,8 @@ public class ByteTypeValidatorTest extends TestCase {
 
     private MockHttpServletRequest request =
         new MockHttpServletRequest(servletContext);
+
+    private Map<String, Object> parameters = new RequestMap(request);
 
     @Override
     protected void setUp() throws Exception {
@@ -50,7 +54,7 @@ public class ByteTypeValidatorTest extends TestCase {
      * @throws Exception
      */
     public void testValidateForNull() throws Exception {
-        assertNull(ByteTypeValidator.INSTANCE.validate(request, "aaa"));
+        assertNull(ByteTypeValidator.INSTANCE.validate(parameters, "aaa"));
     }
 
     /**
@@ -58,7 +62,7 @@ public class ByteTypeValidatorTest extends TestCase {
      */
     public void testValidateForEmptyString() throws Exception {
         request.setAttribute("aaa", "");
-        assertNull(ByteTypeValidator.INSTANCE.validate(request, "aaa"));
+        assertNull(ByteTypeValidator.INSTANCE.validate(parameters, "aaa"));
     }
 
     /**
@@ -66,7 +70,7 @@ public class ByteTypeValidatorTest extends TestCase {
      */
     public void testValidateForValid() throws Exception {
         request.setAttribute("aaa", "111");
-        assertNull(ByteTypeValidator.INSTANCE.validate(request, "aaa"));
+        assertNull(ByteTypeValidator.INSTANCE.validate(parameters, "aaa"));
     }
 
     /**
@@ -75,7 +79,7 @@ public class ByteTypeValidatorTest extends TestCase {
     public void testValidateForInvalid() throws Exception {
         request.setAttribute("aaa", "xxx");
         assertEquals("Aaa must be a byte.", ByteTypeValidator.INSTANCE
-            .validate(request, "aaa"));
+            .validate(parameters, "aaa"));
     }
 
     /**
@@ -84,7 +88,7 @@ public class ByteTypeValidatorTest extends TestCase {
     public void testValidateForInvalidAndMessage() throws Exception {
         request.setAttribute("aaa", "xxx");
         assertEquals("hoge", new ByteTypeValidator("hoge").validate(
-            request,
+            parameters,
             "aaa"));
     }
 }

@@ -15,7 +15,7 @@
  */
 package org.slim3.controller.validator;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /**
  * An interface to validate an input value.
@@ -29,12 +29,12 @@ public interface Validator {
     /**
      * Validates the input value;
      * 
-     * @param request
-     *            the request
+     * @param parameters
+     *            the parameters
      * @param name
      *            the name
      * 
      * @return the error message if the input value is invalid.
      */
-    String validate(HttpServletRequest request, String name);
+    String validate(Map<String, Object> parameters, String name);
 }

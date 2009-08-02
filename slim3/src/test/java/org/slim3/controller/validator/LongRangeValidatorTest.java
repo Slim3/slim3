@@ -16,12 +16,14 @@
 package org.slim3.controller.validator;
 
 import java.util.Locale;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
 import org.slim3.util.ApplicationMessage;
+import org.slim3.util.RequestMap;
 
 /**
  * @author higa
@@ -33,6 +35,8 @@ public class LongRangeValidatorTest extends TestCase {
 
     private MockHttpServletRequest request =
         new MockHttpServletRequest(servletContext);
+
+    private Map<String, Object> parameters = new RequestMap(request);
 
     private LongRangeValidator validator = new LongRangeValidator(3, 5);
 
@@ -52,44 +56,44 @@ public class LongRangeValidatorTest extends TestCase {
      * @throws Exception
      */
     public void testValidateForNull() throws Exception {
-        assertNull(validator.validate(request, "aaa"));
+        assertNull(validator.validate(parameters, "aaa"));
     }
 
     /**
      * @throws Exception
      */
     public void testValidateForEmptyString() throws Exception {
-        request.setAttribute("aaa", "");
-        assertNull(validator.validate(request, "aaa"));
+        parameters.put("aaa", "");
+        assertNull(validator.validate(parameters, "aaa"));
     }
 
     /**
      * @throws Exception
      */
     public void testValidateForValid() throws Exception {
-        request.setAttribute("aaa", "3");
-        assertNull(validator.validate(request, "aaa"));
-        request.setAttribute("aaa", "4");
-        assertNull(validator.validate(request, "aaa"));
-        request.setAttribute("aaa", "5");
-        assertNull(validator.validate(request, "aaa"));
+        parameters.put("aaa", "3");
+        assertNull(validator.validate(parameters, "aaa"));
+        parameters.put("aaa", "4");
+        assertNull(validator.validate(parameters, "aaa"));
+        parameters.put("aaa", "5");
+        assertNull(validator.validate(parameters, "aaa"));
     }
 
     /**
      * @throws Exception
      */
     public void testValidateForInvalid() throws Exception {
-        request.setAttribute("aaa", "2");
+        parameters.put("aaa", "2");
         assertEquals("Aaa is not in the 3 to 5 range.", validator.validate(
-            request,
+            parameters,
             "aaa"));
-        request.setAttribute("aaa", "6");
+        parameters.put("aaa", "6");
         assertEquals("Aaa is not in the 3 to 5 range.", validator.validate(
-            request,
+            parameters,
             "aaa"));
-        request.setAttribute("aaa", "xxx");
+        parameters.put("aaa", "xxx");
         assertEquals("Aaa is not in the 3 to 5 range.", validator.validate(
-            request,
+            parameters,
             "aaa"));
     }
 
@@ -97,9 +101,9 @@ public class LongRangeValidatorTest extends TestCase {
      * @throws Exception
      */
     public void testValidateForInvalidAndMessage() throws Exception {
-        request.setAttribute("aaa", "xxx");
+        parameters.put("aaa", "xxx");
         assertEquals("hoge", new LongRangeValidator(3, 5, "hoge").validate(
-            request,
+            parameters,
             "aaa"));
     }
 }

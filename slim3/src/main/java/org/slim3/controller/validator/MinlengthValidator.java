@@ -15,7 +15,7 @@
  */
 package org.slim3.controller.validator;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 import org.slim3.util.ApplicationMessage;
 
@@ -57,8 +57,8 @@ public class MinlengthValidator extends AbstractValidator {
     }
 
     @Override
-    public String validate(HttpServletRequest request, String name) {
-        Object value = request.getAttribute(name);
+    public String validate(Map<String, Object> parameters, String name) {
+        Object value = parameters.get(name);
         if (value == null || "".equals(value)) {
             return null;
         }

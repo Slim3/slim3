@@ -16,12 +16,14 @@
 package org.slim3.controller.validator;
 
 import java.util.Locale;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
 import org.slim3.util.ApplicationMessage;
+import org.slim3.util.RequestMap;
 
 /**
  * @author higa
@@ -33,6 +35,8 @@ public class LongTypeValidatorTest extends TestCase {
 
     private MockHttpServletRequest request =
         new MockHttpServletRequest(servletContext);
+
+    private Map<String, Object> parameters = new RequestMap(request);
 
     @Override
     protected void setUp() throws Exception {
@@ -50,41 +54,41 @@ public class LongTypeValidatorTest extends TestCase {
      * @throws Exception
      */
     public void testValidateForNull() throws Exception {
-        assertNull(LongTypeValidator.INSTANCE.validate(request, "aaa"));
+        assertNull(LongTypeValidator.INSTANCE.validate(parameters, "aaa"));
     }
 
     /**
      * @throws Exception
      */
     public void testValidateForEmptyString() throws Exception {
-        request.setAttribute("aaa", "");
-        assertNull(LongTypeValidator.INSTANCE.validate(request, "aaa"));
+        parameters.put("aaa", "");
+        assertNull(LongTypeValidator.INSTANCE.validate(parameters, "aaa"));
     }
 
     /**
      * @throws Exception
      */
     public void testValidateForValid() throws Exception {
-        request.setAttribute("aaa", "111");
-        assertNull(LongTypeValidator.INSTANCE.validate(request, "aaa"));
+        parameters.put("aaa", "111");
+        assertNull(LongTypeValidator.INSTANCE.validate(parameters, "aaa"));
     }
 
     /**
      * @throws Exception
      */
     public void testValidateForInvalid() throws Exception {
-        request.setAttribute("aaa", "xxx");
+        parameters.put("aaa", "xxx");
         assertEquals("Aaa must be a long.", LongTypeValidator.INSTANCE
-            .validate(request, "aaa"));
+            .validate(parameters, "aaa"));
     }
 
     /**
      * @throws Exception
      */
     public void testValidateForInvalidAndMessage() throws Exception {
-        request.setAttribute("aaa", "xxx");
+        parameters.put("aaa", "xxx");
         assertEquals("hoge", new LongTypeValidator("hoge").validate(
-            request,
+            parameters,
             "aaa"));
     }
 }
