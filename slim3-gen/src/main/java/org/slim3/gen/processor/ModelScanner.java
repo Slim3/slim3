@@ -21,6 +21,7 @@ import java.util.List;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.TypeElement;
@@ -78,6 +79,9 @@ public class ModelScanner extends ElementScanner6<Void, ModelMetaDesc> {
 
     @Override
     public Void visitVariable(VariableElement attribute, ModelMetaDesc p) {
+        if (attribute.getKind() != ElementKind.FIELD) {
+            return null;
+        }
         if (!isPersistent(attribute)) {
             if (isInstanceVariable(attribute) && !isNotPersistent(attribute)) {
                 Logger.warning(processingEnv, attribute, MessageFormatter
