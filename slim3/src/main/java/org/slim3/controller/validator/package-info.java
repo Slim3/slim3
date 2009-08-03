@@ -14,9 +14,6 @@
  * governing permissions and limitations under the License.
  */
 /**
- * This package has exceptions for Slim3.
- * 
- * @author higa
- * @since 3.0
+ * This package provides validation feature.
  */
-package org.slim3.exception;
+package org.slim3.controller.validator;
