@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -94,9 +95,8 @@ public class RequestMap extends HashMap<String, Object> {
     }
 
     @Override
-    public Set<Map.Entry<String, Object>> entrySet() {
-        Set<Map.Entry<String, Object>> set =
-            new HashSet<Map.Entry<String, Object>>();
+    public Set<Entry<String, Object>> entrySet() {
+        Set<Entry<String, Object>> set = new HashSet<Entry<String, Object>>();
         for (Enumeration<?> e = request.getAttributeNames(); e
             .hasMoreElements();) {
             String key = StringUtil.toString(e.nextElement());
@@ -171,7 +171,7 @@ public class RequestMap extends HashMap<String, Object> {
     /**
      * An implementation for {@link Entry}.
      */
-    protected static class EntryImpl implements Map.Entry<String, Object>,
+    protected static class EntryImpl implements Entry<String, Object>,
             Serializable {
 
         private static final long serialVersionUID = 1L;
@@ -221,10 +221,10 @@ public class RequestMap extends HashMap<String, Object> {
             if (this == obj) {
                 return true;
             }
-            if (!(obj instanceof Map.Entry<?, ?>)) {
+            if (!(obj instanceof Entry<?, ?>)) {
                 return false;
             }
-            Map.Entry<?, ?> other = (Map.Entry<?, ?>) obj;
+            Entry<?, ?> other = (Entry<?, ?>) obj;
             if (key == null) {
                 return other.getKey() == null;
             }
@@ -238,6 +238,5 @@ public class RequestMap extends HashMap<String, Object> {
             }
             return key.hashCode();
         }
-
     }
 }
