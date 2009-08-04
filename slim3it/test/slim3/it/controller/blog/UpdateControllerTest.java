@@ -20,7 +20,7 @@ public class UpdateControllerTest extends JDOControllerTestCase {
         UpdateController controller = getController();
         assertNotNull(controller);
         assertTrue(isRedirect());
-        assertEquals("/blog/", getNextPath());
+        assertEquals("/blog/", getDestinationPath());
         blog = pm.getObjectById(Blog.class, blog.getKey());
         assertNotNull(blog);
         assertEquals("aaa2", blog.getTitle());
@@ -32,7 +32,7 @@ public class UpdateControllerTest extends JDOControllerTestCase {
         UpdateController controller = getController();
         assertNotNull(controller);
         assertFalse(isRedirect());
-        assertEquals("/blog/edit.jsp", getNextPath());
+        assertEquals("/blog/edit.jsp", getDestinationPath());
         Errors errors = getErrors();
         assertNotNull(errors.get("title"));
         assertNotNull(errors.get("content"));

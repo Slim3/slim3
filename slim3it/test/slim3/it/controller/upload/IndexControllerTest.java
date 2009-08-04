@@ -9,7 +9,7 @@ public class IndexControllerTest extends JDOControllerTestCase {
         IndexController controller = getController();
         assertNotNull(controller);
         assertFalse(isRedirect());
-        assertEquals("/upload/index.jsp", getNextPath());
+        assertEquals("/upload/index.jsp", getDestinationPath());
         assertNotNull(requestScope("uploadList"));
     }
 }

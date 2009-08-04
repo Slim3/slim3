@@ -17,7 +17,7 @@ public class UploadControllerTest extends JDOControllerTestCase {
         UploadController controller = getController();
         assertNotNull(controller);
         assertTrue(isRedirect());
-        assertEquals("/upload/", getNextPath());
+        assertEquals("/upload/", getDestinationPath());
         Upload upload = from(Upload.class).getSingleResult();
         assertNotNull(upload);
         assertEquals(1, upload.getLength());

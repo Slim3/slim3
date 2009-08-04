@@ -9,7 +9,7 @@ public class ListControllerTest extends JDOControllerTestCase {
         ListController controller = getController();
         assertNotNull(controller);
         assertFalse(isRedirect());
-        assertEquals("/flexblog/list.jsp", getNextPath());
+        assertEquals("/flexblog/list.jsp", getDestinationPath());
         assertNotNull(requestScope("blogList"));
     }
 }

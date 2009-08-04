@@ -19,7 +19,7 @@ public class UpdateControllerTest extends JDOControllerTestCase {
         UpdateController controller = getController();
         assertNotNull(controller);
         assertFalse(isRedirect());
-        assertNull(getNextPath());
+        assertNull(getDestinationPath());
         Blog blog2 = pm.getObjectById(Blog.class, blog.getKey());
         assertEquals("bbb", blog2.getTitle());
         assertEquals("222", blog2.getContent());

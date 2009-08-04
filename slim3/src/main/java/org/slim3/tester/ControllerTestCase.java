@@ -564,11 +564,11 @@ public abstract class ControllerTestCase extends TestCase {
     }
 
     /**
-     * Returns the next path.
+     * Returns the destination path.
      * 
-     * @return the next path
+     * @return the destination path
      */
-    protected String getNextPath() {
+    protected String getDestinationPath() {
         assertStartWasCalled();
         MockRequestDispatcher dispatcher =
             application.getLatestRequestDispatcher();
@@ -579,6 +579,16 @@ public abstract class ControllerTestCase extends TestCase {
             return response.getRedirectPath();
         }
         return filterChain.getPath();
+    }
+
+    /**
+     * Returns the destination path. Use {@link #getDestinationPath()} instead.
+     * 
+     * @return the destination path
+     */
+    @Deprecated
+    protected String getNextPath() {
+        return getDestinationPath();
     }
 
     /**

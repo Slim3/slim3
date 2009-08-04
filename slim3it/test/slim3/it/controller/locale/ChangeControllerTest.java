@@ -11,7 +11,7 @@ public class ChangeControllerTest extends JDOControllerTestCase {
         ChangeController controller = getController();
         assertNotNull(controller);
         assertTrue(isRedirect());
-        assertEquals("/locale/", getNextPath());
+        assertEquals("/locale/", getDestinationPath());
         assertEquals("en", sessionScope(ControllerConstants.LOCALE_KEY));
     }
 }

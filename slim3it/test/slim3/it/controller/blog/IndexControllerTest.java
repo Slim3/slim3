@@ -10,6 +10,6 @@ public class IndexControllerTest extends JDOControllerTestCase {
         assertNotNull(requestScope("blogList"));
         assertNotNull(controller);
         assertFalse(isRedirect());
-        assertEquals("/blog/index.jsp", getNextPath());
+        assertEquals("/blog/index.jsp", getDestinationPath());
     }
 }

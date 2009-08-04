@@ -9,6 +9,6 @@ public class CreateControllerTest extends JDOControllerTestCase {
         CreateController controller = getController();
         assertNotNull(controller);
         assertFalse(isRedirect());
-        assertEquals("/blog/create.jsp", getNextPath());
+        assertEquals("/blog/create.jsp", getDestinationPath());
     }
 }

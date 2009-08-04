@@ -13,7 +13,7 @@ public class InsertControllerTest extends JDOControllerTestCase {
         InsertController controller = getController();
         assertNotNull(controller);
         assertFalse(isRedirect());
-        assertNull(getNextPath());
+        assertNull(getDestinationPath());
         assertEquals(1, count(Blog.class));
     }
 }

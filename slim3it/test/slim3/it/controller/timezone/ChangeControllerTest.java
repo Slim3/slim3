@@ -11,7 +11,7 @@ public class ChangeControllerTest extends JDOControllerTestCase {
         ChangeController controller = getController();
         assertNotNull(controller);
         assertTrue(isRedirect());
-        assertEquals("/timezone/", getNextPath());
+        assertEquals("/timezone/", getDestinationPath());
         assertEquals("PST", sessionScope(ControllerConstants.TIME_ZONE_KEY));
     }
 }

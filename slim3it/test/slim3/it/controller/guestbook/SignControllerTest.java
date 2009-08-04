@@ -17,7 +17,7 @@ public class SignControllerTest extends JDOControllerTestCase {
         SignController controller = getController();
         assertNotNull(controller);
         assertTrue(isRedirect());
-        assertEquals("/guestbook/", getNextPath());
+        assertEquals("/guestbook/", getDestinationPath());
         Greeting greeting = from(Greeting.class).getFirstResult();
         assertNotNull(greeting);
         assertEquals("hello", greeting.getContent());

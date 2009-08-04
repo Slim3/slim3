@@ -9,7 +9,7 @@ public class IndexControllerTest extends JDOControllerTestCase {
         IndexController controller = getController();
         assertNotNull(controller);
         assertFalse(isRedirect());
-        assertEquals("/timezone/index.jsp", getNextPath());
+        assertEquals("/timezone/index.jsp", getDestinationPath());
         assertNotNull(requestScope("now"));
     }
 }

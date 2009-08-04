@@ -17,7 +17,7 @@ public class DeleteControllerTest extends JDOControllerTestCase {
         DeleteController controller = getController();
         assertNotNull(controller);
         assertTrue(isRedirect());
-        assertEquals("/blog/", getNextPath());
+        assertEquals("/blog/", getDestinationPath());
         assertEquals(0, count(Blog.class));
     }
 }

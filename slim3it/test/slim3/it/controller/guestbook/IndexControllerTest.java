@@ -23,7 +23,7 @@ public class IndexControllerTest extends JDOControllerTestCase {
         IndexController controller = getController();
         assertNotNull(controller);
         assertFalse(isRedirect());
-        assertEquals("/guestbook/index.jsp", getNextPath());
+        assertEquals("/guestbook/index.jsp", getDestinationPath());
         assertNotNull(requestScope("user"));
         assertNotNull(service.getCurrentUser());
         assertEquals(
@@ -39,7 +39,9 @@ public class IndexControllerTest extends JDOControllerTestCase {
         assertTrue(isRedirect());
         UserService service = UserServiceFactory.getUserService();
         assertNull(service.getCurrentUser());
-        assertEquals(service.createLoginURL("/guestbook/"), getNextPath());
+        assertEquals(
+            service.createLoginURL("/guestbook/"),
+            getDestinationPath());
         assertEquals(
             service.createLoginURL("/guestbook/"),
             asString("loginURL"));

@@ -9,7 +9,7 @@ public class IndexControllerTest extends JDOControllerTestCase {
         IndexController controller = getController();
         assertNotNull(controller);
         assertFalse(isRedirect());
-        assertEquals("/add/index.jsp", getNextPath());
+        assertEquals("/add/index.jsp", getDestinationPath());
         assertNull(getErrors().get("arg1"));
         assertNull(getErrors().get("arg2"));
     }
@@ -22,7 +22,7 @@ public class IndexControllerTest extends JDOControllerTestCase {
         IndexController controller = getController();
         assertNotNull(controller);
         assertFalse(isRedirect());
-        assertEquals("/add/index.jsp", getNextPath());
+        assertEquals("/add/index.jsp", getDestinationPath());
         assertEquals(3, requestScope("result"));
     }
 
@@ -32,7 +32,7 @@ public class IndexControllerTest extends JDOControllerTestCase {
         IndexController controller = getController();
         assertNotNull(controller);
         assertFalse(isRedirect());
-        assertEquals("/add/index.jsp", getNextPath());
+        assertEquals("/add/index.jsp", getDestinationPath());
         assertNotNull(getErrors().get("arg1"));
         assertNotNull(getErrors().get("arg2"));
     }

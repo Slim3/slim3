@@ -9,6 +9,6 @@ public class IndexControllerTest extends JDOControllerTestCase {
         IndexController controller = getController();
         assertNotNull(controller);
         assertFalse(isRedirect());
-        assertEquals("/radio/index.jsp", getNextPath());
+        assertEquals("/radio/index.jsp", getDestinationPath());
     }
 }

@@ -255,7 +255,7 @@ public class ControllerTestCaseTest extends ControllerTestCase {
     public void testStartForForward() throws Exception {
         start("/");
         assertFalse(isRedirect());
-        assertEquals("/index.jsp", getNextPath());
+        assertEquals("/index.jsp", getDestinationPath());
     }
 
     /**
@@ -265,7 +265,7 @@ public class ControllerTestCaseTest extends ControllerTestCase {
     public void testStartForRedirect() throws Exception {
         start("/redirect");
         assertTrue(isRedirect());
-        assertEquals("http://www.google.com", getNextPath());
+        assertEquals("http://www.google.com", getDestinationPath());
     }
 
     /**
@@ -275,16 +275,16 @@ public class ControllerTestCaseTest extends ControllerTestCase {
     public void testStartForJSP() throws Exception {
         start("/index.jsp");
         assertFalse(isRedirect());
-        assertEquals("/index.jsp", getNextPath());
+        assertEquals("/index.jsp", getDestinationPath());
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testGetNextPathBeforStarting() throws Exception {
+    public void testGetDestinationPathBeforStarting() throws Exception {
         try {
-            getNextPath();
+            getDestinationPath();
             fail();
         } catch (IllegalStateException e) {
             System.out.println(e.getMessage());

@@ -9,6 +9,6 @@ public class IndexControllerTest extends JDOControllerTestCase {
         IndexController controller = getController();
         assertNotNull(controller);
         assertFalse(isRedirect());
-        assertEquals("/flexblog/index.html", getNextPath());
+        assertEquals("/flexblog/index.html", getDestinationPath());
     }
 }

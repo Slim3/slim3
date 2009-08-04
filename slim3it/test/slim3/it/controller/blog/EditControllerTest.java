@@ -17,7 +17,7 @@ public class EditControllerTest extends JDOControllerTestCase {
         EditController controller = getController();
         assertNotNull(controller);
         assertFalse(isRedirect());
-        assertEquals("/blog/edit.jsp", getNextPath());
+        assertEquals("/blog/edit.jsp", getDestinationPath());
         assertEquals(blog.getKey(), key());
         assertEquals(blog.getTitle(), asString("title"));
         assertEquals(blog.getContent(), requestScope("content"));

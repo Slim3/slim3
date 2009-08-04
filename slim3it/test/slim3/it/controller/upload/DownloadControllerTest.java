@@ -19,7 +19,7 @@ public class DownloadControllerTest extends JDOControllerTestCase {
         DownloadController controller = getController();
         assertNotNull(controller);
         assertFalse(isRedirect());
-        assertNull(getNextPath());
+        assertNull(getDestinationPath());
         byte[] bytes = response.getOutputAsByteArray();
         assertEquals(1, bytes.length);
         assertEquals(1, bytes[0]);
