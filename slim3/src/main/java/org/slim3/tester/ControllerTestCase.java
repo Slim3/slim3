@@ -122,7 +122,10 @@ public abstract class ControllerTestCase extends TestCase {
      */
     protected void setUpContextParameter() {
         String className = getClass().getName();
-        int pos = className.lastIndexOf(".controller.");
+        int pos =
+            className.lastIndexOf("."
+                + ControllerConstants.CONTROLLER_PACKAGE
+                + ".");
         if (pos < 0) {
             pos = className.lastIndexOf('.');
         }
@@ -130,10 +133,6 @@ public abstract class ControllerTestCase extends TestCase {
         application.setInitParameter(
             ControllerConstants.ROOT_PACKAGE_KEY,
             rootPackageName);
-        application.setInitParameter(
-            ControllerConstants.STATIC_PACKAGES_KEY,
-            ControllerConstants.MODEL_PACKAGE);
-
     }
 
     @Override

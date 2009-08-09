@@ -37,9 +37,9 @@ public class HotReloadingClassLoader extends ClassLoader {
     protected String rootPackageName;
 
     /**
-     * The static package names.
+     * The cool package name.
      */
-    protected String[] staticPackageNames;
+    protected String coolPackageName;
 
     /**
      * Constructor
@@ -48,26 +48,36 @@ public class HotReloadingClassLoader extends ClassLoader {
      *            the parent class loader.
      * @param rootPackageName
      *            the root package name
-     * @param staticPackageNames
-     *            the static package names
+     * @param coolPackageName
+     *            the cool package name
      * @throws NullPointerException
      *             if the rootPackageName parameter is null or if the
-     *             staticPackageNames parameter is null
+     *             coolPackageName parameter is null
      */
     public HotReloadingClassLoader(ClassLoader parentClassLoader,
-            String rootPackageName, String[] staticPackageNames)
+            String rootPackageName, String coolPackageName)
             throws NullPointerException {
         super(parentClassLoader);
         if (rootPackageName == null) {
             throw new NullPointerException(
                 "The rootPackageName parameter is null.");
         }
-        if (staticPackageNames == null) {
+        if (coolPackageName == null) {
             throw new NullPointerException(
-                "The staticPackageNames parameter is null.");
+                "The coolPackageName parameter is null.");
         }
         this.rootPackageName = rootPackageName;
-        this.staticPackageNames = staticPackageNames;
+        this.coolPackageName = coolPackageName;
+    }
+
+    /**
+     * Constructor for customization.
+     * 
+     * @param parentClassLoader
+     *            the parent class loader.
+     */
+    protected HotReloadingClassLoader(ClassLoader parentClassLoader) {
+        super(parentClassLoader);
     }
 
     @Override
@@ -216,10 +226,8 @@ public class HotReloadingClassLoader extends ClassLoader {
         if (!className.startsWith(rootPackageName + ".")) {
             return false;
         }
-        for (String p : staticPackageNames) {
-            if (className.startsWith(rootPackageName + "." + p + ".")) {
-                return false;
-            }
+        if (className.startsWith(rootPackageName + "." + coolPackageName + ".")) {
+            return false;
         }
         return true;
     }

@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<plugin id="org.slim3" name="DataNucleus plug-ins" provider-name="slim3">
+    <extension point="org.datanucleus.classloader_resolver">
+        <class-loader-resolver name="s3loader" class-name="org.slim3.jdo.S3ClassLoaderResolver"/>
+    </extension>
+</plugin>

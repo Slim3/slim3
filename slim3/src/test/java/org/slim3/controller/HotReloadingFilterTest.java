@@ -60,33 +60,24 @@ public class HotReloadingFilterTest extends TestCase {
      * @throws Exception
      * 
      */
-    public void testStaticPackages() throws Exception {
+    public void testCoolPackage() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         filter.servletContext = servletContext;
         servletContext.setInitParameter(
-            ControllerConstants.STATIC_PACKAGES_KEY,
-            "model, aaa");
-        filter.initStaticPackageNames();
-        assertEquals(2, filter.staticPackageNames.length);
-        assertEquals("model", filter.staticPackageNames[0]);
-        assertEquals("aaa", filter.staticPackageNames[1]);
+            ControllerConstants.COOL_PACKAGE_KEY,
+            "aaa");
+        filter.initCoolPackageName();
+        assertEquals("aaa", filter.coolPackageName);
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testStaticPackagesForModelIsNotFound() throws Exception {
+    public void testCoolPackageForNotFound() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         filter.servletContext = servletContext;
-        servletContext.setInitParameter(
-            ControllerConstants.STATIC_PACKAGES_KEY,
-            "aaa");
-        try {
-            filter.initStaticPackageNames();
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
+        filter.initCoolPackageName();
+        assertEquals("cool", filter.coolPackageName);
     }
 }

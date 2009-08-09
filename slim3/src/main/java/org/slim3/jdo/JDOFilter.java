@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Transaction;
+import javax.jdo.spi.JDOImplHelper;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -29,6 +30,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 import org.slim3.controller.FrontController;
+import org.slim3.controller.HotReloadingClassLoader;
 
 /**
  * {@link FrontController} for JDO.
@@ -74,6 +76,11 @@ public class JDOFilter implements Filter {
                     logger.log(Level.WARNING, e.getMessage(), e);
                 }
                 CurrentPersistenceManager.set(null);
+                ClassLoader loader =
+                    Thread.currentThread().getContextClassLoader();
+                if (loader instanceof HotReloadingClassLoader) {
+                    JDOImplHelper.getInstance().unregisterClasses(loader);
+                }
             }
         } else {
             chain.doFilter(request, response);

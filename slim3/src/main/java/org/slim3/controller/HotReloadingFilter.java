@@ -62,9 +62,9 @@ public class HotReloadingFilter implements Filter {
     protected String rootPackageName;
 
     /**
-     * The static package names.
+     * The cool package name.
      */
-    protected String[] staticPackageNames;
+    protected String coolPackageName;
 
     /**
      * Constructor.
@@ -76,7 +76,7 @@ public class HotReloadingFilter implements Filter {
         initServletContext(config);
         initHotReloading();
         initRootPackageName();
-        initStaticPackageNames();
+        initCoolPackageName();
     }
 
     /**
@@ -129,27 +129,15 @@ public class HotReloadingFilter implements Filter {
     }
 
     /**
-     * Initializes the static package names.
+     * Initializes the cool package name.
      */
-    protected void initStaticPackageNames() {
-        String s =
+    protected void initCoolPackageName() {
+        coolPackageName =
             servletContext
-                .getInitParameter(ControllerConstants.STATIC_PACKAGES_KEY);
-        if (StringUtil.isEmpty(s)) {
-            throw new IllegalStateException("The context-param("
-                + ControllerConstants.STATIC_PACKAGES_KEY
-                + ") is not found in web.xml.");
+                .getInitParameter(ControllerConstants.COOL_PACKAGE_KEY);
+        if (StringUtil.isEmpty(coolPackageName)) {
+            coolPackageName = ControllerConstants.DEFAULT_COOL_PACKAGE;
         }
-        staticPackageNames = StringUtil.split(s, ", ");
-        for (String name : staticPackageNames) {
-            if (name.equals(ControllerConstants.MODEL_PACKAGE)) {
-                return;
-            }
-        }
-        throw new IllegalStateException(
-            "The model package is not found in slim3.staticPackages("
-                + s
-                + ").");
     }
 
     public void destroy() {
@@ -167,7 +155,7 @@ public class HotReloadingFilter implements Filter {
                         new HotReloadingClassLoader(
                             previousLoader,
                             rootPackageName,
-                            staticPackageNames));
+                            coolPackageName));
                     try {
                         chain.doFilter(request, response);
                     } catch (LinkageError e) {

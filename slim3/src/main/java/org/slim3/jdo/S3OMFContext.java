@@ -1,0 +1,62 @@
+/*
+ * Copyright 2004-2009 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
+ */
+package org.slim3.jdo;
+
+import org.datanucleus.OMFContext;
+import org.datanucleus.PersistenceConfiguration;
+import org.datanucleus.metadata.MetaDataManager;
+
+/**
+ * The object manager context for Slim3.
+ * 
+ * @author higa
+ * @since 3.0
+ * 
+ */
+public class S3OMFContext extends OMFContext {
+
+    /**
+     * MetaDataManager for handling the MetaData for this PMF.
+     */
+    protected MetaDataManager metaDataManager = new S3MetaDataManager(this);
+
+    /**
+     * Constructor.
+     * 
+     * @param persistenceConfig
+     *            the persistence configuration
+     */
+    public S3OMFContext(PersistenceConfiguration persistenceConfig) {
+        super(persistenceConfig);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param persistenceConfig
+     *            the persistence configuration
+     * @param context
+     *            the context
+     */
+    public S3OMFContext(PersistenceConfiguration persistenceConfig, int context) {
+        super(persistenceConfig, context);
+    }
+
+    @Override
+    public MetaDataManager getMetaDataManager() {
+        return metaDataManager;
+    }
+}

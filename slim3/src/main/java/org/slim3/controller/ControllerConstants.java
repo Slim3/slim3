@@ -71,9 +71,14 @@ public interface ControllerConstants {
     String ROOT_PACKAGE_KEY = "slim3.rootPackage";
 
     /**
-     * The key of static packages.
+     * The key of cool package.
      */
-    String STATIC_PACKAGES_KEY = "slim3.staticPackages";
+    String COOL_PACKAGE_KEY = "slim3.coolPackage";
+
+    /**
+     * The default cool package.
+     */
+    String DEFAULT_COOL_PACKAGE = "cool";
 
     /**
      * The key of controller.

@@ -49,7 +49,7 @@ public class HotReloadingClassLoaderTest extends TestCase {
             new HotReloadingClassLoader(
                 originalClassLoader,
                 ROOT_PACKAGE,
-                new String[] { "model" });
+                "cool");
     }
 
     @Override
@@ -76,7 +76,8 @@ public class HotReloadingClassLoaderTest extends TestCase {
      */
     public void testIsTarget() throws Exception {
         assertTrue(hotClassLoader.isTarget(CONTROLLER_CLASS_NAME));
-        assertFalse(hotClassLoader.isTarget(ROOT_PACKAGE + ".model.Aaa"));
+        assertFalse(hotClassLoader.isTarget(ROOT_PACKAGE
+            + ".cool.service.AaaService"));
         assertFalse(hotClassLoader.isTarget(String.class.getName()));
     }
 }
