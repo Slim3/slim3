@@ -5,7 +5,7 @@
 
    <persistence-manager-factory>
        <property name="javax.jdo.PersistenceManagerFactoryClass"
-           value="org.slim3.jdo.S3PersistenceManagerFactory"/>
+           value="org.slim3.jdo.S3DatastorePersistenceManagerFactory"/>
        <property name="javax.jdo.option.ConnectionURL" value="appengine"/>
        <property name="javax.jdo.option.NontransactionalRead" value="true"/>
        <property name="javax.jdo.option.NontransactionalWrite" value="true"/>
