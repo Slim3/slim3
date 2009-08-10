@@ -15,7 +15,6 @@
  */
 package org.slim3.util;
 
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -338,45 +337,14 @@ public final class BeanUtil {
      * @param options
      *            the copy options
      * @throws NullPointerException
-     *             if the src parameter is null or if the dest parameter is null
-     *             or if the options parameter is null
+     *             if the src parameter is null
      */
-    @SuppressWarnings("unchecked")
     public static void copy(HttpServletRequest src, Object dest,
             CopyOptions options) throws NullPointerException {
         if (src == null) {
             throw new NullPointerException("The src parameter is null.");
         }
-        if (dest == null) {
-            throw new NullPointerException("The dest parameter is null.");
-        }
-        if (options == null) {
-            throw new NullPointerException("The options parameter is null.");
-        }
-        BeanDesc destBeanDesc = getBeanDesc(dest.getClass());
-        for (Enumeration<String> e = src.getAttributeNames(); e
-            .hasMoreElements();) {
-            String propertyName = e.nextElement();
-            if (!options.isTargetProperty(propertyName)) {
-                continue;
-            }
-            PropertyDesc destPropertyDesc =
-                destBeanDesc.getPropertyDesc(propertyName);
-            if (destPropertyDesc == null) {
-                continue;
-            }
-            if (!destPropertyDesc.isWritable()) {
-                continue;
-            }
-            Object value = src.getAttribute(propertyName);
-            if (!options.isTargetValue(value)) {
-                continue;
-            }
-            value =
-                options.convertValue(value, propertyName, destPropertyDesc
-                    .getPropertyClass());
-            destPropertyDesc.setValue(dest, value);
-        }
+        copy(new RequestMap(src), dest, options);
     }
 
     /**
@@ -401,36 +369,15 @@ public final class BeanUtil {
      * @param options
      *            the copy options
      * @throws NullPointerException
-     *             if the src parameter is null or if the dest parameter is null
-     *             or if the options parameter is null
+     *             if the dest parameter is null
+     * 
      */
     public static void copy(Object src, HttpServletRequest dest,
             CopyOptions options) throws NullPointerException {
-        if (src == null) {
-            throw new NullPointerException("The src parameter is null.");
-        }
         if (dest == null) {
             throw new NullPointerException("The dest parameter is null.");
         }
-        if (options == null) {
-            throw new NullPointerException("The options parameter is null.");
-        }
-        BeanDesc srcBeanDesc = getBeanDesc(src.getClass());
-        int size = srcBeanDesc.getPropertyDescSize();
-        for (int i = 0; i < size; i++) {
-            PropertyDesc srcPropertyDesc = srcBeanDesc.getPropertyDesc(i);
-            String propertyName = srcPropertyDesc.getName();
-            if (!srcPropertyDesc.isReadable()
-                || !options.isTargetProperty(propertyName)) {
-                continue;
-            }
-            Object value = srcPropertyDesc.getValue(src);
-            if (!options.isTargetValue(value)) {
-                continue;
-            }
-            value = options.convertValue(value, propertyName, null);
-            dest.setAttribute(propertyName, value);
-        }
+        copy(src, new RequestMap(dest), options);
     }
 
     private BeanUtil() {
