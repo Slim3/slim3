@@ -18,6 +18,7 @@ package org.slim3.tester;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,7 +31,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 import org.slim3.exception.WrapRuntimeException;
-import org.slim3.util.IteratorEnumeration;
 
 /**
  * A mock implementation for {@link ServletContext}.
@@ -252,9 +252,7 @@ public class MockServletContext implements ServletContext, Serializable {
     }
 
     public Enumeration<String> getInitParameterNames() {
-        return new IteratorEnumeration<String>(initParameterMap
-            .keySet()
-            .iterator());
+        return Collections.enumeration(initParameterMap.keySet());
     }
 
     /**
@@ -284,9 +282,7 @@ public class MockServletContext implements ServletContext, Serializable {
     }
 
     public Enumeration<String> getAttributeNames() {
-        return new IteratorEnumeration<String>(attributeTable
-            .keySet()
-            .iterator());
+        return Collections.enumeration(attributeTable.keySet());
     }
 
     public void setAttribute(String name, Object value) {

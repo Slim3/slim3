@@ -16,14 +16,13 @@
 package org.slim3.tester;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
-
-import org.slim3.util.IteratorEnumeration;
 
 /**
  * A mock implementation for {@link ServletConfig}.
@@ -49,7 +48,8 @@ public class MockServletConfig implements ServletConfig, Serializable {
     /**
      * The map for initial parameters.
      */
-    protected Map<String, String> initParameterMap = new HashMap<String, String>();
+    protected Map<String, String> initParameterMap =
+        new HashMap<String, String>();
 
     /**
      * Constructor.
@@ -63,7 +63,7 @@ public class MockServletConfig implements ServletConfig, Serializable {
             throws NullPointerException {
         if (servletContext == null) {
             throw new NullPointerException(
-                    "The servletContext parameter is null.");
+                "The servletContext parameter is null.");
         }
         this.servletContext = servletContext;
     }
@@ -116,7 +116,6 @@ public class MockServletConfig implements ServletConfig, Serializable {
     }
 
     public Enumeration<String> getInitParameterNames() {
-        return new IteratorEnumeration<String>(initParameterMap.keySet()
-                .iterator());
+        return Collections.enumeration(initParameterMap.keySet());
     }
 }

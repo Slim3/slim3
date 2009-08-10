@@ -16,14 +16,13 @@
 package org.slim3.tester;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
-
-import org.slim3.util.IteratorEnumeration;
 
 /**
  * A mock implementation for {@link HttpSession}.
@@ -88,7 +87,7 @@ public class MockHttpSession implements HttpSession, Serializable {
             throws NullPointerException {
         if (servletContext == null) {
             throw new NullPointerException(
-                    "The servletContext parameter is null.");
+                "The servletContext parameter is null.");
         }
         this.servletContext = servletContext;
     }
@@ -160,7 +159,7 @@ public class MockHttpSession implements HttpSession, Serializable {
     }
 
     public Enumeration<String> getAttributeNames() {
-        return new IteratorEnumeration<String>(attributeMap.keySet().iterator());
+        return Collections.enumeration(attributeMap.keySet());
     }
 
     @SuppressWarnings("deprecation")

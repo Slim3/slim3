@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +35,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.slim3.util.ArrayMap;
-import org.slim3.util.IteratorEnumeration;
 
 /**
  * A mock implementation for {@link HttpServletRequest}.
@@ -272,14 +272,14 @@ public class MockHttpServletRequest implements HttpServletRequest {
 
     public Enumeration<String> getHeaders(String name) {
         List<String> values = getHeaderList(name);
-        if (values != null) {
-            return new IteratorEnumeration<String>(values.iterator());
+        if (values == null) {
+            values = Collections.emptyList();
         }
-        return new EmptyEnumeration<String>();
+        return Collections.enumeration(values);
     }
 
     public Enumeration<String> getHeaderNames() {
-        return new IteratorEnumeration<String>(headerMap.keySet().iterator());
+        return Collections.enumeration(headerMap.keySet());
     }
 
     /**
@@ -545,7 +545,7 @@ public class MockHttpServletRequest implements HttpServletRequest {
     }
 
     public Enumeration<String> getAttributeNames() {
-        return new IteratorEnumeration<String>(attributeMap.keySet().iterator());
+        return Collections.enumeration(attributeMap.keySet());
     }
 
     public void setAttribute(String name, Object value) {
@@ -615,7 +615,7 @@ public class MockHttpServletRequest implements HttpServletRequest {
     }
 
     public Enumeration<String> getParameterNames() {
-        return new IteratorEnumeration<String>(parameterMap.keySet().iterator());
+        return Collections.enumeration(parameterMap.keySet());
     }
 
     public String[] getParameterValues(String name) {
@@ -877,7 +877,7 @@ public class MockHttpServletRequest implements HttpServletRequest {
     }
 
     public Enumeration<Locale> getLocales() {
-        return new IteratorEnumeration<Locale>(localeList.iterator());
+        return Collections.enumeration(localeList);
     }
 
     public boolean isSecure() {

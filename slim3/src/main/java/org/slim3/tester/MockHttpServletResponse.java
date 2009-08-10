@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -29,8 +30,6 @@ import java.util.Map;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-
-import org.slim3.util.IteratorEnumeration;
 
 /**
  * A mock implementation for {@link MockHttpServletResponse}.
@@ -322,10 +321,10 @@ public class MockHttpServletResponse implements HttpServletResponse {
      */
     public Enumeration<String> getHeaders(String name) {
         List<String> values = getHeaderList(name);
-        if (values != null) {
-            return new IteratorEnumeration<String>(values.iterator());
+        if (values == null) {
+            values = Collections.emptyList();
         }
-        return new EmptyEnumeration<String>();
+        return Collections.enumeration(values);
     }
 
     /**
@@ -384,7 +383,7 @@ public class MockHttpServletResponse implements HttpServletResponse {
      * @return the header names
      */
     public Enumeration<String> getHeaderNames() {
-        return new IteratorEnumeration<String>(headerMap.keySet().iterator());
+        return Collections.enumeration(headerMap.keySet());
     }
 
     public void setHeader(String name, String value) {
