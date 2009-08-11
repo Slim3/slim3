@@ -15,51 +15,26 @@
  */
 package org.slim3.controller;
 
-import javax.servlet.http.HttpSession;
-
 import junit.framework.TestCase;
 
-import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
 
 /**
  * @author higa
  * 
  */
-public class HotHttpServletRequestWrapperTest extends TestCase {
+public class HotServletContextWrapperTest extends TestCase {
 
     private MockServletContext servletContext = new MockServletContext();
 
-    private MockHttpServletRequest request =
-        new MockHttpServletRequest(servletContext);
-
-    private HotHttpServletRequestWrapper requestWrapper =
-        new HotHttpServletRequestWrapper(request);
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testGetSession() throws Exception {
-        HttpSession session = requestWrapper.getSession();
-        assertNotNull(session);
-        assertSame(session, requestWrapper.getSession());
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testInvalidateSession() throws Exception {
-        requestWrapper.getSession().invalidate();
-        assertNull(requestWrapper.sessionWrapper);
-    }
+    private HotServletContextWrapper servletContextWrapper =
+        new HotServletContextWrapper(servletContext);
 
     /**
      * @throws Exception
      * 
      */
     public void testGetRequestDispatcher() throws Exception {
-        assertTrue(requestWrapper.getRequestDispatcher("/index.jsp") instanceof HotRequestDispatcherWrapper);
+        assertTrue(servletContextWrapper.getRequestDispatcher("/index.jsp") instanceof HotRequestDispatcherWrapper);
     }
 }

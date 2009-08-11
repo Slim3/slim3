@@ -68,9 +68,21 @@ public final class Cleaner {
                 }
             }
         }
-        Introspector.flushCaches();
-        ResourceBundle.clearCache(Thread
-            .currentThread()
-            .getContextClassLoader());
+        try {
+            Introspector.flushCaches();
+        } catch (Throwable t) {
+            if (logger.isLoggable(Level.WARNING)) {
+                logger.log(Level.WARNING, t.getMessage(), t);
+            }
+        }
+        try {
+            ResourceBundle.clearCache(Thread
+                .currentThread()
+                .getContextClassLoader());
+        } catch (Throwable t) {
+            if (logger.isLoggable(Level.WARNING)) {
+                logger.log(Level.WARNING, t.getMessage(), t);
+            }
+        }
     }
 }

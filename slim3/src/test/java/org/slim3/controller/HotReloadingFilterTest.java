@@ -18,6 +18,7 @@ package org.slim3.controller;
 import junit.framework.TestCase;
 
 import org.slim3.tester.MockServletContext;
+import org.slim3.util.ServletContextLocator;
 
 /**
  * @author higa
@@ -26,6 +27,25 @@ import org.slim3.tester.MockServletContext;
 public class HotReloadingFilterTest extends TestCase {
 
     private HotReloadingFilter filter = new HotReloadingFilter();
+
+    @Override
+    protected void tearDown() throws Exception {
+        ServletContextLocator.set(null);
+        super.tearDown();
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testHotReloading() throws Exception {
+        MockServletContext servletContext = new MockServletContext();
+        servletContext.setServerInfo("Development");
+        filter.servletContext = servletContext;
+        filter.initHotReloading();
+        assertTrue(filter.hotReloading);
+        assertTrue(ServletContextLocator.get() instanceof HotServletContextWrapper);
+    }
 
     /**
      * @throws Exception

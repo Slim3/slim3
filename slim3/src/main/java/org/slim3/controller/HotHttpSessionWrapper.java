@@ -26,7 +26,7 @@ import org.slim3.util.Cleanable;
 import org.slim3.util.Cleaner;
 
 /**
- * The wrapper class of {@link HttpSession}.
+ * {@link HttpSession} for HOT reloading.
  * 
  * @author higa
  * @since 3.0

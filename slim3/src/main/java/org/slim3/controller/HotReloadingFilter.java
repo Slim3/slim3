@@ -26,9 +26,14 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slim3.exception.HotReloadingRuntimeException;
 import org.slim3.util.Cleaner;
+import org.slim3.util.RequestLocator;
+import org.slim3.util.ResponseLocator;
+import org.slim3.util.ServletContextLocator;
 import org.slim3.util.StringUtil;
 
 /**
@@ -108,6 +113,8 @@ public class HotReloadingFilter implements Filter {
         }
         if (hotReloading) {
             System.setSecurityManager(null);
+            ServletContextLocator.set(new HotServletContextWrapper(
+                servletContext));
         }
         if (logger.isLoggable(Level.INFO)) {
             logger.log(Level.INFO, "Slim3 HOT reloading:" + hotReloading);
@@ -142,51 +149,101 @@ public class HotReloadingFilter implements Filter {
 
     public void destroy() {
         Cleaner.cleanAll();
+        if (hotReloading) {
+            ServletContextLocator.set(null);
+        }
     }
 
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
+        doFilter(
+            (HttpServletRequest) request,
+            (HttpServletResponse) response,
+            chain);
+    }
+
+    /**
+     * Executes filtering process.
+     * 
+     * @param request
+     *            the request
+     * @param response
+     *            the response
+     * @param chain
+     *            the filter chain
+     * @throws IOException
+     *             if {@link IOException} is encountered
+     * @throws ServletException
+     *             if {@link ServletException} is encountered
+     */
+    protected void doFilter(HttpServletRequest request,
+            HttpServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
         if (hotReloading) {
             ClassLoader previousLoader =
                 Thread.currentThread().getContextClassLoader();
             if (!(previousLoader instanceof HotReloadingClassLoader)) {
-                synchronized (previousLoader) {
-                    Thread.currentThread().setContextClassLoader(
-                        new HotReloadingClassLoader(
-                            previousLoader,
-                            rootPackageName,
-                            coolPackageName));
-                    try {
-                        chain.doFilter(request, response);
-                    } catch (LinkageError e) {
-                        String msg = e.getMessage();
-                        if (msg.indexOf("loader constraint violation") >= 0) {
-                            throw new HotReloadingRuntimeException(
-                                "A class that is not HOT reloaded can not access a HOT reloaded class, "
-                                    + msg,
-                                e);
-                        }
-                        throw e;
-                    } catch (ClassCastException e) {
-                        String msg = e.getMessage();
-                        String[] msgs = StringUtil.split(msg, " ");
-                        if (msgs.length > 2
-                            && msgs[0].equals(msgs[msgs.length - 1])) {
-                            throw new HotReloadingRuntimeException(msg
-                                + " because of different class loader.", e);
-                        }
-                        throw e;
-                    } finally {
-                        Thread.currentThread().setContextClassLoader(
-                            previousLoader);
-                        Cleaner.cleanAll();
-                    }
-                }
+                doHotReloading(request, response, chain, previousLoader);
             } else {
                 chain.doFilter(request, response);
             }
         } else {
             chain.doFilter(request, response);
+        }
+    }
+
+    /**
+     * Executes filtering process.
+     * 
+     * @param request
+     *            the request
+     * @param response
+     *            the response
+     * @param chain
+     *            the filter chain
+     * @param previousLoader
+     *            the previous class loader
+     * @throws IOException
+     *             if {@link IOException} is encountered
+     * @throws ServletException
+     *             if {@link ServletException} is encountered
+     */
+    protected synchronized void doHotReloading(HttpServletRequest request,
+            HttpServletResponse response, FilterChain chain,
+            ClassLoader previousLoader) throws IOException, ServletException {
+        Thread.currentThread().setContextClassLoader(
+            new HotReloadingClassLoader(
+                previousLoader,
+                rootPackageName,
+                coolPackageName));
+        request = new HotHttpServletRequestWrapper(request);
+        RequestLocator.set(request);
+        ResponseLocator.set(response);
+        try {
+            chain.doFilter(request, response);
+        } catch (LinkageError e) {
+            String msg = e.getMessage();
+            if (msg.indexOf("loader constraint violation") >= 0) {
+                throw new HotReloadingRuntimeException(
+                    "A class that is not HOT reloaded can not access a HOT reloaded class, "
+                        + msg,
+                    e);
+            }
+            throw e;
+        } catch (ClassCastException e) {
+            String msg = e.getMessage();
+            String[] msgs = StringUtil.split(msg, " ");
+            if (msgs.length > 2 && msgs[0].equals(msgs[msgs.length - 1])) {
+                throw new HotReloadingRuntimeException(msg
+                    + " because of different class loader.", e);
+            }
+            throw e;
+        } finally {
+            Cleaner.cleanAll();
+            Thread.currentThread().setContextClassLoader(previousLoader);
+            RequestLocator.set(null);
+            ResponseLocator.set(null);
+
         }
     }
 }

@@ -89,6 +89,11 @@ public class FrontController implements Filter {
     protected ServletContext servletContext;
 
     /**
+     * Whether the servlet context is set to {@link ServletContextLocator}.
+     */
+    protected boolean servletContextSet = false;
+
+    /**
      * The root package name.
      */
     protected String rootPackageName;
@@ -143,7 +148,12 @@ public class FrontController implements Filter {
      */
     protected void initServletContext(FilterConfig config) {
         servletContext = config.getServletContext();
-        ServletContextLocator.set(servletContext);
+        if (ServletContextLocator.get() == null) {
+            ServletContextLocator.set(servletContext);
+            servletContextSet = true;
+        } else {
+            servletContext = ServletContextLocator.get();
+        }
     }
 
     /**
@@ -205,7 +215,9 @@ public class FrontController implements Filter {
     }
 
     public void destroy() {
-        ServletContextLocator.set(null);
+        if (servletContextSet) {
+            ServletContextLocator.set(null);
+        }
     }
 
     public void doFilter(ServletRequest request, ServletResponse response,

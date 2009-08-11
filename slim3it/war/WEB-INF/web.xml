@@ -5,6 +5,10 @@
         <param-name>slim3.rootPackage</param-name>
         <param-value>slim3.it</param-value>
     </context-param>
+    <context-param>
+        <param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
+        <param-value>application</param-value>
+    </context-param>
 
     <filter>
         <filter-name>hotReloadingFilter</filter-name>

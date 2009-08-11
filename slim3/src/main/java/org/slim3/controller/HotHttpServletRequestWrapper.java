@@ -15,12 +15,13 @@
  */
 package org.slim3.controller;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpSession;
 
 /**
- * {@link HttpServletRequestWrapper} for Slim3.
+ * {@link HttpServletRequestWrapper} for HOT reloading.
  * 
  * @author higa
  * @since 3.0
@@ -34,9 +35,9 @@ public class HotHttpServletRequestWrapper extends HttpServletRequestWrapper {
     protected HttpServletRequest originalRequest;
 
     /**
-     * The http session.
+     * The session wrapper.
      */
-    protected HttpSession session;
+    protected HotHttpSessionWrapper sessionWrapper;
 
     /**
      * Constructor.
@@ -56,15 +57,21 @@ public class HotHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
     @Override
     public HttpSession getSession(boolean create) {
-        if (session != null) {
-            return session;
+        if (sessionWrapper != null) {
+            return sessionWrapper;
         }
         HttpSession originalSession = originalRequest.getSession(create);
         if (originalSession == null) {
             return null;
         }
-        session = new HotHttpSessionWrapper(originalSession, this);
-        return session;
+        sessionWrapper = new HotHttpSessionWrapper(originalSession, this);
+        return sessionWrapper;
+    }
+
+    @Override
+    public RequestDispatcher getRequestDispatcher(String path) {
+        return new HotRequestDispatcherWrapper(originalRequest
+            .getRequestDispatcher(path));
     }
 
     /**
@@ -80,6 +87,6 @@ public class HotHttpServletRequestWrapper extends HttpServletRequestWrapper {
      * Invalidates the session.
      */
     protected void invalidateSession() {
-        session = null;
+        sessionWrapper = null;
     }
 }

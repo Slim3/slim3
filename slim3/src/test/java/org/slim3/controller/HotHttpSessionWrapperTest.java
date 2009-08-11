@@ -59,7 +59,7 @@ public class HotHttpSessionWrapperTest extends TestCase {
         sessionWrapper.invalidate();
         assertNull(sessionWrapper.originalSession);
         assertNull(sessionWrapper.requestWrapper);
-        assertNull(requestWrapper.session);
+        assertNull(requestWrapper.sessionWrapper);
         sessionWrapper.invalidate();
     }
 }
