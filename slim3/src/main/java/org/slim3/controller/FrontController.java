@@ -288,6 +288,12 @@ public class FrontController implements Filter {
         String path = request.getServletPath();
         Controller controller = getController(request, response, path);
         if (controller == null) {
+            if (request instanceof HotHttpServletRequestWrapper) {
+                request =
+                    HotHttpServletRequestWrapper.class
+                        .cast(request)
+                        .getOriginalRequest();
+            }
             chain.doFilter(request, response);
         } else {
             processController(request, response, controller);
