@@ -47,9 +47,7 @@ public class ModelGenerator implements Generator {
         p.println("package %s;", modelDesc.getPackageName());
         p.println();
         p.println("import java.io.Serializable;");
-        p.println("import java.util.logging.Logger;");
         p.println();
-        p.println("import javax.jdo.JDOHelper;");
         p.println("import javax.jdo.annotations.Extension;");
         p.println("import javax.jdo.annotations.IdGeneratorStrategy;");
         p.println("import javax.jdo.annotations.IdentityType;");
@@ -61,17 +59,12 @@ public class ModelGenerator implements Generator {
         p.println();
         p
             .println("@PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = \"true\")");
-        p.println("@Version(strategy = VersionStrategy.VERSION_NUMBER)");
+        p
+            .println("@Version(strategy = VersionStrategy.VERSION_NUMBER, column = \"version\")");
         p.println("public class %s implements Serializable {", modelDesc
             .getSimpleName());
         p.println();
         p.println("    private static final long serialVersionUID = 1L;");
-        p.println();
-        p.println("    @SuppressWarnings(\"unused\")");
-        p
-            .println(
-                "    private static final Logger logger = Logger.getLogger(%s.class.getName());",
-                modelDesc.getSimpleName());
         p.println();
         p.println("    @PrimaryKey");
         p
@@ -80,7 +73,12 @@ public class ModelGenerator implements Generator {
             .println("    @Extension(vendorName = \"datanucleus\", key = \"gae.encoded-pk\", value = \"true\")");
         p.println("    private String key;");
         p.println();
+        p.println("    @Persistent");
+        p.println("    private Long version = 1L;");
+        p.println();
         p.println("    /**");
+        p.println("     * Returns the key.");
+        p.println("     *");
         p.println("     * @return the key");
         p.println("     */");
         p.println("    public String getKey() {");
@@ -88,18 +86,22 @@ public class ModelGenerator implements Generator {
         p.println("    }");
         p.println();
         p.println("    /**");
+        p.println("     * Sets the key.");
+        p.println("     *");
         p.println("     * @param key");
-        p.println("     *            the key to set");
+        p.println("     *            the key");
         p.println("     */");
         p.println("    public void setKey(String key) {");
         p.println("        this.key = key;");
         p.println("    }");
         p.println();
         p.println("    /**");
+        p.println("     * Returns the version.");
+        p.println("     *");
         p.println("     * @return the version");
         p.println("     */");
-        p.println("    public long getVersion() {");
-        p.println("        return (Long) JDOHelper.getVersion(this);");
+        p.println("    public Long getVersion() {");
+        p.println("        return version;");
         p.println("    }");
         p.println("}");
     }

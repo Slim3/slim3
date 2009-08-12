@@ -8,8 +8,6 @@ import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-import javax.jdo.annotations.Version;
-import javax.jdo.annotations.VersionStrategy;
 
 import com.google.appengine.api.datastore.Blob;
 
@@ -17,7 +15,6 @@ import com.google.appengine.api.datastore.Blob;
  *
  */
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
-@Version(strategy = VersionStrategy.VERSION_NUMBER)
 public class UploadData implements Serializable {
 
     private static final long serialVersionUID = 1L;

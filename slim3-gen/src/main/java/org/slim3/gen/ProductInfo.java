@@ -29,10 +29,10 @@ import java.util.Properties;
 public class ProductInfo {
 
     /** the path of the product properties file */
-    protected static final String PATH = "/META-INF/product.properties";
+    protected static final String PATH = "/META-INF/slim3-gen.properties";
 
     /** the product name */
-    protected static String name = "Slim3-Gen";
+    protected static String name = "slim3-gen";
 
     /** the product version */
     protected static String version;

@@ -171,35 +171,9 @@ public class ControllerTestCaseTest extends ControllerTestCase {
      * @throws Exception
      * 
      */
-    public void testKeyForKeyNotFound() throws Exception {
-        try {
-            key();
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
     public void testVersion() throws Exception {
         request.setAttribute("version", "111");
-        assertEquals(111, version());
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testVersionForVersionNotFound() throws Exception {
-        try {
-            version();
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
+        assertEquals(Long.valueOf(111L), version());
     }
 
     /**

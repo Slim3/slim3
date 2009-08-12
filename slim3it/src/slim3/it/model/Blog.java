@@ -2,7 +2,6 @@ package slim3.it.model;
 
 import java.io.Serializable;
 
-import javax.jdo.JDOHelper;
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -13,7 +12,7 @@ import javax.jdo.annotations.Version;
 import javax.jdo.annotations.VersionStrategy;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
-@Version(strategy = VersionStrategy.VERSION_NUMBER)
+@Version(strategy = VersionStrategy.VERSION_NUMBER, column = "version")
 public class Blog implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -22,6 +21,9 @@ public class Blog implements Serializable {
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     @Extension(vendorName = "datanucleus", key = "gae.encoded-pk", value = "true")
     private String key;
+
+    @Persistent
+    private Long version = 1L;
 
     @Persistent
     private String title;
@@ -74,7 +76,7 @@ public class Blog implements Serializable {
         this.content = content;
     }
 
-    public long getVersion() {
-        return (Long) JDOHelper.getVersion(this);
+    public Long getVersion() {
+        return version;
     }
 }

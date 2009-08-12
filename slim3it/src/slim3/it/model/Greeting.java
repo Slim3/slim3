@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.logging.Logger;
 
-import javax.jdo.JDOHelper;
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -17,7 +16,7 @@ import javax.jdo.annotations.VersionStrategy;
 import com.google.appengine.api.users.User;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
-@Version(strategy = VersionStrategy.VERSION_NUMBER)
+@Version(strategy = VersionStrategy.VERSION_NUMBER, column = "version")
 public class Greeting implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -32,6 +31,9 @@ public class Greeting implements Serializable {
     private String key;
 
     @Persistent
+    private Long version = 1L;
+
+    @Persistent
     private User author;
 
     @Persistent
@@ -41,6 +43,8 @@ public class Greeting implements Serializable {
     private Date date = new Date();
 
     /**
+     * Returns the key.
+     * 
      * @return the key
      */
     public String getKey() {
@@ -53,6 +57,21 @@ public class Greeting implements Serializable {
      */
     public void setKey(String key) {
         this.key = key;
+    }
+
+    /**
+     * @return the version
+     */
+    public Long getVersion() {
+        return version;
+    }
+
+    /**
+     * @param version
+     *            the version to set
+     */
+    public void setVersion(Long version) {
+        this.version = version;
     }
 
     /**
@@ -98,12 +117,5 @@ public class Greeting implements Serializable {
      */
     public void setDate(Date date) {
         this.date = date;
-    }
-
-    /**
-     * @return the version
-     */
-    public long getVersion() {
-        return (Long) JDOHelper.getVersion(this);
     }
 }

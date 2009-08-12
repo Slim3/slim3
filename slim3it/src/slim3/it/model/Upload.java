@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.jdo.JDOHelper;
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
@@ -18,7 +17,7 @@ import javax.jdo.annotations.VersionStrategy;
  *
  */
 @PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
-@Version(strategy = VersionStrategy.VERSION_NUMBER)
+@Version(strategy = VersionStrategy.VERSION_NUMBER, column = "version")
 public class Upload implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -27,6 +26,9 @@ public class Upload implements Serializable {
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     @Extension(vendorName = "datanucleus", key = "gae.encoded-pk", value = "true")
     private String key;
+
+    @Persistent
+    private Long version = 1L;
 
     @Persistent
     private String fileName;
@@ -97,7 +99,7 @@ public class Upload implements Serializable {
         this.dataList = dataList;
     }
 
-    public long getVersion() {
-        return (Long) JDOHelper.getVersion(this);
+    public Long getVersion() {
+        return version;
     }
 }
