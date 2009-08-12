@@ -2,7 +2,6 @@ package slim3.it.model;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.logging.Logger;
 
 import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -20,10 +19,6 @@ import com.google.appengine.api.users.User;
 public class Greeting implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    @SuppressWarnings("unused")
-    private static final Logger logger =
-        Logger.getLogger(Greeting.class.getName());
 
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
