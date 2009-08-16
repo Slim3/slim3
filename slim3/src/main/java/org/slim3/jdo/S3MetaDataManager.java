@@ -67,6 +67,7 @@ public class S3MetaDataManager extends JDOMetaDataManager {
                 classMetaDataByClass.clear();
                 classesWithoutPersistenceInfo.clear();
                 classMetaDataByInterface.clear();
+                fileMetaDataByURLString.clear();
                 initialized = false;
             }
         });
