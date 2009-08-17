@@ -61,4 +61,11 @@ public final class ClassConstants {
     /** {@code javax.jdo.annotations.Embedded} */
     public static final String Embedded = "javax.jdo.annotations.Embedded";
 
+    /** {@code com.google.gwt.user.client.rpc.RemoteServiceRelativePath} */
+    public static final String RemoteServiceRelativePath =
+        "com.google.gwt.user.client.rpc.RemoteServiceRelativePath";
+
+    /** {@code com.google.gwt.user.client.rpc.AsyncCallback} */
+    public static final String AsyncCallback =
+        "com.google.gwt.user.client.rpc.AsyncCallback";
 }

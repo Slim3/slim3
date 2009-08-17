@@ -23,7 +23,7 @@ import org.slim3.gen.util.StringUtil;
  * @author taedium
  * @since 3.0
  */
-public class Constants {
+public final class Constants {
 
     /** the suffix of meta class */
     public static final String META_SUFFIX = "Meta";
@@ -36,6 +36,9 @@ public class Constants {
 
     /** the suffix of dao. */
     public static final String DAO_SUFFIX = "Dao";
+
+    /** the suffix of async class */
+    public static final String ASYNC_SUFFIX = "Async";
 
     /** the suffix of view. */
     public static final String VIEW_SUFFIX = ".jsp";

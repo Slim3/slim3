@@ -28,25 +28,26 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementFilter;
 
 import org.slim3.gen.ClassConstants;
-import org.slim3.gen.desc.ModelMetaDesc;
-import org.slim3.gen.desc.ModelMetaDescFactory;
+import org.slim3.gen.desc.ServiceAsyncDesc;
+import org.slim3.gen.desc.ServiceAsyncDescFactory;
+import org.slim3.gen.desc.ServiceAsyncMethodDescFactory;
 import org.slim3.gen.generator.Generator;
-import org.slim3.gen.generator.ModelMetaGenerator;
+import org.slim3.gen.generator.ServiceAsyncGenerator;
 import org.slim3.gen.message.MessageCode;
 import org.slim3.gen.message.MessageFormatter;
 
 /**
- * Processes JDO model classes which annotated with the {@code
- * javax.jdo.annotations.PersistenceCapable} class.
+ * Processes GWT service classes which annotated with the {@code
+ * com.google.gwt.user.client.rpc.RemoteServiceRelativePat} class.
  * 
  * @author taedium
  * @since 3.0
  * 
  */
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
-@SupportedAnnotationTypes(ClassConstants.PersistenceCapable)
+@SupportedAnnotationTypes(ClassConstants.RemoteServiceRelativePath)
 @SupportedOptions( { Options.DEBUG })
-public class ModelProcessor extends AbstractProcessor {
+public class ServiceProcessor extends AbstractProcessor {
 
     /** the support for generating */
     protected GenerateSupport generateSupport;
@@ -72,7 +73,7 @@ public class ModelProcessor extends AbstractProcessor {
                     Logger.error(processingEnv, element, MessageFormatter
                         .getMessage(
                             MessageCode.SILM3GEN0001,
-                            ClassConstants.PersistenceCapable));
+                            ClassConstants.RemoteServiceRelativePath));
                     throw e;
                 }
             }
@@ -81,10 +82,10 @@ public class ModelProcessor extends AbstractProcessor {
     }
 
     /**
-     * Handles a type element represents a JDO model class.
+     * Handles a type element represents a GWT service class.
      * 
      * @param element
-     *            the element represents a JDO model class.
+     *            the element represents a GWT service class.
      */
     protected void handleTypeElement(TypeElement element) {
         if (Options.isDebugEnabled(processingEnv)) {
@@ -92,13 +93,19 @@ public class ModelProcessor extends AbstractProcessor {
                 MessageCode.SILM3GEN0002,
                 element));
         }
-        ModelMetaDescFactory modelMetaDescFactory =
-            createModelMetaDescFactory();
-        ModelMetaDesc modelMetaDesc =
-            modelMetaDescFactory.createModelMetaDesc(element);
-        if (modelMetaDesc.isTopLevel()) {
-            Generator generator = createGenerator(modelMetaDesc);
-            generateSupport.generate(generator, modelMetaDesc, element);
+        if (element.getKind().isInterface()) {
+            ServiceAsyncMethodDescFactory serviceAsyncMethodDescFactory =
+                createAsyncMethodDescFactory();
+            ServiceAsyncDescFactory serviceAsyncDescFactory =
+                createServiceAsyncDescFactory(serviceAsyncMethodDescFactory);
+            ServiceAsyncDesc serviceAsyncDesc =
+                serviceAsyncDescFactory.createServiceAsyncDesc(element);
+            Generator generator = createGenerator(serviceAsyncDesc);
+            generateSupport.generate(generator, serviceAsyncDesc, element);
+        } else {
+            Logger.error(processingEnv, element, MessageFormatter.getMessage(
+                MessageCode.SILM3GEN0011,
+                element));
         }
         if (Options.isDebugEnabled(processingEnv)) {
             Logger.debug(processingEnv, MessageFormatter.getMessage(
@@ -108,22 +115,37 @@ public class ModelProcessor extends AbstractProcessor {
     }
 
     /**
-     * Creates a model meta description factory.
+     * Creates a {@link ServiceAsyncMethodDescFactory}.
      * 
-     * @return a model meta description factory
+     * @return a service async method description factory
      */
-    protected ModelMetaDescFactory createModelMetaDescFactory() {
-        return new ModelMetaDescFactory(new ModelScanner(processingEnv));
+    protected ServiceAsyncMethodDescFactory createAsyncMethodDescFactory() {
+        return new ServiceAsyncMethodDescFactory(processingEnv);
     }
 
     /**
-     * Creates a generator object.
+     * Creates a {@link ServiceAsyncDescFactory}.
      * 
-     * @param modelMetaDesc
-     *            the model description.
+     * @param serviceAsyncMethodDescFactory
+     *            the service async method description factory
+     * @return a service async description factory
+     */
+    protected ServiceAsyncDescFactory createServiceAsyncDescFactory(
+            ServiceAsyncMethodDescFactory serviceAsyncMethodDescFactory) {
+        return new ServiceAsyncDescFactory(
+            processingEnv,
+            serviceAsyncMethodDescFactory);
+    }
+
+    /**
+     * Creates a {@link Generator}.
+     * 
+     * @param serviceAsyncDesc
+     *            the service async description.
      * @return a generator object.
      */
-    protected Generator createGenerator(ModelMetaDesc modelMetaDesc) {
-        return new ModelMetaGenerator(modelMetaDesc);
+    protected Generator createGenerator(ServiceAsyncDesc serviceAsyncDesc) {
+        return new ServiceAsyncGenerator(serviceAsyncDesc);
     }
+
 }

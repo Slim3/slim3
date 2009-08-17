@@ -51,6 +51,7 @@ public class ModelMetaDesc implements ClassDesc {
      * 
      * @return the packageName
      */
+    @Override
     public String getPackageName() {
         return packageName;
     }
@@ -70,6 +71,7 @@ public class ModelMetaDesc implements ClassDesc {
      * 
      * @return the simpleName
      */
+    @Override
     public String getSimpleName() {
         return simpleName;
     }

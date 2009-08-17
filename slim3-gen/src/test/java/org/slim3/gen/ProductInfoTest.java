@@ -29,7 +29,7 @@ public class ProductInfoTest extends TestCase {
      * @throws Exception
      */
     public void test() throws Exception {
-        assertEquals("Slim3-Gen", ProductInfo.getName());
+        assertEquals("slim3-gen", ProductInfo.getName());
         assertEquals("@VERSION@", ProductInfo.getVersion());
     }
 }

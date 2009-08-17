@@ -35,18 +35,19 @@ import org.slim3.gen.printer.Printer;
  */
 public class ModelMetaGenerator implements Generator {
 
-    /** the model description */
+    /** the model meta description */
     protected final ModelMetaDesc modelMetaDesc;
 
     /**
      * Creates a new {@link ModelMetaGenerator}.
      * 
      * @param modelMetaDesc
-     *            the model description
+     *            the model meta description
      */
     public ModelMetaGenerator(ModelMetaDesc modelMetaDesc) {
         if (modelMetaDesc == null) {
-            throw new NullPointerException("The modelDesc parameter is null.");
+            throw new NullPointerException(
+                "The modelMetaDesc parameter is null.");
         }
         this.modelMetaDesc = modelMetaDesc;
     }

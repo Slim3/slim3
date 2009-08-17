@@ -24,7 +24,7 @@ package org.slim3.gen.message;
 public enum MessageCode {
 
     /** */
-    SILM3GEN0001("Failed to create a Meta class. Check a detail message displayed in the Error Log view(for Eclipse) or the console(for javac)."),
+    SILM3GEN0001("Failed to process annotation[{0}]. Check a detail message displayed in the Error Log view(for Eclipse) or the console(for javac)."),
     /** */
     SILM3GEN0002("Element[{0}] is handling."),
     /** */
@@ -42,7 +42,9 @@ public enum MessageCode {
     /** */
     SILM3GEN0009("The property[{0}] has already been set."),
     /** */
-    SILM3GEN0010("Neither @javax.jdo.annotations.Persistent nor @javax.jdo.annotations.NotPersistent is found.");
+    SILM3GEN0010("Neither @javax.jdo.annotations.Persistent nor @javax.jdo.annotations.NotPersistent is found."),
+    /** */
+    SILM3GEN0011("@com.google.gwt.user.client.rpc.RemoteServiceRelativePath is available only to an interface.");
 
     /** the message */
     public final String message;
