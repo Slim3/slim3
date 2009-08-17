@@ -225,8 +225,13 @@ public class HotReloadingFilter implements Filter {
             String msg = e.getMessage();
             if (msg.indexOf("loader constraint violation") >= 0) {
                 throw new HotReloadingRuntimeException(
-                    "A class that is not HOT reloaded can not access a HOT reloaded class, "
-                        + msg,
+                    "No HOT reloaded class can not access a HOT reloaded class. HOT reloaded class means the class is located on \""
+                        + rootPackageName
+                        + "\" package except \""
+                        + rootPackageName
+                        + "."
+                        + coolPackageName
+                        + "\" package.",
                     e);
             }
             throw e;
