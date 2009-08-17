@@ -26,7 +26,7 @@ import javax.lang.model.type.TypeMirror;
 import org.slim3.gen.util.TypeUtil;
 
 /**
- * Represents a service async method description factory.
+ * Creates a service async method description.
  * 
  * @author taedium
  * @since 3.0

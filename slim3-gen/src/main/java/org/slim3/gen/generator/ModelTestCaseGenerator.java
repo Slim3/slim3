@@ -48,8 +48,10 @@ public class ModelTestCaseGenerator implements Generator {
 
     @Override
     public void generate(Printer p) {
-        p.println("package %s;", modelDesc.getPackageName());
-        p.println();
+        if (!modelDesc.getPackageName().isEmpty()) {
+            p.println("package %s;", modelDesc.getPackageName());
+            p.println();
+        }
         p.println("import %s;", modelDesc.getTestCaseSuperclassName());
         p.println();
         p.println(

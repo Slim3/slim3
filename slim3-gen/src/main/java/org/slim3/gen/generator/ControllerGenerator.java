@@ -48,8 +48,10 @@ public class ControllerGenerator implements Generator {
 
     @Override
     public void generate(Printer p) {
-        p.println("package %s;", controllerDesc.getPackageName());
-        p.println();
+        if (!controllerDesc.getPackageName().isEmpty()) {
+            p.println("package %s;", controllerDesc.getPackageName());
+            p.println();
+        }
         p.println("import java.util.logging.Logger;");
         p.println("import %s;", controllerDesc.getSuperclassName());
         p.println("import %s;", ClassConstants.Navigation);

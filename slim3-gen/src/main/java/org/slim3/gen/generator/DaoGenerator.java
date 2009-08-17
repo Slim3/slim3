@@ -46,8 +46,10 @@ public class DaoGenerator implements Generator {
 
     @Override
     public void generate(Printer p) {
-        p.println("package %s;", daoDesc.getPackageName());
-        p.println();
+        if (!daoDesc.getPackageName().isEmpty()) {
+            p.println("package %s;", daoDesc.getPackageName());
+            p.println();
+        }
         p.println("import java.util.logging.Logger;");
         p.println("import javax.jdo.PersistenceManager;");
         p.println("import org.slim3.jdo.SelectQuery;");

@@ -22,7 +22,7 @@ import org.slim3.gen.util.ClassUtil;
 import org.slim3.gen.util.StringUtil;
 
 /**
- * Generates a JDO model test case java file.
+ * Generates a dao test case java file.
  * 
  * @author taedium
  * @since 3.0
@@ -48,8 +48,10 @@ public class DaoTestCaseGenerator implements Generator {
 
     @Override
     public void generate(Printer p) {
-        p.println("package %s;", daoDesc.getPackageName());
-        p.println();
+        if (!daoDesc.getPackageName().isEmpty()) {
+            p.println("package %s;", daoDesc.getPackageName());
+            p.println();
+        }
         p.println("import %s;", daoDesc.getTestCaseSuperclassName());
         p.println();
         p.println(

@@ -48,8 +48,10 @@ public class ControllerTestCaseGenerator implements Generator {
 
     @Override
     public void generate(Printer p) {
-        p.println("package %s;", controllerDesc.getPackageName());
-        p.println();
+        if (!controllerDesc.getPackageName().isEmpty()) {
+            p.println("package %s;", controllerDesc.getPackageName());
+            p.println();
+        }
         p.println("import %s;", controllerDesc.getTestCaseSuperclassName());
         p.println();
         p.println("public class %s%s extends %s {", controllerDesc

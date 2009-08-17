@@ -24,7 +24,7 @@ import org.slim3.gen.Constants;
 import org.slim3.gen.util.ClassUtil;
 
 /**
- * Creates a model meta description factory.
+ * Creates a model meta description.
  * 
  * @author taedium
  * @since 3.0

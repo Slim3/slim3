@@ -142,7 +142,7 @@ public class GenControllerTask extends AbstractGenJavaFileTask {
     }
 
     /**
-     * Creates a {@link Generator}.
+     * Creates a {@link Generator} for a test case.
      * 
      * @param controllerDesc
      *            the controller description

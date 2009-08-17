@@ -44,8 +44,10 @@ public class ModelGenerator implements Generator {
 
     @Override
     public void generate(Printer p) {
-        p.println("package %s;", modelDesc.getPackageName());
-        p.println();
+        if (!modelDesc.getPackageName().isEmpty()) {
+            p.println("package %s;", modelDesc.getPackageName());
+            p.println();
+        }
         p.println("import java.io.Serializable;");
         p.println();
         p.println("import javax.jdo.annotations.Extension;");

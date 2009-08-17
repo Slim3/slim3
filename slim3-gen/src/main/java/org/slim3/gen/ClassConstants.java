@@ -37,6 +37,9 @@ public final class ClassConstants {
     /** {@code org.slim3.controller.Navigation} */
     public static final String Navigation = "org.slim3.controller.Navigation";
 
+    /** {@code junit.framework.TestCase} */
+    public static final String TestCase = "junit.framework.TestCase";
+
     /** {@code org.slim3.tester.JDOControllerTestCase} */
     public static final String JDOControllerTestCase =
         "org.slim3.tester.JDOControllerTestCase";

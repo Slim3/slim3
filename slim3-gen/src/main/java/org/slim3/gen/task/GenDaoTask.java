@@ -150,7 +150,7 @@ public class GenDaoTask extends AbstractGenJavaFileTask {
     }
 
     /**
-     * Creates a {@link Generator}.
+     * Creates a {@link Generator} for a test case.
      * 
      * @param daoDesc
      *            the dao description

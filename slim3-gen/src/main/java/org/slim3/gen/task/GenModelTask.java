@@ -163,7 +163,7 @@ public class GenModelTask extends AbstractGenJavaFileTask {
     }
 
     /**
-     * Creates a {@link Generator}.
+     * Creates a {@link Generator} for a test case.
      * 
      * @param modelDesc
      *            the model description

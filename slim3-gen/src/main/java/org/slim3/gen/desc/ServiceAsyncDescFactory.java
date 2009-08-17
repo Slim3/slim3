@@ -31,7 +31,7 @@ import org.slim3.gen.util.ClassUtil;
 import org.slim3.gen.util.TypeUtil;
 
 /**
- * Represents a service async description factory.
+ * Creates a service async description.
  * 
  * @author taedium
  * @since 3.0

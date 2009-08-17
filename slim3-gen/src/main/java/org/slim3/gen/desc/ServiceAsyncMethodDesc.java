@@ -16,7 +16,7 @@
 package org.slim3.gen.desc;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,7 +48,7 @@ public class ServiceAsyncMethodDesc {
      * name
      */
     protected Map<String, String> parameterNames =
-        new HashMap<String, String>();
+        new LinkedHashMap<String, String>();
 
     /** the list of thrown type names */
     protected List<String> thrownTypeNames = new ArrayList<String>();

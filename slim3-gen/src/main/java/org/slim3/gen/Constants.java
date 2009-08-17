@@ -37,8 +37,11 @@ public final class Constants {
     /** the suffix of dao. */
     public static final String DAO_SUFFIX = "Dao";
 
-    /** the suffix of async class */
+    /** the suffix of asynchronous class */
     public static final String ASYNC_SUFFIX = "Async";
+
+    /** the suffix of implementation class */
+    public static final String IMPL_SUFFIX = "Impl";
 
     /** the suffix of view. */
     public static final String VIEW_SUFFIX = ".jsp";
@@ -61,5 +64,11 @@ public final class Constants {
 
     /** the sub package name for dao */
     public static final String DAO_SUB_PACKAGE = "dao";
+
+    /** the sub package name for service */
+    public static final String SERVICE_SUB_PACKAGE = "client";
+
+    /** the sub package name for service implementation */
+    public static final String SERVICE_IMPL_SUB_PACKAGE = "server";
 
 }
