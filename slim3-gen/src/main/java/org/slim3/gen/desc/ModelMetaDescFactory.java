@@ -15,14 +15,16 @@
  */
 package org.slim3.gen.desc;
 
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.ElementScanner6;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.util.ElementFilter;
 
 import org.slim3.gen.Constants;
 import org.slim3.gen.util.ClassUtil;
 
 /**
- * Creates a model meta description.
+ * Creates a model meta description factory.
  * 
  * @author taedium
  * @since 3.0
@@ -30,17 +32,32 @@ import org.slim3.gen.util.ClassUtil;
  */
 public class ModelMetaDescFactory {
 
-    /** the element scanner */
-    protected final ElementScanner6<Void, ModelMetaDesc> scanner;
+    /** the processing environment */
+    protected final ProcessingEnvironment processingEnv;
+
+    /** the attribute meta description factory */
+    protected final AttributeMetaDescFactory attributeMetaDescFactory;
 
     /**
      * Creates a new {@link ModelMetaDescFactory}.
      * 
-     * @param scanner
-     *            the element scanner
+     * @param processingEnv
+     *            the processing environment
+     * @param attributeMetaDescFactory
+     *            the attribute meta description factory
      */
-    public ModelMetaDescFactory(ElementScanner6<Void, ModelMetaDesc> scanner) {
-        this.scanner = scanner;
+    public ModelMetaDescFactory(ProcessingEnvironment processingEnv,
+            AttributeMetaDescFactory attributeMetaDescFactory) {
+        if (processingEnv == null) {
+            throw new NullPointerException(
+                "The processingEnv parameter is null.");
+        }
+        if (attributeMetaDescFactory == null) {
+            throw new NullPointerException(
+                "The attributeMetaDescFactory parameter is null.");
+        }
+        this.processingEnv = processingEnv;
+        this.attributeMetaDescFactory = attributeMetaDescFactory;
     }
 
     /**
@@ -64,7 +81,40 @@ public class ModelMetaDescFactory {
         modelMetaDesc.setModelClassName(modelElement
             .getQualifiedName()
             .toString());
-        scanner.scan(modelElement, modelMetaDesc);
+        handleFields(modelElement, modelMetaDesc);
         return modelMetaDesc;
     }
+
+    /**
+     * Handles fields.
+     * 
+     * @param modelElement
+     *            the model element.
+     * @param modelMetaDesc
+     *            the model meta description
+     */
+    protected void handleFields(TypeElement modelElement,
+            ModelMetaDesc modelMetaDesc) {
+        for (VariableElement fieldElement : ElementFilter.fieldsIn(modelElement
+            .getEnclosedElements())) {
+            handleField(fieldElement, modelMetaDesc);
+        }
+    }
+
+    /**
+     * Handles the field.
+     * 
+     * @param fieldElement
+     * @param modelMetaDesc
+     *            the model meta description.
+     */
+    protected void handleField(VariableElement fieldElement,
+            ModelMetaDesc modelMetaDesc) {
+        AttributeMetaDesc attributeMetaDesc =
+            attributeMetaDescFactory.createAttributeMetaDesc(fieldElement);
+        if (attributeMetaDesc != null) {
+            modelMetaDesc.addAttributeMetaDesc(attributeMetaDesc);
+        }
+    }
+
 }

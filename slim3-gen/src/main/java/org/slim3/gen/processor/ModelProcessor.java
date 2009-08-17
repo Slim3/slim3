@@ -24,10 +24,12 @@ import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
+import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementFilter;
 
 import org.slim3.gen.ClassConstants;
+import org.slim3.gen.desc.AttributeMetaDescFactory;
 import org.slim3.gen.desc.ModelMetaDesc;
 import org.slim3.gen.desc.ModelMetaDescFactory;
 import org.slim3.gen.generator.Generator;
@@ -92,11 +94,13 @@ public class ModelProcessor extends AbstractProcessor {
                 MessageCode.SILM3GEN0002,
                 element));
         }
-        ModelMetaDescFactory modelMetaDescFactory =
-            createModelMetaDescFactory();
-        ModelMetaDesc modelMetaDesc =
-            modelMetaDescFactory.createModelMetaDesc(element);
-        if (modelMetaDesc.isTopLevel()) {
+        if (element.getNestingKind() == NestingKind.TOP_LEVEL) {
+            AttributeMetaDescFactory attributeMetaDescFactory =
+                createAttributeMetaDescFactory();
+            ModelMetaDescFactory modelMetaDescFactory =
+                createModelMetaDescFactory(attributeMetaDescFactory);
+            ModelMetaDesc modelMetaDesc =
+                modelMetaDescFactory.createModelMetaDesc(element);
             Generator generator = createGenerator(modelMetaDesc);
             generateSupport.generate(generator, modelMetaDesc, element);
         }
@@ -108,12 +112,24 @@ public class ModelProcessor extends AbstractProcessor {
     }
 
     /**
+     * Creates an attribute meta description factory.
+     * 
+     * @return an attribute meta description factory
+     */
+    protected AttributeMetaDescFactory createAttributeMetaDescFactory() {
+        return new AttributeMetaDescFactory(processingEnv);
+    }
+
+    /**
      * Creates a model meta description factory.
      * 
+     * @param attributeMetaDescFactory
+     *            the attribute meta description factory.
      * @return a model meta description factory
      */
-    protected ModelMetaDescFactory createModelMetaDescFactory() {
-        return new ModelMetaDescFactory(new ModelScanner(processingEnv));
+    protected ModelMetaDescFactory createModelMetaDescFactory(
+            AttributeMetaDescFactory attributeMetaDescFactory) {
+        return new ModelMetaDescFactory(processingEnv, attributeMetaDescFactory);
     }
 
     /**

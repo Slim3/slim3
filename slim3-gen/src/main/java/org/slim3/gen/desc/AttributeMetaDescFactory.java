@@ -13,7 +13,7 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.gen.processor;
+package org.slim3.gen.desc;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -21,9 +21,7 @@ import java.util.List;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
-import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
@@ -33,70 +31,72 @@ import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.ElementKindVisitor6;
-import javax.lang.model.util.ElementScanner6;
 import javax.lang.model.util.SimpleElementVisitor6;
 import javax.lang.model.util.SimpleTypeVisitor6;
 import javax.lang.model.util.TypeKindVisitor6;
 
 import org.slim3.gen.ClassConstants;
-import org.slim3.gen.desc.AttributeMetaDesc;
-import org.slim3.gen.desc.ModelMetaDesc;
 import org.slim3.gen.message.MessageCode;
 import org.slim3.gen.message.MessageFormatter;
+import org.slim3.gen.processor.Logger;
 import org.slim3.gen.util.ElementUtil;
 
 /**
- * Scans a JDO model.
+ * Represents an attribute meta description factory.
  * 
  * @author taedium
  * @since 3.0
  * 
  */
-public class ModelScanner extends ElementScanner6<Void, ModelMetaDesc> {
+public class AttributeMetaDescFactory {
 
     /** the processing environment */
     protected final ProcessingEnvironment processingEnv;
 
     /**
-     * Creates a new {@link ModelScanner}.
+     * Creates a new {@link AttributeMetaDescFactory}.
      * 
      * @param processingEnv
      *            the processing environment
      */
-    public ModelScanner(ProcessingEnvironment processingEnv) {
+    public AttributeMetaDescFactory(ProcessingEnvironment processingEnv) {
+        if (processingEnv == null) {
+            throw new NullPointerException(
+                "The processingEnv parameter is null.");
+        }
         this.processingEnv = processingEnv;
     }
 
-    @Override
-    public Void visitType(TypeElement e, ModelMetaDesc p) {
-        if (e.getNestingKind() == NestingKind.TOP_LEVEL) {
-            p.setTopLevel(true);
-        } else {
-            return null;
+    /**
+     * Creates a new {@link AttributeMetaDesc}
+     * 
+     * @param fieldElement
+     *            the field element
+     * @return an attribute meta description
+     */
+    public AttributeMetaDesc createAttributeMetaDesc(
+            VariableElement fieldElement) {
+        if (fieldElement == null) {
+            throw new NullPointerException(
+                "The fieldElement parameter is null.");
         }
-        return super.visitType(e, p);
-    }
-
-    @Override
-    public Void visitVariable(VariableElement attribute, ModelMetaDesc p) {
-        if (attribute.getKind() != ElementKind.FIELD) {
-            return null;
-        }
-        if (!isPersistent(attribute)) {
-            if (isInstanceVariable(attribute) && !isNotPersistent(attribute)) {
-                Logger.warning(processingEnv, attribute, MessageFormatter
+        if (!isPersistent(fieldElement)) {
+            if (isInstanceVariable(fieldElement)
+                && !isNotPersistent(fieldElement)) {
+                Logger.warning(processingEnv, fieldElement, MessageFormatter
                     .getSimpleMessage(MessageCode.SILM3GEN0010));
             }
             return null;
         }
-        if (isNestedType(attribute)) {
+        if (isNestedType(fieldElement)) {
             return null;
         }
+
         AttributeMetaDesc attributeMetaDesc = new AttributeMetaDesc();
-        attributeMetaDesc.setName(attribute.getSimpleName().toString());
-        attributeMetaDesc.setEmbedded(isEmbedded(attribute));
+        attributeMetaDesc.setName(fieldElement.getSimpleName().toString());
+        attributeMetaDesc.setEmbedded(isEmbedded(fieldElement));
         Iterator<String> classNames =
-            new ClassNameCollector(attribute.asType()).collect().iterator();
+            new ClassNameCollector(fieldElement.asType()).collect().iterator();
         if (classNames.hasNext()) {
             String className = classNames.next();
             attributeMetaDesc.setAttributeClassName(className);
@@ -105,32 +105,33 @@ public class ModelScanner extends ElementScanner6<Void, ModelMetaDesc> {
             String elementClassName = classNames.next();
             attributeMetaDesc.setAttributeElementClassName(elementClassName);
         }
-        p.addAttributeMetaDesc(attributeMetaDesc);
-        return null;
+        return attributeMetaDesc;
     }
 
     /**
      * Returns {@code true} if the attribute type is a nested type.
      * 
-     * @param attribute
+     * @param attributeElement
      *            the element of an attribute
      * @return {@code true} if the attribute type is a nested type
      */
-    protected boolean isNestedType(Element attribute) {
+    protected boolean isNestedType(Element attributeElement) {
         TypeMirror typeMirror =
-            attribute.asType().accept(new TypeKindVisitor6<TypeMirror, Void>() {
+            attributeElement.asType().accept(
+                new TypeKindVisitor6<TypeMirror, Void>() {
 
-                @Override
-                public TypeMirror visitArray(ArrayType t, Void p) {
-                    return t.getComponentType().accept(this, p);
-                }
+                    @Override
+                    public TypeMirror visitArray(ArrayType t, Void p) {
+                        return t.getComponentType().accept(this, p);
+                    }
 
-                @Override
-                protected TypeMirror defaultAction(TypeMirror e, Void p) {
-                    return e;
-                }
+                    @Override
+                    protected TypeMirror defaultAction(TypeMirror e, Void p) {
+                        return e;
+                    }
 
-            }, null);
+                },
+                null);
         Element e = processingEnv.getTypeUtils().asElement(typeMirror);
         if (e == null) {
             return false;
@@ -148,51 +149,51 @@ public class ModelScanner extends ElementScanner6<Void, ModelMetaDesc> {
     /**
      * Returns {@code true} if the attribute is persistent.
      * 
-     * @param attribute
+     * @param attributeElement
      *            the element of an attribute
      * @return {@code true} if the attribute is persistent.
      */
-    protected boolean isPersistent(Element attribute) {
+    protected boolean isPersistent(Element attributeElement) {
         return ElementUtil.getAnnotationMirror(
-            attribute,
+            attributeElement,
             ClassConstants.Persistent) != null;
     }
 
     /**
      * Returns {@code true} if the attribute is not persistent.
      * 
-     * @param attribute
+     * @param attributeElement
      *            the element of an attribute
      * @return {@code true} if the attribute is persistent.
      */
-    protected boolean isNotPersistent(Element attribute) {
+    protected boolean isNotPersistent(Element attributeElement) {
         return ElementUtil.getAnnotationMirror(
-            attribute,
+            attributeElement,
             ClassConstants.NotPersistent) != null;
-    }
-
-    /**
-     * Returns {@code true} if the attribute is embedded.
-     * 
-     * @param attribute
-     *            the element of an attribute
-     * @return {@code true} if the attribute is embedded.
-     */
-    protected boolean isEmbedded(Element attribute) {
-        return ElementUtil.getAnnotationMirror(
-            attribute,
-            ClassConstants.Embedded) != null;
     }
 
     /**
      * Returns {@code true} if the attribute is an instance variable.
      * 
-     * @param attribute
+     * @param attributeElement
      *            the element of an attribute
      * @return {@code true} if the attribute is an instance variable.
      */
-    protected boolean isInstanceVariable(VariableElement attribute) {
-        return !attribute.getModifiers().contains(Modifier.STATIC);
+    protected boolean isInstanceVariable(VariableElement attributeElement) {
+        return !attributeElement.getModifiers().contains(Modifier.STATIC);
+    }
+
+    /**
+     * Returns {@code true} if the attribute is embedded.
+     * 
+     * @param attributeElement
+     *            the element of an attribute
+     * @return {@code true} if the attribute is embedded.
+     */
+    protected boolean isEmbedded(Element attributeElement) {
+        return ElementUtil.getAnnotationMirror(
+            attributeElement,
+            ClassConstants.Embedded) != null;
     }
 
     /**

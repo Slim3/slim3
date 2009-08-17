@@ -39,9 +39,6 @@ public class ModelMetaDesc implements ClassDesc {
     /** the modelClassName */
     protected String modelClassName;
 
-    /** {@code true} if the model class is top level element */
-    protected boolean topLevel;
-
     /** the list of attribute meta descriptions */
     protected List<AttributeMetaDesc> attributeMetaDescList =
         new ArrayList<AttributeMetaDesc>();
@@ -108,29 +105,6 @@ public class ModelMetaDesc implements ClassDesc {
      */
     public void setModelClassName(String modelClassName) {
         this.modelClassName = modelClassName;
-    }
-
-    /**
-     * Returns {@code true} if the model class is top level element, otherwise
-     * {@code false}.
-     * 
-     * @return {@code true} if the model class is top level element, otherwise
-     *         {@code false}.
-     */
-    public boolean isTopLevel() {
-        return topLevel;
-    }
-
-    /**
-     * Sets {@code true} if the model class is top level element, otherwise
-     * {@code false}.
-     * 
-     * @param topLevel
-     *            {@code true} if the model class is top level element,
-     *            otherwise {@code false}.
-     */
-    public void setTopLevel(boolean topLevel) {
-        this.topLevel = topLevel;
     }
 
     /**
