@@ -17,6 +17,7 @@ package org.slim3.controller;
 
 import junit.framework.TestCase;
 
+import org.slim3.exception.HotReloadingRuntimeException;
 import org.slim3.tester.MockServletContext;
 import org.slim3.util.ServletContextLocator;
 
@@ -99,5 +100,17 @@ public class HotReloadingFilterTest extends TestCase {
         filter.servletContext = servletContext;
         filter.initCoolPackageName();
         assertEquals("cool", filter.coolPackageName);
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testCreateHotReloadingRuntimeException() throws Exception {
+        filter.rootPackageName = "tutorial";
+        filter.coolPackageName = "cool";
+        HotReloadingRuntimeException e =
+            filter.createHotReloadingRuntimeException(new Exception("cause"));
+        System.out.println(e.getMessage());
     }
 }

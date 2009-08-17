@@ -224,23 +224,14 @@ public class HotReloadingFilter implements Filter {
         } catch (LinkageError e) {
             String msg = e.getMessage();
             if (msg.indexOf("loader constraint violation") >= 0) {
-                throw new HotReloadingRuntimeException(
-                    "No HOT reloaded class can not access a HOT reloaded class. HOT reloaded class means the class is located on \""
-                        + rootPackageName
-                        + "\" package except \""
-                        + rootPackageName
-                        + "."
-                        + coolPackageName
-                        + "\" package.",
-                    e);
+                throw createHotReloadingRuntimeException(e);
             }
             throw e;
         } catch (ClassCastException e) {
             String msg = e.getMessage();
             String[] msgs = StringUtil.split(msg, " ");
             if (msgs.length > 2 && msgs[0].equals(msgs[msgs.length - 1])) {
-                throw new HotReloadingRuntimeException(msg
-                    + " because of different class loader.", e);
+                throw createHotReloadingRuntimeException(e);
             }
             throw e;
         } finally {
@@ -250,5 +241,25 @@ public class HotReloadingFilter implements Filter {
             ResponseLocator.set(null);
 
         }
+    }
+
+    /**
+     * Creates {@link HotReloadingRuntimeException}.
+     * 
+     * @param cause
+     *            the cause
+     * @return {@link HotReloadingRuntimeException}
+     */
+    protected HotReloadingRuntimeException createHotReloadingRuntimeException(
+            Throwable cause) {
+        return new HotReloadingRuntimeException(
+            "No HOT reloaded class can not access a HOT reloaded class. HOT reloaded class means the class is located on \""
+                + rootPackageName
+                + "\" package except \""
+                + rootPackageName
+                + "."
+                + coolPackageName
+                + "\" package.",
+            cause);
     }
 }
