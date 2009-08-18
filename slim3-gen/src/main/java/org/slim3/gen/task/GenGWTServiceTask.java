@@ -38,8 +38,8 @@ public class GenGWTServiceTask extends AbstractGenJavaFileTask {
     /** the packageName */
     protected String packageName;
 
-    /** the simpleName */
-    protected String simpleName;
+    /** the serviceRelativeClassName */
+    protected String serviceRelativeClassName;
 
     /** the remoteServiceRelativePath */
     protected String remoteServiceRelativePath = "gwtservice";
@@ -58,13 +58,13 @@ public class GenGWTServiceTask extends AbstractGenJavaFileTask {
     }
 
     /**
-     * Sets the simpleName.
+     * Sets the serviceRelativeClassName.
      * 
-     * @param simpleName
-     *            the simpleName to set
+     * @param serviceRelativeClassName
+     *            the serviceRelativeClassName to set
      */
-    public void setSimpleName(String simpleName) {
-        this.simpleName = simpleName;
+    public void setServiceRelativeClassName(String serviceRelativeClassName) {
+        this.serviceRelativeClassName = serviceRelativeClassName;
     }
 
     /**
@@ -90,8 +90,9 @@ public class GenGWTServiceTask extends AbstractGenJavaFileTask {
     @Override
     public void doExecute() throws Exception {
         super.doExecute();
-        if (simpleName == null) {
-            throw new IllegalStateException("The simpleName parameter is null.");
+        if (serviceRelativeClassName == null) {
+            throw new IllegalStateException(
+                "The serviceRelativeClassName parameter is null.");
         }
         if (serviceClassNameProperty == null) {
             throw new IllegalStateException(
@@ -102,9 +103,12 @@ public class GenGWTServiceTask extends AbstractGenJavaFileTask {
                 MessageCode.SILM3GEN0009,
                 serviceClassNameProperty));
         }
-        String servicePackageName = getServicePackageName();
+
+        ClassNameBuilder nameBuilder = getClassNameBuilder();
+
         GWTServiceDescFactory factory =
-            createServiceDescFactory(servicePackageName);
+            createServiceDescFactory(nameBuilder.getPackageName(), nameBuilder
+                .getSimpleName());
         GWTServiceDesc serviceDesc = factory.createServiceDesc();
 
         JavaFile javaFile = createJavaFile(serviceDesc);
@@ -117,13 +121,28 @@ public class GenGWTServiceTask extends AbstractGenJavaFileTask {
     }
 
     /**
+     * Creates a {@link ClassNameBuilder}.
+     * 
+     * @return a {@link ClassNameBuilder}
+     * @throws IOException
+     * @throws XPathExpressionException
+     */
+    protected ClassNameBuilder getClassNameBuilder() throws IOException,
+            XPathExpressionException {
+        ClassNameBuilder nameBuilder = new ClassNameBuilder();
+        nameBuilder.append(getServiceBasePackageName());
+        nameBuilder.append(serviceRelativeClassName);
+        return nameBuilder;
+    }
+
+    /**
      * Returns the service package name.
      * 
      * @return the service package name.
      * @throws IOException
      * @throws XPathExpressionException
      */
-    protected String getServicePackageName() throws IOException,
+    protected String getServiceBasePackageName() throws IOException,
             XPathExpressionException {
         if (packageName != null) {
             return packageName;
@@ -143,9 +162,12 @@ public class GenGWTServiceTask extends AbstractGenJavaFileTask {
      * 
      * @param packageName
      *            the package name
+     * @param simpleName
+     *            the simple name
      * @return a service description factory.
      */
-    protected GWTServiceDescFactory createServiceDescFactory(String packageName) {
+    protected GWTServiceDescFactory createServiceDescFactory(
+            String packageName, String simpleName) {
         return new GWTServiceDescFactory(
             packageName,
             simpleName,

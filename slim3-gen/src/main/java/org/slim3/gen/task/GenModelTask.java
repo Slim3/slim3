@@ -40,8 +40,8 @@ public class GenModelTask extends AbstractGenJavaFileTask {
     /** the packageName */
     protected String packageName;
 
-    /** the simpleName */
-    protected String simpleName;
+    /** the modelRelativeClassName */
+    protected String modelRelativeClassName;
 
     /** the superclass name of testcase */
     protected String testCaseSuperclassName = ClassConstants.JDOTestCase;
@@ -60,13 +60,13 @@ public class GenModelTask extends AbstractGenJavaFileTask {
     }
 
     /**
-     * Sets the simpleName.
+     * Sets the modelRelativeClassName.
      * 
-     * @param simpleName
-     *            the simpleName to set
+     * @param modelRelativeClassName
+     *            the modelRelativeClassName to set
      */
-    public void setSimpleName(String simpleName) {
-        this.simpleName = simpleName;
+    public void setModelRelativeClassName(String modelRelativeClassName) {
+        this.modelRelativeClassName = modelRelativeClassName;
     }
 
     /**
@@ -92,8 +92,9 @@ public class GenModelTask extends AbstractGenJavaFileTask {
     @Override
     public void doExecute() throws Exception {
         super.doExecute();
-        if (simpleName == null) {
-            throw new IllegalStateException("The simpleName parameter is null.");
+        if (modelRelativeClassName == null) {
+            throw new IllegalStateException(
+                "The modelRelativeClassName parameter is null.");
         }
         if (modelClassNameProperty == null) {
             throw new IllegalStateException(
@@ -104,8 +105,12 @@ public class GenModelTask extends AbstractGenJavaFileTask {
                 MessageCode.SILM3GEN0009,
                 modelClassNameProperty));
         }
-        String modelPackageName = getModelPackageName();
-        ModelDescFactory factory = createModelDescFactory(modelPackageName);
+
+        ClassNameBuilder nameBuilder = getClassNameBuilder();
+
+        ModelDescFactory factory =
+            createModelDescFactory(nameBuilder.getPackageName(), nameBuilder
+                .getSimpleName());
         ModelDesc modelDesc = factory.createModelDesc();
 
         JavaFile javaFile = createJavaFile(modelDesc);
@@ -122,13 +127,28 @@ public class GenModelTask extends AbstractGenJavaFileTask {
     }
 
     /**
-     * Returns the model package name.
+     * Creates a {@link ClassNameBuilder}.
      * 
-     * @return the model package name.
+     * @return a {@link ClassNameBuilder}
      * @throws IOException
      * @throws XPathExpressionException
      */
-    protected String getModelPackageName() throws IOException,
+    protected ClassNameBuilder getClassNameBuilder() throws IOException,
+            XPathExpressionException {
+        ClassNameBuilder nameBuilder = new ClassNameBuilder();
+        nameBuilder.append(getModelBasePackageName());
+        nameBuilder.append(modelRelativeClassName);
+        return nameBuilder;
+    }
+
+    /**
+     * Returns the model base package name.
+     * 
+     * @return the model base package name.
+     * @throws IOException
+     * @throws XPathExpressionException
+     */
+    protected String getModelBasePackageName() throws IOException,
             XPathExpressionException {
         if (packageName != null) {
             return packageName;
@@ -142,9 +162,12 @@ public class GenModelTask extends AbstractGenJavaFileTask {
      * 
      * @param packageName
      *            the package name
+     * @param simpleName
+     *            the simple name
      * @return a factory of model description.
      */
-    protected ModelDescFactory createModelDescFactory(String packageName) {
+    protected ModelDescFactory createModelDescFactory(String packageName,
+            String simpleName) {
         return new ModelDescFactory(
             packageName,
             simpleName,

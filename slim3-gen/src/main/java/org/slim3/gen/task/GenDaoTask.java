@@ -47,6 +47,9 @@ public class GenDaoTask extends AbstractGenJavaFileTask {
     /** the modelClassName */
     protected String modelClassName;
 
+    /** the modelRelativeClassName */
+    protected String modelRelativeClassName;
+
     /**
      * Sets the packageName.
      * 
@@ -87,6 +90,16 @@ public class GenDaoTask extends AbstractGenJavaFileTask {
         this.modelClassName = modelClassName;
     }
 
+    /**
+     * Sets the modelRelativeClassName.
+     * 
+     * @param modelRelativeClassName
+     *            the modelRelativeClassName to set
+     */
+    public void setModelRelativeClassName(String modelRelativeClassName) {
+        this.modelRelativeClassName = modelRelativeClassName;
+    }
+
     @Override
     public void doExecute() throws Exception {
         super.doExecute();
@@ -94,8 +107,15 @@ public class GenDaoTask extends AbstractGenJavaFileTask {
             throw new IllegalStateException(
                 "The modelClassName parameter is null.");
         }
-        String daoPackageName = getDaoPackageName();
-        DaoDescFactory factory = createDaoDescFactory(daoPackageName);
+        if (modelRelativeClassName == null) {
+            throw new IllegalStateException(
+                "The modelRelativeClassName parameter is null.");
+        }
+
+        ClassNameBuilder nameBuilder = getClassNameBuilder();
+
+        DaoDescFactory factory =
+            createDaoDescFactory(nameBuilder.getPackageName());
         DaoDesc daoDesc = factory.createDaoDesc();
 
         JavaFile javaFile = createJavaFile(daoDesc);
@@ -108,13 +128,28 @@ public class GenDaoTask extends AbstractGenJavaFileTask {
     }
 
     /**
+     * Creates a {@link ClassNameBuilder}.
+     * 
+     * @return a {@link ClassNameBuilder}
+     * @throws IOException
+     * @throws XPathExpressionException
+     */
+    protected ClassNameBuilder getClassNameBuilder() throws IOException,
+            XPathExpressionException {
+        ClassNameBuilder nameBuilder = new ClassNameBuilder();
+        nameBuilder.append(getDaoBasePackageName());
+        nameBuilder.append(modelRelativeClassName);
+        return nameBuilder;
+    }
+
+    /**
      * Returns the dao package name.
      * 
      * @return the dao package name.
      * @throws IOException
      * @throws XPathExpressionException
      */
-    protected String getDaoPackageName() throws IOException,
+    protected String getDaoBasePackageName() throws IOException,
             XPathExpressionException {
         if (packageName != null) {
             return packageName;

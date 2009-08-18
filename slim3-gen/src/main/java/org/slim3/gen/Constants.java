@@ -66,9 +66,9 @@ public final class Constants {
     public static final String DAO_SUB_PACKAGE = "dao";
 
     /** the sub package name for service */
-    public static final String SERVICE_SUB_PACKAGE = "client";
+    public static final String SERVICE_SUB_PACKAGE = "client.service";
 
     /** the sub package name for service implementation */
-    public static final String SERVICE_IMPL_SUB_PACKAGE = "server";
+    public static final String SERVICE_IMPL_SUB_PACKAGE = "service";
 
 }

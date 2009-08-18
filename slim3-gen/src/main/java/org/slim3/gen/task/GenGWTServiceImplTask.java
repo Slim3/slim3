@@ -20,6 +20,7 @@ import java.io.IOException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.slim3.gen.ClassConstants;
+import org.slim3.gen.Constants;
 import org.slim3.gen.desc.GWTServiceImplDesc;
 import org.slim3.gen.desc.GWTServiceImplDescFactory;
 import org.slim3.gen.generator.GWTServiceImplGenerator;
@@ -42,6 +43,9 @@ public class GenGWTServiceImplTask extends AbstractGenJavaFileTask {
 
     /** the serviceClassName */
     protected String serviceClassName;
+
+    /** the serviceRelativeClassName */
+    protected String serviceRelativeClassName;
 
     /**
      * Sets the packageName.
@@ -70,9 +74,11 @@ public class GenGWTServiceImplTask extends AbstractGenJavaFileTask {
             throw new IllegalStateException(
                 "The serviceClassName parameter is null.");
         }
-        String serviceImplPackageName = getServiceImplPackageName();
+
+        ClassNameBuilder nameBuilder = getClassNameBuilder();
+
         GWTServiceImplDescFactory factory =
-            createServiceImplDescFactory(serviceImplPackageName);
+            createServiceImplDescFactory(nameBuilder.getPackageName());
         GWTServiceImplDesc serviceImplDesc = factory.createServiceImplDesc();
 
         JavaFile javaFile = createJavaFile(serviceImplDesc);
@@ -86,19 +92,36 @@ public class GenGWTServiceImplTask extends AbstractGenJavaFileTask {
     }
 
     /**
+     * Creates a {@link ClassNameBuilder}.
+     * 
+     * @return a {@link ClassNameBuilder}
+     * @throws IOException
+     * @throws XPathExpressionException
+     */
+    protected ClassNameBuilder getClassNameBuilder() throws IOException,
+            XPathExpressionException {
+        ClassNameBuilder nameBuilder = new ClassNameBuilder();
+        nameBuilder.append(getServiceImplBasePackageName());
+        nameBuilder.append(serviceRelativeClassName);
+        return nameBuilder;
+    }
+
+    /**
      * Returns the service implementation package name.
      * 
      * @return the service implementation package name.
      * @throws IOException
      * @throws XPathExpressionException
      */
-    protected String getServiceImplPackageName() throws IOException,
+    protected String getServiceImplBasePackageName() throws IOException,
             XPathExpressionException {
         if (packageName != null) {
             return packageName;
         }
         WebConfig config = createWebConfig();
-        return config.getRootPackageName();
+        return config.getRootPackageName()
+            + "."
+            + Constants.SERVICE_IMPL_SUB_PACKAGE;
     }
 
     /**
