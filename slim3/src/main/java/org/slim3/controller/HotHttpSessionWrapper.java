@@ -176,7 +176,7 @@ public class HotHttpSessionWrapper implements HttpSession, Cleanable {
             .hasMoreElements();) {
             String name = e.nextElement();
             Object value = originalSession.getAttribute(name);
-            if (value == null) {
+            if (value == null || value instanceof BytesHolder) {
                 continue;
             }
             originalSession.setAttribute(name, new BytesHolder(ByteUtil

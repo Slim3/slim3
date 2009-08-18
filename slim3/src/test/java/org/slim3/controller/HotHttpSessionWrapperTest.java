@@ -55,6 +55,22 @@ public class HotHttpSessionWrapperTest extends TestCase {
      * @throws Exception
      * 
      */
+    public void testMultipleCleanAndGetAttribute() throws Exception {
+        sessionWrapper.setAttribute("aaa", "111");
+        Cleaner.cleanAll();
+        requestWrapper = new HotHttpServletRequestWrapper(request);
+        sessionWrapper = (HotHttpSessionWrapper) requestWrapper.getSession();
+        Cleaner.cleanAll();
+        assertTrue(request.getSession().getAttribute("aaa") instanceof BytesHolder);
+        Object value = sessionWrapper.getAttribute("aaa");
+        assertEquals("111", value);
+        assertSame(value, sessionWrapper.getAttribute("aaa"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
     public void testInvalidate() throws Exception {
         sessionWrapper.invalidate();
         assertNull(sessionWrapper.originalSession);
