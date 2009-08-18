@@ -15,15 +15,11 @@
  */
 package org.slim3.gen.generator;
 
-import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.annotation.Generated;
-
 import org.slim3.gen.ClassConstants;
-import org.slim3.gen.ProductInfo;
 import org.slim3.gen.desc.GWTServiceAsyncDesc;
 import org.slim3.gen.desc.GWTServiceAsyncMethodDesc;
 import org.slim3.gen.printer.Printer;
@@ -60,12 +56,6 @@ public class GWTServiceAsyncGenerator implements Generator {
             p.println("package %s;", serviceAsyncDesc.getPackageName());
             p.println();
         }
-        p.println(
-            "@%s(value = { \"%s\", \"%s\" }, date = \"%tF %<tT\")",
-            Generated.class.getName(),
-            ProductInfo.getName(),
-            ProductInfo.getVersion(),
-            new Date());
         p.print("public interface %s", serviceAsyncDesc.getSimpleName());
         if (!serviceAsyncDesc.getTypeParameterNames().isEmpty()) {
             p.print("<");
