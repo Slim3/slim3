@@ -22,6 +22,8 @@
     <taskdef name="gen-view" classname="org.slim3.gen.task.GenViewTask" classpathref="classpath"/>
     <taskdef name="gen-controller" classname="org.slim3.gen.task.GenControllerTask" classpathref="classpath"/>
     <taskdef name="gen-dao" classname="org.slim3.gen.task.GenDaoTask" classpathref="classpath"/>
+    <taskdef name="gen-gwt-service" classname="org.slim3.gen.task.GenGWTServiceTask" classpathref="classpath"/>
+    <taskdef name="gen-gwt-service-impl" classname="org.slim3.gen.task.GenGWTServiceImplTask" classpathref="classpath"/>
 	
 	<target name="gen-controller">
         <input message="Input a controller path." addproperty="controllerPath"/>
@@ -37,11 +39,16 @@
     </target>
 
     <target name="gen-model">
-        <input message="Input a model simple name." addproperty="modelSimpleName"/>
-        <gen-model srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" simpleName="${modelSimpleName}" modelClassNameProperty="modelClassName"/>
-        <gen-dao srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" modelClassName="${modelClassName}"/>
+        <input message="Input a model name. (ex.  Foo -> rootpackage.model.Foo,  bar.Foo -> rootpackage.model.bar.Foo)" addproperty="modelRelativeClassName"/>
+        <gen-model srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" modelRelativeClassName="${modelRelativeClassName}" modelClassNameProperty="modelClassName"/>
+        <gen-dao srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" modelRelativeClassName="${modelRelativeClassName}" modelClassName="${modelClassName}"/>
     </target>
 
+    <target name="gen-gwt-service">
+        <input message="Input a model name. (ex.  Foo -> rootpackage.client.service.Foo,  bar.Foo -> rootpackage.client.service.bar.Foo)" addproperty="serviceRelativeClassName"/>
+        <gen-gwt-service srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" serviceRelativeClassName="${serviceRelativeClassName}" serviceClassNameProperty="serviceClassName"/>
+        <gen-gwt-service-impl srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" serviceRelativeClassName="${serviceRelativeClassName}" serviceClassName="${serviceClassName}"/>
+    </target>
 
     <target name="copy">
         <copy todir="war/WEB-INF/lib" file="../slim3/target/slim3-${ver}.jar"/>
