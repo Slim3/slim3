@@ -46,7 +46,7 @@
     </target>
 
     <target name="gen-model">
-        <input message="Input a model name. (ex.  Foo -> rootpackage.Foo,  bar.Foo -> rootpackage.bar.Foo)" addproperty="modelRelativeClassName"/>
+        <input message="Input a model name. (ex.  Foo -> rootpackage.model.Foo,  bar.Foo -> rootpackage.model.bar.Foo)" addproperty="modelRelativeClassName"/>
         <gen-model srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" modelRelativeClassName="${modelRelativeClassName}" modelClassNameProperty="modelClassName"/>
         <gen-dao srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" modelRelativeClassName="${modelRelativeClassName}" modelClassName="${modelClassName}"/>
     </target>
