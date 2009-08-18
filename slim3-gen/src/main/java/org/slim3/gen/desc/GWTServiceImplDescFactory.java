@@ -30,6 +30,9 @@ public class GWTServiceImplDescFactory {
     /** the service package name */
     protected final String packageName;
 
+    /** the superclass name */
+    protected final String superclassName;
+
     /** the test case superclass name */
     protected final String testCaseSuperclassName;
 
@@ -41,15 +44,21 @@ public class GWTServiceImplDescFactory {
      * 
      * @param packageName
      *            the service package name
+     * @param superclassName
+     *            the service super class name
      * @param testCaseSuperclassName
      *            the test case superclass name
      * @param serviceClassName
      *            the service class qualified name
      */
-    public GWTServiceImplDescFactory(String packageName,
+    public GWTServiceImplDescFactory(String packageName, String superclassName,
             String testCaseSuperclassName, String serviceClassName) {
         if (packageName == null) {
             throw new NullPointerException("The packageName parameter is null.");
+        }
+        if (superclassName == null) {
+            throw new NullPointerException(
+                "The superclassName parameter is null.");
         }
         if (testCaseSuperclassName == null) {
             throw new NullPointerException(
@@ -60,6 +69,7 @@ public class GWTServiceImplDescFactory {
                 "The serviceClassName parameter is null.");
         }
         this.packageName = packageName;
+        this.superclassName = superclassName;
         this.testCaseSuperclassName = testCaseSuperclassName;
         this.serviceClassName = serviceClassName;
     }
@@ -74,6 +84,7 @@ public class GWTServiceImplDescFactory {
         serviceImplDesc.setPackageName(packageName);
         serviceImplDesc.setSimpleName(ClassUtil.getSimpleName(serviceClassName)
             + Constants.IMPL_SUFFIX);
+        serviceImplDesc.setSuperclassName(superclassName);
         serviceImplDesc.setTestCaseSuperclassName(testCaseSuperclassName);
         serviceImplDesc.setServiceClassName(serviceClassName);
         return serviceImplDesc;

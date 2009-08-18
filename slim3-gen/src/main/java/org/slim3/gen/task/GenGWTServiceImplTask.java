@@ -38,6 +38,9 @@ public class GenGWTServiceImplTask extends AbstractGenJavaFileTask {
     /** the packageName */
     protected String packageName;
 
+    /** the superclass name */
+    protected String superclassName = ClassConstants.Object;
+
     /** the superclass name of testcase */
     protected String testCaseSuperclassName = ClassConstants.JDOTestCase;
 
@@ -55,6 +58,16 @@ public class GenGWTServiceImplTask extends AbstractGenJavaFileTask {
      */
     public void setPackageName(String packageName) {
         this.packageName = packageName;
+    }
+
+    /**
+     * Sets the superclassName.
+     * 
+     * @param superclassName
+     *            the superclassName to set
+     */
+    public void setSuperclassName(String superclassName) {
+        this.superclassName = superclassName;
     }
 
     /**
@@ -145,6 +158,7 @@ public class GenGWTServiceImplTask extends AbstractGenJavaFileTask {
             String packageName) {
         return new GWTServiceImplDescFactory(
             packageName,
+            superclassName,
             testCaseSuperclassName,
             serviceClassName);
     }

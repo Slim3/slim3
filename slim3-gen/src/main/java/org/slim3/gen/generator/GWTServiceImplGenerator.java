@@ -15,6 +15,7 @@
  */
 package org.slim3.gen.generator;
 
+import org.slim3.gen.ClassConstants;
 import org.slim3.gen.desc.GWTServiceImplDesc;
 import org.slim3.gen.printer.Printer;
 import org.slim3.gen.util.ClassUtil;
@@ -51,9 +52,15 @@ public class GWTServiceImplGenerator implements Generator {
             p.println();
         }
         p.println("import %s;", serviceImplDesc.getServiceClassName());
+        if (!ClassConstants.Object.equals(serviceImplDesc.getSuperclassName())) {
+            p.println("import %s;", serviceImplDesc.getSuperclassName());
+        }
         p.println();
-        p.println("public class %s implements %s {", serviceImplDesc
-            .getSimpleName(), ClassUtil.getSimpleName(serviceImplDesc
+        p.print("public class %s", serviceImplDesc.getSimpleName());
+        if (!ClassConstants.Object.equals(serviceImplDesc.getSuperclassName())) {
+            p.print(" extends %s", serviceImplDesc.getSuperclassName());
+        }
+        p.println(" implements %s {", ClassUtil.getSimpleName(serviceImplDesc
             .getServiceClassName()));
         p.println();
         p.println("}");

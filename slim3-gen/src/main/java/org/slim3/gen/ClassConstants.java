@@ -30,6 +30,9 @@ public final class ClassConstants {
     /** {@code org.slim3.jdo.AttributeMeta} */
     public static final String AttributeMeta = "org.slim3.jdo.AttributeMeta";
 
+    /** {@code java.lang.Object} */
+    public static final String Object = "java.lang.Object";
+
     /** {@code org.slim3.controller.JDOController} */
     public static final String JDOController =
         "org.slim3.controller.JDOController";

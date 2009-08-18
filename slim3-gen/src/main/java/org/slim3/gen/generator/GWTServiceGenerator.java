@@ -48,12 +48,14 @@ public class GWTServiceGenerator implements Generator {
             p.println("package %s;", serviceDesc.getPackageName());
             p.println();
         }
+        p.println("import com.google.gwt.user.client.rpc.RemoteService;");
         p
             .println("import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;");
         p.println();
         p.println("@RemoteServiceRelativePath(\"%s\")", serviceDesc
             .getRemoteServiceRelativePath());
-        p.println("public interface %s {", serviceDesc.getSimpleName());
+        p.println("public interface %s extends RemoteService {", serviceDesc
+            .getSimpleName());
         p.println();
         p.println("}");
     }

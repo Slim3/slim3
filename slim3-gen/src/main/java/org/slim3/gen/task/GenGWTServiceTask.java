@@ -20,8 +20,11 @@ import java.io.IOException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.slim3.gen.Constants;
+import org.slim3.gen.desc.GWTServiceAsyncDesc;
+import org.slim3.gen.desc.GWTServiceAsyncDescFactory;
 import org.slim3.gen.desc.GWTServiceDesc;
 import org.slim3.gen.desc.GWTServiceDescFactory;
+import org.slim3.gen.generator.GWTServiceAsyncGenerator;
 import org.slim3.gen.generator.GWTServiceGenerator;
 import org.slim3.gen.generator.Generator;
 import org.slim3.gen.message.MessageCode;
@@ -106,14 +109,22 @@ public class GenGWTServiceTask extends AbstractGenJavaFileTask {
 
         ClassNameBuilder nameBuilder = getClassNameBuilder();
 
-        GWTServiceDescFactory factory =
+        GWTServiceDescFactory serviceDescFactory =
             createServiceDescFactory(nameBuilder.getPackageName(), nameBuilder
                 .getSimpleName());
-        GWTServiceDesc serviceDesc = factory.createServiceDesc();
+        GWTServiceDesc serviceDesc = serviceDescFactory.createServiceDesc();
+        JavaFile serviceJavaFile = createJavaFile(serviceDesc);
+        Generator serviceGenerator = createServiceGenerator(serviceDesc);
+        generateJavaFile(serviceGenerator, serviceJavaFile);
 
-        JavaFile javaFile = createJavaFile(serviceDesc);
-        Generator generator = createServiceGenerator(serviceDesc);
-        generateJavaFile(generator, javaFile);
+        GWTServiceAsyncDescFactory serviceAsyncDescFactory =
+            createServiceAsyncDescFactory(serviceDesc.getQualifiedName());
+        GWTServiceAsyncDesc serviceAsyncDesc =
+            serviceAsyncDescFactory.createServiceAsyncDesc();
+        JavaFile serviceAsyncJavaFile = createJavaFile(serviceAsyncDesc);
+        Generator serviceAsyncGenerator =
+            createServiceAsyncGenerator(serviceAsyncDesc);
+        generateJavaFile(serviceAsyncGenerator, serviceAsyncJavaFile);
 
         getProject().setNewProperty(
             serviceClassNameProperty,
@@ -175,7 +186,19 @@ public class GenGWTServiceTask extends AbstractGenJavaFileTask {
     }
 
     /**
-     * Creates a {@link Generator}.
+     * Creates a {@link GWTServiceAsyncDescFactory}.
+     * 
+     * @param serviceClassName
+     *            the service class name
+     * @return a service async description factory.
+     */
+    protected GWTServiceAsyncDescFactory createServiceAsyncDescFactory(
+            String serviceClassName) {
+        return new GWTServiceAsyncDescFactory(serviceClassName);
+    }
+
+    /**
+     * Creates a {@link Generator} for a service.
      * 
      * @param serviceDesc
      *            the service description
@@ -183,6 +206,18 @@ public class GenGWTServiceTask extends AbstractGenJavaFileTask {
      */
     protected Generator createServiceGenerator(GWTServiceDesc serviceDesc) {
         return new GWTServiceGenerator(serviceDesc);
+    }
+
+    /**
+     * Creates a {@link Generator} a service async.
+     * 
+     * @param serviceAsyncDesc
+     *            the service async description
+     * @return a generator
+     */
+    protected Generator createServiceAsyncGenerator(
+            GWTServiceAsyncDesc serviceAsyncDesc) {
+        return new GWTServiceAsyncGenerator(serviceAsyncDesc);
     }
 
 }

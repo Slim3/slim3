@@ -32,6 +32,9 @@ public class GWTServiceImplDesc implements ClassDesc {
     /** the simple name */
     protected String simpleName;
 
+    /** the superclass name */
+    protected String superclassName;
+
     /** the test case superclass name */
     protected String testCaseSuperclassName;
 
@@ -81,6 +84,25 @@ public class GWTServiceImplDesc implements ClassDesc {
     @Override
     public String getQualifiedName() {
         return ClassUtil.getQualifiedName(packageName, simpleName);
+    }
+
+    /**
+     * Returns the superclass name.
+     * 
+     * @return the superclass name
+     */
+    public String getSuperclassName() {
+        return superclassName;
+    }
+
+    /**
+     * Sets the superclass name.
+     * 
+     * @param superclassName
+     *            the superclass name
+     */
+    public void setSuperclassName(String superclassName) {
+        this.superclassName = superclassName;
     }
 
     /**
