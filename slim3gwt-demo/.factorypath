@@ -1,4 +1,4 @@
 <factorypath>
-    <factorypathentry kind="WKSPJAR" id="/slim3gwt-demo/lib/slim3-gen-EA1-SNAPSHOT.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="WKSPJAR" id="/slim3gwt-demo/lib/slim3-gen-EA1-SNAPSHOT.jar" enabled="false" runInBatchMode="false"/>
     <factorypathentry kind="WKSPJAR" id="/slim3gwt-demo/lib/slim3-versionchecker-EA1-SNAPSHOT.jar" enabled="true" runInBatchMode="false"/>
 </factorypath>

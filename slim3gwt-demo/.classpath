@@ -5,6 +5,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
 	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="lib" path="lib/appengine-api-stubs.jar"/>
 	<classpathentry kind="lib" path="lib/appengine-local-runtime.jar"/>
 	<classpathentry kind="lib" path="lib/repackaged-appengine-jakarta-standard-1.1.2.jar"/>

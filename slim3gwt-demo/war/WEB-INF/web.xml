@@ -42,13 +42,13 @@
     </filter-mapping>
   
     <servlet>
-        <servlet-name>greetServlet</servlet-name>
-        <servlet-class>slim3.demo.server.GreetingServiceImpl</servlet-class>
+        <servlet-name>gwtServiceServlet</servlet-name>
+        <servlet-class>org.slim3.gwt.server.GwtServiceServlet</servlet-class>
     </servlet>
   
     <servlet-mapping>
-        <servlet-name>greetServlet</servlet-name>
-        <url-pattern>/slim3gwt_demo/greet</url-pattern>
+        <servlet-name>gwtServiceServlet</servlet-name>
+        <url-pattern>/slim3gwt_demo/gwtservice</url-pattern>
     </servlet-mapping>
   
     <welcome-file-list>

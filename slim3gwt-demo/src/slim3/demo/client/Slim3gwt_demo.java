@@ -1,5 +1,8 @@
 package slim3.demo.client;
 
+import slim3.demo.client.service.GreetingService;
+import slim3.demo.client.service.GreetingServiceAsync;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
