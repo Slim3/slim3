@@ -67,6 +67,16 @@ public class GenGWTServiceImplTask extends AbstractGenJavaFileTask {
         this.serviceClassName = serviceClassName;
     }
 
+    /**
+     * Sets the serviceRelativeClassName.
+     * 
+     * @param serviceRelativeClassName
+     *            the serviceRelativeClassName to set
+     */
+    public void setServiceRelativeClassName(String serviceRelativeClassName) {
+        this.serviceRelativeClassName = serviceRelativeClassName;
+    }
+
     @Override
     public void doExecute() throws Exception {
         super.doExecute();

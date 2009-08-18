@@ -69,6 +69,7 @@ public class GWTServiceDescFactory {
         GWTServiceDesc serviceDesc = new GWTServiceDesc();
         serviceDesc.setPackageName(packageName);
         serviceDesc.setSimpleName(simpleName);
+        serviceDesc.setRemoteServiceRelativePath(remoteServiceRelativePath);
         return serviceDesc;
     }
 }
