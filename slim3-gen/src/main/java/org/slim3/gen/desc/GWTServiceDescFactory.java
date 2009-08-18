@@ -16,13 +16,13 @@
 package org.slim3.gen.desc;
 
 /**
- * Creates a service description factory.
+ * Creates a GWT service description factory.
  * 
  * @author taedium
  * @since 3.0
  * 
  */
-public class ServiceDescFactory {
+public class GWTServiceDescFactory {
 
     /** the service package name */
     protected final String packageName;
@@ -34,7 +34,7 @@ public class ServiceDescFactory {
     protected final String remoteServiceRelativePath;
 
     /**
-     * Creates a new {@link ServiceDescFactory}.
+     * Creates a new {@link GWTServiceDescFactory}.
      * 
      * @param packageName
      *            the service package name
@@ -43,7 +43,7 @@ public class ServiceDescFactory {
      * @param remoteServiceRelativePath
      *            the remote service relative path
      */
-    public ServiceDescFactory(String packageName, String simpleName,
+    public GWTServiceDescFactory(String packageName, String simpleName,
             String remoteServiceRelativePath) {
         if (packageName == null) {
             throw new NullPointerException("The packageName parameter is null.");
@@ -65,8 +65,8 @@ public class ServiceDescFactory {
      * 
      * @return a service description.
      */
-    public ServiceDesc createServiceDesc() {
-        ServiceDesc serviceDesc = new ServiceDesc();
+    public GWTServiceDesc createServiceDesc() {
+        GWTServiceDesc serviceDesc = new GWTServiceDesc();
         serviceDesc.setPackageName(packageName);
         serviceDesc.setSimpleName(simpleName);
         return serviceDesc;

@@ -28,11 +28,11 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementFilter;
 
 import org.slim3.gen.ClassConstants;
-import org.slim3.gen.desc.ServiceAsyncDesc;
-import org.slim3.gen.desc.ServiceAsyncDescFactory;
-import org.slim3.gen.desc.ServiceAsyncMethodDescFactory;
+import org.slim3.gen.desc.GWTServiceAsyncDesc;
+import org.slim3.gen.desc.GWTServiceAsyncDescFactory;
+import org.slim3.gen.desc.GWTServiceAsyncMethodDescFactory;
 import org.slim3.gen.generator.Generator;
-import org.slim3.gen.generator.ServiceAsyncGenerator;
+import org.slim3.gen.generator.GWTServiceAsyncGenerator;
 import org.slim3.gen.message.MessageCode;
 import org.slim3.gen.message.MessageFormatter;
 
@@ -47,7 +47,7 @@ import org.slim3.gen.message.MessageFormatter;
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 @SupportedAnnotationTypes(ClassConstants.RemoteServiceRelativePath)
 @SupportedOptions( { Options.DEBUG })
-public class ServiceProcessor extends AbstractProcessor {
+public class GWTServiceProcessor extends AbstractProcessor {
 
     /** the support for generating */
     protected GenerateSupport generateSupport;
@@ -94,11 +94,11 @@ public class ServiceProcessor extends AbstractProcessor {
                 element));
         }
         if (element.getKind().isInterface()) {
-            ServiceAsyncMethodDescFactory serviceAsyncMethodDescFactory =
+            GWTServiceAsyncMethodDescFactory serviceAsyncMethodDescFactory =
                 createAsyncMethodDescFactory();
-            ServiceAsyncDescFactory serviceAsyncDescFactory =
+            GWTServiceAsyncDescFactory serviceAsyncDescFactory =
                 createServiceAsyncDescFactory(serviceAsyncMethodDescFactory);
-            ServiceAsyncDesc serviceAsyncDesc =
+            GWTServiceAsyncDesc serviceAsyncDesc =
                 serviceAsyncDescFactory.createServiceAsyncDesc(element);
             Generator generator = createGenerator(serviceAsyncDesc);
             generateSupport.generate(generator, serviceAsyncDesc, element);
@@ -115,24 +115,24 @@ public class ServiceProcessor extends AbstractProcessor {
     }
 
     /**
-     * Creates a {@link ServiceAsyncMethodDescFactory}.
+     * Creates a {@link GWTServiceAsyncMethodDescFactory}.
      * 
      * @return a service async method description factory
      */
-    protected ServiceAsyncMethodDescFactory createAsyncMethodDescFactory() {
-        return new ServiceAsyncMethodDescFactory(processingEnv);
+    protected GWTServiceAsyncMethodDescFactory createAsyncMethodDescFactory() {
+        return new GWTServiceAsyncMethodDescFactory(processingEnv);
     }
 
     /**
-     * Creates a {@link ServiceAsyncDescFactory}.
+     * Creates a {@link GWTServiceAsyncDescFactory}.
      * 
      * @param serviceAsyncMethodDescFactory
      *            the service async method description factory
      * @return a service async description factory
      */
-    protected ServiceAsyncDescFactory createServiceAsyncDescFactory(
-            ServiceAsyncMethodDescFactory serviceAsyncMethodDescFactory) {
-        return new ServiceAsyncDescFactory(
+    protected GWTServiceAsyncDescFactory createServiceAsyncDescFactory(
+            GWTServiceAsyncMethodDescFactory serviceAsyncMethodDescFactory) {
+        return new GWTServiceAsyncDescFactory(
             processingEnv,
             serviceAsyncMethodDescFactory);
     }
@@ -144,8 +144,8 @@ public class ServiceProcessor extends AbstractProcessor {
      *            the service async description.
      * @return a generator object.
      */
-    protected Generator createGenerator(ServiceAsyncDesc serviceAsyncDesc) {
-        return new ServiceAsyncGenerator(serviceAsyncDesc);
+    protected Generator createGenerator(GWTServiceAsyncDesc serviceAsyncDesc) {
+        return new GWTServiceAsyncGenerator(serviceAsyncDesc);
     }
 
 }

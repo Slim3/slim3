@@ -24,12 +24,12 @@ import javax.lang.model.type.TypeMirror;
 import org.slim3.gen.util.ClassUtil;
 
 /**
- * Represents a service async description.
+ * Represents a GWT service async description.
  * 
  * @author taedium
  * @since 3.0
  */
-public class ServiceAsyncDesc implements ClassDesc {
+public class GWTServiceAsyncDesc implements ClassDesc {
 
     /** the package name */
     protected String packageName;
@@ -41,8 +41,8 @@ public class ServiceAsyncDesc implements ClassDesc {
     protected String serviceClassName;
 
     /** the list of service async method description */
-    protected List<ServiceAsyncMethodDesc> serviceAsyncMethodDescs =
-        new ArrayList<ServiceAsyncMethodDesc>();
+    protected List<GWTServiceAsyncMethodDesc> serviceAsyncMethodDescs =
+        new ArrayList<GWTServiceAsyncMethodDesc>();
 
     /** the list of service super interface type */
     protected List<TypeMirror> serviceSuperInterfaceTypes =
@@ -123,7 +123,7 @@ public class ServiceAsyncDesc implements ClassDesc {
      * 
      * @return the serviceAsyncMethodDescs
      */
-    public List<ServiceAsyncMethodDesc> getServiceAsyncMethodDescs() {
+    public List<GWTServiceAsyncMethodDesc> getServiceAsyncMethodDescs() {
         return serviceAsyncMethodDescs;
     }
 
@@ -134,7 +134,7 @@ public class ServiceAsyncDesc implements ClassDesc {
      *            the service async method description
      */
     public void addServiceAsyncMethodDesc(
-            ServiceAsyncMethodDesc serviceAsyncMethodDesc) {
+            GWTServiceAsyncMethodDesc serviceAsyncMethodDesc) {
         serviceAsyncMethodDescs.add(serviceAsyncMethodDesc);
     }
 

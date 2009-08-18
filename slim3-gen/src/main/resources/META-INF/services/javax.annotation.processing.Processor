@@ -1,2 +1,2 @@
 org.slim3.gen.processor.ModelProcessor
-org.slim3.gen.processor.ServiceProcessor
+org.slim3.gen.processor.GWTServiceProcessor

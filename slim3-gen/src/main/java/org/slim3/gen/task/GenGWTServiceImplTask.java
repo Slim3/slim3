@@ -20,25 +20,25 @@ import java.io.IOException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.slim3.gen.ClassConstants;
-import org.slim3.gen.desc.ServiceImplDesc;
-import org.slim3.gen.desc.ServiceImplDescFactory;
+import org.slim3.gen.desc.GWTServiceImplDesc;
+import org.slim3.gen.desc.GWTServiceImplDescFactory;
+import org.slim3.gen.generator.GWTServiceImplGenerator;
+import org.slim3.gen.generator.GWTServiceImplTestCaseGenerator;
 import org.slim3.gen.generator.Generator;
-import org.slim3.gen.generator.ServiceImplGenerator;
-import org.slim3.gen.generator.ServiceImplTestCaseGenerator;
 
 /**
- * Represents a task to generate a service implementation java file.
+ * Represents a task to generate a GWT service implementation java file.
  * 
  * @author taedium
  * @since 3.0
  */
-public class GenServiceImplTask extends AbstractGenJavaFileTask {
+public class GenGWTServiceImplTask extends AbstractGenJavaFileTask {
 
     /** the packageName */
     protected String packageName;
 
     /** the superclass name of testcase */
-    protected String testCaseSuperclassName = ClassConstants.TestCase;
+    protected String testCaseSuperclassName = ClassConstants.JDOTestCase;
 
     /** the serviceClassName */
     protected String serviceClassName;
@@ -71,9 +71,9 @@ public class GenServiceImplTask extends AbstractGenJavaFileTask {
                 "The serviceClassName parameter is null.");
         }
         String serviceImplPackageName = getServiceImplPackageName();
-        ServiceImplDescFactory factory =
+        GWTServiceImplDescFactory factory =
             createServiceImplDescFactory(serviceImplPackageName);
-        ServiceImplDesc serviceImplDesc = factory.createServiceImplDesc();
+        GWTServiceImplDesc serviceImplDesc = factory.createServiceImplDesc();
 
         JavaFile javaFile = createJavaFile(serviceImplDesc);
         Generator generator = createServiceImplGenerator(serviceImplDesc);
@@ -102,15 +102,15 @@ public class GenServiceImplTask extends AbstractGenJavaFileTask {
     }
 
     /**
-     * Creates a {@link ServiceImplDescFactory}.
+     * Creates a {@link GWTServiceImplDescFactory}.
      * 
      * @param packageName
      *            the package name
      * @return a service implementation description factory.
      */
-    protected ServiceImplDescFactory createServiceImplDescFactory(
+    protected GWTServiceImplDescFactory createServiceImplDescFactory(
             String packageName) {
-        return new ServiceImplDescFactory(
+        return new GWTServiceImplDescFactory(
             packageName,
             testCaseSuperclassName,
             serviceClassName);
@@ -124,8 +124,8 @@ public class GenServiceImplTask extends AbstractGenJavaFileTask {
      * @return a generator
      */
     protected Generator createServiceImplGenerator(
-            ServiceImplDesc serviceImplDesc) {
-        return new ServiceImplGenerator(serviceImplDesc);
+            GWTServiceImplDesc serviceImplDesc) {
+        return new GWTServiceImplGenerator(serviceImplDesc);
     }
 
     /**
@@ -136,7 +136,7 @@ public class GenServiceImplTask extends AbstractGenJavaFileTask {
      * @return a generator
      */
     protected Generator createServiceImplTestCaseGenerator(
-            ServiceImplDesc serviceImplDesc) {
-        return new ServiceImplTestCaseGenerator(serviceImplDesc);
+            GWTServiceImplDesc serviceImplDesc) {
+        return new GWTServiceImplTestCaseGenerator(serviceImplDesc);
     }
 }

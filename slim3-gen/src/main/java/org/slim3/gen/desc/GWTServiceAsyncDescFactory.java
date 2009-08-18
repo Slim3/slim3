@@ -31,30 +31,30 @@ import org.slim3.gen.util.ClassUtil;
 import org.slim3.gen.util.TypeUtil;
 
 /**
- * Creates a service async description.
+ * Creates a GWT service async description.
  * 
  * @author taedium
  * @since 3.0
  * 
  */
-public class ServiceAsyncDescFactory {
+public class GWTServiceAsyncDescFactory {
 
     /** the processing environment */
     protected final ProcessingEnvironment processingEnv;
 
     /** the service async description method factory */
-    protected final ServiceAsyncMethodDescFactory serviceAsyncMethodDescFactory;
+    protected final GWTServiceAsyncMethodDescFactory serviceAsyncMethodDescFactory;
 
     /**
-     * Creates a new {@link ServiceAsyncDescFactory}.
+     * Creates a new {@link GWTServiceAsyncDescFactory}.
      * 
      * @param processingEnv
      *            the processing environment
      * @param serviceAsyncMethodDescFactory
      *            he service async description method factory
      */
-    public ServiceAsyncDescFactory(ProcessingEnvironment processingEnv,
-            ServiceAsyncMethodDescFactory serviceAsyncMethodDescFactory) {
+    public GWTServiceAsyncDescFactory(ProcessingEnvironment processingEnv,
+            GWTServiceAsyncMethodDescFactory serviceAsyncMethodDescFactory) {
         if (processingEnv == null) {
             throw new NullPointerException(
                 "The processingEnv parameter is null.");
@@ -68,18 +68,18 @@ public class ServiceAsyncDescFactory {
     }
 
     /**
-     * Creates a {@link ServiceAsyncDesc}.
+     * Creates a {@link GWTServiceAsyncDesc}.
      * 
      * @param serviceElement
      *            the service element
      * @return a service async description
      */
-    public ServiceAsyncDesc createServiceAsyncDesc(TypeElement serviceElement) {
+    public GWTServiceAsyncDesc createServiceAsyncDesc(TypeElement serviceElement) {
         if (serviceElement == null) {
             throw new NullPointerException(
                 "The serviceElement parameter is null.");
         }
-        ServiceAsyncDesc serviceAsyncDesc = new ServiceAsyncDesc();
+        GWTServiceAsyncDesc serviceAsyncDesc = new GWTServiceAsyncDesc();
         serviceAsyncDesc.setPackageName(ClassUtil.getPackageName(serviceElement
             .getQualifiedName()
             .toString()));
@@ -105,7 +105,7 @@ public class ServiceAsyncDescFactory {
      *            the service async description
      */
     protected void handleTypeParameters(TypeElement serviceElement,
-            ServiceAsyncDesc serviceAsyncDesc) {
+            GWTServiceAsyncDesc serviceAsyncDesc) {
         for (TypeParameterElement typeParameterElement : serviceElement
             .getTypeParameters()) {
             String typeName =
@@ -124,7 +124,7 @@ public class ServiceAsyncDescFactory {
      *            the service async description
      */
     protected void handleSuperInterfaceMethods(TypeElement typeElement,
-            ServiceAsyncDesc serviceAsyncDesc) {
+            GWTServiceAsyncDesc serviceAsyncDesc) {
         for (TypeMirror superInterfaceType : processingEnv
             .getTypeUtils()
             .directSupertypes(typeElement.asType())) {
@@ -160,14 +160,14 @@ public class ServiceAsyncDescFactory {
      *            actual parameter.
      */
     protected void handleMethods(TypeElement typeElement,
-            ServiceAsyncDesc serviceAsyncDesc,
+            GWTServiceAsyncDesc serviceAsyncDesc,
             Map<TypeMirror, TypeMirror> typeParameterMap) {
         for (ExecutableElement methodElement : ElementFilter
             .methodsIn(typeElement.getEnclosedElements())) {
             if (!serviceAsyncDesc.getServiceSuperInterfaceTypes().isEmpty()) {
                 removeOverridenMethodDesc(methodElement, serviceAsyncDesc);
             }
-            ServiceAsyncMethodDesc methodDesc =
+            GWTServiceAsyncMethodDesc methodDesc =
                 serviceAsyncMethodDescFactory.createServiceAsyncMethodDesc(
                     methodElement,
                     typeParameterMap);
@@ -184,8 +184,8 @@ public class ServiceAsyncDescFactory {
      *            the service async description
      */
     protected void removeOverridenMethodDesc(ExecutableElement overrider,
-            ServiceAsyncDesc serviceAsyncDesc) {
-        for (Iterator<ServiceAsyncMethodDesc> it =
+            GWTServiceAsyncDesc serviceAsyncDesc) {
+        for (Iterator<GWTServiceAsyncMethodDesc> it =
             serviceAsyncDesc.getServiceAsyncMethodDescs().iterator(); it
             .hasNext();) {
             ExecutableElement overriden = it.next().getMethodElement();

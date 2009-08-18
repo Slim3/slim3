@@ -19,13 +19,13 @@ import org.slim3.gen.Constants;
 import org.slim3.gen.util.ClassUtil;
 
 /**
- * Creates a service implementation description factory.
+ * Creates a GWT service implementation description factory.
  * 
  * @author taedium
  * @since 3.0
  * 
  */
-public class ServiceImplDescFactory {
+public class GWTServiceImplDescFactory {
 
     /** the service package name */
     protected final String packageName;
@@ -37,7 +37,7 @@ public class ServiceImplDescFactory {
     protected final String serviceClassName;
 
     /**
-     * Creates a new {@link ServiceImplDescFactory}.
+     * Creates a new {@link GWTServiceImplDescFactory}.
      * 
      * @param packageName
      *            the service package name
@@ -46,7 +46,7 @@ public class ServiceImplDescFactory {
      * @param serviceClassName
      *            the service class qualified name
      */
-    public ServiceImplDescFactory(String packageName,
+    public GWTServiceImplDescFactory(String packageName,
             String testCaseSuperclassName, String serviceClassName) {
         if (packageName == null) {
             throw new NullPointerException("The packageName parameter is null.");
@@ -69,8 +69,8 @@ public class ServiceImplDescFactory {
      * 
      * @return a service implementation description.
      */
-    public ServiceImplDesc createServiceImplDesc() {
-        ServiceImplDesc serviceImplDesc = new ServiceImplDesc();
+    public GWTServiceImplDesc createServiceImplDesc() {
+        GWTServiceImplDesc serviceImplDesc = new GWTServiceImplDesc();
         serviceImplDesc.setPackageName(packageName);
         serviceImplDesc.setSimpleName(ClassUtil.getSimpleName(serviceClassName)
             + Constants.IMPL_SUFFIX);

@@ -18,13 +18,13 @@ package org.slim3.gen.desc;
 import org.slim3.gen.util.ClassUtil;
 
 /**
- * Represents a service implementation description.
+ * Represents a GWT service implementation description.
  * 
  * @author taedium
  * @since 3.0
  * 
  */
-public class ServiceImplDesc implements ClassDesc {
+public class GWTServiceImplDesc implements ClassDesc {
 
     /** the package name */
     protected String packageName;

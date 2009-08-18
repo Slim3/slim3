@@ -15,7 +15,7 @@
  */
 package org.slim3.gen.generator;
 
-import org.slim3.gen.desc.ServiceDesc;
+import org.slim3.gen.desc.GWTServiceDesc;
 import org.slim3.gen.printer.Printer;
 
 /**
@@ -24,18 +24,18 @@ import org.slim3.gen.printer.Printer;
  * @author taedium
  * 
  */
-public class ServiceGenerator implements Generator {
+public class GWTServiceGenerator implements Generator {
 
     /** the service description */
-    protected final ServiceDesc serviceDesc;
+    protected final GWTServiceDesc serviceDesc;
 
     /**
-     * Creates a new {@link ServiceGenerator}.
+     * Creates a new {@link GWTServiceGenerator}.
      * 
      * @param serviceDesc
      *            the service description
      */
-    public ServiceGenerator(ServiceDesc serviceDesc) {
+    public GWTServiceGenerator(GWTServiceDesc serviceDesc) {
         if (serviceDesc == null) {
             throw new NullPointerException("The serviceDesc parameter is null.");
         }

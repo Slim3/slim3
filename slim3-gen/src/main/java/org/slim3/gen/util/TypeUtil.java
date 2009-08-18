@@ -272,6 +272,12 @@ public final class TypeUtil {
      */
     public static TypeMirror toWrapperTypeIfPrimitive(TypeMirror typeMirror,
             final ProcessingEnvironment env) {
+        if (typeMirror == null) {
+            throw new NullPointerException("The typeMirror parameter is null.");
+        }
+        if (env == null) {
+            throw new NullPointerException("The env parameter is null.");
+        }
         return typeMirror.accept(new TypeKindVisitor6<TypeMirror, Void>() {
 
             @Override

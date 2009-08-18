@@ -23,13 +23,13 @@ import java.util.Map;
 import javax.lang.model.element.ExecutableElement;
 
 /**
- * Represents a service async method description.
+ * Represents a GWT service async method description.
  * 
  * @author taedium
  * @since 3.0
  * 
  */
-public class ServiceAsyncMethodDesc {
+public class GWTServiceAsyncMethodDesc {
 
     /** the method name */
     protected String name;

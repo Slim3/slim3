@@ -20,20 +20,20 @@ import java.io.IOException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.slim3.gen.Constants;
-import org.slim3.gen.desc.ServiceDesc;
-import org.slim3.gen.desc.ServiceDescFactory;
+import org.slim3.gen.desc.GWTServiceDesc;
+import org.slim3.gen.desc.GWTServiceDescFactory;
+import org.slim3.gen.generator.GWTServiceGenerator;
 import org.slim3.gen.generator.Generator;
-import org.slim3.gen.generator.ServiceGenerator;
 import org.slim3.gen.message.MessageCode;
 import org.slim3.gen.message.MessageFormatter;
 
 /**
- * Represents a task to generate a service java file.
+ * Represents a task to generate a GWT service java file.
  * 
  * @author taedium
  * @since 3.0
  */
-public class GenServiceTask extends AbstractGenJavaFileTask {
+public class GenGWTServiceTask extends AbstractGenJavaFileTask {
 
     /** the packageName */
     protected String packageName;
@@ -42,7 +42,7 @@ public class GenServiceTask extends AbstractGenJavaFileTask {
     protected String simpleName;
 
     /** the remoteServiceRelativePath */
-    protected String remoteServiceRelativePath = "s3gwt";
+    protected String remoteServiceRelativePath = "gwtservice";
 
     /** the property which represents a service class name */
     protected String serviceClassNameProperty;
@@ -103,9 +103,9 @@ public class GenServiceTask extends AbstractGenJavaFileTask {
                 serviceClassNameProperty));
         }
         String servicePackageName = getServicePackageName();
-        ServiceDescFactory factory =
+        GWTServiceDescFactory factory =
             createServiceDescFactory(servicePackageName);
-        ServiceDesc serviceDesc = factory.createServiceDesc();
+        GWTServiceDesc serviceDesc = factory.createServiceDesc();
 
         JavaFile javaFile = createJavaFile(serviceDesc);
         Generator generator = createServiceGenerator(serviceDesc);
@@ -139,14 +139,14 @@ public class GenServiceTask extends AbstractGenJavaFileTask {
     }
 
     /**
-     * Creates a {@link ServiceDescFactory}.
+     * Creates a {@link GWTServiceDescFactory}.
      * 
      * @param packageName
      *            the package name
      * @return a service description factory.
      */
-    protected ServiceDescFactory createServiceDescFactory(String packageName) {
-        return new ServiceDescFactory(
+    protected GWTServiceDescFactory createServiceDescFactory(String packageName) {
+        return new GWTServiceDescFactory(
             packageName,
             simpleName,
             remoteServiceRelativePath);
@@ -159,8 +159,8 @@ public class GenServiceTask extends AbstractGenJavaFileTask {
      *            the service description
      * @return a generator
      */
-    protected Generator createServiceGenerator(ServiceDesc serviceDesc) {
-        return new ServiceGenerator(serviceDesc);
+    protected Generator createServiceGenerator(GWTServiceDesc serviceDesc) {
+        return new GWTServiceGenerator(serviceDesc);
     }
 
 }

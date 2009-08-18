@@ -26,29 +26,29 @@ import javax.lang.model.type.TypeMirror;
 import org.slim3.gen.util.TypeUtil;
 
 /**
- * Creates a service async method description.
+ * Creates a GWT service async method description.
  * 
  * @author taedium
  * @since 3.0
  * 
  */
-public class ServiceAsyncMethodDescFactory {
+public class GWTServiceAsyncMethodDescFactory {
 
     /** the processing environment */
     protected final ProcessingEnvironment processingEnv;
 
     /**
-     * Creates a new {@link ServiceAsyncMethodDescFactory}.
+     * Creates a new {@link GWTServiceAsyncMethodDescFactory}.
      * 
      * @param processingEnv
      *            the processing environment
      */
-    public ServiceAsyncMethodDescFactory(ProcessingEnvironment processingEnv) {
+    public GWTServiceAsyncMethodDescFactory(ProcessingEnvironment processingEnv) {
         this.processingEnv = processingEnv;
     }
 
     /**
-     * Creates a {@link ServiceAsyncMethodDesc}.
+     * Creates a {@link GWTServiceAsyncMethodDesc}.
      * 
      * @param methodElement
      *            the method element
@@ -57,7 +57,7 @@ public class ServiceAsyncMethodDescFactory {
      *            actual parameter.
      * @return a service async method description
      */
-    protected ServiceAsyncMethodDesc createServiceAsyncMethodDesc(
+    protected GWTServiceAsyncMethodDesc createServiceAsyncMethodDesc(
             ExecutableElement methodElement,
             Map<TypeMirror, TypeMirror> typeParameterMap) {
         if (methodElement == null) {
@@ -68,7 +68,7 @@ public class ServiceAsyncMethodDescFactory {
             throw new NullPointerException(
                 "The typeParameterMap parameter is null.");
         }
-        ServiceAsyncMethodDesc methodDesc = new ServiceAsyncMethodDesc();
+        GWTServiceAsyncMethodDesc methodDesc = new GWTServiceAsyncMethodDesc();
         methodDesc.setName(methodElement.getSimpleName().toString());
         methodDesc.setMethodElement(methodElement);
         handleTypeParameters(methodElement, methodDesc, typeParameterMap);
@@ -90,7 +90,7 @@ public class ServiceAsyncMethodDescFactory {
      *            actual parameter.
      */
     protected void handleTypeParameters(ExecutableElement methodElement,
-            ServiceAsyncMethodDesc methodDesc,
+            GWTServiceAsyncMethodDesc methodDesc,
             Map<TypeMirror, TypeMirror> typeParameterMap) {
         for (TypeParameterElement typeParameterElement : methodElement
             .getTypeParameters()) {
@@ -115,7 +115,7 @@ public class ServiceAsyncMethodDescFactory {
      *            actual parameter.
      */
     protected void handleReturnType(ExecutableElement methodElement,
-            ServiceAsyncMethodDesc methodDesc,
+            GWTServiceAsyncMethodDesc methodDesc,
             Map<TypeMirror, TypeMirror> typeParameterMap) {
         TypeMirror wrapperType =
             TypeUtil.toWrapperTypeIfPrimitive(
@@ -138,7 +138,7 @@ public class ServiceAsyncMethodDescFactory {
      *            actual parameter.
      */
     protected void handleParameters(ExecutableElement methodElement,
-            ServiceAsyncMethodDesc methodDesc,
+            GWTServiceAsyncMethodDesc methodDesc,
             Map<TypeMirror, TypeMirror> typeParameterMap) {
         for (VariableElement parameterElement : methodElement.getParameters()) {
             String name = parameterElement.getSimpleName().toString();
@@ -163,7 +163,7 @@ public class ServiceAsyncMethodDescFactory {
      *            actual parameter.
      */
     protected void handleThrownTypes(ExecutableElement methodElement,
-            ServiceAsyncMethodDesc methodDesc,
+            GWTServiceAsyncMethodDesc methodDesc,
             Map<TypeMirror, TypeMirror> typeParameterMap) {
         for (TypeMirror thrownType : methodElement.getThrownTypes()) {
             String typeName =

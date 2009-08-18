@@ -24,8 +24,8 @@ import javax.annotation.Generated;
 
 import org.slim3.gen.ClassConstants;
 import org.slim3.gen.ProductInfo;
-import org.slim3.gen.desc.ServiceAsyncDesc;
-import org.slim3.gen.desc.ServiceAsyncMethodDesc;
+import org.slim3.gen.desc.GWTServiceAsyncDesc;
+import org.slim3.gen.desc.GWTServiceAsyncMethodDesc;
 import org.slim3.gen.printer.Printer;
 
 /**
@@ -35,18 +35,18 @@ import org.slim3.gen.printer.Printer;
  * @since 3.0
  * 
  */
-public class ServiceAsyncGenerator implements Generator {
+public class GWTServiceAsyncGenerator implements Generator {
 
     /** the service async description */
-    protected final ServiceAsyncDesc serviceAsyncDesc;
+    protected final GWTServiceAsyncDesc serviceAsyncDesc;
 
     /**
-     * Creates a new {@link ServiceAsyncGenerator}.
+     * Creates a new {@link GWTServiceAsyncGenerator}.
      * 
      * @param serviceAsyncDesc
      *            the service async description
      */
-    public ServiceAsyncGenerator(ServiceAsyncDesc serviceAsyncDesc) {
+    public GWTServiceAsyncGenerator(GWTServiceAsyncDesc serviceAsyncDesc) {
         if (serviceAsyncDesc == null) {
             throw new NullPointerException(
                 "The serviceAsyncDesc parameter is null.");
@@ -82,7 +82,7 @@ public class ServiceAsyncGenerator implements Generator {
         }
         p.println(" {");
         p.println();
-        for (ServiceAsyncMethodDesc methodDesc : serviceAsyncDesc
+        for (GWTServiceAsyncMethodDesc methodDesc : serviceAsyncDesc
             .getServiceAsyncMethodDescs()) {
             p.print("    ");
             if (!methodDesc.getTypeParameterNames().isEmpty()) {
