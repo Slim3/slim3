@@ -1,0 +1,69 @@
+<project name="slim3gwt-demo" default="gen-controller" basedir=".">
+	<property name="ver" value="EA1-SNAPSHOT"/>
+    <property name="srcDir" value="src"/>
+    <property name="testDir" value="test"/>
+    <property name="warDir" value="war"/>
+	<property name="superclassName" value="org.slim3.controller.Controller"/>
+	<property name="testCaseSuperclassName" value="org.slim3.tester.JDOControllerTestCase"/>
+
+    <path id="classpath">
+        <fileset dir="war/WEB-INF/classes">
+            <include name="**/*.class" />
+        </fileset>
+        <fileset dir="war/WEB-INF/lib">
+            <include name="**/*.jar" />
+        </fileset>
+        <fileset dir="lib">
+            <include name="**/*.jar" />
+        </fileset>
+    </path>
+
+	<taskdef name="gen-model" classname="org.slim3.gen.task.GenModelTask" classpathref="classpath"/>
+    <taskdef name="gen-view" classname="org.slim3.gen.task.GenViewTask" classpathref="classpath"/>
+    <taskdef name="gen-controller" classname="org.slim3.gen.task.GenControllerTask" classpathref="classpath"/>
+    <taskdef name="gen-dao" classname="org.slim3.gen.task.GenDaoTask" classpathref="classpath"/>
+	
+	<target name="gen-controller">
+        <input message="Input a controller path." addproperty="controllerPath"/>
+        <gen-controller srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" controllerpath="${controllerPath}"
+            superclassName="${superclassName}" testCaseSuperclassName="${testCaseSuperclassName}" useView="true"/>
+        <gen-view wardir="${warDir}" controllerPath="${controllerPath}"/>
+    </target>
+
+    <target name="gen-controller-without-view">
+        <input message="Input a controller path." addproperty="controllerPath"/>
+        <gen-controller srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" controllerpath="${controllerPath}"
+            superclassName="${superclassName}" testCaseSuperclassName="${testCaseSuperclassName}" useView="false"/>
+    </target>
+
+    <target name="gen-model">
+        <input message="Input a model simple name." addproperty="modelSimpleName"/>
+        <gen-model srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" simpleName="${modelSimpleName}" modelClassNameProperty="modelClassName"/>
+        <gen-dao srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" modelClassName="${modelClassName}"/>
+    </target>
+
+
+    <target name="copy">
+        <copy todir="war/WEB-INF/lib" file="../slim3/target/slim3-${ver}.jar"/>
+        <copy todir="libsrc" file="../slim3/target/slim3-${ver}-sources.jar"/>
+        <copy todir="lib" file="../slim3-gen/target/slim3-gen-${ver}.jar"/>
+        <copy todir="libsrc" file="../slim3-gen/target/slim3-gen-${ver}-sources.jar"/>
+        <copy todir="lib" file="../slim3-versionchecker/target/slim3-versionchecker-${ver}.jar"/>
+        <copy todir="libsrc" file="../slim3-versionchecker/target/slim3-versionchecker-${ver}-sources.jar"/>
+        <copy todir="src" file="../slim3/src/main/resources/application_en.properties"/>
+        <copy todir="src" file="../slim3/src/main/resources/application_ja.properties"/>
+    </target>
+
+	<target name="dist">
+        <delete includeemptydirs="true" failonerror="false">
+            <fileset dir="target"/>
+        </delete>
+        <mkdir dir="target"/>
+        <zip zipfile="target/slim3gwt-demo-${ver}.zip">
+            <zipfileset prefix="slim3gwt-demo" dir=".">
+                <exclude name="target/**"/>
+                <exclude name="war/WEB-INF/classes/**"/>
+            </zipfileset>
+        </zip>
+    </target>
+</project>
