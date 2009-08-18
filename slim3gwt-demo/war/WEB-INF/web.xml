@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" version="2.5">
+    <context-param>
+        <param-name>slim3.rootPackage</param-name>
+        <param-value>slim3.demo.server</param-value>
+    </context-param>
+    <context-param>
+        <param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
+        <param-value>application</param-value>
+    </context-param>
+  
+    <filter>
+        <filter-name>hotReloadingFilter</filter-name>
+        <filter-class>org.slim3.controller.HotReloadingFilter</filter-class>
+    </filter>
+    <filter>
+        <filter-name>jdoFilter</filter-name>
+        <filter-class>org.slim3.jdo.JDOFilter</filter-class>
+    </filter>    
+    <filter>
+        <filter-name>frontController</filter-name>
+        <filter-class>org.slim3.controller.FrontController</filter-class>
+    </filter>
+    
+    <filter-mapping>
+        <filter-name>hotReloadingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>    
+    <filter-mapping>
+        <filter-name>jdoFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>frontController</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+        <dispatcher>INCLUDE</dispatcher>
+        <dispatcher>ERROR</dispatcher>
+    </filter-mapping>
+  
+    <servlet>
+        <servlet-name>greetServlet</servlet-name>
+        <servlet-class>slim3.demo.server.GreetingServiceImpl</servlet-class>
+    </servlet>
+  
+    <servlet-mapping>
+        <servlet-name>greetServlet</servlet-name>
+        <url-pattern>/slim3gwt_demo/greet</url-pattern>
+    </servlet-mapping>
+  
+    <welcome-file-list>
+        <welcome-file>Slim3gwt_demo.html</welcome-file>
+    </welcome-file-list>
+
+    <security-constraint>
+        <web-resource-collection>
+            <url-pattern>*.jsp</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+        </auth-constraint>
+    </security-constraint>
+</web-app>
