@@ -45,7 +45,7 @@
     </target>
 
     <target name="gen-gwt-service">
-        <input message="Input a model name. (ex.  Foo -> root.client.service.FooService,  bar.Foo -> root.client.service.bar.FooService)" addproperty="serviceRelativeClassName"/>
+        <input message="Input a GWT service name. (ex.  FooService -> root.client.service.FooService,  bar.FooService -> root.client.service.bar.FooService)" addproperty="serviceRelativeClassName"/>
         <gen-gwt-service srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" serviceRelativeClassName="${serviceRelativeClassName}" serviceClassNameProperty="serviceClassName"/>
         <gen-gwt-service-impl srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" serviceRelativeClassName="${serviceRelativeClassName}" serviceClassName="${serviceClassName}"/>
     </target>
