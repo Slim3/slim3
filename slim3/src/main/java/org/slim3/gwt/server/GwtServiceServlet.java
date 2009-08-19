@@ -21,6 +21,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slim3.util.ClassUtil;
+import org.slim3.util.RequestLocator;
+import org.slim3.util.ResponseLocator;
 
 import com.google.gwt.user.client.rpc.IncompatibleRemoteServiceException;
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -72,6 +74,11 @@ public class GwtServiceServlet extends RemoteServiceServlet {
      */
     @Override
     public String processCall(String payload) throws SerializationException {
+        HttpServletRequest previousRequest = RequestLocator.get();
+        if (previousRequest == null) {
+            RequestLocator.set(getThreadLocalRequest());
+            ResponseLocator.set(getThreadLocalResponse());
+        }
         try {
             S3RPCRequest request = decodeRequest(payload);
             RPCRequest rpcRequest = request.getOriginalRequest();
@@ -84,6 +91,11 @@ public class GwtServiceServlet extends RemoteServiceServlet {
                 "An IncompatibleRemoteServiceException was thrown while processing this call.",
                 ex);
             return RPC.encodeResponseForFailure(null, ex);
+        } finally {
+            if (previousRequest == null) {
+                RequestLocator.set(null);
+                ResponseLocator.set(null);
+            }
         }
     }
 

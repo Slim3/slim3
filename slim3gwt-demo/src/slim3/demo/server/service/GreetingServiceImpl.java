@@ -1,5 +1,6 @@
 package slim3.demo.server.service;
 
+import org.slim3.util.RequestLocator;
 import org.slim3.util.ServletContextLocator;
 
 import slim3.demo.client.service.GreetingService;
@@ -11,8 +12,7 @@ public class GreetingServiceImpl implements GreetingService {
 
     public String greetServer(String input) {
         String serverInfo = ServletContextLocator.get().getServerInfo();
-        String userAgent = "hoge234";
-        // RequestLocator().getHeader("User-Agent");
+        String userAgent = RequestLocator.get().getHeader("User-Agent");
         return "Hello, " + input + "!<br><br>I am running " + serverInfo
                 + ".<br><br>It looks like you are using:<br>" + userAgent;
     }
