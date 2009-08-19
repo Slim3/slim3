@@ -223,7 +223,7 @@ public class HotReloadingFilter implements Filter {
             chain.doFilter(request, response);
         } catch (LinkageError e) {
             String msg = e.getMessage();
-            if (msg.indexOf("loader constraint violation") >= 0) {
+            if (msg != null && msg.indexOf("loader constraint violation") >= 0) {
                 throw createHotReloadingRuntimeException(e);
             }
             throw e;
