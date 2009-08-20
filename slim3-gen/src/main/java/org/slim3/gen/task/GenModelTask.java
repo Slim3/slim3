@@ -157,7 +157,7 @@ public class GenModelTask extends AbstractGenJavaFileTask {
         buf.append(config.getRootPackageName());
         if (config.isGWTServiceServletExistent()) {
             buf.append(".");
-            buf.append(Constants.SERVER_SUB_PACKAGE);
+            buf.append(Constants.SHARED_SUB_PACKAGE);
         }
         buf.append(".");
         buf.append(Constants.MODEL_SUB_PACKAGE);

@@ -74,4 +74,6 @@ public final class Constants {
     /** the sub package name for service */
     public static final String SERVICE_SUB_PACKAGE = "service";
 
+    /** the sub package name for shared */
+    public static final String SHARED_SUB_PACKAGE = "shared";
 }
