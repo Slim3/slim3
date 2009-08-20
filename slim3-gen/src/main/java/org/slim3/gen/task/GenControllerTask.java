@@ -15,6 +15,10 @@
  */
 package org.slim3.gen.task;
 
+import java.io.IOException;
+
+import javax.xml.xpath.XPathExpressionException;
+
 import org.slim3.gen.ClassConstants;
 import org.slim3.gen.Constants;
 import org.slim3.gen.desc.ControllerDesc;
@@ -92,17 +96,7 @@ public class GenControllerTask extends AbstractGenJavaFileTask {
             throw new IllegalStateException(
                 "The controllerPath parameter is null.");
         }
-        String path =
-            controllerPath.startsWith("/") ? controllerPath : "/"
-                + controllerPath;
-        WebConfig config = createWebConfig();
-        String controllerPackageName =
-            config.getRootPackageName()
-                + "."
-                + Constants.CONTROLLER_SUB_PACKAGE;
-        ControllerDescFactory factory =
-            createControllerDescFactory(controllerPackageName);
-        ControllerDesc controllerDesc = factory.createControllerDesc(path);
+        ControllerDesc controllerDesc = createControllerDesc();
 
         JavaFile javaFile = createJavaFile(controllerDesc);
         Generator generator = createControllerGenerator(controllerDesc);
@@ -115,16 +109,56 @@ public class GenControllerTask extends AbstractGenJavaFileTask {
     }
 
     /**
+     * Creates a controller description.
+     * 
+     * @return a controller description
+     * @throws IOException
+     * @throws XPathExpressionException
+     */
+    private ControllerDesc createControllerDesc() throws IOException,
+            XPathExpressionException {
+        String path =
+            controllerPath.startsWith("/") ? controllerPath : "/"
+                + controllerPath;
+        String controllerBasePackageName = getControllerBasePackageName();
+        ControllerDescFactory factory =
+            createControllerDescFactory(controllerBasePackageName);
+        ControllerDesc controllerDesc = factory.createControllerDesc(path);
+        return controllerDesc;
+    }
+
+    /**
+     * Creates a controller base package name.
+     * 
+     * @return a controller base package name
+     * @throws IOException
+     * @throws XPathExpressionException
+     */
+    private String getControllerBasePackageName() throws IOException,
+            XPathExpressionException {
+        StringBuilder buf = new StringBuilder();
+        WebConfig config = createWebConfig();
+        buf.append(config.getRootPackageName());
+        if (config.isGWTServiceServletExistent()) {
+            buf.append(".");
+            buf.append(Constants.SERVER_SUB_PACKAGE);
+        }
+        buf.append(".");
+        buf.append(Constants.CONTROLLER_SUB_PACKAGE);
+        return buf.toString();
+    }
+
+    /**
      * Creates a {@link ControllerDescFactory}.
      * 
-     * @param controllerPackageName
+     * @param controllerBasePackageName
      *            the base package name of controllers.
      * @return a factory
      */
     protected ControllerDescFactory createControllerDescFactory(
-            String controllerPackageName) {
+            String controllerBasePackageName) {
         return new ControllerDescFactory(
-            controllerPackageName,
+            controllerBasePackageName,
             superclassName,
             testCaseSuperclassName,
             useView);

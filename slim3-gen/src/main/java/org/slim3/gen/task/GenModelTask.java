@@ -22,7 +22,6 @@ import javax.xml.xpath.XPathExpressionException;
 import org.slim3.gen.ClassConstants;
 import org.slim3.gen.Constants;
 import org.slim3.gen.desc.ModelDesc;
-import org.slim3.gen.desc.ModelDescFactory;
 import org.slim3.gen.generator.Generator;
 import org.slim3.gen.generator.ModelGenerator;
 import org.slim3.gen.generator.ModelTestCaseGenerator;
@@ -106,12 +105,7 @@ public class GenModelTask extends AbstractGenJavaFileTask {
                 modelClassNameProperty));
         }
 
-        ClassNameBuilder nameBuilder = getClassNameBuilder();
-
-        ModelDescFactory factory =
-            createModelDescFactory(nameBuilder.getPackageName(), nameBuilder
-                .getSimpleName());
-        ModelDesc modelDesc = factory.createModelDesc();
+        ModelDesc modelDesc = createModelDesc();
 
         JavaFile javaFile = createJavaFile(modelDesc);
         Generator generator = createModelGenerator(modelDesc);
@@ -127,18 +121,23 @@ public class GenModelTask extends AbstractGenJavaFileTask {
     }
 
     /**
-     * Creates a {@link ClassNameBuilder}.
+     * Creates a model description.
      * 
-     * @return a {@link ClassNameBuilder}
+     * @return a model description
      * @throws IOException
      * @throws XPathExpressionException
      */
-    protected ClassNameBuilder getClassNameBuilder() throws IOException,
+    private ModelDesc createModelDesc() throws IOException,
             XPathExpressionException {
         ClassNameBuilder nameBuilder = new ClassNameBuilder();
         nameBuilder.append(getModelBasePackageName());
         nameBuilder.append(modelRelativeClassName);
-        return nameBuilder;
+
+        ModelDesc modelDesc = new ModelDesc();
+        modelDesc.setPackageName(nameBuilder.getPackageName());
+        modelDesc.setSimpleName(nameBuilder.getSimpleName());
+        modelDesc.setTestCaseSuperclassName(testCaseSuperclassName);
+        return modelDesc;
     }
 
     /**
@@ -154,24 +153,15 @@ public class GenModelTask extends AbstractGenJavaFileTask {
             return packageName;
         }
         WebConfig config = createWebConfig();
-        return config.getRootPackageName() + "." + Constants.MODEL_SUB_PACKAGE;
-    }
-
-    /**
-     * Creates a {@link ModelDescFactory}.
-     * 
-     * @param packageName
-     *            the package name
-     * @param simpleName
-     *            the simple name
-     * @return a factory of model description.
-     */
-    protected ModelDescFactory createModelDescFactory(String packageName,
-            String simpleName) {
-        return new ModelDescFactory(
-            packageName,
-            simpleName,
-            testCaseSuperclassName);
+        StringBuilder buf = new StringBuilder();
+        buf.append(config.getRootPackageName());
+        if (config.isGWTServiceServletExistent()) {
+            buf.append(".");
+            buf.append(Constants.SERVER_SUB_PACKAGE);
+        }
+        buf.append(".");
+        buf.append(Constants.MODEL_SUB_PACKAGE);
+        return buf.toString();
     }
 
     /**

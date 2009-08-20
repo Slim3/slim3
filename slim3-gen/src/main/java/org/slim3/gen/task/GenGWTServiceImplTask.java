@@ -22,7 +22,6 @@ import javax.xml.xpath.XPathExpressionException;
 import org.slim3.gen.ClassConstants;
 import org.slim3.gen.Constants;
 import org.slim3.gen.desc.GWTServiceImplDesc;
-import org.slim3.gen.desc.GWTServiceImplDescFactory;
 import org.slim3.gen.generator.GWTServiceImplGenerator;
 import org.slim3.gen.generator.GWTServiceImplTestCaseGenerator;
 import org.slim3.gen.generator.Generator;
@@ -98,11 +97,7 @@ public class GenGWTServiceImplTask extends AbstractGenJavaFileTask {
                 "The serviceClassName parameter is null.");
         }
 
-        ClassNameBuilder nameBuilder = getClassNameBuilder();
-
-        GWTServiceImplDescFactory factory =
-            createServiceImplDescFactory(nameBuilder.getPackageName());
-        GWTServiceImplDesc serviceImplDesc = factory.createServiceImplDesc();
+        GWTServiceImplDesc serviceImplDesc = createServiceImplDesc();
 
         JavaFile javaFile = createJavaFile(serviceImplDesc);
         Generator generator = createServiceImplGenerator(serviceImplDesc);
@@ -115,24 +110,32 @@ public class GenGWTServiceImplTask extends AbstractGenJavaFileTask {
     }
 
     /**
-     * Creates a {@link ClassNameBuilder}.
+     * Creates a GWT service implementation description.
      * 
-     * @return a {@link ClassNameBuilder}
+     * @return a GWT service implementation description
      * @throws IOException
      * @throws XPathExpressionException
      */
-    protected ClassNameBuilder getClassNameBuilder() throws IOException,
+    private GWTServiceImplDesc createServiceImplDesc() throws IOException,
             XPathExpressionException {
         ClassNameBuilder nameBuilder = new ClassNameBuilder();
         nameBuilder.append(getServiceImplBasePackageName());
         nameBuilder.append(serviceRelativeClassName);
-        return nameBuilder;
+        nameBuilder.appendSuffix(Constants.IMPL_SUFFIX);
+
+        GWTServiceImplDesc serviceImplDesc = new GWTServiceImplDesc();
+        serviceImplDesc.setPackageName(nameBuilder.getPackageName());
+        serviceImplDesc.setSimpleName(nameBuilder.getSimpleName());
+        serviceImplDesc.setSuperclassName(superclassName);
+        serviceImplDesc.setTestCaseSuperclassName(testCaseSuperclassName);
+        serviceImplDesc.setServiceClassName(serviceClassName);
+        return serviceImplDesc;
     }
 
     /**
-     * Returns the service implementation package name.
+     * Returns the service implementation base package name.
      * 
-     * @return the service implementation package name.
+     * @return the service implementation base package name.
      * @throws IOException
      * @throws XPathExpressionException
      */
@@ -142,25 +145,13 @@ public class GenGWTServiceImplTask extends AbstractGenJavaFileTask {
             return packageName;
         }
         WebConfig config = createWebConfig();
-        return config.getRootPackageName()
-            + "."
-            + Constants.SERVICE_IMPL_SUB_PACKAGE;
-    }
-
-    /**
-     * Creates a {@link GWTServiceImplDescFactory}.
-     * 
-     * @param packageName
-     *            the package name
-     * @return a service implementation description factory.
-     */
-    protected GWTServiceImplDescFactory createServiceImplDescFactory(
-            String packageName) {
-        return new GWTServiceImplDescFactory(
-            packageName,
-            superclassName,
-            testCaseSuperclassName,
-            serviceClassName);
+        StringBuilder buf = new StringBuilder();
+        buf.append(config.getRootPackageName());
+        buf.append(".");
+        buf.append(Constants.SERVER_SUB_PACKAGE);
+        buf.append(".");
+        buf.append(Constants.SERVICE_SUB_PACKAGE);
+        return buf.toString();
     }
 
     /**

@@ -22,7 +22,6 @@ import javax.xml.xpath.XPathExpressionException;
 import org.slim3.gen.ClassConstants;
 import org.slim3.gen.Constants;
 import org.slim3.gen.desc.DaoDesc;
-import org.slim3.gen.desc.DaoDescFactory;
 import org.slim3.gen.generator.DaoGenerator;
 import org.slim3.gen.generator.DaoTestCaseGenerator;
 import org.slim3.gen.generator.Generator;
@@ -112,11 +111,7 @@ public class GenDaoTask extends AbstractGenJavaFileTask {
                 "The modelRelativeClassName parameter is null.");
         }
 
-        ClassNameBuilder nameBuilder = getClassNameBuilder();
-
-        DaoDescFactory factory =
-            createDaoDescFactory(nameBuilder.getPackageName());
-        DaoDesc daoDesc = factory.createDaoDesc();
+        DaoDesc daoDesc = createDaoDesc();
 
         JavaFile javaFile = createJavaFile(daoDesc);
         Generator generator = createDaoGenerator(daoDesc);
@@ -128,24 +123,32 @@ public class GenDaoTask extends AbstractGenJavaFileTask {
     }
 
     /**
-     * Creates a {@link ClassNameBuilder}.
+     * Creates a dao description.
      * 
-     * @return a {@link ClassNameBuilder}
+     * @return a dao description
      * @throws IOException
      * @throws XPathExpressionException
      */
-    protected ClassNameBuilder getClassNameBuilder() throws IOException,
+    private DaoDesc createDaoDesc() throws IOException,
             XPathExpressionException {
         ClassNameBuilder nameBuilder = new ClassNameBuilder();
         nameBuilder.append(getDaoBasePackageName());
         nameBuilder.append(modelRelativeClassName);
-        return nameBuilder;
+        nameBuilder.appendSuffix(Constants.DAO_SUFFIX);
+
+        DaoDesc daoDesc = new DaoDesc();
+        daoDesc.setPackageName(nameBuilder.getPackageName());
+        daoDesc.setSimpleName(nameBuilder.getSimpleName());
+        daoDesc.setSuperclassName(superclassName);
+        daoDesc.setTestCaseSuperclassName(testCaseSuperclassName);
+        daoDesc.setModelClassName(modelClassName);
+        return daoDesc;
     }
 
     /**
      * Returns the dao package name.
      * 
-     * @return the dao package name.
+     * @return the dao base package name.
      * @throws IOException
      * @throws XPathExpressionException
      */
@@ -155,22 +158,15 @@ public class GenDaoTask extends AbstractGenJavaFileTask {
             return packageName;
         }
         WebConfig config = createWebConfig();
-        return config.getRootPackageName() + "." + Constants.DAO_SUB_PACKAGE;
-    }
-
-    /**
-     * Creates a {@link DaoDescFactory}.
-     * 
-     * @param packageName
-     *            the package name
-     * @return a factory of dao description.
-     */
-    protected DaoDescFactory createDaoDescFactory(String packageName) {
-        return new DaoDescFactory(
-            packageName,
-            superclassName,
-            testCaseSuperclassName,
-            modelClassName);
+        StringBuilder buf = new StringBuilder();
+        buf.append(config.getRootPackageName());
+        if (config.isGWTServiceServletExistent()) {
+            buf.append(".");
+            buf.append(Constants.SERVER_SUB_PACKAGE);
+        }
+        buf.append(".");
+        buf.append(Constants.DAO_SUB_PACKAGE);
+        return buf.toString();
     }
 
     /**

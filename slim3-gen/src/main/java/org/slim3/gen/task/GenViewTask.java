@@ -51,12 +51,22 @@ public class GenViewTask extends AbstractGenFileTask {
             throw new IllegalStateException(
                 "The controllerPath parameter is null.");
         }
+        ViewDesc viewDesc = createViewDesc();
+        generateView(viewDesc);
+    }
+
+    /**
+     * Creates a view description.
+     * 
+     * @return a view description
+     */
+    private ViewDesc createViewDesc() {
         String path =
             controllerPath.startsWith("/") ? controllerPath : "/"
                 + controllerPath;
         ViewDescFactory viewDescFactory = createViewDescFactory();
         ViewDesc viewDesc = viewDescFactory.createViewDesc(path);
-        generateView(viewDesc);
+        return viewDesc;
     }
 
     /**

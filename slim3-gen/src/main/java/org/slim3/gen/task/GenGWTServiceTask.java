@@ -21,9 +21,7 @@ import javax.xml.xpath.XPathExpressionException;
 
 import org.slim3.gen.Constants;
 import org.slim3.gen.desc.GWTServiceAsyncDesc;
-import org.slim3.gen.desc.GWTServiceAsyncDescFactory;
 import org.slim3.gen.desc.GWTServiceDesc;
-import org.slim3.gen.desc.GWTServiceDescFactory;
 import org.slim3.gen.generator.GWTServiceAsyncGenerator;
 import org.slim3.gen.generator.GWTServiceGenerator;
 import org.slim3.gen.generator.Generator;
@@ -107,20 +105,13 @@ public class GenGWTServiceTask extends AbstractGenJavaFileTask {
                 serviceClassNameProperty));
         }
 
-        ClassNameBuilder nameBuilder = getClassNameBuilder();
-
-        GWTServiceDescFactory serviceDescFactory =
-            createServiceDescFactory(nameBuilder.getPackageName(), nameBuilder
-                .getSimpleName());
-        GWTServiceDesc serviceDesc = serviceDescFactory.createServiceDesc();
+        GWTServiceDesc serviceDesc = createServiceDesc();
         JavaFile serviceJavaFile = createJavaFile(serviceDesc);
         Generator serviceGenerator = createServiceGenerator(serviceDesc);
         generateJavaFile(serviceGenerator, serviceJavaFile);
 
-        GWTServiceAsyncDescFactory serviceAsyncDescFactory =
-            createServiceAsyncDescFactory(serviceDesc.getQualifiedName());
         GWTServiceAsyncDesc serviceAsyncDesc =
-            serviceAsyncDescFactory.createServiceAsyncDesc();
+            createServiceAsyncDesc(serviceDesc);
         JavaFile serviceAsyncJavaFile = createJavaFile(serviceAsyncDesc);
         Generator serviceAsyncGenerator =
             createServiceAsyncGenerator(serviceAsyncDesc);
@@ -132,18 +123,23 @@ public class GenGWTServiceTask extends AbstractGenJavaFileTask {
     }
 
     /**
-     * Creates a {@link ClassNameBuilder}.
+     * Creates a service description.
      * 
-     * @return a {@link ClassNameBuilder}
+     * @return a service description
      * @throws IOException
      * @throws XPathExpressionException
      */
-    protected ClassNameBuilder getClassNameBuilder() throws IOException,
+    private GWTServiceDesc createServiceDesc() throws IOException,
             XPathExpressionException {
         ClassNameBuilder nameBuilder = new ClassNameBuilder();
         nameBuilder.append(getServiceBasePackageName());
         nameBuilder.append(serviceRelativeClassName);
-        return nameBuilder;
+
+        GWTServiceDesc serviceDesc = new GWTServiceDesc();
+        serviceDesc.setPackageName(nameBuilder.getPackageName());
+        serviceDesc.setSimpleName(nameBuilder.getSimpleName());
+        serviceDesc.setRemoteServiceRelativePath(remoteServiceRelativePath);
+        return serviceDesc;
     }
 
     /**
@@ -159,42 +155,29 @@ public class GenGWTServiceTask extends AbstractGenJavaFileTask {
             return packageName;
         }
         WebConfig config = createWebConfig();
-        String rootPackageName = config.getRootPackageName();
-        int pos = rootPackageName.lastIndexOf(".");
-        if (pos > -1) {
-            String basePackageName = rootPackageName.substring(0, pos);
-            return basePackageName + "." + Constants.SERVICE_SUB_PACKAGE;
-        }
-        return "";
+        StringBuilder buf = new StringBuilder();
+        buf.append(config.getRootPackageName());
+        buf.append(".");
+        buf.append(Constants.CLIENT_SUB_PACKAGE);
+        buf.append(".");
+        buf.append(Constants.SERVICE_SUB_PACKAGE);
+        return buf.toString();
     }
 
     /**
-     * Creates a {@link GWTServiceDescFactory}.
+     * Creates a service async description.
      * 
-     * @param packageName
-     *            the package name
-     * @param simpleName
-     *            the simple name
-     * @return a service description factory.
+     * @param serviceDesc
+     *            the service description
+     * @return a service async description
      */
-    protected GWTServiceDescFactory createServiceDescFactory(
-            String packageName, String simpleName) {
-        return new GWTServiceDescFactory(
-            packageName,
-            simpleName,
-            remoteServiceRelativePath);
-    }
-
-    /**
-     * Creates a {@link GWTServiceAsyncDescFactory}.
-     * 
-     * @param serviceClassName
-     *            the service class name
-     * @return a service async description factory.
-     */
-    protected GWTServiceAsyncDescFactory createServiceAsyncDescFactory(
-            String serviceClassName) {
-        return new GWTServiceAsyncDescFactory(serviceClassName);
+    private GWTServiceAsyncDesc createServiceAsyncDesc(
+            GWTServiceDesc serviceDesc) {
+        GWTServiceAsyncDesc serviceAsyncDesc = new GWTServiceAsyncDesc();
+        serviceAsyncDesc.setPackageName(serviceDesc.getPackageName());
+        serviceAsyncDesc.setSimpleName(serviceDesc.getSimpleName()
+            + Constants.ASYNC_SUFFIX);
+        return serviceAsyncDesc;
     }
 
     /**
