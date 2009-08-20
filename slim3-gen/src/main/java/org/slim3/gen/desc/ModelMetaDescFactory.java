@@ -21,7 +21,9 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.ElementFilter;
 
 import org.slim3.gen.Constants;
+import org.slim3.gen.processor.Options;
 import org.slim3.gen.util.ClassUtil;
+import org.slim3.gen.util.StringUtil;
 
 /**
  * Creates a model meta description.
@@ -73,9 +75,8 @@ public class ModelMetaDescFactory {
                 "The modelElement parameter is null.");
         }
         ModelMetaDesc modelMetaDesc = new ModelMetaDesc();
-        modelMetaDesc.setPackageName(ClassUtil.getPackageName(modelElement
-            .getQualifiedName()
-            .toString()));
+        modelMetaDesc.setPackageName(replaceModelPackageName(ClassUtil
+            .getPackageName(modelElement.getQualifiedName().toString())));
         modelMetaDesc.setSimpleName(modelElement.getSimpleName()
             + Constants.META_SUFFIX);
         modelMetaDesc.setModelClassName(modelElement
@@ -83,6 +84,28 @@ public class ModelMetaDescFactory {
             .toString());
         handleFields(modelElement, modelMetaDesc);
         return modelMetaDesc;
+    }
+
+    /**
+     * Replaces a model package name to a meta package name.
+     * 
+     * @param modelPackageName
+     *            a model package name
+     * @return a meta package name
+     */
+    protected String replaceModelPackageName(String modelPackageName) {
+        if (StringUtil.isEmpty(modelPackageName)) {
+            return modelPackageName;
+        }
+        String model = Options.getModelPackage(processingEnv);
+        String meta = Options.getMetaPackage(processingEnv);
+        String name =
+            modelPackageName
+                .replaceAll("\\." + model + "\\.", "." + meta + ".");
+        if (name.endsWith("." + model)) {
+            return name.substring(0, name.length() - model.length()) + meta;
+        }
+        return name;
     }
 
     /**
@@ -102,9 +125,10 @@ public class ModelMetaDescFactory {
     }
 
     /**
-     * Handles the field.
+     * Handles a field.
      * 
      * @param fieldElement
+     *            a field element.
      * @param modelMetaDesc
      *            the model meta description.
      */

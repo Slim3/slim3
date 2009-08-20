@@ -139,12 +139,12 @@ public class GenControllerTask extends AbstractGenJavaFileTask {
         StringBuilder buf = new StringBuilder();
         WebConfig config = createWebConfig();
         buf.append(config.getRootPackageName());
-        if (config.isGWTServiceServletExistent()) {
+        if (config.isGWTServiceServletDefined()) {
             buf.append(".");
-            buf.append(Constants.SERVER_SUB_PACKAGE);
+            buf.append(Constants.SERVER_PACKAGE);
         }
         buf.append(".");
-        buf.append(Constants.CONTROLLER_SUB_PACKAGE);
+        buf.append(Constants.CONTROLLER_PACKAGE);
         return buf.toString();
     }
 

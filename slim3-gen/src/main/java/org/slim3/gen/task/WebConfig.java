@@ -78,13 +78,13 @@ public class WebConfig {
     }
 
     /**
-     * {@code true} if {@code GWTServiceServlet} is existent.
+     * {@code true} if {@code GWTServiceServlet} is defined.
      * 
-     * @return {@code true} if {@code GWTServiceServlet} is existent
+     * @return {@code true} if {@code GWTServiceServlet} is defined
      * @throws IOException
      * @throws XPathExpressionException
      */
-    public boolean isGWTServiceServletExistent() throws IOException,
+    public boolean isGWTServiceServletDefined() throws IOException,
             XPathExpressionException {
         String servletName =
             evaluate(

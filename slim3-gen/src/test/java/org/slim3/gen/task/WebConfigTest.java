@@ -95,7 +95,7 @@ public class WebConfigTest extends TestCase {
      * 
      * @throws Exception
      */
-    public void testIsGWTServiceServletExistent_javaee() throws Exception {
+    public void testIsGWTServiceServletDefined_javaee() throws Exception {
         String path =
             getClass().getPackage().getName().replace(".", "/")
                 + "/"
@@ -108,14 +108,14 @@ public class WebConfigTest extends TestCase {
                 return webXml;
             }
         };
-        assertTrue(webConfig.isGWTServiceServletExistent());
+        assertTrue(webConfig.isGWTServiceServletDefined());
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testIsGWTServiceServletExistent_javaee_not_found()
+    public void testIsGWTServiceServletDefined_javaee_not_found()
             throws Exception {
         String path =
             getClass().getPackage().getName().replace(".", "/")
@@ -129,14 +129,14 @@ public class WebConfigTest extends TestCase {
                 return webXml;
             }
         };
-        assertFalse(webConfig.isGWTServiceServletExistent());
+        assertFalse(webConfig.isGWTServiceServletDefined());
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testIsGWTServiceServletExistent_j2ee() throws Exception {
+    public void testIsGWTServiceServletDefined_j2ee() throws Exception {
         String path =
             getClass().getPackage().getName().replace(".", "/")
                 + "/"
@@ -149,7 +149,7 @@ public class WebConfigTest extends TestCase {
                 return webXml;
             }
         };
-        assertTrue(webConfig.isGWTServiceServletExistent());
+        assertTrue(webConfig.isGWTServiceServletDefined());
     }
 
     /**

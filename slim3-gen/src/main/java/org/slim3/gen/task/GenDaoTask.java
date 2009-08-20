@@ -160,12 +160,12 @@ public class GenDaoTask extends AbstractGenJavaFileTask {
         WebConfig config = createWebConfig();
         StringBuilder buf = new StringBuilder();
         buf.append(config.getRootPackageName());
-        if (config.isGWTServiceServletExistent()) {
+        if (config.isGWTServiceServletDefined()) {
             buf.append(".");
-            buf.append(Constants.SERVER_SUB_PACKAGE);
+            buf.append(Constants.SERVER_PACKAGE);
         }
         buf.append(".");
-        buf.append(Constants.DAO_SUB_PACKAGE);
+        buf.append(Constants.DAO_PACKAGE);
         return buf.toString();
     }
 

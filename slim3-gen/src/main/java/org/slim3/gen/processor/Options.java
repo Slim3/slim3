@@ -18,6 +18,8 @@ package org.slim3.gen.processor;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 
+import org.slim3.gen.Constants;
+
 /**
  * Represents options for {@link Processor}.
  * 
@@ -29,6 +31,12 @@ public final class Options {
 
     /** debug option */
     public static final String DEBUG = "debug";
+
+    /** the model package */
+    public static final String MODEL_PACAKGE = "modelPackage";
+
+    /** the meta package */
+    public static final String META_PACKAGE = "metaPackage";
 
     /**
      * Returns {@code true} if debug enabled otherwirse {@code false}.
@@ -46,4 +54,27 @@ public final class Options {
         return Boolean.valueOf(debug).booleanValue();
     }
 
+    /**
+     * Returns the model package.
+     * 
+     * @param env
+     *            the processing environment.
+     * @return the model package.
+     */
+    public static String getModelPackage(ProcessingEnvironment env) {
+        String modelPackage = env.getOptions().get(Options.MODEL_PACAKGE);
+        return modelPackage != null ? modelPackage : Constants.MODEL_PACKAGE;
+    }
+
+    /**
+     * Returns the meta package.
+     * 
+     * @param env
+     *            the processing environment.
+     * @return the meta package.
+     */
+    public static String getMetaPackage(ProcessingEnvironment env) {
+        String metaPackage = env.getOptions().get(Options.META_PACKAGE);
+        return metaPackage != null ? metaPackage : Constants.META_PACKAGE;
+    }
 }

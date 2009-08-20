@@ -148,9 +148,9 @@ public class GenGWTServiceImplTask extends AbstractGenJavaFileTask {
         StringBuilder buf = new StringBuilder();
         buf.append(config.getRootPackageName());
         buf.append(".");
-        buf.append(Constants.SERVER_SUB_PACKAGE);
+        buf.append(Constants.SERVER_PACKAGE);
         buf.append(".");
-        buf.append(Constants.SERVICE_SUB_PACKAGE);
+        buf.append(Constants.SERVICE_PACKAGE);
         return buf.toString();
     }
 

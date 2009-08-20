@@ -57,23 +57,27 @@ public final class Constants {
     public static final String INDEX_VIEW = INDEX + VIEW_SUFFIX;
 
     /** the sub package name for controller */
-    public static final String CONTROLLER_SUB_PACKAGE = "controller";
+    public static final String CONTROLLER_PACKAGE = "controller";
 
-    /** the sub package name for model */
-    public static final String MODEL_SUB_PACKAGE = "model";
+    /** the package name for model */
+    public static final String MODEL_PACKAGE = "model";
 
-    /** the sub package name for dao */
-    public static final String DAO_SUB_PACKAGE = "dao";
+    /** the package name for dao */
+    public static final String DAO_PACKAGE = "dao";
 
-    /** the sub package name for client */
-    public static final String CLIENT_SUB_PACKAGE = "client";
+    /** the package name for client */
+    public static final String CLIENT_PACKAGE = "client";
 
-    /** the sub package name for server */
-    public static final String SERVER_SUB_PACKAGE = "server";
+    /** the package name for server */
+    public static final String SERVER_PACKAGE = "server";
 
-    /** the sub package name for service */
-    public static final String SERVICE_SUB_PACKAGE = "service";
+    /** the package name for service */
+    public static final String SERVICE_PACKAGE = "service";
 
-    /** the sub package name for shared */
-    public static final String SHARED_SUB_PACKAGE = "shared";
+    /** the package name for shared */
+    public static final String SHARED_PACKAGE = "shared";
+
+    /** the package name for shared */
+    public static final String META_PACKAGE = "meta";
+
 }
