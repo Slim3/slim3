@@ -16,11 +16,8 @@
 package org.slim3.jdo;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.jdo.PersistenceManager;
-import javax.jdo.Transaction;
 import javax.jdo.spi.JDOImplHelper;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -28,12 +25,14 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import org.slim3.controller.FrontController;
 import org.slim3.controller.HotReloadingClassLoader;
+import org.slim3.util.RequestUtil;
 
 /**
- * {@link FrontController} for JDO.
+ * {@link Filter} for JDO.
  * 
  * @author higa
  * @since 3.0
@@ -41,11 +40,8 @@ import org.slim3.controller.HotReloadingClassLoader;
  */
 public class JDOFilter implements Filter {
 
-    private static final Logger logger =
-        Logger.getLogger(JDOFilter.class.getName());
-
     @Override
-    public void init(FilterConfig arg0) throws ServletException {
+    public void init(FilterConfig config) throws ServletException {
     }
 
     @Override
@@ -55,27 +51,39 @@ public class JDOFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
+        doFilter(
+            (HttpServletRequest) request,
+            (HttpServletResponse) response,
+            chain);
+    }
+
+    /**
+     * Executes filtering process.
+     * 
+     * @param request
+     *            the request
+     * @param response
+     *            the response
+     * @param chain
+     *            the filter chain
+     * @throws IOException
+     *             if {@link IOException} is encountered
+     * @throws ServletException
+     *             if {@link ServletException} is encountered
+     */
+    protected void doFilter(HttpServletRequest request,
+            HttpServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+        String path = RequestUtil.getPath(request);
+        String ext = RequestUtil.getExtension(path);
         PersistenceManager pm = CurrentPersistenceManager.get();
-        if (pm == null) {
+        if ((ext == null || ext.startsWith("s3")) && pm == null) {
             pm = PMF.get().getPersistenceManager();
             CurrentPersistenceManager.set(pm);
             try {
                 chain.doFilter(request, response);
             } finally {
-                try {
-                    Transaction tx = pm.currentTransaction();
-                    if (tx.isActive()) {
-                        tx.rollback();
-                    }
-                } catch (Throwable e) {
-                    logger.log(Level.WARNING, e.getMessage(), e);
-                }
-                try {
-                    pm.close();
-                } catch (Throwable e) {
-                    logger.log(Level.WARNING, e.getMessage(), e);
-                }
-                CurrentPersistenceManager.set(null);
+                CurrentPersistenceManager.destroy();
                 ClassLoader loader =
                     Thread.currentThread().getContextClassLoader();
                 if (loader instanceof HotReloadingClassLoader) {

@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slim3.exception.HotReloadingRuntimeException;
 import org.slim3.util.Cleaner;
 import org.slim3.util.RequestLocator;
+import org.slim3.util.RequestUtil;
 import org.slim3.util.ResponseLocator;
 import org.slim3.util.ServletContextLocator;
 import org.slim3.util.StringUtil;
@@ -179,11 +180,17 @@ public class HotReloadingFilter implements Filter {
     protected void doFilter(HttpServletRequest request,
             HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        if (hotReloading) {
-            ClassLoader previousLoader =
-                Thread.currentThread().getContextClassLoader();
-            if (!(previousLoader instanceof HotReloadingClassLoader)) {
-                doHotReloading(request, response, chain, previousLoader);
+        String path = RequestUtil.getPath(request);
+        String ext = RequestUtil.getExtension(path);
+        if (ext == null || ext.startsWith("s3")) {
+            if (hotReloading) {
+                ClassLoader previousLoader =
+                    Thread.currentThread().getContextClassLoader();
+                if (!(previousLoader instanceof HotReloadingClassLoader)) {
+                    doHotReloading(request, response, chain, previousLoader);
+                } else {
+                    chain.doFilter(request, response);
+                }
             } else {
                 chain.doFilter(request, response);
             }

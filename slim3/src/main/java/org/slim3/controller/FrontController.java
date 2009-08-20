@@ -43,6 +43,7 @@ import org.slim3.util.ClassUtil;
 import org.slim3.util.LocaleLocator;
 import org.slim3.util.LocaleUtil;
 import org.slim3.util.RequestLocator;
+import org.slim3.util.RequestUtil;
 import org.slim3.util.ResponseLocator;
 import org.slim3.util.ServletContextLocator;
 import org.slim3.util.StringUtil;
@@ -245,23 +246,29 @@ public class FrontController implements Filter {
     protected void doFilter(HttpServletRequest request,
             HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        HttpServletRequest previousRequest = RequestLocator.get();
-        RequestLocator.set(request);
-        HttpServletResponse previousResponse = ResponseLocator.get();
-        ResponseLocator.set(response);
-        Locale previousLocale = LocaleLocator.get();
-        LocaleLocator.set(processLocale(request));
-        TimeZone previousTimeZone = TimeZoneLocator.get();
-        TimeZoneLocator.set(processTimeZone(request));
-        ApplicationMessage.setBundle(bundleName, LocaleLocator.get());
-        try {
-            doFilterInternal(request, response, chain);
-        } finally {
-            ApplicationMessage.clearBundle();
-            TimeZoneLocator.set(previousTimeZone);
-            LocaleLocator.set(previousLocale);
-            ResponseLocator.set(previousResponse);
-            RequestLocator.set(previousRequest);
+        String path = RequestUtil.getPath(request);
+        String ext = RequestUtil.getExtension(path);
+        if (ext == null) {
+            HttpServletRequest previousRequest = RequestLocator.get();
+            RequestLocator.set(request);
+            HttpServletResponse previousResponse = ResponseLocator.get();
+            ResponseLocator.set(response);
+            Locale previousLocale = LocaleLocator.get();
+            LocaleLocator.set(processLocale(request));
+            TimeZone previousTimeZone = TimeZoneLocator.get();
+            TimeZoneLocator.set(processTimeZone(request));
+            ApplicationMessage.setBundle(bundleName, LocaleLocator.get());
+            try {
+                doFilterInternal(request, response, chain);
+            } finally {
+                ApplicationMessage.clearBundle();
+                TimeZoneLocator.set(previousTimeZone);
+                LocaleLocator.set(previousLocale);
+                ResponseLocator.set(previousResponse);
+                RequestLocator.set(previousRequest);
+            }
+        } else {
+            chain.doFilter(request, response);
         }
     }
 
@@ -285,7 +292,7 @@ public class FrontController implements Filter {
         if (request.getCharacterEncoding() == null) {
             request.setCharacterEncoding(charset);
         }
-        String path = request.getServletPath();
+        String path = RequestUtil.getPath(request);
         Controller controller = getController(request, response, path);
         if (controller == null) {
             if (request instanceof HotHttpServletRequestWrapper) {

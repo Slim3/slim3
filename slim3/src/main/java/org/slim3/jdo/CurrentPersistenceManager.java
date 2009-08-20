@@ -15,7 +15,11 @@
  */
 package org.slim3.jdo;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.jdo.PersistenceManager;
+import javax.jdo.Transaction;
 
 /**
  * A class to hold the current persistence manager.
@@ -25,6 +29,9 @@ import javax.jdo.PersistenceManager;
  * 
  */
 public final class CurrentPersistenceManager {
+
+    private static final Logger logger =
+        Logger.getLogger(CurrentPersistenceManager.class.getName());
 
     /**
      * {@link ThreadLocal} for persistence manager.
@@ -63,6 +70,30 @@ public final class CurrentPersistenceManager {
      */
     public static void set(PersistenceManager pm) {
         persistenceManagers.set(pm);
+    }
+
+    /**
+     * Destroys the current persistence manager.
+     */
+    public static void destroy() {
+        PersistenceManager pm = get();
+        if (pm == null) {
+            return;
+        }
+        try {
+            Transaction tx = pm.currentTransaction();
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+        } catch (Throwable e) {
+            logger.log(Level.WARNING, e.getMessage(), e);
+        }
+        try {
+            pm.close();
+        } catch (Throwable e) {
+            logger.log(Level.WARNING, e.getMessage(), e);
+        }
+        set(null);
     }
 
     /**

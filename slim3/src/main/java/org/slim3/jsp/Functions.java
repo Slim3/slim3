@@ -29,6 +29,7 @@ import org.slim3.controller.ControllerConstants;
 import org.slim3.util.HtmlUtil;
 import org.slim3.util.LocaleLocator;
 import org.slim3.util.RequestLocator;
+import org.slim3.util.RequestUtil;
 import org.slim3.util.ResponseLocator;
 import org.slim3.util.StringUtil;
 import org.slim3.util.TimeZoneLocator;
@@ -107,7 +108,7 @@ public final class Functions {
         if (contextPath.length() > 1) {
             sb.append(contextPath);
         }
-        String path = request.getServletPath();
+        String path = RequestUtil.getPath(request);
         int pos = path.lastIndexOf('/');
         path = path.substring(0, pos + 1);
         if (empty) {

@@ -39,6 +39,11 @@ import javax.jdo.listener.InstanceLifecycleListener;
  */
 public class MockPersistenceManager implements PersistenceManager {
 
+    /**
+     * The current transaction.
+     */
+    protected Transaction tx = new MockTransaction(this);
+
     @SuppressWarnings("unchecked")
     @Override
     public void addInstanceLifecycleListener(
@@ -55,7 +60,7 @@ public class MockPersistenceManager implements PersistenceManager {
 
     @Override
     public Transaction currentTransaction() {
-        return null;
+        return tx;
     }
 
     @Override

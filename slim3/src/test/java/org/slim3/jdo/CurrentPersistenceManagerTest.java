@@ -37,4 +37,16 @@ public class CurrentPersistenceManagerTest extends TestCase {
         CurrentPersistenceManager.set(pm);
         assertSame(pm, CurrentPersistenceManager.getAndCheckPresence());
     }
+
+    /**
+     * @throws Exception
+     */
+    public void testDestroy() throws Exception {
+        MockPersistenceManager pm = new MockPersistenceManager();
+        CurrentPersistenceManager.set(pm);
+        CurrentPersistenceManager.destroy();
+        assertNull(CurrentPersistenceManager.get());
+        CurrentPersistenceManager.destroy();
+        assertNull(CurrentPersistenceManager.get());
+    }
 }
