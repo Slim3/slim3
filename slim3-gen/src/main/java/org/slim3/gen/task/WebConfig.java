@@ -17,7 +17,7 @@ package org.slim3.gen.task;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 
@@ -61,11 +61,72 @@ public class WebConfig {
      * Returns a root package name.
      * 
      * @return a root package name
-     * @throws FileNotFoundException
+     * @throws IOException
      * @throws XPathExpressionException
      */
-    protected String getRootPackageName() throws FileNotFoundException,
+    public String getRootPackageName() throws IOException,
             XPathExpressionException {
+        String rootPackageName =
+            evaluate(
+                "/javaee:web-app/javaee:context-param/javaee:param-name[text()='slim3.rootPackage']/../javaee:param-value",
+                "/j2ee:web-app/j2ee:context-param/j2ee:param-name[text()='slim3.rootPackage']/../j2ee:param-value");
+        if (rootPackageName != null) {
+            return rootPackageName;
+        }
+        throw new RuntimeException(MessageFormatter
+            .getMessage(MessageCode.SILM3GEN0008));
+    }
+
+    /**
+     * {@code true} if {@code GWTServiceServlet} is existent.
+     * 
+     * @return {@code true} if {@code GWTServiceServlet} is existent
+     * @throws IOException
+     * @throws XPathExpressionException
+     */
+    public boolean isGWTServiceServletExistent() throws IOException,
+            XPathExpressionException {
+        String servletName =
+            evaluate(
+                "/javaee:web-app/javaee:servlet/javaee:servlet-name[text()='GWTServiceServlet']",
+                "/j2ee:web-app/j2ee:servlet/j2ee:servlet-name[text()='GWTServiceServlet']");
+        return servletName != null;
+    }
+
+    /**
+     * Evaluates xpath expressions.
+     * 
+     * @param expressions
+     *            xpath expressions
+     * @return evaluated value
+     * @throws IOException
+     * @throws XPathExpressionException
+     */
+    protected String evaluate(String... expressions) throws IOException,
+            XPathExpressionException {
+        XPath xpath = createXPath();
+        for (String expression : expressions) {
+            InputStream inputStream = new FileInputStream(createWebXml());
+            try {
+                String value = null;
+                value =
+                    xpath.evaluate(expression, new InputSource(inputStream));
+                if (!StringUtil.isEmpty(value)) {
+                    return value;
+                }
+            } finally {
+                CloseableUtil.close(inputStream);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Create a XPath.
+     * 
+     * @return a XPath
+     */
+    protected XPath createXPath() {
         XPathFactory factory = XPathFactory.newInstance();
         XPath xpath = factory.newXPath();
         xpath.setNamespaceContext(new NamespaceContext() {
@@ -91,37 +152,16 @@ public class WebConfig {
                 throw new UnsupportedOperationException("getPrefixes");
             }
         });
-        File file = new File(new File(warDir, "WEB-INF"), "web.xml");
-        InputStream inputStream = new FileInputStream(file);
-        String value = null;
-        try {
-            value =
-                xpath
-                    .evaluate(
-                        "/javaee:web-app/javaee:context-param/javaee:param-name[text()='slim3.rootPackage']/../javaee:param-value",
-                        new InputSource(inputStream));
-        } finally {
-            CloseableUtil.close(inputStream);
-        }
-        if (!StringUtil.isEmpty(value)) {
-            return value;
-        }
-        inputStream = new FileInputStream(file);
-        try {
-            value =
-                xpath
-                    .evaluate(
-                        "/j2ee:web-app/j2ee:context-param/j2ee:param-name[text()='slim3.rootPackage']/../j2ee:param-value",
-                        new InputSource(inputStream));
-        } finally {
-            CloseableUtil.close(inputStream);
-        }
-        if (!StringUtil.isEmpty(value)) {
-            return value;
-        }
-        throw new RuntimeException(MessageFormatter
-            .getMessage(MessageCode.SILM3GEN0008));
+        return xpath;
+    }
 
+    /**
+     * Create a web xml file.
+     * 
+     * @return a web xml file
+     */
+    protected File createWebXml() {
+        return new File(new File(warDir, "WEB-INF"), "web.xml");
     }
 
 }
