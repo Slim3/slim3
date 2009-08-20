@@ -60,7 +60,7 @@ public class ModelGenerator implements Generator {
         p.println("import javax.jdo.annotations.VersionStrategy;");
         p.println();
         p
-            .println("@PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = \"true\")");
+            .println("@PersistenceCapable(identityType = IdentityType.APPLICATION)");
         p
             .println("@Version(strategy = VersionStrategy.VERSION_NUMBER, column = \"version\")");
         p.println("public class %s implements Serializable {", modelDesc
