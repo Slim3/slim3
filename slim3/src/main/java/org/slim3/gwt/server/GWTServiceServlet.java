@@ -15,11 +15,14 @@
  */
 package org.slim3.gwt.server;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slim3.jdo.CurrentPersistenceManager;
 import org.slim3.util.ClassUtil;
 import org.slim3.util.RequestLocator;
 import org.slim3.util.ResponseLocator;
@@ -31,7 +34,6 @@ import com.google.gwt.user.server.rpc.RPC;
 import com.google.gwt.user.server.rpc.RPCRequest;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.gwt.user.server.rpc.SerializationPolicy;
-import com.google.gwt.user.server.rpc.UnexpectedException;
 import com.google.gwt.user.server.rpc.impl.ServerSerializationStreamReader;
 
 /**
@@ -41,9 +43,17 @@ import com.google.gwt.user.server.rpc.impl.ServerSerializationStreamReader;
  * @since 3.0
  * 
  */
-public class GwtServiceServlet extends RemoteServiceServlet {
+public class GWTServiceServlet extends RemoteServiceServlet {
 
     private static final long serialVersionUID = 1L;
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        getServletContext().setAttribute(
+            "slim3.controllerPackage",
+            "server.controller");
+    }
 
     /**
      * Process a call originating from the given request. Uses the
@@ -60,17 +70,10 @@ public class GwtServiceServlet extends RemoteServiceServlet {
      * 
      * @param payload
      *            the UTF-8 request payload
-     * @return a string which encodes either the method's return, a checked
-     *         exception thrown by the method, or an
-     *         {@link IncompatibleRemoteServiceException}
+     * @return a string which encodes either the method's return, an exception
+     *         thrown by the method
      * @throws SerializationException
      *             if we cannot serialize the response
-     * @throws UnexpectedException
-     *             if the invocation throws a checked exception that is not
-     *             declared in the service method's signature
-     * @throws RuntimeException
-     *             if the service method throws an unchecked exception (the
-     *             exception will be the one thrown by the service)
      */
     @Override
     public String processCall(String payload) throws SerializationException {
@@ -83,14 +86,23 @@ public class GwtServiceServlet extends RemoteServiceServlet {
             S3RPCRequest request = decodeRequest(payload);
             RPCRequest rpcRequest = request.getOriginalRequest();
             onAfterRequestDeserialized(rpcRequest);
-            return RPC.invokeAndEncodeResponse(request.getService(), rpcRequest
-                .getMethod(), rpcRequest.getParameters(), rpcRequest
-                .getSerializationPolicy());
+            Object result =
+                invoke(request.getService(), rpcRequest.getMethod(), rpcRequest
+                    .getParameters());
+            onAfterMethodInvoked(request, result);
+            return RPC.encodeResponseForSuccess(
+                rpcRequest.getMethod(),
+                result,
+                rpcRequest.getSerializationPolicy());
         } catch (IncompatibleRemoteServiceException ex) {
             log(
                 "An IncompatibleRemoteServiceException was thrown while processing this call.",
                 ex);
             return RPC.encodeResponseForFailure(null, ex);
+        } catch (InvocationTargetException ex) {
+            Throwable cause = ex.getCause();
+            log("An exception was thrown while processing this call.", cause);
+            return RPC.encodeResponseForFailure(null, cause);
         } finally {
             if (previousRequest == null) {
                 RequestLocator.set(null);
@@ -175,6 +187,42 @@ public class GwtServiceServlet extends RemoteServiceServlet {
         } catch (SerializationException ex) {
             throw new IncompatibleRemoteServiceException(ex.getMessage(), ex);
         }
+    }
+
+    /**
+     * Invokes the service method.
+     * 
+     * @param service
+     *            the service
+     * @param method
+     *            the method
+     * @param args
+     *            the arguments
+     * @return the return value of the method
+     * @throws InvocationTargetException
+     *             if the method throws an exception
+     */
+    protected Object invoke(Object service, Method method, Object[] args)
+            throws InvocationTargetException {
+        try {
+            return method.invoke(service, args);
+        } catch (IllegalArgumentException e) {
+            throw new IncompatibleRemoteServiceException(e.getMessage(), e);
+        } catch (IllegalAccessException e) {
+            throw new IncompatibleRemoteServiceException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * This method is invoked after the service method is invoked.
+     * 
+     * @param request
+     *            the request
+     * @param result
+     *            the result
+     */
+    protected void onAfterMethodInvoked(S3RPCRequest request, Object result) {
+        CurrentPersistenceManager.destroy();
     }
 
     /**

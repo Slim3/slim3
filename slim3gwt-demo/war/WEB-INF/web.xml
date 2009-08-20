@@ -2,7 +2,7 @@
 <web-app xmlns="http://java.sun.com/xml/ns/javaee" version="2.5">
     <context-param>
         <param-name>slim3.rootPackage</param-name>
-        <param-value>slim3.demo.server</param-value>
+        <param-value>slim3.demo</param-value>
     </context-param>
     <context-param>
         <param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
@@ -42,13 +42,14 @@
     </filter-mapping>
   
     <servlet>
-        <servlet-name>gwtServiceServlet</servlet-name>
-        <servlet-class>org.slim3.gwt.server.GwtServiceServlet</servlet-class>
+        <servlet-name>GWTServiceServlet</servlet-name>
+        <servlet-class>org.slim3.gwt.server.GWTServiceServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
     </servlet>
   
     <servlet-mapping>
-        <servlet-name>gwtServiceServlet</servlet-name>
-        <url-pattern>/slim3gwt_demo/gwtservice</url-pattern>
+        <servlet-name>GWTServiceServlet</servlet-name>
+        <url-pattern>*.s3gwt</url-pattern>
     </servlet-mapping>
   
     <welcome-file-list>

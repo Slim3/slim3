@@ -71,6 +71,18 @@ public class FrontControllerTest extends ControllerTestCase {
      * @throws Exception
      * 
      */
+    public void testGetControllerPackageName() throws Exception {
+        assertEquals("controller", frontController.getControllerPackageName());
+        application
+            .setAttribute("slim3.controllerPackage", "server.controller");
+        assertEquals("server.controller", frontController
+            .getControllerPackageName());
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
     public void testCreateController() throws Exception {
         Controller controller = frontController.createController("/hello/list");
         assertNotNull(controller);

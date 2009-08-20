@@ -24,9 +24,9 @@ import org.slim3.gwt.server.service.HogeServiceImpl;
  * @author higa
  * 
  */
-public class GwtServiceServletTest extends TestCase {
+public class GWTServiceServletTest extends TestCase {
 
-    private GwtServiceServlet servlet = new GwtServiceServlet();
+    private GWTServiceServlet servlet = new GWTServiceServlet();
 
     /**
      * @throws Exception

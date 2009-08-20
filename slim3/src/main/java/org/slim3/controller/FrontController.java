@@ -448,7 +448,7 @@ public class FrontController implements Filter {
         String className =
             rootPackageName
                 + "."
-                + ControllerConstants.CONTROLLER_PACKAGE
+                + getControllerPackageName()
                 + path.replace('/', '.');
         if (className.endsWith(".")) {
             className += ControllerConstants.INDEX_CONTROLLER;
@@ -460,6 +460,21 @@ public class FrontController implements Filter {
                     + ControllerConstants.CONTROLLER_SUFFIX;
         }
         return className;
+    }
+
+    /**
+     * Returns the controller package name.
+     * 
+     * @return the controller package name
+     */
+    protected String getControllerPackageName() {
+        String packageName =
+            (String) servletContext
+                .getAttribute(ControllerConstants.CONTROLLER_PACKAGE_KEY);
+        if (packageName == null) {
+            packageName = ControllerConstants.CONTROLLER_PACKAGE;
+        }
+        return packageName;
     }
 
     /**

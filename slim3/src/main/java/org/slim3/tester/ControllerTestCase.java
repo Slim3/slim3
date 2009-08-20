@@ -147,17 +147,9 @@ public abstract class ControllerTestCase extends TestCase {
         RequestLocator.set(null);
         ResponseLocator.set(null);
         filterChain = null;
-        tearDownControllerPackage();
         LocaleLocator.set(null);
         TimeZoneLocator.set(null);
         super.tearDown();
-    }
-
-    /**
-     * Tears down the controller package.
-     */
-    protected void tearDownControllerPackage() {
-        System.clearProperty(ControllerConstants.CONTROLLER_PACKAGE_KEY);
     }
 
     /**
