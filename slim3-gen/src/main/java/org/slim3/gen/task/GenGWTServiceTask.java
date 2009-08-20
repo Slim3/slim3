@@ -45,7 +45,7 @@ public class GenGWTServiceTask extends AbstractGenJavaFileTask {
     protected String serviceRelativeClassName;
 
     /** the remoteServiceRelativePath */
-    protected String remoteServiceRelativePath = "gwtservice";
+    protected String remoteServiceRelativePath = "service.s3gwt";
 
     /** the property which represents a service class name */
     protected String serviceClassNameProperty;
