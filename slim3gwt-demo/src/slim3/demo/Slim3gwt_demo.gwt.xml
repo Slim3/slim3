@@ -15,4 +15,6 @@
 
   <!-- Specify the app entry point class.                         -->
   <entry-point class='slim3.demo.client.Slim3gwt_demo'/>
+  <source path="client"/>
+  <source path="shared"/>
 </module>

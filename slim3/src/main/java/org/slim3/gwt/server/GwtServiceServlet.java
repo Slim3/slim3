@@ -141,7 +141,7 @@ public class GwtServiceServlet extends RemoteServiceServlet {
             Thread.currentThread().getContextClassLoader();
         try {
             ServerSerializationStreamReader streamReader =
-                new ServerSerializationStreamReader(classLoader, null);
+                new ServerSerializationStreamReader(classLoader, this);
             streamReader.prepareToRead(encodedRequest);
             String interfaceName = streamReader.readString();
             Class<?> serviceClass = getServiceClass(interfaceName);
