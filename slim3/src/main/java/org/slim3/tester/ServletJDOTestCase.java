@@ -30,7 +30,7 @@ import org.slim3.util.ServletContextLocator;
  * @since 3.0
  * 
  */
-public class ServletJDOTestCase extends JDOTestCase {
+public abstract class ServletJDOTestCase extends JDOTestCase {
 
     /**
      * The mock for {@link ServletContext}.

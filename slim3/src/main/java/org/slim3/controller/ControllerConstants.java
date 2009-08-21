@@ -101,17 +101,7 @@ public interface ControllerConstants {
     String INDEX_CONTROLLER = "Index" + CONTROLLER_SUFFIX;
 
     /**
-     * The controller package name.
+     * The default controller package name.
      */
-    String CONTROLLER_PACKAGE = "controller";
-
-    /**
-     * The model package name.
-     */
-    String MODEL_PACKAGE = "model";
-
-    /**
-     * The dao package name.
-     */
-    String DAO_PACKAGE = "dao";
+    String DEFAULT_CONTROLLER_PACKAGE = "controller";
 }

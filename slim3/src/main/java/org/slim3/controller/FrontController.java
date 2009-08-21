@@ -472,7 +472,7 @@ public class FrontController implements Filter {
             (String) servletContext
                 .getAttribute(ControllerConstants.CONTROLLER_PACKAGE_KEY);
         if (packageName == null) {
-            packageName = ControllerConstants.CONTROLLER_PACKAGE;
+            packageName = ControllerConstants.DEFAULT_CONTROLLER_PACKAGE;
         }
         return packageName;
     }

@@ -122,12 +122,12 @@ public abstract class ControllerTestCase extends TestCase {
      */
     protected void setUpContextParameter() {
         String className = getClass().getName();
-        int pos =
-            className.lastIndexOf("."
-                + ControllerConstants.CONTROLLER_PACKAGE
-                + ".");
+        int pos = className.lastIndexOf(".server.controller.");
         if (pos < 0) {
-            pos = className.lastIndexOf('.');
+            pos = className.lastIndexOf(".controller.");
+            if (pos < 0) {
+                pos = className.lastIndexOf('.');
+            }
         }
         String rootPackageName = className.substring(0, pos);
         application.setInitParameter(
