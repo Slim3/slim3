@@ -60,6 +60,9 @@ public class GWTServiceServlet extends RemoteServiceServlet {
     @Override
     public void init() throws ServletException {
         super.init();
+        getServletContext().setAttribute(
+            "slim3.controllerPackage",
+            "server.controller");
         if (ServletContextLocator.get() == null) {
             ServletContextLocator.set(getServletContext());
             servletContextSet = true;
@@ -100,9 +103,11 @@ public class GWTServiceServlet extends RemoteServiceServlet {
             RequestLocator.set(getThreadLocalRequest());
             ResponseLocator.set(getThreadLocalResponse());
         }
+        S3RPCRequest request = null;
+        RPCRequest rpcRequest = null;
         try {
-            S3RPCRequest request = decodeRequest(payload);
-            RPCRequest rpcRequest = request.getOriginalRequest();
+            request = decodeRequest(payload);
+            rpcRequest = request.getOriginalRequest();
             onAfterRequestDeserialized(rpcRequest);
             Object result =
                 invoke(request.getService(), rpcRequest.getMethod(), rpcRequest
@@ -120,7 +125,9 @@ public class GWTServiceServlet extends RemoteServiceServlet {
         } catch (InvocationTargetException ex) {
             Throwable cause = ex.getCause();
             log("An exception was thrown while processing this call.", cause);
-            return RPC.encodeResponseForFailure(null, cause);
+            SerializationPolicy sp =
+                rpcRequest != null ? rpcRequest.getSerializationPolicy() : null;
+            return RPC.encodeResponseForFailure(null, cause, sp);
         } finally {
             if (previousRequest == null) {
                 RequestLocator.set(null);
