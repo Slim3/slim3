@@ -40,6 +40,9 @@ public class DaoDesc implements ClassDesc {
     /** the modelClassName */
     protected String modelClassName;
 
+    /** the modelMetaClassName */
+    protected String modelMetaClassName;
+
     /**
      * Returns the packageName.
      * 
@@ -138,6 +141,21 @@ public class DaoDesc implements ClassDesc {
      */
     public void setModelClassName(String modelClassName) {
         this.modelClassName = modelClassName;
+    }
+
+    /**
+     * @return the modelMetaClassName
+     */
+    public String getModelMetaClassName() {
+        return modelMetaClassName;
+    }
+
+    /**
+     * @param modelMetaClassName
+     *            the modelMetaClassName to set
+     */
+    public void setModelMetaClassName(String modelMetaClassName) {
+        this.modelMetaClassName = modelMetaClassName;
     }
 
 }

@@ -15,7 +15,6 @@
  */
 package org.slim3.gen.generator;
 
-import org.slim3.gen.Constants;
 import org.slim3.gen.desc.DaoDesc;
 import org.slim3.gen.printer.Printer;
 import org.slim3.gen.util.ClassUtil;
@@ -54,8 +53,7 @@ public class DaoGenerator implements Generator {
         p.println("import javax.jdo.PersistenceManager;");
         p.println("import org.slim3.jdo.SelectQuery;");
         p.println("import %s;", daoDesc.getModelClassName());
-        p.println("import %s;", daoDesc.getModelClassName()
-            + Constants.META_SUFFIX);
+        p.println("import %s;", daoDesc.getModelMetaClassName());
         p.println("import %s;", daoDesc.getSuperclassName());
         p.println();
         p.println(
@@ -64,10 +62,8 @@ public class DaoGenerator implements Generator {
             ClassUtil.getSimpleName(daoDesc.getSuperclassName()),
             ClassUtil.getSimpleName(daoDesc.getModelClassName()));
         p.println();
-        p
-            .println(
-                "    private static final %1$s m = new %1$s();",
-                (ClassUtil.getSimpleName(daoDesc.getModelClassName()) + Constants.META_SUFFIX));
+        p.println("    private static final %1$s m = new %1$s();", (ClassUtil
+            .getSimpleName(daoDesc.getModelMetaClassName())));
         p.println();
         p.println("    @SuppressWarnings(\"unused\")");
         p

@@ -33,10 +33,16 @@ public final class Options {
     public static final String DEBUG = "debug";
 
     /** the model package */
-    public static final String MODEL_PACAKGE = "modelPackage";
+    public static final String MODEL_PACKAGE = "modelPackage";
 
     /** the meta package */
     public static final String META_PACKAGE = "metaPackage";
+
+    /** the shared package */
+    public static final String SHARED_PACKAGE = "sharedPackage";
+
+    /** the server package */
+    public static final String SERVER_PACKAGE = "serverPackage";
 
     /**
      * Returns {@code true} if debug enabled otherwirse {@code false}.
@@ -62,7 +68,7 @@ public final class Options {
      * @return the model package.
      */
     public static String getModelPackage(ProcessingEnvironment env) {
-        String modelPackage = env.getOptions().get(Options.MODEL_PACAKGE);
+        String modelPackage = env.getOptions().get(Options.MODEL_PACKAGE);
         return modelPackage != null ? modelPackage : Constants.MODEL_PACKAGE;
     }
 
@@ -76,5 +82,29 @@ public final class Options {
     public static String getMetaPackage(ProcessingEnvironment env) {
         String metaPackage = env.getOptions().get(Options.META_PACKAGE);
         return metaPackage != null ? metaPackage : Constants.META_PACKAGE;
+    }
+
+    /**
+     * Returns the shared package.
+     * 
+     * @param env
+     *            the processing environment.
+     * @return the shared package.
+     */
+    public static String getSharedPackage(ProcessingEnvironment env) {
+        String sharedPackage = env.getOptions().get(Options.SHARED_PACKAGE);
+        return sharedPackage != null ? sharedPackage : Constants.SHARED_PACKAGE;
+    }
+
+    /**
+     * Returns the server package.
+     * 
+     * @param env
+     *            the processing environment.
+     * @return the server package.
+     */
+    public static String getServerPackage(ProcessingEnvironment env) {
+        String serverPackage = env.getOptions().get(Options.SERVER_PACKAGE);
+        return serverPackage != null ? serverPackage : Constants.SERVER_PACKAGE;
     }
 }

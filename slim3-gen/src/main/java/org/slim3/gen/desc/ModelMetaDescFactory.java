@@ -15,18 +15,12 @@
  */
 package org.slim3.gen.desc;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.ElementFilter;
 
-import org.slim3.gen.Constants;
 import org.slim3.gen.processor.Options;
-import org.slim3.gen.util.ClassUtil;
-import org.slim3.gen.util.StringUtil;
 
 /**
  * Creates a model meta description.
@@ -77,48 +71,30 @@ public class ModelMetaDescFactory {
             throw new NullPointerException(
                 "The modelElement parameter is null.");
         }
+        String modelClassName = modelElement.getQualifiedName().toString();
+        ModelMetaClassName modelMetaClassName =
+            createModelMetaClassName(modelClassName);
         ModelMetaDesc modelMetaDesc = new ModelMetaDesc();
-        modelMetaDesc.setPackageName(replaceModelPackageName(ClassUtil
-            .getPackageName(modelElement.getQualifiedName().toString())));
-        modelMetaDesc.setSimpleName(modelElement.getSimpleName()
-            + Constants.META_SUFFIX);
-        modelMetaDesc.setModelClassName(modelElement
-            .getQualifiedName()
-            .toString());
+        modelMetaDesc.setPackageName(modelMetaClassName.getPackageName());
+        modelMetaDesc.setSimpleName(modelMetaClassName.getSimpleName());
+        modelMetaDesc.setModelClassName(modelClassName);
         handleFields(modelElement, modelMetaDesc);
         return modelMetaDesc;
     }
 
     /**
-     * Replaces a model package name to a meta package name.
+     * Creates a model meta class name.
      * 
-     * @param modelPackageName
-     *            a model package name
-     * @return a meta package name
+     * @param modelClassName
+     *            a model class name
+     * @return a model meta class name
      */
-    protected String replaceModelPackageName(String modelPackageName) {
-        if (StringUtil.isEmpty(modelPackageName)) {
-            return modelPackageName;
-        }
-        String regex =
-            String.format("(.*)(\\.%s)(\\..*|$)", Options
-                .getModelPackage(processingEnv));
-        String replacement =
-            String.format("$1.%s$3", Options.getMetaPackage(processingEnv));
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(modelPackageName);
-        if (!matcher.matches()) {
-            return modelPackageName;
-        }
-        StringBuffer buf = new StringBuffer();
-        for (matcher.reset(); matcher.find();) {
-            matcher.appendReplacement(buf, replacement);
-            if (matcher.hitEnd()) {
-                break;
-            }
-        }
-        matcher.appendTail(buf);
-        return buf.toString();
+    protected ModelMetaClassName createModelMetaClassName(String modelClassName) {
+        return new ModelMetaClassName(modelClassName, Options
+            .getModelPackage(processingEnv), Options
+            .getMetaPackage(processingEnv), Options
+            .getSharedPackage(processingEnv), Options
+            .getServerPackage(processingEnv));
     }
 
     /**

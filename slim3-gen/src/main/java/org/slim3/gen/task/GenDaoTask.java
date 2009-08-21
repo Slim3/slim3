@@ -22,6 +22,7 @@ import javax.xml.xpath.XPathExpressionException;
 import org.slim3.gen.ClassConstants;
 import org.slim3.gen.Constants;
 import org.slim3.gen.desc.DaoDesc;
+import org.slim3.gen.desc.ModelMetaClassName;
 import org.slim3.gen.generator.DaoGenerator;
 import org.slim3.gen.generator.DaoTestCaseGenerator;
 import org.slim3.gen.generator.Generator;
@@ -142,6 +143,9 @@ public class GenDaoTask extends AbstractGenJavaFileTask {
         daoDesc.setSuperclassName(superclassName);
         daoDesc.setTestCaseSuperclassName(testCaseSuperclassName);
         daoDesc.setModelClassName(modelClassName);
+        ModelMetaClassName modelMetaClassName =
+            createModelMetaClassName(modelClassName);
+        daoDesc.setModelMetaClassName(modelMetaClassName.getQualifiedName());
         return daoDesc;
     }
 
@@ -167,6 +171,22 @@ public class GenDaoTask extends AbstractGenJavaFileTask {
         buf.append(".");
         buf.append(Constants.DAO_PACKAGE);
         return buf.toString();
+    }
+
+    /**
+     * Creates a model meta class name.
+     * 
+     * @param modelClassName
+     *            a model class name
+     * @return a model meta class name
+     */
+    protected ModelMetaClassName createModelMetaClassName(String modelClassName) {
+        return new ModelMetaClassName(
+            modelClassName,
+            Constants.MODEL_PACKAGE,
+            Constants.META_PACKAGE,
+            Constants.SHARED_PACKAGE,
+            Constants.SERVER_PACKAGE);
     }
 
     /**

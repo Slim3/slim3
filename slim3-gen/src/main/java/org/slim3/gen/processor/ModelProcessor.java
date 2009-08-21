@@ -47,7 +47,7 @@ import org.slim3.gen.message.MessageFormatter;
  */
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 @SupportedAnnotationTypes(ClassConstants.PersistenceCapable)
-@SupportedOptions( { Options.DEBUG, Options.MODEL_PACAKGE, Options.META_PACKAGE })
+@SupportedOptions( { Options.DEBUG, Options.MODEL_PACKAGE, Options.META_PACKAGE })
 public class ModelProcessor extends AbstractProcessor {
 
     /** the support for generating */
