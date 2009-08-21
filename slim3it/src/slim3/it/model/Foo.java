@@ -26,7 +26,7 @@ import javax.jdo.annotations.PrimaryKey;
  * @author higa
  * 
  */
-@PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
+@PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Foo {
 
     @PrimaryKey

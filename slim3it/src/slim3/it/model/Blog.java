@@ -11,7 +11,7 @@ import javax.jdo.annotations.PrimaryKey;
 import javax.jdo.annotations.Version;
 import javax.jdo.annotations.VersionStrategy;
 
-@PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
+@PersistenceCapable(identityType = IdentityType.APPLICATION)
 @Version(strategy = VersionStrategy.VERSION_NUMBER, column = "version")
 public class Blog implements Serializable {
 

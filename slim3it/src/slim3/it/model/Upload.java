@@ -16,7 +16,7 @@ import javax.jdo.annotations.VersionStrategy;
 /**
  *
  */
-@PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
+@PersistenceCapable(identityType = IdentityType.APPLICATION)
 @Version(strategy = VersionStrategy.VERSION_NUMBER, column = "version")
 public class Upload implements Serializable {
 

@@ -14,7 +14,7 @@ import com.google.appengine.api.datastore.Blob;
 /**
  *
  */
-@PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
+@PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class UploadData implements Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -14,7 +14,7 @@ import javax.jdo.annotations.VersionStrategy;
 
 import com.google.appengine.api.users.User;
 
-@PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
+@PersistenceCapable(identityType = IdentityType.APPLICATION)
 @Version(strategy = VersionStrategy.VERSION_NUMBER, column = "version")
 public class Greeting implements Serializable {
 

@@ -11,8 +11,6 @@
        <property name="javax.jdo.option.NontransactionalWrite" value="true"/>
        <property name="javax.jdo.option.Optimistic" value="true"/>
        <property name="javax.jdo.option.RetainValues" value="true"/>
-       <property name="javax.jdo.option.DetachAllOnCommit" value="false"/>
-       <property name="datanucleus.DetachOnClose" value="true"/>
        <property name="datanucleus.CopyOnAttach" value="false"/>
        <property name="datanucleus.appengine.autoCreateDatastoreTxns" value="true"/>
        <property name="datanucleus.classLoaderResolverName" value="s3loader"/>

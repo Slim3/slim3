@@ -22,7 +22,7 @@ import javax.jdo.annotations.Persistent;
  * @author higa
  * 
  */
-@PersistenceCapable(detachable = "true")
+@PersistenceCapable
 public class Baz {
 
     @Persistent
