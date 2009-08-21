@@ -21,9 +21,8 @@ import javax.jdo.JDOUserException;
 
 import org.slim3.tester.JDOTestCase;
 
+import slim3.it.meta.BlogMeta;
 import slim3.it.model.Blog;
-import slim3.it.model.BlogMeta;
-
 
 /**
  * @author higa

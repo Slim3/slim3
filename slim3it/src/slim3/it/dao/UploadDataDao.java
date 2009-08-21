@@ -7,8 +7,8 @@ import javax.jdo.PersistenceManager;
 import org.slim3.jdo.GenericDao;
 import org.slim3.jdo.SelectQuery;
 
+import slim3.it.meta.UploadDataMeta;
 import slim3.it.model.UploadData;
-import slim3.it.model.UploadDataMeta;
 
 public class UploadDataDao extends GenericDao<UploadData> {
 

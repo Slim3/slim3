@@ -1,7 +1,7 @@
 package org.slim3.tester;
 
+import slim3.it.meta.BlogMeta;
 import slim3.it.model.Blog;
-import slim3.it.model.BlogMeta;
 
 public class QueryTest extends JDOTestCase {
 

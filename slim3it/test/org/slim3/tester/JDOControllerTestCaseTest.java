@@ -17,8 +17,8 @@ package org.slim3.tester;
 
 import org.slim3.controller.ControllerConstants;
 
+import slim3.it.meta.BlogMeta;
 import slim3.it.model.Blog;
-import slim3.it.model.BlogMeta;
 
 /**
  * @author higa

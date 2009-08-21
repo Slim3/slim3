@@ -1,23 +1,26 @@
 package slim3.it.dao;
 
 import java.util.logging.Logger;
+
 import javax.jdo.PersistenceManager;
-import org.slim3.jdo.SelectQuery;
-import slim3.it.model.Bar;
-import slim3.it.model.BarMeta;
+
 import org.slim3.jdo.GenericDao;
+import org.slim3.jdo.SelectQuery;
+
+import slim3.it.meta.BarMeta;
+import slim3.it.model.Bar;
 
 public class BarDao extends GenericDao<Bar> {
 
     private static final BarMeta m = new BarMeta();
 
     @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(BarDao.class.getName());
+    private static final Logger logger =
+        Logger.getLogger(BarDao.class.getName());
 
     public BarDao() {
         super(Bar.class);
     }
-
 
     public BarDao(PersistenceManager pm) {
         super(Bar.class, pm);

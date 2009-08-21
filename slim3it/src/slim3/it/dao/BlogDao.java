@@ -8,8 +8,8 @@ import javax.jdo.PersistenceManager;
 import org.slim3.jdo.GenericDao;
 import org.slim3.jdo.SelectQuery;
 
+import slim3.it.meta.BlogMeta;
 import slim3.it.model.Blog;
-import slim3.it.model.BlogMeta;
 
 public class BlogDao extends GenericDao<Blog> {
 
