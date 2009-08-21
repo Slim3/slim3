@@ -1,10 +1,5 @@
 <project name="slim3-blank" default="gen-controller" basedir=".">
-	<property name="ver" value="EA1-SNAPSHOT"/>
-    <property name="srcDir" value="src"/>
-    <property name="testDir" value="test"/>
-    <property name="warDir" value="war"/>
-	<property name="superclassName" value="org.slim3.controller.Controller"/>
-	<property name="testCaseSuperclassName" value="org.slim3.tester.JDOControllerTestCase"/>
+	<property file="build.properties" />
 
     <path id="classpath">
         <fileset dir="war/WEB-INF/classes">

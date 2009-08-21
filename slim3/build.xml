@@ -1,6 +1,18 @@
 <project name="slim3" default="create-lib" basedir=".">
 
 	<property file="build.properties" />
+	
+	<target name="update-ver">
+        <replaceregexp
+            match="(ver=)(.+)"
+            replace="\1${ver}" encoding="UTF-8">
+            <fileset dir="../slim3-blank" includes="build.properties" />
+        	<fileset dir="../slim3-gen" includes="build.properties" />
+        	<fileset dir="../slim3-versionchecker" includes="build.properties" />
+        	<fileset dir="../slim3gwt-demo" includes="build.properties" />
+        	<fileset dir="../slim3it" includes="build.properties" />
+        </replaceregexp>
+	</target>
 
     <path id="project.classpath">
         <pathelement path="build/classes" />
@@ -11,7 +23,7 @@
 	      <include name="**/*.jar" />
 	    </fileset>
     </path>
-	
+
 	<target name="create-lib" depends="clean">
 	    <jar jarfile="target/slim3-${ver}.jar" basedir="build/classes"/>
 	    <jar jarfile="target/slim3-${ver}-sources.jar" basedir="src/main/java"/>
