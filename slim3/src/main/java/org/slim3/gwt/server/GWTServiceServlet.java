@@ -27,6 +27,7 @@ import org.slim3.jdo.CurrentPersistenceManager;
 import org.slim3.util.ClassUtil;
 import org.slim3.util.RequestLocator;
 import org.slim3.util.ResponseLocator;
+import org.slim3.util.ServletContextLocator;
 
 import com.google.gwt.user.client.rpc.IncompatibleRemoteServiceException;
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -51,12 +52,25 @@ public class GWTServiceServlet extends RemoteServiceServlet {
     private static HotSerializationPolicy hotSerializationPolicy =
         new HotSerializationPolicy();
 
+    /**
+     * Whether the servlet context is set to {@link ServletContextLocator}.
+     */
+    protected boolean servletContextSet = false;
+
     @Override
     public void init() throws ServletException {
         super.init();
-        getServletContext().setAttribute(
-            "slim3.controllerPackage",
-            "server.controller");
+        if (ServletContextLocator.get() == null) {
+            ServletContextLocator.set(getServletContext());
+            servletContextSet = true;
+        }
+    }
+
+    @Override
+    public void destroy() {
+        if (servletContextSet) {
+            ServletContextLocator.set(null);
+        }
     }
 
     /**
