@@ -15,6 +15,9 @@
  */
 package org.slim3.gen.desc;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
@@ -97,15 +100,25 @@ public class ModelMetaDescFactory {
         if (StringUtil.isEmpty(modelPackageName)) {
             return modelPackageName;
         }
-        String model = Options.getModelPackage(processingEnv);
-        String meta = Options.getMetaPackage(processingEnv);
-        String name =
-            modelPackageName
-                .replaceAll("\\." + model + "\\.", "." + meta + ".");
-        if (name.endsWith("." + model)) {
-            return name.substring(0, name.length() - model.length()) + meta;
+        String regex =
+            String.format("(.*)(\\.%s)(\\..*|$)", Options
+                .getModelPackage(processingEnv));
+        String replacement =
+            String.format("$1.%s$3", Options.getMetaPackage(processingEnv));
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(modelPackageName);
+        if (!matcher.matches()) {
+            return modelPackageName;
         }
-        return name;
+        StringBuffer buf = new StringBuffer();
+        for (matcher.reset(); matcher.find();) {
+            matcher.appendReplacement(buf, replacement);
+            if (matcher.hitEnd()) {
+                break;
+            }
+        }
+        matcher.appendTail(buf);
+        return buf.toString();
     }
 
     /**
