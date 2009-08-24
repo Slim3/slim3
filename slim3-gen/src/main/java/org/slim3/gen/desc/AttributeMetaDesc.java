@@ -35,6 +35,9 @@ public class AttributeMetaDesc {
     /** {@code true} if this attribute is embedded. */
     protected boolean embedded = false;
 
+    /** the embeddedModelMetaClassName */
+    protected String embeddedModelMetaClassName;
+
     /**
      * Returns the name.
      * 
@@ -109,6 +112,25 @@ public class AttributeMetaDesc {
      */
     public void setEmbedded(boolean embedded) {
         this.embedded = embedded;
+    }
+
+    /**
+     * Returns the embeddedModelMetaClassName.
+     * 
+     * @return the embeddedModelMetaClassName
+     */
+    public String getEmbeddedModelMetaClassName() {
+        return embeddedModelMetaClassName;
+    }
+
+    /**
+     * Sets the embeddedModelMetaClassName.
+     * 
+     * @param embeddedModelMetaClassName
+     *            the embeddedModelMetaClassName to set
+     */
+    public void setEmbeddedModelMetaClassName(String embeddedModelMetaClassName) {
+        this.embeddedModelMetaClassName = embeddedModelMetaClassName;
     }
 
 }

@@ -20,7 +20,6 @@ import java.util.Date;
 import javax.annotation.Generated;
 
 import org.slim3.gen.ClassConstants;
-import org.slim3.gen.Constants;
 import org.slim3.gen.ProductInfo;
 import org.slim3.gen.desc.AttributeMetaDesc;
 import org.slim3.gen.desc.ModelMetaDesc;
@@ -82,11 +81,8 @@ public class ModelMetaGenerator implements Generator {
         p.println();
         for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
             if (attr.isEmbedded()) {
-                p.println(
-                    "    public %1$s%2$s %3$s = new %1$s%2$s(\"%3$s\");",
-                    attr.getAttributeClassName(),
-                    Constants.META_SUFFIX,
-                    attr.getName());
+                p.println("    public %1$s %2$s = new %1$s(\"%2$s\");", attr
+                    .getEmbeddedModelMetaClassName(), attr.getName());
             } else {
                 if (attr.getAttributeElementClassName() == null) {
                     p

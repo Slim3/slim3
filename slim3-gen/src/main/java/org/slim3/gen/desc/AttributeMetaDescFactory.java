@@ -39,6 +39,7 @@ import org.slim3.gen.ClassConstants;
 import org.slim3.gen.message.MessageCode;
 import org.slim3.gen.message.MessageFormatter;
 import org.slim3.gen.processor.Logger;
+import org.slim3.gen.processor.Options;
 import org.slim3.gen.util.ElementUtil;
 
 /**
@@ -91,19 +92,30 @@ public class AttributeMetaDescFactory {
         if (isNestedType(fieldElement)) {
             return null;
         }
-
-        AttributeMetaDesc attributeMetaDesc = new AttributeMetaDesc();
-        attributeMetaDesc.setName(fieldElement.getSimpleName().toString());
-        attributeMetaDesc.setEmbedded(isEmbedded(fieldElement));
         Iterator<String> classNames =
             new ClassNameCollector(fieldElement.asType()).collect().iterator();
-        if (classNames.hasNext()) {
-            String className = classNames.next();
-            attributeMetaDesc.setAttributeClassName(className);
-        }
-        if (classNames.hasNext()) {
-            String elementClassName = classNames.next();
-            attributeMetaDesc.setAttributeElementClassName(elementClassName);
+        AttributeMetaDesc attributeMetaDesc = new AttributeMetaDesc();
+        attributeMetaDesc.setName(fieldElement.getSimpleName().toString());
+        if (isEmbedded(fieldElement)) {
+            attributeMetaDesc.setEmbedded(true);
+            if (classNames.hasNext()) {
+                String modelClassName = classNames.next();
+                ModelMetaClassName modelMetaClassName =
+                    createModelMetaClassName(modelClassName);
+                attributeMetaDesc
+                    .setEmbeddedModelMetaClassName(modelMetaClassName
+                        .getQualifiedName());
+            }
+        } else {
+            if (classNames.hasNext()) {
+                String className = classNames.next();
+                attributeMetaDesc.setAttributeClassName(className);
+            }
+            if (classNames.hasNext()) {
+                String elementClassName = classNames.next();
+                attributeMetaDesc
+                    .setAttributeElementClassName(elementClassName);
+            }
         }
         return attributeMetaDesc;
     }
@@ -194,6 +206,21 @@ public class AttributeMetaDescFactory {
         return ElementUtil.getAnnotationMirror(
             attributeElement,
             ClassConstants.Embedded) != null;
+    }
+
+    /**
+     * Creates a model meta class name.
+     * 
+     * @param modelClassName
+     *            a model class name
+     * @return a model meta class name
+     */
+    protected ModelMetaClassName createModelMetaClassName(String modelClassName) {
+        return new ModelMetaClassName(modelClassName, Options
+            .getModelPackage(processingEnv), Options
+            .getMetaPackage(processingEnv), Options
+            .getSharedPackage(processingEnv), Options
+            .getServerPackage(processingEnv));
     }
 
     /**
