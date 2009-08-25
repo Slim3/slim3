@@ -1,0 +1,21 @@
+package com.google.appengine.api.datastore;
+
+import java.io.Serializable;
+
+public class Blob implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    private byte[] bytes;
+
+    public Blob() {
+    }
+
+    public Blob(byte[] bytes) {
+        this.bytes = bytes;
+    }
+
+    public byte[] getBytes() {
+        return bytes;
+    }
+}

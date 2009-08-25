@@ -13,21 +13,26 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.gwt.server;
+package org.slim3.gwt.server.rpc;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collection;
 
+import javax.jdo.JDOHelper;
+import javax.jdo.PersistenceManager;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.datanucleus.store.query.QueryResult;
 import org.slim3.controller.HotReloadingClassLoader;
 import org.slim3.jdo.CurrentPersistenceManager;
 import org.slim3.util.ClassUtil;
 import org.slim3.util.RequestLocator;
 import org.slim3.util.ResponseLocator;
 import org.slim3.util.ServletContextLocator;
+import org.slim3.util.StringUtil;
 
 import com.google.gwt.user.client.rpc.IncompatibleRemoteServiceException;
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -112,7 +117,6 @@ public class GWTServiceServlet extends RemoteServiceServlet {
             Object result =
                 invoke(request.getService(), rpcRequest.getMethod(), rpcRequest
                     .getParameters());
-            onAfterMethodInvoked(request, result);
             return RPC.encodeResponseForSuccess(
                 rpcRequest.getMethod(),
                 result,
@@ -229,25 +233,36 @@ public class GWTServiceServlet extends RemoteServiceServlet {
      */
     protected Object invoke(Object service, Method method, Object[] args)
             throws InvocationTargetException {
+        Object result = null;
         try {
-            return method.invoke(service, args);
+            result = method.invoke(service, args);
         } catch (IllegalArgumentException e) {
             throw new IncompatibleRemoteServiceException(e.getMessage(), e);
         } catch (IllegalAccessException e) {
             throw new IncompatibleRemoteServiceException(e.getMessage(), e);
+        } catch (ClassCastException e) {
+            String msg = e.getMessage();
+            String[] msgs = StringUtil.split(msg, " ");
+            if (msgs.length > 2 && msgs[0].equals(msgs[msgs.length - 1])) {
+                msg =
+                    "The class("
+                        + msgs[0]
+                        + ") is loaded by deferent class loaders.";
+            }
+            throw new IncompatibleRemoteServiceException(msg, e);
         }
-    }
-
-    /**
-     * This method is invoked after the service method is invoked.
-     * 
-     * @param request
-     *            the request
-     * @param result
-     *            the result
-     */
-    protected void onAfterMethodInvoked(S3RPCRequest request, Object result) {
-        CurrentPersistenceManager.destroy();
+        if (result == null) {
+            return null;
+        }
+        PersistenceManager pm = CurrentPersistenceManager.get();
+        if (pm != null) {
+            if (result instanceof QueryResult) {
+                return pm.detachCopyAll((Collection<?>) result);
+            } else if (JDOHelper.isPersistent(result)) {
+                return pm.detachCopy(result);
+            }
+        }
+        return result;
     }
 
     @Override
