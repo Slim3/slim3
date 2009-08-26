@@ -248,7 +248,7 @@ public class FrontController implements Filter {
             throws IOException, ServletException {
         String path = RequestUtil.getPath(request);
         String ext = RequestUtil.getExtension(path);
-        if (ext == null) {
+        if (ext == null || ext.startsWith("s3")) {
             HttpServletRequest previousRequest = RequestLocator.get();
             RequestLocator.set(request);
             HttpServletResponse previousResponse = ResponseLocator.get();
@@ -259,7 +259,11 @@ public class FrontController implements Filter {
             TimeZoneLocator.set(processTimeZone(request));
             ApplicationMessage.setBundle(bundleName, LocaleLocator.get());
             try {
-                doFilterInternal(request, response, chain);
+                if (ext == null) {
+                    doFilterInternal(request, response, chain);
+                } else {
+                    chain.doFilter(request, response);
+                }
             } finally {
                 ApplicationMessage.clearBundle();
                 TimeZoneLocator.set(previousTimeZone);
