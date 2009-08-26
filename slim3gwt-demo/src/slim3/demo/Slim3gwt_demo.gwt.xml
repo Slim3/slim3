@@ -12,7 +12,8 @@
   <!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
 
   <!-- Other module inherits                                      -->
-
+  <inherits name='org.slim3.gwt.emul.S3Emulation'/>
+  
   <!-- Specify the app entry point class.                         -->
   <entry-point class='slim3.demo.client.Slim3gwt_demo'/>
   <source path="client"/>
