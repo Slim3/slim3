@@ -17,7 +17,6 @@ package org.slim3.gen.desc;
 
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.slim3.gen.ClassConstants;
 import org.slim3.gen.processor.TigerOptions;
@@ -26,7 +25,6 @@ import org.slim3.gen.util.ElementUtil;
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.declaration.FieldDeclaration;
 import com.sun.mirror.declaration.Modifier;
-import com.sun.mirror.type.AnnotationType;
 import com.sun.mirror.type.ArrayType;
 import com.sun.mirror.type.ClassType;
 import com.sun.mirror.type.DeclaredType;
@@ -35,11 +33,8 @@ import com.sun.mirror.type.InterfaceType;
 import com.sun.mirror.type.PrimitiveType;
 import com.sun.mirror.type.ReferenceType;
 import com.sun.mirror.type.TypeMirror;
-import com.sun.mirror.type.TypeVariable;
-import com.sun.mirror.type.VoidType;
 import com.sun.mirror.type.WildcardType;
 import com.sun.mirror.util.SimpleTypeVisitor;
-import com.sun.tools.javac.code.Type.ErrorType;
 
 /**
  * Represents an attribute meta description factory.
@@ -91,8 +86,8 @@ public class AttributeMetaDescFactory {
 		if (isNestedType(fieldElement)) {
 			return null;
 		}
-		Iterator<String> classNames = new ClassNameCollector(fieldElement
-				.asType()).collect().iterator();
+		Iterator<String> classNames = new ClassNameCollector2(fieldElement
+				.getType()).collect().iterator();
 		AttributeMetaDesc attributeMetaDesc = new AttributeMetaDesc();
 		attributeMetaDesc.setName(fieldElement.getSimpleName().toString());
 		if (isEmbedded(fieldElement)) {
@@ -247,149 +242,7 @@ public class AttributeMetaDescFactory {
 	 * @since 3.0
 	 * 
 	 */
-	protected class ClassNameCollector extends
-			SimpleTypeVisitor6<Void, LinkedList<String>> {
-
-		/** the target typeMirror */
-		protected final TypeMirror typeMirror;
-
-		/**
-		 * Creates a new {@link ClassNameCollector}
-		 * 
-		 * @param typeMirror
-		 *            the target typeMirror
-		 */
-		public ClassNameCollector(TypeMirror typeMirror) {
-			this.typeMirror = typeMirror;
-		}
-
-		/**
-		 * Collects the collection of class name.
-		 * 
-		 * @return the collection of class name
-		 */
-		public List<String> collect() {
-			LinkedList<String> names = new LinkedList<String>();
-			typeMirror.accept(this, names);
-			return names;
-		}
-
-		@Override
-		public Void visitArray(ArrayType t, LinkedList<String> p) {
-			LinkedList<String> names = new LinkedList<String>();
-			t.getComponentType().accept(this, names);
-			p.add(names.getFirst() + "[]");
-			p.add(names.getFirst());
-			return null;
-		}
-
-		@Override
-		public Void visitPrimitive(PrimitiveType t, LinkedList<String> p) {
-			t.accept(new TypeKindVisitor6<Void, LinkedList<String>>() {
-
-				@Override
-				public Void visitPrimitiveAsBoolean(PrimitiveType t,
-						LinkedList<String> p) {
-					p.add(boolean.class.getSimpleName());
-					return null;
-				}
-
-				@Override
-				public Void visitPrimitiveAsByte(PrimitiveType t,
-						LinkedList<String> p) {
-					p.add(byte.class.getSimpleName());
-					return null;
-				}
-
-				@Override
-				public Void visitPrimitiveAsChar(PrimitiveType t,
-						LinkedList<String> p) {
-					p.add(char.class.getSimpleName());
-					return null;
-				}
-
-				@Override
-				public Void visitPrimitiveAsDouble(PrimitiveType t,
-						LinkedList<String> p) {
-					p.add(double.class.getSimpleName());
-					return null;
-				}
-
-				@Override
-				public Void visitPrimitiveAsFloat(PrimitiveType t,
-						LinkedList<String> p) {
-					p.add(float.class.getSimpleName());
-					return null;
-				}
-
-				@Override
-				public Void visitPrimitiveAsInt(PrimitiveType t,
-						LinkedList<String> p) {
-					p.add(int.class.getSimpleName());
-					return null;
-				}
-
-				@Override
-				public Void visitPrimitiveAsLong(PrimitiveType t,
-						LinkedList<String> p) {
-					p.add(long.class.getSimpleName());
-					return null;
-				}
-
-				@Override
-				public Void visitPrimitiveAsShort(PrimitiveType t,
-						LinkedList<String> p) {
-					p.add(short.class.getSimpleName());
-					return null;
-				}
-			}, p);
-			return null;
-		}
-
-		@Override
-		public Void visitWildcard(WildcardType t, LinkedList<String> p) {
-			TypeMirror extendedBound = t.getExtendsBound();
-			if (extendedBound != null) {
-				LinkedList<String> names = new LinkedList<String>();
-				extendedBound.accept(this, names);
-				p.add(names.getFirst());
-			}
-			TypeMirror superBound = t.getSuperBound();
-			if (superBound != null) {
-				LinkedList<String> names = new LinkedList<String>();
-				superBound.accept(this, names);
-				p.add(names.getFirst());
-			}
-			return null;
-		}
-
-		@Override
-		public Void visitError(ErrorType t, LinkedList<String> p) {
-			p.add("Object");
-			return null;
-		}
-
-		@Override
-		public Void visitDeclared(DeclaredType t, LinkedList<String> p) {
-			t.asElement().accept(
-					new SimpleElementVisitor6<Void, LinkedList<String>>() {
-						@Override
-						public Void visitType(TypeElement e,
-								LinkedList<String> p) {
-							p.add(e.getQualifiedName().toString());
-							return null;
-						}
-					}, p);
-			for (TypeMirror arg : t.getTypeArguments()) {
-				LinkedList<String> names = new LinkedList<String>();
-				arg.accept(this, names);
-				p.add(names.getFirst());
-			}
-			return null;
-		}
-	}
-
-	class ClassNameCollector2 extends SimpleTypeVisitor {
+	protected static class ClassNameCollector2 extends SimpleTypeVisitor {
 
 		LinkedList<String> names = new LinkedList<String>();
 
@@ -417,12 +270,6 @@ public class AttributeMetaDescFactory {
 		}
 
 		@Override
-		public void visitAnnotationType(AnnotationType arg0) {
-			// TODO Auto-generated method stub
-			super.visitAnnotationType(arg0);
-		}
-
-		@Override
 		public void visitArrayType(ArrayType arg0) {
 			ClassNameCollector2 collector2 = new ClassNameCollector2(arg0);
 			LinkedList<String> names = collector2.collect();
@@ -432,39 +279,13 @@ public class AttributeMetaDescFactory {
 		}
 
 		@Override
-		public void visitClassType(ClassType arg0) {
-			// TODO Auto-generated method stub
-			super.visitClassType(arg0);
-		}
-
-		@Override
 		public void visitDeclaredType(DeclaredType arg0) {
-			t.asElement().accept(
-					new SimpleElementVisitor6<Void, LinkedList<String>>() {
-						@Override
-						public Void visitType(TypeElement e,
-								LinkedList<String> p) {
-							p.add(e.getQualifiedName().toString());
-							return null;
-						}
-					}, p);
-			for (TypeMirror arg : t.getTypeArguments()) {
-				LinkedList<String> names = new LinkedList<String>();
-				arg.accept(this, names);
-				p.add(names.getFirst());
-			}
-			return null;
-		}
-
-		@Override
-		public void visitEnumType(EnumType arg0) {
 			names.add(arg0.getDeclaration().getQualifiedName());
-		}
-
-		@Override
-		public void visitInterfaceType(InterfaceType arg0) {
-			// TODO Auto-generated method stub
-			super.visitInterfaceType(arg0);
+			for (TypeMirror arg : arg0.getActualTypeArguments()) {
+				ClassNameCollector2 collector2 = new ClassNameCollector2(arg);
+				LinkedList<String> names = collector2.collect();
+				this.names.add(names.getFirst());
+			}
 		}
 
 		@Override
@@ -509,33 +330,19 @@ public class AttributeMetaDescFactory {
 		}
 
 		@Override
-		public void visitReferenceType(ReferenceType arg0) {
-			// TODO Auto-generated method stub
-			super.visitReferenceType(arg0);
-		}
-
-		@Override
-		public void visitTypeMirror(TypeMirror arg0) {
-			// TODO Auto-generated method stub
-			super.visitTypeMirror(arg0);
-		}
-
-		@Override
-		public void visitTypeVariable(TypeVariable arg0) {
-			// TODO Auto-generated method stub
-			super.visitTypeVariable(arg0);
-		}
-
-		@Override
-		public void visitVoidType(VoidType arg0) {
-			// TODO Auto-generated method stub
-			super.visitVoidType(arg0);
-		}
-
-		@Override
 		public void visitWildcardType(WildcardType arg0) {
-			// TODO Auto-generated method stub
-			super.visitWildcardType(arg0);
+			for (ReferenceType referenceType : arg0.getUpperBounds()) {
+				ClassNameCollector2 collector2 = new ClassNameCollector2(
+						referenceType);
+				LinkedList<String> names = collector2.collect();
+				this.names.add(names.getFirst());
+			}
+			for (ReferenceType referenceType : arg0.getLowerBounds()) {
+				ClassNameCollector2 collector2 = new ClassNameCollector2(
+						referenceType);
+				LinkedList<String> names = collector2.collect();
+				this.names.add(names.getFirst());
+			}
 		}
 
 	}

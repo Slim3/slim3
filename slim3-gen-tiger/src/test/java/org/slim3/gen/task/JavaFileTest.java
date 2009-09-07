@@ -28,109 +28,106 @@ import org.slim3.gen.util.ClassUtil;
  */
 public class JavaFileTest extends TestCase {
 
-    /**
-     * 
-     * @throws Exception
-     */
-    public void test() throws Exception {
-        ClassDesc classDesc = new SimpleClassDesc("aaa", "Bbb");
-        JavaFile javaFile = new NoMkdirsJavaFile(new File("src"), classDesc);
-        File expectedFile = new File(new File("src", "aaa"), "Bbb.java");
-        assertEquals(expectedFile, javaFile.getFile());
-        assertEquals("aaa.Bbb", javaFile.getClassName());
-    }
+	/**
+	 * 
+	 * @throws Exception
+	 */
+	public void test() throws Exception {
+		ClassDesc classDesc = new SimpleClassDesc("aaa", "Bbb");
+		JavaFile javaFile = new NoMkdirsJavaFile(new File("src"), classDesc);
+		File expectedFile = new File(new File("src", "aaa"), "Bbb.java");
+		assertEquals(expectedFile, javaFile.getFile());
+		assertEquals("aaa.Bbb", javaFile.getClassName());
+	}
 
-    /**
-     * 
-     * @throws Exception
-     */
-    public void testDefaultPackage() throws Exception {
-        ClassDesc classDesc = new SimpleClassDesc(null, "Bbb");
-        JavaFile javaFile = new NoMkdirsJavaFile(new File("src"), classDesc);
-        File expectedFile = new File("src", "Bbb.java");
-        assertEquals(expectedFile, javaFile.getFile());
-        assertEquals("Bbb", javaFile.getClassName());
-    }
+	/**
+	 * 
+	 * @throws Exception
+	 */
+	public void testDefaultPackage() throws Exception {
+		ClassDesc classDesc = new SimpleClassDesc(null, "Bbb");
+		JavaFile javaFile = new NoMkdirsJavaFile(new File("src"), classDesc);
+		File expectedFile = new File("src", "Bbb.java");
+		assertEquals(expectedFile, javaFile.getFile());
+		assertEquals("Bbb", javaFile.getClassName());
+	}
 
-    /**
-     * 
-     * @throws Exception
-     */
-    public void testSuffix() throws Exception {
-        ClassDesc classDesc = new SimpleClassDesc("aaa", "Bbb");
-        JavaFile javaFile =
-            new NoMkdirsJavaFile(new File("src"), classDesc, "Test");
-        File expectedFile = new File(new File("src", "aaa"), "BbbTest.java");
-        assertEquals(expectedFile, javaFile.getFile());
-        assertEquals("aaa.BbbTest", javaFile.getClassName());
-    }
+	/**
+	 * 
+	 * @throws Exception
+	 */
+	public void testSuffix() throws Exception {
+		ClassDesc classDesc = new SimpleClassDesc("aaa", "Bbb");
+		JavaFile javaFile = new NoMkdirsJavaFile(new File("src"), classDesc,
+				"Test");
+		File expectedFile = new File(new File("src", "aaa"), "BbbTest.java");
+		assertEquals(expectedFile, javaFile.getFile());
+		assertEquals("aaa.BbbTest", javaFile.getClassName());
+	}
 
-    /**
-     * 
-     * @author taedium
-     * 
-     */
-    protected static class NoMkdirsJavaFile extends JavaFile {
+	/**
+	 * 
+	 * @author taedium
+	 * 
+	 */
+	protected static class NoMkdirsJavaFile extends JavaFile {
 
-        /**
-         * 
-         * @param baseDir
-         * @param classDesc
-         */
-        public NoMkdirsJavaFile(File baseDir, ClassDesc classDesc) {
-            super(baseDir, classDesc);
-        }
+		/**
+		 * 
+		 * @param baseDir
+		 * @param classDesc
+		 */
+		public NoMkdirsJavaFile(File baseDir, ClassDesc classDesc) {
+			super(baseDir, classDesc);
+		}
 
-        /**
-         * 
-         * @param baseDir
-         * @param classDesc
-         * @param suffix
-         */
-        public NoMkdirsJavaFile(File baseDir, ClassDesc classDesc, String suffix) {
-            super(baseDir, classDesc, suffix);
-        }
+		/**
+		 * 
+		 * @param baseDir
+		 * @param classDesc
+		 * @param suffix
+		 */
+		public NoMkdirsJavaFile(File baseDir, ClassDesc classDesc, String suffix) {
+			super(baseDir, classDesc, suffix);
+		}
 
-        @Override
-        protected void mkdirs(File dir) {
-        }
-    }
+		@Override
+		protected void mkdirs(File dir) {
+		}
+	}
 
-    /**
-     * 
-     * @author taedium
-     * 
-     */
-    protected static class SimpleClassDesc implements ClassDesc {
+	/**
+	 * 
+	 * @author taedium
+	 * 
+	 */
+	protected static class SimpleClassDesc implements ClassDesc {
 
-        private String packageName;
+		private String packageName;
 
-        private String simpleName;
+		private String simpleName;
 
-        /**
-         * 
-         * @param packageName
-         * @param simpleName
-         */
-        public SimpleClassDesc(String packageName, String simpleName) {
-            this.packageName = packageName;
-            this.simpleName = simpleName;
-        }
+		/**
+		 * 
+		 * @param packageName
+		 * @param simpleName
+		 */
+		public SimpleClassDesc(String packageName, String simpleName) {
+			this.packageName = packageName;
+			this.simpleName = simpleName;
+		}
 
-        @Override
-        public String getPackageName() {
-            return packageName;
-        }
+		public String getPackageName() {
+			return packageName;
+		}
 
-        @Override
-        public String getSimpleName() {
-            return simpleName;
-        }
+		public String getSimpleName() {
+			return simpleName;
+		}
 
-        @Override
-        public String getQualifiedName() {
-            return ClassUtil.getQualifiedName(packageName, simpleName);
-        }
+		public String getQualifiedName() {
+			return ClassUtil.getQualifiedName(packageName, simpleName);
+		}
 
-    }
+	}
 }

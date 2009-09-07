@@ -17,11 +17,14 @@ package org.slim3.gen.processor;
 
 import java.util.Set;
 
+import org.slim3.gen.ClassConstants;
 import org.slim3.gen.desc.AttributeMetaDescFactory;
 import org.slim3.gen.desc.ModelMetaDesc;
 import org.slim3.gen.desc.ModelMetaDescFactory;
 import org.slim3.gen.generator.Generator;
 import org.slim3.gen.generator.ModelMetaGenerator;
+import org.slim3.gen.message.MessageCode;
+import org.slim3.gen.message.MessageFormatter;
 
 import com.sun.mirror.apt.AnnotationProcessor;
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
@@ -35,14 +38,18 @@ import com.sun.mirror.util.DeclarationFilter;
  */
 public class TigerModelProcessor implements AnnotationProcessor {
 
-	private final Set<AnnotationTypeDeclaration> atds;
+	protected final Set<AnnotationTypeDeclaration> atds;
 
-	private final AnnotationProcessorEnvironment processingEnv;
+	protected final AnnotationProcessorEnvironment processingEnv;
+
+	/** the support for generating */
+	protected final GenerateSupport generateSupport;
 
 	public TigerModelProcessor(Set<AnnotationTypeDeclaration> atds,
 			AnnotationProcessorEnvironment processingEnv) {
 		this.atds = atds;
 		this.processingEnv = processingEnv;
+		this.generateSupport = new GenerateSupport(processingEnv);
 	}
 
 	public void process() {
@@ -54,9 +61,9 @@ public class TigerModelProcessor implements AnnotationProcessor {
 				try {
 					handleTypeElement(element);
 				} catch (RuntimeException e) {
-					// Logger.error(processingEnv, element, MessageFormatter
-					// .getMessage(MessageCode.SILM3GEN0001,
-					// ClassConstants.PersistenceCapable));
+					TigerLogger.error(processingEnv, element, MessageFormatter
+							.getMessage(MessageCode.SILM3GEN0001,
+									ClassConstants.PersistenceCapable));
 					throw e;
 				}
 			}
@@ -70,10 +77,10 @@ public class TigerModelProcessor implements AnnotationProcessor {
 	 *            the element represents a JDO model class.
 	 */
 	protected void handleTypeElement(ClassDeclaration element) {
-		// if (Options.isDebugEnabled(processingEnv)) {
-		// Logger.debug(processingEnv, MessageFormatter.getMessage(
-		// MessageCode.SILM3GEN0002, element));
-		// }
+		if (TigerOptions.isDebugEnabled(processingEnv)) {
+			TigerLogger.debug(processingEnv, MessageFormatter.getMessage(
+					MessageCode.SILM3GEN0002, element));
+		}
 		if (element.getDeclaringType() == null) {
 			AttributeMetaDescFactory attributeMetaDescFactory = createAttributeMetaDescFactory();
 			ModelMetaDescFactory modelMetaDescFactory = createModelMetaDescFactory(attributeMetaDescFactory);
