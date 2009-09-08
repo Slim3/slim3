@@ -46,9 +46,8 @@ public class ModelTestCaseGenerator implements Generator {
         this.modelDesc = modelDesc;
     }
 
-    @Override
     public void generate(Printer p) {
-        if (!modelDesc.getPackageName().isEmpty()) {
+        if (modelDesc.getPackageName().length() != 0) {
             p.println("package %s;", modelDesc.getPackageName());
             p.println();
         }

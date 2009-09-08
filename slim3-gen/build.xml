@@ -16,8 +16,8 @@
         <mkdir dir="${build}"/>
     </target>
 
-    <target name="compile">
-        <javac fork="yes" srcdir="${src}" compiler="javac1.6"
+    <target name="compile" depends="clean">
+        <javac fork="yes" srcdir="${src}" compiler="javac1.5"
             classpathref="classpath" destdir="${build}" debug="on" encoding="UTF-8">
         </javac>
     </target>
@@ -33,5 +33,4 @@
             </fileset>
         </copy>
     </target>
-
 </project>

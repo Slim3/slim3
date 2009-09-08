@@ -46,9 +46,8 @@ public class ControllerTestCaseGenerator implements Generator {
         this.controllerDesc = controllerDesc;
     }
 
-    @Override
     public void generate(Printer p) {
-        if (!controllerDesc.getPackageName().isEmpty()) {
+        if (controllerDesc.getPackageName().length() != 0) {
             p.println("package %s;", controllerDesc.getPackageName());
             p.println();
         }

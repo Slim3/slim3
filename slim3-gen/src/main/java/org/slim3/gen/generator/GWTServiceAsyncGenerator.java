@@ -44,9 +44,8 @@ public class GWTServiceAsyncGenerator implements Generator {
         this.serviceAsyncDesc = serviceAsyncDesc;
     }
 
-    @Override
     public void generate(Printer p) {
-        if (!serviceAsyncDesc.getPackageName().isEmpty()) {
+        if (serviceAsyncDesc.getPackageName().length() != 0) {
             p.println("package %s;", serviceAsyncDesc.getPackageName());
             p.println();
         }

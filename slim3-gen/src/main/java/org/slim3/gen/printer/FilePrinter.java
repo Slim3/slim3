@@ -18,9 +18,8 @@ package org.slim3.gen.printer;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.Formatter;
-
-import javax.tools.FileObject;
 
 /**
  * Prints format strings to a file.
@@ -37,16 +36,16 @@ public class FilePrinter implements Printer {
     /**
      * Creates a new {@link FilePrinter}.
      * 
-     * @param fileObject
-     *            the writer object
+     * @param writer
+     *            the writer
      * @throws IOException
      *             if an I/O error occurred
      */
-    public FilePrinter(FileObject fileObject) throws IOException {
-        if (fileObject == null) {
-            throw new NullPointerException("The fileObject parameter is null.");
+    public FilePrinter(Writer writer) throws IOException {
+        if (writer == null) {
+            throw new NullPointerException("The writer parameter is null.");
         }
-        formatter = new Formatter(new BufferedWriter(fileObject.openWriter()));
+        formatter = new Formatter(new BufferedWriter(writer));
     }
 
     /**

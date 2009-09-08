@@ -119,7 +119,6 @@ public class ControllerDesc implements ClassDesc {
         return simpleName;
     }
 
-    @Override
     public String getQualifiedName() {
         return ClassUtil.getQualifiedName(packageName, simpleName);
     }

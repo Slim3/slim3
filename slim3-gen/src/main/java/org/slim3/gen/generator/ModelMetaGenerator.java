@@ -17,8 +17,6 @@ package org.slim3.gen.generator;
 
 import java.util.Date;
 
-import javax.annotation.Generated;
-
 import org.slim3.gen.ClassConstants;
 import org.slim3.gen.ProductInfo;
 import org.slim3.gen.desc.AttributeMetaDesc;
@@ -51,18 +49,17 @@ public class ModelMetaGenerator implements Generator {
         this.modelMetaDesc = modelMetaDesc;
     }
 
-    @Override
     public void generate(Printer p) {
-        if (!modelMetaDesc.getPackageName().isEmpty()) {
+        if (modelMetaDesc.getPackageName().length() != 0) {
             p.println("package %s;", modelMetaDesc.getPackageName());
             p.println();
         }
-        p.println(
-            "@%s(value = { \"%s\", \"%s\" }, date = \"%tF %<tT\")",
-            Generated.class.getName(),
-            ProductInfo.getName(),
-            ProductInfo.getVersion(),
-            new Date());
+        p
+            .println(
+                "//@javax.annotation.Generated(value = { \"%s\", \"%s\" }, date = \"%tF %<tT\")",
+                ProductInfo.getName(),
+                ProductInfo.getVersion(),
+                new Date());
         p.println("public final class %s extends %s<%s> {", modelMetaDesc
             .getSimpleName(), ClassConstants.ModelMeta, modelMetaDesc
             .getModelClassName());

@@ -16,16 +16,15 @@
 package org.slim3.gen.processor;
 
 import java.io.IOException;
-
-import javax.annotation.processing.Filer;
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.TypeElement;
-import javax.tools.FileObject;
+import java.io.Writer;
 
 import org.slim3.gen.desc.ClassDesc;
 import org.slim3.gen.generator.Generator;
 import org.slim3.gen.printer.FilePrinter;
 import org.slim3.gen.printer.Printer;
+
+import com.sun.mirror.apt.AnnotationProcessorEnvironment;
+import com.sun.mirror.apt.Filer;
 
 /**
  * Represents the support class for generating java file.
@@ -36,21 +35,20 @@ import org.slim3.gen.printer.Printer;
  */
 public class GenerateSupport {
 
-    /** the processing environment */
-    protected final ProcessingEnvironment processingEnv;
+    /** the environment */
+    protected final AnnotationProcessorEnvironment env;
 
     /**
      * Creates a new {@link GenerateSupport}.
      * 
-     * @param processingEnv
-     *            the processing environment
+     * @param env
+     *            the environment
      */
-    public GenerateSupport(ProcessingEnvironment processingEnv) {
-        if (processingEnv == null) {
-            throw new NullPointerException(
-                "The processingEnv parameter is null.");
+    public GenerateSupport(AnnotationProcessorEnvironment env) {
+        if (env == null) {
+            throw new NullPointerException("The env parameter is null.");
         }
-        this.processingEnv = processingEnv;
+        this.env = env;
     }
 
     /**
@@ -60,26 +58,20 @@ public class GenerateSupport {
      *            the generator.
      * @param classDesc
      *            the class description.
-     * @param typeElement
-     *            the original type element.
      */
-    public void generate(Generator generator, ClassDesc classDesc,
-            TypeElement typeElement) {
+    public void generate(Generator generator, ClassDesc classDesc) {
         if (generator == null) {
             throw new NullPointerException("The generator parameter is null.");
         }
         if (classDesc == null) {
             throw new NullPointerException("The classDesc parameter is null.");
         }
-        if (typeElement == null) {
-            throw new NullPointerException("The typeElement parameter is null.");
-        }
-        Filer filer = processingEnv.getFiler();
+        Filer filer = env.getFiler();
         Printer printer = null;
         try {
             printer =
                 createPrinter(filer.createSourceFile(classDesc
-                    .getQualifiedName(), typeElement));
+                    .getQualifiedName()));
             generator.generate(printer);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -93,13 +85,13 @@ public class GenerateSupport {
     /**
      * Creates a {@link Printer}.
      * 
-     * @param file
-     *            the file object.
+     * @param writer
+     *            the writer object.
      * @return a printer object.
      * @throws IOException
      *             if an I/O error occurred
      */
-    protected Printer createPrinter(FileObject file) throws IOException {
-        return new FilePrinter(file);
+    protected Printer createPrinter(Writer writer) throws IOException {
+        return new FilePrinter(writer);
     }
 }

@@ -15,10 +15,9 @@
  */
 package org.slim3.gen.processor;
 
-import javax.annotation.processing.Messager;
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.Element;
-import javax.tools.Diagnostic.Kind;
+import com.sun.mirror.apt.AnnotationProcessorEnvironment;
+import com.sun.mirror.apt.Messager;
+import com.sun.mirror.declaration.Declaration;
 
 /**
  * Logs messages.
@@ -33,45 +32,45 @@ public final class Logger {
      * Logs a debug message.
      * 
      * @param env
-     *            the processing environment.
+     *            the environment.
      * @param message
      *            the message.
      */
-    public static void debug(ProcessingEnvironment env, String message) {
+    public static void debug(AnnotationProcessorEnvironment env, String message) {
         Messager messager = env.getMessager();
-        messager.printMessage(Kind.NOTE, message);
+        messager.printNotice(message);
     }
 
     /**
      * Logs a warning message.
      * 
      * @param env
-     *            the processing environment.
+     *            the environment.
      * @param element
      *            the element to use as a position hint
      * @param message
      *            the message.
      */
-    public static void warning(ProcessingEnvironment env, Element element,
-            String message) {
+    public static void warning(AnnotationProcessorEnvironment env,
+            Declaration element, String message) {
         Messager messager = env.getMessager();
-        messager.printMessage(Kind.WARNING, message, element);
+        messager.printWarning(element.getPosition(), message);
     }
 
     /**
      * Logs an error message.
      * 
      * @param env
-     *            the processing environment.
+     *            the environment.
      * @param element
      *            the element to use as a position hint
      * @param message
      *            the message.
      */
-    public static void error(ProcessingEnvironment env, Element element,
-            String message) {
+    public static void error(AnnotationProcessorEnvironment env,
+            Declaration element, String message) {
         Messager messager = env.getMessager();
-        messager.printMessage(Kind.ERROR, message, element);
+        messager.printError(element.getPosition(), message);
     }
 
 }

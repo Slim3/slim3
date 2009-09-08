@@ -46,9 +46,8 @@ public class GWTServiceImplTestCaseGenerator implements Generator {
         this.serviceImplDesc = serviceImplDesc;
     }
 
-    @Override
     public void generate(Printer p) {
-        if (!serviceImplDesc.getPackageName().isEmpty()) {
+        if (serviceImplDesc.getPackageName().length() != 0) {
             p.println("package %s;", serviceImplDesc.getPackageName());
             p.println();
         }

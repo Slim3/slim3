@@ -26,9 +26,9 @@ public enum MessageCode {
     /** */
     SILM3GEN0001("Failed to process annotation[{0}]. Check a detail message displayed in the Error Log view(for Eclipse) or the console(for javac)."),
     /** */
-    SILM3GEN0002("Element[{0}] is handling."),
+    SILM3GEN0002("[{0}] is handling."),
     /** */
-    SILM3GEN0003("Element[{0}] is handled."),
+    SILM3GEN0003("[{0}] is handled."),
     /** */
     SILM3GEN0004("Already exists. Generation Skipped. ({0}.java:0)"),
     /** */
@@ -44,7 +44,9 @@ public enum MessageCode {
     /** */
     SILM3GEN0010("Neither @javax.jdo.annotations.Persistent nor @javax.jdo.annotations.NotPersistent is found."),
     /** */
-    SILM3GEN0011("@com.google.gwt.user.client.rpc.RemoteServiceRelativePath is available only to an interface.");
+    SILM3GEN0011("@com.google.gwt.user.client.rpc.RemoteServiceRelativePath is available only to an interface."),
+    /** */
+    SILM3GEN0012("The processor[{0}] is skipped.");
 
     /** the message */
     public final String message;

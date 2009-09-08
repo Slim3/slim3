@@ -17,30 +17,25 @@ package org.slim3.gen.desc;
 
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
-
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.ArrayType;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.ErrorType;
-import javax.lang.model.type.PrimitiveType;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.type.WildcardType;
-import javax.lang.model.util.ElementKindVisitor6;
-import javax.lang.model.util.SimpleElementVisitor6;
-import javax.lang.model.util.SimpleTypeVisitor6;
-import javax.lang.model.util.TypeKindVisitor6;
 
 import org.slim3.gen.ClassConstants;
 import org.slim3.gen.message.MessageCode;
 import org.slim3.gen.message.MessageFormatter;
 import org.slim3.gen.processor.Logger;
 import org.slim3.gen.processor.Options;
-import org.slim3.gen.util.ElementUtil;
+import org.slim3.gen.util.DeclarationUtil;
+
+import com.sun.mirror.apt.AnnotationProcessorEnvironment;
+import com.sun.mirror.declaration.FieldDeclaration;
+import com.sun.mirror.declaration.Modifier;
+import com.sun.mirror.declaration.TypeDeclaration;
+import com.sun.mirror.type.ArrayType;
+import com.sun.mirror.type.DeclaredType;
+import com.sun.mirror.type.PrimitiveType;
+import com.sun.mirror.type.ReferenceType;
+import com.sun.mirror.type.TypeMirror;
+import com.sun.mirror.type.WildcardType;
+import com.sun.mirror.util.SimpleTypeVisitor;
 
 /**
  * Represents an attribute meta description factory.
@@ -51,52 +46,55 @@ import org.slim3.gen.util.ElementUtil;
  */
 public class AttributeMetaDescFactory {
 
-    /** the processing environment */
-    protected final ProcessingEnvironment processingEnv;
+    /** the environment */
+    protected final AnnotationProcessorEnvironment env;
 
     /**
      * Creates a new {@link AttributeMetaDescFactory}.
      * 
-     * @param processingEnv
+     * @param env
      *            the processing environment
      */
-    public AttributeMetaDescFactory(ProcessingEnvironment processingEnv) {
-        if (processingEnv == null) {
-            throw new NullPointerException(
-                "The processingEnv parameter is null.");
+    public AttributeMetaDescFactory(AnnotationProcessorEnvironment env) {
+        if (env == null) {
+            throw new NullPointerException("The env parameter is null.");
         }
-        this.processingEnv = processingEnv;
+        this.env = env;
     }
 
     /**
      * Creates a new {@link AttributeMetaDesc}
      * 
-     * @param fieldElement
-     *            the field element
+     * @param attributeDeclaration
+     *            the attribute declaration
      * @return an attribute meta description
      */
     public AttributeMetaDesc createAttributeMetaDesc(
-            VariableElement fieldElement) {
-        if (fieldElement == null) {
+            FieldDeclaration attributeDeclaration) {
+        if (attributeDeclaration == null) {
             throw new NullPointerException(
-                "The fieldElement parameter is null.");
+                "The fieldDeclaration parameter is null.");
         }
-        if (!isPersistent(fieldElement)) {
-            if (isInstanceVariable(fieldElement)
-                && !isNotPersistent(fieldElement)) {
-                Logger.warning(processingEnv, fieldElement, MessageFormatter
+        if (!isPersistent(attributeDeclaration)) {
+            if (isInstanceVariable(attributeDeclaration)
+                && !isNotPersistent(attributeDeclaration)) {
+                Logger.warning(env, attributeDeclaration, MessageFormatter
                     .getSimpleMessage(MessageCode.SILM3GEN0010));
             }
             return null;
         }
-        if (isNestedType(fieldElement)) {
+        if (isNestedType(attributeDeclaration)) {
             return null;
         }
         Iterator<String> classNames =
-            new ClassNameCollector(fieldElement.asType()).collect().iterator();
+            new ClassNameCollector(attributeDeclaration.getType())
+                .collect()
+                .iterator();
         AttributeMetaDesc attributeMetaDesc = new AttributeMetaDesc();
-        attributeMetaDesc.setName(fieldElement.getSimpleName().toString());
-        if (isEmbedded(fieldElement)) {
+        attributeMetaDesc.setName(attributeDeclaration
+            .getSimpleName()
+            .toString());
+        if (isEmbedded(attributeDeclaration)) {
             attributeMetaDesc.setEmbedded(true);
             if (classNames.hasNext()) {
                 String modelClassName = classNames.next();
@@ -123,88 +121,99 @@ public class AttributeMetaDescFactory {
     /**
      * Returns {@code true} if the attribute type is a nested type.
      * 
-     * @param attributeElement
-     *            the element of an attribute
+     * @param attributeDeclaration
+     *            the declaration of an attribute
      * @return {@code true} if the attribute type is a nested type
      */
-    protected boolean isNestedType(Element attributeElement) {
-        TypeMirror typeMirror =
-            attributeElement.asType().accept(
-                new TypeKindVisitor6<TypeMirror, Void>() {
+    protected boolean isNestedType(FieldDeclaration attributeDeclaration) {
+        class GetTypeMirror extends SimpleTypeVisitor {
 
-                    @Override
-                    public TypeMirror visitArray(ArrayType t, Void p) {
-                        return t.getComponentType().accept(this, p);
-                    }
+            TypeMirror result;
 
-                    @Override
-                    protected TypeMirror defaultAction(TypeMirror e, Void p) {
-                        return e;
-                    }
-
-                },
-                null);
-        Element e = processingEnv.getTypeUtils().asElement(typeMirror);
-        if (e == null) {
-            return false;
-        }
-        return e.accept(new ElementKindVisitor6<Boolean, Void>(false) {
-
-            @Override
-            public Boolean visitType(TypeElement e, Void p) {
-                return e.getNestingKind().isNested();
+            GetTypeMirror(TypeMirror typeMirror) {
+                result = typeMirror;
             }
 
-        }, null);
+            @Override
+            public void visitArrayType(ArrayType type) {
+                GetTypeMirror visitor = new GetTypeMirror(result);
+                type.getComponentType().accept(visitor);
+                this.result = visitor.result;
+            }
+        }
+        GetTypeMirror getTypeMirrorVisitor =
+            new GetTypeMirror(attributeDeclaration.getType());
+        attributeDeclaration.getType().accept(getTypeMirrorVisitor);
+        TypeMirror typeMirror = getTypeMirrorVisitor.result;
+
+        class GetDeclaredType extends SimpleTypeVisitor {
+            DeclaredType result;
+
+            @Override
+            public void visitDeclaredType(DeclaredType type) {
+                result = type;
+            }
+        }
+        GetDeclaredType getDeclaredTypeVisitor = new GetDeclaredType();
+        typeMirror.accept(getDeclaredTypeVisitor);
+        DeclaredType declaredType = getDeclaredTypeVisitor.result;
+        if (declaredType == null) {
+            return false;
+        }
+        TypeDeclaration typeDeclaration = declaredType.getDeclaration();
+        if (typeDeclaration == null) {
+            return false;
+        }
+        return typeDeclaration.getDeclaringType() != null;
     }
 
     /**
      * Returns {@code true} if the attribute is persistent.
      * 
-     * @param attributeElement
-     *            the element of an attribute
+     * @param attributeDeclaration
+     *            the declaration of an attribute
      * @return {@code true} if the attribute is persistent.
      */
-    protected boolean isPersistent(Element attributeElement) {
-        return ElementUtil.getAnnotationMirror(
-            attributeElement,
+    protected boolean isPersistent(FieldDeclaration attributeDeclaration) {
+        return DeclarationUtil.getAnnotationMirror(
+            attributeDeclaration,
             ClassConstants.Persistent) != null;
     }
 
     /**
      * Returns {@code true} if the attribute is not persistent.
      * 
-     * @param attributeElement
-     *            the element of an attribute
+     * @param attributeDeclaration
+     *            the declaration of an attribute
      * @return {@code true} if the attribute is persistent.
      */
-    protected boolean isNotPersistent(Element attributeElement) {
-        return ElementUtil.getAnnotationMirror(
-            attributeElement,
+    protected boolean isNotPersistent(FieldDeclaration attributeDeclaration) {
+        return DeclarationUtil.getAnnotationMirror(
+            attributeDeclaration,
             ClassConstants.NotPersistent) != null;
     }
 
     /**
      * Returns {@code true} if the attribute is an instance variable.
      * 
-     * @param attributeElement
-     *            the element of an attribute
+     * @param attributeDeclaration
+     *            the declaration of an attribute
      * @return {@code true} if the attribute is an instance variable.
      */
-    protected boolean isInstanceVariable(VariableElement attributeElement) {
-        return !attributeElement.getModifiers().contains(Modifier.STATIC);
+    protected boolean isInstanceVariable(FieldDeclaration attributeDeclaration) {
+        return !attributeDeclaration.getModifiers().contains(Modifier.STATIC);
     }
 
     /**
      * Returns {@code true} if the attribute is embedded.
      * 
-     * @param attributeElement
-     *            the element of an attribute
+     * @param attributeDeclaration
+     *            the declaration of an attribute
      * @return {@code true} if the attribute is embedded.
      */
-    protected boolean isEmbedded(Element attributeElement) {
-        return ElementUtil.getAnnotationMirror(
-            attributeElement,
+    protected boolean isEmbedded(FieldDeclaration attributeDeclaration) {
+        return DeclarationUtil.getAnnotationMirror(
+            attributeDeclaration,
             ClassConstants.Embedded) != null;
     }
 
@@ -217,10 +226,8 @@ public class AttributeMetaDescFactory {
      */
     protected ModelMetaClassName createModelMetaClassName(String modelClassName) {
         return new ModelMetaClassName(modelClassName, Options
-            .getModelPackage(processingEnv), Options
-            .getMetaPackage(processingEnv), Options
-            .getSharedPackage(processingEnv), Options
-            .getServerPackage(processingEnv));
+            .getModelPackage(env), Options.getMetaPackage(env), Options
+            .getSharedPackage(env), Options.getServerPackage(env));
     }
 
     /**
@@ -230,8 +237,9 @@ public class AttributeMetaDescFactory {
      * @since 3.0
      * 
      */
-    protected class ClassNameCollector extends
-            SimpleTypeVisitor6<Void, LinkedList<String>> {
+    protected static class ClassNameCollector extends SimpleTypeVisitor {
+
+        LinkedList<String> names = new LinkedList<String>();
 
         /** the target typeMirror */
         protected final TypeMirror typeMirror;
@@ -251,124 +259,85 @@ public class AttributeMetaDescFactory {
          * 
          * @return the collection of class name
          */
-        public List<String> collect() {
-            LinkedList<String> names = new LinkedList<String>();
-            typeMirror.accept(this, names);
+        public LinkedList<String> collect() {
+            typeMirror.accept(this);
             return names;
         }
 
         @Override
-        public Void visitArray(ArrayType t, LinkedList<String> p) {
-            LinkedList<String> names = new LinkedList<String>();
-            t.getComponentType().accept(this, names);
-            p.add(names.getFirst() + "[]");
-            p.add(names.getFirst());
-            return null;
+        public void visitArrayType(ArrayType type) {
+            ClassNameCollector collector2 = new ClassNameCollector(type);
+            LinkedList<String> names = collector2.collect();
+            type.getComponentType().accept(collector2);
+            this.names.add(names.getFirst() + "[]");
+            this.names.add(names.getFirst());
         }
 
         @Override
-        public Void visitPrimitive(PrimitiveType t, LinkedList<String> p) {
-            t.accept(new TypeKindVisitor6<Void, LinkedList<String>>() {
-
-                @Override
-                public Void visitPrimitiveAsBoolean(PrimitiveType t,
-                        LinkedList<String> p) {
-                    p.add(boolean.class.getSimpleName());
-                    return null;
-                }
-
-                @Override
-                public Void visitPrimitiveAsByte(PrimitiveType t,
-                        LinkedList<String> p) {
-                    p.add(byte.class.getSimpleName());
-                    return null;
-                }
-
-                @Override
-                public Void visitPrimitiveAsChar(PrimitiveType t,
-                        LinkedList<String> p) {
-                    p.add(char.class.getSimpleName());
-                    return null;
-                }
-
-                @Override
-                public Void visitPrimitiveAsDouble(PrimitiveType t,
-                        LinkedList<String> p) {
-                    p.add(double.class.getSimpleName());
-                    return null;
-                }
-
-                @Override
-                public Void visitPrimitiveAsFloat(PrimitiveType t,
-                        LinkedList<String> p) {
-                    p.add(float.class.getSimpleName());
-                    return null;
-                }
-
-                @Override
-                public Void visitPrimitiveAsInt(PrimitiveType t,
-                        LinkedList<String> p) {
-                    p.add(int.class.getSimpleName());
-                    return null;
-                }
-
-                @Override
-                public Void visitPrimitiveAsLong(PrimitiveType t,
-                        LinkedList<String> p) {
-                    p.add(long.class.getSimpleName());
-                    return null;
-                }
-
-                @Override
-                public Void visitPrimitiveAsShort(PrimitiveType t,
-                        LinkedList<String> p) {
-                    p.add(short.class.getSimpleName());
-                    return null;
-                }
-            }, p);
-            return null;
-        }
-
-        @Override
-        public Void visitWildcard(WildcardType t, LinkedList<String> p) {
-            TypeMirror extendedBound = t.getExtendsBound();
-            if (extendedBound != null) {
-                LinkedList<String> names = new LinkedList<String>();
-                extendedBound.accept(this, names);
-                p.add(names.getFirst());
+        public void visitDeclaredType(DeclaredType type) {
+            names.add(type.getDeclaration().getQualifiedName());
+            for (TypeMirror arg : type.getActualTypeArguments()) {
+                ClassNameCollector collector2 = new ClassNameCollector(arg);
+                LinkedList<String> names = collector2.collect();
+                this.names.add(names.getFirst());
             }
-            TypeMirror superBound = t.getSuperBound();
-            if (superBound != null) {
-                LinkedList<String> names = new LinkedList<String>();
-                superBound.accept(this, names);
-                p.add(names.getFirst());
-            }
-            return null;
         }
 
         @Override
-        public Void visitError(ErrorType t, LinkedList<String> p) {
-            p.add("Object");
-            return null;
+        public void visitPrimitiveType(PrimitiveType type) {
+            switch (type.getKind()) {
+            case BOOLEAN: {
+                names.add(boolean.class.getName());
+                break;
+            }
+            case BYTE: {
+                names.add(byte.class.getName());
+                break;
+            }
+            case CHAR: {
+                names.add(char.class.getName());
+                break;
+            }
+            case DOUBLE: {
+                names.add(double.class.getName());
+                break;
+            }
+            case FLOAT: {
+                names.add(float.class.getName());
+                break;
+            }
+            case INT: {
+                names.add(int.class.getName());
+                break;
+            }
+            case LONG: {
+                names.add(long.class.getName());
+                break;
+            }
+            case SHORT: {
+                names.add(short.class.getName());
+                break;
+            }
+            default: {
+                throw new IllegalArgumentException(type.getKind().name());
+            }
+            }
         }
 
         @Override
-        public Void visitDeclared(DeclaredType t, LinkedList<String> p) {
-            t.asElement().accept(
-                new SimpleElementVisitor6<Void, LinkedList<String>>() {
-                    @Override
-                    public Void visitType(TypeElement e, LinkedList<String> p) {
-                        p.add(e.getQualifiedName().toString());
-                        return null;
-                    }
-                },
-                p);
-            for (TypeMirror arg : t.getTypeArguments()) {
-                LinkedList<String> names = new LinkedList<String>();
-                arg.accept(this, names);
-                p.add(names.getFirst());
+        public void visitWildcardType(WildcardType type) {
+            for (ReferenceType referenceType : type.getUpperBounds()) {
+                ClassNameCollector collector2 =
+                    new ClassNameCollector(referenceType);
+                LinkedList<String> names = collector2.collect();
+                this.names.add(names.getFirst());
             }
-            return null;
+            for (ReferenceType referenceType : type.getLowerBounds()) {
+                ClassNameCollector collector2 =
+                    new ClassNameCollector(referenceType);
+                LinkedList<String> names = collector2.collect();
+                this.names.add(names.getFirst());
+            }
         }
     }
 }

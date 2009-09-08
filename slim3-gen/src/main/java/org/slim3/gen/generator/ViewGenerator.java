@@ -40,7 +40,6 @@ public class ViewGenerator implements Generator {
         this.viewDesc = viewDesc;
     }
 
-    @Override
     public void generate(Printer p) {
         p.println("<%%@page pageEncoding=\"UTF-8\" isELIgnored=\"false\"%%>");
         p

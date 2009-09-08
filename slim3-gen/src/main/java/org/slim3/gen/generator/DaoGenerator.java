@@ -43,9 +43,8 @@ public class DaoGenerator implements Generator {
         this.daoDesc = daoDesc;
     }
 
-    @Override
     public void generate(Printer p) {
-        if (!daoDesc.getPackageName().isEmpty()) {
+        if (daoDesc.getPackageName().length() != 0) {
             p.println("package %s;", daoDesc.getPackageName());
             p.println();
         }

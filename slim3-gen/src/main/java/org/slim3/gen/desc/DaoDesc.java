@@ -81,7 +81,6 @@ public class DaoDesc implements ClassDesc {
         this.simpleName = simpleName;
     }
 
-    @Override
     public String getQualifiedName() {
         return ClassUtil.getQualifiedName(packageName, simpleName);
     }

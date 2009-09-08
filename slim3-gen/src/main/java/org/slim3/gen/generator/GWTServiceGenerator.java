@@ -42,9 +42,8 @@ public class GWTServiceGenerator implements Generator {
         this.serviceDesc = serviceDesc;
     }
 
-    @Override
     public void generate(Printer p) {
-        if (!serviceDesc.getPackageName().isEmpty()) {
+        if (serviceDesc.getPackageName().length() != 0) {
             p.println("package %s;", serviceDesc.getPackageName());
             p.println();
         }

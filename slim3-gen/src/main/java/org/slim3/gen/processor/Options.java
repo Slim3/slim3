@@ -15,44 +15,52 @@
  */
 package org.slim3.gen.processor;
 
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.annotation.processing.Processor;
-
 import org.slim3.gen.Constants;
 
+import com.sun.mirror.apt.AnnotationProcessor;
+import com.sun.mirror.apt.AnnotationProcessorEnvironment;
+
 /**
- * Represents options for {@link Processor}.
+ * Represents options for {@link AnnotationProcessor}.
  * 
  * @author taedium
  * @since 3.0
- * @see Processor#getSupportedOptions()
  */
 public final class Options {
+
+    private static final double javaVersion = getJavaVersion();
 
     /** debug option */
     public static final String DEBUG = "debug";
 
+    /** debug option */
+    public static final String JAVA_VERSION = "java.version";
+
     /** the model package */
-    public static final String MODEL_PACKAGE = "modelPackage";
+    public static final String MODEL_PACKAGE = "model.package";
 
     /** the meta package */
-    public static final String META_PACKAGE = "metaPackage";
+    public static final String META_PACKAGE = "meta.package";
 
     /** the shared package */
-    public static final String SHARED_PACKAGE = "sharedPackage";
+    public static final String SHARED_PACKAGE = "shared.package";
 
     /** the server package */
-    public static final String SERVER_PACKAGE = "serverPackage";
+    public static final String SERVER_PACKAGE = "server.package";
+
+    private static double getJavaVersion() {
+        return Double.valueOf(System.getProperty("java.specification.version"));
+    }
 
     /**
      * Returns {@code true} if debug enabled otherwirse {@code false}.
      * 
      * @param env
-     *            the processing environment.
+     *            the environment.
      * @return {@code true} if the debug option enabled otherwirse {@code false}
      *         .
      */
-    public static boolean isDebugEnabled(ProcessingEnvironment env) {
+    public static boolean isDebugEnabled(AnnotationProcessorEnvironment env) {
         String debug = env.getOptions().get(Options.DEBUG);
         if (debug == null) {
             return false;
@@ -61,13 +69,31 @@ public final class Options {
     }
 
     /**
+     * Returns the java version.
+     * 
+     * @param env
+     *            the environment.
+     * @return java version
+     */
+    public static double getJavaVersion(AnnotationProcessorEnvironment env) {
+        String version = env.getOptions().get(Options.JAVA_VERSION);
+        if (version != null) {
+            try {
+                return Double.valueOf(version);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        return javaVersion;
+    }
+
+    /**
      * Returns the model package.
      * 
      * @param env
-     *            the processing environment.
+     *            the environment.
      * @return the model package.
      */
-    public static String getModelPackage(ProcessingEnvironment env) {
+    public static String getModelPackage(AnnotationProcessorEnvironment env) {
         String modelPackage = env.getOptions().get(Options.MODEL_PACKAGE);
         return modelPackage != null ? modelPackage : Constants.MODEL_PACKAGE;
     }
@@ -76,10 +102,10 @@ public final class Options {
      * Returns the meta package.
      * 
      * @param env
-     *            the processing environment.
+     *            the environment.
      * @return the meta package.
      */
-    public static String getMetaPackage(ProcessingEnvironment env) {
+    public static String getMetaPackage(AnnotationProcessorEnvironment env) {
         String metaPackage = env.getOptions().get(Options.META_PACKAGE);
         return metaPackage != null ? metaPackage : Constants.META_PACKAGE;
     }
@@ -88,10 +114,10 @@ public final class Options {
      * Returns the shared package.
      * 
      * @param env
-     *            the processing environment.
+     *            the environment.
      * @return the shared package.
      */
-    public static String getSharedPackage(ProcessingEnvironment env) {
+    public static String getSharedPackage(AnnotationProcessorEnvironment env) {
         String sharedPackage = env.getOptions().get(Options.SHARED_PACKAGE);
         return sharedPackage != null ? sharedPackage : Constants.SHARED_PACKAGE;
     }
@@ -100,10 +126,10 @@ public final class Options {
      * Returns the server package.
      * 
      * @param env
-     *            the processing environment.
+     *            the environment.
      * @return the server package.
      */
-    public static String getServerPackage(ProcessingEnvironment env) {
+    public static String getServerPackage(AnnotationProcessorEnvironment env) {
         String serverPackage = env.getOptions().get(Options.SERVER_PACKAGE);
         return serverPackage != null ? serverPackage : Constants.SERVER_PACKAGE;
     }

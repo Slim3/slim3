@@ -40,7 +40,6 @@ public class GWTServiceDesc implements ClassDesc {
      * 
      * @return the packageName
      */
-    @Override
     public String getPackageName() {
         return packageName;
     }
@@ -60,7 +59,6 @@ public class GWTServiceDesc implements ClassDesc {
      * 
      * @return the simpleName
      */
-    @Override
     public String getSimpleName() {
         return simpleName;
     }
@@ -75,7 +73,6 @@ public class GWTServiceDesc implements ClassDesc {
         this.simpleName = simpleName;
     }
 
-    @Override
     public String getQualifiedName() {
         return ClassUtil.getQualifiedName(packageName, simpleName);
     }

@@ -117,17 +117,14 @@ public class JavaFileTest extends TestCase {
             this.simpleName = simpleName;
         }
 
-        @Override
         public String getPackageName() {
             return packageName;
         }
 
-        @Override
         public String getSimpleName() {
             return simpleName;
         }
 
-        @Override
         public String getQualifiedName() {
             return ClassUtil.getQualifiedName(packageName, simpleName);
         }

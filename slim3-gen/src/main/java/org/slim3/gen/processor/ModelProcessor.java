@@ -17,17 +17,6 @@ package org.slim3.gen.processor;
 
 import java.util.Set;
 
-import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.annotation.processing.RoundEnvironment;
-import javax.annotation.processing.SupportedAnnotationTypes;
-import javax.annotation.processing.SupportedOptions;
-import javax.annotation.processing.SupportedSourceVersion;
-import javax.lang.model.SourceVersion;
-import javax.lang.model.element.NestingKind;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.ElementFilter;
-
 import org.slim3.gen.ClassConstants;
 import org.slim3.gen.desc.AttributeMetaDescFactory;
 import org.slim3.gen.desc.ModelMetaDesc;
@@ -37,6 +26,12 @@ import org.slim3.gen.generator.ModelMetaGenerator;
 import org.slim3.gen.message.MessageCode;
 import org.slim3.gen.message.MessageFormatter;
 
+import com.sun.mirror.apt.AnnotationProcessor;
+import com.sun.mirror.apt.AnnotationProcessorEnvironment;
+import com.sun.mirror.declaration.AnnotationTypeDeclaration;
+import com.sun.mirror.declaration.ClassDeclaration;
+import com.sun.mirror.util.DeclarationFilter;
+
 /**
  * Processes JDO model classes which annotated with the {@code
  * javax.jdo.annotations.PersistenceCapable} class.
@@ -45,74 +40,90 @@ import org.slim3.gen.message.MessageFormatter;
  * @since 3.0
  * 
  */
-@SupportedSourceVersion(SourceVersion.RELEASE_6)
-@SupportedAnnotationTypes(ClassConstants.PersistenceCapable)
-@SupportedOptions( {
-    Options.DEBUG,
-    Options.MODEL_PACKAGE,
-    Options.META_PACKAGE,
-    Options.SHARED_PACKAGE,
-    Options.SERVER_PACKAGE })
-public class ModelProcessor extends AbstractProcessor {
+public class ModelProcessor implements AnnotationProcessor {
+
+    /** the set of annotation type declaration */
+    protected final Set<AnnotationTypeDeclaration> annotationTypeDeclarations;
+
+    /** the environment */
+    protected final AnnotationProcessorEnvironment env;
 
     /** the support for generating */
-    protected GenerateSupport generateSupport;
+    protected final GenerateSupport generateSupport;
 
-    @Override
-    public synchronized void init(ProcessingEnvironment processingEnv) {
-        super.init(processingEnv);
-        generateSupport = new GenerateSupport(processingEnv);
+    /**
+     * Creates a new {@link ModelProcessor}.
+     * 
+     * @param annotationTypeDeclarations
+     *            the set of annotation type declaration
+     * @param env
+     *            the environment
+     */
+    public ModelProcessor(
+            Set<AnnotationTypeDeclaration> annotationTypeDeclarations,
+            AnnotationProcessorEnvironment env) {
+        if (annotationTypeDeclarations == null) {
+            throw new NullPointerException(
+                "The annotationTypeDeclarations parameter is null.");
+        }
+        if (env == null) {
+            throw new NullPointerException("The env parameter is null.");
+        }
+        this.annotationTypeDeclarations = annotationTypeDeclarations;
+        this.env = env;
+        this.generateSupport = new GenerateSupport(env);
     }
 
-    @Override
-    public boolean process(Set<? extends TypeElement> annotations,
-            RoundEnvironment roundEnv) {
-        if (roundEnv.processingOver()) {
-            return true;
+    public void process() {
+        if (Options.getJavaVersion(env) >= 1.6) {
+            Logger.debug(env, MessageFormatter.getMessage(
+                MessageCode.SILM3GEN0012,
+                getClass().getName()));
+            return;
         }
-        for (TypeElement annotation : annotations) {
-            for (TypeElement element : ElementFilter.typesIn(roundEnv
-                .getElementsAnnotatedWith(annotation))) {
+        for (AnnotationTypeDeclaration annotation : annotationTypeDeclarations) {
+            for (ClassDeclaration element : DeclarationFilter.getFilter(
+                ClassDeclaration.class).filter(
+                env.getDeclarationsAnnotatedWith(annotation),
+                ClassDeclaration.class)) {
                 try {
-                    handleTypeElement(element);
+                    handleClassDeclaration(element);
                 } catch (RuntimeException e) {
-                    Logger.error(processingEnv, element, MessageFormatter
-                        .getMessage(
-                            MessageCode.SILM3GEN0001,
-                            ClassConstants.PersistenceCapable));
+                    Logger.error(env, element, MessageFormatter.getMessage(
+                        MessageCode.SILM3GEN0001,
+                        ClassConstants.PersistenceCapable));
                     throw e;
                 }
             }
         }
-        return true;
     }
 
     /**
-     * Handles a type element represents a JDO model class.
+     * Handles a class declaration represents a JDO model class.
      * 
-     * @param element
-     *            the element represents a JDO model class.
+     * @param declaration
+     *            the declaration represents a JDO model class.
      */
-    protected void handleTypeElement(TypeElement element) {
-        if (Options.isDebugEnabled(processingEnv)) {
-            Logger.debug(processingEnv, MessageFormatter.getMessage(
+    protected void handleClassDeclaration(ClassDeclaration declaration) {
+        if (Options.isDebugEnabled(env)) {
+            Logger.debug(env, MessageFormatter.getMessage(
                 MessageCode.SILM3GEN0002,
-                element));
+                declaration));
         }
-        if (element.getNestingKind() == NestingKind.TOP_LEVEL) {
+        if (declaration.getDeclaringType() == null) {
             AttributeMetaDescFactory attributeMetaDescFactory =
                 createAttributeMetaDescFactory();
             ModelMetaDescFactory modelMetaDescFactory =
                 createModelMetaDescFactory(attributeMetaDescFactory);
             ModelMetaDesc modelMetaDesc =
-                modelMetaDescFactory.createModelMetaDesc(element);
+                modelMetaDescFactory.createModelMetaDesc(declaration);
             Generator generator = createGenerator(modelMetaDesc);
-            generateSupport.generate(generator, modelMetaDesc, element);
+            generateSupport.generate(generator, modelMetaDesc);
         }
-        if (Options.isDebugEnabled(processingEnv)) {
-            Logger.debug(processingEnv, MessageFormatter.getMessage(
+        if (Options.isDebugEnabled(env)) {
+            Logger.debug(env, MessageFormatter.getMessage(
                 MessageCode.SILM3GEN0003,
-                element));
+                declaration));
         }
     }
 
@@ -122,7 +133,7 @@ public class ModelProcessor extends AbstractProcessor {
      * @return an attribute meta description factory
      */
     protected AttributeMetaDescFactory createAttributeMetaDescFactory() {
-        return new AttributeMetaDescFactory(processingEnv);
+        return new AttributeMetaDescFactory(env);
     }
 
     /**
@@ -134,7 +145,7 @@ public class ModelProcessor extends AbstractProcessor {
      */
     protected ModelMetaDescFactory createModelMetaDescFactory(
             AttributeMetaDescFactory attributeMetaDescFactory) {
-        return new ModelMetaDescFactory(processingEnv, attributeMetaDescFactory);
+        return new ModelMetaDescFactory(env, attributeMetaDescFactory);
     }
 
     /**

@@ -15,12 +15,11 @@
  */
 package org.slim3.gen.desc;
 
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.util.ElementFilter;
-
 import org.slim3.gen.processor.Options;
+
+import com.sun.mirror.apt.AnnotationProcessorEnvironment;
+import com.sun.mirror.declaration.ClassDeclaration;
+import com.sun.mirror.declaration.FieldDeclaration;
 
 /**
  * Creates a model meta description.
@@ -31,8 +30,8 @@ import org.slim3.gen.processor.Options;
  */
 public class ModelMetaDescFactory {
 
-    /** the processing environment */
-    protected final ProcessingEnvironment processingEnv;
+    /** the environment */
+    protected final AnnotationProcessorEnvironment env;
 
     /** the attribute meta description factory */
     protected final AttributeMetaDescFactory attributeMetaDescFactory;
@@ -40,45 +39,44 @@ public class ModelMetaDescFactory {
     /**
      * Creates a new {@link ModelMetaDescFactory}.
      * 
-     * @param processingEnv
-     *            the processing environment
+     * @param env
+     *            the environment
      * @param attributeMetaDescFactory
      *            the attribute meta description factory
      */
-    public ModelMetaDescFactory(ProcessingEnvironment processingEnv,
+    public ModelMetaDescFactory(AnnotationProcessorEnvironment env,
             AttributeMetaDescFactory attributeMetaDescFactory) {
-        if (processingEnv == null) {
-            throw new NullPointerException(
-                "The processingEnv parameter is null.");
+        if (env == null) {
+            throw new NullPointerException("The env parameter is null.");
         }
         if (attributeMetaDescFactory == null) {
             throw new NullPointerException(
                 "The attributeMetaDescFactory parameter is null.");
         }
-        this.processingEnv = processingEnv;
+        this.env = env;
         this.attributeMetaDescFactory = attributeMetaDescFactory;
     }
 
     /**
      * Creates a model meta description.
      * 
-     * @param modelElement
-     *            the model element.
+     * @param modelDeclaration
+     *            the model declaration.
      * @return a model description
      */
-    public ModelMetaDesc createModelMetaDesc(TypeElement modelElement) {
-        if (modelElement == null) {
+    public ModelMetaDesc createModelMetaDesc(ClassDeclaration modelDeclaration) {
+        if (modelDeclaration == null) {
             throw new NullPointerException(
-                "The modelElement parameter is null.");
+                "The classDeclaration parameter is null.");
         }
-        String modelClassName = modelElement.getQualifiedName().toString();
+        String modelClassName = modelDeclaration.getQualifiedName().toString();
         ModelMetaClassName modelMetaClassName =
             createModelMetaClassName(modelClassName);
         ModelMetaDesc modelMetaDesc = new ModelMetaDesc();
         modelMetaDesc.setPackageName(modelMetaClassName.getPackageName());
         modelMetaDesc.setSimpleName(modelMetaClassName.getSimpleName());
         modelMetaDesc.setModelClassName(modelClassName);
-        handleFields(modelElement, modelMetaDesc);
+        handleAttributes(modelDeclaration, modelMetaDesc);
         return modelMetaDesc;
     }
 
@@ -91,43 +89,41 @@ public class ModelMetaDescFactory {
      */
     protected ModelMetaClassName createModelMetaClassName(String modelClassName) {
         return new ModelMetaClassName(modelClassName, Options
-            .getModelPackage(processingEnv), Options
-            .getMetaPackage(processingEnv), Options
-            .getSharedPackage(processingEnv), Options
-            .getServerPackage(processingEnv));
+            .getModelPackage(env), Options.getMetaPackage(env), Options
+            .getSharedPackage(env), Options.getServerPackage(env));
     }
 
     /**
-     * Handles fields.
+     * Handles attributes.
      * 
-     * @param modelElement
-     *            the model element.
+     * @param modelDeclaration
+     *            the model declaration.
      * @param modelMetaDesc
      *            the model meta description
      */
-    protected void handleFields(TypeElement modelElement,
+    protected void handleAttributes(ClassDeclaration modelDeclaration,
             ModelMetaDesc modelMetaDesc) {
-        for (VariableElement fieldElement : ElementFilter.fieldsIn(modelElement
-            .getEnclosedElements())) {
-            handleField(fieldElement, modelMetaDesc);
+        for (FieldDeclaration attributeDeclaration : modelDeclaration
+            .getFields()) {
+            handleAttribute(attributeDeclaration, modelMetaDesc);
         }
     }
 
     /**
-     * Handles a field.
+     * Handles an attribute.
      * 
-     * @param fieldElement
-     *            a field element.
+     * @param attributeDeclaration
+     *            an attribute declaration.
      * @param modelMetaDesc
      *            the model meta description.
      */
-    protected void handleField(VariableElement fieldElement,
+    protected void handleAttribute(FieldDeclaration attributeDeclaration,
             ModelMetaDesc modelMetaDesc) {
         AttributeMetaDesc attributeMetaDesc =
-            attributeMetaDescFactory.createAttributeMetaDesc(fieldElement);
+            attributeMetaDescFactory
+                .createAttributeMetaDesc(attributeDeclaration);
         if (attributeMetaDesc != null) {
             modelMetaDesc.addAttributeMetaDesc(attributeMetaDesc);
         }
     }
-
 }
