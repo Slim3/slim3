@@ -17,6 +17,8 @@
     <taskdef name="gen-view" classname="org.slim3.gen.task.GenViewTask" classpathref="classpath"/>
     <taskdef name="gen-controller" classname="org.slim3.gen.task.GenControllerTask" classpathref="classpath"/>
     <taskdef name="gen-dao" classname="org.slim3.gen.task.GenDaoTask" classpathref="classpath"/>
+	<taskdef name="gen-gwt-service" classname="org.slim3.gen.task.GenGWTServiceTask" classpathref="classpath"/>
+    <taskdef name="gen-gwt-service-impl" classname="org.slim3.gen.task.GenGWTServiceImplTask" classpathref="classpath"/>
 	
 	<target name="gen-controller">
         <input message="Input a controller path." addproperty="controllerPath"/>
@@ -37,14 +39,17 @@
         <gen-dao srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" modelRelativeClassName="${modelRelativeClassName}" modelClassName="${modelClassName}"/>
     </target>
 
-
+	<target name="gen-gwt-service">
+        <input message="Input a GWT service name. (ex.  FooService -> root.client.service.FooService,  bar.FooService -> root.client.service.bar.FooService)" addproperty="serviceRelativeClassName"/>
+        <gen-gwt-service srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" serviceRelativeClassName="${serviceRelativeClassName}" serviceClassNameProperty="serviceClassName"/>
+        <gen-gwt-service-impl srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" serviceRelativeClassName="${serviceRelativeClassName}" serviceClassName="${serviceClassName}"/>
+    </target>
+	
     <target name="copy">
         <copy todir="war/WEB-INF/lib" file="../slim3/target/slim3-${ver}.jar"/>
         <copy todir="libsrc" file="../slim3/target/slim3-${ver}-sources.jar"/>
         <copy todir="lib" file="../slim3-gen/target/slim3-gen-${ver}.jar"/>
         <copy todir="libsrc" file="../slim3-gen/target/slim3-gen-${ver}-sources.jar"/>
-        <copy todir="lib" file="../slim3-versionchecker/target/slim3-versionchecker-${ver}.jar"/>
-        <copy todir="libsrc" file="../slim3-versionchecker/target/slim3-versionchecker-${ver}-sources.jar"/>
         <copy todir="src" file="../slim3/src/main/resources/application_en.properties"/>
         <copy todir="src" file="../slim3/src/main/resources/application_ja.properties"/>
     </target>
