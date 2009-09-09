@@ -3,7 +3,7 @@
 <web-app xmlns="http://java.sun.com/xml/ns/javaee" version="2.5">
 	<context-param>
         <param-name>slim3.rootPackage</param-name>
-        <param-value>slim3.it</param-value>
+        <param-value>slim3</param-value>
     </context-param>
     <context-param>
         <param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
