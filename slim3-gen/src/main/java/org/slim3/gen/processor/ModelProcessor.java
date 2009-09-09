@@ -75,12 +75,6 @@ public class ModelProcessor implements AnnotationProcessor {
     }
 
     public void process() {
-        if (Options.getJavaVersion(env) >= 1.6) {
-            Logger.debug(env, MessageFormatter.getMessage(
-                MessageCode.SILM3GEN0012,
-                getClass().getName()));
-            return;
-        }
         for (AnnotationTypeDeclaration annotation : annotationTypeDeclarations) {
             for (ClassDeclaration element : DeclarationFilter.getFilter(
                 ClassDeclaration.class).filter(

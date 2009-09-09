@@ -20,7 +20,7 @@ import com.sun.mirror.declaration.AnnotationTypeDeclaration;
 import com.sun.mirror.declaration.Declaration;
 
 /**
- * A utility class for operationg declaration.
+ * A utility class for operationg declarations.
  * 
  * @author taedium
  * @since 3.0
@@ -29,7 +29,7 @@ import com.sun.mirror.declaration.Declaration;
 public final class DeclarationUtil {
 
     /**
-     * Returns {@code AnnotationMirror} if an declaration is annotated with a
+     * Returns {@code AnnotationMirror} if a declaration is annotated with a
      * specified annotation and {@code null} otherwise.
      * 
      * @param declaration

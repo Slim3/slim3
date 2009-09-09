@@ -73,18 +73,21 @@ public class AttributeMetaDescFactory {
             FieldDeclaration attributeDeclaration) {
         if (attributeDeclaration == null) {
             throw new NullPointerException(
-                "The fieldDeclaration parameter is null.");
-        }
-        if (!isPersistent(attributeDeclaration)) {
-            if (isInstanceVariable(attributeDeclaration)
-                && !isNotPersistent(attributeDeclaration)) {
-                Logger.warning(env, attributeDeclaration, MessageFormatter
-                    .getSimpleMessage(MessageCode.SILM3GEN0010));
-            }
-            return null;
+                "The attributeDeclaration parameter is null.");
         }
         if (isNestedType(attributeDeclaration)) {
             return null;
+        }
+        if (isNotPersistent(attributeDeclaration)
+            || isStatic(attributeDeclaration)) {
+            return null;
+        }
+        if (!isPersistent(attributeDeclaration)) {
+            if (isTransient(attributeDeclaration)) {
+                return null;
+            }
+            Logger.warning(env, attributeDeclaration, MessageFormatter
+                .getSimpleMessage(MessageCode.SILM3GEN0010));
         }
         Iterator<String> classNames =
             new ClassNameCollector(attributeDeclaration.getType())
@@ -126,23 +129,23 @@ public class AttributeMetaDescFactory {
      * @return {@code true} if the attribute type is a nested type
      */
     protected boolean isNestedType(FieldDeclaration attributeDeclaration) {
-        class GetTypeMirror extends SimpleTypeVisitor {
+        class GetTypeMirrorVisitor extends SimpleTypeVisitor {
 
             TypeMirror result;
 
-            GetTypeMirror(TypeMirror typeMirror) {
+            GetTypeMirrorVisitor(TypeMirror typeMirror) {
                 result = typeMirror;
             }
 
             @Override
             public void visitArrayType(ArrayType type) {
-                GetTypeMirror visitor = new GetTypeMirror(result);
+                GetTypeMirrorVisitor visitor = new GetTypeMirrorVisitor(result);
                 type.getComponentType().accept(visitor);
                 this.result = visitor.result;
             }
         }
-        GetTypeMirror getTypeMirrorVisitor =
-            new GetTypeMirror(attributeDeclaration.getType());
+        GetTypeMirrorVisitor getTypeMirrorVisitor =
+            new GetTypeMirrorVisitor(attributeDeclaration.getType());
         attributeDeclaration.getType().accept(getTypeMirrorVisitor);
         TypeMirror typeMirror = getTypeMirrorVisitor.result;
 
@@ -194,14 +197,25 @@ public class AttributeMetaDescFactory {
     }
 
     /**
-     * Returns {@code true} if the attribute is an instance variable.
+     * Returns {@code true} if the attribute is a static variable.
      * 
      * @param attributeDeclaration
      *            the declaration of an attribute
-     * @return {@code true} if the attribute is an instance variable.
+     * @return {@code true} if the attribute is a static variable.
      */
-    protected boolean isInstanceVariable(FieldDeclaration attributeDeclaration) {
-        return !attributeDeclaration.getModifiers().contains(Modifier.STATIC);
+    protected boolean isStatic(FieldDeclaration attributeDeclaration) {
+        return attributeDeclaration.getModifiers().contains(Modifier.STATIC);
+    }
+
+    /**
+     * Returns {@code true} if the attribute is transient.
+     * 
+     * @param attributeDeclaration
+     *            the declaration of an attribute
+     * @return {@code true} if the attribute is transient.
+     */
+    protected boolean isTransient(FieldDeclaration attributeDeclaration) {
+        return attributeDeclaration.getModifiers().contains(Modifier.TRANSIENT);
     }
 
     /**
