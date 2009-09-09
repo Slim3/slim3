@@ -23,8 +23,6 @@
         <copy todir="libsrc" file="../slim3/target/slim3-${ver}-sources.jar"/>
         <copy todir="lib" file="../slim3-gen/target/slim3-gen-${ver}.jar"/>
         <copy todir="libsrc" file="../slim3-gen/target/slim3-gen-${ver}-sources.jar"/>
-        <copy todir="lib" file="../slim3-versionchecker/target/slim3-versionchecker-${ver}.jar"/>
-        <copy todir="libsrc" file="../slim3-versionchecker/target/slim3-versionchecker-${ver}-sources.jar"/>
     </target>
 
     <target name="gen-controller">
