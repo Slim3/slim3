@@ -23,7 +23,6 @@ import org.slim3.gwt.client.service.HogeService;
  */
 public class HogeServiceImpl implements HogeService {
 
-    @Override
     public String greet() {
         return "Hello";
     }

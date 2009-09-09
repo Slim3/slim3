@@ -46,7 +46,6 @@ public class AttributeComparator implements Comparator {
         this.orderCriteria = orderCriteria;
     }
 
-    @Override
     public int compare(Object o1, Object o2) {
         if (o1 == null || o2 == null) {
             throw new NullPointerException("The model is null.");

@@ -56,7 +56,6 @@ public class MinlengthValidator extends AbstractValidator {
         this.minlength = minlength;
     }
 
-    @Override
     public String validate(Map<String, Object> parameters, String name) {
         Object value = parameters.get(name);
         if (value == null || "".equals(value)) {

@@ -167,7 +167,6 @@ public class HotHttpSessionWrapper implements HttpSession, Cleanable {
     }
 
     @SuppressWarnings("unchecked")
-    @Override
     public void clean() {
         if (originalSession == null) {
             return;

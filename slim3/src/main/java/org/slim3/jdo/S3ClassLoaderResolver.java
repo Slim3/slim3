@@ -48,17 +48,14 @@ public class S3ClassLoaderResolver implements ClassLoaderResolver {
     public S3ClassLoaderResolver(ClassLoader pmLoader) {
     }
 
-    @Override
     public Class<?> classForName(String name) {
         return classForName(name, false);
     }
 
-    @Override
     public Class<?> classForName(String name, ClassLoader primary) {
         return classForName(name);
     }
 
-    @Override
     public Class<?> classForName(String name, boolean initialize) {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         try {
@@ -68,13 +65,11 @@ public class S3ClassLoaderResolver implements ClassLoaderResolver {
         }
     }
 
-    @Override
     public Class<?> classForName(String name, ClassLoader primary,
             boolean initialize) {
         return classForName(name, initialize);
     }
 
-    @Override
     public URL getResource(String resourceName, ClassLoader primary) {
         if (resourceName.startsWith("/")) {
             resourceName = resourceName.substring(1);
@@ -83,7 +78,6 @@ public class S3ClassLoaderResolver implements ClassLoaderResolver {
         return loader.getResource(resourceName);
     }
 
-    @Override
     public Enumeration<URL> getResources(String resourceName,
             ClassLoader primary) throws IOException {
         if (resourceName.startsWith("/")) {
@@ -94,7 +88,6 @@ public class S3ClassLoaderResolver implements ClassLoaderResolver {
     }
 
     @SuppressWarnings("unchecked")
-    @Override
     public boolean isAssignableFrom(String className_1, Class class_2) {
         if (className_1 == null || class_2 == null) {
             return false;
@@ -103,7 +96,6 @@ public class S3ClassLoaderResolver implements ClassLoaderResolver {
     }
 
     @SuppressWarnings("unchecked")
-    @Override
     public boolean isAssignableFrom(Class class_1, String className_2) {
         if (class_1 == null || className_2 == null) {
             return false;
@@ -111,7 +103,6 @@ public class S3ClassLoaderResolver implements ClassLoaderResolver {
         return class_1.isAssignableFrom(classForName(className_2));
     }
 
-    @Override
     public boolean isAssignableFrom(String className_1, String className_2) {
         if (className_1 == null || className_2 == null) {
             return false;
@@ -120,19 +111,15 @@ public class S3ClassLoaderResolver implements ClassLoaderResolver {
             classForName(className_2));
     }
 
-    @Override
     public void registerUserClassLoader(ClassLoader loader) {
     }
 
-    @Override
     public void setPrimary(ClassLoader primary) {
     }
 
-    @Override
     public void setRuntimeClassLoader(ClassLoader loader) {
     }
 
-    @Override
     public void unsetPrimary() {
     }
 }

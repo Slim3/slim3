@@ -15,7 +15,6 @@
  */
 package org.slim3.jdo;
 
-
 /**
  * An implementation class for "startsWith" filter criterion.
  * 
@@ -50,17 +49,14 @@ public class StartsWithCriterion extends AbstractCriterion implements
         this.parameter = parameter;
     }
 
-    @Override
     public String getQueryString(String parameterName) {
         return attributeMeta.fullName + ".startsWith(" + parameterName + ")";
     }
 
-    @Override
     public Object[] getParameters() {
         return new Object[] { parameter };
     }
 
-    @Override
     public boolean accept(Object model) {
         Object value = attributeMeta.getValue(model);
         if (value == null) {

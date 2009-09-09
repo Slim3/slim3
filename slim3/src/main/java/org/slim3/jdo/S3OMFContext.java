@@ -109,7 +109,6 @@ public class S3OMFContext extends OMFContext {
      */
     protected void initialize() {
         Cleaner.add(new Cleanable() {
-            @Override
             public void clean() {
                 if (storeDataMgr != null) {
                     storeDataMgr.clear();

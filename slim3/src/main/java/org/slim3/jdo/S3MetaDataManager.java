@@ -62,7 +62,6 @@ public class S3MetaDataManager extends JDOMetaDataManager {
      */
     protected void initialize() {
         Cleaner.add(new Cleanable() {
-            @Override
             public void clean() {
                 classMetaDataByClass.clear();
                 classesWithoutPersistenceInfo.clear();

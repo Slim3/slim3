@@ -52,17 +52,14 @@ public class ContainsCriterion extends AbstractCriterion implements
         this.parameter = parameter;
     }
 
-    @Override
     public String getQueryString(String parameterName) {
         return attributeMeta.fullName + ".contains(" + parameterName + ")";
     }
 
-    @Override
     public Object[] getParameters() {
         return new Object[] { parameter };
     }
 
-    @Override
     public boolean accept(Object model) {
         Object value = attributeMeta.getValue(model);
         if (value == null) {

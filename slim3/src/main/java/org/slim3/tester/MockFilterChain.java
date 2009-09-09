@@ -42,7 +42,6 @@ public class MockFilterChain implements FilterChain {
      */
     protected ServletResponse response;
 
-    @Override
     public void doFilter(ServletRequest request, ServletResponse response)
             throws IOException, ServletException {
         this.request = request;

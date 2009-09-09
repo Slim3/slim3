@@ -49,7 +49,6 @@ public class AbstractValidatorTest extends TestCase {
 
     private static class MyValidator extends AbstractValidator {
 
-        @Override
         public String validate(Map<String, Object> parameters, String name) {
             return null;
         }

@@ -50,7 +50,6 @@ public class DoubleTypeValidator extends AbstractValidator {
         super(message);
     }
 
-    @Override
     public String validate(Map<String, Object> parameters, String name) {
         Object value = parameters.get(name);
         if (value == null || "".equals(value)) {

@@ -34,12 +34,10 @@ public class DescCriterion extends AbstractCriterion implements OrderCriterion {
         super(attributeMeta);
     }
 
-    @Override
     public String getQueryString() {
         return attributeMeta.fullName + " desc";
     }
 
-    @Override
     public int compare(Object o1, Object o2) {
         if (attributeMeta.modelMeta.attributeName != null) {
             throw new IllegalStateException(

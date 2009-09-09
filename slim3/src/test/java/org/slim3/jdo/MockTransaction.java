@@ -50,110 +50,87 @@ public class MockTransaction implements Transaction {
         this.pm = pm;
     }
 
-    @Override
     public void begin() {
         active = true;
     }
 
-    @Override
     public void commit() {
         active = false;
     }
 
-    @Override
     public String getIsolationLevel() {
         return isolationLevel;
     }
 
-    @Override
     public boolean getNontransactionalRead() {
         return false;
     }
 
-    @Override
     public boolean getNontransactionalWrite() {
         return false;
     }
 
-    @Override
     public boolean getOptimistic() {
         return false;
     }
 
-    @Override
     public PersistenceManager getPersistenceManager() {
         return pm;
     }
 
-    @Override
     public boolean getRestoreValues() {
         return false;
     }
 
-    @Override
     public boolean getRetainValues() {
         return false;
     }
 
-    @Override
     public boolean getRollbackOnly() {
         return false;
     }
 
-    @Override
     public Boolean getSerializeRead() {
         return null;
     }
 
-    @Override
     public Synchronization getSynchronization() {
         return null;
     }
 
-    @Override
     public boolean isActive() {
         return active;
     }
 
-    @Override
     public void rollback() {
         active = false;
     }
 
-    @Override
     public void setIsolationLevel(String isolationLevel) {
         this.isolationLevel = isolationLevel;
     }
 
-    @Override
     public void setNontransactionalRead(boolean arg0) {
     }
 
-    @Override
     public void setNontransactionalWrite(boolean arg0) {
     }
 
-    @Override
     public void setOptimistic(boolean arg0) {
     }
 
-    @Override
     public void setRestoreValues(boolean arg0) {
     }
 
-    @Override
     public void setRetainValues(boolean arg0) {
     }
 
-    @Override
     public void setRollbackOnly() {
     }
 
-    @Override
     public void setSerializeRead(Boolean arg0) {
     }
 
-    @Override
     public void setSynchronization(Synchronization arg0) {
     }
 }

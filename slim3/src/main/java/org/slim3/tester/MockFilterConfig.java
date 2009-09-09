@@ -65,12 +65,10 @@ public class MockFilterConfig implements FilterConfig {
         this.servletContext = servletContext;
     }
 
-    @Override
     public ServletContext getServletContext() {
         return servletContext;
     }
 
-    @Override
     public String getFilterName() {
         return filterName;
     }
@@ -85,7 +83,6 @@ public class MockFilterConfig implements FilterConfig {
         this.filterName = filterName;
     }
 
-    @Override
     public String getInitParameter(String name) {
         return initParameterMap.get(name);
     }
@@ -112,7 +109,6 @@ public class MockFilterConfig implements FilterConfig {
         initParameterMap.remove(name);
     }
 
-    @Override
     public Enumeration<String> getInitParameterNames() {
         return Collections.enumeration(initParameterMap.keySet());
     }

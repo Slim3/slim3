@@ -63,7 +63,6 @@ public class NumberTypeValidator extends AbstractValidator {
         this.pattern = pattern;
     }
 
-    @Override
     public String validate(Map<String, Object> parameters, String name) {
         Object value = parameters.get(name);
         if (value == null || "".equals(value)) {

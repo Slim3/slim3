@@ -307,7 +307,6 @@ public class MockServletContext implements ServletContext, Serializable {
         this.servletContextName = servletContextName;
     }
 
-    @Override
     public String getContextPath() {
         return contextPath;
     }
