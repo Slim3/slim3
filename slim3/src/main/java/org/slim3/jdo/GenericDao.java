@@ -18,6 +18,7 @@ package org.slim3.jdo;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.jdo.JDOHelper;
 import javax.jdo.JDOOptimisticVerificationException;
@@ -87,18 +88,31 @@ public class GenericDao<M> {
     }
 
     /**
-     * Finds a model by key.
+     * Gets a model by the key.
      * 
      * @param key
      *            the key
      * @return a model
      */
-    public M find(String key) {
+    public M getObjectById(String key) {
         return pm.getObjectById(modelClass, key);
     }
 
     /**
-     * Finds a model by key and checks the version.
+     * Finds a model by the key. Use {@link #getObjectById(String)} instead of
+     * this method.
+     * 
+     * @param key
+     *            the key
+     * @return a model
+     */
+    @Deprecated
+    public M find(String key) {
+        return getObjectById(key);
+    }
+
+    /**
+     * Gets a model by the key and checks the version.
      * 
      * @param key
      *            the key
@@ -106,7 +120,7 @@ public class GenericDao<M> {
      *            the version
      * @return a model
      */
-    public M find(String key, long version) {
+    public M getObjectById(String key, long version) {
         M model = pm.getObjectById(modelClass, key);
         if (version != LongUtil.toPrimitiveLong(JDOHelper.getVersion(model))) {
             throw new JDOOptimisticVerificationException(
@@ -121,12 +135,48 @@ public class GenericDao<M> {
     }
 
     /**
+     * Finds a model by the key and checks the version. Use
+     * {@link #getObjectById(String, long)} instead of this method.
+     * 
+     * @param key
+     *            the key
+     * @param version
+     *            the version
+     * @return a model
+     */
+    @Deprecated
+    public M find(String key, long version) {
+        return getObjectById(key, version);
+    }
+
+    /**
+     * Gets models by the keys.
+     * 
+     * @param keys
+     *            the keys
+     * @return models
+     */
+    @SuppressWarnings("unchecked")
+    public List<M> getObjectsById(List<String> keys) {
+        return (List<M>) pm.newQuery(modelClass, "key == :keys").execute(keys);
+    }
+
+    /**
      * Finds all models.
      * 
      * @return all models
      */
     public List<M> findAll() {
         return from().getResultList();
+    }
+
+    /**
+     * Finds the first model.
+     * 
+     * @return the first model
+     */
+    public M findFirst() {
+        return from().getFirstResult();
     }
 
     /**
@@ -195,6 +245,39 @@ public class GenericDao<M> {
         begin();
         deletePersistent(model);
         commit();
+    }
+
+    /**
+     * Detaches the model from the persistence manager.
+     * 
+     * @param model
+     *            the model
+     * @return the detached model
+     */
+    public M detachCopy(M model) {
+        return pm.detachCopy(model);
+    }
+
+    /**
+     * Detaches the models from the persistence manager.
+     * 
+     * @param models
+     *            the models
+     * @return the detached model
+     */
+    public List<M> detachCopyAll(List<M> models) {
+        return (List<M>) pm.detachCopyAll(models);
+    }
+
+    /**
+     * Detaches the models from the persistence manager.
+     * 
+     * @param models
+     *            the models
+     * @return the detached model
+     */
+    public Set<M> detachCopyAll(Set<M> models) {
+        return (Set<M>) pm.detachCopyAll(models);
     }
 
     /**
