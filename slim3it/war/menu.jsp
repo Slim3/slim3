@@ -5,7 +5,6 @@
 <ul>
 <li><a href="${f:url('/add/')}">Add</a></li>
 <li><a href="${f:url('/blog/')}">Blog</a></li>
-<li><a href="${f:url('/flexblog/')}">Blog with Flex</a></li>
 <li><a href="${f:url('/locale/')}">Locale</a></li>
 <li><a href="${f:url('/timezone/')}">TimeZone</a></li>
 <li><a href="${f:url('/checkbox/')}">Checkbox</a></li>
