@@ -15,6 +15,7 @@
  */
 package org.slim3.jdo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.jdo.JDOHelper;
@@ -34,38 +35,51 @@ public class GenericDaoTest extends JDOTestCase {
     /**
      * @throws Exception
      */
-    public void testFind() throws Exception {
+    public void testGetObjectById() throws Exception {
         BlogDao dao = new BlogDao();
         Blog blog = new Blog();
         dao.makePersistentInTx(blog);
-        assertNotNull(dao.find(blog.getKey()));
+        assertNotNull(dao.getObjectById(blog.getKey()));
     }
 
     /**
      * @throws Exception
      */
-    public void testFindByVersion() throws Exception {
+    public void testGetObjectByIdAndVersion() throws Exception {
         BlogDao dao = new BlogDao();
         Blog blog = new Blog();
         dao.makePersistentInTx(blog);
         long version = (Long) JDOHelper.getVersion(blog);
-        assertNotNull(dao.find(blog.getKey(), version));
+        assertNotNull(dao.getObjectById(blog.getKey(), version));
     }
 
     /**
      * @throws Exception
      */
-    public void testFindForOptimisticException() throws Exception {
+    public void testGetObjectByIdForOptimisticException() throws Exception {
         BlogDao dao = new BlogDao();
         Blog blog = new Blog();
         dao.makePersistentInTx(blog);
         long version = (Long) JDOHelper.getVersion(blog) + 1;
         try {
-            dao.find(blog.getKey(), version);
+            dao.getObjectById(blog.getKey(), version);
             fail();
         } catch (JDOOptimisticVerificationException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetObjectsById() throws Exception {
+        BlogDao dao = new BlogDao();
+        Blog blog = new Blog();
+        dao.makePersistentInTx(blog);
+        List<String> keys = new ArrayList<String>();
+        keys.add(blog.getKey());
+        List<Blog> list = dao.getObjectsById(keys);
+        assertEquals(1, list.size());
     }
 
     /**

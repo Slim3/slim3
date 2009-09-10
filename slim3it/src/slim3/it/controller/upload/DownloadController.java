@@ -16,7 +16,7 @@ public class DownloadController extends Controller {
 
     @Override
     public Navigation run() {
-        Upload upload = dao.find(key(), version());
+        Upload upload = dao.getObjectById(key(), version());
         List<UploadData> dataList = upload.getDataList();
         byte[][] bytesArray = new byte[dataList.size()][0];
         for (int i = 0; i < dataList.size(); i++) {

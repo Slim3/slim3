@@ -12,7 +12,7 @@ public class DeleteController extends Controller {
 
     @Override
     public Navigation run() {
-        Upload upload = dao.find(key(), version());
+        Upload upload = dao.getObjectById(key(), version());
         dao.deletePersistentInTx(upload);
         return redirect(basePath);
     }

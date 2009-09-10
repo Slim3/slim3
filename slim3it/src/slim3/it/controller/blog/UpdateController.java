@@ -18,7 +18,7 @@ public class UpdateController extends Controller {
             return forward("edit.jsp");
         }
         dao.begin();
-        Blog blog = dao.find(key(), version());
+        Blog blog = dao.getObjectById(key(), version());
         BeanUtil.copy(request, blog);
         dao.commit();
         return redirect(basePath);

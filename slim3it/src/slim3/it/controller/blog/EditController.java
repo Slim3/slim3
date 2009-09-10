@@ -13,7 +13,7 @@ public class EditController extends Controller {
 
     @Override
     public Navigation run() {
-        Blog blog = dao.find(key(), version());
+        Blog blog = dao.getObjectById(key(), version());
         BeanUtil.copy(blog, request);
         return forward("/blog/edit.jsp");
     }

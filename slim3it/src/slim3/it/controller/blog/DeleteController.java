@@ -12,7 +12,7 @@ public class DeleteController extends Controller {
 
     @Override
     public Navigation run() {
-        Blog blog = dao.find(key(), version());
+        Blog blog = dao.getObjectById(key(), version());
         dao.deletePersistentInTx(blog);
         return redirect(basePath);
     }
