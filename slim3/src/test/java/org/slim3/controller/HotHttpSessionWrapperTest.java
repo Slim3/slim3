@@ -19,6 +19,7 @@ import junit.framework.TestCase;
 
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
+import org.slim3.util.ByteUtil;
 import org.slim3.util.Cleaner;
 
 /**
@@ -35,36 +36,30 @@ public class HotHttpSessionWrapperTest extends TestCase {
     private HotHttpServletRequestWrapper requestWrapper =
         new HotHttpServletRequestWrapper(request);
 
-    private HotHttpSessionWrapper sessionWrapper =
-        (HotHttpSessionWrapper) requestWrapper.getSession();
-
     /**
      * @throws Exception
      * 
      */
-    public void testCleanAndGetAttribute() throws Exception {
+    public void testClean() throws Exception {
+        HotHttpSessionWrapper sessionWrapper =
+            (HotHttpSessionWrapper) requestWrapper.getSession();
         sessionWrapper.setAttribute("aaa", "111");
         Cleaner.cleanAll();
         assertTrue(request.getSession().getAttribute("aaa") instanceof BytesHolder);
-        Object value = sessionWrapper.getAttribute("aaa");
-        assertEquals("111", value);
-        assertSame(value, sessionWrapper.getAttribute("aaa"));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testMultipleCleanAndGetAttribute() throws Exception {
-        sessionWrapper.setAttribute("aaa", "111");
-        Cleaner.cleanAll();
-        requestWrapper = new HotHttpServletRequestWrapper(request);
-        sessionWrapper = (HotHttpSessionWrapper) requestWrapper.getSession();
-        Cleaner.cleanAll();
-        assertTrue(request.getSession().getAttribute("aaa") instanceof BytesHolder);
-        Object value = sessionWrapper.getAttribute("aaa");
-        assertEquals("111", value);
-        assertSame(value, sessionWrapper.getAttribute("aaa"));
+    public void testConstructorAndGetAttribute() throws Exception {
+        request.getSession().setAttribute(
+            "aaa",
+            new BytesHolder(ByteUtil.toByteArray("111")));
+        HotHttpSessionWrapper sessionWrapper =
+            (HotHttpSessionWrapper) requestWrapper.getSession();
+        assertEquals("111", request.getSession().getAttribute("aaa"));
+        assertEquals("111", sessionWrapper.getAttribute("aaa"));
     }
 
     /**
@@ -72,6 +67,8 @@ public class HotHttpSessionWrapperTest extends TestCase {
      * 
      */
     public void testInvalidate() throws Exception {
+        HotHttpSessionWrapper sessionWrapper =
+            (HotHttpSessionWrapper) requestWrapper.getSession();
         sessionWrapper.invalidate();
         assertNull(sessionWrapper.originalSession);
         assertNull(sessionWrapper.requestWrapper);

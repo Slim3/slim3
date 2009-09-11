@@ -48,6 +48,10 @@ public class HotHttpServletRequestWrapper extends HttpServletRequestWrapper {
     public HotHttpServletRequestWrapper(HttpServletRequest request) {
         super(request);
         originalRequest = request;
+        HttpSession originalSession = request.getSession(false);
+        if (originalSession != null) {
+            sessionWrapper = new HotHttpSessionWrapper(originalSession, this);
+        }
     }
 
     @Override

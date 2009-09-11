@@ -55,6 +55,7 @@ public class HotHttpSessionWrapper implements HttpSession, Cleanable {
      *             if the originalSession parameter is null or if the
      *             requestWrapper parameter is null
      */
+    @SuppressWarnings("unchecked")
     public HotHttpSessionWrapper(HttpSession originalSession,
             HotHttpServletRequestWrapper requestWrapper)
             throws NullPointerException {
@@ -68,18 +69,21 @@ public class HotHttpSessionWrapper implements HttpSession, Cleanable {
         }
         this.originalSession = originalSession;
         this.requestWrapper = requestWrapper;
+        for (Enumeration<String> e = originalSession.getAttributeNames(); e
+            .hasMoreElements();) {
+            String name = e.nextElement();
+            Object value = originalSession.getAttribute(name);
+            if (value instanceof BytesHolder) {
+                byte[] bytes = ((BytesHolder) value).getBytes();
+                value = ByteUtil.toObject(bytes);
+                originalSession.setAttribute(name, value);
+            }
+        }
         Cleaner.add(this);
     }
 
     public Object getAttribute(String name) {
-        Object value = originalSession.getAttribute(name);
-        if (value instanceof BytesHolder) {
-            byte[] bytes = ((BytesHolder) value).getBytes();
-            value = ByteUtil.toObject(bytes);
-            originalSession.setAttribute(name, value);
-            return value;
-        }
-        return value;
+        return originalSession.getAttribute(name);
     }
 
     @SuppressWarnings("unchecked")

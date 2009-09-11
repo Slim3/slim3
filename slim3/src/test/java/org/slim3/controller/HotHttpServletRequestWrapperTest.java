@@ -33,14 +33,34 @@ public class HotHttpServletRequestWrapperTest extends TestCase {
     private MockHttpServletRequest request =
         new MockHttpServletRequest(servletContext);
 
-    private HotHttpServletRequestWrapper requestWrapper =
-        new HotHttpServletRequestWrapper(request);
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testConstructor() throws Exception {
+        HotHttpServletRequestWrapper requestWrapper =
+            new HotHttpServletRequestWrapper(request);
+        assertNull(requestWrapper.sessionWrapper);
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testConstructorWithSession() throws Exception {
+        request.getSession();
+        HotHttpServletRequestWrapper requestWrapper =
+            new HotHttpServletRequestWrapper(request);
+        assertNotNull(requestWrapper.sessionWrapper);
+    }
 
     /**
      * @throws Exception
      * 
      */
     public void testGetSession() throws Exception {
+        HotHttpServletRequestWrapper requestWrapper =
+            new HotHttpServletRequestWrapper(request);
         HttpSession session = requestWrapper.getSession();
         assertNotNull(session);
         assertSame(session, requestWrapper.getSession());
@@ -51,6 +71,8 @@ public class HotHttpServletRequestWrapperTest extends TestCase {
      * 
      */
     public void testInvalidateSession() throws Exception {
+        HotHttpServletRequestWrapper requestWrapper =
+            new HotHttpServletRequestWrapper(request);
         requestWrapper.getSession().invalidate();
         assertNull(requestWrapper.sessionWrapper);
     }
@@ -60,6 +82,8 @@ public class HotHttpServletRequestWrapperTest extends TestCase {
      * 
      */
     public void testGetRequestDispatcher() throws Exception {
+        HotHttpServletRequestWrapper requestWrapper =
+            new HotHttpServletRequestWrapper(request);
         assertTrue(requestWrapper.getRequestDispatcher("/index.jsp") instanceof HotRequestDispatcherWrapper);
     }
 }
