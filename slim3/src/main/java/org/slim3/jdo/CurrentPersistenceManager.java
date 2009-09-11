@@ -21,6 +21,8 @@ import java.util.logging.Logger;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Transaction;
 
+import org.slim3.util.ThrowableUtil;
+
 /**
  * A class to hold the current persistence manager.
  * 
@@ -80,20 +82,28 @@ public final class CurrentPersistenceManager {
         if (pm == null) {
             return;
         }
+        Throwable error = null;
         try {
             Transaction tx = pm.currentTransaction();
             if (tx.isActive()) {
                 tx.rollback();
             }
         } catch (Throwable e) {
-            logger.log(Level.WARNING, e.getMessage(), e);
+            error = e;
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
         try {
             pm.close();
         } catch (Throwable e) {
-            logger.log(Level.WARNING, e.getMessage(), e);
+            if (error == null) {
+                error = e;
+            }
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
         set(null);
+        if (error != null) {
+            ThrowableUtil.wrapAndThrow(error);
+        }
     }
 
     /**
