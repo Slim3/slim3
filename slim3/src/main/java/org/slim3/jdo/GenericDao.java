@@ -23,7 +23,6 @@ import java.util.Set;
 import javax.jdo.JDOHelper;
 import javax.jdo.JDOOptimisticVerificationException;
 import javax.jdo.PersistenceManager;
-import javax.jdo.Transaction;
 
 import org.slim3.util.LongUtil;
 
@@ -44,11 +43,6 @@ public class GenericDao<M> {
     protected PersistenceManager pm;
 
     /**
-     * The transaction.
-     */
-    protected Transaction tx;
-
-    /**
      * The model class.
      */
     protected Class<M> modelClass;
@@ -60,7 +54,7 @@ public class GenericDao<M> {
      *            the model class
      */
     public GenericDao(Class<M> modelClass) {
-        this(modelClass, CurrentPersistenceManager.getAndCheckPresence());
+        this(modelClass, CurrentPersistenceManager.getProxy());
     }
 
     /**
@@ -84,7 +78,6 @@ public class GenericDao<M> {
         }
         this.modelClass = modelClass;
         this.pm = pm;
-        tx = pm.currentTransaction();
     }
 
     /**
@@ -284,23 +277,30 @@ public class GenericDao<M> {
      * Begins transaction.
      */
     public void begin() {
-        tx.begin();
+        pm.currentTransaction().begin();
     }
 
     /**
      * Commits transaction.
      */
     public void commit() {
-        tx.commit();
+        pm.currentTransaction().commit();
     }
 
     /**
      * Rolls back transaction.
      */
     public void rollback() {
-        if (tx.isActive()) {
-            tx.rollback();
+        if (pm.currentTransaction().isActive()) {
+            pm.currentTransaction().rollback();
         }
+    }
+
+    /**
+     * Reopens the current persistence manager.
+     */
+    public void reopenPersistenceManager() {
+        CurrentPersistenceManager.reopen();
     }
 
     /**

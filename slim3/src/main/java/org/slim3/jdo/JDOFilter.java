@@ -80,7 +80,7 @@ public class JDOFilter implements Filter {
             try {
                 chain.doFilter(request, response);
             } finally {
-                CurrentPersistenceManager.destroy();
+                CurrentPersistenceManager.close();
                 ClassLoader loader =
                     Thread.currentThread().getContextClassLoader();
                 if (loader instanceof HotReloadingClassLoader) {

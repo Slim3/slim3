@@ -41,12 +41,12 @@ public class CurrentPersistenceManagerTest extends TestCase {
     /**
      * @throws Exception
      */
-    public void testDestroy() throws Exception {
+    public void testClose() throws Exception {
         MockPersistenceManager pm = new MockPersistenceManager();
         CurrentPersistenceManager.set(pm);
-        CurrentPersistenceManager.destroy();
+        CurrentPersistenceManager.close();
         assertNull(CurrentPersistenceManager.get());
-        CurrentPersistenceManager.destroy();
+        CurrentPersistenceManager.close();
         assertNull(CurrentPersistenceManager.get());
     }
 }

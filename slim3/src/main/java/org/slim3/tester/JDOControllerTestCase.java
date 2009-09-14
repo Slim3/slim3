@@ -16,7 +16,6 @@
 package org.slim3.tester;
 
 import javax.jdo.PersistenceManager;
-import javax.jdo.Transaction;
 
 import org.slim3.jdo.CurrentPersistenceManager;
 import org.slim3.jdo.ModelMeta;
@@ -43,11 +42,6 @@ public abstract class JDOControllerTestCase extends ControllerTestCase {
     protected PersistenceManager pm;
 
     /**
-     * The transaction.
-     */
-    protected Transaction tx;
-
-    /**
      * @throws Exception
      * 
      */
@@ -61,9 +55,8 @@ public abstract class JDOControllerTestCase extends ControllerTestCase {
             datastoreTester.setUp();
         } catch (Throwable ignore) {
         }
-        pm = PMF.get().getPersistenceManager();
-        CurrentPersistenceManager.set(pm);
-        tx = pm.currentTransaction();
+        CurrentPersistenceManager.set(PMF.get().getPersistenceManager());
+        pm = CurrentPersistenceManager.getProxy();
     }
 
     /**
@@ -72,13 +65,7 @@ public abstract class JDOControllerTestCase extends ControllerTestCase {
      */
     @Override
     protected void tearDown() throws Exception {
-        if (tx.isActive()) {
-            tx.rollback();
-        }
-        tx = null;
-        pm.close();
-        pm = null;
-        CurrentPersistenceManager.set(null);
+        CurrentPersistenceManager.close();
         if (datastoreTester != null) {
             datastoreTester.tearDown();
         }
@@ -121,9 +108,9 @@ public abstract class JDOControllerTestCase extends ControllerTestCase {
      * @return the persistent model
      */
     protected <T> T makePersistentInTx(T model) {
-        tx.begin();
+        begin();
         T t = pm.makePersistent(model);
-        tx.commit();
+        commit();
         return t;
     }
 
@@ -134,9 +121,9 @@ public abstract class JDOControllerTestCase extends ControllerTestCase {
      *            the model
      */
     protected void deletePersistentInTx(Object model) {
-        tx.begin();
+        begin();
         pm.deletePersistent(model);
-        tx.commit();
+        commit();
     }
 
     /**
@@ -148,5 +135,35 @@ public abstract class JDOControllerTestCase extends ControllerTestCase {
      */
     protected int count(Class<?> modelClass) {
         return from(modelClass).getResultList().size();
+    }
+
+    /**
+     * Begins the current transaction.
+     */
+    protected void begin() {
+        pm.currentTransaction().begin();
+    }
+
+    /**
+     * Rolls back the current transaction.
+     */
+    protected void commit() {
+        pm.currentTransaction().commit();
+    }
+
+    /**
+     * Rolls back transaction.
+     */
+    protected void rollback() {
+        if (pm.currentTransaction().isActive()) {
+            pm.currentTransaction().rollback();
+        }
+    }
+
+    /**
+     * Reopens the current persistence manager.
+     */
+    protected void reopenPersistenceManager() {
+        CurrentPersistenceManager.reopen();
     }
 }

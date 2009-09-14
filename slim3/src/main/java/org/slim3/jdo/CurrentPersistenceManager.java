@@ -65,6 +65,15 @@ public final class CurrentPersistenceManager {
     }
 
     /**
+     * Returns the proxy of current persistence manager.
+     * 
+     * @return the proxy of current persistence manager
+     */
+    public static PersistenceManager getProxy() {
+        return new PersistenceManagerProxy();
+    }
+
+    /**
      * Sets the current persistence manager.
      * 
      * @param pm
@@ -75,9 +84,17 @@ public final class CurrentPersistenceManager {
     }
 
     /**
-     * Destroys the current persistence manager.
+     * Reopens the current persistence manager.
      */
-    public static void destroy() {
+    public static void reopen() {
+        close();
+        set(PMF.get().getPersistenceManager());
+    }
+
+    /**
+     * Closes the current persistence manager.
+     */
+    public static void close() {
         PersistenceManager pm = get();
         if (pm == null) {
             return;
