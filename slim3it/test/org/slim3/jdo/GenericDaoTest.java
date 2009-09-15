@@ -20,6 +20,7 @@ import java.util.List;
 
 import javax.jdo.JDOHelper;
 import javax.jdo.JDOOptimisticVerificationException;
+import javax.jdo.PersistenceManager;
 
 import org.slim3.tester.JDOTestCase;
 
@@ -31,6 +32,24 @@ import slim3.it.model.Blog;
  * 
  */
 public class GenericDaoTest extends JDOTestCase {
+
+    /**
+     * @throws Exception
+     */
+    public void testConstructor() throws Exception {
+        BlogDao dao = new BlogDao();
+        assertEquals(PersistenceManagerProxy.class, dao.pm.getClass());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testReopenPersistenceManager() throws Exception {
+        BlogDao dao = new BlogDao();
+        PersistenceManager pm = CurrentPersistenceManager.get();
+        dao.reopenPersistenceManager();
+        assertNotSame(pm, CurrentPersistenceManager.get());
+    }
 
     /**
      * @throws Exception

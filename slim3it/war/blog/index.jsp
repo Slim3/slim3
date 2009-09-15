@@ -10,6 +10,10 @@
 </head>
 <body>
 <a href="${f:url('create')}">Create</a>
+<form method="post">
+<input type="text" name="content"/>
+<input type="submit" value="Search"/>
+</form>
 <table>
 <thead>
 <tr><th>Title</th><th>Content</th></tr>

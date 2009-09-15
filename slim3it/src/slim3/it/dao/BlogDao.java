@@ -31,6 +31,12 @@ public class BlogDao extends GenericDao<Blog> {
         return from().range(0, 10).getResultList();
     }
 
+    public List<Blog> findByContent(String content) {
+        return from().where(
+            m.content.ge(content),
+            m.content.lt(content + "\ufffd")).getResultList();
+    }
+
     @Override
     protected SelectQuery<Blog> from() {
         return new SelectQuery<Blog>(pm, m.getModelClass());
