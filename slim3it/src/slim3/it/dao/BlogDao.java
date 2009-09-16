@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 import javax.jdo.PersistenceManager;
 
 import org.slim3.jdo.GenericDao;
-import org.slim3.jdo.SelectQuery;
 
 import slim3.it.meta.BlogMeta;
 import slim3.it.model.Blog;
@@ -35,10 +34,5 @@ public class BlogDao extends GenericDao<Blog> {
         return from().where(
             m.content.ge(content),
             m.content.lt(content + "\ufffd")).getResultList();
-    }
-
-    @Override
-    protected SelectQuery<Blog> from() {
-        return new SelectQuery<Blog>(pm, m.getModelClass());
     }
 }
