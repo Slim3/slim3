@@ -41,18 +41,7 @@
         <dispatcher>INCLUDE</dispatcher>
         <dispatcher>ERROR</dispatcher>
     </filter-mapping>
-    <!--
-    <servlet>
-        <servlet-name>GWTServiceServlet</servlet-name>
-        <servlet-class>org.slim3.gwt.server.rpc.GWTServiceServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-  
-    <servlet-mapping>
-        <servlet-name>GWTServiceServlet</servlet-name>
-        <url-pattern>*.s3gwt</url-pattern>
-    </servlet-mapping>
-    -->
+
     <security-constraint>
         <web-resource-collection>
             <url-pattern>*.jsp</url-pattern>
