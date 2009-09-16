@@ -235,6 +235,24 @@ public class AttributeMeta {
     }
 
     /**
+     * Returns the name.
+     * 
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Returns the full name.
+     * 
+     * @return the full name
+     */
+    public String getFullName() {
+        return fullName;
+    }
+
+    /**
      * Returns the property value.
      * 
      * @param model
