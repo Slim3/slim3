@@ -123,4 +123,13 @@ public class ModelMetaDesc implements ClassDesc {
         return Collections.unmodifiableList(attributeMetaDescList);
     }
 
+    public AttributeMetaDesc addAttributeMetaDesc(String name,
+            AttributeMetaDesc attributeMetaDesc) {
+        throw new AssertionError("not yet implemented.");
+    }
+
+    public AttributeMetaDesc getAttributeMetaDesc(String name) {
+        throw new AssertionError("not yet implemented.");
+    }
+
 }

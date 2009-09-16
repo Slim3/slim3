@@ -78,4 +78,11 @@ public final class ClassConstants {
     /** {@code com.google.gwt.user.client.rpc.AsyncCallback} */
     public static final String AsyncCallback =
         "com.google.gwt.user.client.rpc.AsyncCallback";
+
+    public static final String Blob = "org.slim3.datastore.Blob";
+    public static final String Text = "org.slim3.datastore.Text";
+    public static final String PrimaryKey = " org.slim3.datastore.PrimaryKey";
+    public static final String Version = "org.slim3.datastore.Version";
+    public static final String Impermanent = "org.slim3.datastore.Impermanent";
+
 }

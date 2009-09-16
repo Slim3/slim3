@@ -38,6 +38,32 @@ public class AttributeMetaDesc {
     /** the embeddedModelMetaClassName */
     protected String embeddedModelMetaClassName;
 
+    protected boolean primaryKey;
+
+    protected boolean blob;
+
+    protected boolean text;
+
+    protected boolean version;
+
+    protected boolean impermanent;
+
+    protected boolean unindexed;
+
+    protected boolean collection;
+
+    protected String readMethodName;
+
+    protected String writeMethodName;
+
+    public AttributeMetaDesc() {
+        super();
+    }
+
+    public AttributeMetaDesc(String name, String attributeClassName) {
+        throw new AssertionError("not yet implemented.");
+    }
+
     /**
      * Returns the name.
      * 
@@ -131,6 +157,141 @@ public class AttributeMetaDesc {
      */
     public void setEmbeddedModelMetaClassName(String embeddedModelMetaClassName) {
         this.embeddedModelMetaClassName = embeddedModelMetaClassName;
+    }
+
+    /**
+     * @return the readMethodName
+     */
+    public String getReadMethodName() {
+        return readMethodName;
+    }
+
+    /**
+     * @param readMethodName
+     *            the readMethodName to set
+     */
+    public void setReadMethodName(String readMethodName) {
+        this.readMethodName = readMethodName;
+    }
+
+    /**
+     * @return the writeMethodName
+     */
+    public String getWriteMethodName() {
+        return writeMethodName;
+    }
+
+    /**
+     * @param writeMethodName
+     *            the writeMethodName to set
+     */
+    public void setWriteMethodName(String writeMethodName) {
+        this.writeMethodName = writeMethodName;
+    }
+
+    /**
+     * @return the primaryKey
+     */
+    public boolean isPrimaryKey() {
+        return primaryKey;
+    }
+
+    /**
+     * @param primaryKey
+     *            the primaryKey to set
+     */
+    public void setPrimaryKey(boolean primaryKey) {
+        this.primaryKey = primaryKey;
+    }
+
+    /**
+     * @return the blob
+     */
+    public boolean isBlob() {
+        return blob;
+    }
+
+    /**
+     * @param blob
+     *            the blob to set
+     */
+    public void setBlob(boolean blob) {
+        this.blob = blob;
+    }
+
+    /**
+     * @return the text
+     */
+    public boolean isText() {
+        return text;
+    }
+
+    /**
+     * @param text
+     *            the text to set
+     */
+    public void setText(boolean text) {
+        this.text = text;
+    }
+
+    /**
+     * @return the version
+     */
+    public boolean isVersion() {
+        return version;
+    }
+
+    /**
+     * @param version
+     *            the version to set
+     */
+    public void setVersion(boolean version) {
+        this.version = version;
+    }
+
+    /**
+     * @return the impermanent
+     */
+    public boolean isImpermanent() {
+        return impermanent;
+    }
+
+    /**
+     * @param impermanent
+     *            the impermanent to set
+     */
+    public void setImpermanent(boolean impermanent) {
+        this.impermanent = impermanent;
+    }
+
+    /**
+     * @return the unindexed
+     */
+    public boolean isUnindexed() {
+        return unindexed;
+    }
+
+    /**
+     * @param unindexed
+     *            the unindexed to set
+     */
+    public void setUnindexed(boolean unindexed) {
+        this.unindexed = unindexed;
+    }
+
+    /**
+     * @return the collection
+     */
+    public boolean isCollection() {
+        return collection;
+    }
+
+    /**
+     * @param collection
+     *            the collection to set
+     */
+    public void setCollection(boolean collection) {
+        this.collection = collection;
     }
 
 }
