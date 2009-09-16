@@ -15,19 +15,18 @@
  */
 package org.slim3.gen.desc;
 
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.slim3.gen.ClassConstants;
-import org.slim3.gen.message.MessageCode;
-import org.slim3.gen.message.MessageFormatter;
-import org.slim3.gen.processor.Logger;
-import org.slim3.gen.processor.Options;
 import org.slim3.gen.util.DeclarationUtil;
+import org.slim3.gen.util.StringUtil;
+import org.slim3.gen.util.TypeUtil;
 
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.declaration.FieldDeclaration;
-import com.sun.mirror.declaration.Modifier;
+import com.sun.mirror.declaration.MethodDeclaration;
 import com.sun.mirror.declaration.TypeDeclaration;
 import com.sun.mirror.type.ArrayType;
 import com.sun.mirror.type.DeclaredType;
@@ -35,6 +34,7 @@ import com.sun.mirror.type.PrimitiveType;
 import com.sun.mirror.type.ReferenceType;
 import com.sun.mirror.type.TypeMirror;
 import com.sun.mirror.type.WildcardType;
+import com.sun.mirror.type.PrimitiveType.Kind;
 import com.sun.mirror.util.SimpleTypeVisitor;
 
 /**
@@ -70,187 +70,186 @@ public class AttributeMetaDescFactory {
      * @return an attribute meta description
      */
     public AttributeMetaDesc createAttributeMetaDesc(
-            FieldDeclaration attributeDeclaration) {
-        if (attributeDeclaration == null) {
+            FieldDeclaration fieldDeclaration,
+            List<MethodDeclaration> methodDeclarations) {
+        if (fieldDeclaration == null) {
             throw new NullPointerException(
-                "The attributeDeclaration parameter is null.");
+                "The fieldDeclaration parameter is null.");
         }
-        if (isNestedType(attributeDeclaration)) {
-            return null;
+        if (methodDeclarations == null) {
+            throw new NullPointerException(
+                "The methodDeclarations parameter is null.");
         }
-        if (isNotPersistent(attributeDeclaration)
-            || isStatic(attributeDeclaration)) {
-            return null;
+
+        AttributeMetaDesc attributeMetaDesc =
+            new AttributeMetaDesc(
+                fieldDeclaration.getSimpleName(),
+                fieldDeclaration.getDeclaringType().getQualifiedName());
+        if (isPrimaryKeyAnnotated(fieldDeclaration)) {
+            attributeMetaDesc.setPrimaryKey(true);
         }
-        if (!isPersistent(attributeDeclaration)) {
-            if (isTransient(attributeDeclaration)) {
-                return null;
-            }
-            Logger.warning(env, attributeDeclaration, MessageFormatter
-                .getSimpleMessage(MessageCode.SILM3GEN0010));
+        if (isVersionAnnotated(fieldDeclaration)) {
+            attributeMetaDesc.setVersion(true);
         }
-        Iterator<String> classNames =
-            new ClassNameCollector(attributeDeclaration.getType())
-                .collect()
-                .iterator();
-        AttributeMetaDesc attributeMetaDesc = new AttributeMetaDesc();
-        attributeMetaDesc.setName(attributeDeclaration
-            .getSimpleName()
-            .toString());
-        if (isEmbedded(attributeDeclaration)) {
-            attributeMetaDesc.setEmbedded(true);
-            if (classNames.hasNext()) {
-                String modelClassName = classNames.next();
-                ModelMetaClassName modelMetaClassName =
-                    createModelMetaClassName(modelClassName);
-                attributeMetaDesc
-                    .setEmbeddedModelMetaClassName(modelMetaClassName
-                        .getQualifiedName());
-            }
+        if (isTextAnnotated(fieldDeclaration)) {
+            attributeMetaDesc.setText(true);
+        }
+        if (isBlobAnnotated(fieldDeclaration)) {
+            attributeMetaDesc.setBlob(true);
+        }
+        if (isImpermanentAnnotated(fieldDeclaration)) {
+            attributeMetaDesc.setImpermanent(true);
         } else {
-            if (classNames.hasNext()) {
-                String className = classNames.next();
-                attributeMetaDesc.setAttributeClassName(className);
+            DeclaredType declaredType =
+                TypeUtil.toDeclaredType(fieldDeclaration.getType());
+            if (declaredType == null) {
+                // throw
             }
-            if (classNames.hasNext()) {
-                String elementClassName = classNames.next();
-                attributeMetaDesc
-                    .setAttributeElementClassName(elementClassName);
+            if (isSupportedCoreType(declaredType)) {
+
+            } else if (isSupportedCollectionType(declaredType)) {
+
+            } else if (isSerializable(declaredType)) {
+
+                attributeMetaDesc.setUnindexed(false);
             }
         }
+        for (MethodDeclaration m : methodDeclarations) {
+            if (isReadMethod(m, attributeMetaDesc)) {
+                attributeMetaDesc.setReadMethodName(m.getSimpleName());
+                if (attributeMetaDesc.getWriteMethodName() != null) {
+                    break;
+                }
+            } else if (isWriteMethod(m, attributeMetaDesc)) {
+                attributeMetaDesc.setWriteMethodName(m.getSimpleName());
+                if (attributeMetaDesc.getReadMethodName() != null) {
+                    break;
+                }
+            }
+        }
+        validateAttributeMetaDesc(attributeMetaDesc);
         return attributeMetaDesc;
     }
 
-    /**
-     * Returns {@code true} if the attribute type is a nested type.
-     * 
-     * @param attributeDeclaration
-     *            the declaration of an attribute
-     * @return {@code true} if the attribute type is a nested type
-     */
-    protected boolean isNestedType(FieldDeclaration attributeDeclaration) {
-        class GetTypeMirrorVisitor extends SimpleTypeVisitor {
-
-            TypeMirror result;
-
-            GetTypeMirrorVisitor(TypeMirror typeMirror) {
-                result = typeMirror;
+    protected boolean isReadMethod(MethodDeclaration m,
+            AttributeMetaDesc attributeMetaDesc) {
+        String propertyName = null;
+        if (m.getSimpleName().startsWith("get")) {
+            propertyName =
+                StringUtil.decapitalize(m.getSimpleName().substring(3));
+        } else if (m.getSimpleName().startsWith("is")) {
+            if (!TypeUtil.isPrimitive(m.getReturnType(), Kind.BOOLEAN)) {
+                return false;
             }
-
-            @Override
-            public void visitArrayType(ArrayType type) {
-                GetTypeMirrorVisitor visitor = new GetTypeMirrorVisitor(result);
-                type.getComponentType().accept(visitor);
-                this.result = visitor.result;
-            }
-        }
-        GetTypeMirrorVisitor getTypeMirrorVisitor =
-            new GetTypeMirrorVisitor(attributeDeclaration.getType());
-        attributeDeclaration.getType().accept(getTypeMirrorVisitor);
-        TypeMirror typeMirror = getTypeMirrorVisitor.result;
-
-        class GetDeclaredType extends SimpleTypeVisitor {
-            DeclaredType result;
-
-            @Override
-            public void visitDeclaredType(DeclaredType type) {
-                result = type;
-            }
-        }
-        GetDeclaredType getDeclaredTypeVisitor = new GetDeclaredType();
-        typeMirror.accept(getDeclaredTypeVisitor);
-        DeclaredType declaredType = getDeclaredTypeVisitor.result;
-        if (declaredType == null) {
+            propertyName =
+                StringUtil.decapitalize(m.getSimpleName().substring(2));
+        } else {
             return false;
         }
-        TypeDeclaration typeDeclaration = declaredType.getDeclaration();
-        if (typeDeclaration == null) {
+        if (!propertyName.equals(attributeMetaDesc.getName())
+            || TypeUtil.isVoid(m.getReturnType())
+            || m.getParameters().size() != 0) {
             return false;
         }
-        return typeDeclaration.getDeclaringType() != null;
+        TypeDeclaration propertyClass =
+            TypeUtil.toTypeDeclaration(m.getReturnType());
+        if (propertyClass == null
+            || !propertyClass.getQualifiedName().equals(
+                attributeMetaDesc.getAttributeClassName())) {
+            return false;
+        }
+        return true;
     }
 
-    /**
-     * Returns {@code true} if the attribute is persistent.
-     * 
-     * @param attributeDeclaration
-     *            the declaration of an attribute
-     * @return {@code true} if the attribute is persistent.
-     */
-    protected boolean isPersistent(FieldDeclaration attributeDeclaration) {
+    protected boolean isWriteMethod(MethodDeclaration m,
+            AttributeMetaDesc attributeMetaDesc) {
+        if (!m.getSimpleName().startsWith("set")) {
+            return false;
+        }
+        String propertyName =
+            StringUtil.decapitalize(m.getSimpleName().substring(3));
+        if (!propertyName.equals(attributeMetaDesc.getName())
+            || m.getParameters().size() != 1
+            || TypeUtil.isVoid(m.getReturnType())) {
+            return false;
+        }
+        TypeDeclaration propertyClass =
+            TypeUtil.toTypeDeclaration(m
+                .getParameters()
+                .iterator()
+                .next()
+                .getType());
+        if (propertyClass == null
+            || !propertyClass.getQualifiedName().equals(
+                attributeMetaDesc.getAttributeClassName())) {
+            return false;
+        }
+        return true;
+    }
+
+    protected void validateAttributeMetaDesc(AttributeMetaDesc attributeMetaDesc) {
+        //
+    }
+
+    protected boolean isPrimaryKeyAnnotated(FieldDeclaration fieldDeclaration) {
         return DeclarationUtil.getAnnotationMirror(
-            attributeDeclaration,
-            ClassConstants.Persistent) != null;
+            fieldDeclaration,
+            ClassConstants.PrimaryKey) != null;
     }
 
-    /**
-     * Returns {@code true} if the attribute is not persistent.
-     * 
-     * @param attributeDeclaration
-     *            the declaration of an attribute
-     * @return {@code true} if the attribute is persistent.
-     */
-    protected boolean isNotPersistent(FieldDeclaration attributeDeclaration) {
+    protected boolean isVersionAnnotated(FieldDeclaration fieldDeclaration) {
         return DeclarationUtil.getAnnotationMirror(
-            attributeDeclaration,
-            ClassConstants.NotPersistent) != null;
+            fieldDeclaration,
+            ClassConstants.Version) != null;
     }
 
-    /**
-     * Returns {@code true} if the attribute is a static variable.
-     * 
-     * @param attributeDeclaration
-     *            the declaration of an attribute
-     * @return {@code true} if the attribute is a static variable.
-     */
-    protected boolean isStatic(FieldDeclaration attributeDeclaration) {
-        return attributeDeclaration.getModifiers().contains(Modifier.STATIC);
-    }
-
-    /**
-     * Returns {@code true} if the attribute is transient.
-     * 
-     * @param attributeDeclaration
-     *            the declaration of an attribute
-     * @return {@code true} if the attribute is transient.
-     */
-    protected boolean isTransient(FieldDeclaration attributeDeclaration) {
-        return attributeDeclaration.getModifiers().contains(Modifier.TRANSIENT);
-    }
-
-    /**
-     * Returns {@code true} if the attribute is embedded.
-     * 
-     * @param attributeDeclaration
-     *            the declaration of an attribute
-     * @return {@code true} if the attribute is embedded.
-     */
-    protected boolean isEmbedded(FieldDeclaration attributeDeclaration) {
+    protected boolean isImpermanentAnnotated(FieldDeclaration fieldDeclaration) {
         return DeclarationUtil.getAnnotationMirror(
-            attributeDeclaration,
-            ClassConstants.Embedded) != null;
+            fieldDeclaration,
+            ClassConstants.Impermanent) != null;
     }
 
-    /**
-     * Creates a model meta class name.
-     * 
-     * @param modelClassName
-     *            a model class name
-     * @return a model meta class name
-     */
-    protected ModelMetaClassName createModelMetaClassName(String modelClassName) {
-        return new ModelMetaClassName(modelClassName, Options
-            .getModelPackage(env), Options.getMetaPackage(env), Options
-            .getSharedPackage(env), Options.getServerPackage(env));
+    protected boolean isTextAnnotated(FieldDeclaration fieldDeclaration) {
+        return DeclarationUtil.getAnnotationMirror(
+            fieldDeclaration,
+            ClassConstants.Text) != null;
     }
 
-    /**
-     * Collects the collection of class name.
-     * 
-     * @author taedium
-     * @since 3.0
-     * 
-     */
+    protected boolean isBlobAnnotated(FieldDeclaration fieldDeclaration) {
+        return DeclarationUtil.getAnnotationMirror(
+            fieldDeclaration,
+            ClassConstants.Blob) != null;
+    }
+
+    protected boolean isCollection(DeclaredType declaredType) {
+        return TypeUtil.isSubtype(env, declaredType, Collection.class);
+    }
+
+    protected boolean isSupportedCoreType(DeclaredType declaredType) {
+
+        return false;
+    }
+
+    protected boolean isSupportedCollectionType(DeclaredType declaredType) {
+
+        return false;
+    }
+
+    protected boolean isSerializable(DeclaredType declaredType) {
+
+        return false;
+    }
+
+    protected String getElementNameOfCollection(DeclaredType declaredType) {
+        TypeMirror element =
+            declaredType.getActualTypeArguments().iterator().next();
+        List<String> names = new ClassNameCollector(element).collect();
+        if (names.isEmpty()) {
+            return null;
+        }
+        return names.get(0);
+    }
+
     protected static class ClassNameCollector extends SimpleTypeVisitor {
 
         LinkedList<String> names = new LinkedList<String>();
