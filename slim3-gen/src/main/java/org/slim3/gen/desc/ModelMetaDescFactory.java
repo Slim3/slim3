@@ -23,6 +23,7 @@ import java.util.List;
 import org.slim3.gen.message.MessageCode;
 import org.slim3.gen.processor.AptException;
 import org.slim3.gen.processor.Options;
+import org.slim3.gen.processor.UnknownDeclarationException;
 import org.slim3.gen.processor.ValidationException;
 
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
@@ -166,7 +167,7 @@ public class ModelMetaDescFactory {
         for (ClassDeclaration c = classDeclaration; c != null
             && !c.getQualifiedName().equals(Object.class.getName()); c =
             c.getSuperclass().getDeclaration()) {
-            for (FieldDeclaration field : classDeclaration.getFields()) {
+            for (FieldDeclaration field : c.getFields()) {
                 Collection<Modifier> modifiers = field.getModifiers();
                 if (!modifiers.contains(Modifier.STATIC)) {
                     results.add(field);
@@ -193,14 +194,17 @@ public class ModelMetaDescFactory {
         for (ClassDeclaration c = classDeclaration; c != null
             && !c.getQualifiedName().equals(Object.class.getName()); c =
             c.getSuperclass().getDeclaration()) {
-            gatherClassMethods(classDeclaration, results);
-            for (InterfaceType interfaceType : c.getSuperinterfaces()) {
-                InterfaceDeclaration interfaceDeclaration =
-                    interfaceType.getDeclaration();
-                if (interfaceDeclaration == null) {
-                    continue;
+            gatherClassMethods(c, results);
+            for (InterfaceType superinterfaceType : c.getSuperinterfaces()) {
+                InterfaceDeclaration superinterfaceDeclaration =
+                    superinterfaceType.getDeclaration();
+                if (superinterfaceDeclaration == null) {
+                    throw new UnknownDeclarationException(
+                        env,
+                        classDeclaration,
+                        superinterfaceType);
                 }
-                gatherInterfaceMethods(interfaceDeclaration, results);
+                gatherInterfaceMethods(superinterfaceDeclaration, results);
             }
         }
 
@@ -234,12 +238,15 @@ public class ModelMetaDescFactory {
         for (MethodDeclaration method : interfaceDeclaration.getMethods()) {
             methodDeclarations.add(method);
         }
-        for (InterfaceType interfaceType : interfaceDeclaration
+        for (InterfaceType superinterfaceType : interfaceDeclaration
             .getSuperinterfaces()) {
             InterfaceDeclaration superInterfaceDeclaration =
-                interfaceType.getDeclaration();
+                superinterfaceType.getDeclaration();
             if (superInterfaceDeclaration == null) {
-                continue;
+                throw new UnknownDeclarationException(
+                    env,
+                    interfaceDeclaration,
+                    superinterfaceType);
             }
             gatherInterfaceMethods(
                 superInterfaceDeclaration,
