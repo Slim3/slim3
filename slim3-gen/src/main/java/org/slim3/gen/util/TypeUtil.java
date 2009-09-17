@@ -17,6 +17,7 @@ package org.slim3.gen.util;
 
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.declaration.TypeDeclaration;
+import com.sun.mirror.type.ArrayType;
 import com.sun.mirror.type.DeclaredType;
 import com.sun.mirror.type.PrimitiveType;
 import com.sun.mirror.type.TypeMirror;
@@ -79,6 +80,34 @@ public final class TypeUtil {
             @Override
             public void visitDeclaredType(DeclaredType declaredtype) {
                 result = declaredtype;
+            }
+        }
+        Visitor visitor = new Visitor();
+        typeMirror.accept(visitor);
+        return visitor.result;
+    }
+
+    public static PrimitiveType toPrimitiveType(TypeMirror typeMirror) {
+        class Visitor extends SimpleTypeVisitor {
+            PrimitiveType result;
+
+            @Override
+            public void visitPrimitiveType(PrimitiveType primitiveType) {
+                result = primitiveType;
+            }
+        }
+        Visitor visitor = new Visitor();
+        typeMirror.accept(visitor);
+        return visitor.result;
+    }
+
+    public static ArrayType toArrayType(TypeMirror typeMirror) {
+        class Visitor extends SimpleTypeVisitor {
+            ArrayType result;
+
+            @Override
+            public void visitArrayType(ArrayType arraytype) {
+                result = arraytype;
             }
         }
         Visitor visitor = new Visitor();

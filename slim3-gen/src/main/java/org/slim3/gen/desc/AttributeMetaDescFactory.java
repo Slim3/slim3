@@ -15,12 +15,16 @@
  */
 package org.slim3.gen.desc;
 
-import java.util.Collection;
+import static org.slim3.gen.AnnotationConstants.Blob;
+import static org.slim3.gen.AnnotationConstants.Impermanent;
+import static org.slim3.gen.AnnotationConstants.PrimaryKey;
+import static org.slim3.gen.AnnotationConstants.Text;
+import static org.slim3.gen.AnnotationConstants.Version;
+
 import java.util.LinkedList;
 import java.util.List;
 
-import org.slim3.gen.ClassConstants;
-import org.slim3.gen.util.DeclarationUtil;
+import org.slim3.gen.datastore.DatastoreType;
 import org.slim3.gen.util.StringUtil;
 import org.slim3.gen.util.TypeUtil;
 
@@ -85,35 +89,67 @@ public class AttributeMetaDescFactory {
             new AttributeMetaDesc(
                 fieldDeclaration.getSimpleName(),
                 fieldDeclaration.getDeclaringType().getQualifiedName());
-        if (isPrimaryKeyAnnotated(fieldDeclaration)) {
-            attributeMetaDesc.setPrimaryKey(true);
-        }
-        if (isVersionAnnotated(fieldDeclaration)) {
-            attributeMetaDesc.setVersion(true);
-        }
-        if (isTextAnnotated(fieldDeclaration)) {
-            attributeMetaDesc.setText(true);
-        }
-        if (isBlobAnnotated(fieldDeclaration)) {
-            attributeMetaDesc.setBlob(true);
-        }
-        if (isImpermanentAnnotated(fieldDeclaration)) {
+        handleField(attributeMetaDesc, fieldDeclaration);
+        handleMethod(attributeMetaDesc, methodDeclarations);
+        return attributeMetaDesc;
+    }
+
+    protected void handleField(AttributeMetaDesc attributeMetaDesc,
+            FieldDeclaration fieldDeclaration) {
+        DatastoreType type = null;
+
+        if (type.isAnnotated(Impermanent)) {
             attributeMetaDesc.setImpermanent(true);
-        } else {
-            DeclaredType declaredType =
-                TypeUtil.toDeclaredType(fieldDeclaration.getType());
-            if (declaredType == null) {
+            if (type.isAnnotated(PrimaryKey)) {
                 // throw
             }
-            if (isSupportedCoreType(declaredType)) {
-
-            } else if (isSupportedCollectionType(declaredType)) {
-
-            } else if (isSerializable(declaredType)) {
-
-                attributeMetaDesc.setUnindexed(false);
+            if (type.isAnnotated(Version)) {
+                // throw
             }
+            if (type.isAnnotated(Text)) {
+                // throw
+            }
+            if (type.isAnnotated(Blob)) {
+                // throw
+            }
+            return;
         }
+        attributeMetaDesc.setUnindexed(type.isUnindex());
+
+        if (type.isCollection()) {
+
+        } else if (type.isArray()) {
+
+        }
+
+        if (type.isAnnotated(PrimaryKey)) {
+            // TODO type check
+            attributeMetaDesc.setPrimaryKey(true);
+        }
+        if (type.isAnnotated(Version)) {
+            // TODO type check
+            attributeMetaDesc.setVersion(true);
+        }
+        if (type.isAnnotated(Text)) {
+            // TODO type check
+            attributeMetaDesc.setText(true);
+            attributeMetaDesc.setUnindexed(true);
+        }
+        if (type.isAnnotated(Blob)) {
+            // TODO type check
+            attributeMetaDesc.setBlob(true);
+            attributeMetaDesc.setUnindexed(true);
+            if (type.isSerialized()) {
+                attributeMetaDesc.setSerialized(true);
+            }
+        } else if (type.isSerialized()) {
+            attributeMetaDesc.setShortBlob(true);
+            attributeMetaDesc.setSerialized(true);
+        }
+    }
+
+    protected void handleMethod(AttributeMetaDesc attributeMetaDesc,
+            List<MethodDeclaration> methodDeclarations) {
         for (MethodDeclaration m : methodDeclarations) {
             if (isReadMethod(m, attributeMetaDesc)) {
                 attributeMetaDesc.setReadMethodName(m.getSimpleName());
@@ -127,8 +163,7 @@ public class AttributeMetaDescFactory {
                 }
             }
         }
-        validateAttributeMetaDesc(attributeMetaDesc);
-        return attributeMetaDesc;
+        // throw if (readMethod == null || writeMethod == null)
     }
 
     protected boolean isReadMethod(MethodDeclaration m,
@@ -185,69 +220,6 @@ public class AttributeMetaDescFactory {
             return false;
         }
         return true;
-    }
-
-    protected void validateAttributeMetaDesc(AttributeMetaDesc attributeMetaDesc) {
-        //
-    }
-
-    protected boolean isPrimaryKeyAnnotated(FieldDeclaration fieldDeclaration) {
-        return DeclarationUtil.getAnnotationMirror(
-            fieldDeclaration,
-            ClassConstants.PrimaryKey) != null;
-    }
-
-    protected boolean isVersionAnnotated(FieldDeclaration fieldDeclaration) {
-        return DeclarationUtil.getAnnotationMirror(
-            fieldDeclaration,
-            ClassConstants.Version) != null;
-    }
-
-    protected boolean isImpermanentAnnotated(FieldDeclaration fieldDeclaration) {
-        return DeclarationUtil.getAnnotationMirror(
-            fieldDeclaration,
-            ClassConstants.Impermanent) != null;
-    }
-
-    protected boolean isTextAnnotated(FieldDeclaration fieldDeclaration) {
-        return DeclarationUtil.getAnnotationMirror(
-            fieldDeclaration,
-            ClassConstants.Text) != null;
-    }
-
-    protected boolean isBlobAnnotated(FieldDeclaration fieldDeclaration) {
-        return DeclarationUtil.getAnnotationMirror(
-            fieldDeclaration,
-            ClassConstants.Blob) != null;
-    }
-
-    protected boolean isCollection(DeclaredType declaredType) {
-        return TypeUtil.isSubtype(env, declaredType, Collection.class);
-    }
-
-    protected boolean isSupportedCoreType(DeclaredType declaredType) {
-
-        return false;
-    }
-
-    protected boolean isSupportedCollectionType(DeclaredType declaredType) {
-
-        return false;
-    }
-
-    protected boolean isSerializable(DeclaredType declaredType) {
-
-        return false;
-    }
-
-    protected String getElementNameOfCollection(DeclaredType declaredType) {
-        TypeMirror element =
-            declaredType.getActualTypeArguments().iterator().next();
-        List<String> names = new ClassNameCollector(element).collect();
-        if (names.isEmpty()) {
-            return null;
-        }
-        return names.get(0);
     }
 
     protected static class ClassNameCollector extends SimpleTypeVisitor {

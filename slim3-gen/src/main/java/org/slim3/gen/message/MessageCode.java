@@ -46,7 +46,19 @@ public enum MessageCode {
     /** */
     SILM3GEN0011("@com.google.gwt.user.client.rpc.RemoteServiceRelativePath is available only to an interface."),
     /** */
-    SILM3GEN0012("The processor[{0}] is skipped.");
+    SILM3GEN0012("The processor[{0}] is skipped."),
+
+    SILM3GEN1001("Unknown type[{0}] is found."),
+
+    SILM3GEN1002("The class[{0}] is not supported."),
+
+    SILM3GEN1003("The interface[{0}] is not supported."),
+
+    SILM3GEN1004("The type parameter is not found for Collection."),
+
+    SILM3GEN1005("The component class[{0}] is not supported."),
+
+    ;
 
     /** the message */
     public final String message;

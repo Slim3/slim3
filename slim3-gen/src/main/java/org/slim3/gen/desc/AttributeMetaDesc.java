@@ -32,6 +32,10 @@ public class AttributeMetaDesc {
     /** the attributeElementClassName */
     protected String attributeElementClassName;
 
+    protected String attributeImplClassName;
+
+    protected String attributeDeclarationName;
+
     /** {@code true} if this attribute is embedded. */
     protected boolean embedded = false;
 
@@ -39,6 +43,8 @@ public class AttributeMetaDesc {
     protected String embeddedModelMetaClassName;
 
     protected boolean primaryKey;
+
+    protected boolean shortBlob;
 
     protected boolean blob;
 
@@ -51,6 +57,12 @@ public class AttributeMetaDesc {
     protected boolean unindexed;
 
     protected boolean collection;
+
+    protected boolean primitive;
+
+    protected boolean interfase;
+
+    protected boolean serialized;
 
     protected String readMethodName;
 
@@ -292,6 +304,96 @@ public class AttributeMetaDesc {
      */
     public void setCollection(boolean collection) {
         this.collection = collection;
+    }
+
+    /**
+     * @return the serialized
+     */
+    public boolean isSerialized() {
+        return serialized;
+    }
+
+    /**
+     * @param serialized
+     *            the serialized to set
+     */
+    public void setSerialized(boolean serialized) {
+        this.serialized = serialized;
+    }
+
+    /**
+     * @return the attributeImplClassName
+     */
+    public String getAttributeImplClassName() {
+        return attributeImplClassName;
+    }
+
+    /**
+     * @param attributeImplClassName
+     *            the attributeImplClassName to set
+     */
+    public void setAttributeImplClassName(String attributeImplClassName) {
+        this.attributeImplClassName = attributeImplClassName;
+    }
+
+    /**
+     * @return the attributeDeclarationName
+     */
+    public String getAttributeDeclarationName() {
+        return attributeDeclarationName;
+    }
+
+    /**
+     * @param attributeDeclarationName
+     *            the attributeDeclarationName to set
+     */
+    public void setAttributeDeclarationName(String attributeDeclarationName) {
+        this.attributeDeclarationName = attributeDeclarationName;
+    }
+
+    /**
+     * @return the shortBlob
+     */
+    public boolean isShortBlob() {
+        return shortBlob;
+    }
+
+    /**
+     * @param shortBlob
+     *            the shortBlob to set
+     */
+    public void setShortBlob(boolean shortBlob) {
+        this.shortBlob = shortBlob;
+    }
+
+    /**
+     * @return the primitive
+     */
+    public boolean isPrimitive() {
+        return primitive;
+    }
+
+    /**
+     * @param primitive
+     *            the primitive to set
+     */
+    public void setPrimitive(boolean primitive) {
+        this.primitive = primitive;
+    }
+
+    /**
+     * @return the interfase
+     */
+    public boolean isInterfase() {
+        return interfase;
+    }
+
+    /**
+     * @param interfase
+     *            the interfase to set
+     */
+    public void setInterfase(boolean interfase) {
+        this.interfase = interfase;
     }
 
 }

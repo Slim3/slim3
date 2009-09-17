@@ -16,7 +16,6 @@
 package org.slim3.gen.processor;
 
 import org.slim3.gen.message.MessageCode;
-import org.slim3.gen.message.MessageFormatter;
 
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.declaration.Declaration;
@@ -25,32 +24,19 @@ import com.sun.mirror.declaration.Declaration;
  * @author taedium
  * 
  */
-public class AptException extends RuntimeException {
+public class ValidationException extends AptException {
 
     private static final long serialVersionUID = 1L;
 
-    protected final AnnotationProcessorEnvironment env;
-
-    protected final MessageCode messageCode;
-
-    protected final Declaration declaration;
-
-    public AptException(MessageCode messageCode,
+    public ValidationException(MessageCode messageCode,
             AnnotationProcessorEnvironment env, Declaration declaration,
             Object... args) {
         this(messageCode, env, declaration, null, args);
     }
 
-    public AptException(MessageCode messageCode,
+    public ValidationException(MessageCode messageCode,
             AnnotationProcessorEnvironment env, Declaration declaration,
             Throwable cause, Object... args) {
-        super(MessageFormatter.getMessage(messageCode, args), cause);
-        this.env = env;
-        this.messageCode = messageCode;
-        this.declaration = declaration;
-    }
-
-    public void printError() {
-        env.getMessager().printError(declaration.getPosition(), getMessage());
+        super(messageCode, env, declaration, cause, args);
     }
 }

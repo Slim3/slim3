@@ -30,9 +30,6 @@ public final class ClassConstants {
     /** {@code org.slim3.jdo.AttributeMeta} */
     public static final String AttributeMeta = "org.slim3.jdo.AttributeMeta";
 
-    /** {@code java.lang.Object} */
-    public static final String Object = "java.lang.Object";
-
     /** {@code org.slim3.controller.JDOController} */
     public static final String JDOController =
         "org.slim3.controller.JDOController";
@@ -57,32 +54,85 @@ public final class ClassConstants {
     /** {@code org.slim3.jdo.GenericDao} */
     public static final String GenericDao = "org.slim3.jdo.GenericDao";
 
-    /** {@code javax.jdo.annotations.PersistenceCapable} */
-    public static final String PersistenceCapable =
-        "javax.jdo.annotations.PersistenceCapable";
-
-    /** {@code javax.jdo.annotations.Persistent} */
-    public static final String Persistent = "javax.jdo.annotations.Persistent";
-
-    /** {@code javax.jdo.annotations.NotPersistent} */
-    public static final String NotPersistent =
-        "javax.jdo.annotations.NotPersistent";
-
-    /** {@code javax.jdo.annotations.Embedded} */
-    public static final String Embedded = "javax.jdo.annotations.Embedded";
-
-    /** {@code com.google.gwt.user.client.rpc.RemoteServiceRelativePath} */
-    public static final String RemoteServiceRelativePath =
-        "com.google.gwt.user.client.rpc.RemoteServiceRelativePath";
-
     /** {@code com.google.gwt.user.client.rpc.AsyncCallback} */
     public static final String AsyncCallback =
         "com.google.gwt.user.client.rpc.AsyncCallback";
 
-    public static final String Blob = "org.slim3.datastore.Blob";
-    public static final String Text = "org.slim3.datastore.Text";
-    public static final String PrimaryKey = " org.slim3.datastore.PrimaryKey";
-    public static final String Version = "org.slim3.datastore.Version";
-    public static final String Impermanent = "org.slim3.datastore.Impermanent";
+    /** {@code java.lang.Object} */
+    public static final String Object = "java.lang.Object";
+
+    public static final String String = "java.lang.String";
+
+    public static final String Boolean = "java.lang.Boolean";
+
+    public static final String Short = "java.lang.Short";
+
+    public static final String Integer = "java.lang.Integer";
+
+    public static final String Long = "java.lang.Long";
+
+    public static final String Float = "java.lang.Float";
+
+    public static final String Double = "java.lang.Double";
+
+    public static final String Date = "java.util.Date";
+
+    public static final String BigDecimal = "java.math.BigDecimal";
+
+    public static final String User = "com.google.appengine.api.users.User";
+
+    public static final String Key = "com.google.appengine.api.datastore.Key";
+
+    public static final String Category =
+        "com.google.appengine.api.datastore.Category";
+
+    public static final String Email =
+        "com.google.appengine.api.datastore.Email";
+
+    public static final String GeoPt =
+        "com.google.appengine.api.datastore.GeoPt";
+
+    public static final String IMHandle =
+        "com.google.appengine.api.datastore.IMHandle";
+
+    public static final String Link = "com.google.appengine.api.datastore.Link";
+
+    public static final String PhoneNumber =
+        "com.google.appengine.api.datastore.PhoneNumber";
+
+    public static final String PostalAddress =
+        "com.google.appengine.api.datastore.PostalAddress";
+
+    public static final String Rating =
+        "com.google.appengine.api.datastore.Rating";
+
+    public static final String ShortBlob =
+        "com.google.appengine.api.datastore.Blob";
+
+    public static final String Blob = "com.google.appengine.api.datastore.Blob";
+
+    public static final String Text = "com.google.appengine.api.datastore.Text";
+
+    public static final String Collection = "java.util.Collection";
+
+    public static final String List = "java.util.List";
+
+    public static final String Set = "java.util.Set";
+
+    public static final String SortedSet = "java.util.SortedSet";
+
+    public static final String ArrayList = "java.util.ArrayList";
+
+    public static final String LinkedList = "java.util.LinkedList";
+
+    public static final String Vector = "java.util.Vector";
+
+    public static final String Stack = "java.util.Stack";
+
+    public static final String HashSet = "java.util.HashSet";
+
+    public static final String LinkedHashSet = "java.util.LinkedHashSet";
+
+    public static final String TreeSet = "java.util.TreeSet";
 
 }
