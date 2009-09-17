@@ -15,6 +15,8 @@
  */
 package org.slim3.gen.processor;
 
+import static org.slim3.gen.AnnotationConstants.Model;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -37,8 +39,7 @@ public class ModelProcessorFactory implements AnnotationProcessorFactory {
 
     /** the supported annotations */
     protected static final Collection<String> supportedAnnotations =
-        Collections.unmodifiableCollection(Arrays
-            .asList("javax.jdo.annotations.PersistenceCapable"));
+        Collections.unmodifiableCollection(Arrays.asList(Model));
 
     /** the supported options */
     protected static final Collection<String> supportedOptions =

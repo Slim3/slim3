@@ -136,29 +136,28 @@ public class DatastoreTypeFactory {
 
     protected final AnnotationProcessorEnvironment env;
 
-    protected final Declaration notificationTarget;
-
-    public DatastoreTypeFactory(AnnotationProcessorEnvironment env,
-            Declaration notificationTarget) {
+    public DatastoreTypeFactory(AnnotationProcessorEnvironment env) {
         this.env = env;
-        this.notificationTarget = notificationTarget;
     }
 
-    public DatastoreType createDatastoreType(TypeMirror typeMirror) {
+    public DatastoreType createDatastoreType(Declaration declaration,
+            TypeMirror typeMirror) {
         if (typeMirror == null) {
             throw new NullPointerException("The parameter typeMirror is null.");
         }
-        DatastoreType datastoreType = new DatastoreType();
-        Visitor visitor = new Visitor(datastoreType);
+        DatastoreType datastoreType =
+            new DatastoreType(env, declaration, typeMirror);
+        datastoreType.setDeclaredTypeName(typeMirror.toString());
+        TypeAnalizer visitor = new TypeAnalizer(datastoreType);
         typeMirror.accept(visitor);
         return datastoreType;
     }
 
-    protected class Visitor extends SimpleTypeVisitor {
+    protected class TypeAnalizer extends SimpleTypeVisitor {
 
         protected DatastoreType datastoreType;
 
-        public Visitor(DatastoreType datastoreType) {
+        public TypeAnalizer(DatastoreType datastoreType) {
             this.datastoreType = datastoreType;
         }
 
@@ -177,13 +176,13 @@ public class DatastoreTypeFactory {
                     if (REFERENCE_TYPES.contains(name)) {
                         // do nothing
                     } else if (isSerializable(declaredtype)) {
-                        datastoreType.setSerialized(true);
+                        datastoreType.setSerializable(true);
                         datastoreType.setUnindex(true);
                     } else {
                         throw new ValidationException(
                             MessageCode.SILM3GEN1005,
                             env,
-                            notificationTarget,
+                            datastoreType.getDeclaration(),
                             name);
                     }
                 }
@@ -194,8 +193,11 @@ public class DatastoreTypeFactory {
                     datastoreType
                         .setTypeName("[" + kind.name().substring(0, 1));
                     datastoreType.setElementTypeName(kind.name().toLowerCase());
-                    if (kind != Kind.BYTE && !PRIMITIVE_TYPES.contains(kind)) {
-                        datastoreType.setSerialized(true);
+                    if (PRIMITIVE_TYPES.contains(kind)) {
+                        // do nothing
+                    } else {
+                        datastoreType.setSerializable(true);
+                        datastoreType.setUnindex(true);
                     }
                 }
 
@@ -216,7 +218,7 @@ public class DatastoreTypeFactory {
                     datastoreType.setUnindex(true);
                 }
             } else if (COLLECTION_IMPL_TYPES.contains(name)) {
-                datastoreType.setImplTypeName(name);
+                datastoreType.setImplicationTypeName(name);
                 datastoreType.setCollection(true);
                 Collection<TypeMirror> typeArgs =
                     classtype.getActualTypeArguments();
@@ -224,7 +226,7 @@ public class DatastoreTypeFactory {
                     throw new ValidationException(
                         MessageCode.SILM3GEN1004,
                         env,
-                        notificationTarget);
+                        datastoreType.getDeclaration());
                 }
                 DeclaredType elementType =
                     TypeUtil.toDeclaredType(typeArgs.iterator().next());
@@ -234,23 +236,23 @@ public class DatastoreTypeFactory {
                 if (REFERENCE_TYPES.contains(elementName)) {
                     // do nothing.
                 } else if (isSerializable(elementType)) {
-                    datastoreType.setSerialized(true);
+                    datastoreType.setSerializable(true);
                     datastoreType.setUnindex(true);
                 } else {
                     throw new ValidationException(
                         MessageCode.SILM3GEN1002,
                         env,
-                        notificationTarget,
+                        datastoreType.getDeclaration(),
                         elementName);
                 }
             } else if (isSerializable(classtype)) {
-                datastoreType.setSerialized(true);
+                datastoreType.setSerializable(true);
                 datastoreType.setUnindex(true);
             } else {
                 throw new ValidationException(
                     MessageCode.SILM3GEN1002,
                     env,
-                    notificationTarget,
+                    datastoreType.getDeclaration(),
                     name);
             }
         }
@@ -261,7 +263,7 @@ public class DatastoreTypeFactory {
             String name = typeDeclaration.getQualifiedName();
             datastoreType.setTypeName(name);
             if (COLLECTION_INTERFACE_TYPES.containsKey(name)) {
-                datastoreType.setImplTypeName(COLLECTION_INTERFACE_TYPES
+                datastoreType.setImplicationTypeName(COLLECTION_INTERFACE_TYPES
                     .get(name));
                 datastoreType.setCollection(true);
                 Collection<TypeMirror> typeArgs =
@@ -270,7 +272,7 @@ public class DatastoreTypeFactory {
                     throw new ValidationException(
                         MessageCode.SILM3GEN1004,
                         env,
-                        notificationTarget);
+                        datastoreType.getDeclaration());
                 }
                 DeclaredType elementType =
                     TypeUtil.toDeclaredType(typeArgs.iterator().next());
@@ -280,19 +282,20 @@ public class DatastoreTypeFactory {
                 if (REFERENCE_TYPES.contains(elementName)) {
                     // do nothing
                 } else if (isSerializable(elementType)) {
-                    datastoreType.setSerialized(true);
+                    datastoreType.setSerializable(true);
+                    datastoreType.setUnindex(true);
                 } else {
                     throw new ValidationException(
                         MessageCode.SILM3GEN1002,
                         env,
-                        notificationTarget,
+                        datastoreType.getDeclaration(),
                         elementName);
                 }
             } else {
                 throw new ValidationException(
                     MessageCode.SILM3GEN1003,
                     env,
-                    notificationTarget,
+                    datastoreType.getDeclaration(),
                     name);
             }
         }
@@ -307,7 +310,7 @@ public class DatastoreTypeFactory {
                 throw new ValidationException(
                     MessageCode.SILM3GEN1002,
                     env,
-                    notificationTarget,
+                    datastoreType.getDeclaration(),
                     kind.name().toLowerCase());
             }
         }
@@ -322,15 +325,13 @@ public class DatastoreTypeFactory {
             if (typeDeclaration != null) {
                 return typeDeclaration;
             }
-            throw new UnknownDeclarationException(
-                env,
-                notificationTarget,
-                declaredType);
+            throw new UnknownDeclarationException(env, datastoreType
+                .getDeclaration(), declaredType);
         }
 
         protected boolean isSerializable(TypeMirror typeMirror) {
             return TypeUtil.isSubtype(env, typeMirror, Serializable.class);
         }
-
     }
+
 }

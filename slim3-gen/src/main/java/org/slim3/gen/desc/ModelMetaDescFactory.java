@@ -15,11 +15,15 @@
  */
 package org.slim3.gen.desc;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
+import org.slim3.gen.message.MessageCode;
+import org.slim3.gen.processor.AptException;
 import org.slim3.gen.processor.Options;
+import org.slim3.gen.processor.ValidationException;
 
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.declaration.ClassDeclaration;
@@ -111,24 +115,54 @@ public class ModelMetaDescFactory {
      */
     protected void handleAttributes(ClassDeclaration modelDeclaration,
             ModelMetaDesc modelMetaDesc) {
-
         List<MethodDeclaration> methodDeclarations =
             getMethodDeclarations(modelDeclaration);
-
         for (FieldDeclaration fieldDeclaration : getFieldDeclarations(modelDeclaration)) {
             AttributeMetaDesc attributeMetaDesc =
-                attributeMetaDescFactory.createAttributeMetaDesc(
-                    fieldDeclaration,
-                    methodDeclarations);
-            if (attributeMetaDesc != null) {
-                modelMetaDesc.addAttributeMetaDesc(attributeMetaDesc);
+                createAttributeMetaDesc(fieldDeclaration, methodDeclarations);
+            if (attributeMetaDesc == null) {
+                continue;
             }
+            if (attributeMetaDesc.isPrimaryKey()
+                && modelMetaDesc.getKeyAttributeMetaDesc() != null) {
+                throw new ValidationException(
+                    MessageCode.SILM3GEN1013,
+                    env,
+                    modelDeclaration);
+            }
+            if (attributeMetaDesc.isVersion()
+                && modelMetaDesc.getVersionAttributeMetaDesc() != null) {
+                throw new ValidationException(
+                    MessageCode.SILM3GEN1014,
+                    env,
+                    modelDeclaration);
+            }
+            modelMetaDesc.addAttributeMetaDesc(attributeMetaDesc);
         }
+        if (modelMetaDesc.getKeyAttributeMetaDesc() == null) {
+            throw new ValidationException(
+                MessageCode.SILM3GEN1015,
+                env,
+                modelDeclaration);
+        }
+    }
+
+    protected AttributeMetaDesc createAttributeMetaDesc(
+            FieldDeclaration fieldDeclaration,
+            List<MethodDeclaration> methodDeclarations) {
+        try {
+            return attributeMetaDescFactory.createAttributeMetaDesc(
+                fieldDeclaration,
+                methodDeclarations);
+        } catch (AptException e) {
+            e.printError();
+        }
+        return null;
     }
 
     protected List<FieldDeclaration> getFieldDeclarations(
             ClassDeclaration classDeclaration) {
-        List<FieldDeclaration> results = new ArrayList<FieldDeclaration>();
+        List<FieldDeclaration> results = new LinkedList<FieldDeclaration>();
         for (ClassDeclaration c = classDeclaration; c != null
             && !c.getQualifiedName().equals(Object.class.getName()); c =
             c.getSuperclass().getDeclaration()) {
@@ -139,14 +173,23 @@ public class ModelMetaDescFactory {
                 }
             }
         }
-        // filter hidden fields
 
+        List<FieldDeclaration> hiderFieldDeclarations =
+            new LinkedList<FieldDeclaration>();
+        for (Iterator<FieldDeclaration> it = results.iterator(); it.hasNext();) {
+            FieldDeclaration hidden = it.next();
+            for (FieldDeclaration hider : hiderFieldDeclarations) {
+                if (env.getDeclarationUtils().hides(hider, hidden)) {
+                    it.remove();
+                }
+            }
+        }
         return results;
     }
 
     protected List<MethodDeclaration> getMethodDeclarations(
             ClassDeclaration classDeclaration) {
-        List<MethodDeclaration> results = new ArrayList<MethodDeclaration>();
+        List<MethodDeclaration> results = new LinkedList<MethodDeclaration>();
         for (ClassDeclaration c = classDeclaration; c != null
             && !c.getQualifiedName().equals(Object.class.getName()); c =
             c.getSuperclass().getDeclaration()) {
@@ -158,6 +201,17 @@ public class ModelMetaDescFactory {
                     continue;
                 }
                 gatherInterfaceMethods(interfaceDeclaration, results);
+            }
+        }
+
+        List<MethodDeclaration> overriderMethodDeclarations =
+            new LinkedList<MethodDeclaration>();
+        for (Iterator<MethodDeclaration> it = results.iterator(); it.hasNext();) {
+            MethodDeclaration overriden = it.next();
+            for (MethodDeclaration overrider : overriderMethodDeclarations) {
+                if (env.getDeclarationUtils().overrides(overrider, overriden)) {
+                    it.remove();
+                }
             }
         }
         return results;

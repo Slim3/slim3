@@ -15,9 +15,13 @@
  */
 package org.slim3.gen.datastore;
 
+import static org.slim3.gen.ClassConstants.primitve_byte;
+
 import org.slim3.gen.util.DeclarationUtil;
 
-import com.sun.mirror.type.DeclaredType;
+import com.sun.mirror.apt.AnnotationProcessorEnvironment;
+import com.sun.mirror.declaration.Declaration;
+import com.sun.mirror.type.TypeMirror;
 
 /**
  * @author taedium
@@ -25,25 +29,36 @@ import com.sun.mirror.type.DeclaredType;
  */
 public class DatastoreType {
 
+    protected final AnnotationProcessorEnvironment env;
+
+    protected final Declaration declaration;
+
+    protected final TypeMirror typeMirror;
+
     protected boolean primitive;
 
     protected boolean unindex;
 
     protected boolean collection;
 
-    protected boolean serialized;
+    protected boolean serializable;
 
     protected boolean array;
 
     protected String typeName;
 
-    protected String elementTypeName;
-
-    protected String implTypeName;
-
     protected String declaredTypeName;
 
-    protected DeclaredType declaredType;
+    protected String elementTypeName;
+
+    protected String implicationTypeName;
+
+    public DatastoreType(AnnotationProcessorEnvironment env,
+            Declaration declaration, TypeMirror typeMirror) {
+        this.env = env;
+        this.declaration = declaration;
+        this.typeMirror = typeMirror;
+    }
 
     /**
      * @return the primitive
@@ -93,16 +108,16 @@ public class DatastoreType {
     /**
      * @return the serializable
      */
-    public boolean isSerialized() {
-        return serialized;
+    public boolean isSerializable() {
+        return serializable;
     }
 
     /**
      * @param serializable
      *            the serializable to set
      */
-    public void setSerialized(boolean serializable) {
-        this.serialized = serializable;
+    public void setSerializable(boolean serializable) {
+        this.serializable = serializable;
     }
 
     /**
@@ -158,30 +173,42 @@ public class DatastoreType {
     }
 
     /**
-     * @param declarationName
-     *            the declarationName to set
+     * @param declaredTypeName
+     *            the declaredTypeName to set
      */
-    public void setDeclaredTypeName(String declarationName) {
-        this.declaredTypeName = declarationName;
+    public void setDeclaredTypeName(String declaredTypeName) {
+        this.declaredTypeName = declaredTypeName;
     }
 
     /**
      * @return the implClassName
      */
-    public String getImplTypeName() {
-        return implTypeName;
+    public String getImplicationTypeName() {
+        return implicationTypeName;
     }
 
     /**
      * @param implClassName
      *            the implClassName to set
      */
-    public void setImplTypeName(String implClassName) {
-        this.implTypeName = implClassName;
+    public void setImplicationTypeName(String implClassName) {
+        this.implicationTypeName = implClassName;
+    }
+
+    public Declaration getDeclaration() {
+        return declaration;
+    }
+
+    public TypeMirror getTypeMirror() {
+        return typeMirror;
+    }
+
+    public boolean isByteArray() {
+        return primitve_byte.equals(elementTypeName) && array;
     }
 
     public boolean isAnnotated(String annotation) {
-        return DeclarationUtil.getAnnotationMirror(declaredType
-            .getDeclaration(), annotation) != null;
+        return DeclarationUtil
+            .getAnnotationMirror(env, declaration, annotation) != null;
     }
 }

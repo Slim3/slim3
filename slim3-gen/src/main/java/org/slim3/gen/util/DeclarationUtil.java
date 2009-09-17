@@ -15,6 +15,9 @@
  */
 package org.slim3.gen.util;
 
+import org.slim3.gen.processor.UnknownDeclarationException;
+
+import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.declaration.AnnotationMirror;
 import com.sun.mirror.declaration.AnnotationTypeDeclaration;
 import com.sun.mirror.declaration.Declaration;
@@ -39,7 +42,8 @@ public final class DeclarationUtil {
      * @return {@code AnnotationMirror} if an declaration is annotated with a
      *         specified annotation and {@code null} otherwise.
      */
-    public static AnnotationMirror getAnnotationMirror(Declaration declaration,
+    public static AnnotationMirror getAnnotationMirror(
+            AnnotationProcessorEnvironment env, Declaration declaration,
             final String annotation) {
         if (declaration == null) {
             throw new NullPointerException("The declaration parameter is null.");
@@ -47,6 +51,9 @@ public final class DeclarationUtil {
         for (AnnotationMirror mirror : declaration.getAnnotationMirrors()) {
             AnnotationTypeDeclaration annotationTypeDeclaration =
                 mirror.getAnnotationType().getDeclaration();
+            if (annotationTypeDeclaration == null) {
+                throw new UnknownDeclarationException(env, declaration, mirror);
+            }
             if (annotationTypeDeclaration.getQualifiedName().equals(annotation)) {
                 return mirror;
             }

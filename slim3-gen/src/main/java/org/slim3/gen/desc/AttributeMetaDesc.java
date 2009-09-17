@@ -24,23 +24,16 @@ package org.slim3.gen.desc;
 public class AttributeMetaDesc {
 
     /** the name */
-    protected String name;
+    protected final String name;
 
     /** the attributeClassName */
-    protected String attributeClassName;
+    protected String typeName;
 
-    /** the attributeElementClassName */
-    protected String attributeElementClassName;
+    protected String declaredTypeName;
 
-    protected String attributeImplClassName;
+    protected String implicationTypeName;
 
-    protected String attributeDeclarationName;
-
-    /** {@code true} if this attribute is embedded. */
-    protected boolean embedded = false;
-
-    /** the embeddedModelMetaClassName */
-    protected String embeddedModelMetaClassName;
+    protected String elementTypeName;
 
     protected boolean primaryKey;
 
@@ -58,6 +51,8 @@ public class AttributeMetaDesc {
 
     protected boolean collection;
 
+    protected boolean array;
+
     protected boolean primitive;
 
     protected boolean interfase;
@@ -68,332 +63,180 @@ public class AttributeMetaDesc {
 
     protected String writeMethodName;
 
-    public AttributeMetaDesc() {
-        super();
+    @Deprecated
+    /** {@code true} if this attribute is embedded. */
+    protected boolean embedded = false;
+
+    @Deprecated
+    /** the embeddedModelMetaClassName */
+    protected String embeddedModelMetaClassName;
+
+    public AttributeMetaDesc(String name) {
+        this.name = name;
     }
 
-    public AttributeMetaDesc(String name, String attributeClassName) {
-        throw new AssertionError("not yet implemented.");
-    }
-
-    /**
-     * Returns the name.
-     * 
-     * @return the name
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * Sets the name.
-     * 
-     * @param name
-     *            the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
+    public String getTypeName() {
+        return typeName;
     }
 
-    /**
-     * Returns the attributeClassName.
-     * 
-     * @return the attributeClassName
-     */
-    public String getAttributeClassName() {
-        return attributeClassName;
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
     }
 
-    /**
-     * Sets the attributeClassName.
-     * 
-     * @param attributeClassName
-     *            the attributeClassName to set
-     */
-    public void setAttributeClassName(String attributeClassName) {
-        this.attributeClassName = attributeClassName;
+    public String getDeclaredTypeName() {
+        return declaredTypeName;
     }
 
-    /**
-     * Returns the attributeElementClassName.
-     * 
-     * @return the attributeElementClassName
-     */
-    public String getAttributeElementClassName() {
-        return attributeElementClassName;
+    public void setDeclaredTypeName(String declaredTypeName) {
+        this.declaredTypeName = declaredTypeName;
     }
 
-    /**
-     * Sets the attributeElementClassName.
-     * 
-     * @param attributeElementClassName
-     *            the attributeElementClassName to set
-     */
-    public void setAttributeElementClassName(String attributeElementClassName) {
-        this.attributeElementClassName = attributeElementClassName;
+    public String getImplicationTypeName() {
+        return implicationTypeName;
     }
 
-    /**
-     * Returns {@code true} if this attribute is embedded.
-     * 
-     * @return whether this attribute is embedded
-     */
-    public boolean isEmbedded() {
-        return embedded;
+    public void setImplicationTypeName(String implicationTypeName) {
+        this.implicationTypeName = implicationTypeName;
     }
 
-    /**
-     * Sets {@code true} if this attribute is embedded.
-     * 
-     * @param embedded
-     *            whether this attribute is embedded
-     */
-    public void setEmbedded(boolean embedded) {
-        this.embedded = embedded;
-    }
-
-    /**
-     * Returns the embeddedModelMetaClassName.
-     * 
-     * @return the embeddedModelMetaClassName
-     */
-    public String getEmbeddedModelMetaClassName() {
-        return embeddedModelMetaClassName;
-    }
-
-    /**
-     * Sets the embeddedModelMetaClassName.
-     * 
-     * @param embeddedModelMetaClassName
-     *            the embeddedModelMetaClassName to set
-     */
-    public void setEmbeddedModelMetaClassName(String embeddedModelMetaClassName) {
-        this.embeddedModelMetaClassName = embeddedModelMetaClassName;
-    }
-
-    /**
-     * @return the readMethodName
-     */
-    public String getReadMethodName() {
-        return readMethodName;
-    }
-
-    /**
-     * @param readMethodName
-     *            the readMethodName to set
-     */
-    public void setReadMethodName(String readMethodName) {
-        this.readMethodName = readMethodName;
-    }
-
-    /**
-     * @return the writeMethodName
-     */
-    public String getWriteMethodName() {
-        return writeMethodName;
-    }
-
-    /**
-     * @param writeMethodName
-     *            the writeMethodName to set
-     */
-    public void setWriteMethodName(String writeMethodName) {
-        this.writeMethodName = writeMethodName;
-    }
-
-    /**
-     * @return the primaryKey
-     */
     public boolean isPrimaryKey() {
         return primaryKey;
     }
 
-    /**
-     * @param primaryKey
-     *            the primaryKey to set
-     */
     public void setPrimaryKey(boolean primaryKey) {
         this.primaryKey = primaryKey;
     }
 
-    /**
-     * @return the blob
-     */
-    public boolean isBlob() {
-        return blob;
-    }
-
-    /**
-     * @param blob
-     *            the blob to set
-     */
-    public void setBlob(boolean blob) {
-        this.blob = blob;
-    }
-
-    /**
-     * @return the text
-     */
-    public boolean isText() {
-        return text;
-    }
-
-    /**
-     * @param text
-     *            the text to set
-     */
-    public void setText(boolean text) {
-        this.text = text;
-    }
-
-    /**
-     * @return the version
-     */
-    public boolean isVersion() {
-        return version;
-    }
-
-    /**
-     * @param version
-     *            the version to set
-     */
-    public void setVersion(boolean version) {
-        this.version = version;
-    }
-
-    /**
-     * @return the impermanent
-     */
-    public boolean isImpermanent() {
-        return impermanent;
-    }
-
-    /**
-     * @param impermanent
-     *            the impermanent to set
-     */
-    public void setImpermanent(boolean impermanent) {
-        this.impermanent = impermanent;
-    }
-
-    /**
-     * @return the unindexed
-     */
-    public boolean isUnindexed() {
-        return unindexed;
-    }
-
-    /**
-     * @param unindexed
-     *            the unindexed to set
-     */
-    public void setUnindexed(boolean unindexed) {
-        this.unindexed = unindexed;
-    }
-
-    /**
-     * @return the collection
-     */
-    public boolean isCollection() {
-        return collection;
-    }
-
-    /**
-     * @param collection
-     *            the collection to set
-     */
-    public void setCollection(boolean collection) {
-        this.collection = collection;
-    }
-
-    /**
-     * @return the serialized
-     */
-    public boolean isSerialized() {
-        return serialized;
-    }
-
-    /**
-     * @param serialized
-     *            the serialized to set
-     */
-    public void setSerialized(boolean serialized) {
-        this.serialized = serialized;
-    }
-
-    /**
-     * @return the attributeImplClassName
-     */
-    public String getAttributeImplClassName() {
-        return attributeImplClassName;
-    }
-
-    /**
-     * @param attributeImplClassName
-     *            the attributeImplClassName to set
-     */
-    public void setAttributeImplClassName(String attributeImplClassName) {
-        this.attributeImplClassName = attributeImplClassName;
-    }
-
-    /**
-     * @return the attributeDeclarationName
-     */
-    public String getAttributeDeclarationName() {
-        return attributeDeclarationName;
-    }
-
-    /**
-     * @param attributeDeclarationName
-     *            the attributeDeclarationName to set
-     */
-    public void setAttributeDeclarationName(String attributeDeclarationName) {
-        this.attributeDeclarationName = attributeDeclarationName;
-    }
-
-    /**
-     * @return the shortBlob
-     */
     public boolean isShortBlob() {
         return shortBlob;
     }
 
-    /**
-     * @param shortBlob
-     *            the shortBlob to set
-     */
     public void setShortBlob(boolean shortBlob) {
         this.shortBlob = shortBlob;
     }
 
-    /**
-     * @return the primitive
-     */
+    public boolean isBlob() {
+        return blob;
+    }
+
+    public void setBlob(boolean blob) {
+        this.blob = blob;
+    }
+
+    public boolean isText() {
+        return text;
+    }
+
+    public void setText(boolean text) {
+        this.text = text;
+    }
+
+    public boolean isVersion() {
+        return version;
+    }
+
+    public void setVersion(boolean version) {
+        this.version = version;
+    }
+
+    public boolean isImpermanent() {
+        return impermanent;
+    }
+
+    public void setImpermanent(boolean impermanent) {
+        this.impermanent = impermanent;
+    }
+
+    public boolean isUnindexed() {
+        return unindexed;
+    }
+
+    public void setUnindexed(boolean unindexed) {
+        this.unindexed = unindexed;
+    }
+
+    public boolean isCollection() {
+        return collection;
+    }
+
+    public void setCollection(boolean collection) {
+        this.collection = collection;
+    }
+
     public boolean isPrimitive() {
         return primitive;
     }
 
-    /**
-     * @param primitive
-     *            the primitive to set
-     */
     public void setPrimitive(boolean primitive) {
         this.primitive = primitive;
     }
 
-    /**
-     * @return the interfase
-     */
     public boolean isInterfase() {
         return interfase;
     }
 
-    /**
-     * @param interfase
-     *            the interfase to set
-     */
     public void setInterfase(boolean interfase) {
         this.interfase = interfase;
+    }
+
+    public boolean isSerialized() {
+        return serialized;
+    }
+
+    public void setSerialized(boolean serialized) {
+        this.serialized = serialized;
+    }
+
+    public String getReadMethodName() {
+        return readMethodName;
+    }
+
+    public void setReadMethodName(String readMethodName) {
+        this.readMethodName = readMethodName;
+    }
+
+    public String getWriteMethodName() {
+        return writeMethodName;
+    }
+
+    public void setWriteMethodName(String writeMethodName) {
+        this.writeMethodName = writeMethodName;
+    }
+
+    public String getElementTypeName() {
+        return elementTypeName;
+    }
+
+    public void setElementTypeName(String elementTypeName) {
+        this.elementTypeName = elementTypeName;
+    }
+
+    public boolean isArray() {
+        return array;
+    }
+
+    public void setArray(boolean array) {
+        this.array = array;
+    }
+
+    public boolean isEmbedded() {
+        return embedded;
+    }
+
+    public void setEmbedded(boolean embedded) {
+        this.embedded = embedded;
+    }
+
+    public String getEmbeddedModelMetaClassName() {
+        return embeddedModelMetaClassName;
+    }
+
+    public void setEmbeddedModelMetaClassName(String embeddedModelMetaClassName) {
+        this.embeddedModelMetaClassName = embeddedModelMetaClassName;
     }
 
 }

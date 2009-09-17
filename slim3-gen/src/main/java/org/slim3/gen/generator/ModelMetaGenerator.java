@@ -77,27 +77,11 @@ public class ModelMetaGenerator implements Generator {
         p.println("    }");
         p.println();
         for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
-            if (attr.isEmbedded()) {
-                p.println("    public %1$s %2$s = new %1$s(\"%2$s\");", attr
-                    .getEmbeddedModelMetaClassName(), attr.getName());
-            } else {
-                if (attr.getAttributeElementClassName() == null) {
-                    p
-                        .println(
-                            "    public %1$s %2$s = new %1$s(this, \"%2$s\", %3$s.class);",
-                            ClassConstants.AttributeMeta,
-                            attr.getName(),
-                            attr.getAttributeClassName());
-                } else {
-                    p
-                        .println(
-                            "    public %1$s %2$s = new %1$s(this,\"%2$s\", %3$s.class, %4$s.class);",
-                            ClassConstants.AttributeMeta,
-                            attr.getName(),
-                            attr.getAttributeClassName(),
-                            attr.getAttributeElementClassName());
-                }
-            }
+            p.println(
+                "    public %1$s %2$s = new %1$s(this, \"%2$s\", %3$s.class);",
+                ClassConstants.AttributeMeta,
+                attr.getName(),
+                attr.getTypeName());
             p.println();
         }
         p.print("}");

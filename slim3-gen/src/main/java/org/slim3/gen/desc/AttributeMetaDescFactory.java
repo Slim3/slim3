@@ -20,26 +20,25 @@ import static org.slim3.gen.AnnotationConstants.Impermanent;
 import static org.slim3.gen.AnnotationConstants.PrimaryKey;
 import static org.slim3.gen.AnnotationConstants.Text;
 import static org.slim3.gen.AnnotationConstants.Version;
+import static org.slim3.gen.ClassConstants.Key;
+import static org.slim3.gen.ClassConstants.Long;
+import static org.slim3.gen.ClassConstants.String;
+import static org.slim3.gen.ClassConstants.primitive_long;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import org.slim3.gen.datastore.DatastoreType;
+import org.slim3.gen.datastore.DatastoreTypeFactory;
+import org.slim3.gen.message.MessageCode;
+import org.slim3.gen.processor.ValidationException;
 import org.slim3.gen.util.StringUtil;
 import org.slim3.gen.util.TypeUtil;
 
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.declaration.FieldDeclaration;
 import com.sun.mirror.declaration.MethodDeclaration;
-import com.sun.mirror.declaration.TypeDeclaration;
-import com.sun.mirror.type.ArrayType;
-import com.sun.mirror.type.DeclaredType;
-import com.sun.mirror.type.PrimitiveType;
-import com.sun.mirror.type.ReferenceType;
 import com.sun.mirror.type.TypeMirror;
-import com.sun.mirror.type.WildcardType;
 import com.sun.mirror.type.PrimitiveType.Kind;
-import com.sun.mirror.util.SimpleTypeVisitor;
 
 /**
  * Represents an attribute meta description factory.
@@ -86,88 +85,156 @@ public class AttributeMetaDescFactory {
         }
 
         AttributeMetaDesc attributeMetaDesc =
-            new AttributeMetaDesc(
-                fieldDeclaration.getSimpleName(),
-                fieldDeclaration.getDeclaringType().getQualifiedName());
+            new AttributeMetaDesc(fieldDeclaration.getSimpleName());
         handleField(attributeMetaDesc, fieldDeclaration);
-        handleMethod(attributeMetaDesc, methodDeclarations);
+        handleMethod(attributeMetaDesc, fieldDeclaration, methodDeclarations);
         return attributeMetaDesc;
     }
 
     protected void handleField(AttributeMetaDesc attributeMetaDesc,
             FieldDeclaration fieldDeclaration) {
-        DatastoreType type = null;
-
-        if (type.isAnnotated(Impermanent)) {
-            attributeMetaDesc.setImpermanent(true);
-            if (type.isAnnotated(PrimaryKey)) {
-                // throw
-            }
-            if (type.isAnnotated(Version)) {
-                // throw
-            }
-            if (type.isAnnotated(Text)) {
-                // throw
-            }
-            if (type.isAnnotated(Blob)) {
-                // throw
-            }
-            return;
-        }
+        DatastoreTypeFactory datastoreTypeFactory =
+            creaetDatastoreTypeFactory();
+        DatastoreType type =
+            datastoreTypeFactory.createDatastoreType(
+                fieldDeclaration,
+                fieldDeclaration.getType());
+        attributeMetaDesc.setTypeName(type.getTypeName());
+        attributeMetaDesc.setDeclaredTypeName(type.getDeclaredTypeName());
+        attributeMetaDesc.setElementTypeName(type.getElementTypeName());
+        attributeMetaDesc.setImplicationTypeName(type.getImplicationTypeName());
+        attributeMetaDesc.setCollection(type.isCollection());
+        attributeMetaDesc.setArray(type.isArray());
+        attributeMetaDesc.setPrimitive(type.isPrimitive());
         attributeMetaDesc.setUnindexed(type.isUnindex());
-
-        if (type.isCollection()) {
-
-        } else if (type.isArray()) {
-
+        if (type.isAnnotated(Impermanent)) {
+            handleImpermanent(attributeMetaDesc, type);
+        } else if (type.isAnnotated(PrimaryKey)) {
+            handlePrimaryKey(attributeMetaDesc, type);
+        } else if (type.isAnnotated(Version)) {
+            handleVersion(attributeMetaDesc, type);
+        } else if (type.isAnnotated(Text)) {
+            handleText(attributeMetaDesc, type);
+        } else if (type.isAnnotated(Blob)) {
+            handleBlob(attributeMetaDesc, type);
+        } else if (type.isSerializable()) {
+            handleSerializable(attributeMetaDesc, type);
         }
+    }
 
-        if (type.isAnnotated(PrimaryKey)) {
-            // TODO type check
-            attributeMetaDesc.setPrimaryKey(true);
+    protected void handleImpermanent(AttributeMetaDesc attributeMetaDesc,
+            DatastoreType type) {
+        validateAnnotationConsistency(
+            type,
+            Impermanent,
+            PrimaryKey,
+            Version,
+            Text,
+            Blob);
+        attributeMetaDesc.setImpermanent(true);
+    }
+
+    protected void handlePrimaryKey(AttributeMetaDesc attributeMetaDesc,
+            DatastoreType type) {
+        validateAnnotationConsistency(type, PrimaryKey, Version, Text, Blob);
+        if (!Key.equals(type.getTypeName())) {
+            throw new ValidationException(MessageCode.SILM3GEN1007, env, type
+                .getDeclaration());
         }
-        if (type.isAnnotated(Version)) {
-            // TODO type check
-            attributeMetaDesc.setVersion(true);
+        attributeMetaDesc.setPrimaryKey(true);
+    }
+
+    protected void handleVersion(AttributeMetaDesc attributeMetaDesc,
+            DatastoreType type) {
+        validateAnnotationConsistency(type, Version, Text, Blob);
+        if (!Long.equals(type.getTypeName())
+            && primitive_long.equals(type.getTypeName())) {
+            throw new ValidationException(MessageCode.SILM3GEN1008, env, type
+                .getDeclaration());
         }
-        if (type.isAnnotated(Text)) {
-            // TODO type check
-            attributeMetaDesc.setText(true);
-            attributeMetaDesc.setUnindexed(true);
+        attributeMetaDesc.setVersion(true);
+    }
+
+    protected void handleText(AttributeMetaDesc attributeMetaDesc,
+            DatastoreType type) {
+        validateAnnotationConsistency(type, Text, Blob);
+        if (!String.equals(type.getTypeName())) {
+            throw new ValidationException(MessageCode.SILM3GEN1009, env, type
+                .getDeclaration());
         }
-        if (type.isAnnotated(Blob)) {
-            // TODO type check
-            attributeMetaDesc.setBlob(true);
-            attributeMetaDesc.setUnindexed(true);
-            if (type.isSerialized()) {
-                attributeMetaDesc.setSerialized(true);
-            }
-        } else if (type.isSerialized()) {
-            attributeMetaDesc.setShortBlob(true);
+        attributeMetaDesc.setText(true);
+        attributeMetaDesc.setUnindexed(true);
+    }
+
+    protected void handleBlob(AttributeMetaDesc attributeMetaDesc,
+            DatastoreType type) {
+        if (!type.isByteArray() && !type.isSerializable()) {
+            throw new ValidationException(MessageCode.SILM3GEN1009, env, type
+                .getDeclaration());
+        }
+        if (!type.isByteArray()) {
             attributeMetaDesc.setSerialized(true);
+        }
+        attributeMetaDesc.setBlob(true);
+    }
+
+    protected void handleSerializable(AttributeMetaDesc attributeMetaDesc,
+            DatastoreType type) {
+        if (!type.isByteArray()) {
+            attributeMetaDesc.setSerialized(true);
+        }
+        attributeMetaDesc.setShortBlob(true);
+    }
+
+    protected void validateAnnotationConsistency(DatastoreType type,
+            String targetAnnotation, String... annotations) {
+        for (String annotation : annotations) {
+            if (type.isAnnotated(annotation)) {
+                throw new ValidationException(
+                    MessageCode.SILM3GEN1006,
+                    env,
+                    type.getDeclaration(),
+                    targetAnnotation,
+                    annotation);
+            }
         }
     }
 
     protected void handleMethod(AttributeMetaDesc attributeMetaDesc,
+            FieldDeclaration fieldDeclaration,
             List<MethodDeclaration> methodDeclarations) {
+        TypeMirror fieldTypeMirror = fieldDeclaration.getType();
         for (MethodDeclaration m : methodDeclarations) {
-            if (isReadMethod(m, attributeMetaDesc)) {
+            if (isReadMethod(m, attributeMetaDesc, fieldTypeMirror)) {
                 attributeMetaDesc.setReadMethodName(m.getSimpleName());
                 if (attributeMetaDesc.getWriteMethodName() != null) {
                     break;
                 }
-            } else if (isWriteMethod(m, attributeMetaDesc)) {
+            } else if (isWriteMethod(m, attributeMetaDesc, fieldTypeMirror)) {
                 attributeMetaDesc.setWriteMethodName(m.getSimpleName());
                 if (attributeMetaDesc.getReadMethodName() != null) {
                     break;
                 }
             }
         }
-        // throw if (readMethod == null || writeMethod == null)
+        if (attributeMetaDesc.getReadMethodName() == null) {
+            throw new ValidationException(
+                MessageCode.SILM3GEN1011,
+                env,
+                fieldDeclaration,
+                fieldDeclaration.getSimpleName());
+        }
+        if (attributeMetaDesc.getWriteMethodName() == null) {
+            throw new ValidationException(
+                MessageCode.SILM3GEN1012,
+                env,
+                fieldDeclaration,
+                fieldDeclaration.getSimpleName());
+        }
     }
 
     protected boolean isReadMethod(MethodDeclaration m,
-            AttributeMetaDesc attributeMetaDesc) {
+            AttributeMetaDesc attributeMetaDesc, TypeMirror fieldTypeMirror) {
         String propertyName = null;
         if (m.getSimpleName().startsWith("get")) {
             propertyName =
@@ -186,143 +253,28 @@ public class AttributeMetaDescFactory {
             || m.getParameters().size() != 0) {
             return false;
         }
-        TypeDeclaration propertyClass =
-            TypeUtil.toTypeDeclaration(m.getReturnType());
-        if (propertyClass == null
-            || !propertyClass.getQualifiedName().equals(
-                attributeMetaDesc.getAttributeClassName())) {
-            return false;
-        }
-        return true;
+        return m.getReturnType().equals(fieldTypeMirror);
     }
 
     protected boolean isWriteMethod(MethodDeclaration m,
-            AttributeMetaDesc attributeMetaDesc) {
+            AttributeMetaDesc attributeMetaDesc, TypeMirror fieldTypeMirror) {
         if (!m.getSimpleName().startsWith("set")) {
             return false;
         }
         String propertyName =
             StringUtil.decapitalize(m.getSimpleName().substring(3));
         if (!propertyName.equals(attributeMetaDesc.getName())
-            || m.getParameters().size() != 1
-            || TypeUtil.isVoid(m.getReturnType())) {
+            || !TypeUtil.isVoid(m.getReturnType())
+            || m.getParameters().size() != 1) {
             return false;
         }
-        TypeDeclaration propertyClass =
-            TypeUtil.toTypeDeclaration(m
-                .getParameters()
-                .iterator()
-                .next()
-                .getType());
-        if (propertyClass == null
-            || !propertyClass.getQualifiedName().equals(
-                attributeMetaDesc.getAttributeClassName())) {
-            return false;
-        }
-        return true;
+        TypeMirror parameterTypeMirror =
+            m.getParameters().iterator().next().getType();
+        return parameterTypeMirror.equals(fieldTypeMirror);
     }
 
-    protected static class ClassNameCollector extends SimpleTypeVisitor {
-
-        LinkedList<String> names = new LinkedList<String>();
-
-        /** the target typeMirror */
-        protected final TypeMirror typeMirror;
-
-        /**
-         * Creates a new {@link ClassNameCollector}
-         * 
-         * @param typeMirror
-         *            the target typeMirror
-         */
-        public ClassNameCollector(TypeMirror typeMirror) {
-            this.typeMirror = typeMirror;
-        }
-
-        /**
-         * Collects the collection of class name.
-         * 
-         * @return the collection of class name
-         */
-        public LinkedList<String> collect() {
-            typeMirror.accept(this);
-            return names;
-        }
-
-        @Override
-        public void visitArrayType(ArrayType type) {
-            ClassNameCollector collector2 = new ClassNameCollector(type);
-            LinkedList<String> names = collector2.collect();
-            type.getComponentType().accept(collector2);
-            this.names.add(names.getFirst() + "[]");
-            this.names.add(names.getFirst());
-        }
-
-        @Override
-        public void visitDeclaredType(DeclaredType type) {
-            names.add(type.getDeclaration().getQualifiedName());
-            for (TypeMirror arg : type.getActualTypeArguments()) {
-                ClassNameCollector collector2 = new ClassNameCollector(arg);
-                LinkedList<String> names = collector2.collect();
-                this.names.add(names.getFirst());
-            }
-        }
-
-        @Override
-        public void visitPrimitiveType(PrimitiveType type) {
-            switch (type.getKind()) {
-            case BOOLEAN: {
-                names.add(boolean.class.getName());
-                break;
-            }
-            case BYTE: {
-                names.add(byte.class.getName());
-                break;
-            }
-            case CHAR: {
-                names.add(char.class.getName());
-                break;
-            }
-            case DOUBLE: {
-                names.add(double.class.getName());
-                break;
-            }
-            case FLOAT: {
-                names.add(float.class.getName());
-                break;
-            }
-            case INT: {
-                names.add(int.class.getName());
-                break;
-            }
-            case LONG: {
-                names.add(long.class.getName());
-                break;
-            }
-            case SHORT: {
-                names.add(short.class.getName());
-                break;
-            }
-            default: {
-                throw new IllegalArgumentException(type.getKind().name());
-            }
-            }
-        }
-
-        @Override
-        public void visitWildcardType(WildcardType type) {
-            for (ReferenceType referenceType : type.getUpperBounds()) {
-                ClassNameCollector collector2 =
-                    new ClassNameCollector(referenceType);
-                LinkedList<String> names = collector2.collect();
-                this.names.add(names.getFirst());
-            }
-            for (ReferenceType referenceType : type.getLowerBounds()) {
-                ClassNameCollector collector2 =
-                    new ClassNameCollector(referenceType);
-                LinkedList<String> names = collector2.collect();
-                this.names.add(names.getFirst());
-            }
-        }
+    protected DatastoreTypeFactory creaetDatastoreTypeFactory() {
+        return new DatastoreTypeFactory(env);
     }
+
 }

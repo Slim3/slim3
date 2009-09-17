@@ -54,9 +54,29 @@ public enum MessageCode {
 
     SILM3GEN1003("The interface[{0}] is not supported."),
 
-    SILM3GEN1004("The type parameter is not found for Collection."),
+    SILM3GEN1004("The type parameter of java.util.Collection is not found."),
 
     SILM3GEN1005("The component class[{0}] is not supported."),
+
+    SILM3GEN1006("The annotation[{0}] conflicts with another annotation[{1}]."),
+
+    SILM3GEN1007("The class must be com.google.appengine.api.datastore.Key for @org.slim3.datastore.PrimaryKey."),
+
+    SILM3GEN1008("The class must be java.lang.Long for @org.slim3.datastore.Version."),
+
+    SILM3GEN1009("The class must be java.lang.String for @org.slim3.datastore.Text."),
+
+    SILM3GEN1010("The class must be byte array or serializable for @org.slim3.datastore.Blob."),
+
+    SILM3GEN1011("The getter method is not found for the filed[{0}]."),
+
+    SILM3GEN1012("The setter method is not found for the filed[{0}]."),
+
+    SILM3GEN1013("Multi @org.slim3.datastore.PrimaryKey are not allowed."),
+
+    SILM3GEN1014("Multi @org.slim3.datastore.Version are not allowed."),
+
+    SILM3GEN1015("@org.slim3.datastore.PrimaryKey is mandatory."),
 
     ;
 

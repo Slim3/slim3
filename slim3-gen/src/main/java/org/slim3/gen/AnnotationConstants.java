@@ -39,9 +39,11 @@ public class AnnotationConstants {
     public static final String RemoteServiceRelativePath =
         "com.google.gwt.user.client.rpc.RemoteServiceRelativePath";
 
+    public static final String Model = "org.slim3.datastore.Model";
+    public static final String Unindexed = "org.slim3.datastore.Unindexed";
     public static final String Blob = "org.slim3.datastore.Blob";
     public static final String Text = "org.slim3.datastore.Text";
-    public static final String PrimaryKey = " org.slim3.datastore.PrimaryKey";
+    public static final String PrimaryKey = "org.slim3.datastore.PrimaryKey";
     public static final String Version = "org.slim3.datastore.Version";
     public static final String Impermanent = "org.slim3.datastore.Impermanent";
 }

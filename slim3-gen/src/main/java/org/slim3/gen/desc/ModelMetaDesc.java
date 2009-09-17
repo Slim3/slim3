@@ -39,6 +39,10 @@ public class ModelMetaDesc implements ClassDesc {
     /** the modelClassName */
     protected String modelClassName;
 
+    protected AttributeMetaDesc keyAttributeMetaDesc;
+
+    protected AttributeMetaDesc versionAttributeMetaDesc;
+
     /** the list of attribute meta descriptions */
     protected List<AttributeMetaDesc> attributeMetaDescList =
         new ArrayList<AttributeMetaDesc>();
@@ -111,6 +115,12 @@ public class ModelMetaDesc implements ClassDesc {
      *            the attribute meta description.
      */
     public void addAttributeMetaDesc(AttributeMetaDesc attributeMetaDesc) {
+        if (attributeMetaDesc.isPrimaryKey()) {
+            keyAttributeMetaDesc = attributeMetaDesc;
+        }
+        if (attributeMetaDesc.isVersion()) {
+            versionAttributeMetaDesc = attributeMetaDesc;
+        }
         this.attributeMetaDescList.add(attributeMetaDesc);
     }
 
@@ -123,13 +133,12 @@ public class ModelMetaDesc implements ClassDesc {
         return Collections.unmodifiableList(attributeMetaDescList);
     }
 
-    public AttributeMetaDesc addAttributeMetaDesc(String name,
-            AttributeMetaDesc attributeMetaDesc) {
-        throw new AssertionError("not yet implemented.");
+    public AttributeMetaDesc getKeyAttributeMetaDesc() {
+        return keyAttributeMetaDesc;
     }
 
-    public AttributeMetaDesc getAttributeMetaDesc(String name) {
-        throw new AssertionError("not yet implemented.");
+    public AttributeMetaDesc getVersionAttributeMetaDesc() {
+        return versionAttributeMetaDesc;
     }
 
 }

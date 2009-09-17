@@ -18,6 +18,7 @@ package org.slim3.gen.processor;
 import org.slim3.gen.message.MessageCode;
 
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
+import com.sun.mirror.declaration.AnnotationMirror;
 import com.sun.mirror.declaration.Declaration;
 import com.sun.mirror.type.TypeMirror;
 
@@ -34,4 +35,8 @@ public class UnknownDeclarationException extends AptException {
         super(MessageCode.SILM3GEN1001, env, declaration, typeMirror);
     }
 
+    public UnknownDeclarationException(AnnotationProcessorEnvironment env,
+            Declaration declaration, AnnotationMirror annotationMirror) {
+        super(MessageCode.SILM3GEN1001, env, declaration, annotationMirror);
+    }
 }

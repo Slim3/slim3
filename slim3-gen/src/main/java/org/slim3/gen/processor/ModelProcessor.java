@@ -17,7 +17,6 @@ package org.slim3.gen.processor;
 
 import java.util.Set;
 
-import org.slim3.gen.AnnotationConstants;
 import org.slim3.gen.desc.AttributeMetaDescFactory;
 import org.slim3.gen.desc.ModelMetaDesc;
 import org.slim3.gen.desc.ModelMetaDescFactory;
@@ -82,10 +81,12 @@ public class ModelProcessor implements AnnotationProcessor {
                 ClassDeclaration.class)) {
                 try {
                     handleClassDeclaration(element);
+                } catch (AptException e) {
+                    e.printError();
                 } catch (RuntimeException e) {
                     Logger.error(env, element, MessageFormatter.getMessage(
                         MessageCode.SILM3GEN0001,
-                        AnnotationConstants.PersistenceCapable));
+                        annotation.getQualifiedName()));
                     throw e;
                 }
             }

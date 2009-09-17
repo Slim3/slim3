@@ -61,6 +61,20 @@ public final class ClassConstants {
     /** {@code java.lang.Object} */
     public static final String Object = "java.lang.Object";
 
+    public static final String primitve_byte = "tyte";
+
+    public static final String primitve_boolean = "boolean";
+
+    public static final String primitve_short = "short";
+
+    public static final String primitve_int = "int";
+
+    public static final String primitive_long = "long";
+
+    public static final String primitive_float = "float";
+
+    public static final String primitive_double = "double";
+
     public static final String String = "java.lang.String";
 
     public static final String Boolean = "java.lang.Boolean";
@@ -107,7 +121,7 @@ public final class ClassConstants {
         "com.google.appengine.api.datastore.Rating";
 
     public static final String ShortBlob =
-        "com.google.appengine.api.datastore.Blob";
+        "com.google.appengine.api.datastore.ShortBlob";
 
     public static final String Blob = "com.google.appengine.api.datastore.Blob";
 
