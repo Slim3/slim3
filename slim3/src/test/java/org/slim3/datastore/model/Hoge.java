@@ -86,6 +86,8 @@ public class Hoge {
 
     private BigDecimal myBigDecimal;
 
+    private short[] myShortArray;
+
     @Version
     private Long version;
 
@@ -447,6 +449,21 @@ public class Hoge {
      */
     public void setMyBigDecimal(BigDecimal myBigDecimal) {
         this.myBigDecimal = myBigDecimal;
+    }
+
+    /**
+     * @return the myShortArray
+     */
+    public short[] getMyShortArray() {
+        return myShortArray;
+    }
+
+    /**
+     * @param myShortArray
+     *            the myShortArray to set
+     */
+    public void setMyShortArray(short[] myShortArray) {
+        this.myShortArray = myShortArray;
     }
 
     /**

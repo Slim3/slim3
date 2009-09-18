@@ -15,7 +15,16 @@
  */
 package org.slim3.datastore;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.slim3.util.ByteUtil;
+
+import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.ShortBlob;
+import com.google.appengine.api.datastore.Text;
 
 /**
  * A meta data of model.
@@ -65,4 +74,88 @@ public abstract class ModelMeta<T> {
      * @return converted model.
      */
     public abstract T entityToModel(Entity entity);
+
+    /**
+     * Converts the long to a primitive short.
+     * 
+     * @param value
+     *            the long
+     * @return a primitive short
+     */
+    protected short toPrimitiveShort(Long value) {
+        return value != null ? value.shortValue() : 0;
+    }
+
+    /**
+     * Converts the long to a short.
+     * 
+     * @param value
+     *            the long
+     * @return a short
+     */
+    protected Short toShort(Long value) {
+        return value != null ? value.shortValue() : null;
+    }
+
+    /**
+     * Converts the list of long to an array of primitive short.
+     * 
+     * @param value
+     *            the list of long
+     * @return an array of primitive short
+     */
+    protected short[] toPrimitiveShortArray(List<Long> value) {
+        if (value == null) {
+            return null;
+        }
+        short[] ret = new short[value.size()];
+        int size = value.size();
+        for (int i = 0; i < size; i++) {
+            Long l = value.get(i);
+            ret[i] = l != null ? l.shortValue() : 0;
+        }
+        return ret;
+    }
+
+    /**
+     * Converts the list of long to a list of short.
+     * 
+     * @param value
+     *            the list of long
+     * @return a list of short
+     */
+    protected List<Short> toShortList(List<Long> value) {
+        if (value == null) {
+            return null;
+        }
+        List<Short> ret = new ArrayList<Short>(value.size());
+        int size = value.size();
+        for (int i = 0; i < size; i++) {
+            Long l = value.get(i);
+            ret.add(l != null ? l.shortValue() : null);
+        }
+        return ret;
+    }
+
+    protected String toString(Text value) {
+        return value != null ? value.getValue() : null;
+    }
+
+    protected byte[] toBytes(ShortBlob value) {
+        return value != null ? value.getBytes() : null;
+    }
+
+    protected byte[] toBytes(Blob value) {
+        return value != null ? value.getBytes() : null;
+    }
+
+    protected Serializable toSerializable(ShortBlob value) {
+        return value != null ? (Serializable) ByteUtil.toObject(value
+            .getBytes()) : null;
+    }
+
+    protected Serializable toSerializable(Blob value) {
+        return value != null ? (Serializable) ByteUtil.toObject(value
+            .getBytes()) : null;
+    }
 }

@@ -17,12 +17,13 @@ package org.slim3.datastore.meta;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import org.slim3.datastore.AttributeMeta;
+import org.slim3.datastore.CollectionAttributeMeta;
 import org.slim3.datastore.ModelMeta;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.datastore.model.MySerializable;
-import org.slim3.util.ByteUtil;
 
 import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Entity;
@@ -141,50 +142,14 @@ public class HogeMeta extends ModelMeta<Hoge> {
     /**
      * 
      */
-    public AttributeMeta<byte[]> myBytes =
-        new AttributeMeta<byte[]>(this, "myBytes", byte[].class);
-
-    /**
-     * 
-     */
-    public AttributeMeta<byte[]> myBytesBlob =
-        new AttributeMeta<byte[]>(this, "myBytesBlob", byte[].class);
-
-    /**
-     * 
-     */
-    public AttributeMeta<MySerializable> mySerializable =
-        new AttributeMeta<MySerializable>(
-            this,
-            "mySerializable",
-            MySerializable.class);
-
-    /**
-     * 
-     */
-    public AttributeMeta<MySerializable> mySerializableBlob =
-        new AttributeMeta<MySerializable>(
-            this,
-            "mySerializableBlob",
-            MySerializable.class);
-
-    /**
-     * 
-     */
-    public AttributeMeta<Blob> myBlob =
-        new AttributeMeta<Blob>(this, "myBlob", Blob.class);
-
-    /**
-     * 
-     */
-    public AttributeMeta<ShortBlob> myShortBlob =
-        new AttributeMeta<ShortBlob>(this, "myShortBlob", ShortBlob.class);
-
-    /**
-     * 
-     */
     public AttributeMeta<BigDecimal> myBigDecimal =
         new AttributeMeta<BigDecimal>(this, "myBigDecimal", BigDecimal.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Short> myShortArray =
+        new CollectionAttributeMeta<Short>(this, "myShortArray", short[].class);
 
     /**
      * 
@@ -199,20 +164,15 @@ public class HogeMeta extends ModelMeta<Hoge> {
         super(Hoge.class);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Hoge entityToModel(Entity entity) {
         Hoge model = new Hoge();
         model.setKey(entity.getKey());
         Long myShort = (Long) entity.getProperty("myShort");
-        if (myShort != null) {
-            model.setMyShort(myShort.shortValue());
-        }
+        model.setMyShort(toPrimitiveShort(myShort));
         Long myShortWrapper = (Long) entity.getProperty("myShortWrapper");
-        if (myShortWrapper != null) {
-            model.setMyShortWrapper(myShortWrapper.shortValue());
-        } else {
-            model.setMyShortWrapper(null);
-        }
+        model.setMyShortWrapper(toShort(myShortWrapper));
         Long myInt = (Long) entity.getProperty("myInt");
         if (myInt != null) {
             model.setMyInt(myInt.intValue());
@@ -261,59 +221,34 @@ public class HogeMeta extends ModelMeta<Hoge> {
         Date myDate = (Date) entity.getProperty("myDate");
         model.setMyDate(myDate);
         Text myStringText = (Text) entity.getProperty("myStringText");
-        if (myStringText != null) {
-            model.setMyStringText(myStringText.getValue());
-        } else {
-            model.setMyStringText(null);
-        }
+        model.setMyStringText(toString(myStringText));
         Text myText = (Text) entity.getProperty("myText");
         model.setMyText(myText);
         ShortBlob myBytes = (ShortBlob) entity.getProperty("myBytes");
-        if (myBytes != null) {
-            model.setMyBytes(myBytes.getBytes());
-        } else {
-            model.setMyBytes(null);
-        }
+        model.setMyBytes(toBytes(myBytes));
         Blob myBytesBlob = (Blob) entity.getProperty("myBytesBlob");
-        if (myBytesBlob != null) {
-            model.setMyBytesBlob(myBytesBlob.getBytes());
-        } else {
-            model.setMyBytesBlob(null);
-        }
+        model.setMyBytesBlob(toBytes(myBytesBlob));
         ShortBlob mySerializable =
             (ShortBlob) entity.getProperty("mySerializable");
-        if (mySerializable != null) {
-            model.setMySerializable((MySerializable) ByteUtil
-                .toObject(mySerializable.getBytes()));
-        } else {
-            model.setMySerializable(null);
-        }
+        model
+            .setMySerializable((MySerializable) toSerializable(mySerializable));
         Blob mySerializableBlob =
             (Blob) entity.getProperty("mySerializableBlob");
-        if (mySerializableBlob != null) {
-            model.setMySerializableBlob((MySerializable) ByteUtil
-                .toObject(mySerializableBlob.getBytes()));
-        } else {
-            model.setMySerializableBlob(null);
-        }
+        model
+            .setMySerializableBlob((MySerializable) toSerializable(mySerializableBlob));
         Blob myBlob = (Blob) entity.getProperty("myBlob");
-        if (myBlob != null) {
-            model.setMyBlob(myBlob);
-        } else {
-            model.setMyBlob(null);
-        }
+        model.setMyBlob(myBlob);
         ShortBlob myShortBlob = (ShortBlob) entity.getProperty("myShortBlob");
-        if (myShortBlob != null) {
-            model.setMyShortBlob(myShortBlob);
-        } else {
-            model.setMyShortBlob(null);
-        }
+        model.setMyShortBlob(myShortBlob);
         String myBigDecimal = (String) entity.getProperty("myBigDecimal");
         if (myBigDecimal != null) {
             model.setMyBigDecimal(new BigDecimal(myBigDecimal));
         } else {
             model.setMyBigDecimal(null);
         }
+        List<Long> myShortArray =
+            (List<Long>) entity.getProperty("myShortArray");
+        model.setMyShortArray(toPrimitiveShortArray(myShortArray));
         return model;
     }
 }
