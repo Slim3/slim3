@@ -23,18 +23,41 @@ import com.sun.mirror.declaration.Declaration;
 import com.sun.mirror.type.TypeMirror;
 
 /**
+ * Thrown when unknown declaration object is found.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class UnknownDeclarationException extends AptException {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Creates a new {@link ValidationException}.
+     * 
+     * @param env
+     *            the environment
+     * @param declaration
+     *            the send target
+     * @param typeMirror
+     *            the typemirror corresponding to unknown declaration
+     */
     public UnknownDeclarationException(AnnotationProcessorEnvironment env,
             Declaration declaration, TypeMirror typeMirror) {
         super(MessageCode.SILM3GEN1001, env, declaration, typeMirror);
     }
 
+    /**
+     * Creates a new {@link ValidationException}.
+     * 
+     * @param env
+     *            the environment
+     * @param declaration
+     *            the send target
+     * @param annotationMirror
+     *            the annotationmirror corresponding to unknown declaration
+     */
     public UnknownDeclarationException(AnnotationProcessorEnvironment env,
             Declaration declaration, AnnotationMirror annotationMirror) {
         super(MessageCode.SILM3GEN1001, env, declaration, annotationMirror);

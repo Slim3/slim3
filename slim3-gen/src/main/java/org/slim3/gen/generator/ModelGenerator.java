@@ -49,40 +49,30 @@ public class ModelGenerator implements Generator {
         }
         p.println("import java.io.Serializable;");
         p.println();
-        p.println("import javax.jdo.annotations.Extension;");
-        p.println("import javax.jdo.annotations.IdGeneratorStrategy;");
-        p.println("import javax.jdo.annotations.IdentityType;");
-        p.println("import javax.jdo.annotations.PersistenceCapable;");
-        p.println("import javax.jdo.annotations.Persistent;");
-        p.println("import javax.jdo.annotations.PrimaryKey;");
-        p.println("import javax.jdo.annotations.Version;");
-        p.println("import javax.jdo.annotations.VersionStrategy;");
+        p.println("import com.google.appengine.api.datastore.Key;");
         p.println();
-        p
-            .println("@PersistenceCapable(identityType = IdentityType.APPLICATION)");
-        p
-            .println("@Version(strategy = VersionStrategy.VERSION_NUMBER, column = \"version\")");
+        p.println("import org.slim3.datastore.Model;");
+        p.println("import org.slim3.datastore.PrimaryKey;");
+        p.println("import org.slim3.datastore.Version;");
+        p.println();
+        p.println("@Model");
         p.println("public class %s implements Serializable {", modelDesc
             .getSimpleName());
         p.println();
         p.println("    private static final long serialVersionUID = 1L;");
         p.println();
         p.println("    @PrimaryKey");
-        p
-            .println("    @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)");
-        p
-            .println("    @Extension(vendorName = \"datanucleus\", key = \"gae.encoded-pk\", value = \"true\")");
-        p.println("    private String key;");
+        p.println("    private Key key;");
         p.println();
         p.println("    @Persistent");
-        p.println("    private Long version = 1L;");
+        p.println("    private long version;");
         p.println();
         p.println("    /**");
         p.println("     * Returns the key.");
         p.println("     *");
         p.println("     * @return the key");
         p.println("     */");
-        p.println("    public String getKey() {");
+        p.println("    public Key getKey() {");
         p.println("        return key;");
         p.println("    }");
         p.println();
@@ -92,7 +82,7 @@ public class ModelGenerator implements Generator {
         p.println("     * @param key");
         p.println("     *            the key");
         p.println("     */");
-        p.println("    public void setKey(String key) {");
+        p.println("    public void setKey(Key key) {");
         p.println("        this.key = key;");
         p.println("    }");
         p.println();
@@ -103,6 +93,16 @@ public class ModelGenerator implements Generator {
         p.println("     */");
         p.println("    public Long getVersion() {");
         p.println("        return version;");
+        p.println("    }");
+        p.println();
+        p.println("    /**");
+        p.println("     * Sets the version.");
+        p.println("     *");
+        p.println("     * @param version");
+        p.println("     *            the version");
+        p.println("     */");
+        p.println("    public void setVersion(long version) {");
+        p.println("        this.version = version;");
         p.println("    }");
         p.println("}");
     }

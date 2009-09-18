@@ -68,8 +68,10 @@ public class AttributeMetaDescFactory {
     /**
      * Creates a new {@link AttributeMetaDesc}
      * 
-     * @param attributeDeclaration
-     *            the attribute declaration
+     * @param fieldDeclaration
+     *            the field declaration
+     * @param methodDeclarations
+     *            the method declarations
      * @return an attribute meta description
      */
     public AttributeMetaDesc createAttributeMetaDesc(
@@ -91,6 +93,14 @@ public class AttributeMetaDescFactory {
         return attributeMetaDesc;
     }
 
+    /**
+     * Handleds a field.
+     * 
+     * @param attributeMetaDesc
+     *            the attribute meta description
+     * @param fieldDeclaration
+     *            the field declaration
+     */
     protected void handleField(AttributeMetaDesc attributeMetaDesc,
             FieldDeclaration fieldDeclaration) {
         DatastoreTypeFactory datastoreTypeFactory =
@@ -101,8 +111,9 @@ public class AttributeMetaDescFactory {
                 fieldDeclaration.getType());
         attributeMetaDesc.setTypeName(type.getTypeName());
         attributeMetaDesc.setDeclaredTypeName(type.getDeclaredTypeName());
-        attributeMetaDesc.setElementTypeName(type.getElementTypeName());
         attributeMetaDesc.setImplicationTypeName(type.getImplicationTypeName());
+        attributeMetaDesc.setWrapperTypeName(type.getWrapperTypeName());
+        attributeMetaDesc.setElementTypeName(type.getElementTypeName());
         attributeMetaDesc.setCollection(type.isCollection());
         attributeMetaDesc.setArray(type.isArray());
         attributeMetaDesc.setPrimitive(type.isPrimitive());
@@ -122,6 +133,14 @@ public class AttributeMetaDescFactory {
         }
     }
 
+    /**
+     * Handles impermanent.
+     * 
+     * @param attributeMetaDesc
+     *            the attribute meta description
+     * @param type
+     *            the datastore type
+     */
     protected void handleImpermanent(AttributeMetaDesc attributeMetaDesc,
             DatastoreType type) {
         validateAnnotationConsistency(
@@ -134,6 +153,14 @@ public class AttributeMetaDescFactory {
         attributeMetaDesc.setImpermanent(true);
     }
 
+    /**
+     * Handles primary key.
+     * 
+     * @param attributeMetaDesc
+     *            the attribute meta description
+     * @param type
+     *            the datastore type
+     */
     protected void handlePrimaryKey(AttributeMetaDesc attributeMetaDesc,
             DatastoreType type) {
         validateAnnotationConsistency(type, PrimaryKey, Version, Text, Blob);
@@ -144,17 +171,33 @@ public class AttributeMetaDescFactory {
         attributeMetaDesc.setPrimaryKey(true);
     }
 
+    /**
+     * Handles version.
+     * 
+     * @param attributeMetaDesc
+     *            the attribute meta description
+     * @param type
+     *            the datastore type
+     */
     protected void handleVersion(AttributeMetaDesc attributeMetaDesc,
             DatastoreType type) {
         validateAnnotationConsistency(type, Version, Text, Blob);
         if (!Long.equals(type.getTypeName())
-            && primitive_long.equals(type.getTypeName())) {
+            && !primitive_long.equals(type.getTypeName())) {
             throw new ValidationException(MessageCode.SILM3GEN1008, env, type
                 .getDeclaration());
         }
         attributeMetaDesc.setVersion(true);
     }
 
+    /**
+     * Handles text.
+     * 
+     * @param attributeMetaDesc
+     *            the attribute meta description
+     * @param type
+     *            the datastore type
+     */
     protected void handleText(AttributeMetaDesc attributeMetaDesc,
             DatastoreType type) {
         validateAnnotationConsistency(type, Text, Blob);
@@ -166,10 +209,18 @@ public class AttributeMetaDescFactory {
         attributeMetaDesc.setUnindexed(true);
     }
 
+    /**
+     * Handles blob.
+     * 
+     * @param attributeMetaDesc
+     *            the attribute meta description
+     * @param type
+     *            the datastore type
+     */
     protected void handleBlob(AttributeMetaDesc attributeMetaDesc,
             DatastoreType type) {
         if (!type.isByteArray() && !type.isSerializable()) {
-            throw new ValidationException(MessageCode.SILM3GEN1009, env, type
+            throw new ValidationException(MessageCode.SILM3GEN1010, env, type
                 .getDeclaration());
         }
         if (!type.isByteArray()) {
@@ -178,6 +229,14 @@ public class AttributeMetaDescFactory {
         attributeMetaDesc.setBlob(true);
     }
 
+    /**
+     * Handles serializable.
+     * 
+     * @param attributeMetaDesc
+     *            the attribute meta description
+     * @param type
+     *            the datastore type
+     */
     protected void handleSerializable(AttributeMetaDesc attributeMetaDesc,
             DatastoreType type) {
         if (!type.isByteArray()) {
@@ -186,6 +245,16 @@ public class AttributeMetaDescFactory {
         attributeMetaDesc.setShortBlob(true);
     }
 
+    /**
+     * Validates annotation consistency.
+     * 
+     * @param type
+     *            the datastore type
+     * @param targetAnnotation
+     *            the validation target
+     * @param annotations
+     *            annotations
+     */
     protected void validateAnnotationConsistency(DatastoreType type,
             String targetAnnotation, String... annotations) {
         for (String annotation : annotations) {
@@ -200,6 +269,16 @@ public class AttributeMetaDescFactory {
         }
     }
 
+    /**
+     * Handles a method.
+     * 
+     * @param attributeMetaDesc
+     *            the attribute meta description
+     * @param fieldDeclaration
+     *            the field declaration
+     * @param methodDeclarations
+     *            the method declaration
+     */
     protected void handleMethod(AttributeMetaDesc attributeMetaDesc,
             FieldDeclaration fieldDeclaration,
             List<MethodDeclaration> methodDeclarations) {
@@ -217,6 +296,22 @@ public class AttributeMetaDescFactory {
                 }
             }
         }
+        if (!attributeMetaDesc.isImpermanent()) {
+            validateGetterAndSetterMethods(attributeMetaDesc, fieldDeclaration);
+        }
+    }
+
+    /**
+     * Validates the getter method and the setter method.
+     * 
+     * @param attributeMetaDesc
+     *            the attribute mete description
+     * @param fieldDeclaration
+     *            the field declaration
+     */
+    protected void validateGetterAndSetterMethods(
+            AttributeMetaDesc attributeMetaDesc,
+            FieldDeclaration fieldDeclaration) {
         if (attributeMetaDesc.getReadMethodName() == null) {
             throw new ValidationException(
                 MessageCode.SILM3GEN1011,
@@ -233,6 +328,17 @@ public class AttributeMetaDescFactory {
         }
     }
 
+    /**
+     * Retrun {@code true} if method is getter method.
+     * 
+     * @param m
+     *            the method declaraion
+     * @param attributeMetaDesc
+     *            the attribute meta description
+     * @param fieldTypeMirror
+     *            the field type
+     * @return {@code true} if method is getter method
+     */
     protected boolean isReadMethod(MethodDeclaration m,
             AttributeMetaDesc attributeMetaDesc, TypeMirror fieldTypeMirror) {
         String propertyName = null;
@@ -256,6 +362,17 @@ public class AttributeMetaDescFactory {
         return m.getReturnType().equals(fieldTypeMirror);
     }
 
+    /**
+     * Retrun {@code true} if method is setter method.
+     * 
+     * @param m
+     *            the method declaraion
+     * @param attributeMetaDesc
+     *            the attribute meta description
+     * @param fieldTypeMirror
+     *            the field type
+     * @return {@code true} if method is setter method
+     */
     protected boolean isWriteMethod(MethodDeclaration m,
             AttributeMetaDesc attributeMetaDesc, TypeMirror fieldTypeMirror) {
         if (!m.getSimpleName().startsWith("set")) {
@@ -273,6 +390,11 @@ public class AttributeMetaDescFactory {
         return parameterTypeMirror.equals(fieldTypeMirror);
     }
 
+    /**
+     * Creates a datastore type factory.
+     * 
+     * @return a datastore type factory
+     */
     protected DatastoreTypeFactory creaetDatastoreTypeFactory() {
         return new DatastoreTypeFactory(env);
     }

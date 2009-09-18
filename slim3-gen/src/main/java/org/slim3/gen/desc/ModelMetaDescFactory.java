@@ -28,6 +28,7 @@ import org.slim3.gen.processor.ValidationException;
 
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.declaration.ClassDeclaration;
+import com.sun.mirror.declaration.ConstructorDeclaration;
 import com.sun.mirror.declaration.FieldDeclaration;
 import com.sun.mirror.declaration.InterfaceDeclaration;
 import com.sun.mirror.declaration.MethodDeclaration;
@@ -73,24 +74,80 @@ public class ModelMetaDescFactory {
     /**
      * Creates a model meta description.
      * 
-     * @param modelDeclaration
+     * @param classDeclaration
      *            the model declaration.
      * @return a model description
      */
-    public ModelMetaDesc createModelMetaDesc(ClassDeclaration modelDeclaration) {
-        if (modelDeclaration == null) {
+    public ModelMetaDesc createModelMetaDesc(ClassDeclaration classDeclaration) {
+        if (classDeclaration == null) {
             throw new NullPointerException(
                 "The classDeclaration parameter is null.");
         }
-        String modelClassName = modelDeclaration.getQualifiedName().toString();
+        validateNestedLevel(classDeclaration);
+        validateModifier(classDeclaration);
+        validateConstructor(classDeclaration);
+
+        String modelClassName = classDeclaration.getQualifiedName().toString();
         ModelMetaClassName modelMetaClassName =
             createModelMetaClassName(modelClassName);
-        ModelMetaDesc modelMetaDesc = new ModelMetaDesc();
-        modelMetaDesc.setPackageName(modelMetaClassName.getPackageName());
-        modelMetaDesc.setSimpleName(modelMetaClassName.getSimpleName());
-        modelMetaDesc.setModelClassName(modelClassName);
-        handleAttributes(modelDeclaration, modelMetaDesc);
+        ModelMetaDesc modelMetaDesc =
+            new ModelMetaDesc(
+                modelMetaClassName.getPackageName(),
+                modelMetaClassName.getSimpleName(),
+                modelClassName);
+        handleAttributes(classDeclaration, modelMetaDesc);
         return modelMetaDesc;
+    }
+
+    /**
+     * Validates nested level.
+     * 
+     * @param classDeclaration
+     *            the class declaration
+     */
+    protected void validateNestedLevel(ClassDeclaration classDeclaration) {
+        if (classDeclaration.getDeclaringType() != null) {
+            throw new ValidationException(
+                MessageCode.SILM3GEN1019,
+                env,
+                classDeclaration);
+        }
+    }
+
+    /**
+     * Validates modifier.
+     * 
+     * @param classDeclaration
+     *            the class declaration
+     */
+    protected void validateModifier(ClassDeclaration classDeclaration) {
+        if (!classDeclaration.getModifiers().contains(Modifier.PUBLIC)) {
+            throw new ValidationException(
+                MessageCode.SILM3GEN1017,
+                env,
+                classDeclaration);
+        }
+    }
+
+    /**
+     * Validates constructor.
+     * 
+     * @param classDeclaration
+     *            the class declaration
+     */
+    protected void validateConstructor(ClassDeclaration classDeclaration) {
+        for (ConstructorDeclaration constructor : classDeclaration
+            .getConstructors()) {
+            if (constructor.getModifiers().contains(Modifier.PUBLIC)) {
+                if (constructor.getParameters().isEmpty()) {
+                    return;
+                }
+            }
+        }
+        throw new ValidationException(
+            MessageCode.SILM3GEN1018,
+            env,
+            classDeclaration);
     }
 
     /**
@@ -109,16 +166,16 @@ public class ModelMetaDescFactory {
     /**
      * Handles attributes.
      * 
-     * @param modelDeclaration
+     * @param classDeclaration
      *            the model declaration.
      * @param modelMetaDesc
      *            the model meta description
      */
-    protected void handleAttributes(ClassDeclaration modelDeclaration,
+    protected void handleAttributes(ClassDeclaration classDeclaration,
             ModelMetaDesc modelMetaDesc) {
         List<MethodDeclaration> methodDeclarations =
-            getMethodDeclarations(modelDeclaration);
-        for (FieldDeclaration fieldDeclaration : getFieldDeclarations(modelDeclaration)) {
+            getMethodDeclarations(classDeclaration);
+        for (FieldDeclaration fieldDeclaration : getFieldDeclarations(classDeclaration)) {
             AttributeMetaDesc attributeMetaDesc =
                 createAttributeMetaDesc(fieldDeclaration, methodDeclarations);
             if (attributeMetaDesc == null) {
@@ -129,14 +186,14 @@ public class ModelMetaDescFactory {
                 throw new ValidationException(
                     MessageCode.SILM3GEN1013,
                     env,
-                    modelDeclaration);
+                    classDeclaration);
             }
             if (attributeMetaDesc.isVersion()
                 && modelMetaDesc.getVersionAttributeMetaDesc() != null) {
                 throw new ValidationException(
                     MessageCode.SILM3GEN1014,
                     env,
-                    modelDeclaration);
+                    classDeclaration);
             }
             modelMetaDesc.addAttributeMetaDesc(attributeMetaDesc);
         }
@@ -144,10 +201,17 @@ public class ModelMetaDescFactory {
             throw new ValidationException(
                 MessageCode.SILM3GEN1015,
                 env,
-                modelDeclaration);
+                classDeclaration);
         }
     }
 
+    /**
+     * Creates a attribute meta description.
+     * 
+     * @param fieldDeclaration
+     * @param methodDeclarations
+     * @return a attribute meta description or {@code null} if error occured.
+     */
     protected AttributeMetaDesc createAttributeMetaDesc(
             FieldDeclaration fieldDeclaration,
             List<MethodDeclaration> methodDeclarations) {
@@ -156,11 +220,18 @@ public class ModelMetaDescFactory {
                 fieldDeclaration,
                 methodDeclarations);
         } catch (AptException e) {
-            e.printError();
+            e.sendError();
         }
         return null;
     }
 
+    /**
+     * Returns field declarations.
+     * 
+     * @param classDeclaration
+     *            the class declaration
+     * @return field declarations
+     */
     protected List<FieldDeclaration> getFieldDeclarations(
             ClassDeclaration classDeclaration) {
         List<FieldDeclaration> results = new LinkedList<FieldDeclaration>();
@@ -188,13 +259,20 @@ public class ModelMetaDescFactory {
         return results;
     }
 
+    /**
+     * Returns method declarations.
+     * 
+     * @param classDeclaration
+     *            the class declaration
+     * @return method declarations
+     */
     protected List<MethodDeclaration> getMethodDeclarations(
             ClassDeclaration classDeclaration) {
         List<MethodDeclaration> results = new LinkedList<MethodDeclaration>();
         for (ClassDeclaration c = classDeclaration; c != null
             && !c.getQualifiedName().equals(Object.class.getName()); c =
             c.getSuperclass().getDeclaration()) {
-            gatherClassMethods(c, results);
+            gatherClassMethodDeclarations(c, results);
             for (InterfaceType superinterfaceType : c.getSuperinterfaces()) {
                 InterfaceDeclaration superinterfaceDeclaration =
                     superinterfaceType.getDeclaration();
@@ -204,7 +282,9 @@ public class ModelMetaDescFactory {
                         classDeclaration,
                         superinterfaceType);
                 }
-                gatherInterfaceMethods(superinterfaceDeclaration, results);
+                gatherInterfaceMethodDeclarations(
+                    superinterfaceDeclaration,
+                    results);
             }
         }
 
@@ -221,7 +301,16 @@ public class ModelMetaDescFactory {
         return results;
     }
 
-    protected void gatherClassMethods(ClassDeclaration classDeclaration,
+    /**
+     * Gather class method declarations.
+     * 
+     * @param classDeclaration
+     *            the class declaration
+     * @param methodDeclarations
+     *            the list of method declarations
+     */
+    protected void gatherClassMethodDeclarations(
+            ClassDeclaration classDeclaration,
             List<MethodDeclaration> methodDeclarations) {
         for (MethodDeclaration method : classDeclaration.getMethods()) {
             Collection<Modifier> modifiers = method.getModifiers();
@@ -232,7 +321,15 @@ public class ModelMetaDescFactory {
         }
     }
 
-    protected void gatherInterfaceMethods(
+    /**
+     * Gather interface method declarations.
+     * 
+     * @param interfaceDeclaration
+     *            the interface declaration
+     * @param methodDeclarations
+     *            the list of method declarations
+     */
+    protected void gatherInterfaceMethodDeclarations(
             InterfaceDeclaration interfaceDeclaration,
             List<MethodDeclaration> methodDeclarations) {
         for (MethodDeclaration method : interfaceDeclaration.getMethods()) {
@@ -248,7 +345,7 @@ public class ModelMetaDescFactory {
                     interfaceDeclaration,
                     superinterfaceType);
             }
-            gatherInterfaceMethods(
+            gatherInterfaceMethodDeclarations(
                 superInterfaceDeclaration,
                 methodDeclarations);
         }

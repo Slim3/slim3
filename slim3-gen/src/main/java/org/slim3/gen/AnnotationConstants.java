@@ -16,34 +16,36 @@
 package org.slim3.gen;
 
 /**
+ * The collection of constants of annotation.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class AnnotationConstants {
-
-    /** {@code javax.jdo.annotations.PersistenceCapable} */
-    public static final String PersistenceCapable =
-        "javax.jdo.annotations.PersistenceCapable";
-
-    /** {@code javax.jdo.annotations.Persistent} */
-    public static final String Persistent = "javax.jdo.annotations.Persistent";
-
-    /** {@code javax.jdo.annotations.NotPersistent} */
-    public static final String NotPersistent =
-        "javax.jdo.annotations.NotPersistent";
-
-    /** {@code javax.jdo.annotations.Embedded} */
-    public static final String Embedded = "javax.jdo.annotations.Embedded";
 
     /** {@code com.google.gwt.user.client.rpc.RemoteServiceRelativePath} */
     public static final String RemoteServiceRelativePath =
         "com.google.gwt.user.client.rpc.RemoteServiceRelativePath";
 
+    /** {@code org.slim3.datastore.Model} */
     public static final String Model = "org.slim3.datastore.Model";
+
+    /** {@code org.slim3.datastore.Unindexed} */
     public static final String Unindexed = "org.slim3.datastore.Unindexed";
+
+    /** {@code org.slim3.datastore.Blob} */
     public static final String Blob = "org.slim3.datastore.Blob";
+
+    /** {@code org.slim3.datastore.Text} */
     public static final String Text = "org.slim3.datastore.Text";
+
+    /** {@code org.slim3.datastore.PrimaryKey} */
     public static final String PrimaryKey = "org.slim3.datastore.PrimaryKey";
+
+    /** {@code org.slim3.datastore.Version} */
     public static final String Version = "org.slim3.datastore.Version";
+
+    /** {@code org.slim3.datastore.Impermanent} */
     public static final String Impermanent = "org.slim3.datastore.Impermanent";
 }

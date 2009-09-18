@@ -21,19 +21,48 @@ import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.declaration.Declaration;
 
 /**
+ * Thrown when validation in annotation processing is failed.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class ValidationException extends AptException {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Creates a new {@link ValidationException}.
+     * 
+     * @param messageCode
+     *            the message code
+     * @param env
+     *            the environment
+     * @param declaration
+     *            the send target
+     * @param args
+     *            arguments
+     */
     public ValidationException(MessageCode messageCode,
             AnnotationProcessorEnvironment env, Declaration declaration,
             Object... args) {
         this(messageCode, env, declaration, null, args);
     }
 
+    /**
+     * Creates a new {@link ValidationException}.
+     * 
+     * @param messageCode
+     *            the message code
+     * @param env
+     *            the environment
+     * @param declaration
+     *            the send target
+     * @param cause
+     *            the cause
+     * @param args
+     *            arguments
+     */
     public ValidationException(MessageCode messageCode,
             AnnotationProcessorEnvironment env, Declaration declaration,
             Throwable cause, Object... args) {

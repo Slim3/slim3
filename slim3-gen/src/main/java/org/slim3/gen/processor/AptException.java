@@ -22,25 +22,57 @@ import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.declaration.Declaration;
 
 /**
+ * Thrown when annotation processing is failed.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class AptException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
+    /** the environment */
     protected final AnnotationProcessorEnvironment env;
 
+    /** the message code */
     protected final MessageCode messageCode;
 
+    /** the declaration */
     protected final Declaration declaration;
 
+    /**
+     * Creates a new {@link AptException}.
+     * 
+     * @param messageCode
+     *            the message code
+     * @param env
+     *            the environment
+     * @param declaration
+     *            the send target
+     * @param args
+     *            arguments
+     */
     public AptException(MessageCode messageCode,
             AnnotationProcessorEnvironment env, Declaration declaration,
             Object... args) {
         this(messageCode, env, declaration, null, args);
     }
 
+    /**
+     * Creates a new {@link AptException}.
+     * 
+     * @param messageCode
+     *            the message code
+     * @param env
+     *            the environment
+     * @param declaration
+     *            the send target
+     * @param cause
+     *            the cause
+     * @param args
+     *            arguments
+     */
     public AptException(MessageCode messageCode,
             AnnotationProcessorEnvironment env, Declaration declaration,
             Throwable cause, Object... args) {
@@ -50,7 +82,10 @@ public class AptException extends RuntimeException {
         this.declaration = declaration;
     }
 
-    public void printError() {
-        env.getMessager().printError(declaration.getPosition(), getMessage());
+    /**
+     * Sends error message.
+     */
+    public void sendError() {
+        Logger.error(env, declaration, getMessage());
     }
 }

@@ -65,115 +65,166 @@ import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.declaration.Declaration;
 import com.sun.mirror.declaration.TypeDeclaration;
 import com.sun.mirror.type.ArrayType;
-import com.sun.mirror.type.ClassType;
 import com.sun.mirror.type.DeclaredType;
-import com.sun.mirror.type.InterfaceType;
 import com.sun.mirror.type.PrimitiveType;
 import com.sun.mirror.type.TypeMirror;
 import com.sun.mirror.type.PrimitiveType.Kind;
 import com.sun.mirror.util.SimpleTypeVisitor;
 
 /**
+ * Represents a datastore type factory.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class DatastoreTypeFactory {
 
-    protected static final List<Kind> PRIMITIVE_TYPES = new ArrayList<Kind>();
+    /** the supported primitive types */
+    protected static final Map<Kind, String> PRIMITIVE_TYPES =
+        new HashMap<Kind, String>();
     static {
-        PRIMITIVE_TYPES.add(Kind.BOOLEAN);
-        PRIMITIVE_TYPES.add(Kind.INT);
-        PRIMITIVE_TYPES.add(Kind.SHORT);
+        PRIMITIVE_TYPES.put(Kind.BOOLEAN, Boolean);
+        PRIMITIVE_TYPES.put(Kind.SHORT, Short);
+        PRIMITIVE_TYPES.put(Kind.INT, Integer);
+        PRIMITIVE_TYPES.put(Kind.LONG, Long);
+        PRIMITIVE_TYPES.put(Kind.FLOAT, Float);
+        PRIMITIVE_TYPES.put(Kind.DOUBLE, Double);
     }
 
-    protected static final List<String> REFERENCE_TYPES =
-        new ArrayList<String>();
+    /** the supported single types */
+    protected static final List<String> SINGLE_TYPES = new ArrayList<String>();
     static {
-        REFERENCE_TYPES.add(String);
-        REFERENCE_TYPES.add(Boolean);
-        REFERENCE_TYPES.add(Short);
-        REFERENCE_TYPES.add(Integer);
-        REFERENCE_TYPES.add(Long);
-        REFERENCE_TYPES.add(Float);
-        REFERENCE_TYPES.add(Double);
-        REFERENCE_TYPES.add(Date);
-        REFERENCE_TYPES.add(BigDecimal);
-        REFERENCE_TYPES.add(User);
-        REFERENCE_TYPES.add(Key);
-        REFERENCE_TYPES.add(Category);
-        REFERENCE_TYPES.add(Email);
-        REFERENCE_TYPES.add(GeoPt);
-        REFERENCE_TYPES.add(IMHandle);
-        REFERENCE_TYPES.add(Link);
-        REFERENCE_TYPES.add(PhoneNumber);
-        REFERENCE_TYPES.add(PostalAddress);
-        REFERENCE_TYPES.add(Rating);
-        REFERENCE_TYPES.add(ShortBlob);
-        REFERENCE_TYPES.add(Blob);
-        REFERENCE_TYPES.add(Text);
+        SINGLE_TYPES.add(String);
+        SINGLE_TYPES.add(Boolean);
+        SINGLE_TYPES.add(Short);
+        SINGLE_TYPES.add(Integer);
+        SINGLE_TYPES.add(Long);
+        SINGLE_TYPES.add(Float);
+        SINGLE_TYPES.add(Double);
+        SINGLE_TYPES.add(Date);
+        SINGLE_TYPES.add(BigDecimal);
+        SINGLE_TYPES.add(User);
+        SINGLE_TYPES.add(Key);
+        SINGLE_TYPES.add(Category);
+        SINGLE_TYPES.add(Email);
+        SINGLE_TYPES.add(GeoPt);
+        SINGLE_TYPES.add(IMHandle);
+        SINGLE_TYPES.add(Link);
+        SINGLE_TYPES.add(PhoneNumber);
+        SINGLE_TYPES.add(PostalAddress);
+        SINGLE_TYPES.add(Rating);
+        SINGLE_TYPES.add(ShortBlob);
+        SINGLE_TYPES.add(Blob);
+        SINGLE_TYPES.add(Text);
     }
 
-    protected static final Map<String, String> COLLECTION_INTERFACE_TYPES =
+    /** the supported collection types */
+    protected static final Map<String, String> COLLECTION_TYPES =
         new HashMap<String, String>();
     static {
-        COLLECTION_INTERFACE_TYPES.put(Collection, ArrayList);
-        COLLECTION_INTERFACE_TYPES.put(List, ArrayList);
-        COLLECTION_INTERFACE_TYPES.put(Set, HashSet);
-        COLLECTION_INTERFACE_TYPES.put(SortedSet, TreeSet);
+        COLLECTION_TYPES.put(Collection, ArrayList);
+        COLLECTION_TYPES.put(List, ArrayList);
+        COLLECTION_TYPES.put(ArrayList, ArrayList);
+        COLLECTION_TYPES.put(LinkedList, LinkedList);
+        COLLECTION_TYPES.put(Vector, Vector);
+        COLLECTION_TYPES.put(Stack, Stack);
+        COLLECTION_TYPES.put(Set, HashSet);
+        COLLECTION_TYPES.put(HashSet, HashSet);
+        COLLECTION_TYPES.put(LinkedHashSet, LinkedHashSet);
+        COLLECTION_TYPES.put(SortedSet, TreeSet);
+        COLLECTION_TYPES.put(TreeSet, TreeSet);
     }
 
-    protected static final List<String> COLLECTION_IMPL_TYPES =
-        new ArrayList<String>();
-    static {
-        COLLECTION_IMPL_TYPES.add(ArrayList);
-        COLLECTION_IMPL_TYPES.add(LinkedList);
-        COLLECTION_IMPL_TYPES.add(Vector);
-        COLLECTION_IMPL_TYPES.add(Stack);
-        COLLECTION_IMPL_TYPES.add(HashSet);
-        COLLECTION_IMPL_TYPES.add(LinkedHashSet);
-        COLLECTION_IMPL_TYPES.add(TreeSet);
-    }
-
+    /** the environment */
     protected final AnnotationProcessorEnvironment env;
 
+    /**
+     * Creates a new {@link DatastoreTypeFactory}.
+     * 
+     * @param env
+     *            the environment
+     */
     public DatastoreTypeFactory(AnnotationProcessorEnvironment env) {
         this.env = env;
     }
 
+    /**
+     * Creates a new {@link DatastoreType}.
+     * 
+     * @param declaration
+     *            the declaration
+     * @param typeMirror
+     *            the typemirror
+     * @return a new {@link DatastoreType}
+     */
     public DatastoreType createDatastoreType(Declaration declaration,
             TypeMirror typeMirror) {
-        if (typeMirror == null) {
-            throw new NullPointerException("The parameter typeMirror is null.");
+        if (declaration == null) {
+            throw new NullPointerException("The declaration parameter is null.");
         }
-        DatastoreType datastoreType =
-            new DatastoreType(env, declaration, typeMirror);
-        datastoreType.setDeclaredTypeName(typeMirror.toString());
-        TypeAnalizer visitor = new TypeAnalizer(datastoreType);
-        typeMirror.accept(visitor);
-        return datastoreType;
+        if (typeMirror == null) {
+            throw new NullPointerException("The typeMirror parameter is null.");
+        }
+        Builder builder = new Builder(declaration, typeMirror);
+        return builder.build();
     }
 
-    protected class TypeAnalizer extends SimpleTypeVisitor {
+    /**
+     * The datastore type builder.
+     * 
+     * @author taedium
+     * @since 3.0
+     * 
+     */
+    protected class Builder extends SimpleTypeVisitor {
 
-        protected DatastoreType datastoreType;
+        /** the typemirror */
+        protected final TypeMirror typeMirror;
 
-        public TypeAnalizer(DatastoreType datastoreType) {
-            this.datastoreType = datastoreType;
+        /** the datastore type */
+        protected final DatastoreType datastoreType;
+
+        /**
+         * Creates a new {@link Builder}
+         * 
+         * @param declaration
+         *            the declaration
+         * @param typeMirror
+         *            the typemirror
+         */
+        public Builder(Declaration declaration, TypeMirror typeMirror) {
+            this.typeMirror = typeMirror;
+            this.datastoreType =
+                new DatastoreType(env, declaration, typeMirror);
+        }
+
+        /**
+         * Builds a {@link DatastoreType}.
+         * 
+         * @return a datastore type
+         */
+        public DatastoreType build() {
+            typeMirror.accept(this);
+            return datastoreType;
         }
 
         @Override
-        public void visitArrayType(ArrayType arraytype) {
+        public void visitArrayType(ArrayType arrayType) {
             datastoreType.setArray(true);
-            arraytype.getComponentType().accept(new SimpleTypeVisitor() {
+            arrayType.getComponentType().accept(new SimpleTypeVisitor() {
 
                 @Override
                 public void visitDeclaredType(DeclaredType declaredtype) {
                     TypeDeclaration typeDeclaration =
                         toTypeDeclaration(declaredtype);
                     String name = typeDeclaration.getQualifiedName();
-                    datastoreType.setTypeName("[L" + name);
+                    String typeName = name + "[]";
+                    datastoreType.setTypeName(typeName);
+                    datastoreType.setImplicationTypeName(typeName);
+                    datastoreType.setWrapperTypeName(typeName);
                     datastoreType.setElementTypeName(name);
-                    if (REFERENCE_TYPES.contains(name)) {
+                    if (SINGLE_TYPES.contains(name)) {
                         // do nothing
                     } else if (isSerializable(declaredtype)) {
                         datastoreType.setSerializable(true);
@@ -188,12 +239,15 @@ public class DatastoreTypeFactory {
                 }
 
                 @Override
-                public void visitPrimitiveType(PrimitiveType primitivetype) {
-                    Kind kind = primitivetype.getKind();
-                    datastoreType
-                        .setTypeName("[" + kind.name().substring(0, 1));
-                    datastoreType.setElementTypeName(kind.name().toLowerCase());
-                    if (PRIMITIVE_TYPES.contains(kind)) {
+                public void visitPrimitiveType(PrimitiveType primitiveType) {
+                    Kind kind = primitiveType.getKind();
+                    String name = kind.name().toLowerCase();
+                    String typeName = name + "[]";
+                    datastoreType.setTypeName(typeName);
+                    datastoreType.setImplicationTypeName(typeName);
+                    datastoreType.setWrapperTypeName(typeName);
+                    datastoreType.setElementTypeName(name);
+                    if (PRIMITIVE_TYPES.containsKey(kind)) {
                         // do nothing
                     } else {
                         datastoreType.setSerializable(true);
@@ -209,31 +263,44 @@ public class DatastoreTypeFactory {
         }
 
         @Override
-        public void visitClassType(ClassType classtype) {
-            TypeDeclaration typeDeclaration = toTypeDeclaration(classtype);
+        public void visitDeclaredType(DeclaredType declaredType) {
+            TypeDeclaration typeDeclaration = toTypeDeclaration(declaredType);
             String name = typeDeclaration.getQualifiedName();
             datastoreType.setTypeName(name);
-            if (REFERENCE_TYPES.contains(name)) {
+            datastoreType.setImplicationTypeName(name);
+            datastoreType.setWrapperTypeName(name);
+            if (SINGLE_TYPES.contains(name)) {
                 if (Blob.equals(name) || Text.equals(name)) {
                     datastoreType.setUnindex(true);
                 }
-            } else if (COLLECTION_IMPL_TYPES.contains(name)) {
-                datastoreType.setImplicationTypeName(name);
+            } else if (COLLECTION_TYPES.containsKey(name)) {
+                datastoreType
+                    .setImplicationTypeName(COLLECTION_TYPES.get(name));
                 datastoreType.setCollection(true);
                 Collection<TypeMirror> typeArgs =
-                    classtype.getActualTypeArguments();
+                    declaredType.getActualTypeArguments();
                 if (typeArgs.isEmpty()) {
                     throw new ValidationException(
                         MessageCode.SILM3GEN1004,
                         env,
-                        datastoreType.getDeclaration());
+                        datastoreType.getDeclaration(),
+                        declaredType);
                 }
-                DeclaredType elementType =
+                TypeMirror elementType = typeArgs.iterator().next();
+                DeclaredType elementDeclaredType =
                     TypeUtil.toDeclaredType(typeArgs.iterator().next());
+                if (elementDeclaredType == null) {
+                    throw new ValidationException(
+                        MessageCode.SILM3GEN1016,
+                        env,
+                        datastoreType.getDeclaration(),
+                        elementType);
+                }
                 TypeDeclaration elementDeclaration =
-                    toTypeDeclaration(elementType);
+                    toTypeDeclaration(elementDeclaredType);
                 String elementName = elementDeclaration.getQualifiedName();
-                if (REFERENCE_TYPES.contains(elementName)) {
+                datastoreType.setElementTypeName(elementName);
+                if (SINGLE_TYPES.contains(elementName)) {
                     // do nothing.
                 } else if (isSerializable(elementType)) {
                     datastoreType.setSerializable(true);
@@ -245,7 +312,7 @@ public class DatastoreTypeFactory {
                         datastoreType.getDeclaration(),
                         elementName);
                 }
-            } else if (isSerializable(classtype)) {
+            } else if (isSerializable(declaredType)) {
                 datastoreType.setSerializable(true);
                 datastoreType.setUnindex(true);
             } else {
@@ -258,53 +325,13 @@ public class DatastoreTypeFactory {
         }
 
         @Override
-        public void visitInterfaceType(InterfaceType interfacetype) {
-            TypeDeclaration typeDeclaration = toTypeDeclaration(interfacetype);
-            String name = typeDeclaration.getQualifiedName();
-            datastoreType.setTypeName(name);
-            if (COLLECTION_INTERFACE_TYPES.containsKey(name)) {
-                datastoreType.setImplicationTypeName(COLLECTION_INTERFACE_TYPES
-                    .get(name));
-                datastoreType.setCollection(true);
-                Collection<TypeMirror> typeArgs =
-                    interfacetype.getActualTypeArguments();
-                if (typeArgs.isEmpty()) {
-                    throw new ValidationException(
-                        MessageCode.SILM3GEN1004,
-                        env,
-                        datastoreType.getDeclaration());
-                }
-                DeclaredType elementType =
-                    TypeUtil.toDeclaredType(typeArgs.iterator().next());
-                TypeDeclaration elementDeclaration =
-                    toTypeDeclaration(elementType);
-                String elementName = elementDeclaration.getQualifiedName();
-                if (REFERENCE_TYPES.contains(elementName)) {
-                    // do nothing
-                } else if (isSerializable(elementType)) {
-                    datastoreType.setSerializable(true);
-                    datastoreType.setUnindex(true);
-                } else {
-                    throw new ValidationException(
-                        MessageCode.SILM3GEN1002,
-                        env,
-                        datastoreType.getDeclaration(),
-                        elementName);
-                }
-            } else {
-                throw new ValidationException(
-                    MessageCode.SILM3GEN1003,
-                    env,
-                    datastoreType.getDeclaration(),
-                    name);
-            }
-        }
-
-        @Override
         public void visitPrimitiveType(PrimitiveType primitiveType) {
             Kind kind = primitiveType.getKind();
-            if (PRIMITIVE_TYPES.contains(primitiveType.getKind())) {
-                datastoreType.setTypeName(kind.name().toLowerCase());
+            if (PRIMITIVE_TYPES.containsKey(kind)) {
+                String name = (kind.name().toLowerCase());
+                datastoreType.setTypeName(name);
+                datastoreType.setImplicationTypeName(name);
+                datastoreType.setWrapperTypeName(PRIMITIVE_TYPES.get(kind));
                 datastoreType.setPrimitive(true);
             } else {
                 throw new ValidationException(
@@ -316,10 +343,17 @@ public class DatastoreTypeFactory {
         }
 
         @Override
-        public void visitTypeMirror(TypeMirror typemirror) {
+        public void visitTypeMirror(TypeMirror typeMirror) {
             throw new AssertionError("unreachable");
         }
 
+        /**
+         * Converts {@link DeclaredType} to {@link TypeDeclaration}.
+         * 
+         * @param declaredType
+         *            the declared type
+         * @return a type declaration
+         */
         protected TypeDeclaration toTypeDeclaration(DeclaredType declaredType) {
             TypeDeclaration typeDeclaration = declaredType.getDeclaration();
             if (typeDeclaration != null) {
@@ -329,6 +363,14 @@ public class DatastoreTypeFactory {
                 .getDeclaration(), declaredType);
         }
 
+        /**
+         * Returns {@code true} if {@code typeMirror} is serializable.
+         * 
+         * @param typeMirror
+         *            the typemirror
+         * @return {@code true} if {@code typeMirror} is serializable, otherwise
+         *         {@code false}.
+         */
         protected boolean isSerializable(TypeMirror typeMirror) {
             return TypeUtil.isSubtype(env, typeMirror, Serializable.class);
         }

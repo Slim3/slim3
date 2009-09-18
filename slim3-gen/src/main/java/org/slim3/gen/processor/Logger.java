@@ -46,15 +46,15 @@ public final class Logger {
      * 
      * @param env
      *            the environment.
-     * @param element
-     *            the element to use as a position hint
+     * @param declaration
+     *            the declaration to use as a position hint
      * @param message
      *            the message.
      */
     public static void warning(AnnotationProcessorEnvironment env,
-            Declaration element, String message) {
+            Declaration declaration, String message) {
         Messager messager = env.getMessager();
-        messager.printWarning(element.getPosition(), message);
+        messager.printWarning(declaration.getPosition(), message);
     }
 
     /**
@@ -62,15 +62,15 @@ public final class Logger {
      * 
      * @param env
      *            the environment.
-     * @param element
-     *            the element to use as a position hint
+     * @param declaration
+     *            the declaration to use as a position hint
      * @param message
      *            the message.
      */
     public static void error(AnnotationProcessorEnvironment env,
-            Declaration element, String message) {
+            Declaration declaration, String message) {
         Messager messager = env.getMessager();
-        messager.printError(element.getPosition(), message);
+        messager.printError(declaration.getPosition(), message);
     }
 
 }

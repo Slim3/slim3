@@ -82,7 +82,7 @@ public class ModelProcessor implements AnnotationProcessor {
                 try {
                     handleClassDeclaration(element);
                 } catch (AptException e) {
-                    e.printError();
+                    e.sendError();
                 } catch (RuntimeException e) {
                     Logger.error(env, element, MessageFormatter.getMessage(
                         MessageCode.SILM3GEN0001,
@@ -105,16 +105,14 @@ public class ModelProcessor implements AnnotationProcessor {
                 MessageCode.SILM3GEN0002,
                 declaration));
         }
-        if (declaration.getDeclaringType() == null) {
-            AttributeMetaDescFactory attributeMetaDescFactory =
-                createAttributeMetaDescFactory();
-            ModelMetaDescFactory modelMetaDescFactory =
-                createModelMetaDescFactory(attributeMetaDescFactory);
-            ModelMetaDesc modelMetaDesc =
-                modelMetaDescFactory.createModelMetaDesc(declaration);
-            Generator generator = createGenerator(modelMetaDesc);
-            generateSupport.generate(generator, modelMetaDesc);
-        }
+        AttributeMetaDescFactory attributeMetaDescFactory =
+            createAttributeMetaDescFactory();
+        ModelMetaDescFactory modelMetaDescFactory =
+            createModelMetaDescFactory(attributeMetaDescFactory);
+        ModelMetaDesc modelMetaDesc =
+            modelMetaDescFactory.createModelMetaDesc(declaration);
+        Generator generator = createGenerator(modelMetaDesc);
+        generateSupport.generate(generator, modelMetaDesc);
         if (Options.isDebugEnabled(env)) {
             Logger.debug(env, MessageFormatter.getMessage(
                 MessageCode.SILM3GEN0003,

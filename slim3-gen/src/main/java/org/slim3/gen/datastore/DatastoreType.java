@@ -24,40 +24,78 @@ import com.sun.mirror.declaration.Declaration;
 import com.sun.mirror.type.TypeMirror;
 
 /**
+ * Represents a datastore type.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class DatastoreType {
 
+    /** the environment */
     protected final AnnotationProcessorEnvironment env;
 
+    /** the declaration */
     protected final Declaration declaration;
 
+    /** the typeMirror */
     protected final TypeMirror typeMirror;
 
-    protected boolean primitive;
+    /** the declaredTypeName */
+    protected final String declaredTypeName;
 
-    protected boolean unindex;
-
-    protected boolean collection;
-
-    protected boolean serializable;
-
-    protected boolean array;
-
+    /** the typeName */
     protected String typeName;
 
-    protected String declaredTypeName;
+    /** the wrapperTypeName */
+    protected String wrapperTypeName;
 
-    protected String elementTypeName;
-
+    /** the implicationTypeName */
     protected String implicationTypeName;
 
+    /** the elementTypeName */
+    protected String elementTypeName;
+
+    /** the primitive */
+    protected boolean primitive;
+
+    /** the unindex */
+    protected boolean unindex;
+
+    /** the collection */
+    protected boolean collection;
+
+    /** the serializable */
+    protected boolean serializable;
+
+    /** the array */
+    protected boolean array;
+
+    /**
+     * Creates a new {@link DatastoreType}.
+     * 
+     * @param env
+     *            the environment
+     * @param declaration
+     *            the declaration
+     * @param typeMirror
+     *            the typemirror
+     */
     public DatastoreType(AnnotationProcessorEnvironment env,
             Declaration declaration, TypeMirror typeMirror) {
+        if (env == null) {
+            throw new NullPointerException("The env parameter is null.");
+        }
+        if (declaration == null) {
+            throw new NullPointerException("The declaration parameter is null.");
+        }
+        if (typeMirror == null) {
+            throw new NullPointerException("The typeMirror parameter is null.");
+        }
         this.env = env;
         this.declaration = declaration;
         this.typeMirror = typeMirror;
+        this.declaredTypeName = typeMirror.toString();
     }
 
     /**
@@ -151,18 +189,18 @@ public class DatastoreType {
     }
 
     /**
-     * @return the componentClassName
+     * @return the elementTypeName
      */
     public String getElementTypeName() {
         return elementTypeName;
     }
 
     /**
-     * @param componentClassName
-     *            the componentClassName to set
+     * @param elementTypeName
+     *            the elementTypeName to set
      */
-    public void setElementTypeName(String componentClassName) {
-        this.elementTypeName = componentClassName;
+    public void setElementTypeName(String elementTypeName) {
+        this.elementTypeName = elementTypeName;
     }
 
     /**
@@ -173,14 +211,6 @@ public class DatastoreType {
     }
 
     /**
-     * @param declaredTypeName
-     *            the declaredTypeName to set
-     */
-    public void setDeclaredTypeName(String declaredTypeName) {
-        this.declaredTypeName = declaredTypeName;
-    }
-
-    /**
      * @return the implClassName
      */
     public String getImplicationTypeName() {
@@ -188,25 +218,60 @@ public class DatastoreType {
     }
 
     /**
-     * @param implClassName
-     *            the implClassName to set
+     * @param implicationTypeName
+     *            the implicationTypeName to set
      */
-    public void setImplicationTypeName(String implClassName) {
-        this.implicationTypeName = implClassName;
+    public void setImplicationTypeName(String implicationTypeName) {
+        this.implicationTypeName = implicationTypeName;
     }
 
+    /**
+     * @return the wrapperTypeName
+     */
+    public String getWrapperTypeName() {
+        return wrapperTypeName;
+    }
+
+    /**
+     * @param wrapperTypeName
+     *            the wrapperTypeName to set
+     */
+    public void setWrapperTypeName(String wrapperTypeName) {
+        this.wrapperTypeName = wrapperTypeName;
+    }
+
+    /**
+     * @return the declaration
+     */
     public Declaration getDeclaration() {
         return declaration;
     }
 
+    /**
+     * @return the typeMirror
+     */
     public TypeMirror getTypeMirror() {
         return typeMirror;
     }
 
+    /**
+     * Returns {@code true} if this represents byte array.
+     * 
+     * @return {@code true} if this represents byte array otherwise {@code
+     *         false}.
+     */
     public boolean isByteArray() {
         return primitve_byte.equals(elementTypeName) && array;
     }
 
+    /**
+     * Returns {@code true} if this anntated with {@code annotation}.
+     * 
+     * @param annotation
+     *            the annotation
+     * @return {{@code true} if this anntated with {@code annotation} otherwise
+     *         {@code false}.
+     */
     public boolean isAnnotated(String annotation) {
         return DeclarationUtil
             .getAnnotationMirror(env, declaration, annotation) != null;

@@ -47,38 +47,42 @@ public enum MessageCode {
     SILM3GEN0011("@com.google.gwt.user.client.rpc.RemoteServiceRelativePath is available only to an interface."),
     /** */
     SILM3GEN0012("The processor[{0}] is skipped."),
-
+    /** */
     SILM3GEN1001("Unknown type[{0}] is found."),
-
+    /** */
     SILM3GEN1002("The class[{0}] is not supported."),
-
-    SILM3GEN1003("The interface[{0}] is not supported."),
-
-    SILM3GEN1004("The type parameter of java.util.Collection is not found."),
-
+    /** */
+    SILM3GEN1004("The class[{0}] must be parametalized."),
+    /** */
     SILM3GEN1005("The component class[{0}] is not supported."),
-
+    /** */
     SILM3GEN1006("The annotation[{0}] conflicts with another annotation[{1}]."),
-
-    SILM3GEN1007("The class must be com.google.appengine.api.datastore.Key for @org.slim3.datastore.PrimaryKey."),
-
-    SILM3GEN1008("The class must be java.lang.Long for @org.slim3.datastore.Version."),
-
-    SILM3GEN1009("The class must be java.lang.String for @org.slim3.datastore.Text."),
-
-    SILM3GEN1010("The class must be byte array or serializable for @org.slim3.datastore.Blob."),
-
-    SILM3GEN1011("The getter method is not found for the filed[{0}]."),
-
-    SILM3GEN1012("The setter method is not found for the filed[{0}]."),
-
+    /** */
+    SILM3GEN1007("The type annotated with @org.slim3.datastore.PrimaryKey must be com.google.appengine.api.datastore.Key."),
+    /** */
+    SILM3GEN1008("The type annotated with @org.slim3.datastore.Version must be primitive long or java.lang.Long."),
+    /** */
+    SILM3GEN1009("The type annotated with @org.slim3.datastore.Text must be java.lang.String."),
+    /** */
+    SILM3GEN1010("The type annotated with @org.slim3.datastore.Blob must be primitive byte array or subtype of java.io.Serializable."),
+    /** */
+    SILM3GEN1011("The getter method is not found."),
+    /** */
+    SILM3GEN1012("The setter method is not found."),
+    /** */
     SILM3GEN1013("Multi @org.slim3.datastore.PrimaryKey are not allowed."),
-
+    /** */
     SILM3GEN1014("Multi @org.slim3.datastore.Version are not allowed."),
-
+    /** */
     SILM3GEN1015("@org.slim3.datastore.PrimaryKey is mandatory."),
-
-    ;
+    /** */
+    SILM3GEN1016("The type parameter[{0}] is not supported."),
+    /** */
+    SILM3GEN1017("The modifier must be public."),
+    /** */
+    SILM3GEN1018("The public default constructor is not found."),
+    /** */
+    SILM3GEN1019("The model class must be top level class.");
 
     /** the message */
     public final String message;

@@ -29,214 +29,405 @@ public class AttributeMetaDesc {
     /** the attributeClassName */
     protected String typeName;
 
+    /** the declaredTypeName */
     protected String declaredTypeName;
 
+    /** the implicationTypeName */
     protected String implicationTypeName;
 
+    /** the wrapperTypeName */
+    protected String wrapperTypeName;
+
+    /** the elementTypeName */
     protected String elementTypeName;
 
+    /** the primaryKey */
     protected boolean primaryKey;
 
+    /** the shortBlob */
     protected boolean shortBlob;
 
+    /** the blob */
     protected boolean blob;
 
+    /** the text */
     protected boolean text;
 
+    /** the version */
     protected boolean version;
 
+    /** the impermanent */
     protected boolean impermanent;
 
+    /** the unindexed */
     protected boolean unindexed;
 
+    /** the collection */
     protected boolean collection;
 
+    /** the array */
     protected boolean array;
 
+    /** the primitive */
     protected boolean primitive;
 
+    /** the interfase */
     protected boolean interfase;
 
+    /** the serialized */
     protected boolean serialized;
 
+    /** the readMethodName */
     protected String readMethodName;
 
+    /** the writeMethodName */
     protected String writeMethodName;
 
-    @Deprecated
-    /** {@code true} if this attribute is embedded. */
-    protected boolean embedded = false;
-
-    @Deprecated
-    /** the embeddedModelMetaClassName */
-    protected String embeddedModelMetaClassName;
-
+    /**
+     * Creates a new {@code AttributeMetaDesc}.
+     * 
+     * @param name
+     *            the name
+     */
     public AttributeMetaDesc(String name) {
         this.name = name;
     }
 
-    public String getName() {
-        return name;
-    }
-
+    /**
+     * @return the typeName
+     */
     public String getTypeName() {
         return typeName;
     }
 
+    /**
+     * @param typeName
+     *            the typeName to set
+     */
     public void setTypeName(String typeName) {
         this.typeName = typeName;
     }
 
+    /**
+     * @return the declaredTypeName
+     */
     public String getDeclaredTypeName() {
         return declaredTypeName;
     }
 
+    /**
+     * @param declaredTypeName
+     *            the declaredTypeName to set
+     */
     public void setDeclaredTypeName(String declaredTypeName) {
         this.declaredTypeName = declaredTypeName;
     }
 
+    /**
+     * @return the implicationTypeName
+     */
     public String getImplicationTypeName() {
         return implicationTypeName;
     }
 
+    /**
+     * @param implicationTypeName
+     *            the implicationTypeName to set
+     */
     public void setImplicationTypeName(String implicationTypeName) {
         this.implicationTypeName = implicationTypeName;
     }
 
-    public boolean isPrimaryKey() {
-        return primaryKey;
+    /**
+     * @return the wrapperTypeName
+     */
+    public String getWrapperTypeName() {
+        return wrapperTypeName;
     }
 
-    public void setPrimaryKey(boolean primaryKey) {
-        this.primaryKey = primaryKey;
+    /**
+     * @param wrapperTypeName
+     *            the wrapperTypeName to set
+     */
+    public void setWrapperTypeName(String wrapperTypeName) {
+        this.wrapperTypeName = wrapperTypeName;
     }
 
-    public boolean isShortBlob() {
-        return shortBlob;
-    }
-
-    public void setShortBlob(boolean shortBlob) {
-        this.shortBlob = shortBlob;
-    }
-
-    public boolean isBlob() {
-        return blob;
-    }
-
-    public void setBlob(boolean blob) {
-        this.blob = blob;
-    }
-
-    public boolean isText() {
-        return text;
-    }
-
-    public void setText(boolean text) {
-        this.text = text;
-    }
-
-    public boolean isVersion() {
-        return version;
-    }
-
-    public void setVersion(boolean version) {
-        this.version = version;
-    }
-
-    public boolean isImpermanent() {
-        return impermanent;
-    }
-
-    public void setImpermanent(boolean impermanent) {
-        this.impermanent = impermanent;
-    }
-
-    public boolean isUnindexed() {
-        return unindexed;
-    }
-
-    public void setUnindexed(boolean unindexed) {
-        this.unindexed = unindexed;
-    }
-
-    public boolean isCollection() {
-        return collection;
-    }
-
-    public void setCollection(boolean collection) {
-        this.collection = collection;
-    }
-
-    public boolean isPrimitive() {
-        return primitive;
-    }
-
-    public void setPrimitive(boolean primitive) {
-        this.primitive = primitive;
-    }
-
-    public boolean isInterfase() {
-        return interfase;
-    }
-
-    public void setInterfase(boolean interfase) {
-        this.interfase = interfase;
-    }
-
-    public boolean isSerialized() {
-        return serialized;
-    }
-
-    public void setSerialized(boolean serialized) {
-        this.serialized = serialized;
-    }
-
-    public String getReadMethodName() {
-        return readMethodName;
-    }
-
-    public void setReadMethodName(String readMethodName) {
-        this.readMethodName = readMethodName;
-    }
-
-    public String getWriteMethodName() {
-        return writeMethodName;
-    }
-
-    public void setWriteMethodName(String writeMethodName) {
-        this.writeMethodName = writeMethodName;
-    }
-
+    /**
+     * @return the elementTypeName
+     */
     public String getElementTypeName() {
         return elementTypeName;
     }
 
+    /**
+     * @param elementTypeName
+     *            the elementTypeName to set
+     */
     public void setElementTypeName(String elementTypeName) {
         this.elementTypeName = elementTypeName;
     }
 
+    /**
+     * @return the primaryKey
+     */
+    public boolean isPrimaryKey() {
+        return primaryKey;
+    }
+
+    /**
+     * @param primaryKey
+     *            the primaryKey to set
+     */
+    public void setPrimaryKey(boolean primaryKey) {
+        this.primaryKey = primaryKey;
+    }
+
+    /**
+     * @return the shortBlob
+     */
+    public boolean isShortBlob() {
+        return shortBlob;
+    }
+
+    /**
+     * @param shortBlob
+     *            the shortBlob to set
+     */
+    public void setShortBlob(boolean shortBlob) {
+        this.shortBlob = shortBlob;
+    }
+
+    /**
+     * @return the blob
+     */
+    public boolean isBlob() {
+        return blob;
+    }
+
+    /**
+     * @param blob
+     *            the blob to set
+     */
+    public void setBlob(boolean blob) {
+        this.blob = blob;
+    }
+
+    /**
+     * @return the text
+     */
+    public boolean isText() {
+        return text;
+    }
+
+    /**
+     * @param text
+     *            the text to set
+     */
+    public void setText(boolean text) {
+        this.text = text;
+    }
+
+    /**
+     * @return the version
+     */
+    public boolean isVersion() {
+        return version;
+    }
+
+    /**
+     * @param version
+     *            the version to set
+     */
+    public void setVersion(boolean version) {
+        this.version = version;
+    }
+
+    /**
+     * @return the impermanent
+     */
+    public boolean isImpermanent() {
+        return impermanent;
+    }
+
+    /**
+     * @param impermanent
+     *            the impermanent to set
+     */
+    public void setImpermanent(boolean impermanent) {
+        this.impermanent = impermanent;
+    }
+
+    /**
+     * @return the unindexed
+     */
+    public boolean isUnindexed() {
+        return unindexed;
+    }
+
+    /**
+     * @param unindexed
+     *            the unindexed to set
+     */
+    public void setUnindexed(boolean unindexed) {
+        this.unindexed = unindexed;
+    }
+
+    /**
+     * @return the collection
+     */
+    public boolean isCollection() {
+        return collection;
+    }
+
+    /**
+     * @param collection
+     *            the collection to set
+     */
+    public void setCollection(boolean collection) {
+        this.collection = collection;
+    }
+
+    /**
+     * @return the array
+     */
     public boolean isArray() {
         return array;
     }
 
+    /**
+     * @param array
+     *            the array to set
+     */
     public void setArray(boolean array) {
         this.array = array;
     }
 
-    public boolean isEmbedded() {
-        return embedded;
+    /**
+     * @return the primitive
+     */
+    public boolean isPrimitive() {
+        return primitive;
     }
 
-    public void setEmbedded(boolean embedded) {
-        this.embedded = embedded;
+    /**
+     * @param primitive
+     *            the primitive to set
+     */
+    public void setPrimitive(boolean primitive) {
+        this.primitive = primitive;
     }
 
-    public String getEmbeddedModelMetaClassName() {
-        return embeddedModelMetaClassName;
+    /**
+     * @return the interfase
+     */
+    public boolean isInterfase() {
+        return interfase;
     }
 
-    public void setEmbeddedModelMetaClassName(String embeddedModelMetaClassName) {
-        this.embeddedModelMetaClassName = embeddedModelMetaClassName;
+    /**
+     * @param interfase
+     *            the interfase to set
+     */
+    public void setInterfase(boolean interfase) {
+        this.interfase = interfase;
+    }
+
+    /**
+     * @return the serialized
+     */
+    public boolean isSerialized() {
+        return serialized;
+    }
+
+    /**
+     * @param serialized
+     *            the serialized to set
+     */
+    public void setSerialized(boolean serialized) {
+        this.serialized = serialized;
+    }
+
+    /**
+     * @return the readMethodName
+     */
+    public String getReadMethodName() {
+        return readMethodName;
+    }
+
+    /**
+     * @param readMethodName
+     *            the readMethodName to set
+     */
+    public void setReadMethodName(String readMethodName) {
+        this.readMethodName = readMethodName;
+    }
+
+    /**
+     * @return the writeMethodName
+     */
+    public String getWriteMethodName() {
+        return writeMethodName;
+    }
+
+    /**
+     * @param writeMethodName
+     *            the writeMethodName to set
+     */
+    public void setWriteMethodName(String writeMethodName) {
+        this.writeMethodName = writeMethodName;
+    }
+
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String toString() {
+        return "AttributeMetaDesc [array="
+            + array
+            + ", blob="
+            + blob
+            + ", collection="
+            + collection
+            + ", declaredTypeName="
+            + declaredTypeName
+            + ", elementTypeName="
+            + elementTypeName
+            + ", impermanent="
+            + impermanent
+            + ", implicationTypeName="
+            + implicationTypeName
+            + ", interfase="
+            + interfase
+            + ", name="
+            + name
+            + ", primaryKey="
+            + primaryKey
+            + ", primitive="
+            + primitive
+            + ", readMethodName="
+            + readMethodName
+            + ", serialized="
+            + serialized
+            + ", shortBlob="
+            + shortBlob
+            + ", text="
+            + text
+            + ", typeName="
+            + typeName
+            + ", unindexed="
+            + unindexed
+            + ", version="
+            + version
+            + ", wrapperTypeName="
+            + wrapperTypeName
+            + ", writeMethodName="
+            + writeMethodName
+            + "]";
     }
 
 }

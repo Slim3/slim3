@@ -31,21 +31,50 @@ import org.slim3.gen.util.ClassUtil;
 public class ModelMetaDesc implements ClassDesc {
 
     /** the package name */
-    protected String packageName;
+    protected final String packageName;
 
     /** the simple name */
-    protected String simpleName;
+    protected final String simpleName;
 
     /** the modelClassName */
-    protected String modelClassName;
+    protected final String modelClassName;
 
+    /** the key attribute meta description */
     protected AttributeMetaDesc keyAttributeMetaDesc;
 
+    /** the version attribute meta description */
     protected AttributeMetaDesc versionAttributeMetaDesc;
 
     /** the list of attribute meta descriptions */
-    protected List<AttributeMetaDesc> attributeMetaDescList =
+    protected final List<AttributeMetaDesc> attributeMetaDescList =
         new ArrayList<AttributeMetaDesc>();
+
+    /**
+     * Creates a new {@link ModelMetaDesc}.
+     * 
+     * @param packageName
+     *            the package name
+     * @param simpleName
+     *            the simple name
+     * @param modelClassName
+     *            the modelClassName
+     */
+    public ModelMetaDesc(String packageName, String simpleName,
+            String modelClassName) {
+        if (packageName == null) {
+            throw new NullPointerException("The packageName parameter is null.");
+        }
+        if (simpleName == null) {
+            throw new NullPointerException("The simpleName parameter is null.");
+        }
+        if (modelClassName == null) {
+            throw new NullPointerException(
+                "The modelClassName parameter is null.");
+        }
+        this.packageName = packageName;
+        this.simpleName = simpleName;
+        this.modelClassName = modelClassName;
+    }
 
     /**
      * Returns the packageName.
@@ -57,32 +86,12 @@ public class ModelMetaDesc implements ClassDesc {
     }
 
     /**
-     * Sets the packageName.
-     * 
-     * @param packageName
-     *            the packageName to set
-     */
-    public void setPackageName(String packageName) {
-        this.packageName = packageName;
-    }
-
-    /**
      * Returns the simpleName.
      * 
      * @return the simpleName
      */
     public String getSimpleName() {
         return simpleName;
-    }
-
-    /**
-     * Sets the simpleName.
-     * 
-     * @param simpleName
-     *            the simpleName to set
-     */
-    public void setSimpleName(String simpleName) {
-        this.simpleName = simpleName;
     }
 
     public String getQualifiedName() {
@@ -96,16 +105,6 @@ public class ModelMetaDesc implements ClassDesc {
      */
     public String getModelClassName() {
         return modelClassName;
-    }
-
-    /**
-     * Sets the modelClassName.
-     * 
-     * @param modelClassName
-     *            the modelClassName to set
-     */
-    public void setModelClassName(String modelClassName) {
-        this.modelClassName = modelClassName;
     }
 
     /**
@@ -133,10 +132,20 @@ public class ModelMetaDesc implements ClassDesc {
         return Collections.unmodifiableList(attributeMetaDescList);
     }
 
+    /**
+     * Returns the key attribute meta description.
+     * 
+     * @return the key attribute meta description
+     */
     public AttributeMetaDesc getKeyAttributeMetaDesc() {
         return keyAttributeMetaDesc;
     }
 
+    /**
+     * Returns the version attribute meta description.
+     * 
+     * @return the version attribute meta description
+     */
     public AttributeMetaDesc getVersionAttributeMetaDesc() {
         return versionAttributeMetaDesc;
     }

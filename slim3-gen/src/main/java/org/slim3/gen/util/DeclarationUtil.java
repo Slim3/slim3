@@ -35,6 +35,8 @@ public final class DeclarationUtil {
      * Returns {@code AnnotationMirror} if a declaration is annotated with a
      * specified annotation and {@code null} otherwise.
      * 
+     * @param env
+     *            the environment
      * @param declaration
      *            the declaration object to be checked.
      * @param annotation

@@ -70,20 +70,36 @@ public class ModelMetaGenerator implements Generator {
                 .getModelClassName());
         p.println("    }");
         p.println();
-        p.println("    public %s(String attributeName) {", modelMetaDesc
-            .getSimpleName());
-        p.println("        super(%s.class, attributeName);", modelMetaDesc
-            .getModelClassName());
-        p.println("    }");
-        p.println();
         for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
-            p.println(
-                "    public %1$s %2$s = new %1$s(this, \"%2$s\", %3$s.class);",
-                ClassConstants.AttributeMeta,
-                attr.getName(),
-                attr.getTypeName());
-            p.println();
+            if (attr.isUnindexed()) {
+                continue;
+            }
+            p.println("    // %1$s", attr);
+            if (attr.isCollection() || attr.isArray()) {
+                p
+                    .println(
+                        "    public %1$s<%4$s> %2$s = new %1$s<%4$s>(this, \"%2$s\", %3$s.class);",
+                        ClassConstants.CollectionAttributeMeta,
+                        attr.getName(),
+                        attr.getTypeName(),
+                        attr.getElementTypeName());
+                p.println();
+            } else {
+                p
+                    .println(
+                        "    public %1$s<%4$s> %2$s = new %1$s<%4$s>(this, \"%2$s\", %3$s.class);",
+                        ClassConstants.AttributeMeta,
+                        attr.getName(),
+                        attr.getTypeName(),
+                        attr.getWrapperTypeName());
+                p.println();
+            }
         }
+        p.println("    @Override");
+        p.println("    public %1$s entityToModel(%2$s entity) {", modelMetaDesc
+            .getModelClassName(), ClassConstants.Entity);
+        p.println("        return null;");
+        p.println("   }");
         p.print("}");
     }
 }
