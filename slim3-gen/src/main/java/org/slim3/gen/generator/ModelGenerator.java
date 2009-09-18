@@ -64,8 +64,8 @@ public class ModelGenerator implements Generator {
         p.println("    @PrimaryKey");
         p.println("    private Key key;");
         p.println();
-        p.println("    @Persistent");
-        p.println("    private long version;");
+        p.println("    @Version");
+        p.println("    private Long version;");
         p.println();
         p.println("    /**");
         p.println("     * Returns the key.");
@@ -101,7 +101,7 @@ public class ModelGenerator implements Generator {
         p.println("     * @param version");
         p.println("     *            the version");
         p.println("     */");
-        p.println("    public void setVersion(long version) {");
+        p.println("    public void setVersion(Long version) {");
         p.println("        this.version = version;");
         p.println("    }");
         p.println("}");
