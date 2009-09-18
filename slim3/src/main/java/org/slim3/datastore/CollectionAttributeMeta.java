@@ -15,19 +15,17 @@
  */
 package org.slim3.datastore;
 
-import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 /**
- * A meta data of attribute.
+ * A meta data of collection attribute.
  * 
  * @author higa
  * @param <T>
- *            the attribute type
+ *            the element type of collection
  * @since 3.0
  * 
  */
-public class AttributeMeta<T> extends AbstractAttributeMeta<T> {
+public class CollectionAttributeMeta<T> extends AbstractAttributeMeta<T> {
 
     /**
      * Constructor.
@@ -42,36 +40,8 @@ public class AttributeMeta<T> extends AbstractAttributeMeta<T> {
      *             if the modelMeta parameter is null or if the name parameter
      *             is null of if the attributeClass parameter is null
      */
-    public AttributeMeta(ModelMeta<?> modelMeta, String name,
+    public CollectionAttributeMeta(ModelMeta<?> modelMeta, String name,
             Class<?> attributeClass) {
         super(modelMeta, name, attributeClass);
-    }
-
-    /**
-     * Returns the "equal" filter predicate.
-     * 
-     * @param value
-     *            the value
-     * @return the "equal" filter predicate
-     */
-    public FilterPredicate equal(T value) {
-        if (isEmpty(value)) {
-            return null;
-        }
-        return new FilterPredicate(name, FilterOperator.EQUAL, value);
-    }
-
-    /**
-     * Returns the "less than" filter predicate.
-     * 
-     * @param value
-     *            the value
-     * @return the "less than" filter predicate
-     */
-    public FilterPredicate lessThan(T value) {
-        if (isEmpty(value)) {
-            return null;
-        }
-        return new FilterPredicate(name, FilterOperator.LESS_THAN, value);
     }
 }
