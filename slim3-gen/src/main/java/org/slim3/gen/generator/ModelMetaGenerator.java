@@ -50,10 +50,18 @@ public class ModelMetaGenerator implements Generator {
     }
 
     public void generate(Printer p) {
+        printPackage(p);
+        printClass(p);
+    }
+
+    protected void printPackage(Printer p) {
         if (modelMetaDesc.getPackageName().length() != 0) {
             p.println("package %s;", modelMetaDesc.getPackageName());
             p.println();
         }
+    }
+
+    protected void printClass(Printer p) {
         p
             .println(
                 "//@javax.annotation.Generated(value = { \"%s\", \"%s\" }, date = \"%tF %<tT\")",
@@ -64,12 +72,22 @@ public class ModelMetaGenerator implements Generator {
             .getSimpleName(), ClassConstants.ModelMeta, modelMetaDesc
             .getModelClassName());
         p.println();
+        printConstructor(p);
+        p.println();
+        printAttributeMetaFields(p);
+        printEntityToModelMethod(p);
+        p.print("}");
+    }
+
+    protected void printConstructor(Printer p) {
         p.println("    public %s() {", modelMetaDesc.getSimpleName());
         p
             .println("        super(%s.class);", modelMetaDesc
                 .getModelClassName());
         p.println("    }");
-        p.println();
+    }
+
+    protected void printAttributeMetaFields(Printer p) {
         for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
             if (attr.isUnindexed()) {
                 continue;
@@ -83,7 +101,6 @@ public class ModelMetaGenerator implements Generator {
                         attr.getName(),
                         attr.getTypeName(),
                         attr.getElementTypeName());
-                p.println();
             } else {
                 p
                     .println(
@@ -92,14 +109,109 @@ public class ModelMetaGenerator implements Generator {
                         attr.getName(),
                         attr.getTypeName(),
                         attr.getWrapperTypeName());
-                p.println();
             }
+            p.println();
         }
+    }
+
+    protected void printEntityToModelMethod(Printer p) {
         p.println("    @Override");
         p.println("    public %1$s entityToModel(%2$s entity) {", modelMetaDesc
             .getModelClassName(), ClassConstants.Entity);
-        p.println("        return null;");
+        p.println("        %1$s model = new %1$s();", modelMetaDesc
+            .getModelClassName());
+        for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
+            if (attr.isPrimaryKey()) {
+                p.println("        model.%1$s(entity.getKey());", attr
+                    .getWriteMethodName());
+            } else if (attr.isSerialized()) {
+                if (attr.isBlob()) {
+                    printConversionStatement(
+                        p,
+                        attr,
+                        "toSerializable",
+                        ClassConstants.Blob,
+                        attr.getTypeName());
+                } else {
+                    printConversionStatement(
+                        p,
+                        attr,
+                        "toSerializable",
+                        ClassConstants.ShortBlob,
+                        attr.getTypeName());
+                }
+            } else if (attr.isCollection()) {
+                if (ClassConstants.Short.equals(attr.getElementTypeName())) {
+                    printConversionStatement(
+                        p,
+                        attr,
+                        "toShortList",
+                        ClassConstants.List + "<" + ClassConstants.Long + ">",
+                        ClassConstants.List
+                            + "<"
+                            + attr.getElementTypeName()
+                            + ">");
+                }
+            } else if (attr.isText()) {
+                printConversionStatement(p, attr, "toString", ClassConstants.Text);
+            } else if (attr.isArray()
+                && ClassConstants.primitve_byte.equals(attr
+                    .getElementTypeName())) {
+                if (attr.isBlob()) {
+                    printConversionStatement(
+                        p,
+                        attr,
+                        "toBytes",
+                        ClassConstants.Blob);
+                } else {
+                    printConversionStatement(
+                        p,
+                        attr,
+                        "toBytes",
+                        ClassConstants.ShortBlob);
+                }
+            } else if (attr.isPrimitive()) {
+                if (ClassConstants.primitve_short.equals(attr.getTypeName())) {
+                    printConversionStatement(
+                        p,
+                        attr,
+                        "toPrimitiveShort",
+                        ClassConstants.Long);
+                }
+            } else {
+                if (ClassConstants.Short.equals(attr.getTypeName())) {
+                    printConversionStatement(
+                        p,
+                        attr,
+                        "toShort",
+                        ClassConstants.Long);
+                }
+            }
+        }
+        p.println("        return model;");
         p.println("   }");
-        p.print("}");
     }
+
+    protected void printConversionStatement(Printer p, AttributeMetaDesc attr,
+            String conversionMethodName, String srcTypeName) {
+        p.println(
+            "        model.%2$s(%3$s((%4$s) entity.getProperty(\"%1$s\")));",
+            attr.getName(),
+            attr.getWriteMethodName(),
+            conversionMethodName,
+            srcTypeName);
+    }
+
+    protected void printConversionStatement(Printer p, AttributeMetaDesc attr,
+            String conversionMethodName, String srcTypeName, String destTypeName) {
+        p
+            .println(
+                "        model.%2$s((%5$s) %3$s((%4$s) entity.getProperty(\"%1$s\")));",
+                attr.getName(),
+                attr.getWriteMethodName(),
+                conversionMethodName,
+                srcTypeName,
+                destTypeName);
+    }
+
 }
