@@ -83,11 +83,25 @@ public class AttributeMeta<T> {
      *            the value
      * @return the "equal" filter predicate
      */
-    public FilterPredicate eq(T value) {
+    public FilterPredicate equal(T value) {
         if (isEmpty(value)) {
             return null;
         }
         return new FilterPredicate(name, FilterOperator.EQUAL, value);
+    }
+
+    /**
+     * Returns the "less than" filter predicate.
+     * 
+     * @param value
+     *            the value
+     * @return the "less than" filter predicate
+     */
+    public FilterPredicate lessThan(T value) {
+        if (isEmpty(value)) {
+            return null;
+        }
+        return new FilterPredicate(name, FilterOperator.LESS_THAN, value);
     }
 
     /**

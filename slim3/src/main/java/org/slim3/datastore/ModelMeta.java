@@ -15,6 +15,8 @@
  */
 package org.slim3.datastore;
 
+import com.google.appengine.api.datastore.Entity;
+
 /**
  * A meta data of model.
  * 
@@ -24,7 +26,7 @@ package org.slim3.datastore;
  * @since 3.0
  * 
  */
-public class ModelMeta<T> {
+public abstract class ModelMeta<T> {
 
     /**
      * The model class.
@@ -54,4 +56,13 @@ public class ModelMeta<T> {
     public Class<T> getModelClass() {
         return modelClass;
     }
+
+    /**
+     * Converts the entity to model.
+     * 
+     * @param entity
+     *            the entity
+     * @return converted model.
+     */
+    public abstract T entityToModel(Entity entity);
 }

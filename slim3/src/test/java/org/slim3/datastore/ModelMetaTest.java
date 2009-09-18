@@ -19,6 +19,8 @@ import junit.framework.TestCase;
 
 import org.slim3.datastore.model.Hoge;
 
+import com.google.appengine.api.datastore.Entity;
+
 /**
  * @author higa
  * 
@@ -41,6 +43,12 @@ public class ModelMetaTest extends TestCase {
          */
         public HogeMeta() {
             super(Hoge.class);
+        }
+
+        @Override
+        public Hoge entityToModel(Entity entity) {
+            // TODO Auto-generated method stub
+            return null;
         }
     }
 }

@@ -32,7 +32,7 @@ public class ServiceTester {
     /**
      * The base path for api proxy local implementation.
      */
-    protected String basePath = "war/WEB-INF/classes";
+    protected String basePath = "build";
 
     /**
      * Returns the base path.

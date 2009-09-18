@@ -17,7 +17,7 @@ package org.slim3.datastore;
 
 import junit.framework.TestCase;
 
-import org.slim3.datastore.model.Hoge;
+import org.slim3.datastore.meta.HogeMeta;
 
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
@@ -30,18 +30,15 @@ import com.google.appengine.api.datastore.Query.SortPredicate;
  */
 public class AttributeMetaTest extends TestCase {
 
-    private ModelMeta<Hoge> hogeMeta = new ModelMeta<Hoge>(Hoge.class);
-
-    private AttributeMeta<String> aaa =
-        new AttributeMeta<String>(hogeMeta, "aaa", String.class);
+    private HogeMeta h = new HogeMeta();
 
     /**
      * @throws Exception
      */
-    public void testEq() throws Exception {
-        FilterPredicate filter = aaa.eq("111");
+    public void testEqual() throws Exception {
+        FilterPredicate filter = h.myString.equal("111");
         assertNotNull(filter);
-        assertEquals("aaa", filter.getPropertyName());
+        assertEquals("myString", filter.getPropertyName());
         assertEquals(FilterOperator.EQUAL, filter.getOperator());
         assertEquals("111", filter.getValue());
     }
@@ -49,17 +46,35 @@ public class AttributeMetaTest extends TestCase {
     /**
      * @throws Exception
      */
-    public void testEqForNull() throws Exception {
-        assertNull(aaa.eq(null));
+    public void testEqualForNull() throws Exception {
+        assertNull(h.myString.equal(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testLessThan() throws Exception {
+        FilterPredicate filter = h.myString.lessThan("111");
+        assertNotNull(filter);
+        assertEquals("myString", filter.getPropertyName());
+        assertEquals(FilterOperator.LESS_THAN, filter.getOperator());
+        assertEquals("111", filter.getValue());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testLessThanForNull() throws Exception {
+        assertNull(h.myString.lessThan(null));
     }
 
     /**
      * @throws Exception
      */
     public void testAsc() throws Exception {
-        SortPredicate sort = aaa.asc();
+        SortPredicate sort = h.myString.asc();
         assertNotNull(sort);
-        assertEquals("aaa", sort.getPropertyName());
+        assertEquals("myString", sort.getPropertyName());
         assertEquals(SortDirection.ASCENDING, sort.getDirection());
     }
 
@@ -67,9 +82,9 @@ public class AttributeMetaTest extends TestCase {
      * @throws Exception
      */
     public void testDesc() throws Exception {
-        SortPredicate sort = aaa.desc();
+        SortPredicate sort = h.myString.desc();
         assertNotNull(sort);
-        assertEquals("aaa", sort.getPropertyName());
+        assertEquals("myString", sort.getPropertyName());
         assertEquals(SortDirection.DESCENDING, sort.getDirection());
     }
 }
