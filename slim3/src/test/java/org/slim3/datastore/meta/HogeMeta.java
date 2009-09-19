@@ -169,26 +169,15 @@ public class HogeMeta extends ModelMeta<Hoge> {
     public Hoge entityToModel(Entity entity) {
         Hoge model = new Hoge();
         model.setKey(entity.getKey());
-        Long myShort = (Long) entity.getProperty("myShort");
-        model.setMyShort(toPrimitiveShort(myShort));
-        Long myShortWrapper = (Long) entity.getProperty("myShortWrapper");
-        model.setMyShortWrapper(toShort(myShortWrapper));
-        Long myInt = (Long) entity.getProperty("myInt");
-        if (myInt != null) {
-            model.setMyInt(myInt.intValue());
-        }
-        Long myIntWrapper = (Long) entity.getProperty("myIntWrapper");
-        if (myIntWrapper != null) {
-            model.setMyIntWrapper(myIntWrapper.intValue());
-        } else {
-            model.setMyIntWrapper(null);
-        }
-        Long myLong = (Long) entity.getProperty("myLong");
-        if (myLong != null) {
-            model.setMyLong(myLong);
-        }
-        Long myLongWrapper = (Long) entity.getProperty("myLongWrapper");
-        model.setMyLongWrapper(myLongWrapper);
+        model
+            .setMyShort(toPrimitiveShort((Long) entity.getProperty("myShort")));
+        model.setMyShortWrapper(toShort((Long) entity
+            .getProperty("myShortWrapper")));
+        model.setMyInt(toPrimitiveInt((Long) entity.getProperty("myInt")));
+        model.setMyIntWrapper(toInteger((Long) entity
+            .getProperty("myIntWrapper")));
+        model.setMyLong(toPrimitiveLong((Long) entity.getProperty("myLong")));
+        model.setMyLongWrapper((Long) entity.getProperty("myLongWrapper"));
         Double myFloat = (Double) entity.getProperty("myFloat");
         if (myFloat != null) {
             model.setMyFloat(myFloat.floatValue());

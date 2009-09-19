@@ -36,6 +36,46 @@ public class ModelMetaTest extends TestCase {
         assertEquals(Hoge.class, hogeMeta.getModelClass());
     }
 
+    /**
+     * @throws Exception
+     */
+    public void testToPrimitiveShort() throws Exception {
+        assertEquals((short) 1, hogeMeta.toPrimitiveShort(1L));
+        assertEquals((short) 0, hogeMeta.toPrimitiveShort(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testToShort() throws Exception {
+        assertEquals(Short.valueOf((short) 1), hogeMeta.toShort(1L));
+        assertNull(hogeMeta.toShort(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testToPrimitiveInt() throws Exception {
+        assertEquals(1, hogeMeta.toPrimitiveInt(1L));
+        assertEquals(0, hogeMeta.toPrimitiveInt(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testToInteger() throws Exception {
+        assertEquals(Integer.valueOf(1), hogeMeta.toInteger(1L));
+        assertNull(hogeMeta.toInteger(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testToPrimitiveLong() throws Exception {
+        assertEquals(1L, hogeMeta.toPrimitiveLong(1L));
+        assertEquals(0L, hogeMeta.toPrimitiveLong(null));
+    }
+
     private static class HogeMeta extends ModelMeta<Hoge> {
 
         /**

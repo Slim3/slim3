@@ -98,6 +98,39 @@ public abstract class ModelMeta<T> {
     }
 
     /**
+     * Converts the long to a primitive int.
+     * 
+     * @param value
+     *            the long
+     * @return a primitive int
+     */
+    protected int toPrimitiveInt(Long value) {
+        return value != null ? value.intValue() : 0;
+    }
+
+    /**
+     * Converts the long to an integer.
+     * 
+     * @param value
+     *            the long
+     * @return an integer
+     */
+    protected Integer toInteger(Long value) {
+        return value != null ? value.intValue() : null;
+    }
+
+    /**
+     * Converts the long to a primitive long.
+     * 
+     * @param value
+     *            the long
+     * @return a primitive long
+     */
+    protected long toPrimitiveLong(Long value) {
+        return value != null ? value : 0;
+    }
+
+    /**
      * Converts the list of long to an array of primitive short.
      * 
      * @param value
