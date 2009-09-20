@@ -21,6 +21,7 @@ import junit.framework.TestCase;
 
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
+import org.slim3.datastore.model.MySerializable;
 import org.slim3.util.ByteUtil;
 
 import com.google.appengine.api.datastore.ShortBlob;
@@ -52,80 +53,81 @@ public class ModelMetaTest extends TestCase {
     /**
      * @throws Exception
      */
-    public void testPrimitiveShortToLong() throws Exception {
-        assertEquals(Long.valueOf(1), meta.primitiveShortToLong((short) 1));
+    public void testLongToShort() throws Exception {
+        assertEquals(Short.valueOf((short) 1), meta.longToShort(1L));
+        assertNull(meta.longToShort(null));
     }
 
     /**
      * @throws Exception
      */
-    public void testToShort() throws Exception {
-        assertEquals(Short.valueOf((short) 1), meta.toShort(1L));
-        assertNull(meta.toShort(null));
+    public void testLongToPrimitiveInt() throws Exception {
+        assertEquals(1, meta.longToPrimitiveInt(1L));
+        assertEquals(0, meta.longToPrimitiveInt(null));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveInt() throws Exception {
-        assertEquals(1, meta.toPrimitiveInt(1L));
-        assertEquals(0, meta.toPrimitiveInt(null));
+    public void testLongToInteger() throws Exception {
+        assertEquals(Integer.valueOf(1), meta.longToInteger(1L));
+        assertNull(meta.longToInteger(null));
     }
 
     /**
      * @throws Exception
      */
-    public void testToInteger() throws Exception {
-        assertEquals(Integer.valueOf(1), meta.toInteger(1L));
-        assertNull(meta.toInteger(null));
+    public void testLongToPrimitiveLong() throws Exception {
+        assertEquals(1L, meta.longToPrimitiveLong(1L));
+        assertEquals(0L, meta.longToPrimitiveLong(null));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveLong() throws Exception {
-        assertEquals(1L, meta.toPrimitiveLong(1L));
-        assertEquals(0L, meta.toPrimitiveLong(null));
+    public void testDoubleToPrimitiveFloat() throws Exception {
+        assertEquals(1f, meta.doubleToPrimitiveFloat(1d));
+        assertEquals(0f, meta.doubleToPrimitiveFloat(null));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveFloat() throws Exception {
-        assertEquals(1f, meta.toPrimitiveFloat(1d));
-        assertEquals(0f, meta.toPrimitiveFloat(null));
+    public void testDoubleToFloat() throws Exception {
+        assertEquals(Float.valueOf(1), meta.doubleToFloat(1d));
+        assertNull(meta.doubleToFloat(null));
     }
 
     /**
      * @throws Exception
      */
-    public void testToFloat() throws Exception {
-        assertEquals(Float.valueOf(1), meta.toFloat(1d));
-        assertNull(meta.toFloat(null));
+    public void testDoubleToPrimitiveDouble() throws Exception {
+        assertEquals(1d, meta.doubleToPrimitiveDouble(1d));
+        assertEquals(0d, meta.doubleToPrimitiveDouble(null));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveDouble() throws Exception {
-        assertEquals(1d, meta.toPrimitiveDouble(1d));
-        assertEquals(0d, meta.toPrimitiveDouble(null));
+    public void testBooleanToPrimitiveBoolean() throws Exception {
+        assertEquals(true, meta.booleanToPrimitiveBoolean(true));
+        assertEquals(false, meta.booleanToPrimitiveBoolean(null));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveBoolean() throws Exception {
-        assertEquals(true, meta.toPrimitiveBoolean(true));
-        assertEquals(false, meta.toPrimitiveBoolean(null));
+    public void testTextToString() throws Exception {
+        assertEquals("aaa", meta.textToString(new Text("aaa")));
+        assertNull(meta.textToString(null));
     }
 
     /**
      * @throws Exception
      */
-    public void testToString() throws Exception {
-        assertEquals("aaa", meta.toString(new Text("aaa")));
-        assertNull(meta.toString(null));
+    public void testStringToText() throws Exception {
+        assertEquals(new Text("aaa"), meta.stringToText("aaa"));
+        assertNull(meta.stringToText(null));
     }
 
     /**
@@ -133,10 +135,21 @@ public class ModelMetaTest extends TestCase {
      */
     public void testShortBlobToBytes() throws Exception {
         byte[] bytes = new byte[] { 1 };
-        byte[] bytes2 = meta.toBytes(new ShortBlob(bytes));
+        byte[] bytes2 = meta.shortBlobToBytes(new ShortBlob(bytes));
         assertEquals(1, bytes2.length);
         assertEquals(1, bytes2[0]);
-        assertNull(meta.toBytes((ShortBlob) null));
+        assertNull(meta.shortBlobToBytes(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testBytesToShortBlob() throws Exception {
+        byte[] bytes = new byte[] { 1 };
+        byte[] bytes2 = meta.bytesToShortBlob(bytes).getBytes();
+        assertEquals(1, bytes2.length);
+        assertEquals(1, bytes2[0]);
+        assertNull(meta.bytesToShortBlob(null));
     }
 
     /**
@@ -145,19 +158,43 @@ public class ModelMetaTest extends TestCase {
     public void testBlobToBytes() throws Exception {
         byte[] bytes = new byte[] { 1 };
         byte[] bytes2 =
-            meta.toBytes(new com.google.appengine.api.datastore.Blob(bytes));
+            meta
+                .blobToBytes(new com.google.appengine.api.datastore.Blob(bytes));
         assertEquals(1, bytes2.length);
         assertEquals(1, bytes2[0]);
-        assertNull(meta.toBytes((com.google.appengine.api.datastore.Blob) null));
+        assertNull(meta.blobToBytes(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testBytesToBlob() throws Exception {
+        byte[] bytes = new byte[] { 1 };
+        byte[] bytes2 = meta.bytesToBlob(bytes).getBytes();
+        assertEquals(1, bytes2.length);
+        assertEquals(1, bytes2[0]);
+        assertNull(meta.bytesToBlob(null));
     }
 
     /**
      * @throws Exception
      */
     public void testShortBlobToSerializable() throws Exception {
-        assertEquals("aaa", meta.toSerializable(new ShortBlob(ByteUtil
+        assertEquals("aaa", meta.shortBlobToSerializable(new ShortBlob(ByteUtil
             .toByteArray("aaa"))));
-        assertNull(meta.toSerializable((ShortBlob) null));
+        assertNull(meta.shortBlobToSerializable(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testSerializableToShortBlob() throws Exception {
+        MySerializable serializable = new MySerializable("aaa");
+        MySerializable serializable2 =
+            (MySerializable) ByteUtil.toObject(meta.serializableToShortBlob(
+                serializable).getBytes());
+        assertEquals("aaa", serializable2.getAaa());
+        assertNull(meta.serializableToShortBlob(null));
     }
 
     /**
@@ -165,17 +202,36 @@ public class ModelMetaTest extends TestCase {
      */
     public void testBlobToSerializable() throws Exception {
         assertEquals("aaa", meta
-            .toSerializable(new com.google.appengine.api.datastore.Blob(
+            .blobToSerializable(new com.google.appengine.api.datastore.Blob(
                 ByteUtil.toByteArray("aaa"))));
-        assertNull(meta
-            .toSerializable((com.google.appengine.api.datastore.Blob) null));
+        assertNull(meta.blobToSerializable(null));
     }
 
     /**
      * @throws Exception
      */
-    public void testToBigDecimal() throws Exception {
-        assertEquals(new BigDecimal("1"), meta.toBigDecimal("1"));
-        assertNull(meta.toBigDecimal(null));
+    public void testSerializableToBlob() throws Exception {
+        MySerializable serializable = new MySerializable("aaa");
+        MySerializable serializable2 =
+            (MySerializable) ByteUtil.toObject(meta.serializableToBlob(
+                serializable).getBytes());
+        assertEquals("aaa", serializable2.getAaa());
+        assertNull(meta.serializableToShortBlob(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testStringToBigDecimal() throws Exception {
+        assertEquals(new BigDecimal("1"), meta.stringToBigDecimal("1"));
+        assertNull(meta.stringToBigDecimal(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testBigDecimalToString() throws Exception {
+        assertEquals("1", meta.bigDecimalToString(new BigDecimal("1")));
+        assertNull(meta.bigDecimalToString(null));
     }
 }

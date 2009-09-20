@@ -52,56 +52,56 @@ public class HogeMeta extends ModelMeta<Hoge> {
     /**
      * 
      */
-    public AttributeMeta<Short> myShortWrapper =
-        new AttributeMeta<Short>(this, "myShortWrapper", Short.class);
+    public AttributeMeta<Short> myShort =
+        new AttributeMeta<Short>(this, "myShort", Short.class);
 
     /**
      * 
      */
-    public AttributeMeta<Integer> myInt =
-        new AttributeMeta<Integer>(this, "myInt", int.class);
+    public AttributeMeta<Integer> myPrimitiveInt =
+        new AttributeMeta<Integer>(this, "myPrimitiveInt", int.class);
 
     /**
      * 
      */
-    public AttributeMeta<Integer> myIntWrapper =
-        new AttributeMeta<Integer>(this, "myIntWrapper", Integer.class);
+    public AttributeMeta<Integer> myInteger =
+        new AttributeMeta<Integer>(this, "myInteger", Integer.class);
+
+    /**
+     * 
+     */
+    public AttributeMeta<Long> myPrimitiveLong =
+        new AttributeMeta<Long>(this, "myPrimitiveLong", long.class);
 
     /**
      * 
      */
     public AttributeMeta<Long> myLong =
-        new AttributeMeta<Long>(this, "myLong", long.class);
+        new AttributeMeta<Long>(this, "myLong", Long.class);
 
     /**
      * 
      */
-    public AttributeMeta<Long> myLongWrapper =
-        new AttributeMeta<Long>(this, "myLongWrapper", Long.class);
+    public AttributeMeta<Float> myPrimitiveFloat =
+        new AttributeMeta<Float>(this, "myPrimitiveFloat", float.class);
 
     /**
      * 
      */
     public AttributeMeta<Float> myFloat =
-        new AttributeMeta<Float>(this, "myFloat", float.class);
+        new AttributeMeta<Float>(this, "myFloat", Float.class);
 
     /**
      * 
      */
-    public AttributeMeta<Float> myFloatWrapper =
-        new AttributeMeta<Float>(this, "myFloatWrapper", Float.class);
+    public AttributeMeta<Double> myPrimitiveDouble =
+        new AttributeMeta<Double>(this, "myPrimitiveDouble", double.class);
 
     /**
      * 
      */
     public AttributeMeta<Double> myDouble =
-        new AttributeMeta<Double>(this, "myDouble", double.class);
-
-    /**
-     * 
-     */
-    public AttributeMeta<Double> myDoubleWrapper =
-        new AttributeMeta<Double>(this, "myDoubleWrapper", Double.class);
+        new AttributeMeta<Double>(this, "myDouble", Double.class);
 
     /**
      * 
@@ -112,14 +112,14 @@ public class HogeMeta extends ModelMeta<Hoge> {
     /**
      * 
      */
-    public AttributeMeta<Boolean> myBoolean =
-        new AttributeMeta<Boolean>(this, "myBoolean", boolean.class);
+    public AttributeMeta<Boolean> myPrimitiveBoolean =
+        new AttributeMeta<Boolean>(this, "myPrimitiveBoolean", boolean.class);
 
     /**
      * 
      */
-    public AttributeMeta<Boolean> myBooleanWrapper =
-        new AttributeMeta<Boolean>(this, "myBooleanWrapper", Boolean.class);
+    public AttributeMeta<Boolean> myBoolean =
+        new AttributeMeta<Boolean>(this, "myBoolean", Boolean.class);
 
     /**
      * 
@@ -171,41 +171,41 @@ public class HogeMeta extends ModelMeta<Hoge> {
         model.setKey(entity.getKey());
         model.setMyPrimitiveShort(longToPrimitiveShort((Long) entity
             .getProperty("myPrimitiveShort")));
-        model.setMyShortWrapper(toShort((Long) entity
-            .getProperty("myShortWrapper")));
-        model.setMyInt(toPrimitiveInt((Long) entity.getProperty("myInt")));
-        model.setMyIntWrapper(toInteger((Long) entity
-            .getProperty("myIntWrapper")));
-        model.setMyLong(toPrimitiveLong((Long) entity.getProperty("myLong")));
-        model.setMyLongWrapper((Long) entity.getProperty("myLongWrapper"));
-        model.setMyFloat(toPrimitiveFloat((Double) entity
-            .getProperty("myFloat")));
-        model.setMyFloatWrapper(toFloat((Double) entity
-            .getProperty("myFloatWrapper")));
-        model.setMyDouble(toPrimitiveDouble((Double) entity
-            .getProperty("myDouble")));
+        model.setMyShort(longToShort((Long) entity.getProperty("myShort")));
+        model.setMyPrimitiveInt(longToPrimitiveInt((Long) entity
+            .getProperty("myPrimitiveInt")));
         model
-            .setMyDoubleWrapper((Double) entity.getProperty("myDoubleWrapper"));
+            .setMyInteger(longToInteger((Long) entity.getProperty("myInteger")));
+        model.setMyPrimitiveLong(longToPrimitiveLong((Long) entity
+            .getProperty("myPrimitiveLong")));
+        model.setMyLong((Long) entity.getProperty("myLong"));
+        model.setMyPrimitiveFloat(doubleToPrimitiveFloat((Double) entity
+            .getProperty("myPrimitiveFloat")));
+        model.setMyFloat(doubleToFloat((Double) entity.getProperty("myFloat")));
+        model.setMyPrimitiveDouble(doubleToPrimitiveDouble((Double) entity
+            .getProperty("myPrimitiveDouble")));
+        model.setMyDouble((Double) entity.getProperty("myDouble"));
         model.setMyString((String) entity.getProperty("myString"));
-        model.setMyBoolean(toPrimitiveBoolean((Boolean) entity
-            .getProperty("myBoolean")));
-        model.setMyBooleanWrapper((Boolean) entity
-            .getProperty("myBooleanWrapper"));
+        model.setMyPrimitiveBoolean(booleanToPrimitiveBoolean((Boolean) entity
+            .getProperty("myPrimitiveBoolean")));
+        model.setMyBoolean((Boolean) entity.getProperty("myBoolean"));
         model.setMyDate((Date) entity.getProperty("myDate"));
-        model.setMyStringText(toString((Text) entity
+        model.setMyStringText(textToString((Text) entity
             .getProperty("myStringText")));
         model.setMyText((Text) entity.getProperty("myText"));
-        model.setMyBytes(toBytes((ShortBlob) entity.getProperty("myBytes")));
-        model.setMyBytesBlob(toBytes((Blob) entity.getProperty("myBytesBlob")));
+        model.setMyBytes(shortBlobToBytes((ShortBlob) entity
+            .getProperty("myBytes")));
+        model.setMyBytesBlob(blobToBytes((Blob) entity
+            .getProperty("myBytesBlob")));
         model
-            .setMySerializable((MySerializable) toSerializable((ShortBlob) entity
+            .setMySerializable((MySerializable) shortBlobToSerializable((ShortBlob) entity
                 .getProperty("mySerializable")));
         model
-            .setMySerializableBlob((MySerializable) toSerializable((Blob) entity
+            .setMySerializableBlob((MySerializable) blobToSerializable((Blob) entity
                 .getProperty("mySerializableBlob")));
         model.setMyBlob((Blob) entity.getProperty("myBlob"));
         model.setMyShortBlob((ShortBlob) entity.getProperty("myShortBlob"));
-        model.setMyBigDecimal(toBigDecimal((String) entity
+        model.setMyBigDecimal(stringToBigDecimal((String) entity
             .getProperty("myBigDecimal")));
         List<Long> myShortArray =
             (List<Long>) entity.getProperty("myShortArray");
@@ -222,6 +222,34 @@ public class HogeMeta extends ModelMeta<Hoge> {
             entity = new Entity("Hoge");
         }
         entity.setProperty("myPrimitiveShort", model.getMyPrimitiveShort());
+        entity.setProperty("myShort", model.getMyShort());
+        entity.setProperty("myPrimitiveInt", model.getMyPrimitiveInt());
+        entity.setProperty("myInteger", model.getMyInteger());
+        entity.setProperty("myPrimitiveLong", model.getMyPrimitiveLong());
+        entity.setProperty("myLong", model.getMyLong());
+        entity.setProperty("myPrimitiveFloat", model.getMyPrimitiveFloat());
+        entity.setProperty("myFloat", model.getMyFloat());
+        entity.setProperty("myPrimitiveDouble", model.getMyPrimitiveDouble());
+        entity.setProperty("myDouble", model.getMyDouble());
+        entity.setProperty("myString", model.getMyString());
+        entity.setProperty("myPrimitiveBoolean", model.isMyPrimitiveBoolean());
+        entity.setProperty("myBoolean", model.getMyBoolean());
+        entity.setProperty("myDate", model.getMyDate());
+        entity.setUnindexedProperty("myStringText", stringToText(model
+            .getMyStringText()));
+        entity.setUnindexedProperty("myText", model.getMyText());
+        entity.setUnindexedProperty("myBytes", bytesToShortBlob(model
+            .getMyBytes()));
+        entity.setUnindexedProperty("myBytesBlob", bytesToBlob(model
+            .getMyBytesBlob()));
+        entity.setUnindexedProperty(
+            "mySerializable",
+            serializableToShortBlob(model.getMySerializable()));
+        entity.setUnindexedProperty(
+            "mySerializableBlob",
+            serializableToBlob(model.getMySerializableBlob()));
+        entity.setProperty("myBigDecimal", bigDecimalToString(model
+            .getMyBigDecimal()));
         return entity;
     }
 }

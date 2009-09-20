@@ -39,29 +39,29 @@ public class Hoge {
 
     private short myPrimitiveShort;
 
-    private Short myShortWrapper;
+    private Short myShort;
 
-    private int myInt;
+    private int myPrimitiveInt;
 
-    private Integer myIntWrapper;
+    private Integer myInteger;
 
-    private long myLong;
+    private long myPrimitiveLong;
 
-    private Long myLongWrapper;
+    private Long myLong;
 
-    private float myFloat;
+    private float myPrimitiveFloat;
 
-    private Float myFloatWrapper;
+    private Float myFloat;
 
-    private double myDouble;
+    private double myPrimitiveDouble;
 
-    private Double myDoubleWrapper;
+    private Double myDouble;
 
     private String myString;
 
-    private boolean myBoolean;
+    private boolean myPrimitiveBoolean;
 
-    private Boolean myBooleanWrapper;
+    private Boolean myBoolean;
 
     private Date myDate;
 
@@ -124,136 +124,136 @@ public class Hoge {
     /**
      * @return the myShortWrapper
      */
-    public Short getMyShortWrapper() {
-        return myShortWrapper;
+    public Short getMyShort() {
+        return myShort;
     }
 
     /**
      * @param myShortWrapper
      *            the myShortWrapper to set
      */
-    public void setMyShortWrapper(Short myShortWrapper) {
-        this.myShortWrapper = myShortWrapper;
+    public void setMyShort(Short myShortWrapper) {
+        this.myShort = myShortWrapper;
     }
 
     /**
      * @return the myInt
      */
-    public int getMyInt() {
-        return myInt;
+    public int getMyPrimitiveInt() {
+        return myPrimitiveInt;
     }
 
     /**
      * @param myInt
      *            the myInt to set
      */
-    public void setMyInt(int myInt) {
-        this.myInt = myInt;
+    public void setMyPrimitiveInt(int myInt) {
+        this.myPrimitiveInt = myInt;
     }
 
     /**
      * @return the myIntWrapper
      */
-    public Integer getMyIntWrapper() {
-        return myIntWrapper;
+    public Integer getMyInteger() {
+        return myInteger;
     }
 
     /**
      * @param myIntWrapper
      *            the myIntWrapper to set
      */
-    public void setMyIntWrapper(Integer myIntWrapper) {
-        this.myIntWrapper = myIntWrapper;
+    public void setMyInteger(Integer myIntWrapper) {
+        this.myInteger = myIntWrapper;
     }
 
     /**
      * @return the myLong
      */
-    public long getMyLong() {
-        return myLong;
+    public long getMyPrimitiveLong() {
+        return myPrimitiveLong;
     }
 
     /**
      * @param myLong
      *            the myLong to set
      */
-    public void setMyLong(long myLong) {
-        this.myLong = myLong;
+    public void setMyPrimitiveLong(long myLong) {
+        this.myPrimitiveLong = myLong;
     }
 
     /**
      * @return the myLongWrapper
      */
-    public Long getMyLongWrapper() {
-        return myLongWrapper;
+    public Long getMyLong() {
+        return myLong;
     }
 
     /**
      * @param myLongWrapper
      *            the myLongWrapper to set
      */
-    public void setMyLongWrapper(Long myLongWrapper) {
-        this.myLongWrapper = myLongWrapper;
+    public void setMyLong(Long myLongWrapper) {
+        this.myLong = myLongWrapper;
     }
 
     /**
      * @return the myFloat
      */
-    public float getMyFloat() {
-        return myFloat;
+    public float getMyPrimitiveFloat() {
+        return myPrimitiveFloat;
     }
 
     /**
      * @param myFloat
      *            the myFloat to set
      */
-    public void setMyFloat(float myFloat) {
-        this.myFloat = myFloat;
+    public void setMyPrimitiveFloat(float myFloat) {
+        this.myPrimitiveFloat = myFloat;
     }
 
     /**
      * @return the myFloatWrapper
      */
-    public Float getMyFloatWrapper() {
-        return myFloatWrapper;
+    public Float getMyFloat() {
+        return myFloat;
     }
 
     /**
      * @param myFloatWrapper
      *            the myFloatWrapper to set
      */
-    public void setMyFloatWrapper(Float myFloatWrapper) {
-        this.myFloatWrapper = myFloatWrapper;
+    public void setMyFloat(Float myFloatWrapper) {
+        this.myFloat = myFloatWrapper;
     }
 
     /**
      * @return the myDouble
      */
-    public double getMyDouble() {
-        return myDouble;
+    public double getMyPrimitiveDouble() {
+        return myPrimitiveDouble;
     }
 
     /**
      * @param myDouble
      *            the myDouble to set
      */
-    public void setMyDouble(double myDouble) {
-        this.myDouble = myDouble;
+    public void setMyPrimitiveDouble(double myDouble) {
+        this.myPrimitiveDouble = myDouble;
     }
 
     /**
      * @return the myDoubleWrapper
      */
-    public Double getMyDoubleWrapper() {
-        return myDoubleWrapper;
+    public Double getMyDouble() {
+        return myDouble;
     }
 
     /**
      * @param myDoubleWrapper
      *            the myDoubleWrapper to set
      */
-    public void setMyDoubleWrapper(Double myDoubleWrapper) {
-        this.myDoubleWrapper = myDoubleWrapper;
+    public void setMyDouble(Double myDoubleWrapper) {
+        this.myDouble = myDoubleWrapper;
     }
 
     /**
@@ -274,31 +274,31 @@ public class Hoge {
     /**
      * @return the myBoolean
      */
-    public boolean isMyBoolean() {
-        return myBoolean;
+    public boolean isMyPrimitiveBoolean() {
+        return myPrimitiveBoolean;
     }
 
     /**
      * @param myBoolean
      *            the myBoolean to set
      */
-    public void setMyBoolean(boolean myBoolean) {
-        this.myBoolean = myBoolean;
+    public void setMyPrimitiveBoolean(boolean myBoolean) {
+        this.myPrimitiveBoolean = myBoolean;
     }
 
     /**
      * @return the myBooleanWrapper
      */
-    public Boolean getMyBooleanWrapper() {
-        return myBooleanWrapper;
+    public Boolean getMyBoolean() {
+        return myBoolean;
     }
 
     /**
      * @param myBooleanWrapper
      *            the myBooleanWrapper to set
      */
-    public void setMyBooleanWrapper(Boolean myBooleanWrapper) {
-        this.myBooleanWrapper = myBooleanWrapper;
+    public void setMyBoolean(Boolean myBooleanWrapper) {
+        this.myBoolean = myBooleanWrapper;
     }
 
     /**

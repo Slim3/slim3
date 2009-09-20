@@ -97,24 +97,13 @@ public abstract class ModelMeta<T> {
     }
 
     /**
-     * Converts the primitive short to a long.
-     * 
-     * @param value
-     *            the primitive short
-     * @return a long
-     */
-    protected Long primitiveShortToLong(short value) {
-        return Long.valueOf(value);
-    }
-
-    /**
      * Converts the long to a short.
      * 
      * @param value
      *            the long
      * @return a short
      */
-    protected Short toShort(Long value) {
+    protected Short longToShort(Long value) {
         return value != null ? value.shortValue() : null;
     }
 
@@ -125,7 +114,7 @@ public abstract class ModelMeta<T> {
      *            the long
      * @return a primitive int
      */
-    protected int toPrimitiveInt(Long value) {
+    protected int longToPrimitiveInt(Long value) {
         return value != null ? value.intValue() : 0;
     }
 
@@ -136,7 +125,7 @@ public abstract class ModelMeta<T> {
      *            the long
      * @return an integer
      */
-    protected Integer toInteger(Long value) {
+    protected Integer longToInteger(Long value) {
         return value != null ? value.intValue() : null;
     }
 
@@ -147,7 +136,7 @@ public abstract class ModelMeta<T> {
      *            the long
      * @return a primitive long
      */
-    protected long toPrimitiveLong(Long value) {
+    protected long longToPrimitiveLong(Long value) {
         return value != null ? value : 0;
     }
 
@@ -158,7 +147,7 @@ public abstract class ModelMeta<T> {
      *            the double
      * @return a primitive float
      */
-    protected float toPrimitiveFloat(Double value) {
+    protected float doubleToPrimitiveFloat(Double value) {
         return value != null ? value.floatValue() : 0;
     }
 
@@ -169,7 +158,7 @@ public abstract class ModelMeta<T> {
      *            the double
      * @return a float
      */
-    protected Float toFloat(Double value) {
+    protected Float doubleToFloat(Double value) {
         return value != null ? value.floatValue() : null;
     }
 
@@ -180,7 +169,7 @@ public abstract class ModelMeta<T> {
      *            the double
      * @return a primitive double
      */
-    protected double toPrimitiveDouble(Double value) {
+    protected double doubleToPrimitiveDouble(Double value) {
         return value != null ? value : 0;
     }
 
@@ -191,7 +180,7 @@ public abstract class ModelMeta<T> {
      *            the boolean
      * @return a primitive boolean
      */
-    protected boolean toPrimitiveBoolean(Boolean value) {
+    protected boolean booleanToPrimitiveBoolean(Boolean value) {
         return value != null ? value : false;
     }
 
@@ -202,8 +191,19 @@ public abstract class ModelMeta<T> {
      *            the text
      * @return a string
      */
-    protected String toString(Text value) {
+    protected String textToString(Text value) {
         return value != null ? value.getValue() : null;
+    }
+
+    /**
+     * Converts the string to a text
+     * 
+     * @param value
+     *            the string
+     * @return a text
+     */
+    protected Text stringToText(String value) {
+        return value != null ? new Text(value) : null;
     }
 
     /**
@@ -213,8 +213,19 @@ public abstract class ModelMeta<T> {
      *            the short blob
      * @return an array of bytes
      */
-    protected byte[] toBytes(ShortBlob value) {
+    protected byte[] shortBlobToBytes(ShortBlob value) {
         return value != null ? value.getBytes() : null;
+    }
+
+    /**
+     * Converts the array of bytes to a short blob.
+     * 
+     * @param value
+     *            the array of bytes
+     * @return a short blob
+     */
+    protected ShortBlob bytesToShortBlob(byte[] value) {
+        return value != null ? new ShortBlob(value) : null;
     }
 
     /**
@@ -224,8 +235,19 @@ public abstract class ModelMeta<T> {
      *            the blob
      * @return an array of bytes
      */
-    protected byte[] toBytes(Blob value) {
+    protected byte[] blobToBytes(Blob value) {
         return value != null ? value.getBytes() : null;
+    }
+
+    /**
+     * Converts the array of bytes to a blob.
+     * 
+     * @param value
+     *            the array of bytes
+     * @return a blob
+     */
+    protected Blob bytesToBlob(byte[] value) {
+        return value != null ? new Blob(value) : null;
     }
 
     /**
@@ -235,9 +257,22 @@ public abstract class ModelMeta<T> {
      *            the short blob
      * @return a serializable object
      */
-    protected Serializable toSerializable(ShortBlob value) {
+    protected Serializable shortBlobToSerializable(ShortBlob value) {
         return value != null ? (Serializable) ByteUtil.toObject(value
             .getBytes()) : null;
+    }
+
+    /**
+     * Converts the serializable object to a short blob.
+     * 
+     * @param value
+     *            the serializable object
+     * @return a short blob
+     */
+    protected ShortBlob serializableToShortBlob(Serializable value) {
+        return value != null
+            ? new ShortBlob(ByteUtil.toByteArray(value))
+            : null;
     }
 
     /**
@@ -247,9 +282,20 @@ public abstract class ModelMeta<T> {
      *            the blob
      * @return a serializable object
      */
-    protected Serializable toSerializable(Blob value) {
+    protected Serializable blobToSerializable(Blob value) {
         return value != null ? (Serializable) ByteUtil.toObject(value
             .getBytes()) : null;
+    }
+
+    /**
+     * Converts the serializable object to a blob.
+     * 
+     * @param value
+     *            the serializable object
+     * @return a blob
+     */
+    protected Blob serializableToBlob(Serializable value) {
+        return value != null ? new Blob(ByteUtil.toByteArray(value)) : null;
     }
 
     /**
@@ -259,8 +305,19 @@ public abstract class ModelMeta<T> {
      *            the string
      * @return a big decimal
      */
-    protected BigDecimal toBigDecimal(String value) {
+    protected BigDecimal stringToBigDecimal(String value) {
         return value != null ? new BigDecimal(value) : null;
+    }
+
+    /**
+     * Converts the big decimal to a string.
+     * 
+     * @param value
+     *            the big decimal
+     * @return a string
+     */
+    protected String bigDecimalToString(BigDecimal value) {
+        return value != null ? value.toPlainString() : null;
     }
 
     /**
