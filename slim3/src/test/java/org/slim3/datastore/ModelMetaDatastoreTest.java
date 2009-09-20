@@ -61,6 +61,8 @@ public class ModelMetaDatastoreTest extends DatastoreTestCase {
         model.setMySerializable(new MySerializable("aaa"));
         model.setMySerializableBlob(new MySerializable("aaa"));
         model.setMyBigDecimal(new BigDecimal("1"));
+        model.setMyPrimitiveShortArray(new short[] { 1 });
+        model.setMyShortArray(new Short[] { 1 });
         Entity entity = meta.modelToEntity(model);
         Key key = ds.put(entity);
         Entity entity2 = ds.get(key);
@@ -90,5 +92,11 @@ public class ModelMetaDatastoreTest extends DatastoreTestCase {
         assertEquals(new MySerializable("aaa"), model2.getMySerializable());
         assertEquals(new MySerializable("aaa"), model2.getMySerializableBlob());
         assertEquals(new BigDecimal("1"), model2.getMyBigDecimal());
+        short[] myPrimitiveShortArray = model2.getMyPrimitiveShortArray();
+        assertEquals(1, myPrimitiveShortArray.length);
+        assertEquals((short) 1, myPrimitiveShortArray[0]);
+        Short[] myShortArray = model2.getMyShortArray();
+        assertEquals(1, myShortArray.length);
+        assertEquals(Short.valueOf("1"), myShortArray[0]);
     }
 }

@@ -16,6 +16,8 @@
 package org.slim3.datastore;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -233,5 +235,49 @@ public class ModelMetaTest extends TestCase {
     public void testBigDecimalToString() throws Exception {
         assertEquals("1", meta.bigDecimalToString(new BigDecimal("1")));
         assertNull(meta.bigDecimalToString(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testLongListToPrimitiveShortArray() throws Exception {
+        List<Long> longList = Arrays.asList(1L);
+        short[] shortArray = meta.longListToPrimitiveShortArray(longList);
+        assertEquals(1, shortArray.length);
+        assertEquals(1, shortArray[0]);
+        assertNull(meta.longListToPrimitiveShortArray(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testPrimitiveShortArrayToLongList() throws Exception {
+        short[] value = new short[] { 1 };
+        List<Long> ret = meta.primitiveShortArrayToLongList(value);
+        assertEquals(1, ret.size());
+        assertEquals(Long.valueOf(1), ret.get(0));
+        assertNull(meta.primitiveShortArrayToLongList(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testLongListToShortArray() throws Exception {
+        List<Long> value = Arrays.asList(1L);
+        Short[] ret = meta.longListToShortArray(value);
+        assertEquals(1, ret.length);
+        assertEquals(Short.valueOf((short) 1), ret[0]);
+        assertNull(meta.longListToShortArray(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testShortArrayToLongList() throws Exception {
+        Short[] value = new Short[] { 1 };
+        List<Long> ret = meta.shortArrayToLongList(value);
+        assertEquals(1, ret.size());
+        assertEquals(Long.valueOf(1), ret.get(0));
+        assertNull(meta.shortArrayToLongList(null));
     }
 }

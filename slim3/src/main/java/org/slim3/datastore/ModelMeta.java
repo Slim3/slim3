@@ -327,7 +327,7 @@ public abstract class ModelMeta<T> {
      *            the list of long
      * @return an array of primitive short
      */
-    protected short[] toPrimitiveShortArray(List<Long> value) {
+    protected short[] longListToPrimitiveShortArray(List<Long> value) {
         if (value == null) {
             return null;
         }
@@ -341,13 +341,71 @@ public abstract class ModelMeta<T> {
     }
 
     /**
+     * Converts the array of primitive short to a list of long.
+     * 
+     * @param value
+     *            the array of primitive short
+     * @return a list of long
+     */
+    protected List<Long> primitiveShortArrayToLongList(short[] value) {
+        if (value == null) {
+            return null;
+        }
+        List<Long> ret = new ArrayList<Long>(value.length);
+        int size = value.length;
+        for (int i = 0; i < size; i++) {
+            ret.add(Long.valueOf(value[i]));
+        }
+        return ret;
+    }
+
+    /**
+     * Converts the list of long to an array of short.
+     * 
+     * @param value
+     *            the list of long
+     * @return an array of short
+     */
+    protected Short[] longListToShortArray(List<Long> value) {
+        if (value == null) {
+            return null;
+        }
+        Short[] ret = new Short[value.size()];
+        int size = value.size();
+        for (int i = 0; i < size; i++) {
+            Long l = value.get(i);
+            ret[i] = l != null ? l.shortValue() : 0;
+        }
+        return ret;
+    }
+
+    /**
+     * Converts the array of short to a list of long.
+     * 
+     * @param value
+     *            the array of short
+     * @return a list of long
+     */
+    protected List<Long> shortArrayToLongList(Short[] value) {
+        if (value == null) {
+            return null;
+        }
+        List<Long> ret = new ArrayList<Long>(value.length);
+        int size = value.length;
+        for (int i = 0; i < size; i++) {
+            ret.add(value[i].longValue());
+        }
+        return ret;
+    }
+
+    /**
      * Converts the list of long to a list of short.
      * 
      * @param value
      *            the list of long
      * @return a list of short
      */
-    protected List<Short> toShortList(List<Long> value) {
+    protected List<Short> longListToShortList(List<Long> value) {
         if (value == null) {
             return null;
         }

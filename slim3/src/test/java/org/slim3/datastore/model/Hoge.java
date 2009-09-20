@@ -86,7 +86,9 @@ public class Hoge {
 
     private BigDecimal myBigDecimal;
 
-    private short[] myShortArray;
+    private short[] myPrimitiveShortArray;
+
+    private Short[] myShortArray;
 
     @Version
     private Long version;
@@ -454,7 +456,22 @@ public class Hoge {
     /**
      * @return the myShortArray
      */
-    public short[] getMyShortArray() {
+    public short[] getMyPrimitiveShortArray() {
+        return myPrimitiveShortArray;
+    }
+
+    /**
+     * @param myShortArray
+     *            the myShortArray to set
+     */
+    public void setMyPrimitiveShortArray(short[] myShortArray) {
+        this.myPrimitiveShortArray = myShortArray;
+    }
+
+    /**
+     * @return the myShortArray
+     */
+    public Short[] getMyShortArray() {
         return myShortArray;
     }
 
@@ -462,7 +479,7 @@ public class Hoge {
      * @param myShortArray
      *            the myShortArray to set
      */
-    public void setMyShortArray(short[] myShortArray) {
+    public void setMyShortArray(Short[] myShortArray) {
         this.myShortArray = myShortArray;
     }
 

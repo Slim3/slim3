@@ -148,8 +148,17 @@ public class HogeMeta extends ModelMeta<Hoge> {
     /**
      * 
      */
+    public CollectionAttributeMeta<Short> myPrimitiveShortArray =
+        new CollectionAttributeMeta<Short>(
+            this,
+            "myPrimitiveShortArray",
+            short[].class);
+
+    /**
+     * 
+     */
     public CollectionAttributeMeta<Short> myShortArray =
-        new CollectionAttributeMeta<Short>(this, "myShortArray", short[].class);
+        new CollectionAttributeMeta<Short>(this, "myShortArray", Short[].class);
 
     /**
      * 
@@ -207,9 +216,11 @@ public class HogeMeta extends ModelMeta<Hoge> {
         model.setMyShortBlob((ShortBlob) entity.getProperty("myShortBlob"));
         model.setMyBigDecimal(stringToBigDecimal((String) entity
             .getProperty("myBigDecimal")));
-        List<Long> myShortArray =
-            (List<Long>) entity.getProperty("myShortArray");
-        model.setMyShortArray(toPrimitiveShortArray(myShortArray));
+        model
+            .setMyPrimitiveShortArray(longListToPrimitiveShortArray((List<Long>) entity
+                .getProperty("myPrimitiveShortArray")));
+        model.setMyShortArray(longListToShortArray((List<Long>) entity
+            .getProperty("myShortArray")));
         return model;
     }
 
@@ -250,6 +261,11 @@ public class HogeMeta extends ModelMeta<Hoge> {
             serializableToBlob(model.getMySerializableBlob()));
         entity.setProperty("myBigDecimal", bigDecimalToString(model
             .getMyBigDecimal()));
+        entity.setProperty(
+            "myPrimitiveShortArray",
+            primitiveShortArrayToLongList(model.getMyPrimitiveShortArray()));
+        entity.setProperty("myShortArray", shortArrayToLongList(model
+            .getMyShortArray()));
         return entity;
     }
 }
