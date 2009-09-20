@@ -17,6 +17,9 @@ package org.slim3.tester;
 
 import junit.framework.TestCase;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+
 /**
  * A test case for local data store.
  * 
@@ -31,23 +34,22 @@ public abstract class DatastoreTestCase extends TestCase {
      */
     protected DatastoreTester datastoreTester;
 
+    /**
+     * The datastore service.
+     */
+    protected DatastoreService ds;
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        try {
-            Class
-                .forName("com.google.appengine.tools.development.ApiProxyLocal");
-            datastoreTester = new DatastoreTester();
-            datastoreTester.setUp();
-        } catch (Throwable ignore) {
-        }
+        datastoreTester = new DatastoreTester();
+        datastoreTester.setUp();
+        ds = DatastoreServiceFactory.getDatastoreService();
     }
 
     @Override
     protected void tearDown() throws Exception {
-        if (datastoreTester != null) {
-            datastoreTester.tearDown();
-        }
+        datastoreTester.tearDown();
         super.tearDown();
     }
 }

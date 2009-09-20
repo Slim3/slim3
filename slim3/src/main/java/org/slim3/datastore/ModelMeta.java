@@ -16,6 +16,7 @@
 package org.slim3.datastore;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,13 +68,22 @@ public abstract class ModelMeta<T> {
     }
 
     /**
-     * Converts the entity to model.
+     * Converts the entity to a model.
      * 
      * @param entity
      *            the entity
-     * @return converted model.
+     * @return a model
      */
     public abstract T entityToModel(Entity entity);
+
+    /**
+     * Converts the model to an entity.
+     * 
+     * @param model
+     *            the model
+     * @return an entity
+     */
+    public abstract Entity modelToEntity(T model);
 
     /**
      * Converts the long to a primitive short.
@@ -82,8 +92,19 @@ public abstract class ModelMeta<T> {
      *            the long
      * @return a primitive short
      */
-    protected short toPrimitiveShort(Long value) {
+    protected short longToPrimitiveShort(Long value) {
         return value != null ? value.shortValue() : 0;
+    }
+
+    /**
+     * Converts the primitive short to a long.
+     * 
+     * @param value
+     *            the primitive short
+     * @return a long
+     */
+    protected Long primitiveShortToLong(short value) {
+        return Long.valueOf(value);
     }
 
     /**
@@ -131,6 +152,118 @@ public abstract class ModelMeta<T> {
     }
 
     /**
+     * Converts the double to a primitive float.
+     * 
+     * @param value
+     *            the double
+     * @return a primitive float
+     */
+    protected float toPrimitiveFloat(Double value) {
+        return value != null ? value.floatValue() : 0;
+    }
+
+    /**
+     * Converts the double to a float.
+     * 
+     * @param value
+     *            the double
+     * @return a float
+     */
+    protected Float toFloat(Double value) {
+        return value != null ? value.floatValue() : null;
+    }
+
+    /**
+     * Converts the double to a primitive double.
+     * 
+     * @param value
+     *            the double
+     * @return a primitive double
+     */
+    protected double toPrimitiveDouble(Double value) {
+        return value != null ? value : 0;
+    }
+
+    /**
+     * Converts the boolean to a primitive boolean.
+     * 
+     * @param value
+     *            the boolean
+     * @return a primitive boolean
+     */
+    protected boolean toPrimitiveBoolean(Boolean value) {
+        return value != null ? value : false;
+    }
+
+    /**
+     * Converts the text to a string
+     * 
+     * @param value
+     *            the text
+     * @return a string
+     */
+    protected String toString(Text value) {
+        return value != null ? value.getValue() : null;
+    }
+
+    /**
+     * Converts the short blob to an array of bytes.
+     * 
+     * @param value
+     *            the short blob
+     * @return an array of bytes
+     */
+    protected byte[] toBytes(ShortBlob value) {
+        return value != null ? value.getBytes() : null;
+    }
+
+    /**
+     * Converts the blob to an array of bytes.
+     * 
+     * @param value
+     *            the blob
+     * @return an array of bytes
+     */
+    protected byte[] toBytes(Blob value) {
+        return value != null ? value.getBytes() : null;
+    }
+
+    /**
+     * Converts the short blob to a serializable object.
+     * 
+     * @param value
+     *            the short blob
+     * @return a serializable object
+     */
+    protected Serializable toSerializable(ShortBlob value) {
+        return value != null ? (Serializable) ByteUtil.toObject(value
+            .getBytes()) : null;
+    }
+
+    /**
+     * Converts the blob to a serializable object.
+     * 
+     * @param value
+     *            the blob
+     * @return a serializable object
+     */
+    protected Serializable toSerializable(Blob value) {
+        return value != null ? (Serializable) ByteUtil.toObject(value
+            .getBytes()) : null;
+    }
+
+    /**
+     * Converts the string to a big decimal.
+     * 
+     * @param value
+     *            the string
+     * @return a big decimal
+     */
+    protected BigDecimal toBigDecimal(String value) {
+        return value != null ? new BigDecimal(value) : null;
+    }
+
+    /**
      * Converts the list of long to an array of primitive short.
      * 
      * @param value
@@ -168,27 +301,5 @@ public abstract class ModelMeta<T> {
             ret.add(l != null ? l.shortValue() : null);
         }
         return ret;
-    }
-
-    protected String toString(Text value) {
-        return value != null ? value.getValue() : null;
-    }
-
-    protected byte[] toBytes(ShortBlob value) {
-        return value != null ? value.getBytes() : null;
-    }
-
-    protected byte[] toBytes(Blob value) {
-        return value != null ? value.getBytes() : null;
-    }
-
-    protected Serializable toSerializable(ShortBlob value) {
-        return value != null ? (Serializable) ByteUtil.toObject(value
-            .getBytes()) : null;
-    }
-
-    protected Serializable toSerializable(Blob value) {
-        return value != null ? (Serializable) ByteUtil.toObject(value
-            .getBytes()) : null;
     }
 }

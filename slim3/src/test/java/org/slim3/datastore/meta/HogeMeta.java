@@ -46,8 +46,8 @@ public class HogeMeta extends ModelMeta<Hoge> {
     /**
      * 
      */
-    public AttributeMeta<Short> myShort =
-        new AttributeMeta<Short>(this, "myShort", short.class);
+    public AttributeMeta<Short> myPrimitiveShort =
+        new AttributeMeta<Short>(this, "myPrimitiveShort", short.class);
 
     /**
      * 
@@ -169,8 +169,8 @@ public class HogeMeta extends ModelMeta<Hoge> {
     public Hoge entityToModel(Entity entity) {
         Hoge model = new Hoge();
         model.setKey(entity.getKey());
-        model
-            .setMyShort(toPrimitiveShort((Long) entity.getProperty("myShort")));
+        model.setMyPrimitiveShort(longToPrimitiveShort((Long) entity
+            .getProperty("myPrimitiveShort")));
         model.setMyShortWrapper(toShort((Long) entity
             .getProperty("myShortWrapper")));
         model.setMyInt(toPrimitiveInt((Long) entity.getProperty("myInt")));
@@ -178,66 +178,50 @@ public class HogeMeta extends ModelMeta<Hoge> {
             .getProperty("myIntWrapper")));
         model.setMyLong(toPrimitiveLong((Long) entity.getProperty("myLong")));
         model.setMyLongWrapper((Long) entity.getProperty("myLongWrapper"));
-        Double myFloat = (Double) entity.getProperty("myFloat");
-        if (myFloat != null) {
-            model.setMyFloat(myFloat.floatValue());
-        }
-        Double myFloatWrapper = (Double) entity.getProperty("myFloatWrapper");
-        if (myFloatWrapper != null) {
-            model.setMyFloatWrapper(myFloatWrapper.floatValue());
-        } else {
-            model.setMyFloatWrapper(null);
-        }
-        Double myDouble = (Double) entity.getProperty("myDouble");
-        if (myDouble != null) {
-            model.setMyDouble(myDouble);
-        }
-        Double myDoubleWrapper = (Double) entity.getProperty("myDoubleWrapper");
-        if (myDoubleWrapper != null) {
-            model.setMyDoubleWrapper(myDoubleWrapper);
-        } else {
-            model.setMyDoubleWrapper(null);
-        }
-        String myString = (String) entity.getProperty("myString");
-        model.setMyString(myString);
-        Boolean myBoolean = (Boolean) entity.getProperty("myBoolean");
-        if (myBoolean != null) {
-            model.setMyBoolean(myBoolean);
-        }
-        Boolean myBooleanWrapper =
-            (Boolean) entity.getProperty("myBooleanWrapper");
-        model.setMyBooleanWrapper(myBooleanWrapper);
-        Date myDate = (Date) entity.getProperty("myDate");
-        model.setMyDate(myDate);
-        Text myStringText = (Text) entity.getProperty("myStringText");
-        model.setMyStringText(toString(myStringText));
-        Text myText = (Text) entity.getProperty("myText");
-        model.setMyText(myText);
-        ShortBlob myBytes = (ShortBlob) entity.getProperty("myBytes");
-        model.setMyBytes(toBytes(myBytes));
-        Blob myBytesBlob = (Blob) entity.getProperty("myBytesBlob");
-        model.setMyBytesBlob(toBytes(myBytesBlob));
-        ShortBlob mySerializable =
-            (ShortBlob) entity.getProperty("mySerializable");
+        model.setMyFloat(toPrimitiveFloat((Double) entity
+            .getProperty("myFloat")));
+        model.setMyFloatWrapper(toFloat((Double) entity
+            .getProperty("myFloatWrapper")));
+        model.setMyDouble(toPrimitiveDouble((Double) entity
+            .getProperty("myDouble")));
         model
-            .setMySerializable((MySerializable) toSerializable(mySerializable));
-        Blob mySerializableBlob =
-            (Blob) entity.getProperty("mySerializableBlob");
+            .setMyDoubleWrapper((Double) entity.getProperty("myDoubleWrapper"));
+        model.setMyString((String) entity.getProperty("myString"));
+        model.setMyBoolean(toPrimitiveBoolean((Boolean) entity
+            .getProperty("myBoolean")));
+        model.setMyBooleanWrapper((Boolean) entity
+            .getProperty("myBooleanWrapper"));
+        model.setMyDate((Date) entity.getProperty("myDate"));
+        model.setMyStringText(toString((Text) entity
+            .getProperty("myStringText")));
+        model.setMyText((Text) entity.getProperty("myText"));
+        model.setMyBytes(toBytes((ShortBlob) entity.getProperty("myBytes")));
+        model.setMyBytesBlob(toBytes((Blob) entity.getProperty("myBytesBlob")));
         model
-            .setMySerializableBlob((MySerializable) toSerializable(mySerializableBlob));
-        Blob myBlob = (Blob) entity.getProperty("myBlob");
-        model.setMyBlob(myBlob);
-        ShortBlob myShortBlob = (ShortBlob) entity.getProperty("myShortBlob");
-        model.setMyShortBlob(myShortBlob);
-        String myBigDecimal = (String) entity.getProperty("myBigDecimal");
-        if (myBigDecimal != null) {
-            model.setMyBigDecimal(new BigDecimal(myBigDecimal));
-        } else {
-            model.setMyBigDecimal(null);
-        }
+            .setMySerializable((MySerializable) toSerializable((ShortBlob) entity
+                .getProperty("mySerializable")));
+        model
+            .setMySerializableBlob((MySerializable) toSerializable((Blob) entity
+                .getProperty("mySerializableBlob")));
+        model.setMyBlob((Blob) entity.getProperty("myBlob"));
+        model.setMyShortBlob((ShortBlob) entity.getProperty("myShortBlob"));
+        model.setMyBigDecimal(toBigDecimal((String) entity
+            .getProperty("myBigDecimal")));
         List<Long> myShortArray =
             (List<Long>) entity.getProperty("myShortArray");
         model.setMyShortArray(toPrimitiveShortArray(myShortArray));
         return model;
+    }
+
+    @Override
+    public Entity modelToEntity(Hoge model) {
+        Entity entity = null;
+        if (model.getKey() != null) {
+            entity = new Entity(model.getKey());
+        } else {
+            entity = new Entity("Hoge");
+        }
+        entity.setProperty("myPrimitiveShort", model.getMyPrimitiveShort());
+        return entity;
     }
 }

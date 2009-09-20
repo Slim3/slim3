@@ -37,7 +37,7 @@ public class Hoge {
     @PrimaryKey
     private Key key;
 
-    private short myShort;
+    private short myPrimitiveShort;
 
     private Short myShortWrapper;
 
@@ -109,16 +109,16 @@ public class Hoge {
     /**
      * @return the myShort
      */
-    public short getMyShort() {
-        return myShort;
+    public short getMyPrimitiveShort() {
+        return myPrimitiveShort;
     }
 
     /**
      * @param myShort
      *            the myShort to set
      */
-    public void setMyShort(short myShort) {
-        this.myShort = myShort;
+    public void setMyPrimitiveShort(short myShort) {
+        this.myPrimitiveShort = myShort;
     }
 
     /**
