@@ -26,6 +26,7 @@ import java.util.TimeZone;
 import javax.servlet.http.HttpServletRequest;
 
 import org.slim3.controller.ControllerConstants;
+import org.slim3.util.BooleanUtil;
 import org.slim3.util.HtmlUtil;
 import org.slim3.util.LocaleLocator;
 import org.slim3.util.RequestLocator;
@@ -258,7 +259,7 @@ public final class Functions {
         return "name = \""
             + name
             + "\""
-            + (request.getAttribute(name) != null
+            + (BooleanUtil.toPrimitiveBoolean(request.getAttribute(name))
                 ? " checked = \"checked\""
                 : "");
     }
