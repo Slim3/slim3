@@ -16,6 +16,7 @@
 package org.slim3.datastore.meta;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -163,6 +164,21 @@ public class HogeMeta extends ModelMeta<Hoge> {
     /**
      * 
      */
+    public CollectionAttributeMeta<Short> myShortList =
+        new CollectionAttributeMeta<Short>(this, "myShortList", List.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Short> myShortArrayList =
+        new CollectionAttributeMeta<Short>(
+            this,
+            "myShortArrayList",
+            ArrayList.class);
+
+    /**
+     * 
+     */
     public AttributeMeta<Long> version =
         new AttributeMeta<Long>(this, "version", Long.class);
 
@@ -221,6 +237,10 @@ public class HogeMeta extends ModelMeta<Hoge> {
                 .getProperty("myPrimitiveShortArray")));
         model.setMyShortArray(longListToShortArray((List<Long>) entity
             .getProperty("myShortArray")));
+        model.setMyShortList(longListToShortList((List<Long>) entity
+            .getProperty("myShortList")));
+        model.setMyShortArrayList(longListToShortList((List<Long>) entity
+            .getProperty("myShortArrayList")));
         return model;
     }
 
@@ -266,6 +286,8 @@ public class HogeMeta extends ModelMeta<Hoge> {
             primitiveShortArrayToLongList(model.getMyPrimitiveShortArray()));
         entity.setProperty("myShortArray", shortArrayToLongList(model
             .getMyShortArray()));
+        entity.setProperty("myShortList", model.getMyShortList());
+        entity.setProperty("myShortArrayList", model.getMyShortArrayList());
         return entity;
     }
 }

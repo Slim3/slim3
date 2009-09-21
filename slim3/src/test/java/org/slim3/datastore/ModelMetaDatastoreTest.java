@@ -16,7 +16,10 @@
 package org.slim3.datastore;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
@@ -63,6 +66,10 @@ public class ModelMetaDatastoreTest extends DatastoreTestCase {
         model.setMyBigDecimal(new BigDecimal("1"));
         model.setMyPrimitiveShortArray(new short[] { 1 });
         model.setMyShortArray(new Short[] { 1 });
+        model.setMyShortList(Arrays.asList((short) 1));
+        ArrayList<Short> myShortArrayList = new ArrayList<Short>();
+        myShortArrayList.add((short) 1);
+        model.setMyShortArrayList(myShortArrayList);
         Entity entity = meta.modelToEntity(model);
         Key key = ds.put(entity);
         Entity entity2 = ds.get(key);
@@ -83,20 +90,26 @@ public class ModelMetaDatastoreTest extends DatastoreTestCase {
         assertEquals(new Date(0), model2.getMyDate());
         assertEquals("aaa", model2.getMyStringText());
         assertEquals(new Text("aaa"), model2.getMyText());
-        byte[] myBytes = model2.getMyBytes();
-        assertEquals(1, myBytes.length);
-        assertEquals(1, myBytes[0]);
-        byte[] myBytesBlob = model2.getMyBytesBlob();
-        assertEquals(1, myBytesBlob.length);
-        assertEquals(1, myBytesBlob[0]);
+        byte[] myBytes2 = model2.getMyBytes();
+        assertEquals(1, myBytes2.length);
+        assertEquals(1, myBytes2[0]);
+        byte[] myBytesBlob2 = model2.getMyBytesBlob();
+        assertEquals(1, myBytesBlob2.length);
+        assertEquals(1, myBytesBlob2[0]);
         assertEquals(new MySerializable("aaa"), model2.getMySerializable());
         assertEquals(new MySerializable("aaa"), model2.getMySerializableBlob());
         assertEquals(new BigDecimal("1"), model2.getMyBigDecimal());
-        short[] myPrimitiveShortArray = model2.getMyPrimitiveShortArray();
-        assertEquals(1, myPrimitiveShortArray.length);
-        assertEquals((short) 1, myPrimitiveShortArray[0]);
-        Short[] myShortArray = model2.getMyShortArray();
-        assertEquals(1, myShortArray.length);
-        assertEquals(Short.valueOf("1"), myShortArray[0]);
+        short[] myPrimitiveShortArray2 = model2.getMyPrimitiveShortArray();
+        assertEquals(1, myPrimitiveShortArray2.length);
+        assertEquals((short) 1, myPrimitiveShortArray2[0]);
+        Short[] myShortArray2 = model2.getMyShortArray();
+        assertEquals(1, myShortArray2.length);
+        assertEquals(Short.valueOf("1"), myShortArray2[0]);
+        List<Short> myShortList2 = model2.getMyShortList();
+        assertEquals(1, myShortList2.size());
+        assertEquals(Short.valueOf("1"), myShortList2.get(0));
+        ArrayList<Short> myShortArrayList2 = model2.getMyShortArrayList();
+        assertEquals(1, myShortArrayList2.size());
+        assertEquals(Short.valueOf("1"), myShortArrayList2.get(0));
     }
 }

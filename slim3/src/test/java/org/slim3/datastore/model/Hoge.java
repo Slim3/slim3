@@ -16,7 +16,9 @@
 package org.slim3.datastore.model;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.slim3.datastore.Blob;
 import org.slim3.datastore.Model;
@@ -89,6 +91,10 @@ public class Hoge {
     private short[] myPrimitiveShortArray;
 
     private Short[] myShortArray;
+
+    private List<Short> myShortList;
+
+    private ArrayList<Short> myShortArrayList;
 
     @Version
     private Long version;
@@ -481,6 +487,36 @@ public class Hoge {
      */
     public void setMyShortArray(Short[] myShortArray) {
         this.myShortArray = myShortArray;
+    }
+
+    /**
+     * @return the myShortList
+     */
+    public List<Short> getMyShortList() {
+        return myShortList;
+    }
+
+    /**
+     * @param myShortList
+     *            the myShortList to set
+     */
+    public void setMyShortList(List<Short> myShortList) {
+        this.myShortList = myShortList;
+    }
+
+    /**
+     * @return the myShortArrayList
+     */
+    public ArrayList<Short> getMyShortArrayList() {
+        return myShortArrayList;
+    }
+
+    /**
+     * @param myShortArrayList
+     *            the myShortArrayList to set
+     */
+    public void setMyShortArrayList(ArrayList<Short> myShortArrayList) {
+        this.myShortArrayList = myShortArrayList;
     }
 
     /**

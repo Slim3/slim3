@@ -399,17 +399,17 @@ public abstract class ModelMeta<T> {
     }
 
     /**
-     * Converts the list of long to a list of short.
+     * Converts the list of long to an array list of short.
      * 
      * @param value
      *            the list of long
      * @return a list of short
      */
-    protected List<Short> longListToShortList(List<Long> value) {
+    protected ArrayList<Short> longListToShortList(List<Long> value) {
         if (value == null) {
             return null;
         }
-        List<Short> ret = new ArrayList<Short>(value.size());
+        ArrayList<Short> ret = new ArrayList<Short>(value.size());
         int size = value.size();
         for (int i = 0; i < size; i++) {
             Long l = value.get(i);

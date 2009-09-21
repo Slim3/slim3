@@ -280,4 +280,15 @@ public class ModelMetaTest extends TestCase {
         assertEquals(Long.valueOf(1), ret.get(0));
         assertNull(meta.shortArrayToLongList(null));
     }
+
+    /**
+     * @throws Exception
+     */
+    public void testLongListToShortList() throws Exception {
+        List<Long> value = Arrays.asList(1L);
+        List<Short> ret = meta.longListToShortList(value);
+        assertEquals(1, ret.size());
+        assertEquals(Short.valueOf((short) 1), ret.get(0));
+        assertNull(meta.longListToShortList(null));
+    }
 }
