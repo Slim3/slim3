@@ -313,9 +313,11 @@ public class FunctionsTest extends TestCase {
      */
     public void testCheckbox() throws Exception {
         request.setAttribute("aaa", "111");
+        request.setAttribute("ccc", "false");
         assertEquals("name = \"aaa\" checked = \"checked\"", Functions
             .checkbox("aaa"));
         assertEquals("name = \"bbb\"", Functions.checkbox("bbb"));
+        assertEquals("name = \"ccc\"", Functions.checkbox("ccc"));
     }
 
     /**
