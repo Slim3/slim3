@@ -400,11 +400,11 @@ public abstract class ModelMeta<T> {
     }
 
     /**
-     * Converts the list of long to an array list of short.
+     * Converts the list of long to a list of short.
      * 
      * @param value
      *            the list of long
-     * @return an array list of short
+     * @return a list of short
      */
     protected ArrayList<Short> longListToShortList(List<Long> value) {
         if (value == null) {
@@ -416,11 +416,11 @@ public abstract class ModelMeta<T> {
     }
 
     /**
-     * Converts the list of long to a hash set of short.
+     * Converts the list of long to a set of short.
      * 
      * @param value
      *            the list of long
-     * @return a hash set of short
+     * @return a set of short
      */
     protected HashSet<Short> longListToShortSet(List<Long> value) {
         if (value == null) {
@@ -432,11 +432,11 @@ public abstract class ModelMeta<T> {
     }
 
     /**
-     * Converts the list of long to a hash set of short.
+     * Converts the list of long to a sorted set of short.
      * 
      * @param value
      *            the list of long
-     * @return a hash set of short
+     * @return a sorted set of short
      */
     protected TreeSet<Short> longListToShortSortedSet(List<Long> value) {
         if (value == null) {
@@ -484,7 +484,7 @@ public abstract class ModelMeta<T> {
      * 
      * @param value
      *            the list of long
-     * @return a statck of short
+     * @return a stack of short
      */
     protected Stack<Short> longListToShortStack(List<Long> value) {
         if (value == null) {
@@ -587,5 +587,135 @@ public abstract class ModelMeta<T> {
             ret.add(value[i].longValue());
         }
         return ret;
+    }
+
+    /**
+     * Copies the list of long to the collection of integer.
+     * 
+     * @param value
+     *            the list of long
+     * @param collection
+     *            the collection of integer
+     */
+    protected void copyLongListToIntegerCollection(List<Long> value,
+            Collection<Integer> collection) {
+        int size = value.size();
+        for (int i = 0; i < size; i++) {
+            Long l = value.get(i);
+            collection.add(l != null ? l.intValue() : null);
+        }
+    }
+
+    /**
+     * Converts the list of long to a list of integer.
+     * 
+     * @param value
+     *            the list of long
+     * @return a list of integer
+     */
+    protected ArrayList<Integer> longListToIntegerList(List<Long> value) {
+        if (value == null) {
+            return null;
+        }
+        ArrayList<Integer> collection = new ArrayList<Integer>(value.size());
+        copyLongListToIntegerCollection(value, collection);
+        return collection;
+    }
+
+    /**
+     * Converts the list of long to a set of integer.
+     * 
+     * @param value
+     *            the list of long
+     * @return a set of integer
+     */
+    protected HashSet<Integer> longListToIntegerSet(List<Long> value) {
+        if (value == null) {
+            return null;
+        }
+        HashSet<Integer> collection = new HashSet<Integer>();
+        copyLongListToIntegerCollection(value, collection);
+        return collection;
+    }
+
+    /**
+     * Converts the list of long to a sorted set of integer.
+     * 
+     * @param value
+     *            the list of long
+     * @return a sorted set of integer
+     */
+    protected TreeSet<Integer> longListToIntegerSortedSet(List<Long> value) {
+        if (value == null) {
+            return null;
+        }
+        TreeSet<Integer> collection = new TreeSet<Integer>();
+        copyLongListToIntegerCollection(value, collection);
+        return collection;
+    }
+
+    /**
+     * Converts the list of long to a linked list of integer.
+     * 
+     * @param value
+     *            the list of long
+     * @return a linked list of integer
+     */
+    protected LinkedList<Integer> longListToIntegerLinkedList(List<Long> value) {
+        if (value == null) {
+            return null;
+        }
+        LinkedList<Integer> collection = new LinkedList<Integer>();
+        copyLongListToIntegerCollection(value, collection);
+        return collection;
+    }
+
+    /**
+     * Converts the list of long to a linked hash set of integer.
+     * 
+     * @param value
+     *            the list of long
+     * @return a linked hash set of integer
+     */
+    protected LinkedHashSet<Integer> longListToIntegerLinkedHashSet(
+            List<Long> value) {
+        if (value == null) {
+            return null;
+        }
+        LinkedHashSet<Integer> collection = new LinkedHashSet<Integer>();
+        copyLongListToIntegerCollection(value, collection);
+        return collection;
+    }
+
+    /**
+     * Converts the list of long to a stack of integer.
+     * 
+     * @param value
+     *            the list of long
+     * @return a stack of integer
+     */
+    protected Stack<Integer> longListToIntegerStack(List<Long> value) {
+        if (value == null) {
+            return null;
+        }
+        Stack<Integer> collection = new Stack<Integer>();
+        copyLongListToIntegerCollection(value, collection);
+        return collection;
+    }
+
+    /**
+     * Converts the list of long to a vector of integer.
+     * 
+     * @param value
+     *            the list of long
+     * @return a vector of integer
+     */
+    protected Vector<Integer> longListToIntegerVector(List<Long> value) {
+        if (value == null) {
+            return null;
+        }
+        Vector<Integer> collection = new Vector<Integer>(value.size());
+        copyLongListToIntegerCollection(value, collection);
+        return collection;
     }
 }

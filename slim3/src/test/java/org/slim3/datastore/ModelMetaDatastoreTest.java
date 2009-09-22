@@ -89,6 +89,19 @@ public class ModelMetaDatastoreTest extends DatastoreTestCase {
         model.setMyShortVector(new Vector<Short>(Arrays.asList((short) 1)));
         model.setMyPrimitiveIntArray(new int[] { 1 });
         model.setMyIntegerArray(new Integer[] { 1 });
+        model.setMyIntegerList(Arrays.asList(1));
+        model.setMyIntegerArrayList(new ArrayList<Integer>(Arrays.asList(1)));
+        model.setMyIntegerSet(new HashSet<Integer>(Arrays.asList(1)));
+        model.setMyIntegerHashSet(new HashSet<Integer>(Arrays.asList(1)));
+        model.setMyIntegerSortedSet(new TreeSet<Integer>(Arrays.asList(1)));
+        model.setMyIntegerTreeSet(new TreeSet<Integer>(Arrays.asList(1)));
+        model.setMyIntegerLinkedList(new LinkedList<Integer>(Arrays.asList(1)));
+        model.setMyIntegerLinkedHashSet(new LinkedHashSet<Integer>(Arrays
+            .asList(1)));
+        Stack<Integer> myIntegerStack = new Stack<Integer>();
+        myIntegerStack.add(1);
+        model.setMyIntegerStack(myIntegerStack);
+        model.setMyIntegerVector(new Vector<Integer>(Arrays.asList(1)));
 
         Entity entity = meta.modelToEntity(model);
         Key key = ds.put(entity);
@@ -163,5 +176,43 @@ public class ModelMetaDatastoreTest extends DatastoreTestCase {
         Integer[] myIntegerArray2 = model2.getMyIntegerArray();
         assertEquals(1, myIntegerArray2.length);
         assertEquals(Integer.valueOf("1"), myIntegerArray2[0]);
+        List<Integer> myIntegerList2 = model2.getMyIntegerList();
+        assertEquals(1, myIntegerList2.size());
+        assertEquals(Integer.valueOf("1"), myIntegerList2.get(0));
+        ArrayList<Integer> myIntegerArrayList2 = model2.getMyIntegerArrayList();
+        assertEquals(1, myIntegerArrayList2.size());
+        assertEquals(Integer.valueOf("1"), myIntegerArrayList2.get(0));
+        Set<Integer> myIntegerSet2 = model2.getMyIntegerSet();
+        assertEquals(1, myIntegerSet2.size());
+        assertEquals(Integer.valueOf("1"), myIntegerSet2.iterator().next());
+        HashSet<Integer> myIntegerHashSet2 = model2.getMyIntegerHashSet();
+        assertEquals(1, myIntegerHashSet2.size());
+        assertEquals(Integer.valueOf("1"), myIntegerHashSet2.iterator().next());
+        SortedSet<Integer> myIntegerSortedSet2 = model2.getMyIntegerSortedSet();
+        assertEquals(1, myIntegerSortedSet2.size());
+        assertEquals(Integer.valueOf("1"), myIntegerSortedSet2
+            .iterator()
+            .next());
+        TreeSet<Integer> myIntegerTreeSet2 = model2.getMyIntegerTreeSet();
+        assertEquals(1, myIntegerTreeSet2.size());
+        assertEquals(Integer.valueOf("1"), myIntegerTreeSet2.iterator().next());
+        LinkedList<Integer> myIntegerLinkedList2 =
+            model2.getMyIntegerLinkedList();
+        assertEquals(1, myIntegerLinkedList2.size());
+        assertEquals(Integer.valueOf("1"), myIntegerLinkedList2
+            .iterator()
+            .next());
+        LinkedHashSet<Integer> myIntegerLinkedHashSet2 =
+            model2.getMyIntegerLinkedHashSet();
+        assertEquals(1, myIntegerLinkedHashSet2.size());
+        assertEquals(Integer.valueOf("1"), myIntegerLinkedHashSet2
+            .iterator()
+            .next());
+        Stack<Integer> myIntegerStack2 = model2.getMyIntegerStack();
+        assertEquals(1, myIntegerStack2.size());
+        assertEquals(Integer.valueOf("1"), myIntegerStack2.iterator().next());
+        Vector<Integer> myIntegerVector2 = model2.getMyIntegerVector();
+        assertEquals(1, myIntegerVector2.size());
+        assertEquals(Integer.valueOf("1"), myIntegerVector2.iterator().next());
     }
 }

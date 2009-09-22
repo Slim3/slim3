@@ -121,6 +121,26 @@ public class Hoge {
 
     private Integer[] myIntegerArray;
 
+    private List<Integer> myIntegerList;
+
+    private ArrayList<Integer> myIntegerArrayList;
+
+    private Set<Integer> myIntegerSet;
+
+    private HashSet<Integer> myIntegerHashSet;
+
+    private SortedSet<Integer> myIntegerSortedSet;
+
+    private TreeSet<Integer> myIntegerTreeSet;
+
+    private LinkedList<Integer> myIntegerLinkedList;
+
+    private LinkedHashSet<Integer> myIntegerLinkedHashSet;
+
+    private Stack<Integer> myIntegerStack;
+
+    private Vector<Integer> myIntegerVector;
+
     @Version
     private Long version;
 
@@ -678,6 +698,157 @@ public class Hoge {
      */
     public void setMyIntegerArray(Integer[] myIntegerArray) {
         this.myIntegerArray = myIntegerArray;
+    }
+
+    /**
+     * @return the myIntegerList
+     */
+    public List<Integer> getMyIntegerList() {
+        return myIntegerList;
+    }
+
+    /**
+     * @param myIntegerList
+     *            the myIntegerList to set
+     */
+    public void setMyIntegerList(List<Integer> myIntegerList) {
+        this.myIntegerList = myIntegerList;
+    }
+
+    /**
+     * @return the myIntegerArrayList
+     */
+    public ArrayList<Integer> getMyIntegerArrayList() {
+        return myIntegerArrayList;
+    }
+
+    /**
+     * @param myIntegerArrayList
+     *            the myIntegerArrayList to set
+     */
+    public void setMyIntegerArrayList(ArrayList<Integer> myIntegerArrayList) {
+        this.myIntegerArrayList = myIntegerArrayList;
+    }
+
+    /**
+     * @return the myIntegerSet
+     */
+    public Set<Integer> getMyIntegerSet() {
+        return myIntegerSet;
+    }
+
+    /**
+     * @param myIntegerSet
+     *            the myIntegerSet to set
+     */
+    public void setMyIntegerSet(Set<Integer> myIntegerSet) {
+        this.myIntegerSet = myIntegerSet;
+    }
+
+    /**
+     * @return the myIntegerHashSet
+     */
+    public HashSet<Integer> getMyIntegerHashSet() {
+        return myIntegerHashSet;
+    }
+
+    /**
+     * @param myIntegerHashSet
+     *            the myIntegerHashSet to set
+     */
+    public void setMyIntegerHashSet(HashSet<Integer> myIntegerHashSet) {
+        this.myIntegerHashSet = myIntegerHashSet;
+    }
+
+    /**
+     * @return the myIntegerSortedSet
+     */
+    public SortedSet<Integer> getMyIntegerSortedSet() {
+        return myIntegerSortedSet;
+    }
+
+    /**
+     * @param myIntegerSortedSet
+     *            the myIntegerSortedSet to set
+     */
+    public void setMyIntegerSortedSet(SortedSet<Integer> myIntegerSortedSet) {
+        this.myIntegerSortedSet = myIntegerSortedSet;
+    }
+
+    /**
+     * @return the myIntegerTreeSet
+     */
+    public TreeSet<Integer> getMyIntegerTreeSet() {
+        return myIntegerTreeSet;
+    }
+
+    /**
+     * @param myIntegerTreeSet
+     *            the myIntegerTreeSet to set
+     */
+    public void setMyIntegerTreeSet(TreeSet<Integer> myIntegerTreeSet) {
+        this.myIntegerTreeSet = myIntegerTreeSet;
+    }
+
+    /**
+     * @return the myIntegerLinkedList
+     */
+    public LinkedList<Integer> getMyIntegerLinkedList() {
+        return myIntegerLinkedList;
+    }
+
+    /**
+     * @param myIntegerLinkedList
+     *            the myIntegerLinkedList to set
+     */
+    public void setMyIntegerLinkedList(LinkedList<Integer> myIntegerLinkedList) {
+        this.myIntegerLinkedList = myIntegerLinkedList;
+    }
+
+    /**
+     * @return the myIntegerLinkedHashSet
+     */
+    public LinkedHashSet<Integer> getMyIntegerLinkedHashSet() {
+        return myIntegerLinkedHashSet;
+    }
+
+    /**
+     * @param myIntegerLinkedHashSet
+     *            the myIntegerLinkedHashSet to set
+     */
+    public void setMyIntegerLinkedHashSet(
+            LinkedHashSet<Integer> myIntegerLinkedHashSet) {
+        this.myIntegerLinkedHashSet = myIntegerLinkedHashSet;
+    }
+
+    /**
+     * @return the myIntegerStack
+     */
+    public Stack<Integer> getMyIntegerStack() {
+        return myIntegerStack;
+    }
+
+    /**
+     * @param myIntegerStack
+     *            the myIntegerStack to set
+     */
+    public void setMyIntegerStack(Stack<Integer> myIntegerStack) {
+        this.myIntegerStack = myIntegerStack;
+    }
+
+    /**
+     * @return the myIntegerVector
+     */
+    public Vector<Integer> getMyIntegerVector() {
+        return myIntegerVector;
+    }
+
+    /**
+     * @param myIntegerVector
+     *            the myIntegerVector to set
+     */
+    public void setMyIntegerVector(Vector<Integer> myIntegerVector) {
+        this.myIntegerVector = myIntegerVector;
     }
 
     /**

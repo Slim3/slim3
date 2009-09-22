@@ -261,6 +261,90 @@ public class HogeMeta extends ModelMeta<Hoge> {
     /**
      * 
      */
+    public CollectionAttributeMeta<Integer> myIntegerList =
+        new CollectionAttributeMeta<Integer>(this, "myIntegerList", List.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Integer> myIntegerArrayList =
+        new CollectionAttributeMeta<Integer>(
+            this,
+            "myIntegerArrayList",
+            ArrayList.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Integer> myIntegerSet =
+        new CollectionAttributeMeta<Integer>(this, "myIntegerSet", Set.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Integer> myIntegerHashSet =
+        new CollectionAttributeMeta<Integer>(
+            this,
+            "myIntegerHashSet",
+            HashSet.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Integer> myIntegerSortedSet =
+        new CollectionAttributeMeta<Integer>(
+            this,
+            "myIntegerSortedSet",
+            SortedSet.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Integer> myIntegerTreeSet =
+        new CollectionAttributeMeta<Integer>(
+            this,
+            "myIntegerTreeSet",
+            TreeSet.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Integer> myIntegerLinkedList =
+        new CollectionAttributeMeta<Integer>(
+            this,
+            "myIntegerLinkedList",
+            LinkedList.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Integer> myIntegerLinkedHashSet =
+        new CollectionAttributeMeta<Integer>(
+            this,
+            "myIntegerLinkedHashSet",
+            LinkedHashSet.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Integer> myIntegerStack =
+        new CollectionAttributeMeta<Integer>(
+            this,
+            "myIntegerStack",
+            Stack.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Integer> myIntegerVector =
+        new CollectionAttributeMeta<Integer>(
+            this,
+            "myIntegerVector",
+            Vector.class);
+
+    /**
+     * 
+     */
     public AttributeMeta<Long> version =
         new AttributeMeta<Long>(this, "version", Long.class);
 
@@ -344,6 +428,30 @@ public class HogeMeta extends ModelMeta<Hoge> {
                 .getProperty("myPrimitiveIntArray")));
         model.setMyIntegerArray(longListToIntegerArray((List<Long>) entity
             .getProperty("myIntegerArray")));
+        model.setMyIntegerList(longListToIntegerList((List<Long>) entity
+            .getProperty("myIntegerList")));
+        model.setMyIntegerArrayList(longListToIntegerList((List<Long>) entity
+            .getProperty("myIntegerArrayList")));
+        model.setMyIntegerSet(longListToIntegerSet((List<Long>) entity
+            .getProperty("myIntegerSet")));
+        model.setMyIntegerHashSet(longListToIntegerSet((List<Long>) entity
+            .getProperty("myIntegerHashSet")));
+        model
+            .setMyIntegerSortedSet(longListToIntegerSortedSet((List<Long>) entity
+                .getProperty("myIntegerSortedSet")));
+        model
+            .setMyIntegerTreeSet(longListToIntegerSortedSet((List<Long>) entity
+                .getProperty("myIntegerTreeSet")));
+        model
+            .setMyIntegerLinkedList(longListToIntegerLinkedList((List<Long>) entity
+                .getProperty("myIntegerLinkedList")));
+        model
+            .setMyIntegerLinkedHashSet(longListToIntegerLinkedHashSet((List<Long>) entity
+                .getProperty("myIntegerLinkedHashSet")));
+        model.setMyIntegerStack(longListToIntegerStack((List<Long>) entity
+            .getProperty("myIntegerStack")));
+        model.setMyIntegerVector(longListToIntegerVector((List<Long>) entity
+            .getProperty("myIntegerVector")));
         return model;
     }
 
@@ -403,6 +511,18 @@ public class HogeMeta extends ModelMeta<Hoge> {
             primitiveIntArrayToLongList(model.getMyPrimitiveIntArray()));
         entity.setProperty("myIntegerArray", integerArrayToLongList(model
             .getMyIntegerArray()));
+        entity.setProperty("myIntegerList", model.getMyIntegerList());
+        entity.setProperty("myIntegerArrayList", model.getMyIntegerArrayList());
+        entity.setProperty("myIntegerSet", model.getMyIntegerSet());
+        entity.setProperty("myIntegerHashSet", model.getMyIntegerHashSet());
+        entity.setProperty("myIntegerSortedSet", model.getMyIntegerSortedSet());
+        entity.setProperty("myIntegerTreeSet", model.getMyIntegerTreeSet());
+        entity.setProperty("myIntegerLinkedList", model
+            .getMyIntegerLinkedList());
+        entity.setProperty("myIntegerLinkedHashSet", model
+            .getMyIntegerLinkedHashSet());
+        entity.setProperty("myIntegerStack", model.getMyIntegerStack());
+        entity.setProperty("myIntegerVector", model.getMyIntegerVector());
         return entity;
     }
 }
