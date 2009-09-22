@@ -16,9 +16,15 @@
 package org.slim3.datastore;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Stack;
+import java.util.TreeSet;
+import java.util.Vector;
 
 import org.slim3.util.ByteUtil;
 
@@ -299,28 +305,6 @@ public abstract class ModelMeta<T> {
     }
 
     /**
-     * Converts the string to a big decimal.
-     * 
-     * @param value
-     *            the string
-     * @return a big decimal
-     */
-    protected BigDecimal stringToBigDecimal(String value) {
-        return value != null ? new BigDecimal(value) : null;
-    }
-
-    /**
-     * Converts the big decimal to a string.
-     * 
-     * @param value
-     *            the big decimal
-     * @return a string
-     */
-    protected String bigDecimalToString(BigDecimal value) {
-        return value != null ? value.toPlainString() : null;
-    }
-
-    /**
      * Converts the list of long to an array of primitive short.
      * 
      * @param value
@@ -399,22 +383,131 @@ public abstract class ModelMeta<T> {
     }
 
     /**
+     * Copies the list of long to the collection of short.
+     * 
+     * @param value
+     *            the list of long
+     * @param collection
+     *            the collection of short
+     */
+    protected void copyLongListToShortCollection(List<Long> value,
+            Collection<Short> collection) {
+        int size = value.size();
+        for (int i = 0; i < size; i++) {
+            Long l = value.get(i);
+            collection.add(l != null ? l.shortValue() : null);
+        }
+    }
+
+    /**
      * Converts the list of long to an array list of short.
      * 
      * @param value
      *            the list of long
-     * @return a list of short
+     * @return an array list of short
      */
     protected ArrayList<Short> longListToShortList(List<Long> value) {
         if (value == null) {
             return null;
         }
-        ArrayList<Short> ret = new ArrayList<Short>(value.size());
-        int size = value.size();
-        for (int i = 0; i < size; i++) {
-            Long l = value.get(i);
-            ret.add(l != null ? l.shortValue() : null);
+        ArrayList<Short> collection = new ArrayList<Short>(value.size());
+        copyLongListToShortCollection(value, collection);
+        return collection;
+    }
+
+    /**
+     * Converts the list of long to a hash set of short.
+     * 
+     * @param value
+     *            the list of long
+     * @return a hash set of short
+     */
+    protected HashSet<Short> longListToShortSet(List<Long> value) {
+        if (value == null) {
+            return null;
         }
-        return ret;
+        HashSet<Short> collection = new HashSet<Short>();
+        copyLongListToShortCollection(value, collection);
+        return collection;
+    }
+
+    /**
+     * Converts the list of long to a hash set of short.
+     * 
+     * @param value
+     *            the list of long
+     * @return a hash set of short
+     */
+    protected TreeSet<Short> longListToShortSortedSet(List<Long> value) {
+        if (value == null) {
+            return null;
+        }
+        TreeSet<Short> collection = new TreeSet<Short>();
+        copyLongListToShortCollection(value, collection);
+        return collection;
+    }
+
+    /**
+     * Converts the list of long to a linked list of short.
+     * 
+     * @param value
+     *            the list of long
+     * @return a linked list of short
+     */
+    protected LinkedList<Short> longListToShortLinkedList(List<Long> value) {
+        if (value == null) {
+            return null;
+        }
+        LinkedList<Short> collection = new LinkedList<Short>();
+        copyLongListToShortCollection(value, collection);
+        return collection;
+    }
+
+    /**
+     * Converts the list of long to a linked hash set of short.
+     * 
+     * @param value
+     *            the list of long
+     * @return a linked hash set of short
+     */
+    protected LinkedHashSet<Short> longListToShortLinkedHashSet(List<Long> value) {
+        if (value == null) {
+            return null;
+        }
+        LinkedHashSet<Short> collection = new LinkedHashSet<Short>();
+        copyLongListToShortCollection(value, collection);
+        return collection;
+    }
+
+    /**
+     * Converts the list of long to a stack of short.
+     * 
+     * @param value
+     *            the list of long
+     * @return a statck of short
+     */
+    protected Stack<Short> longListToShortStack(List<Long> value) {
+        if (value == null) {
+            return null;
+        }
+        Stack<Short> collection = new Stack<Short>();
+        copyLongListToShortCollection(value, collection);
+        return collection;
+    }
+
+    /**
+     * Converts the list of long to a vector of short.
+     * 
+     * @param value
+     *            the list of long
+     * @return a vector of short
+     */
+    protected Vector<Short> longListToShortVector(List<Long> value) {
+        if (value == null) {
+            return null;
+        }
+        Vector<Short> collection = new Vector<Short>(value.size());
+        copyLongListToShortCollection(value, collection);
+        return collection;
     }
 }

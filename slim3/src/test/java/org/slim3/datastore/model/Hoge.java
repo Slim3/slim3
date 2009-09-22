@@ -15,10 +15,17 @@
  */
 package org.slim3.datastore.model;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.Stack;
+import java.util.TreeSet;
+import java.util.Vector;
 
 import org.slim3.datastore.Blob;
 import org.slim3.datastore.Model;
@@ -86,8 +93,6 @@ public class Hoge {
 
     private ShortBlob myShortBlob;
 
-    private BigDecimal myBigDecimal;
-
     private short[] myPrimitiveShortArray;
 
     private Short[] myShortArray;
@@ -95,6 +100,22 @@ public class Hoge {
     private List<Short> myShortList;
 
     private ArrayList<Short> myShortArrayList;
+
+    private Set<Short> myShortSet;
+
+    private HashSet<Short> myShortHashSet;
+
+    private SortedSet<Short> myShortSortedSet;
+
+    private TreeSet<Short> myShortTreeSet;
+
+    private LinkedList<Short> myShortLinkedList;
+
+    private LinkedHashSet<Short> myShortLinkedHashSet;
+
+    private Stack<Short> myShortStack;
+
+    private Vector<Short> myShortVector;
 
     @Version
     private Long version;
@@ -445,21 +466,6 @@ public class Hoge {
     }
 
     /**
-     * @return the myBigDecimal
-     */
-    public BigDecimal getMyBigDecimal() {
-        return myBigDecimal;
-    }
-
-    /**
-     * @param myBigDecimal
-     *            the myBigDecimal to set
-     */
-    public void setMyBigDecimal(BigDecimal myBigDecimal) {
-        this.myBigDecimal = myBigDecimal;
-    }
-
-    /**
      * @return the myShortArray
      */
     public short[] getMyPrimitiveShortArray() {
@@ -517,6 +523,127 @@ public class Hoge {
      */
     public void setMyShortArrayList(ArrayList<Short> myShortArrayList) {
         this.myShortArrayList = myShortArrayList;
+    }
+
+    /**
+     * @return the myShortSet
+     */
+    public Set<Short> getMyShortSet() {
+        return myShortSet;
+    }
+
+    /**
+     * @param myShortSet
+     *            the myShortSet to set
+     */
+    public void setMyShortSet(Set<Short> myShortSet) {
+        this.myShortSet = myShortSet;
+    }
+
+    /**
+     * @return the myShortHashSet
+     */
+    public HashSet<Short> getMyShortHashSet() {
+        return myShortHashSet;
+    }
+
+    /**
+     * @param myShortHashSet
+     *            the myShortHashSet to set
+     */
+    public void setMyShortHashSet(HashSet<Short> myShortHashSet) {
+        this.myShortHashSet = myShortHashSet;
+    }
+
+    /**
+     * @return the myShortSortedSet
+     */
+    public SortedSet<Short> getMyShortSortedSet() {
+        return myShortSortedSet;
+    }
+
+    /**
+     * @param myShortSortedSet
+     *            the myShortSortedSet to set
+     */
+    public void setMyShortSortedSet(SortedSet<Short> myShortSortedSet) {
+        this.myShortSortedSet = myShortSortedSet;
+    }
+
+    /**
+     * @return the myShortTreeSet
+     */
+    public TreeSet<Short> getMyShortTreeSet() {
+        return myShortTreeSet;
+    }
+
+    /**
+     * @param myShortTreeSet
+     *            the myShortTreeSet to set
+     */
+    public void setMyShortTreeSet(TreeSet<Short> myShortTreeSet) {
+        this.myShortTreeSet = myShortTreeSet;
+    }
+
+    /**
+     * @return the myShortLinkedList
+     */
+    public LinkedList<Short> getMyShortLinkedList() {
+        return myShortLinkedList;
+    }
+
+    /**
+     * @param myShortLinkedList
+     *            the myShortLinkedList to set
+     */
+    public void setMyShortLinkedList(LinkedList<Short> myShortLinkedList) {
+        this.myShortLinkedList = myShortLinkedList;
+    }
+
+    /**
+     * @return the myShortLinkedHashSet
+     */
+    public LinkedHashSet<Short> getMyShortLinkedHashSet() {
+        return myShortLinkedHashSet;
+    }
+
+    /**
+     * @param myShortLinkedHashSet
+     *            the myShortLinkedHashSet to set
+     */
+    public void setMyShortLinkedHashSet(
+            LinkedHashSet<Short> myShortLinkedHashSet) {
+        this.myShortLinkedHashSet = myShortLinkedHashSet;
+    }
+
+    /**
+     * @return the myShortStack
+     */
+    public Stack<Short> getMyShortStack() {
+        return myShortStack;
+    }
+
+    /**
+     * @param myShortStack
+     *            the myShortStack to set
+     */
+    public void setMyShortStack(Stack<Short> myShortStack) {
+        this.myShortStack = myShortStack;
+    }
+
+    /**
+     * @return the myShortVector
+     */
+    public Vector<Short> getMyShortVector() {
+        return myShortVector;
+    }
+
+    /**
+     * @param myShortVector
+     *            the myShortVector to set
+     */
+    public void setMyShortVector(Vector<Short> myShortVector) {
+        this.myShortVector = myShortVector;
     }
 
     /**

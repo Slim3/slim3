@@ -15,7 +15,6 @@
  */
 package org.slim3.datastore;
 
-
 /**
  * A meta data of collection attribute.
  * 

@@ -15,9 +15,16 @@
  */
 package org.slim3.datastore;
 
-import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.Stack;
+import java.util.Vector;
 
 import junit.framework.TestCase;
 
@@ -224,22 +231,6 @@ public class ModelMetaTest extends TestCase {
     /**
      * @throws Exception
      */
-    public void testStringToBigDecimal() throws Exception {
-        assertEquals(new BigDecimal("1"), meta.stringToBigDecimal("1"));
-        assertNull(meta.stringToBigDecimal(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testBigDecimalToString() throws Exception {
-        assertEquals("1", meta.bigDecimalToString(new BigDecimal("1")));
-        assertNull(meta.bigDecimalToString(null));
-    }
-
-    /**
-     * @throws Exception
-     */
     public void testLongListToPrimitiveShortArray() throws Exception {
         List<Long> longList = Arrays.asList(1L);
         short[] shortArray = meta.longListToPrimitiveShortArray(longList);
@@ -284,11 +275,88 @@ public class ModelMetaTest extends TestCase {
     /**
      * @throws Exception
      */
+    public void testLongListToShortCollection() throws Exception {
+        List<Long> value = Arrays.asList(1L);
+        Collection<Short> collection = new ArrayList<Short>();
+        meta.copyLongListToShortCollection(value, collection);
+        assertEquals(1, collection.size());
+        assertEquals(Short.valueOf((short) 1), collection.iterator().next());
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testLongListToShortList() throws Exception {
         List<Long> value = Arrays.asList(1L);
         List<Short> ret = meta.longListToShortList(value);
         assertEquals(1, ret.size());
         assertEquals(Short.valueOf((short) 1), ret.get(0));
         assertNull(meta.longListToShortList(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testLongListToShortSet() throws Exception {
+        List<Long> value = Arrays.asList(1L);
+        Set<Short> ret = meta.longListToShortSet(value);
+        assertEquals(1, ret.size());
+        assertEquals(Short.valueOf((short) 1), ret.iterator().next());
+        assertNull(meta.longListToShortSet(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testLongListToShortSortedSet() throws Exception {
+        List<Long> value = Arrays.asList(1L);
+        SortedSet<Short> ret = meta.longListToShortSortedSet(value);
+        assertEquals(1, ret.size());
+        assertEquals(Short.valueOf((short) 1), ret.iterator().next());
+        assertNull(meta.longListToShortSortedSet(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testLongListToShortLinkedList() throws Exception {
+        List<Long> value = Arrays.asList(1L);
+        LinkedList<Short> ret = meta.longListToShortLinkedList(value);
+        assertEquals(1, ret.size());
+        assertEquals(Short.valueOf((short) 1), ret.iterator().next());
+        assertNull(meta.longListToShortLinkedList(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testLongListToShortLinkedHashSet() throws Exception {
+        List<Long> value = Arrays.asList(1L);
+        LinkedHashSet<Short> ret = meta.longListToShortLinkedHashSet(value);
+        assertEquals(1, ret.size());
+        assertEquals(Short.valueOf((short) 1), ret.iterator().next());
+        assertNull(meta.longListToShortLinkedHashSet(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testLongListToShortStack() throws Exception {
+        List<Long> value = Arrays.asList(1L);
+        Stack<Short> ret = meta.longListToShortStack(value);
+        assertEquals(1, ret.size());
+        assertEquals(Short.valueOf((short) 1), ret.iterator().next());
+        assertNull(meta.longListToShortStack(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testLongListToShortVector() throws Exception {
+        List<Long> value = Arrays.asList(1L);
+        Vector<Short> ret = meta.longListToShortVector(value);
+        assertEquals(1, ret.size());
+        assertEquals(Short.valueOf((short) 1), ret.iterator().next());
+        assertNull(meta.longListToShortVector(null));
     }
 }

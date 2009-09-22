@@ -15,10 +15,17 @@
  */
 package org.slim3.datastore.meta;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.Stack;
+import java.util.TreeSet;
+import java.util.Vector;
 
 import org.slim3.datastore.AttributeMeta;
 import org.slim3.datastore.CollectionAttributeMeta;
@@ -143,12 +150,6 @@ public class HogeMeta extends ModelMeta<Hoge> {
     /**
      * 
      */
-    public AttributeMeta<BigDecimal> myBigDecimal =
-        new AttributeMeta<BigDecimal>(this, "myBigDecimal", BigDecimal.class);
-
-    /**
-     * 
-     */
     public CollectionAttributeMeta<Short> myPrimitiveShortArray =
         new CollectionAttributeMeta<Short>(
             this,
@@ -176,6 +177,68 @@ public class HogeMeta extends ModelMeta<Hoge> {
             "myShortArrayList",
             ArrayList.class);
 
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Short> myShortSet =
+        new CollectionAttributeMeta<Short>(this, "myShortSet", Set.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Short> myShortHashSet =
+        new CollectionAttributeMeta<Short>(
+            this,
+            "myShortHashSet",
+            HashSet.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Short> myShortSortedSet =
+        new CollectionAttributeMeta<Short>(
+            this,
+            "myShortSortedSet",
+            SortedSet.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Short> myShortTreeSet =
+        new CollectionAttributeMeta<Short>(
+            this,
+            "myShortTreeSet",
+            TreeSet.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Short> myShortLinkedList =
+        new CollectionAttributeMeta<Short>(
+            this,
+            "myShortLinkedList",
+            LinkedList.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Short> myShortLinkedHashSet =
+        new CollectionAttributeMeta<Short>(
+            this,
+            "myShortLinkedHashSet",
+            LinkedHashSet.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Short> myShortStack =
+        new CollectionAttributeMeta<Short>(this, "myShortStack", Stack.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Short> myShortVector =
+        new CollectionAttributeMeta<Short>(this, "myShortVector", Vector.class);
     /**
      * 
      */
@@ -230,8 +293,6 @@ public class HogeMeta extends ModelMeta<Hoge> {
                 .getProperty("mySerializableBlob")));
         model.setMyBlob((Blob) entity.getProperty("myBlob"));
         model.setMyShortBlob((ShortBlob) entity.getProperty("myShortBlob"));
-        model.setMyBigDecimal(stringToBigDecimal((String) entity
-            .getProperty("myBigDecimal")));
         model
             .setMyPrimitiveShortArray(longListToPrimitiveShortArray((List<Long>) entity
                 .getProperty("myPrimitiveShortArray")));
@@ -241,6 +302,24 @@ public class HogeMeta extends ModelMeta<Hoge> {
             .getProperty("myShortList")));
         model.setMyShortArrayList(longListToShortList((List<Long>) entity
             .getProperty("myShortArrayList")));
+        model.setMyShortSet(longListToShortSet((List<Long>) entity
+            .getProperty("myShortSet")));
+        model.setMyShortHashSet(longListToShortSet((List<Long>) entity
+            .getProperty("myShortHashSet")));
+        model.setMyShortSortedSet(longListToShortSortedSet((List<Long>) entity
+            .getProperty("myShortSortedSet")));
+        model.setMyShortTreeSet(longListToShortSortedSet((List<Long>) entity
+            .getProperty("myShortTreeSet")));
+        model
+            .setMyShortLinkedList(longListToShortLinkedList((List<Long>) entity
+                .getProperty("myShortLinkedList")));
+        model
+            .setMyShortLinkedHashSet(longListToShortLinkedHashSet((List<Long>) entity
+                .getProperty("myShortLinkedHashSet")));
+        model.setMyShortStack(longListToShortStack((List<Long>) entity
+            .getProperty("myShortStack")));
+        model.setMyShortVector(longListToShortVector((List<Long>) entity
+            .getProperty("myShortVector")));
         return model;
     }
 
@@ -279,8 +358,6 @@ public class HogeMeta extends ModelMeta<Hoge> {
         entity.setUnindexedProperty(
             "mySerializableBlob",
             serializableToBlob(model.getMySerializableBlob()));
-        entity.setProperty("myBigDecimal", bigDecimalToString(model
-            .getMyBigDecimal()));
         entity.setProperty(
             "myPrimitiveShortArray",
             primitiveShortArrayToLongList(model.getMyPrimitiveShortArray()));
@@ -288,6 +365,15 @@ public class HogeMeta extends ModelMeta<Hoge> {
             .getMyShortArray()));
         entity.setProperty("myShortList", model.getMyShortList());
         entity.setProperty("myShortArrayList", model.getMyShortArrayList());
+        entity.setProperty("myShortSet", model.getMyShortSet());
+        entity.setProperty("myShortHashSet", model.getMyShortHashSet());
+        entity.setProperty("myShortSortedSet", model.getMyShortSortedSet());
+        entity.setProperty("myShortTreeSet", model.getMyShortTreeSet());
+        entity.setProperty("myShortLinkedList", model.getMyShortLinkedList());
+        entity.setProperty("myShortLinkedHashSet", model
+            .getMyShortLinkedHashSet());
+        entity.setProperty("myShortStack", model.getMyShortStack());
+        entity.setProperty("myShortVector", model.getMyShortVector());
         return entity;
     }
 }

@@ -15,11 +15,18 @@
  */
 package org.slim3.datastore;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.Stack;
+import java.util.TreeSet;
+import java.util.Vector;
 
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
@@ -63,13 +70,24 @@ public class ModelMetaDatastoreTest extends DatastoreTestCase {
         model.setMyBytesBlob(new byte[] { 1 });
         model.setMySerializable(new MySerializable("aaa"));
         model.setMySerializableBlob(new MySerializable("aaa"));
-        model.setMyBigDecimal(new BigDecimal("1"));
         model.setMyPrimitiveShortArray(new short[] { 1 });
         model.setMyShortArray(new Short[] { 1 });
         model.setMyShortList(Arrays.asList((short) 1));
-        ArrayList<Short> myShortArrayList = new ArrayList<Short>();
-        myShortArrayList.add((short) 1);
-        model.setMyShortArrayList(myShortArrayList);
+        model
+            .setMyShortArrayList(new ArrayList<Short>(Arrays.asList((short) 1)));
+        model.setMyShortSet(new HashSet<Short>(Arrays.asList((short) 1)));
+        model.setMyShortHashSet(new HashSet<Short>(Arrays.asList((short) 1)));
+        model.setMyShortSortedSet(new TreeSet<Short>(Arrays.asList((short) 1)));
+        model.setMyShortTreeSet(new TreeSet<Short>(Arrays.asList((short) 1)));
+        model.setMyShortLinkedList(new LinkedList<Short>(Arrays
+            .asList((short) 1)));
+        model.setMyShortLinkedHashSet(new LinkedHashSet<Short>(Arrays
+            .asList((short) 1)));
+        Stack<Short> myShortStack = new Stack<Short>();
+        myShortStack.add((short) 1);
+        model.setMyShortStack(myShortStack);
+        model.setMyShortVector(new Vector<Short>(Arrays.asList((short) 1)));
+
         Entity entity = meta.modelToEntity(model);
         Key key = ds.put(entity);
         Entity entity2 = ds.get(key);
@@ -98,7 +116,6 @@ public class ModelMetaDatastoreTest extends DatastoreTestCase {
         assertEquals(1, myBytesBlob2[0]);
         assertEquals(new MySerializable("aaa"), model2.getMySerializable());
         assertEquals(new MySerializable("aaa"), model2.getMySerializableBlob());
-        assertEquals(new BigDecimal("1"), model2.getMyBigDecimal());
         short[] myPrimitiveShortArray2 = model2.getMyPrimitiveShortArray();
         assertEquals(1, myPrimitiveShortArray2.length);
         assertEquals((short) 1, myPrimitiveShortArray2[0]);
@@ -111,5 +128,32 @@ public class ModelMetaDatastoreTest extends DatastoreTestCase {
         ArrayList<Short> myShortArrayList2 = model2.getMyShortArrayList();
         assertEquals(1, myShortArrayList2.size());
         assertEquals(Short.valueOf("1"), myShortArrayList2.get(0));
+        Set<Short> myShortSet2 = model2.getMyShortSet();
+        assertEquals(1, myShortSet2.size());
+        assertEquals(Short.valueOf("1"), myShortSet2.iterator().next());
+        HashSet<Short> myShortHashSet2 = model2.getMyShortHashSet();
+        assertEquals(1, myShortHashSet2.size());
+        assertEquals(Short.valueOf("1"), myShortHashSet2.iterator().next());
+        SortedSet<Short> myShortSortedSet2 = model2.getMyShortSortedSet();
+        assertEquals(1, myShortSortedSet2.size());
+        assertEquals(Short.valueOf("1"), myShortSortedSet2.iterator().next());
+        TreeSet<Short> myShortTreeSet2 = model2.getMyShortTreeSet();
+        assertEquals(1, myShortTreeSet2.size());
+        assertEquals(Short.valueOf("1"), myShortTreeSet2.iterator().next());
+        LinkedList<Short> myShortLinkedList2 = model2.getMyShortLinkedList();
+        assertEquals(1, myShortLinkedList2.size());
+        assertEquals(Short.valueOf("1"), myShortLinkedList2.iterator().next());
+        LinkedHashSet<Short> myShortLinkedHashSet2 =
+            model2.getMyShortLinkedHashSet();
+        assertEquals(1, myShortLinkedHashSet2.size());
+        assertEquals(Short.valueOf("1"), myShortLinkedHashSet2
+            .iterator()
+            .next());
+        Stack<Short> myShortStack2 = model2.getMyShortStack();
+        assertEquals(1, myShortStack2.size());
+        assertEquals(Short.valueOf("1"), myShortStack2.iterator().next());
+        Vector<Short> myShortVector2 = model2.getMyShortVector();
+        assertEquals(1, myShortVector2.size());
+        assertEquals(Short.valueOf("1"), myShortVector2.iterator().next());
     }
 }
