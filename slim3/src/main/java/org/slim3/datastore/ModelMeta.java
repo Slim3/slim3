@@ -510,4 +510,82 @@ public abstract class ModelMeta<T> {
         copyLongListToShortCollection(value, collection);
         return collection;
     }
+
+    /**
+     * Converts the list of long to an array of primitive int.
+     * 
+     * @param value
+     *            the list of long
+     * @return an array of primitive int
+     */
+    protected int[] longListToPrimitiveIntArray(List<Long> value) {
+        if (value == null) {
+            return null;
+        }
+        int[] ret = new int[value.size()];
+        int size = value.size();
+        for (int i = 0; i < size; i++) {
+            Long l = value.get(i);
+            ret[i] = l != null ? l.intValue() : 0;
+        }
+        return ret;
+    }
+
+    /**
+     * Converts the array of primitive int to a list of long.
+     * 
+     * @param value
+     *            the array of primitive int
+     * @return a list of long
+     */
+    protected List<Long> primitiveIntArrayToLongList(int[] value) {
+        if (value == null) {
+            return null;
+        }
+        List<Long> ret = new ArrayList<Long>(value.length);
+        int size = value.length;
+        for (int i = 0; i < size; i++) {
+            ret.add(Long.valueOf(value[i]));
+        }
+        return ret;
+    }
+
+    /**
+     * Converts the list of long to an array of integer.
+     * 
+     * @param value
+     *            the list of long
+     * @return an array of integer
+     */
+    protected Integer[] longListToIntegerArray(List<Long> value) {
+        if (value == null) {
+            return null;
+        }
+        Integer[] ret = new Integer[value.size()];
+        int size = value.size();
+        for (int i = 0; i < size; i++) {
+            Long l = value.get(i);
+            ret[i] = l != null ? l.intValue() : 0;
+        }
+        return ret;
+    }
+
+    /**
+     * Converts the array of integer to a list of long.
+     * 
+     * @param value
+     *            the array of integer
+     * @return a list of long
+     */
+    protected List<Long> integerArrayToLongList(Integer[] value) {
+        if (value == null) {
+            return null;
+        }
+        List<Long> ret = new ArrayList<Long>(value.length);
+        int size = value.length;
+        for (int i = 0; i < size; i++) {
+            ret.add(value[i].longValue());
+        }
+        return ret;
+    }
 }

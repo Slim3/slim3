@@ -233,9 +233,9 @@ public class ModelMetaTest extends TestCase {
      */
     public void testLongListToPrimitiveShortArray() throws Exception {
         List<Long> longList = Arrays.asList(1L);
-        short[] shortArray = meta.longListToPrimitiveShortArray(longList);
-        assertEquals(1, shortArray.length);
-        assertEquals(1, shortArray[0]);
+        short[] ret = meta.longListToPrimitiveShortArray(longList);
+        assertEquals(1, ret.length);
+        assertEquals(1, ret[0]);
         assertNull(meta.longListToPrimitiveShortArray(null));
     }
 
@@ -358,5 +358,49 @@ public class ModelMetaTest extends TestCase {
         assertEquals(1, ret.size());
         assertEquals(Short.valueOf((short) 1), ret.iterator().next());
         assertNull(meta.longListToShortVector(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testLongListToPrimitiveIntArray() throws Exception {
+        List<Long> longList = Arrays.asList(1L);
+        int[] ret = meta.longListToPrimitiveIntArray(longList);
+        assertEquals(1, ret.length);
+        assertEquals(1, ret[0]);
+        assertNull(meta.longListToPrimitiveIntArray(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testPrimitiveIntArrayToLongList() throws Exception {
+        int[] value = new int[] { 1 };
+        List<Long> ret = meta.primitiveIntArrayToLongList(value);
+        assertEquals(1, ret.size());
+        assertEquals(Long.valueOf(1), ret.get(0));
+        assertNull(meta.primitiveIntArrayToLongList(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testLongListToIntegerArray() throws Exception {
+        List<Long> value = Arrays.asList(1L);
+        Integer[] ret = meta.longListToIntegerArray(value);
+        assertEquals(1, ret.length);
+        assertEquals(Integer.valueOf(1), ret[0]);
+        assertNull(meta.longListToIntegerArray(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testIntegerArrayToLongList() throws Exception {
+        Integer[] value = new Integer[] { 1 };
+        List<Long> ret = meta.integerArrayToLongList(value);
+        assertEquals(1, ret.size());
+        assertEquals(Long.valueOf(1), ret.get(0));
+        assertNull(meta.integerArrayToLongList(null));
     }
 }

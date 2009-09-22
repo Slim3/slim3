@@ -239,6 +239,25 @@ public class HogeMeta extends ModelMeta<Hoge> {
      */
     public CollectionAttributeMeta<Short> myShortVector =
         new CollectionAttributeMeta<Short>(this, "myShortVector", Vector.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Integer> myPrimitiveIntArray =
+        new CollectionAttributeMeta<Integer>(
+            this,
+            "myPrimitiveIntArray",
+            int[].class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Integer> myIntegerArray =
+        new CollectionAttributeMeta<Integer>(
+            this,
+            "myIntegerArray",
+            Integer[].class);
+
     /**
      * 
      */
@@ -320,6 +339,11 @@ public class HogeMeta extends ModelMeta<Hoge> {
             .getProperty("myShortStack")));
         model.setMyShortVector(longListToShortVector((List<Long>) entity
             .getProperty("myShortVector")));
+        model
+            .setMyPrimitiveIntArray(longListToPrimitiveIntArray((List<Long>) entity
+                .getProperty("myPrimitiveIntArray")));
+        model.setMyIntegerArray(longListToIntegerArray((List<Long>) entity
+            .getProperty("myIntegerArray")));
         return model;
     }
 
@@ -374,6 +398,11 @@ public class HogeMeta extends ModelMeta<Hoge> {
             .getMyShortLinkedHashSet());
         entity.setProperty("myShortStack", model.getMyShortStack());
         entity.setProperty("myShortVector", model.getMyShortVector());
+        entity.setProperty(
+            "myPrimitiveIntArray",
+            primitiveIntArrayToLongList(model.getMyPrimitiveIntArray()));
+        entity.setProperty("myIntegerArray", integerArrayToLongList(model
+            .getMyIntegerArray()));
         return entity;
     }
 }

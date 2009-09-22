@@ -117,6 +117,10 @@ public class Hoge {
 
     private Vector<Short> myShortVector;
 
+    private int[] myPrimitiveIntArray;
+
+    private Integer[] myIntegerArray;
+
     @Version
     private Long version;
 
@@ -644,6 +648,36 @@ public class Hoge {
      */
     public void setMyShortVector(Vector<Short> myShortVector) {
         this.myShortVector = myShortVector;
+    }
+
+    /**
+     * @return the myPrimitiveIntArray
+     */
+    public int[] getMyPrimitiveIntArray() {
+        return myPrimitiveIntArray;
+    }
+
+    /**
+     * @param myPrimitiveIntArray
+     *            the myPrimitiveIntArray to set
+     */
+    public void setMyPrimitiveIntArray(int[] myPrimitiveIntArray) {
+        this.myPrimitiveIntArray = myPrimitiveIntArray;
+    }
+
+    /**
+     * @return the myIntegerArray
+     */
+    public Integer[] getMyIntegerArray() {
+        return myIntegerArray;
+    }
+
+    /**
+     * @param myIntegerArray
+     *            the myIntegerArray to set
+     */
+    public void setMyIntegerArray(Integer[] myIntegerArray) {
+        this.myIntegerArray = myIntegerArray;
     }
 
     /**

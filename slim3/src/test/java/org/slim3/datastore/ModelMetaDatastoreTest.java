@@ -87,6 +87,8 @@ public class ModelMetaDatastoreTest extends DatastoreTestCase {
         myShortStack.add((short) 1);
         model.setMyShortStack(myShortStack);
         model.setMyShortVector(new Vector<Short>(Arrays.asList((short) 1)));
+        model.setMyPrimitiveIntArray(new int[] { 1 });
+        model.setMyIntegerArray(new Integer[] { 1 });
 
         Entity entity = meta.modelToEntity(model);
         Key key = ds.put(entity);
@@ -155,5 +157,11 @@ public class ModelMetaDatastoreTest extends DatastoreTestCase {
         Vector<Short> myShortVector2 = model2.getMyShortVector();
         assertEquals(1, myShortVector2.size());
         assertEquals(Short.valueOf("1"), myShortVector2.iterator().next());
+        int[] myPrimitiveIntArray2 = model2.getMyPrimitiveIntArray();
+        assertEquals(1, myPrimitiveIntArray2.length);
+        assertEquals((short) 1, myPrimitiveIntArray2[0]);
+        Integer[] myIntegerArray2 = model2.getMyIntegerArray();
+        assertEquals(1, myIntegerArray2.length);
+        assertEquals(Integer.valueOf("1"), myIntegerArray2[0]);
     }
 }
