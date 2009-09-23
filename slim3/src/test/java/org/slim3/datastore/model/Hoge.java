@@ -141,6 +141,30 @@ public class Hoge {
 
     private Vector<Integer> myIntegerVector;
 
+    private long[] myPrimitiveLongArray;
+
+    private Long[] myLongArray;
+
+    private List<Long> myLongList;
+
+    private ArrayList<Long> myLongArrayList;
+
+    private Set<Long> myLongSet;
+
+    private HashSet<Long> myLongHashSet;
+
+    private SortedSet<Long> myLongSortedSet;
+
+    private TreeSet<Long> myLongTreeSet;
+
+    private LinkedList<Long> myLongLinkedList;
+
+    private LinkedHashSet<Long> myLongLinkedHashSet;
+
+    private Stack<Long> myLongStack;
+
+    private Vector<Long> myLongVector;
+
     @Version
     private Long version;
 
@@ -849,6 +873,186 @@ public class Hoge {
      */
     public void setMyIntegerVector(Vector<Integer> myIntegerVector) {
         this.myIntegerVector = myIntegerVector;
+    }
+
+    /**
+     * @return the myPrimitiveLongArray
+     */
+    public long[] getMyPrimitiveLongArray() {
+        return myPrimitiveLongArray;
+    }
+
+    /**
+     * @param myPrimitiveLongArray
+     *            the myPrimitiveLongArray to set
+     */
+    public void setMyPrimitiveLongArray(long[] myPrimitiveLongArray) {
+        this.myPrimitiveLongArray = myPrimitiveLongArray;
+    }
+
+    /**
+     * @return the myLongArray
+     */
+    public Long[] getMyLongArray() {
+        return myLongArray;
+    }
+
+    /**
+     * @param myLongArray
+     *            the myLongArray to set
+     */
+    public void setMyLongArray(Long[] myLongArray) {
+        this.myLongArray = myLongArray;
+    }
+
+    /**
+     * @return the myLongList
+     */
+    public List<Long> getMyLongList() {
+        return myLongList;
+    }
+
+    /**
+     * @param myLongList
+     *            the myLongList to set
+     */
+    public void setMyLongList(List<Long> myLongList) {
+        this.myLongList = myLongList;
+    }
+
+    /**
+     * @return the myLongArrayList
+     */
+    public ArrayList<Long> getMyLongArrayList() {
+        return myLongArrayList;
+    }
+
+    /**
+     * @param myLongArrayList
+     *            the myLongArrayList to set
+     */
+    public void setMyLongArrayList(ArrayList<Long> myLongArrayList) {
+        this.myLongArrayList = myLongArrayList;
+    }
+
+    /**
+     * @return the myLongSet
+     */
+    public Set<Long> getMyLongSet() {
+        return myLongSet;
+    }
+
+    /**
+     * @param myLongSet
+     *            the myLongSet to set
+     */
+    public void setMyLongSet(Set<Long> myLongSet) {
+        this.myLongSet = myLongSet;
+    }
+
+    /**
+     * @return the myLongHashSet
+     */
+    public HashSet<Long> getMyLongHashSet() {
+        return myLongHashSet;
+    }
+
+    /**
+     * @param myLongHashSet
+     *            the myLongHashSet to set
+     */
+    public void setMyLongHashSet(HashSet<Long> myLongHashSet) {
+        this.myLongHashSet = myLongHashSet;
+    }
+
+    /**
+     * @return the myLongSortedSet
+     */
+    public SortedSet<Long> getMyLongSortedSet() {
+        return myLongSortedSet;
+    }
+
+    /**
+     * @param myLongSortedSet
+     *            the myLongSortedSet to set
+     */
+    public void setMyLongSortedSet(SortedSet<Long> myLongSortedSet) {
+        this.myLongSortedSet = myLongSortedSet;
+    }
+
+    /**
+     * @return the myLongTreeSet
+     */
+    public TreeSet<Long> getMyLongTreeSet() {
+        return myLongTreeSet;
+    }
+
+    /**
+     * @param myLongTreeSet
+     *            the myLongTreeSet to set
+     */
+    public void setMyLongTreeSet(TreeSet<Long> myLongTreeSet) {
+        this.myLongTreeSet = myLongTreeSet;
+    }
+
+    /**
+     * @return the myLongLinkedList
+     */
+    public LinkedList<Long> getMyLongLinkedList() {
+        return myLongLinkedList;
+    }
+
+    /**
+     * @param myLongLinkedList
+     *            the myLongLinkedList to set
+     */
+    public void setMyLongLinkedList(LinkedList<Long> myLongLinkedList) {
+        this.myLongLinkedList = myLongLinkedList;
+    }
+
+    /**
+     * @return the myLongLinkedHashSet
+     */
+    public LinkedHashSet<Long> getMyLongLinkedHashSet() {
+        return myLongLinkedHashSet;
+    }
+
+    /**
+     * @param myLongLinkedHashSet
+     *            the myLongLinkedHashSet to set
+     */
+    public void setMyLongLinkedHashSet(LinkedHashSet<Long> myLongLinkedHashSet) {
+        this.myLongLinkedHashSet = myLongLinkedHashSet;
+    }
+
+    /**
+     * @return the myLongStack
+     */
+    public Stack<Long> getMyLongStack() {
+        return myLongStack;
+    }
+
+    /**
+     * @param myLongStack
+     *            the myLongStack to set
+     */
+    public void setMyLongStack(Stack<Long> myLongStack) {
+        this.myLongStack = myLongStack;
+    }
+
+    /**
+     * @return the myLongVector
+     */
+    public Vector<Long> getMyLongVector() {
+        return myLongVector;
+    }
+
+    /**
+     * @param myLongVector
+     *            the myLongVector to set
+     */
+    public void setMyLongVector(Vector<Long> myLongVector) {
+        this.myLongVector = myLongVector;
     }
 
     /**

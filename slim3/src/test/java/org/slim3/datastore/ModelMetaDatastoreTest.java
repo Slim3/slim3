@@ -87,6 +87,7 @@ public class ModelMetaDatastoreTest extends DatastoreTestCase {
         myShortStack.add((short) 1);
         model.setMyShortStack(myShortStack);
         model.setMyShortVector(new Vector<Short>(Arrays.asList((short) 1)));
+
         model.setMyPrimitiveIntArray(new int[] { 1 });
         model.setMyIntegerArray(new Integer[] { 1 });
         model.setMyIntegerList(Arrays.asList(1));
@@ -102,6 +103,22 @@ public class ModelMetaDatastoreTest extends DatastoreTestCase {
         myIntegerStack.add(1);
         model.setMyIntegerStack(myIntegerStack);
         model.setMyIntegerVector(new Vector<Integer>(Arrays.asList(1)));
+
+        model.setMyPrimitiveLongArray(new long[] { 1 });
+        model.setMyLongArray(new Long[] { 1L });
+        model.setMyLongList(Arrays.asList(1L));
+        model.setMyLongArrayList(new ArrayList<Long>(Arrays.asList(1L)));
+        model.setMyLongSet(new HashSet<Long>(Arrays.asList(1L)));
+        model.setMyLongHashSet(new HashSet<Long>(Arrays.asList(1L)));
+        model.setMyLongSortedSet(new TreeSet<Long>(Arrays.asList(1L)));
+        model.setMyLongTreeSet(new TreeSet<Long>(Arrays.asList(1L)));
+        model.setMyLongLinkedList(new LinkedList<Long>(Arrays.asList(1L)));
+        model
+            .setMyLongLinkedHashSet(new LinkedHashSet<Long>(Arrays.asList(1L)));
+        Stack<Long> myLongStack = new Stack<Long>();
+        myLongStack.add(1L);
+        model.setMyLongStack(myLongStack);
+        model.setMyLongVector(new Vector<Long>(Arrays.asList(1L)));
 
         Entity entity = meta.modelToEntity(model);
         Key key = ds.put(entity);
@@ -170,9 +187,10 @@ public class ModelMetaDatastoreTest extends DatastoreTestCase {
         Vector<Short> myShortVector2 = model2.getMyShortVector();
         assertEquals(1, myShortVector2.size());
         assertEquals(Short.valueOf("1"), myShortVector2.iterator().next());
+
         int[] myPrimitiveIntArray2 = model2.getMyPrimitiveIntArray();
         assertEquals(1, myPrimitiveIntArray2.length);
-        assertEquals((short) 1, myPrimitiveIntArray2[0]);
+        assertEquals(1, myPrimitiveIntArray2[0]);
         Integer[] myIntegerArray2 = model2.getMyIntegerArray();
         assertEquals(1, myIntegerArray2.length);
         assertEquals(Integer.valueOf("1"), myIntegerArray2[0]);
@@ -214,5 +232,43 @@ public class ModelMetaDatastoreTest extends DatastoreTestCase {
         Vector<Integer> myIntegerVector2 = model2.getMyIntegerVector();
         assertEquals(1, myIntegerVector2.size());
         assertEquals(Integer.valueOf("1"), myIntegerVector2.iterator().next());
+
+        long[] myPrimitiveLongArray2 = model2.getMyPrimitiveLongArray();
+        assertEquals(1, myPrimitiveLongArray2.length);
+        assertEquals(1L, myPrimitiveLongArray2[0]);
+        Long[] myLongArray2 = model2.getMyLongArray();
+        assertEquals(1, myLongArray2.length);
+        assertEquals(Long.valueOf("1"), myLongArray2[0]);
+        List<Long> myLongList2 = model2.getMyLongList();
+        assertEquals(1, myLongList2.size());
+        assertEquals(Long.valueOf("1"), myLongList2.get(0));
+        ArrayList<Long> myLongArrayList2 = model2.getMyLongArrayList();
+        assertEquals(1, myLongArrayList2.size());
+        assertEquals(Long.valueOf("1"), myLongArrayList2.get(0));
+        Set<Long> myLongSet2 = model2.getMyLongSet();
+        assertEquals(1, myLongSet2.size());
+        assertEquals(Long.valueOf("1"), myLongSet2.iterator().next());
+        HashSet<Long> myLongHashSet2 = model2.getMyLongHashSet();
+        assertEquals(1, myLongHashSet2.size());
+        assertEquals(Long.valueOf("1"), myLongHashSet2.iterator().next());
+        SortedSet<Long> myLongSortedSet2 = model2.getMyLongSortedSet();
+        assertEquals(1, myLongSortedSet2.size());
+        assertEquals(Long.valueOf("1"), myLongSortedSet2.iterator().next());
+        TreeSet<Long> myLongTreeSet2 = model2.getMyLongTreeSet();
+        assertEquals(1, myLongTreeSet2.size());
+        assertEquals(Long.valueOf("1"), myLongTreeSet2.iterator().next());
+        LinkedList<Long> myLongLinkedList2 = model2.getMyLongLinkedList();
+        assertEquals(1, myLongLinkedList2.size());
+        assertEquals(Long.valueOf("1"), myLongLinkedList2.iterator().next());
+        LinkedHashSet<Long> myLongLinkedHashSet2 =
+            model2.getMyLongLinkedHashSet();
+        assertEquals(1, myLongLinkedHashSet2.size());
+        assertEquals(Long.valueOf("1"), myLongLinkedHashSet2.iterator().next());
+        Stack<Long> myLongStack2 = model2.getMyLongStack();
+        assertEquals(1, myLongStack2.size());
+        assertEquals(Long.valueOf("1"), myLongStack2.iterator().next());
+        Vector<Long> myLongVector2 = model2.getMyLongVector();
+        assertEquals(1, myLongVector2.size());
+        assertEquals(Long.valueOf("1"), myLongVector2.iterator().next());
     }
 }

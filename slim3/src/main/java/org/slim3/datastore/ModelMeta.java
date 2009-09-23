@@ -17,6 +17,7 @@ package org.slim3.datastore;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -716,6 +717,169 @@ public abstract class ModelMeta<T> {
         }
         Vector<Integer> collection = new Vector<Integer>(value.size());
         copyLongListToIntegerCollection(value, collection);
+        return collection;
+    }
+
+    /**
+     * Converts the list of long to an array of primitive long.
+     * 
+     * @param value
+     *            the list of long
+     * @return an array of primitive long
+     */
+    protected long[] longListToPrimitiveLongArray(List<Long> value) {
+        if (value == null) {
+            return null;
+        }
+        long[] ret = new long[value.size()];
+        int size = value.size();
+        for (int i = 0; i < size; i++) {
+            Long l = value.get(i);
+            ret[i] = l != null ? l : 0;
+        }
+        return ret;
+    }
+
+    /**
+     * Converts the array of primitive long to a list of long.
+     * 
+     * @param value
+     *            the array of primitive long
+     * @return a list of long
+     */
+    protected List<Long> primitiveLongArrayToLongList(long[] value) {
+        if (value == null) {
+            return null;
+        }
+        List<Long> ret = new ArrayList<Long>(value.length);
+        int size = value.length;
+        for (int i = 0; i < size; i++) {
+            ret.add(value[i]);
+        }
+        return ret;
+    }
+
+    /**
+     * Converts the list of long to an array of long.
+     * 
+     * @param value
+     *            the list of long
+     * @return an array of long
+     */
+    protected Long[] longListToLongArray(List<Long> value) {
+        if (value == null) {
+            return null;
+        }
+        return value.toArray(new Long[value.size()]);
+    }
+
+    /**
+     * Converts the array of long to a list of long.
+     * 
+     * @param value
+     *            the array of long
+     * @return a list of long
+     */
+    protected List<Long> longArrayToLongList(Long[] value) {
+        if (value == null) {
+            return null;
+        }
+        return Arrays.asList(value);
+    }
+
+    /**
+     * Converts the list of long to a set of long.
+     * 
+     * @param value
+     *            the list of long
+     * @return a set of long
+     */
+    protected HashSet<Long> longListToLongSet(List<Long> value) {
+        if (value == null) {
+            return null;
+        }
+        HashSet<Long> collection = new HashSet<Long>();
+        collection.addAll(value);
+        return collection;
+    }
+
+    /**
+     * Converts the list of long to a sorted set of long.
+     * 
+     * @param value
+     *            the list of long
+     * @return a sorted set of long
+     */
+    protected TreeSet<Long> longListToLongSortedSet(List<Long> value) {
+        if (value == null) {
+            return null;
+        }
+        TreeSet<Long> collection = new TreeSet<Long>();
+        collection.addAll(value);
+        return collection;
+    }
+
+    /**
+     * Converts the list of long to a linked list of long.
+     * 
+     * @param value
+     *            the list of long
+     * @return a linked list of long
+     */
+    protected LinkedList<Long> longListToLongLinkedList(List<Long> value) {
+        if (value == null) {
+            return null;
+        }
+        LinkedList<Long> collection = new LinkedList<Long>();
+        collection.addAll(value);
+        return collection;
+    }
+
+    /**
+     * Converts the list of long to a linked hash set of long.
+     * 
+     * @param value
+     *            the list of long
+     * @return a linked hash set of long
+     */
+    protected LinkedHashSet<Long> longListToLongLinkedHashSet(List<Long> value) {
+        if (value == null) {
+            return null;
+        }
+        LinkedHashSet<Long> collection = new LinkedHashSet<Long>();
+        collection.addAll(value);
+        return collection;
+    }
+
+    /**
+     * Converts the list of long to a stack of long.
+     * 
+     * @param value
+     *            the list of long
+     * @return a stack of long
+     */
+    protected Stack<Long> longListToLongStack(List<Long> value) {
+        if (value == null) {
+            return null;
+        }
+        Stack<Long> collection = new Stack<Long>();
+        collection.addAll(value);
+        return collection;
+    }
+
+    /**
+     * Converts the list of long to a vector of long.
+     * 
+     * @param value
+     *            the list of long
+     * @return a vector of long
+     */
+    protected Vector<Long> longListToLongVector(List<Long> value) {
+        if (value == null) {
+            return null;
+        }
+        Vector<Long> collection = new Vector<Long>(value.size());
+        collection.addAll(value);
         return collection;
     }
 }

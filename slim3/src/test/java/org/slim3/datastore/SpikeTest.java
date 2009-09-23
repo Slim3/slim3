@@ -15,14 +15,15 @@
  */
 package org.slim3.datastore;
 
+import java.util.Arrays;
+
 import org.slim3.tester.DatastoreTestCase;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.FilterOperator;
 
 /**
  * @author higa
@@ -35,17 +36,12 @@ public class SpikeTest extends DatastoreTestCase {
      */
     public void testSpike() throws Exception {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        assertNull(ds.getCurrentTransaction(null));
-        Transaction tx = ds.beginTransaction();
-        assertNotNull(tx);
-        assertSame(tx, ds.getCurrentTransaction(null));
-        assertTrue(tx.isActive());
-        tx.rollback();
-        assertFalse(tx.isActive());
-        Entity entity = new Entity("Parent");
-        Key parentKey = ds.put(entity);
-        Key childKey = KeyFactory.createKey(parentKey, "Child", 1);
-        ds.put(new Entity(childKey));
-        ds.put(new Entity(KeyFactory.createKey(parentKey, "Child", 1)));
+        Entity entity = new Entity("Hoge");
+        entity.setProperty("aaa", Arrays.asList(1));
+        ds.put(entity);
+        System.out.println(ds
+            .prepare(
+                new Query("Hoge").addFilter("aaa", FilterOperator.EQUAL, 1L))
+            .countEntities());
     }
 }

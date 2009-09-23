@@ -345,6 +345,93 @@ public class HogeMeta extends ModelMeta<Hoge> {
     /**
      * 
      */
+    public CollectionAttributeMeta<Long> myPrimitiveLongArray =
+        new CollectionAttributeMeta<Long>(
+            this,
+            "myPrimitiveLongArray",
+            long[].class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Long> myLongArray =
+        new CollectionAttributeMeta<Long>(this, "myLongArray", Long[].class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Long> myLongList =
+        new CollectionAttributeMeta<Long>(this, "myLongList", List.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Long> myLongArrayList =
+        new CollectionAttributeMeta<Long>(
+            this,
+            "myLongArrayList",
+            ArrayList.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Long> myLongSet =
+        new CollectionAttributeMeta<Long>(this, "myLongSet", Set.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Long> myLongHashSet =
+        new CollectionAttributeMeta<Long>(this, "myLongHashSet", HashSet.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Long> myLongSortedSet =
+        new CollectionAttributeMeta<Long>(
+            this,
+            "myLongSortedSet",
+            SortedSet.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Long> myLongTreeSet =
+        new CollectionAttributeMeta<Long>(this, "myLongTreeSet", TreeSet.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Long> myLongLinkedList =
+        new CollectionAttributeMeta<Long>(
+            this,
+            "myLongLinkedList",
+            LinkedList.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Long> myLongLinkedHashSet =
+        new CollectionAttributeMeta<Long>(
+            this,
+            "myLongLinkedHashSet",
+            LinkedHashSet.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Long> myLongStack =
+        new CollectionAttributeMeta<Long>(this, "myLongStack", Stack.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Long> myLongVector =
+        new CollectionAttributeMeta<Long>(this, "myLongVector", Vector.class);
+
+    /**
+     * 
+     */
     public AttributeMeta<Long> version =
         new AttributeMeta<Long>(this, "version", Long.class);
 
@@ -452,6 +539,32 @@ public class HogeMeta extends ModelMeta<Hoge> {
             .getProperty("myIntegerStack")));
         model.setMyIntegerVector(longListToIntegerVector((List<Long>) entity
             .getProperty("myIntegerVector")));
+
+        model
+            .setMyPrimitiveLongArray(longListToPrimitiveLongArray((List<Long>) entity
+                .getProperty("myPrimitiveLongArray")));
+        model.setMyLongArray(longListToLongArray((List<Long>) entity
+            .getProperty("myLongArray")));
+        model.setMyLongList((List<Long>) entity.getProperty("myLongList"));
+        model.setMyLongArrayList((ArrayList<Long>) entity
+            .getProperty("myLongArrayList"));
+        model.setMyLongSet(longListToLongSet((List<Long>) entity
+            .getProperty("myLongSet")));
+        model.setMyLongHashSet(longListToLongSet((List<Long>) entity
+            .getProperty("myLongHashSet")));
+        model.setMyLongSortedSet(longListToLongSortedSet((List<Long>) entity
+            .getProperty("myLongSortedSet")));
+        model.setMyLongTreeSet(longListToLongSortedSet((List<Long>) entity
+            .getProperty("myLongTreeSet")));
+        model.setMyLongLinkedList(longListToLongLinkedList((List<Long>) entity
+            .getProperty("myLongLinkedList")));
+        model
+            .setMyLongLinkedHashSet(longListToLongLinkedHashSet((List<Long>) entity
+                .getProperty("myLongLinkedHashSet")));
+        model.setMyLongStack(longListToLongStack((List<Long>) entity
+            .getProperty("myLongStack")));
+        model.setMyLongVector(longListToLongVector((List<Long>) entity
+            .getProperty("myLongVector")));
         return model;
     }
 
@@ -490,6 +603,7 @@ public class HogeMeta extends ModelMeta<Hoge> {
         entity.setUnindexedProperty(
             "mySerializableBlob",
             serializableToBlob(model.getMySerializableBlob()));
+
         entity.setProperty(
             "myPrimitiveShortArray",
             primitiveShortArrayToLongList(model.getMyPrimitiveShortArray()));
@@ -506,6 +620,7 @@ public class HogeMeta extends ModelMeta<Hoge> {
             .getMyShortLinkedHashSet());
         entity.setProperty("myShortStack", model.getMyShortStack());
         entity.setProperty("myShortVector", model.getMyShortVector());
+
         entity.setProperty(
             "myPrimitiveIntArray",
             primitiveIntArrayToLongList(model.getMyPrimitiveIntArray()));
@@ -523,6 +638,23 @@ public class HogeMeta extends ModelMeta<Hoge> {
             .getMyIntegerLinkedHashSet());
         entity.setProperty("myIntegerStack", model.getMyIntegerStack());
         entity.setProperty("myIntegerVector", model.getMyIntegerVector());
+
+        entity.setProperty(
+            "myPrimitiveLongArray",
+            primitiveLongArrayToLongList(model.getMyPrimitiveLongArray()));
+        entity.setProperty("myLongArray", longArrayToLongList(model
+            .getMyLongArray()));
+        entity.setProperty("myLongList", model.getMyLongList());
+        entity.setProperty("myLongArrayList", model.getMyLongArrayList());
+        entity.setProperty("myLongSet", model.getMyLongSet());
+        entity.setProperty("myLongHashSet", model.getMyLongHashSet());
+        entity.setProperty("myLongSortedSet", model.getMyLongSortedSet());
+        entity.setProperty("myLongTreeSet", model.getMyLongTreeSet());
+        entity.setProperty("myLongLinkedList", model.getMyLongLinkedList());
+        entity.setProperty("myLongLinkedHashSet", model
+            .getMyLongLinkedHashSet());
+        entity.setProperty("myLongStack", model.getMyLongStack());
+        entity.setProperty("myLongVector", model.getMyLongVector());
         return entity;
     }
 }
