@@ -128,6 +128,10 @@ public abstract class ControllerTestCase extends TestCase {
             if (pos < 0) {
                 pos = className.lastIndexOf('.');
             }
+        } else {
+            application.setAttribute(
+                ControllerConstants.CONTROLLER_PACKAGE_KEY,
+                "server.controller");
         }
         String rootPackageName = className.substring(0, pos);
         application.setInitParameter(
