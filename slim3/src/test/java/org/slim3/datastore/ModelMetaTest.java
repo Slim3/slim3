@@ -275,7 +275,7 @@ public class ModelMetaTest extends TestCase {
     /**
      * @throws Exception
      */
-    public void testLongListToShortCollection() throws Exception {
+    public void testCopyLongListToShortCollection() throws Exception {
         List<Long> value = Arrays.asList(1L);
         Collection<Short> collection = new ArrayList<Short>();
         meta.copyLongListToShortCollection(value, collection);
@@ -407,7 +407,7 @@ public class ModelMetaTest extends TestCase {
     /**
      * @throws Exception
      */
-    public void testLongListToIntegerCollection() throws Exception {
+    public void testCopyLongListToIntegerCollection() throws Exception {
         List<Long> value = Arrays.asList(1L);
         Collection<Integer> collection = new ArrayList<Integer>();
         meta.copyLongListToIntegerCollection(value, collection);
@@ -600,5 +600,137 @@ public class ModelMetaTest extends TestCase {
         assertEquals(1, ret.size());
         assertEquals(Long.valueOf(1), ret.iterator().next());
         assertNull(meta.longListToLongVector(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testDoubleListToPrimitiveFloatArray() throws Exception {
+        List<Double> list = Arrays.asList(1d);
+        float[] ret = meta.doubleListToPrimitiveFloatArray(list);
+        assertEquals(1, ret.length);
+        assertEquals(1f, ret[0]);
+        assertNull(meta.doubleListToPrimitiveFloatArray(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testPrimitiveFloatArrayToDoubleList() throws Exception {
+        float[] value = new float[] { 1 };
+        List<Double> ret = meta.primitiveFloatArrayToDoubleList(value);
+        assertEquals(1, ret.size());
+        assertEquals(Double.valueOf(1), ret.get(0));
+        assertNull(meta.primitiveFloatArrayToDoubleList(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testDoubleListToFloatArray() throws Exception {
+        List<Double> value = Arrays.asList(1d);
+        Float[] ret = meta.doubleListToFloatArray(value);
+        assertEquals(1, ret.length);
+        assertEquals(Float.valueOf(1), ret[0]);
+        assertNull(meta.doubleListToFloatArray(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testFloatArrayToDoubleList() throws Exception {
+        Float[] value = new Float[] { 1f };
+        List<Double> ret = meta.floatArrayToDoubleList(value);
+        assertEquals(1, ret.size());
+        assertEquals(Double.valueOf(1), ret.get(0));
+        assertNull(meta.floatArrayToDoubleList(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testCopyDoubleListToFloatCollection() throws Exception {
+        List<Double> value = Arrays.asList(1d);
+        Collection<Float> collection = new ArrayList<Float>();
+        meta.copyDoubleListToFloatCollection(value, collection);
+        assertEquals(1, collection.size());
+        assertEquals(Float.valueOf(1), collection.iterator().next());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testDoubleListToFloatList() throws Exception {
+        List<Double> value = Arrays.asList(1d);
+        List<Float> ret = meta.doubleListToFloatList(value);
+        assertEquals(1, ret.size());
+        assertEquals(Float.valueOf(1), ret.get(0));
+        assertNull(meta.doubleListToFloatList(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testDoubleListToFloatSet() throws Exception {
+        List<Double> value = Arrays.asList(1d);
+        Set<Float> ret = meta.doubleListToFloatSet(value);
+        assertEquals(1, ret.size());
+        assertEquals(Float.valueOf(1), ret.iterator().next());
+        assertNull(meta.doubleListToFloatSet(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testDoubleListToFloatSortedSet() throws Exception {
+        List<Double> value = Arrays.asList(1d);
+        SortedSet<Float> ret = meta.doubleListToFloatSortedSet(value);
+        assertEquals(1, ret.size());
+        assertEquals(Float.valueOf(1), ret.iterator().next());
+        assertNull(meta.doubleListToFloatSortedSet(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testDoubleListToFloatLinkedList() throws Exception {
+        List<Double> value = Arrays.asList(1d);
+        LinkedList<Float> ret = meta.doubleListToFloatLinkedList(value);
+        assertEquals(1, ret.size());
+        assertEquals(Float.valueOf(1), ret.iterator().next());
+        assertNull(meta.doubleListToFloatLinkedList(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testDoubleListToFloatLinkedHashSet() throws Exception {
+        List<Double> value = Arrays.asList(1d);
+        LinkedHashSet<Float> ret = meta.doubleListToFloatLinkedHashSet(value);
+        assertEquals(1, ret.size());
+        assertEquals(Float.valueOf(1), ret.iterator().next());
+        assertNull(meta.doubleListToFloatLinkedHashSet(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testDoubleListToFLoatStack() throws Exception {
+        List<Double> value = Arrays.asList(1d);
+        Stack<Float> ret = meta.doubleListToFloatStack(value);
+        assertEquals(1, ret.size());
+        assertEquals(Float.valueOf(1), ret.iterator().next());
+        assertNull(meta.doubleListToFloatStack(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testDoubleListToFloatVector() throws Exception {
+        List<Double> value = Arrays.asList(1d);
+        Vector<Float> ret = meta.doubleListToFloatVector(value);
+        assertEquals(1, ret.size());
+        assertEquals(Float.valueOf(1), ret.iterator().next());
+        assertNull(meta.doubleListToFloatVector(null));
     }
 }

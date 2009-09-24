@@ -165,6 +165,30 @@ public class Hoge {
 
     private Vector<Long> myLongVector;
 
+    private float[] myPrimitiveFloatArray;
+
+    private Float[] myFloatArray;
+
+    private List<Float> myFloatList;
+
+    private ArrayList<Float> myFloatArrayList;
+
+    private Set<Float> myFloatSet;
+
+    private HashSet<Float> myFloatHashSet;
+
+    private SortedSet<Float> myFloatSortedSet;
+
+    private TreeSet<Float> myFloatTreeSet;
+
+    private LinkedList<Float> myFloatLinkedList;
+
+    private LinkedHashSet<Float> myFloatLinkedHashSet;
+
+    private Stack<Float> myFloatStack;
+
+    private Vector<Float> myFloatVector;
+
     @Version
     private Long version;
 
@@ -1053,6 +1077,187 @@ public class Hoge {
      */
     public void setMyLongVector(Vector<Long> myLongVector) {
         this.myLongVector = myLongVector;
+    }
+
+    /**
+     * @return the myPrimitiveFloatArray
+     */
+    public float[] getMyPrimitiveFloatArray() {
+        return myPrimitiveFloatArray;
+    }
+
+    /**
+     * @param myPrimitiveFloatArray
+     *            the myPrimitiveFloatArray to set
+     */
+    public void setMyPrimitiveFloatArray(float[] myPrimitiveFloatArray) {
+        this.myPrimitiveFloatArray = myPrimitiveFloatArray;
+    }
+
+    /**
+     * @return the myFloatArray
+     */
+    public Float[] getMyFloatArray() {
+        return myFloatArray;
+    }
+
+    /**
+     * @param myFloatArray
+     *            the myFloatArray to set
+     */
+    public void setMyFloatArray(Float[] myFloatArray) {
+        this.myFloatArray = myFloatArray;
+    }
+
+    /**
+     * @return the myFloatList
+     */
+    public List<Float> getMyFloatList() {
+        return myFloatList;
+    }
+
+    /**
+     * @param myFloatList
+     *            the myFloatList to set
+     */
+    public void setMyFloatList(List<Float> myFloatList) {
+        this.myFloatList = myFloatList;
+    }
+
+    /**
+     * @return the myFloatArrayList
+     */
+    public ArrayList<Float> getMyFloatArrayList() {
+        return myFloatArrayList;
+    }
+
+    /**
+     * @param myFloatArrayList
+     *            the myFloatArrayList to set
+     */
+    public void setMyFloatArrayList(ArrayList<Float> myFloatArrayList) {
+        this.myFloatArrayList = myFloatArrayList;
+    }
+
+    /**
+     * @return the myFloatSet
+     */
+    public Set<Float> getMyFloatSet() {
+        return myFloatSet;
+    }
+
+    /**
+     * @param myFloatSet
+     *            the myFloatSet to set
+     */
+    public void setMyFloatSet(Set<Float> myFloatSet) {
+        this.myFloatSet = myFloatSet;
+    }
+
+    /**
+     * @return the myFloatHashSet
+     */
+    public HashSet<Float> getMyFloatHashSet() {
+        return myFloatHashSet;
+    }
+
+    /**
+     * @param myFloatHashSet
+     *            the myFloatHashSet to set
+     */
+    public void setMyFloatHashSet(HashSet<Float> myFloatHashSet) {
+        this.myFloatHashSet = myFloatHashSet;
+    }
+
+    /**
+     * @return the myFloatSortedSet
+     */
+    public SortedSet<Float> getMyFloatSortedSet() {
+        return myFloatSortedSet;
+    }
+
+    /**
+     * @param myFloatSortedSet
+     *            the myFloatSortedSet to set
+     */
+    public void setMyFloatSortedSet(SortedSet<Float> myFloatSortedSet) {
+        this.myFloatSortedSet = myFloatSortedSet;
+    }
+
+    /**
+     * @return the myFloatTreeSet
+     */
+    public TreeSet<Float> getMyFloatTreeSet() {
+        return myFloatTreeSet;
+    }
+
+    /**
+     * @param myFloatTreeSet
+     *            the myFloatTreeSet to set
+     */
+    public void setMyFloatTreeSet(TreeSet<Float> myFloatTreeSet) {
+        this.myFloatTreeSet = myFloatTreeSet;
+    }
+
+    /**
+     * @return the myFloatLinkedList
+     */
+    public LinkedList<Float> getMyFloatLinkedList() {
+        return myFloatLinkedList;
+    }
+
+    /**
+     * @param myFloatLinkedList
+     *            the myFloatLinkedList to set
+     */
+    public void setMyFloatLinkedList(LinkedList<Float> myFloatLinkedList) {
+        this.myFloatLinkedList = myFloatLinkedList;
+    }
+
+    /**
+     * @return the myFloatLinkedHashSet
+     */
+    public LinkedHashSet<Float> getMyFloatLinkedHashSet() {
+        return myFloatLinkedHashSet;
+    }
+
+    /**
+     * @param myFloatLinkedHashSet
+     *            the myFloatLinkedHashSet to set
+     */
+    public void setMyFloatLinkedHashSet(
+            LinkedHashSet<Float> myFloatLinkedHashSet) {
+        this.myFloatLinkedHashSet = myFloatLinkedHashSet;
+    }
+
+    /**
+     * @return the myFloatStack
+     */
+    public Stack<Float> getMyFloatStack() {
+        return myFloatStack;
+    }
+
+    /**
+     * @param myFloatStack
+     *            the myFloatStack to set
+     */
+    public void setMyFloatStack(Stack<Float> myFloatStack) {
+        this.myFloatStack = myFloatStack;
+    }
+
+    /**
+     * @return the myFloatVector
+     */
+    public Vector<Float> getMyFloatVector() {
+        return myFloatVector;
+    }
+
+    /**
+     * @param myFloatVector
+     *            the myFloatVector to set
+     */
+    public void setMyFloatVector(Vector<Float> myFloatVector) {
+        this.myFloatVector = myFloatVector;
     }
 
     /**

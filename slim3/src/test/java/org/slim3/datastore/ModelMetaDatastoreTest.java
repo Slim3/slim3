@@ -120,6 +120,22 @@ public class ModelMetaDatastoreTest extends DatastoreTestCase {
         model.setMyLongStack(myLongStack);
         model.setMyLongVector(new Vector<Long>(Arrays.asList(1L)));
 
+        model.setMyPrimitiveFloatArray(new float[] { 1f });
+        model.setMyFloatArray(new Float[] { 1f });
+        model.setMyFloatList(Arrays.asList(1f));
+        model.setMyFloatArrayList(new ArrayList<Float>(Arrays.asList(1f)));
+        model.setMyFloatSet(new HashSet<Float>(Arrays.asList(1f)));
+        model.setMyFloatHashSet(new HashSet<Float>(Arrays.asList(1f)));
+        model.setMyFloatSortedSet(new TreeSet<Float>(Arrays.asList(1f)));
+        model.setMyFloatTreeSet(new TreeSet<Float>(Arrays.asList(1f)));
+        model.setMyFloatLinkedList(new LinkedList<Float>(Arrays.asList(1f)));
+        model.setMyFloatLinkedHashSet(new LinkedHashSet<Float>(Arrays
+            .asList(1f)));
+        Stack<Float> myFloatStack = new Stack<Float>();
+        myFloatStack.add(1f);
+        model.setMyFloatStack(myFloatStack);
+        model.setMyFloatVector(new Vector<Float>(Arrays.asList(1f)));
+
         Entity entity = meta.modelToEntity(model);
         Key key = ds.put(entity);
         Entity entity2 = ds.get(key);
@@ -270,5 +286,45 @@ public class ModelMetaDatastoreTest extends DatastoreTestCase {
         Vector<Long> myLongVector2 = model2.getMyLongVector();
         assertEquals(1, myLongVector2.size());
         assertEquals(Long.valueOf("1"), myLongVector2.iterator().next());
+
+        float[] myPrimitiveFloatArray2 = model2.getMyPrimitiveFloatArray();
+        assertEquals(1, myPrimitiveFloatArray2.length);
+        assertEquals(1f, myPrimitiveFloatArray2[0]);
+        Float[] myFloatArray2 = model2.getMyFloatArray();
+        assertEquals(1, myFloatArray2.length);
+        assertEquals(Float.valueOf("1"), myFloatArray2[0]);
+        List<Float> myFloatList2 = model2.getMyFloatList();
+        assertEquals(1, myFloatList2.size());
+        assertEquals(Float.valueOf("1"), myFloatList2.get(0));
+        ArrayList<Float> myFloatArrayList2 = model2.getMyFloatArrayList();
+        assertEquals(1, myFloatArrayList2.size());
+        assertEquals(Float.valueOf("1"), myFloatArrayList2.get(0));
+        Set<Float> myFloatSet2 = model2.getMyFloatSet();
+        assertEquals(1, myFloatSet2.size());
+        assertEquals(Float.valueOf("1"), myFloatSet2.iterator().next());
+        HashSet<Float> myFloatHashSet2 = model2.getMyFloatHashSet();
+        assertEquals(1, myFloatHashSet2.size());
+        assertEquals(Float.valueOf("1"), myFloatHashSet2.iterator().next());
+        SortedSet<Float> myFloatSortedSet2 = model2.getMyFloatSortedSet();
+        assertEquals(1, myFloatSortedSet2.size());
+        assertEquals(Float.valueOf("1"), myFloatSortedSet2.iterator().next());
+        TreeSet<Float> myFloatTreeSet2 = model2.getMyFloatTreeSet();
+        assertEquals(1, myFloatTreeSet2.size());
+        assertEquals(Float.valueOf("1"), myFloatTreeSet2.iterator().next());
+        LinkedList<Float> myFloatLinkedList2 = model2.getMyFloatLinkedList();
+        assertEquals(1, myFloatLinkedList2.size());
+        assertEquals(Float.valueOf("1"), myFloatLinkedList2.iterator().next());
+        LinkedHashSet<Float> myFloatLinkedHashSet2 =
+            model2.getMyFloatLinkedHashSet();
+        assertEquals(1, myFloatLinkedHashSet2.size());
+        assertEquals(Float.valueOf("1"), myFloatLinkedHashSet2
+            .iterator()
+            .next());
+        Stack<Float> myFloatStack2 = model2.getMyFloatStack();
+        assertEquals(1, myFloatStack2.size());
+        assertEquals(Float.valueOf("1"), myFloatStack2.iterator().next());
+        Vector<Float> myFloatVector2 = model2.getMyFloatVector();
+        assertEquals(1, myFloatVector2.size());
+        assertEquals(Float.valueOf("1"), myFloatVector2.iterator().next());
     }
 }

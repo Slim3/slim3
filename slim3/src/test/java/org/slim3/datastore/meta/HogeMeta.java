@@ -432,6 +432,99 @@ public class HogeMeta extends ModelMeta<Hoge> {
     /**
      * 
      */
+    public CollectionAttributeMeta<Float> myPrimitiveFloatArray =
+        new CollectionAttributeMeta<Float>(
+            this,
+            "myPrimitiveFloatArray",
+            float[].class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Float> myFloatArray =
+        new CollectionAttributeMeta<Float>(this, "myFloatArray", Float[].class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Float> myFloatList =
+        new CollectionAttributeMeta<Float>(this, "myFloatList", List.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Float> myFloatArrayList =
+        new CollectionAttributeMeta<Float>(
+            this,
+            "myFloatArrayList",
+            ArrayList.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Float> myFloatSet =
+        new CollectionAttributeMeta<Float>(this, "myFloatSet", Set.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Float> myFloatHashSet =
+        new CollectionAttributeMeta<Float>(
+            this,
+            "myFloatHashSet",
+            HashSet.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Float> myFloatSortedSet =
+        new CollectionAttributeMeta<Float>(
+            this,
+            "myFloatSortedSet",
+            SortedSet.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Float> myFloatTreeSet =
+        new CollectionAttributeMeta<Float>(
+            this,
+            "myFloatTreeSet",
+            TreeSet.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Float> myFloatLinkedList =
+        new CollectionAttributeMeta<Float>(
+            this,
+            "myFloatLinkedList",
+            LinkedList.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Float> myFloatLinkedHashSet =
+        new CollectionAttributeMeta<Float>(
+            this,
+            "myFloatLinkedHashSet",
+            LinkedHashSet.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Float> myFloatStack =
+        new CollectionAttributeMeta<Float>(this, "myFloatStack", Stack.class);
+
+    /**
+     * 
+     */
+    public CollectionAttributeMeta<Float> myFloatVector =
+        new CollectionAttributeMeta<Float>(this, "myFloatVector", Vector.class);
+
+    /**
+     * 
+     */
     public AttributeMeta<Long> version =
         new AttributeMeta<Long>(this, "version", Long.class);
 
@@ -510,6 +603,7 @@ public class HogeMeta extends ModelMeta<Hoge> {
             .getProperty("myShortStack")));
         model.setMyShortVector(longListToShortVector((List<Long>) entity
             .getProperty("myShortVector")));
+
         model
             .setMyPrimitiveIntArray(longListToPrimitiveIntArray((List<Long>) entity
                 .getProperty("myPrimitiveIntArray")));
@@ -565,6 +659,36 @@ public class HogeMeta extends ModelMeta<Hoge> {
             .getProperty("myLongStack")));
         model.setMyLongVector(longListToLongVector((List<Long>) entity
             .getProperty("myLongVector")));
+
+        model
+            .setMyPrimitiveFloatArray(doubleListToPrimitiveFloatArray((List<Double>) entity
+                .getProperty("myPrimitiveFloatArray")));
+        model.setMyFloatArray(doubleListToFloatArray((List<Double>) entity
+            .getProperty("myFloatArray")));
+        model.setMyFloatList(doubleListToFloatList((List<Double>) entity
+            .getProperty("myFloatList")));
+        model.setMyFloatArrayList(doubleListToFloatList((List<Double>) entity
+            .getProperty("myFloatArrayList")));
+        model.setMyFloatSet(doubleListToFloatSet((List<Double>) entity
+            .getProperty("myFloatSet")));
+        model.setMyFloatHashSet(doubleListToFloatSet((List<Double>) entity
+            .getProperty("myFloatHashSet")));
+        model
+            .setMyFloatSortedSet(doubleListToFloatSortedSet((List<Double>) entity
+                .getProperty("myFloatSortedSet")));
+        model
+            .setMyFloatTreeSet(doubleListToFloatSortedSet((List<Double>) entity
+                .getProperty("myFloatTreeSet")));
+        model
+            .setMyFloatLinkedList(doubleListToFloatLinkedList((List<Double>) entity
+                .getProperty("myFloatLinkedList")));
+        model
+            .setMyFloatLinkedHashSet(doubleListToFloatLinkedHashSet((List<Double>) entity
+                .getProperty("myFloatLinkedHashSet")));
+        model.setMyFloatStack(doubleListToFloatStack((List<Double>) entity
+            .getProperty("myFloatStack")));
+        model.setMyFloatVector(doubleListToFloatVector((List<Double>) entity
+            .getProperty("myFloatVector")));
         return model;
     }
 
@@ -655,6 +779,23 @@ public class HogeMeta extends ModelMeta<Hoge> {
             .getMyLongLinkedHashSet());
         entity.setProperty("myLongStack", model.getMyLongStack());
         entity.setProperty("myLongVector", model.getMyLongVector());
+
+        entity.setProperty(
+            "myPrimitiveFloatArray",
+            primitiveFloatArrayToDoubleList(model.getMyPrimitiveFloatArray()));
+        entity.setProperty("myFloatArray", floatArrayToDoubleList(model
+            .getMyFloatArray()));
+        entity.setProperty("myFloatList", model.getMyFloatList());
+        entity.setProperty("myFloatArrayList", model.getMyFloatArrayList());
+        entity.setProperty("myFloatSet", model.getMyFloatSet());
+        entity.setProperty("myFloatHashSet", model.getMyFloatHashSet());
+        entity.setProperty("myFloatSortedSet", model.getMyFloatSortedSet());
+        entity.setProperty("myFloatTreeSet", model.getMyFloatTreeSet());
+        entity.setProperty("myFloatLinkedList", model.getMyFloatLinkedList());
+        entity.setProperty("myFloatLinkedHashSet", model
+            .getMyFloatLinkedHashSet());
+        entity.setProperty("myFloatStack", model.getMyFloatStack());
+        entity.setProperty("myFloatVector", model.getMyFloatVector());
         return entity;
     }
 }

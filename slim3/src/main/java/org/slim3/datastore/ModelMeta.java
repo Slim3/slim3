@@ -378,7 +378,8 @@ public abstract class ModelMeta<T> {
         List<Long> ret = new ArrayList<Long>(value.length);
         int size = value.length;
         for (int i = 0; i < size; i++) {
-            ret.add(value[i].longValue());
+            Short v = value[i];
+            ret.add(v != null ? v.longValue() : null);
         }
         return ret;
     }
@@ -585,7 +586,8 @@ public abstract class ModelMeta<T> {
         List<Long> ret = new ArrayList<Long>(value.length);
         int size = value.length;
         for (int i = 0; i < size; i++) {
-            ret.add(value[i].longValue());
+            Integer v = value[i];
+            ret.add(v != null ? v.longValue() : null);
         }
         return ret;
     }
@@ -880,6 +882,215 @@ public abstract class ModelMeta<T> {
         }
         Vector<Long> collection = new Vector<Long>(value.size());
         collection.addAll(value);
+        return collection;
+    }
+
+    /**
+     * Converts the list of double to an array of primitive float.
+     * 
+     * @param value
+     *            the list of double
+     * @return an array of primitive float
+     */
+    protected float[] doubleListToPrimitiveFloatArray(List<Double> value) {
+        if (value == null) {
+            return null;
+        }
+        float[] ret = new float[value.size()];
+        int size = value.size();
+        for (int i = 0; i < size; i++) {
+            Double d = value.get(i);
+            ret[i] = d != null ? d.floatValue() : 0;
+        }
+        return ret;
+    }
+
+    /**
+     * Converts the array of primitive float to a list of double.
+     * 
+     * @param value
+     *            the array of primitive float
+     * @return a list of double
+     */
+    protected List<Double> primitiveFloatArrayToDoubleList(float[] value) {
+        if (value == null) {
+            return null;
+        }
+        List<Double> ret = new ArrayList<Double>(value.length);
+        int size = value.length;
+        for (int i = 0; i < size; i++) {
+            ret.add(Double.valueOf(value[i]));
+        }
+        return ret;
+    }
+
+    /**
+     * Converts the list of double to an array of float.
+     * 
+     * @param value
+     *            the list of double
+     * @return an array of float
+     */
+    protected Float[] doubleListToFloatArray(List<Double> value) {
+        if (value == null) {
+            return null;
+        }
+        Float[] ret = new Float[value.size()];
+        int size = value.size();
+        for (int i = 0; i < size; i++) {
+            Double d = value.get(i);
+            ret[i] = d != null ? d.floatValue() : 0;
+        }
+        return ret;
+    }
+
+    /**
+     * Converts the array of float to a list of double.
+     * 
+     * @param value
+     *            the array of float
+     * @return a list of double
+     */
+    protected List<Double> floatArrayToDoubleList(Float[] value) {
+        if (value == null) {
+            return null;
+        }
+        List<Double> ret = new ArrayList<Double>(value.length);
+        int size = value.length;
+        for (int i = 0; i < size; i++) {
+            Float v = value[i];
+            ret.add(v != null ? v.doubleValue() : null);
+        }
+        return ret;
+    }
+
+    /**
+     * Copies the list of double to the collection of float.
+     * 
+     * @param value
+     *            the list of double
+     * @param collection
+     *            the collection of float
+     */
+    protected void copyDoubleListToFloatCollection(List<Double> value,
+            Collection<Float> collection) {
+        int size = value.size();
+        for (int i = 0; i < size; i++) {
+            Double d = value.get(i);
+            collection.add(d != null ? d.floatValue() : null);
+        }
+    }
+
+    /**
+     * Converts the list of double to a list of float.
+     * 
+     * @param value
+     *            the list of double
+     * @return a list of float
+     */
+    protected ArrayList<Float> doubleListToFloatList(List<Double> value) {
+        if (value == null) {
+            return null;
+        }
+        ArrayList<Float> collection = new ArrayList<Float>(value.size());
+        copyDoubleListToFloatCollection(value, collection);
+        return collection;
+    }
+
+    /**
+     * Converts the list of double to a set of float.
+     * 
+     * @param value
+     *            the list of double
+     * @return a set of float
+     */
+    protected HashSet<Float> doubleListToFloatSet(List<Double> value) {
+        if (value == null) {
+            return null;
+        }
+        HashSet<Float> collection = new HashSet<Float>();
+        copyDoubleListToFloatCollection(value, collection);
+        return collection;
+    }
+
+    /**
+     * Converts the list of double to a sorted set of float.
+     * 
+     * @param value
+     *            the list of double
+     * @return a sorted set of float
+     */
+    protected TreeSet<Float> doubleListToFloatSortedSet(List<Double> value) {
+        if (value == null) {
+            return null;
+        }
+        TreeSet<Float> collection = new TreeSet<Float>();
+        copyDoubleListToFloatCollection(value, collection);
+        return collection;
+    }
+
+    /**
+     * Converts the list of double to a linked list of float.
+     * 
+     * @param value
+     *            the list of double
+     * @return a linked list of float
+     */
+    protected LinkedList<Float> doubleListToFloatLinkedList(List<Double> value) {
+        if (value == null) {
+            return null;
+        }
+        LinkedList<Float> collection = new LinkedList<Float>();
+        copyDoubleListToFloatCollection(value, collection);
+        return collection;
+    }
+
+    /**
+     * Converts the list of double to a linked hash set of float.
+     * 
+     * @param value
+     *            the list of double
+     * @return a linked hash set of float
+     */
+    protected LinkedHashSet<Float> doubleListToFloatLinkedHashSet(
+            List<Double> value) {
+        if (value == null) {
+            return null;
+        }
+        LinkedHashSet<Float> collection = new LinkedHashSet<Float>();
+        copyDoubleListToFloatCollection(value, collection);
+        return collection;
+    }
+
+    /**
+     * Converts the list of double to a stack of float.
+     * 
+     * @param value
+     *            the list of double
+     * @return a stack of float
+     */
+    protected Stack<Float> doubleListToFloatStack(List<Double> value) {
+        if (value == null) {
+            return null;
+        }
+        Stack<Float> collection = new Stack<Float>();
+        copyDoubleListToFloatCollection(value, collection);
+        return collection;
+    }
+
+    /**
+     * Converts the list of double to a vector of float.
+     * 
+     * @param value
+     *            the list of double
+     * @return a vector of float
+     */
+    protected Vector<Float> doubleListToFloatVector(List<Double> value) {
+        if (value == null) {
+            return null;
+        }
+        Vector<Float> collection = new Vector<Float>(value.size());
+        copyDoubleListToFloatCollection(value, collection);
         return collection;
     }
 }
