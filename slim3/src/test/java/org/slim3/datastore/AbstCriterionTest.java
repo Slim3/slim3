@@ -48,7 +48,7 @@ public class AbstCriterionTest extends TestCase {
         assertEquals(1, criterion.compareValue(2, 1));
     }
 
-    private static class MyCriterion extends AbstractCriterion<Hoge, Integer> {
+    private static class MyCriterion extends AbstractCriterion {
 
         /**
          * @param attributeMeta

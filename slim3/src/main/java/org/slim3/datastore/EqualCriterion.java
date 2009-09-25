@@ -22,15 +22,11 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
  * An implementation class for "equal" filter criterion.
  * 
  * @author higa
- * @param <M>
- *            the model type
- * @param <A>
- *            the attribute type
  * @since 3.0
  * 
  */
-public class EqualCriterion<M, A> extends AbstractCriterion<M, A> implements
-        FilterCriterion<M> {
+public class EqualCriterion extends AbstractCriterion implements
+        FilterCriterion {
 
     /**
      * The value;
@@ -47,7 +43,7 @@ public class EqualCriterion<M, A> extends AbstractCriterion<M, A> implements
      * @throws NullPointerException
      *             if the value parameter is null
      */
-    public EqualCriterion(CoreAttributeMeta<M, A> attributeMeta, Object value)
+    public EqualCriterion(CoreAttributeMeta<?, ?> attributeMeta, Object value)
             throws NullPointerException {
         super(attributeMeta);
         if (value == null) {

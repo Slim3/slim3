@@ -44,7 +44,7 @@ public class SelectQuery<M> {
     /**
      * The filter criteria.
      */
-    protected FilterCriterion<M>[] filterCriteria;
+    protected FilterCriterion[] filterCriteria;
 
     /**
      * Constructor.
@@ -68,7 +68,7 @@ public class SelectQuery<M> {
      *            the filter criteria
      * @return this instance
      */
-    public SelectQuery<M> filter(FilterCriterion<M>... criteria) {
+    public SelectQuery<M> filter(FilterCriterion... criteria) {
         this.filterCriteria = criteria;
         return this;
     }
@@ -134,7 +134,7 @@ public class SelectQuery<M> {
         if (filterCriteria == null) {
             return;
         }
-        for (FilterCriterion<M> c : filterCriteria) {
+        for (FilterCriterion c : filterCriteria) {
             if (c == null) {
                 continue;
             }

@@ -29,7 +29,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
  * @author higa
  * 
  */
-public class EqualCriterionTest extends TestCase {
+public class StartsWithCriterionTest extends TestCase {
 
     /**
      * @throws Exception
@@ -37,7 +37,7 @@ public class EqualCriterionTest extends TestCase {
      */
     public void testConstructor() throws Exception {
         HogeMeta meta = new HogeMeta();
-        EqualCriterion c = new EqualCriterion(meta.myString, "aaa");
+        StartsWithCriterion c = new StartsWithCriterion(meta.myString, "aaa");
         assertEquals("aaa", c.value);
     }
 
@@ -48,11 +48,17 @@ public class EqualCriterionTest extends TestCase {
     public void testApply() throws Exception {
         HogeMeta meta = new HogeMeta();
         Query query = new Query();
-        EqualCriterion c = new EqualCriterion(meta.myString, "aaa");
+        StartsWithCriterion c = new StartsWithCriterion(meta.myString, "aaa");
         c.apply(query);
         List<FilterPredicate> predicates = query.getFilterPredicates();
+        assertEquals(2, predicates.size());
         assertEquals("myString", predicates.get(0).getPropertyName());
-        assertEquals(FilterOperator.EQUAL, predicates.get(0).getOperator());
+        assertEquals(FilterOperator.GREATER_THAN_OR_EQUAL, predicates
+            .get(0)
+            .getOperator());
         assertEquals("aaa", predicates.get(0).getValue());
+        assertEquals("myString", predicates.get(1).getPropertyName());
+        assertEquals(FilterOperator.LESS_THAN, predicates.get(1).getOperator());
+        assertEquals("aaa" + "\ufffd", predicates.get(1).getValue());
     }
 }

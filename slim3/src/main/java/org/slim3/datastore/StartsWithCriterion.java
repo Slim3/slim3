@@ -22,46 +22,44 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
  * An implementation class for "startsWith" filter criterion.
  * 
  * @author higa
- * @param <M>
- *            the model type
  * @since 3.0
  * 
  */
-public class StartsWithCriterion<M> extends AbstractCriterion<M, String>
-        implements FilterCriterion<M> {
+public class StartsWithCriterion extends AbstractCriterion implements
+        FilterCriterion {
 
     /**
-     * The parameter;
+     * The value;
      */
-    protected String parameter;
+    protected String value;
 
     /**
      * Constructor.
      * 
      * @param attributeMeta
      *            the meta data of attribute
-     * @param parameter
-     *            the parameter
+     * @param value
+     *            the value
      * @throws NullPointerException
-     *             if the parameter parameter is null
+     *             if the value parameter is null
      */
-    public StartsWithCriterion(CoreAttributeMeta<M, String> attributeMeta,
-            String parameter) throws NullPointerException {
+    public StartsWithCriterion(CoreAttributeMeta<?, String> attributeMeta,
+            String value) throws NullPointerException {
         super(attributeMeta);
-        if (parameter == null) {
-            throw new NullPointerException("The parameter parameter is null.");
+        if (value == null) {
+            throw new NullPointerException("The value parameter is null.");
         }
-        this.parameter = parameter;
+        this.value = value;
     }
 
     public void apply(Query query) {
         query.addFilter(
             attributeMeta.getName(),
             FilterOperator.GREATER_THAN_OR_EQUAL,
-            parameter).addFilter(
+            value).addFilter(
             attributeMeta.getName(),
             FilterOperator.LESS_THAN,
-            parameter + "\ufffd");
+            value + "\ufffd");
 
     }
 }

@@ -53,10 +53,10 @@ public class CollectionAttributeMeta<M, A, E> extends
      *            the value
      * @return the "contains" filter predicate
      */
-    public ContainsCriterion<M, A, E> contains(E value) {
+    public ContainsCriterion contains(E value) {
         if (value == null) {
             return null;
         }
-        return new ContainsCriterion<M, A, E>(this, value);
+        return new ContainsCriterion(this, value);
     }
 }

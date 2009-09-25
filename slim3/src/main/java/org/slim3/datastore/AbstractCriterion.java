@@ -19,19 +19,15 @@ package org.slim3.datastore;
  * An abstract class for criterion.
  * 
  * @author higa
- * @param <M>
- *            the model type
- * @param <A>
- *            the attribute type
  * @since 3.0
  * 
  */
-public abstract class AbstractCriterion<M, A> {
+public abstract class AbstractCriterion {
 
     /**
      * The meta data of attribute.
      */
-    protected AbstractAttributeMeta<M, A> attributeMeta;
+    protected AbstractAttributeMeta<?, ?> attributeMeta;
 
     /**
      * Constructor.
@@ -41,7 +37,7 @@ public abstract class AbstractCriterion<M, A> {
      * @throws NullPointerException
      *             if the attributeMeta parameter is null
      */
-    public AbstractCriterion(AbstractAttributeMeta<M, A> attributeMeta)
+    public AbstractCriterion(AbstractAttributeMeta<?, ?> attributeMeta)
             throws NullPointerException {
         if (attributeMeta == null) {
             throw new NullPointerException(

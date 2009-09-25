@@ -50,10 +50,10 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
      *            the value
      * @return the "equal" filter predicate
      */
-    public EqualCriterion<M, A> equal(A value) {
+    public EqualCriterion equal(A value) {
         if (isEmpty(value)) {
             return null;
         }
-        return new EqualCriterion<M, A>(this, value);
+        return new EqualCriterion(this, value);
     }
 }

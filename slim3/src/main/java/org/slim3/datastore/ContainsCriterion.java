@@ -22,22 +22,16 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
  * An implementation class for "contains" filter criterion.
  * 
  * @author higa
- * @param <M>
- *            the model type
- * @param <A>
- *            the attribute type
- * @param <E>
- *            the element type of collection
  * @since 3.0
  * 
  */
-public class ContainsCriterion<M, A, E> extends AbstractCriterion<M, A>
-        implements FilterCriterion<M> {
+public class ContainsCriterion extends AbstractCriterion implements
+        FilterCriterion {
 
     /**
      * The parameter;
      */
-    protected E parameter;
+    protected Object parameter;
 
     /**
      * Constructor.
@@ -49,8 +43,8 @@ public class ContainsCriterion<M, A, E> extends AbstractCriterion<M, A>
      * @throws NullPointerException
      *             if the parameter parameter is null
      */
-    public ContainsCriterion(CollectionAttributeMeta<M, A, E> attributeMeta,
-            E parameter) throws NullPointerException {
+    public ContainsCriterion(CollectionAttributeMeta<?, ?, ?> attributeMeta,
+            Object parameter) throws NullPointerException {
         super(attributeMeta);
         if (parameter == null) {
             throw new NullPointerException("The parameter parameter is null.");

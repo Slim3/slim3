@@ -15,22 +15,25 @@
  */
 package org.slim3.datastore;
 
-import com.google.appengine.api.datastore.Query;
+import junit.framework.TestCase;
+
+import org.slim3.datastore.meta.HogeMeta;
 
 /**
- * A criterion interface for filter.
- * 
  * @author higa
- * @since 3.0
  * 
  */
-public interface FilterCriterion {
+public class StringAttributeMetaTest extends TestCase {
 
     /**
-     * Applies this filter to the query.
+     * @throws Exception
      * 
-     * @param query
-     *            the query
      */
-    void apply(Query query);
+    public void testStartsWith() throws Exception {
+        HogeMeta meta = new HogeMeta();
+        assertEquals(StartsWithCriterion.class, meta.myString
+            .startsWith("a")
+            .getClass());
+        assertNull(meta.myString.startsWith(null));
+    }
 }
