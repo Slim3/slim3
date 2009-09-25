@@ -35,6 +35,7 @@ import org.slim3.tester.DatastoreTestCase;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Text;
 
 /**
@@ -45,25 +46,193 @@ public class ModelMetaDatastoreTest extends DatastoreTestCase {
 
     private HogeMeta meta = new HogeMeta();
 
+    private Hoge model = new Hoge();
+
+    /**
+     * @throws Exception
+     */
+    public void testPrimitiveShort() throws Exception {
+        model.setMyPrimitiveShort((short) 1);
+        Entity entity = meta.modelToEntity(model);
+        Key key = ds.put(entity);
+        Entity entity2 = ds.get(key);
+        Hoge model2 = meta.entityToModel(entity2);
+        assertEquals((short) 1, model2.getMyPrimitiveShort());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testShort() throws Exception {
+        model.setMyShort((short) 1);
+        Entity entity = meta.modelToEntity(model);
+        Key key = ds.put(entity);
+        Entity entity2 = ds.get(key);
+        Hoge model2 = meta.entityToModel(entity2);
+        assertEquals(Short.valueOf("1"), model2.getMyShort());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testPrimitiveInt() throws Exception {
+        model.setMyPrimitiveInt(1);
+        Entity entity = meta.modelToEntity(model);
+        Key key = ds.put(entity);
+        Entity entity2 = ds.get(key);
+        Hoge model2 = meta.entityToModel(entity2);
+        assertEquals(1, model2.getMyPrimitiveInt());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testInteger() throws Exception {
+        model.setMyInteger(1);
+        Entity entity = meta.modelToEntity(model);
+        Key key = ds.put(entity);
+        Entity entity2 = ds.get(key);
+        Hoge model2 = meta.entityToModel(entity2);
+        assertEquals(Integer.valueOf(1), model2.getMyInteger());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testPrimitiveLong() throws Exception {
+        model.setMyPrimitiveLong(1);
+        Entity entity = meta.modelToEntity(model);
+        Key key = ds.put(entity);
+        Entity entity2 = ds.get(key);
+        Hoge model2 = meta.entityToModel(entity2);
+        assertEquals(1L, model2.getMyPrimitiveLong());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testLong() throws Exception {
+        model.setMyLong(1L);
+        Entity entity = meta.modelToEntity(model);
+        Key key = ds.put(entity);
+        Entity entity2 = ds.get(key);
+        Hoge model2 = meta.entityToModel(entity2);
+        assertEquals(Long.valueOf(1), model2.getMyLong());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testPrimitiveFloat() throws Exception {
+        model.setMyPrimitiveFloat(1);
+        Entity entity = meta.modelToEntity(model);
+        Key key = ds.put(entity);
+        Entity entity2 = ds.get(key);
+        Hoge model2 = meta.entityToModel(entity2);
+        assertEquals(1.0f, model2.getMyPrimitiveFloat());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testFloat() throws Exception {
+        model.setMyFloat(1f);
+        Entity entity = meta.modelToEntity(model);
+        Key key = ds.put(entity);
+        Entity entity2 = ds.get(key);
+        Hoge model2 = meta.entityToModel(entity2);
+        assertEquals(Float.valueOf(1), model2.getMyFloat());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testPrimitiveDouble() throws Exception {
+        model.setMyPrimitiveDouble(1);
+        Entity entity = meta.modelToEntity(model);
+        Key key = ds.put(entity);
+        Entity entity2 = ds.get(key);
+        Hoge model2 = meta.entityToModel(entity2);
+        assertEquals(1.0d, model2.getMyPrimitiveDouble());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testDouble() throws Exception {
+        model.setMyDouble(1d);
+        Entity entity = meta.modelToEntity(model);
+        Key key = ds.put(entity);
+        Entity entity2 = ds.get(key);
+        Hoge model2 = meta.entityToModel(entity2);
+        assertEquals(Double.valueOf(1), model2.getMyDouble());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testPrimitiveBoolean() throws Exception {
+        model.setMyPrimitiveBoolean(true);
+        Entity entity = meta.modelToEntity(model);
+        Key key = ds.put(entity);
+        Entity entity2 = ds.get(key);
+        Hoge model2 = meta.entityToModel(entity2);
+        assertTrue(model2.isMyPrimitiveBoolean());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testBoolean() throws Exception {
+        model.setMyBoolean(true);
+        Entity entity = meta.modelToEntity(model);
+        Key key = ds.put(entity);
+        Entity entity2 = ds.get(key);
+        Hoge model2 = meta.entityToModel(entity2);
+        assertTrue(model2.getMyBoolean());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testString() throws Exception {
+        model.setMyString("1");
+        Entity entity = meta.modelToEntity(model);
+        Key key = ds.put(entity);
+        Entity entity2 = ds.get(key);
+        Hoge model2 = meta.entityToModel(entity2);
+        assertEquals("1", model2.getMyString());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testDate() throws Exception {
+        model.setMyDate(new Date(0));
+        Entity entity = meta.modelToEntity(model);
+        Key key = ds.put(entity);
+        Entity entity2 = ds.get(key);
+        Hoge model2 = meta.entityToModel(entity2);
+        assertEquals(new Date(0), model2.getMyDate());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testKey() throws Exception {
+        Key key = KeyFactory.createKey("Hoge", 1);
+        model.setKey(key);
+        Entity entity = meta.modelToEntity(model);
+        ds.put(entity);
+        Entity entity2 = ds.get(key);
+        Hoge model2 = meta.entityToModel(entity2);
+        assertEquals(key, model2.getKey());
+    }
+
     /**
      * @throws Exception
      */
     public void testModelToEntityAndEntityToModel() throws Exception {
-        Hoge model = new Hoge();
-        model.setMyPrimitiveShort((short) 1);
-        model.setMyShort((short) 1);
-        model.setMyPrimitiveInt(1);
-        model.setMyInteger(1);
-        model.setMyPrimitiveLong(1);
-        model.setMyLong(1L);
-        model.setMyPrimitiveFloat(1);
-        model.setMyFloat(1f);
-        model.setMyPrimitiveDouble(1);
-        model.setMyDouble(1d);
-        model.setMyString("1");
-        model.setMyPrimitiveBoolean(true);
-        model.setMyBoolean(true);
-        model.setMyDate(new Date(0));
         model.setMyStringText("aaa");
         model.setMyText(new com.google.appengine.api.datastore.Text("aaa"));
         model.setMyBytes(new byte[] { 1 });
@@ -140,20 +309,7 @@ public class ModelMetaDatastoreTest extends DatastoreTestCase {
         Key key = ds.put(entity);
         Entity entity2 = ds.get(key);
         Hoge model2 = meta.entityToModel(entity2);
-        assertEquals((short) 1, model2.getMyPrimitiveShort());
-        assertEquals(Short.valueOf((short) 1), model2.getMyShort());
-        assertEquals(1, model2.getMyPrimitiveInt());
-        assertEquals(Integer.valueOf(1), model2.getMyInteger());
-        assertEquals(1L, model2.getMyPrimitiveLong());
-        assertEquals(Long.valueOf(1), model2.getMyLong());
-        assertEquals(1.0f, model2.getMyPrimitiveFloat());
-        assertEquals(Float.valueOf(1), model2.getMyFloat());
-        assertEquals(1.0d, model2.getMyPrimitiveDouble());
-        assertEquals(Double.valueOf(1), model2.getMyDouble());
-        assertEquals("1", model2.getMyString());
-        assertTrue(model2.isMyPrimitiveBoolean());
-        assertTrue(model2.getMyBoolean());
-        assertEquals(new Date(0), model2.getMyDate());
+
         assertEquals("aaa", model2.getMyStringText());
         assertEquals(new Text("aaa"), model2.getMyText());
         byte[] myBytes2 = model2.getMyBytes();

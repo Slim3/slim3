@@ -33,34 +33,31 @@ public class EqualCriterion<M, A> extends AbstractCriterion<M, A> implements
         FilterCriterion<M> {
 
     /**
-     * The parameter;
+     * The value;
      */
-    protected Object parameter;
+    protected Object value;
 
     /**
      * Constructor.
      * 
      * @param attributeMeta
      *            the meta data of attribute
-     * @param parameter
-     *            the parameter
+     * @param value
+     *            the value
      * @throws NullPointerException
-     *             if the parameter parameter is null
+     *             if the value parameter is null
      */
-    public EqualCriterion(CoreAttributeMeta<M, A> attributeMeta,
-            Object parameter) throws NullPointerException {
+    public EqualCriterion(CoreAttributeMeta<M, A> attributeMeta, Object value)
+            throws NullPointerException {
         super(attributeMeta);
-        if (parameter == null) {
-            throw new NullPointerException("The parameter parameter is null.");
+        if (value == null) {
+            throw new NullPointerException("The value parameter is null.");
         }
-        this.parameter = parameter;
+        this.value = value;
     }
 
     public void apply(Query query) {
-        query.addFilter(
-            attributeMeta.getName(),
-            FilterOperator.EQUAL,
-            parameter);
+        query.addFilter(attributeMeta.getName(), FilterOperator.EQUAL, value);
 
     }
 }
