@@ -16,20 +16,15 @@
 package org.slim3.datastore;
 
 /**
- * A meta data of collection attribute.
+ * A meta data of string attribute.
  * 
  * @author higa
  * @param <M>
  *            the model type
- * @param <A>
- *            the attribute type
- * @param <E>
- *            the element type of collection
  * @since 3.0
  * 
  */
-public class CollectionAttributeMeta<M, A, E> extends
-        AbstractAttributeMeta<M, A> {
+public class StringAttributeMeta<M> extends CoreAttributeMeta<M, String> {
 
     /**
      * Constructor.
@@ -38,25 +33,22 @@ public class CollectionAttributeMeta<M, A, E> extends
      *            the meta data of model
      * @param name
      *            the name
-     * @param attributeClass
-     *            the attribute class
      */
-    public CollectionAttributeMeta(ModelMeta<M> modelMeta, String name,
-            Class<? super A> attributeClass) {
-        super(modelMeta, name, attributeClass);
+    public StringAttributeMeta(ModelMeta<M> modelMeta, String name) {
+        super(modelMeta, name, String.class);
     }
 
     /**
-     * Returns the "contains" filter predicate.
+     * Returns the "startsWith" filter criterion.
      * 
      * @param value
      *            the value
-     * @return the "contains" filter predicate
+     * @return the "startsWith" filter criterion
      */
-    public ContainsCriterion<M, A, E> contains(E value) {
-        if (value == null) {
+    public StartsWithCriterion<M> startsWith(String value) {
+        if (isEmpty(value)) {
             return null;
         }
-        return new ContainsCriterion<M, A, E>(this, value);
+        return new StartsWithCriterion<M>(this, value);
     }
 }

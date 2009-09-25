@@ -15,24 +15,23 @@
  */
 package org.slim3.datastore;
 
-import com.google.appengine.api.datastore.Query.SortDirection;
-import com.google.appengine.api.datastore.Query.SortPredicate;
-
 /**
  * An abstract meta data of attribute.
  * 
  * @author higa
- * @param <T>
+ * @param <M>
+ *            the model type
+ * @param <A>
  *            the attribute type
  * @since 3.0
  * 
  */
-public abstract class AbstractAttributeMeta<T> {
+public abstract class AbstractAttributeMeta<M, A> {
 
     /**
      * The meta data of model.
      */
-    protected ModelMeta<?> modelMeta;
+    protected ModelMeta<M> modelMeta;
 
     /**
      * The name.
@@ -42,7 +41,7 @@ public abstract class AbstractAttributeMeta<T> {
     /**
      * The attribute class.
      */
-    protected Class<?> attributeClass;
+    protected Class<? super A> attributeClass;
 
     /**
      * Constructor.
@@ -55,10 +54,10 @@ public abstract class AbstractAttributeMeta<T> {
      *            the attribute class
      * @throws NullPointerException
      *             if the modelMeta parameter is null or if the name parameter
-     *             is null of if the attributeClass parameter is null
+     *             is null or if the attributeClass parameter is null
      */
-    public AbstractAttributeMeta(ModelMeta<?> modelMeta, String name,
-            Class<?> attributeClass) {
+    public AbstractAttributeMeta(ModelMeta<M> modelMeta, String name,
+            Class<? super A> attributeClass) {
         if (modelMeta == null) {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
@@ -75,24 +74,6 @@ public abstract class AbstractAttributeMeta<T> {
     }
 
     /**
-     * Returns the "ascending" sort predicate.
-     * 
-     * @return the "ascending" sort predicate
-     */
-    public SortPredicate asc() {
-        return new SortPredicate(name, SortDirection.ASCENDING);
-    }
-
-    /**
-     * Returns the "descending" sort predicate.
-     * 
-     * @return the "descending" sort predicate
-     */
-    public SortPredicate desc() {
-        return new SortPredicate(name, SortDirection.DESCENDING);
-    }
-
-    /**
      * Returns the name.
      * 
      * @return the name
@@ -106,7 +87,7 @@ public abstract class AbstractAttributeMeta<T> {
      * 
      * @return the attribute class
      */
-    public Class<?> getAttributeClass() {
+    public Class<? super A> getAttributeClass() {
         return attributeClass;
     }
 

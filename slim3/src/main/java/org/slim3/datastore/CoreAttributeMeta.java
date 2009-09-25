@@ -15,19 +15,18 @@
  */
 package org.slim3.datastore;
 
-import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
-
 /**
  * A meta data of attribute.
  * 
  * @author higa
- * @param <T>
+ * @param <M>
+ *            the model type
+ * @param <A>
  *            the attribute type
  * @since 3.0
  * 
  */
-public class AttributeMeta<T> extends AbstractAttributeMeta<T> {
+public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
 
     /**
      * Constructor.
@@ -38,12 +37,9 @@ public class AttributeMeta<T> extends AbstractAttributeMeta<T> {
      *            the name
      * @param attributeClass
      *            the attribute class
-     * @throws NullPointerException
-     *             if the modelMeta parameter is null or if the name parameter
-     *             is null of if the attributeClass parameter is null
      */
-    public AttributeMeta(ModelMeta<?> modelMeta, String name,
-            Class<?> attributeClass) {
+    public CoreAttributeMeta(ModelMeta<M> modelMeta, String name,
+            Class<A> attributeClass) {
         super(modelMeta, name, attributeClass);
     }
 
@@ -54,24 +50,10 @@ public class AttributeMeta<T> extends AbstractAttributeMeta<T> {
      *            the value
      * @return the "equal" filter predicate
      */
-    public FilterPredicate equal(T value) {
+    public EqualCriterion<M, A> equal(A value) {
         if (isEmpty(value)) {
             return null;
         }
-        return new FilterPredicate(name, FilterOperator.EQUAL, value);
-    }
-
-    /**
-     * Returns the "less than" filter predicate.
-     * 
-     * @param value
-     *            the value
-     * @return the "less than" filter predicate
-     */
-    public FilterPredicate lessThan(T value) {
-        if (isEmpty(value)) {
-            return null;
-        }
-        return new FilterPredicate(name, FilterOperator.LESS_THAN, value);
+        return new EqualCriterion<M, A>(this, value);
     }
 }
