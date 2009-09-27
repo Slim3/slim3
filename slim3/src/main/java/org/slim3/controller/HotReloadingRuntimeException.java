@@ -13,7 +13,9 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.exception;
+package org.slim3.controller;
+
+import org.slim3.util.WrapRuntimeException;
 
 /**
  * This runtime exception is thrown when an exception about hot reloading

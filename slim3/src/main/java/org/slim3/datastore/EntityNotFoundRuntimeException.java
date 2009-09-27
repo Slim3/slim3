@@ -13,38 +13,30 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.exception;
+package org.slim3.datastore;
+
+import com.google.appengine.api.datastore.Key;
 
 /**
- * A runtime exception to wrap an exception.
+ * This exception is thrown when no entity specified by the key could be found.
  * 
  * @author higa
  * @since 3.0
  * 
  */
-public class WrapRuntimeException extends RuntimeException {
+public class EntityNotFoundRuntimeException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * Constructor.
      * 
+     * @param key
+     *            the key
      * @param cause
      *            the cause
      */
-    public WrapRuntimeException(Throwable cause) {
-        super(cause);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param message
-     *            the message
-     * @param cause
-     *            the cause
-     */
-    public WrapRuntimeException(String message, Throwable cause) {
-        super(message, cause);
+    public EntityNotFoundRuntimeException(Key key, Throwable cause) {
+        super("No entity was found matching the key: " + key, cause);
     }
 }

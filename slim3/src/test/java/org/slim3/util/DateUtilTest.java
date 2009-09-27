@@ -21,7 +21,6 @@ import java.util.TimeZone;
 
 import junit.framework.TestCase;
 
-import org.slim3.exception.WrapRuntimeException;
 
 /**
  * @author higa

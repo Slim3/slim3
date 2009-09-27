@@ -17,7 +17,6 @@ package org.slim3.util;
 
 import java.lang.reflect.Method;
 
-import org.slim3.exception.WrapRuntimeException;
 
 /**
  * This class describes a property.

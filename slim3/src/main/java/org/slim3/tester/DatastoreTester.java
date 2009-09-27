@@ -15,6 +15,8 @@
  */
 package org.slim3.tester;
 
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.dev.LocalDatastoreService;
 import com.google.appengine.tools.development.ApiProxyLocalImpl;
 import com.google.apphosting.api.ApiProxy;
@@ -44,6 +46,13 @@ public class DatastoreTester extends ServiceTester {
         LocalDatastoreService datastoreService =
             (LocalDatastoreService) apiProxy.getService("datastore_v3");
         datastoreService.clearProfiles();
+        Transaction tx =
+            DatastoreServiceFactory
+                .getDatastoreService()
+                .getCurrentTransaction(null);
+        if (tx != null && tx.isActive()) {
+            tx.rollback();
+        }
         super.tearDown();
     }
 }

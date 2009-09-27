@@ -30,7 +30,7 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import org.slim3.exception.WrapRuntimeException;
+import org.slim3.util.WrapRuntimeException;
 
 /**
  * A mock implementation for {@link ServletContext}.

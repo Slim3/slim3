@@ -23,9 +23,9 @@ import org.datanucleus.metadata.MetaDataManager;
 import org.datanucleus.store.AbstractStoreManager;
 import org.datanucleus.store.StoreDataManager;
 import org.datanucleus.store.StoreManager;
-import org.slim3.exception.WrapRuntimeException;
 import org.slim3.util.Cleanable;
 import org.slim3.util.Cleaner;
+import org.slim3.util.WrapRuntimeException;
 
 /**
  * The object manager context for Slim3.

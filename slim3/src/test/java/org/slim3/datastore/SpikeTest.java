@@ -19,11 +19,7 @@ import org.slim3.tester.DatastoreTestCase;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Transaction;
 
 /**
  * @author higa
@@ -36,17 +32,18 @@ public class SpikeTest extends DatastoreTestCase {
      */
     public void testSpike() throws Exception {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        Key parentKey = ds.put(new Entity("parent"));
-        Entity child1 = new Entity("child", parentKey);
-        child1.setProperty("name", "child1");
-        ds.put(child1);
-        Entity child2 = new Entity("child", parentKey);
-        child2.setProperty("name", "child2");
-        ds.put(child2);
-        System.out.println(ds.prepare(
-            new Query("child", parentKey).addFilter(
-                "name",
-                FilterOperator.EQUAL,
-                "child1")).asList(FetchOptions.Builder.withOffset(0)));
+        Transaction tx = ds.beginTransaction();
+        final int count = 1000;
+        long start = System.nanoTime();
+        try {
+            for (int i = 0; i < count; i++) {
+                ds.getCurrentTransaction(null);
+            }
+            System.out.println(System.nanoTime() - start);
+        } finally {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+        }
     }
 }

@@ -17,7 +17,6 @@ package org.slim3.controller;
 
 import junit.framework.TestCase;
 
-import org.slim3.exception.HotReloadingRuntimeException;
 import org.slim3.tester.MockServletContext;
 import org.slim3.util.ServletContextLocator;
 

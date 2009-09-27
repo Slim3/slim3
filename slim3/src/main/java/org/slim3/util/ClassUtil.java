@@ -15,7 +15,6 @@
  */
 package org.slim3.util;
 
-import org.slim3.exception.WrapRuntimeException;
 
 /**
  * A utility class for {@link Class}.

@@ -17,7 +17,6 @@ package org.slim3.util;
 
 import junit.framework.TestCase;
 
-import org.slim3.exception.WrapRuntimeException;
 
 /**
  * @author higa

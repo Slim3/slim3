@@ -29,7 +29,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slim3.exception.HotReloadingRuntimeException;
 import org.slim3.util.Cleaner;
 import org.slim3.util.RequestLocator;
 import org.slim3.util.RequestUtil;

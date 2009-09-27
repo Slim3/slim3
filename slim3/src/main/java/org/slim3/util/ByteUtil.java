@@ -22,7 +22,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamClass;
 
-import org.slim3.exception.WrapRuntimeException;
 
 /**
  * A utility class for {@link Byte}.

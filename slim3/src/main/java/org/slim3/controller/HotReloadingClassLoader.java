@@ -21,7 +21,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.slim3.exception.WrapRuntimeException;
+import org.slim3.util.WrapRuntimeException;
 
 /**
  * The {@link ClassLoader} for hot reloading.

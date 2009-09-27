@@ -763,109 +763,103 @@ public class HogeMeta extends ModelMeta<Hoge> {
     }
 
     @Override
-    public Entity modelToEntity(Hoge model) {
-        Entity entity = null;
-        if (model.getKey() != null) {
-            entity = new Entity(model.getKey());
+    public Entity modelToEntity(Object model) {
+        Hoge m = (Hoge) model;
+        Entity e = null;
+        if (m.getKey() != null) {
+            e = new Entity(m.getKey());
         } else {
-            entity = new Entity("Hoge");
+            e = new Entity("Hoge");
         }
-        entity.setProperty("myPrimitiveShort", model.getMyPrimitiveShort());
-        entity.setProperty("myShort", model.getMyShort());
-        entity.setProperty("myPrimitiveInt", model.getMyPrimitiveInt());
-        entity.setProperty("myInteger", model.getMyInteger());
-        entity.setProperty("myPrimitiveLong", model.getMyPrimitiveLong());
-        entity.setProperty("myLong", model.getMyLong());
-        entity.setProperty("myPrimitiveFloat", model.getMyPrimitiveFloat());
-        entity.setProperty("myFloat", model.getMyFloat());
-        entity.setProperty("myPrimitiveDouble", model.getMyPrimitiveDouble());
-        entity.setProperty("myDouble", model.getMyDouble());
-        entity.setProperty("myString", model.getMyString());
-        entity.setProperty("myPrimitiveBoolean", model.isMyPrimitiveBoolean());
-        entity.setProperty("myBoolean", model.getMyBoolean());
-        entity.setProperty("myDate", model.getMyDate());
-        entity.setUnindexedProperty("myStringText", stringToText(model
+        e.setProperty("myPrimitiveShort", m.getMyPrimitiveShort());
+        e.setProperty("myShort", m.getMyShort());
+        e.setProperty("myPrimitiveInt", m.getMyPrimitiveInt());
+        e.setProperty("myInteger", m.getMyInteger());
+        e.setProperty("myPrimitiveLong", m.getMyPrimitiveLong());
+        e.setProperty("myLong", m.getMyLong());
+        e.setProperty("myPrimitiveFloat", m.getMyPrimitiveFloat());
+        e.setProperty("myFloat", m.getMyFloat());
+        e.setProperty("myPrimitiveDouble", m.getMyPrimitiveDouble());
+        e.setProperty("myDouble", m.getMyDouble());
+        e.setProperty("myString", m.getMyString());
+        e.setProperty("myPrimitiveBoolean", m.isMyPrimitiveBoolean());
+        e.setProperty("myBoolean", m.getMyBoolean());
+        e.setProperty("myDate", m.getMyDate());
+        e.setUnindexedProperty("myStringText", stringToText(m
             .getMyStringText()));
-        entity.setUnindexedProperty("myText", model.getMyText());
-        entity.setUnindexedProperty("myBytes", bytesToShortBlob(model
-            .getMyBytes()));
-        entity.setUnindexedProperty("myBytesBlob", bytesToBlob(model
+        e.setUnindexedProperty("myText", m.getMyText());
+        e
+            .setUnindexedProperty("myBytes", bytesToShortBlob(m.getMyBytes()));
+        e.setUnindexedProperty("myBytesBlob", bytesToBlob(m
             .getMyBytesBlob()));
-        entity.setUnindexedProperty(
-            "mySerializable",
-            serializableToShortBlob(model.getMySerializable()));
-        entity.setUnindexedProperty(
-            "mySerializableBlob",
-            serializableToBlob(model.getMySerializableBlob()));
+        e.setUnindexedProperty("mySerializable", serializableToShortBlob(m
+            .getMySerializable()));
+        e.setUnindexedProperty("mySerializableBlob", serializableToBlob(m
+            .getMySerializableBlob()));
 
-        entity.setProperty(
+        e.setProperty(
             "myPrimitiveShortArray",
-            primitiveShortArrayToLongList(model.getMyPrimitiveShortArray()));
-        entity.setProperty("myShortArray", shortArrayToLongList(model
+            primitiveShortArrayToLongList(m.getMyPrimitiveShortArray()));
+        e.setProperty("myShortArray", shortArrayToLongList(m
             .getMyShortArray()));
-        entity.setProperty("myShortList", model.getMyShortList());
-        entity.setProperty("myShortArrayList", model.getMyShortArrayList());
-        entity.setProperty("myShortSet", model.getMyShortSet());
-        entity.setProperty("myShortHashSet", model.getMyShortHashSet());
-        entity.setProperty("myShortSortedSet", model.getMyShortSortedSet());
-        entity.setProperty("myShortTreeSet", model.getMyShortTreeSet());
-        entity.setProperty("myShortLinkedList", model.getMyShortLinkedList());
-        entity.setProperty("myShortLinkedHashSet", model
-            .getMyShortLinkedHashSet());
-        entity.setProperty("myShortStack", model.getMyShortStack());
-        entity.setProperty("myShortVector", model.getMyShortVector());
+        e.setProperty("myShortList", m.getMyShortList());
+        e.setProperty("myShortArrayList", m.getMyShortArrayList());
+        e.setProperty("myShortSet", m.getMyShortSet());
+        e.setProperty("myShortHashSet", m.getMyShortHashSet());
+        e.setProperty("myShortSortedSet", m.getMyShortSortedSet());
+        e.setProperty("myShortTreeSet", m.getMyShortTreeSet());
+        e.setProperty("myShortLinkedList", m.getMyShortLinkedList());
+        e.setProperty("myShortLinkedHashSet", m.getMyShortLinkedHashSet());
+        e.setProperty("myShortStack", m.getMyShortStack());
+        e.setProperty("myShortVector", m.getMyShortVector());
 
-        entity.setProperty(
-            "myPrimitiveIntArray",
-            primitiveIntArrayToLongList(model.getMyPrimitiveIntArray()));
-        entity.setProperty("myIntegerArray", integerArrayToLongList(model
+        e.setProperty("myPrimitiveIntArray", primitiveIntArrayToLongList(m
+            .getMyPrimitiveIntArray()));
+        e.setProperty("myIntegerArray", integerArrayToLongList(m
             .getMyIntegerArray()));
-        entity.setProperty("myIntegerList", model.getMyIntegerList());
-        entity.setProperty("myIntegerArrayList", model.getMyIntegerArrayList());
-        entity.setProperty("myIntegerSet", model.getMyIntegerSet());
-        entity.setProperty("myIntegerHashSet", model.getMyIntegerHashSet());
-        entity.setProperty("myIntegerSortedSet", model.getMyIntegerSortedSet());
-        entity.setProperty("myIntegerTreeSet", model.getMyIntegerTreeSet());
-        entity.setProperty("myIntegerLinkedList", model
-            .getMyIntegerLinkedList());
-        entity.setProperty("myIntegerLinkedHashSet", model
+        e.setProperty("myIntegerList", m.getMyIntegerList());
+        e.setProperty("myIntegerArrayList", m.getMyIntegerArrayList());
+        e.setProperty("myIntegerSet", m.getMyIntegerSet());
+        e.setProperty("myIntegerHashSet", m.getMyIntegerHashSet());
+        e.setProperty("myIntegerSortedSet", m.getMyIntegerSortedSet());
+        e.setProperty("myIntegerTreeSet", m.getMyIntegerTreeSet());
+        e.setProperty("myIntegerLinkedList", m.getMyIntegerLinkedList());
+        e.setProperty("myIntegerLinkedHashSet", m
             .getMyIntegerLinkedHashSet());
-        entity.setProperty("myIntegerStack", model.getMyIntegerStack());
-        entity.setProperty("myIntegerVector", model.getMyIntegerVector());
+        e.setProperty("myIntegerStack", m.getMyIntegerStack());
+        e.setProperty("myIntegerVector", m.getMyIntegerVector());
 
-        entity.setProperty(
+        e.setProperty(
             "myPrimitiveLongArray",
-            primitiveLongArrayToLongList(model.getMyPrimitiveLongArray()));
-        entity.setProperty("myLongArray", longArrayToLongList(model
+            primitiveLongArrayToLongList(m.getMyPrimitiveLongArray()));
+        e.setProperty("myLongArray", longArrayToLongList(m
             .getMyLongArray()));
-        entity.setProperty("myLongList", model.getMyLongList());
-        entity.setProperty("myLongArrayList", model.getMyLongArrayList());
-        entity.setProperty("myLongSet", model.getMyLongSet());
-        entity.setProperty("myLongHashSet", model.getMyLongHashSet());
-        entity.setProperty("myLongSortedSet", model.getMyLongSortedSet());
-        entity.setProperty("myLongTreeSet", model.getMyLongTreeSet());
-        entity.setProperty("myLongLinkedList", model.getMyLongLinkedList());
-        entity.setProperty("myLongLinkedHashSet", model
-            .getMyLongLinkedHashSet());
-        entity.setProperty("myLongStack", model.getMyLongStack());
-        entity.setProperty("myLongVector", model.getMyLongVector());
+        e.setProperty("myLongList", m.getMyLongList());
+        e.setProperty("myLongArrayList", m.getMyLongArrayList());
+        e.setProperty("myLongSet", m.getMyLongSet());
+        e.setProperty("myLongHashSet", m.getMyLongHashSet());
+        e.setProperty("myLongSortedSet", m.getMyLongSortedSet());
+        e.setProperty("myLongTreeSet", m.getMyLongTreeSet());
+        e.setProperty("myLongLinkedList", m.getMyLongLinkedList());
+        e.setProperty("myLongLinkedHashSet", m.getMyLongLinkedHashSet());
+        e.setProperty("myLongStack", m.getMyLongStack());
+        e.setProperty("myLongVector", m.getMyLongVector());
 
-        entity.setProperty(
+        e.setProperty(
             "myPrimitiveFloatArray",
-            primitiveFloatArrayToDoubleList(model.getMyPrimitiveFloatArray()));
-        entity.setProperty("myFloatArray", floatArrayToDoubleList(model
+            primitiveFloatArrayToDoubleList(m.getMyPrimitiveFloatArray()));
+        e.setProperty("myFloatArray", floatArrayToDoubleList(m
             .getMyFloatArray()));
-        entity.setProperty("myFloatList", model.getMyFloatList());
-        entity.setProperty("myFloatArrayList", model.getMyFloatArrayList());
-        entity.setProperty("myFloatSet", model.getMyFloatSet());
-        entity.setProperty("myFloatHashSet", model.getMyFloatHashSet());
-        entity.setProperty("myFloatSortedSet", model.getMyFloatSortedSet());
-        entity.setProperty("myFloatTreeSet", model.getMyFloatTreeSet());
-        entity.setProperty("myFloatLinkedList", model.getMyFloatLinkedList());
-        entity.setProperty("myFloatLinkedHashSet", model
-            .getMyFloatLinkedHashSet());
-        entity.setProperty("myFloatStack", model.getMyFloatStack());
-        entity.setProperty("myFloatVector", model.getMyFloatVector());
-        return entity;
+        e.setProperty("myFloatList", m.getMyFloatList());
+        e.setProperty("myFloatArrayList", m.getMyFloatArrayList());
+        e.setProperty("myFloatSet", m.getMyFloatSet());
+        e.setProperty("myFloatHashSet", m.getMyFloatHashSet());
+        e.setProperty("myFloatSortedSet", m.getMyFloatSortedSet());
+        e.setProperty("myFloatTreeSet", m.getMyFloatTreeSet());
+        e.setProperty("myFloatLinkedList", m.getMyFloatLinkedList());
+        e.setProperty("myFloatLinkedHashSet", m.getMyFloatLinkedHashSet());
+        e.setProperty("myFloatStack", m.getMyFloatStack());
+        e.setProperty("myFloatVector", m.getMyFloatVector());
+        return e;
     }
 }

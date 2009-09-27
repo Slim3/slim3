@@ -38,17 +38,17 @@ import com.google.appengine.api.datastore.Text;
  * A meta data of model.
  * 
  * @author higa
- * @param <T>
+ * @param <M>
  *            the model type
  * @since 3.0
  * 
  */
-public abstract class ModelMeta<T> {
+public abstract class ModelMeta<M> {
 
     /**
      * The model class.
      */
-    protected Class<T> modelClass;
+    protected Class<M> modelClass;
 
     /**
      * Constructor.
@@ -58,7 +58,7 @@ public abstract class ModelMeta<T> {
      * @throws NullPointerException
      *             if the modelClass parameter is null
      */
-    public ModelMeta(Class<T> modelClass) throws NullPointerException {
+    public ModelMeta(Class<M> modelClass) throws NullPointerException {
         if (modelClass == null) {
             throw new NullPointerException("The modelClass parameter is null.");
         }
@@ -70,7 +70,7 @@ public abstract class ModelMeta<T> {
      * 
      * @return the model class
      */
-    public Class<T> getModelClass() {
+    public Class<M> getModelClass() {
         return modelClass;
     }
 
@@ -81,7 +81,7 @@ public abstract class ModelMeta<T> {
      *            the entity
      * @return a model
      */
-    public abstract T entityToModel(Entity entity);
+    public abstract M entityToModel(Entity entity);
 
     /**
      * Converts the model to an entity.
@@ -90,7 +90,7 @@ public abstract class ModelMeta<T> {
      *            the model
      * @return an entity
      */
-    public abstract Entity modelToEntity(T model);
+    public abstract Entity modelToEntity(Object model);
 
     /**
      * Converts the long to a primitive short.

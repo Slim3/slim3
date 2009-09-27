@@ -30,7 +30,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.slim3.controller.validator.Errors;
-import org.slim3.exception.WrapRuntimeException;
 import org.slim3.util.BigDecimalUtil;
 import org.slim3.util.BooleanUtil;
 import org.slim3.util.ByteUtil;
@@ -43,6 +42,7 @@ import org.slim3.util.NumberUtil;
 import org.slim3.util.ShortUtil;
 import org.slim3.util.StringUtil;
 import org.slim3.util.ThrowableUtil;
+import org.slim3.util.WrapRuntimeException;
 
 /**
  * A base controller. This controller is created each request.

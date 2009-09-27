@@ -18,7 +18,6 @@ package org.slim3.util;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 
-import org.slim3.exception.WrapRuntimeException;
 
 /**
  * A utility class for {@link Number}.

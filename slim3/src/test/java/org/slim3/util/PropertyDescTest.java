@@ -19,7 +19,6 @@ import java.lang.reflect.Method;
 
 import junit.framework.TestCase;
 
-import org.slim3.exception.WrapRuntimeException;
 
 /**
  * @author higa

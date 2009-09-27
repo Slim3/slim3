@@ -37,7 +37,6 @@ import javax.servlet.http.HttpSession;
 
 import org.slim3.controller.upload.FileUpload;
 import org.slim3.controller.validator.Errors;
-import org.slim3.exception.WrapRuntimeException;
 import org.slim3.util.ApplicationMessage;
 import org.slim3.util.ClassUtil;
 import org.slim3.util.LocaleLocator;
@@ -48,6 +47,7 @@ import org.slim3.util.ResponseLocator;
 import org.slim3.util.ServletContextLocator;
 import org.slim3.util.StringUtil;
 import org.slim3.util.TimeZoneLocator;
+import org.slim3.util.WrapRuntimeException;
 
 /**
  * The front controller of Slim3.
