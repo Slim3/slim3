@@ -33,17 +33,8 @@ public class SpikeTest extends DatastoreTestCase {
     public void testSpike() throws Exception {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         Transaction tx = ds.beginTransaction();
-        final int count = 1000;
-        long start = System.nanoTime();
-        try {
-            for (int i = 0; i < count; i++) {
-                ds.getCurrentTransaction(null);
-            }
-            System.out.println(System.nanoTime() - start);
-        } finally {
-            if (tx.isActive()) {
-                tx.rollback();
-            }
-        }
+        Transaction tx2 = ds.beginTransaction();
+        assertNotSame(tx, tx2);
+        assertSame(tx2, ds.getCurrentTransaction(null));
     }
 }
