@@ -21,18 +21,13 @@ import org.slim3.gen.ClassConstants;
  * @author taedium
  * 
  */
-public class StringType extends CoreType {
+public class StringType extends CoreReferenceType {
 
-    /**
-     * @param env
-     * @param declaration
-     * @param typeMirror
-     * @param className
-     */
     public StringType() {
-        super(ClassConstants.String, ClassConstants.String);
+        super(ClassConstants.String);
     }
 
+    @Override
     public <R, P, TH extends Throwable> R accept(
             DataTypeVisitor<R, P, TH> visitor, P p) throws TH {
         return visitor.visitStringType(this, p);

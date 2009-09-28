@@ -24,17 +24,19 @@ package org.slim3.gen;
  */
 public final class ClassConstants {
 
+    public static final String primitive_char = "char";
+
     /** {@code byte} */
-    public static final String primitve_byte = "byte";
+    public static final String primitive_byte = "byte";
 
     /** {@code boolean} */
-    public static final String primitve_boolean = "boolean";
+    public static final String primitive_boolean = "boolean";
 
     /** {@code short} */
-    public static final String primitve_short = "short";
+    public static final String primitive_short = "short";
 
     /** {@code int} */
-    public static final String primitve_int = "int";
+    public static final String primitive_int = "int";
 
     /** {@code long} */
     public static final String primitive_long = "long";
@@ -46,7 +48,7 @@ public final class ClassConstants {
     public static final String primitive_double = "double";
 
     /** {@code byte} array */
-    public static final String primitve_byte_array = "byte[]";
+    public static final String primitive_byte_array = "byte[]";
 
     /** {@code org.slim3.datastore.ModelMeta} */
     public static final String ModelMeta = "org.slim3.datastore.ModelMeta";
@@ -103,6 +105,9 @@ public final class ClassConstants {
 
     /** {@code java.lang.Boolean} */
     public static final String Boolean = "java.lang.Boolean";
+
+    /** {@code java.lang.Byte} */
+    public static final String Byte = "java.lang.Byte";
 
     /** {@code java.lang.Short} */
     public static final String Short = "java.lang.Short";

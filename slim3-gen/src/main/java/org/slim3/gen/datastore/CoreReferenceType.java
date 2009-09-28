@@ -15,20 +15,20 @@
  */
 package org.slim3.gen.datastore;
 
-
 /**
  * @author taedium
  * 
  */
-public abstract class CoreType extends AbstractDataType {
+public class CoreReferenceType extends ReferenceType {
 
-    /**
-     * @param env
-     * @param declaration
-     * @param typeMirror
-     */
-    public CoreType(String className, String typeName) {
-        super(className, typeName);
+    public CoreReferenceType(String className) {
+        super(className, className);
+    }
+
+    @Override
+    public <R, P, TH extends Throwable> R accept(
+            DataTypeVisitor<R, P, TH> visitor, P p) throws TH {
+        return visitor.visitCoreReferenceType(this, p);
     }
 
 }

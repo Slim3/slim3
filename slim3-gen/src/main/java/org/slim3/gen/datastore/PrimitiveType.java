@@ -23,11 +23,6 @@ public abstract class PrimitiveType extends AbstractDataType {
 
     protected final String wrapperClassName;
 
-    /**
-     * @param env
-     * @param declaration
-     * @param typeMirror
-     */
     public PrimitiveType(String className, String wrapperClassName) {
         super(className, wrapperClassName);
         this.wrapperClassName = wrapperClassName;

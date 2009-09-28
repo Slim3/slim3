@@ -30,6 +30,10 @@ import java.util.Formatter;
  */
 public class FilePrinter implements Printer {
 
+    protected static final String INDENT_SPACE = "    ";
+
+    protected StringBuilder indent = new StringBuilder();
+
     /** the formatter object */
     protected final Formatter formatter;
 
@@ -69,16 +73,26 @@ public class FilePrinter implements Printer {
     }
 
     public void print(String format, Object... args) {
-        formatter.format(format, args);
+        formatter.format(indent + format, args);
     }
 
     public void println(String format, Object... args) {
-        formatter.format(format, args);
+        formatter.format(indent + format, args);
         formatter.format("%n");
     }
 
     public void println() {
         formatter.format("%n");
+    }
+
+    public void indent() {
+        indent.append(INDENT_SPACE);
+    }
+
+    public void unindent() {
+        if (indent.length() >= INDENT_SPACE.length()) {
+            indent.setLength(indent.length() - INDENT_SPACE.length());
+        }
     }
 
     public void close() {

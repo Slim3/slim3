@@ -15,26 +15,19 @@
  */
 package org.slim3.gen.datastore;
 
-import org.slim3.gen.ClassConstants;
-
 /**
  * @author taedium
  * 
  */
-public class KeyType extends CoreReferenceType {
+public class HashSetType extends CollectionType {
 
-    /**
-     * @param env
-     * @param declaration
-     * @param typeMirror
-     */
-    public KeyType() {
-        super(ClassConstants.Key);
+    public HashSetType(String className, String typeName, DataType elementType) {
+        super(className, typeName, elementType);
     }
 
     @Override
     public <R, P, TH extends Throwable> R accept(
             DataTypeVisitor<R, P, TH> visitor, P p) throws TH {
-        return visitor.visitKeyType(this, p);
+        return visitor.visitHashSetType(this, p);
     }
 }

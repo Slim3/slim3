@@ -49,10 +49,8 @@ import static org.slim3.gen.ClassConstants.User;
 import static org.slim3.gen.ClassConstants.Vector;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.slim3.gen.message.MessageCode;
@@ -80,58 +78,42 @@ import com.sun.mirror.util.SimpleTypeVisitor;
 public class DataTypeFactory {
 
     /** the supported primitive types */
-    protected static final Map<Kind, String> PRIMITIVE_TYPES =
-        new HashMap<Kind, String>();
+    protected static final Map<Kind, CorePrimitiveType> CORE_PRIMITIVE_TYPES =
+        new HashMap<Kind, CorePrimitiveType>();
     static {
-        PRIMITIVE_TYPES.put(Kind.BOOLEAN, Boolean);
-        PRIMITIVE_TYPES.put(Kind.SHORT, Short);
-        PRIMITIVE_TYPES.put(Kind.INT, Integer);
-        PRIMITIVE_TYPES.put(Kind.LONG, Long);
-        PRIMITIVE_TYPES.put(Kind.FLOAT, Float);
-        PRIMITIVE_TYPES.put(Kind.DOUBLE, Double);
+        CORE_PRIMITIVE_TYPES.put(Kind.BOOLEAN, new PrimitiveBooleanType());
+        CORE_PRIMITIVE_TYPES.put(Kind.SHORT, new PrimitiveShortType());
+        CORE_PRIMITIVE_TYPES.put(Kind.INT, new PrimitiveIntType());
+        CORE_PRIMITIVE_TYPES.put(Kind.LONG, new PrimitiveLongType());
+        CORE_PRIMITIVE_TYPES.put(Kind.FLOAT, new PrimitiveFloatType());
+        CORE_PRIMITIVE_TYPES.put(Kind.DOUBLE, new PrimitiveLongType());
     }
 
     /** the supported value types */
-    protected static final List<String> VALUE_TYPES = new ArrayList<String>();
+    protected static final Map<String, CoreReferenceType> CORE_REFERENCE_TYPES =
+        new HashMap<String, CoreReferenceType>();
     static {
-        VALUE_TYPES.add(String);
-        VALUE_TYPES.add(Boolean);
-        VALUE_TYPES.add(Short);
-        VALUE_TYPES.add(Integer);
-        VALUE_TYPES.add(Long);
-        VALUE_TYPES.add(Float);
-        VALUE_TYPES.add(Double);
-        VALUE_TYPES.add(Date);
-        VALUE_TYPES.add(User);
-        VALUE_TYPES.add(Key);
-        VALUE_TYPES.add(Category);
-        VALUE_TYPES.add(Email);
-        VALUE_TYPES.add(GeoPt);
-        VALUE_TYPES.add(IMHandle);
-        VALUE_TYPES.add(Link);
-        VALUE_TYPES.add(PhoneNumber);
-        VALUE_TYPES.add(PostalAddress);
-        VALUE_TYPES.add(Rating);
-        VALUE_TYPES.add(ShortBlob);
-        VALUE_TYPES.add(Blob);
-        VALUE_TYPES.add(Text);
-    }
-
-    /** the supported collection types */
-    protected static final Map<String, String> COLLECTION_TYPES =
-        new HashMap<String, String>();
-    static {
-        COLLECTION_TYPES.put(Collection, ArrayList);
-        COLLECTION_TYPES.put(List, ArrayList);
-        COLLECTION_TYPES.put(ArrayList, ArrayList);
-        COLLECTION_TYPES.put(LinkedList, LinkedList);
-        COLLECTION_TYPES.put(Vector, Vector);
-        COLLECTION_TYPES.put(Stack, Stack);
-        COLLECTION_TYPES.put(Set, HashSet);
-        COLLECTION_TYPES.put(HashSet, HashSet);
-        COLLECTION_TYPES.put(LinkedHashSet, LinkedHashSet);
-        COLLECTION_TYPES.put(SortedSet, TreeSet);
-        COLLECTION_TYPES.put(TreeSet, TreeSet);
+        CORE_REFERENCE_TYPES.put(String, new StringType());
+        CORE_REFERENCE_TYPES.put(Boolean, new BooleanType());
+        CORE_REFERENCE_TYPES.put(Short, new ShortType());
+        CORE_REFERENCE_TYPES.put(Integer, new IntegerType());
+        CORE_REFERENCE_TYPES.put(Long, new LongType());
+        CORE_REFERENCE_TYPES.put(Float, new FloatType());
+        CORE_REFERENCE_TYPES.put(Double, new DoubleType());
+        CORE_REFERENCE_TYPES.put(Date, new DateType());
+        CORE_REFERENCE_TYPES.put(User, new UserType());
+        CORE_REFERENCE_TYPES.put(Key, new KeyType());
+        CORE_REFERENCE_TYPES.put(Category, new CategoryType());
+        CORE_REFERENCE_TYPES.put(Email, new EmailType());
+        CORE_REFERENCE_TYPES.put(GeoPt, new GeoPtType());
+        CORE_REFERENCE_TYPES.put(IMHandle, new IMHandleType());
+        CORE_REFERENCE_TYPES.put(Link, new LinkType());
+        CORE_REFERENCE_TYPES.put(PhoneNumber, new PhoneNumberType());
+        CORE_REFERENCE_TYPES.put(PostalAddress, new PostalAddressType());
+        CORE_REFERENCE_TYPES.put(Rating, new RatingType());
+        CORE_REFERENCE_TYPES.put(ShortBlob, new ShortBlobType());
+        CORE_REFERENCE_TYPES.put(Blob, new BlobType());
+        CORE_REFERENCE_TYPES.put(Text, new TextType());
     }
 
     /** the environment */
@@ -217,25 +199,34 @@ public class DataTypeFactory {
                 public void visitDeclaredType(DeclaredType declaredtype) {
                     TypeDeclaration typeDeclaration =
                         toTypeDeclaration(declaredtype);
-                    String className =
-                        typeDeclaration.getQualifiedName() + "[]";
-                    dataType =
-                        new org.slim3.gen.datastore.ArrayType(
-                            className,
-                            declaredtype.toString(),
-                            createDataType(typeDeclaration, declaredtype));
-                    if (VALUE_TYPES.contains(className)) {
-                        // do nothing
-                    } else if (isSerializable(declaredtype)) {
+                    String componentClasName =
+                        typeDeclaration.getQualifiedName();
+                    String className = componentClasName + "[]";
+                    CoreReferenceType componentCoreReferenceType =
+                        getCoreReferenceType(componentClasName);
+                    if (componentCoreReferenceType != null) {
+                        dataType =
+                            new org.slim3.gen.datastore.ArrayType(
+                                className,
+                                arrayType.toString(),
+                                componentCoreReferenceType);
+                        return;
+                    }
+                    if (isSerializable(declaredtype)) {
+                        dataType =
+                            new org.slim3.gen.datastore.ArrayType(
+                                className,
+                                arrayType.toString(),
+                                createDataType(typeDeclaration, declaredtype));
                         dataType.setSerializable(true);
                         dataType.setUnindex(true);
-                    } else {
-                        throw new ValidationException(
-                            MessageCode.SILM3GEN1005,
-                            env,
-                            declaration,
-                            className);
+                        return;
                     }
+                    throw new ValidationException(
+                        MessageCode.SILM3GEN1005,
+                        env,
+                        declaration,
+                        className);
                 }
 
                 @Override
@@ -243,15 +234,27 @@ public class DataTypeFactory {
                     Kind kind = primitiveType.getKind();
                     String componentClassName = kind.name().toLowerCase();
                     String className = componentClassName + "[]";
-                    dataType =
-                        new org.slim3.gen.datastore.ArrayType(
-                            className,
-                            PRIMITIVE_TYPES.get(kind),
-                            createDataType(null, primitiveType));
+                    CorePrimitiveType componentPrimitiveType =
+                        getCorePrimitiveType(kind);
+                    if (componentPrimitiveType != null) {
+                        dataType =
+                            new org.slim3.gen.datastore.ArrayType(
+                                className,
+                                arrayType.toString(),
+                                componentPrimitiveType);
+                        return;
+                    }
                     if (kind == Kind.CHAR) {
+                        dataType =
+                            new org.slim3.gen.datastore.ArrayType(
+                                className,
+                                arrayType.toString(),
+                                new PrimitiveCharType());
                         dataType.setSerializable(true);
                         dataType.setUnindex(true);
+                        return;
                     }
+                    throw new AssertionError("not yet implemented");
                 }
 
                 @Override
@@ -265,59 +268,17 @@ public class DataTypeFactory {
         public void visitDeclaredType(DeclaredType declaredType) {
             TypeDeclaration typeDeclaration = toTypeDeclaration(declaredType);
             String className = typeDeclaration.getQualifiedName();
-            if (VALUE_TYPES.contains(className)) {
-                dataType = createCoreType(className);
+            dataType = getCoreReferenceType(className);
+            if (dataType != null) {
                 return;
             }
-            if (COLLECTION_TYPES.containsKey(className)) {
-                Collection<TypeMirror> typeArgs =
-                    declaredType.getActualTypeArguments();
-                if (typeArgs.isEmpty()) {
-                    throw new ValidationException(
-                        MessageCode.SILM3GEN1004,
-                        env,
-                        declaration,
-                        declaredType);
-                }
-                TypeMirror elementType = typeArgs.iterator().next();
-                DeclaredType elementDeclaredType =
-                    TypeUtil.toDeclaredType(typeArgs.iterator().next());
-                if (elementDeclaredType == null) {
-                    throw new ValidationException(
-                        MessageCode.SILM3GEN1016,
-                        env,
-                        declaration,
-                        elementType);
-                }
-                DataType elementDataType =
-                    createDataType(
-                        elementDeclaredType.getDeclaration(),
-                        elementType);
-
-                TypeDeclaration elementDeclaration =
-                    toTypeDeclaration(elementDeclaredType);
-                String elementClassName = elementDeclaration.getQualifiedName();
-                dataType =
-                    new CollectionType(
-                        className,
-                        declaredType.toString(),
-                        elementDataType);
-                if (VALUE_TYPES.contains(elementClassName)) {
-                    // do nothing.
-                } else if (isSerializable(elementType)) {
-                    dataType.setSerializable(true);
-                    dataType.setUnindex(true);
-                } else {
-                    throw new ValidationException(
-                        MessageCode.SILM3GEN1002,
-                        env,
-                        declaration,
-                        elementClassName);
-                }
+            dataType = getCollectionType(className, declaredType);
+            if (dataType != null) {
                 return;
             }
             if (isSerializable(declaredType)) {
-                dataType = new AnyType(className, declaredType.toString());
+                dataType =
+                    new ReferenceType(className, declaredType.toString());
                 dataType.setSerializable(true);
                 dataType.setUnindex(true);
                 return;
@@ -332,16 +293,15 @@ public class DataTypeFactory {
         @Override
         public void visitPrimitiveType(PrimitiveType primitiveType) {
             Kind kind = primitiveType.getKind();
-            String className = kind.name().toLowerCase();
-            if (PRIMITIVE_TYPES.containsKey(kind)) {
-                dataType = createPrimitiveType(className);
-            } else {
-                throw new ValidationException(
-                    MessageCode.SILM3GEN1002,
-                    env,
-                    declaration,
-                    className);
+            dataType = getCorePrimitiveType(kind);
+            if (dataType != null) {
+                return;
             }
+            throw new ValidationException(
+                MessageCode.SILM3GEN1002,
+                env,
+                declaration,
+                kind.name().toLowerCase());
         }
 
         @Override
@@ -379,27 +339,103 @@ public class DataTypeFactory {
             return TypeUtil.isSubtype(env, typeMirror, Serializable.class);
         }
 
-        protected CoreType createCoreType(String className) {
-            env.getMessager().printNotice(
-                "Builder.createCoreType : " + className);
-            if (String.equals(className)) {
-                return new StringType();
-            }
-            if (Key.equals(className)) {
-                return new KeyType();
-            }
-            if (Blob.equals(className)) {
-                return new BlobType();
-            }
-            if (Text.equals(className)) {
-                return new TextType();
-            }
-            throw new AssertionError("not yet implemented. : " + className);
+        protected CoreReferenceType getCoreReferenceType(String className) {
+            return CORE_REFERENCE_TYPES.get(className);
         }
 
-        protected org.slim3.gen.datastore.PrimitiveType createPrimitiveType(
-                String className) {
+        protected CorePrimitiveType getCorePrimitiveType(Kind kind) {
+            return CORE_PRIMITIVE_TYPES.get(kind);
+        }
 
+        protected CollectionType getCollectionType(String className,
+                DeclaredType declaredType) {
+            if (TypeUtil.isSubtype(env, declaredType, Collection.class)) {
+                return null;
+            }
+            Collection<TypeMirror> typeArgs =
+                declaredType.getActualTypeArguments();
+            if (typeArgs.isEmpty()) {
+                throw new ValidationException(
+                    MessageCode.SILM3GEN1004,
+                    env,
+                    declaration,
+                    declaredType);
+            }
+            TypeMirror elementType = typeArgs.iterator().next();
+            DeclaredType elementDeclaredType =
+                TypeUtil.toDeclaredType(typeArgs.iterator().next());
+            if (elementDeclaredType == null) {
+                throw new ValidationException(
+                    MessageCode.SILM3GEN1016,
+                    env,
+                    declaration,
+                    elementType);
+            }
+            TypeDeclaration elementDeclaration =
+                toTypeDeclaration(elementDeclaredType);
+            CoreReferenceType elementCoreReferenceType =
+                getCoreReferenceType(elementDeclaration.getQualifiedName());
+            if (elementCoreReferenceType != null) {
+                return createCollectionType(
+                    className,
+                    declaredType,
+                    elementCoreReferenceType);
+            }
+            DataType elementDataType =
+                createDataType(elementDeclaration, elementType);
+            CollectionType collectionType =
+                createCollectionType(
+                    className,
+                    declaredType,
+                    elementCoreReferenceType);
+            if (isSerializable(elementType)) {
+                collectionType.setSerializable(true);
+                collectionType.setUnindex(true);
+                return collectionType;
+            }
+            throw new ValidationException(
+                MessageCode.SILM3GEN1002,
+                env,
+                declaration,
+                elementDataType.getClassName());
+        }
+
+        protected CollectionType createCollectionType(String className,
+                DeclaredType declaredType, DataType elementType) {
+            String typeName = declaredType.toString();
+            if (Collection.equals(className)) {
+                return new ArrayListType(className, typeName, elementType);
+            }
+            if (List.equals(className)) {
+                return new ArrayListType(className, typeName, elementType);
+            }
+            if (ArrayList.equals(className)) {
+                return new ArrayListType(className, typeName, elementType);
+            }
+            if (LinkedList.equals(className)) {
+                return new LinkedListType(className, typeName, elementType);
+            }
+            if (Stack.equals(className)) {
+                return new StackType(className, typeName, elementType);
+            }
+            if (Vector.equals(className)) {
+                return new VectorType(className, typeName, elementType);
+            }
+            if (Set.equals(className)) {
+                return new HashSetType(className, typeName, elementType);
+            }
+            if (HashSet.equals(className)) {
+                return new HashSetType(className, typeName, elementType);
+            }
+            if (LinkedHashSet.equals(className)) {
+                return new LinkedHashSetType(className, typeName, elementType);
+            }
+            if (SortedSet.equals(className)) {
+                return new TreeSetType(className, typeName, elementType);
+            }
+            if (TreeSet.equals(className)) {
+                return new TreeSetType(className, typeName, elementType);
+            }
             return null;
         }
 
@@ -408,6 +444,7 @@ public class DataTypeFactory {
             Builder builder = new Builder(declaration, typeMirror);
             return builder.build();
         }
+
     }
 
 }

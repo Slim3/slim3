@@ -21,22 +21,17 @@ import org.slim3.gen.ClassConstants;
  * @author taedium
  * 
  */
-public class TextType extends CoreType {
+public class TextType extends CoreReferenceType {
 
-    /**
-     * @param env
-     * @param declaration
-     * @param typeMirror
-     * @param className
-     */
     public TextType() {
-        super(ClassConstants.Text, ClassConstants.Text);
+        super(ClassConstants.Text);
         setUnindex(true);
     }
 
+    @Override
     public <R, P, TH extends Throwable> R accept(
             DataTypeVisitor<R, P, TH> visitor, P p) throws TH {
-        return visitor.visitCoreType(this, p);
+        return visitor.visitTextType(this, p);
     }
 
 }

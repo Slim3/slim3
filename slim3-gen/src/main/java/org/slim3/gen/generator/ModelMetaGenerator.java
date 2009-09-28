@@ -15,21 +15,28 @@
  */
 package org.slim3.gen.generator;
 
+import static org.slim3.gen.ClassConstants.CollectionAttributeMeta;
+import static org.slim3.gen.ClassConstants.CoreAttributeMeta;
+import static org.slim3.gen.ClassConstants.Entity;
+import static org.slim3.gen.ClassConstants.Object;
+import static org.slim3.gen.ClassConstants.StringAttributeMeta;
+
 import java.util.Date;
 
 import org.slim3.gen.ClassConstants;
 import org.slim3.gen.ProductInfo;
 import org.slim3.gen.datastore.ArrayType;
 import org.slim3.gen.datastore.CollectionType;
-import org.slim3.gen.datastore.CoreType;
+import org.slim3.gen.datastore.CorePrimitiveType;
+import org.slim3.gen.datastore.CoreReferenceType;
 import org.slim3.gen.datastore.DataType;
 import org.slim3.gen.datastore.KeyType;
-import org.slim3.gen.datastore.PrimitiveType;
 import org.slim3.gen.datastore.SimpleDataTypeVisitor;
 import org.slim3.gen.datastore.StringType;
 import org.slim3.gen.desc.AttributeMetaDesc;
 import org.slim3.gen.desc.ModelMetaDesc;
 import org.slim3.gen.printer.Printer;
+import org.slim3.gen.util.ClassUtil;
 
 /**
  * Generates a JDO model meta java file.
@@ -80,140 +87,61 @@ public class ModelMetaGenerator implements Generator {
             .getSimpleName(), ClassConstants.ModelMeta, modelMetaDesc
             .getModelClassName());
         p.println();
+        p.indent();
         printConstructor(p);
+        p.unindent();
         p.println();
+        p.indent();
         printAttributeMetaFields(p);
         printEntityToModelMethod(p);
         printModelToEntityMethod(p);
+        p.unindent();
         p.print("}");
     }
 
     protected void printConstructor(Printer p) {
-        p.println("    public %s() {", modelMetaDesc.getSimpleName());
-        p
-            .println("        super(%s.class);", modelMetaDesc
-                .getModelClassName());
-        p.println("    }");
+        p.println("public %s() {", modelMetaDesc.getSimpleName());
+        p.println("    super(%s.class);", modelMetaDesc.getModelClassName());
+        p.println("}");
     }
 
     protected void printAttributeMetaFields(Printer p) {
-        AttributeMetaFieldPrintingVisitor visitor =
-            new AttributeMetaFieldPrintingVisitor(p);
-        for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
-            if (attr.isUnindexed()) {
-                continue;
-            }
-            DataType dataType = attr.getDataType();
-            dataType.accept(visitor, attr);
-            p.println();
-        }
+        AttributeMetaFieldsGenerator generator =
+            new AttributeMetaFieldsGenerator(p);
+        generator.generate();
     }
 
     protected void printEntityToModelMethod(Printer p) {
-        p.println("    @Override");
-        p.println("    public %1$s entityToModel(%2$s entity) {", modelMetaDesc
-            .getModelClassName(), ClassConstants.Entity);
-        p.println("        %1$s model = new %1$s();", modelMetaDesc
-            .getModelClassName());
-        EntityToModelMethodPrintingVisitor visitor =
-            new EntityToModelMethodPrintingVisitor(p);
-        for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
-            DataType dataType = attr.getDataType();
-            dataType.accept(visitor, attr);
-
-            // if (attr.isPrimaryKey()) {
-            // p.println("        model.%1$s(entity.getKey());", attr
-            // .getWriteMethodName());
-            // } else if (attr.isSerialized()) {
-            // if (attr.isBlob()) {
-            // printConversionStatement(
-            // p,
-            // attr,
-            // "toSerializable",
-            // ClassConstants.Blob,
-            // attr.getTypeName());
-            // } else {
-            // printConversionStatement(
-            // p,
-            // attr,
-            // "toSerializable",
-            // ClassConstants.ShortBlob,
-            // attr.getTypeName());
-            // }
-            // } else if (attr.isCollection()) {
-            // if (ClassConstants.Short.equals(attr.getElementTypeName())) {
-            // printConversionStatement(
-            // p,
-            // attr,
-            // "toShortList",
-            // ClassConstants.List + "<" + ClassConstants.Long + ">",
-            // ClassConstants.List
-            // + "<"
-            // + attr.getElementTypeName()
-            // + ">");
-            // }
-            // } else if (attr.isText()) {
-            // printConversionStatement(
-            // p,
-            // attr,
-            // "toString",
-            // ClassConstants.Text);
-            // } else if (attr.isArray()
-            // && ClassConstants.primitve_byte.equals(attr
-            // .getElementTypeName())) {
-            // if (attr.isBlob()) {
-            // printConversionStatement(
-            // p,
-            // attr,
-            // "toBytes",
-            // ClassConstants.Blob);
-            // } else {
-            // printConversionStatement(
-            // p,
-            // attr,
-            // "toBytes",
-            // ClassConstants.ShortBlob);
-            // }
-            // } else if (attr.isPrimitive()) {
-            // if (ClassConstants.primitve_short.equals(attr.getTypeName())) {
-            // printConversionStatement(
-            // p,
-            // attr,
-            // "toPrimitiveShort",
-            // ClassConstants.Long);
-            // }
-            // } else {
-            // if (ClassConstants.Short.equals(attr.getTypeName())) {
-            // printConversionStatement(
-            // p,
-            // attr,
-            // "toShort",
-            // ClassConstants.Long);
-            // }
-            // }
-        }
-        p.println("        return model;");
-        p.println("   }");
-        p.println();
+        EntityToModelMethodGenerator generator =
+            new EntityToModelMethodGenerator(p);
+        generator.generate();
     }
 
     protected void printModelToEntityMethod(Printer p) {
-        p.println("    @Override");
-        p.println(
-            "    public %1$s modelToEntity(%2$s model) {",
-            ClassConstants.Entity,
-            ClassConstants.Object);
-        p.println("        return null;");
-        p.println("   }");
+        ModelToEntityMethodGenerator generator =
+            new ModelToEntityMethodGenerator(p);
+        generator.generate();
     }
 
-    public class AttributeMetaFieldPrintingVisitor extends
+    protected class AttributeMetaFieldsGenerator extends
             SimpleDataTypeVisitor<Void, AttributeMetaDesc, RuntimeException> {
 
         protected final Printer printer;
 
-        public AttributeMetaFieldPrintingVisitor(Printer printer) {
+        protected AttributeMetaFieldsGenerator(Printer printer) {
             this.printer = printer;
+        }
+
+        public void generate() {
+            for (AttributeMetaDesc attr : modelMetaDesc
+                .getAttributeMetaDescList()) {
+                if (attr.isImpermanent()) {
+                    continue;
+                }
+                DataType dataType = attr.getDataType();
+                dataType.accept(this, attr);
+                printer.println();
+            }
         }
 
         @Override
@@ -241,8 +169,8 @@ public class ModelMetaGenerator implements Generator {
         }
 
         @Override
-        public Void visitCoreType(CoreType type, AttributeMetaDesc p)
-                throws RuntimeException {
+        public Void visitCoreReferenceType(CoreReferenceType type,
+                AttributeMetaDesc p) throws RuntimeException {
             printCoreAttributeMetaField(p.getName(), type.getClassName(), type
                 .getTypeName());
             return null;
@@ -264,8 +192,8 @@ public class ModelMetaGenerator implements Generator {
         }
 
         @Override
-        public Void visitPrimitiveType(PrimitiveType type, AttributeMetaDesc p)
-                throws RuntimeException {
+        public Void visitCorePrimitiveType(CorePrimitiveType type,
+                AttributeMetaDesc p) throws RuntimeException {
             printCoreAttributeMetaField(p.getName(), type.getClassName(), type
                 .getTypeName());
             return null;
@@ -275,8 +203,20 @@ public class ModelMetaGenerator implements Generator {
                 String attributeClassName, String attributeTypeName) {
             printer
                 .println(
-                    "    public %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%4$s\", %5$s.class);",
-                    ClassConstants.CoreAttributeMeta,
+                    "public %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%4$s\", %5$s.class);",
+                    CoreAttributeMeta,
+                    modelMetaDesc.getModelClassName(),
+                    attributeTypeName,
+                    fieldName,
+                    attributeClassName);
+        }
+
+        protected void printKeyAttributeMetaField(String fieldName,
+                String attributeClassName, String attributeTypeName) {
+            printer
+                .println(
+                    "public %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"__key__\", %5$s.class);",
+                    CoreAttributeMeta,
                     modelMetaDesc.getModelClassName(),
                     attributeTypeName,
                     fieldName,
@@ -285,8 +225,8 @@ public class ModelMetaGenerator implements Generator {
 
         protected void printStringAttributeMetaField(String fieldName) {
             printer.println(
-                "    public %1$s<%2$s> %3$s = new %1$s<%2$s>(this, \"%3$s\");",
-                ClassConstants.StringAttributeMeta,
+                "public %1$s<%2$s> %3$s = new %1$s<%2$s>(this, \"%3$s\");",
+                StringAttributeMeta,
                 modelMetaDesc.getModelClassName(),
                 fieldName);
         }
@@ -296,8 +236,8 @@ public class ModelMetaGenerator implements Generator {
                 String elementTypeName) {
             printer
                 .println(
-                    "    public %1$s<%2$s, %3$s, %4$s> %5$s = new %1$s<%2$s, %3$s, %4$s>(this, \"%2$s\", %5$s.class);",
-                    ClassConstants.CollectionAttributeMeta,
+                    "public %1$s<%2$s, %3$s, %4$s> %5$s = new %1$s<%2$s, %3$s, %4$s>(this, \"%5$s\", %6$s.class);",
+                    CollectionAttributeMeta,
                     modelMetaDesc.getModelClassName(),
                     attributeTypeName,
                     elementTypeName,
@@ -307,48 +247,108 @@ public class ModelMetaGenerator implements Generator {
 
     }
 
-    public class EntityToModelMethodPrintingVisitor extends
+    protected class EntityToModelMethodGenerator extends
             SimpleDataTypeVisitor<Void, AttributeMetaDesc, RuntimeException> {
 
-        protected Printer printer;
+        protected final Printer printer;
 
         /**
          * @param defaultValue
          */
-        public EntityToModelMethodPrintingVisitor(Printer printer) {
+        public EntityToModelMethodGenerator(Printer printer) {
             this.printer = printer;
+        }
+
+        public void generate() {
+            printer.println("@Override");
+            printer.println(
+                "public %1$s entityToModel(%2$s entity) {",
+                modelMetaDesc.getModelClassName(),
+                Entity);
+            printer.indent();
+            printer.println("%1$s model = new %1$s();", modelMetaDesc
+                .getModelClassName());
+            for (AttributeMetaDesc attr : modelMetaDesc
+                .getAttributeMetaDescList()) {
+                if (attr.isImpermanent()) {
+                    continue;
+                }
+                DataType dataType = attr.getDataType();
+                dataType.accept(this, attr);
+            }
+            printer.println("return model;");
+            printer.unindent();
+            printer.println("}");
+            printer.println();
         }
 
         @Override
         public Void visitKeyType(KeyType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            printer.println("        model.%1$s(entity.getKey());", p
+            printer.println("model.%1$s(entity.getKey());", p
                 .getWriteMethodName());
             return null;
         }
 
-        protected void printConversionStatement(AttributeMetaDesc attr,
-                String conversionMethodName, String srcTypeName) {
-            printer
-                .println(
-                    "        model.%2$s(%3$s((%4$s) entity.getProperty(\"%1$s\")));",
-                    attr.getName(),
-                    attr.getWriteMethodName(),
-                    conversionMethodName,
-                    srcTypeName);
+        @Override
+        public Void visitStringType(StringType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            printer.println(
+                "model.%1$s((%2$s) entity.getProperty(\"%3$s\"));",
+                p.getWriteMethodName(),
+                type.getTypeName(),
+                p.getName());
+            return null;
         }
 
-        protected void printConversionStatement(AttributeMetaDesc attr,
-                String conversionMethodName, String srcTypeName,
-                String destTypeName) {
-            printer
-                .println(
-                    "        model.%2$s((%5$s) %3$s((%4$s) entity.getProperty(\"%1$s\")));",
-                    attr.getName(),
-                    attr.getWriteMethodName(),
-                    conversionMethodName,
-                    srcTypeName,
-                    destTypeName);
+    }
+
+    protected class ModelToEntityMethodGenerator extends
+            SimpleDataTypeVisitor<Void, AttributeMetaDesc, RuntimeException> {
+
+        protected final Printer printer;
+
+        public ModelToEntityMethodGenerator(Printer printer) {
+            this.printer = printer;
+        }
+
+        public void generate() {
+            printer.println("@Override");
+            printer.println(
+                "public %1$s modelToEntity(%2$s m) {",
+                Entity,
+                Object);
+            printer.indent();
+            printer.println("%1$s model = (%1$s) m;", modelMetaDesc
+                .getModelClassName());
+            printer.println("%1$s entity = null;", Entity);
+            printer.println("if (model.getKey() != null) {");
+            printer.println("    entity = new %1$s(model.getKey());", Entity);
+            printer.println("} else {");
+            printer.println(
+                "    entity = new %1$s(\"%2$s\");",
+                Entity,
+                ClassUtil.getSimpleName(modelMetaDesc.getModelClassName()));
+            printer.println("}");
+            for (AttributeMetaDesc attr : modelMetaDesc
+                .getAttributeMetaDescList()) {
+                if (attr.isImpermanent() || attr.isPrimaryKey()) {
+                    continue;
+                }
+                DataType dataType = attr.getDataType();
+                dataType.accept(this, attr);
+            }
+            printer.println("return entity;");
+            printer.unindent();
+            printer.println("}");
+        }
+
+        @Override
+        public Void visitCoreReferenceType(CoreReferenceType type,
+                AttributeMetaDesc p) throws RuntimeException {
+            printer.println("entity.setProperty(\"%1$s\", model.%2$s());", p
+                .getName(), p.getReadMethodName());
+            return super.visitCoreReferenceType(type, p);
         }
 
     }

@@ -19,15 +19,10 @@ package org.slim3.gen.datastore;
  * @author taedium
  * 
  */
-public class CollectionType extends AbstractDataType {
+public abstract class CollectionType extends AbstractDataType {
 
     protected final DataType elementType;
 
-    /**
-     * @param env
-     * @param declaration
-     * @param typeMirror
-     */
     public CollectionType(String className, String typeName,
             DataType elementType) {
         super(className, typeName);

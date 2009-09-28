@@ -120,8 +120,9 @@ public final class TypeUtil {
         if (supertypeDeclaration == null) {
             return false;
         }
-        TypeMirror supertype =
+        TypeMirror t1 = env.getTypeUtils().getErasure(subtype);
+        TypeMirror t2 =
             env.getTypeUtils().getDeclaredType(supertypeDeclaration);
-        return env.getTypeUtils().isSubtype(subtype, supertype);
+        return env.getTypeUtils().isSubtype(t1, t2);
     }
 }

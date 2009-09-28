@@ -51,10 +51,14 @@ public interface Printer extends Closeable {
     /**
      * Terminates the current line by writing the line separator string.
      */
-    public void println();
+    void println();
+
+    void indent();
+
+    void unindent();
 
     /**
      * Closes the stream and releases any system resources associated with it.
      */
-    public void close();
+    void close();
 }

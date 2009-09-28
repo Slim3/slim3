@@ -24,7 +24,7 @@ import static org.slim3.gen.ClassConstants.Key;
 import static org.slim3.gen.ClassConstants.Long;
 import static org.slim3.gen.ClassConstants.String;
 import static org.slim3.gen.ClassConstants.primitive_long;
-import static org.slim3.gen.ClassConstants.primitve_byte_array;
+import static org.slim3.gen.ClassConstants.primitive_byte_array;
 
 import java.util.List;
 
@@ -225,13 +225,13 @@ public class AttributeMetaDescFactory {
             FieldDeclaration fieldDeclaration) {
         DataType dataType = attributeMetaDesc.getDataType();
         String className = dataType.getClassName();
-        if (!primitve_byte_array.equals(className) && !dataType.isSerialized()) {
+        if (!primitive_byte_array.equals(className) && !dataType.isSerialized()) {
             throw new ValidationException(
                 MessageCode.SILM3GEN1010,
                 env,
                 fieldDeclaration);
         }
-        if (!primitve_byte_array.equals(className)) {
+        if (!primitive_byte_array.equals(className)) {
             attributeMetaDesc.setSerialized(true);
         }
         attributeMetaDesc.setBlob(true);
@@ -247,7 +247,7 @@ public class AttributeMetaDescFactory {
      */
     protected void handleSerialized(AttributeMetaDesc attributeMetaDesc,
             FieldDeclaration fieldDeclaration) {
-        if (!primitve_byte_array.equals(attributeMetaDesc
+        if (!primitive_byte_array.equals(attributeMetaDesc
             .getDataType()
             .getClassName())) {
             attributeMetaDesc.setSerialized(true);

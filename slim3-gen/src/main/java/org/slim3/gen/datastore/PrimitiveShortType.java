@@ -21,20 +21,20 @@ import org.slim3.gen.ClassConstants;
  * @author taedium
  * 
  */
-public class KeyType extends CoreReferenceType {
+public class PrimitiveShortType extends CorePrimitiveType {
 
     /**
      * @param env
      * @param declaration
      * @param typeMirror
      */
-    public KeyType() {
-        super(ClassConstants.Key);
+    public PrimitiveShortType() {
+        super(ClassConstants.primitive_short, ClassConstants.Short);
     }
 
     @Override
     public <R, P, TH extends Throwable> R accept(
             DataTypeVisitor<R, P, TH> visitor, P p) throws TH {
-        return visitor.visitKeyType(this, p);
+        return visitor.visitPrimitiveShortType(this, p);
     }
 }

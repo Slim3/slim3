@@ -21,22 +21,17 @@ import org.slim3.gen.ClassConstants;
  * @author taedium
  * 
  */
-public class BlobType extends CoreType {
+public class BlobType extends CoreReferenceType {
 
-    /**
-     * @param env
-     * @param declaration
-     * @param typeMirror
-     * @param className
-     */
     public BlobType() {
-        super(ClassConstants.Blob, ClassConstants.Blob);
+        super(ClassConstants.Blob);
         setUnindex(true);
     }
 
+    @Override
     public <R, P, TH extends Throwable> R accept(
             DataTypeVisitor<R, P, TH> visitor, P p) throws TH {
-        return visitor.visitCoreType(this, p);
+        return visitor.visitBlobType(this, p);
     }
 
 }

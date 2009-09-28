@@ -15,26 +15,19 @@
  */
 package org.slim3.gen.datastore;
 
-import org.slim3.gen.ClassConstants;
-
 /**
  * @author taedium
  * 
  */
-public class KeyType extends CoreReferenceType {
+public abstract class CorePrimitiveType extends PrimitiveType {
 
-    /**
-     * @param env
-     * @param declaration
-     * @param typeMirror
-     */
-    public KeyType() {
-        super(ClassConstants.Key);
+    public CorePrimitiveType(String className, String wrapperClassName) {
+        super(className, wrapperClassName);
     }
 
     @Override
     public <R, P, TH extends Throwable> R accept(
             DataTypeVisitor<R, P, TH> visitor, P p) throws TH {
-        return visitor.visitKeyType(this, p);
+        return visitor.visitCorePrimitiveType(this, p);
     }
 }

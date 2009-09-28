@@ -15,25 +15,22 @@
  */
 package org.slim3.gen.datastore;
 
+import org.slim3.gen.ClassConstants;
 
 /**
  * @author taedium
  * 
  */
-public class AnyType extends AbstractDataType {
+public class PostalAddressType extends CoreReferenceType {
 
-    /**
-     * @param env
-     * @param declaration
-     * @param typeMirror
-     */
-    public AnyType(String className, String typeName) {
-        super(className, typeName);
+    public PostalAddressType() {
+        super(ClassConstants.PostalAddress);
     }
 
+    @Override
     public <R, P, TH extends Throwable> R accept(
             DataTypeVisitor<R, P, TH> visitor, P p) throws TH {
-        return visitor.visitAnyType(this, p);
+        return visitor.visitPostalAddressType(this, p);
     }
 
 }

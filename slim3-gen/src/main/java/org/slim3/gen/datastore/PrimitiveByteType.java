@@ -15,27 +15,16 @@
  */
 package org.slim3.gen.datastore;
 
+import org.slim3.gen.ClassConstants;
+
 /**
  * @author taedium
  * 
  */
-public abstract class PrimitiveByteType extends PrimitiveType {
+public abstract class PrimitiveByteType extends CorePrimitiveType {
 
-    /**
-     * @param env
-     * @param declaration
-     * @param typeMirror
-     */
     public PrimitiveByteType() {
-        super(byte.class.getName(), Byte.class.getName());
-    }
-
-    /**
-     * @return the wrapperClassName
-     */
-    @Override
-    public String getWrapperClassName() {
-        return wrapperClassName;
+        super(ClassConstants.primitive_byte, ClassConstants.Byte);
     }
 
     @Override
