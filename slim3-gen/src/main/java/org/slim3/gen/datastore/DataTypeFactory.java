@@ -16,7 +16,6 @@
 package org.slim3.gen.datastore;
 
 import static org.slim3.gen.ClassConstants.ArrayList;
-import static org.slim3.gen.ClassConstants.BigDecimal;
 import static org.slim3.gen.ClassConstants.Blob;
 import static org.slim3.gen.ClassConstants.Boolean;
 import static org.slim3.gen.ClassConstants.Category;
@@ -78,7 +77,7 @@ import com.sun.mirror.util.SimpleTypeVisitor;
  * @since 3.0
  * 
  */
-public class DatastoreTypeFactory {
+public class DataTypeFactory {
 
     /** the supported primitive types */
     protected static final Map<Kind, String> PRIMITIVE_TYPES =
@@ -92,31 +91,30 @@ public class DatastoreTypeFactory {
         PRIMITIVE_TYPES.put(Kind.DOUBLE, Double);
     }
 
-    /** the supported single types */
-    protected static final List<String> SINGLE_TYPES = new ArrayList<String>();
+    /** the supported value types */
+    protected static final List<String> VALUE_TYPES = new ArrayList<String>();
     static {
-        SINGLE_TYPES.add(String);
-        SINGLE_TYPES.add(Boolean);
-        SINGLE_TYPES.add(Short);
-        SINGLE_TYPES.add(Integer);
-        SINGLE_TYPES.add(Long);
-        SINGLE_TYPES.add(Float);
-        SINGLE_TYPES.add(Double);
-        SINGLE_TYPES.add(Date);
-        SINGLE_TYPES.add(BigDecimal);
-        SINGLE_TYPES.add(User);
-        SINGLE_TYPES.add(Key);
-        SINGLE_TYPES.add(Category);
-        SINGLE_TYPES.add(Email);
-        SINGLE_TYPES.add(GeoPt);
-        SINGLE_TYPES.add(IMHandle);
-        SINGLE_TYPES.add(Link);
-        SINGLE_TYPES.add(PhoneNumber);
-        SINGLE_TYPES.add(PostalAddress);
-        SINGLE_TYPES.add(Rating);
-        SINGLE_TYPES.add(ShortBlob);
-        SINGLE_TYPES.add(Blob);
-        SINGLE_TYPES.add(Text);
+        VALUE_TYPES.add(String);
+        VALUE_TYPES.add(Boolean);
+        VALUE_TYPES.add(Short);
+        VALUE_TYPES.add(Integer);
+        VALUE_TYPES.add(Long);
+        VALUE_TYPES.add(Float);
+        VALUE_TYPES.add(Double);
+        VALUE_TYPES.add(Date);
+        VALUE_TYPES.add(User);
+        VALUE_TYPES.add(Key);
+        VALUE_TYPES.add(Category);
+        VALUE_TYPES.add(Email);
+        VALUE_TYPES.add(GeoPt);
+        VALUE_TYPES.add(IMHandle);
+        VALUE_TYPES.add(Link);
+        VALUE_TYPES.add(PhoneNumber);
+        VALUE_TYPES.add(PostalAddress);
+        VALUE_TYPES.add(Rating);
+        VALUE_TYPES.add(ShortBlob);
+        VALUE_TYPES.add(Blob);
+        VALUE_TYPES.add(Text);
     }
 
     /** the supported collection types */
@@ -140,25 +138,25 @@ public class DatastoreTypeFactory {
     protected final AnnotationProcessorEnvironment env;
 
     /**
-     * Creates a new {@link DatastoreTypeFactory}.
+     * Creates a new {@link DataTypeFactory}.
      * 
      * @param env
      *            the environment
      */
-    public DatastoreTypeFactory(AnnotationProcessorEnvironment env) {
+    public DataTypeFactory(AnnotationProcessorEnvironment env) {
         this.env = env;
     }
 
     /**
-     * Creates a new {@link DatastoreType}.
+     * Creates a new {@link DataType}.
      * 
      * @param declaration
      *            the declaration
      * @param typeMirror
      *            the typemirror
-     * @return a new {@link DatastoreType}
+     * @return a new {@link DataType}
      */
-    public DatastoreType createDatastoreType(Declaration declaration,
+    public DataType createDatastoreType(Declaration declaration,
             TypeMirror typeMirror) {
         if (declaration == null) {
             throw new NullPointerException("The declaration parameter is null.");
@@ -179,11 +177,13 @@ public class DatastoreTypeFactory {
      */
     protected class Builder extends SimpleTypeVisitor {
 
+        protected final Declaration declaration;
+
         /** the typemirror */
         protected final TypeMirror typeMirror;
 
         /** the datastore type */
-        protected final DatastoreType datastoreType;
+        protected AbstractDataType dataType;
 
         /**
          * Creates a new {@link Builder}
@@ -194,64 +194,63 @@ public class DatastoreTypeFactory {
          *            the typemirror
          */
         public Builder(Declaration declaration, TypeMirror typeMirror) {
+            this.declaration = declaration;
             this.typeMirror = typeMirror;
-            this.datastoreType =
-                new DatastoreType(env, declaration, typeMirror);
         }
 
         /**
-         * Builds a {@link DatastoreType}.
+         * Builds a {@link DataType}.
          * 
          * @return a datastore type
          */
-        public DatastoreType build() {
+        public DataType build() {
             typeMirror.accept(this);
-            return datastoreType;
+            return dataType;
         }
 
         @Override
-        public void visitArrayType(ArrayType arrayType) {
-            datastoreType.setArray(true);
-            arrayType.getComponentType().accept(new SimpleTypeVisitor() {
+        public void visitArrayType(final ArrayType arrayType) {
+            final TypeMirror componentType = arrayType.getComponentType();
+            componentType.accept(new SimpleTypeVisitor() {
 
                 @Override
                 public void visitDeclaredType(DeclaredType declaredtype) {
                     TypeDeclaration typeDeclaration =
                         toTypeDeclaration(declaredtype);
-                    String name = typeDeclaration.getQualifiedName();
-                    String typeName = name + "[]";
-                    datastoreType.setTypeName(typeName);
-                    datastoreType.setImplicationTypeName(typeName);
-                    datastoreType.setWrapperTypeName(typeName);
-                    datastoreType.setElementTypeName(name);
-                    if (SINGLE_TYPES.contains(name)) {
+                    String className =
+                        typeDeclaration.getQualifiedName() + "[]";
+                    dataType =
+                        new org.slim3.gen.datastore.ArrayType(
+                            className,
+                            declaredtype.toString(),
+                            createDataType(typeDeclaration, declaredtype));
+                    if (VALUE_TYPES.contains(className)) {
                         // do nothing
                     } else if (isSerializable(declaredtype)) {
-                        datastoreType.setSerializable(true);
-                        datastoreType.setUnindex(true);
+                        dataType.setSerializable(true);
+                        dataType.setUnindex(true);
                     } else {
                         throw new ValidationException(
                             MessageCode.SILM3GEN1005,
                             env,
-                            datastoreType.getDeclaration(),
-                            name);
+                            declaration,
+                            className);
                     }
                 }
 
                 @Override
                 public void visitPrimitiveType(PrimitiveType primitiveType) {
                     Kind kind = primitiveType.getKind();
-                    String name = kind.name().toLowerCase();
-                    String typeName = name + "[]";
-                    datastoreType.setTypeName(typeName);
-                    datastoreType.setImplicationTypeName(typeName);
-                    datastoreType.setWrapperTypeName(typeName);
-                    datastoreType.setElementTypeName(name);
-                    if (PRIMITIVE_TYPES.containsKey(kind)) {
-                        // do nothing
-                    } else {
-                        datastoreType.setSerializable(true);
-                        datastoreType.setUnindex(true);
+                    String componentClassName = kind.name().toLowerCase();
+                    String className = componentClassName + "[]";
+                    dataType =
+                        new org.slim3.gen.datastore.ArrayType(
+                            className,
+                            PRIMITIVE_TYPES.get(kind),
+                            createDataType(null, primitiveType));
+                    if (kind == Kind.CHAR) {
+                        dataType.setSerializable(true);
+                        dataType.setUnindex(true);
                     }
                 }
 
@@ -265,25 +264,19 @@ public class DatastoreTypeFactory {
         @Override
         public void visitDeclaredType(DeclaredType declaredType) {
             TypeDeclaration typeDeclaration = toTypeDeclaration(declaredType);
-            String name = typeDeclaration.getQualifiedName();
-            datastoreType.setTypeName(name);
-            datastoreType.setImplicationTypeName(name);
-            datastoreType.setWrapperTypeName(name);
-            if (SINGLE_TYPES.contains(name)) {
-                if (Blob.equals(name) || Text.equals(name)) {
-                    datastoreType.setUnindex(true);
-                }
-            } else if (COLLECTION_TYPES.containsKey(name)) {
-                datastoreType
-                    .setImplicationTypeName(COLLECTION_TYPES.get(name));
-                datastoreType.setCollection(true);
+            String className = typeDeclaration.getQualifiedName();
+            if (VALUE_TYPES.contains(className)) {
+                dataType = createCoreType(className);
+                return;
+            }
+            if (COLLECTION_TYPES.containsKey(className)) {
                 Collection<TypeMirror> typeArgs =
                     declaredType.getActualTypeArguments();
                 if (typeArgs.isEmpty()) {
                     throw new ValidationException(
                         MessageCode.SILM3GEN1004,
                         env,
-                        datastoreType.getDeclaration(),
+                        declaration,
                         declaredType);
                 }
                 TypeMirror elementType = typeArgs.iterator().next();
@@ -293,52 +286,61 @@ public class DatastoreTypeFactory {
                     throw new ValidationException(
                         MessageCode.SILM3GEN1016,
                         env,
-                        datastoreType.getDeclaration(),
+                        declaration,
                         elementType);
                 }
+                DataType elementDataType =
+                    createDataType(
+                        elementDeclaredType.getDeclaration(),
+                        elementType);
+
                 TypeDeclaration elementDeclaration =
                     toTypeDeclaration(elementDeclaredType);
-                String elementName = elementDeclaration.getQualifiedName();
-                datastoreType.setElementTypeName(elementName);
-                if (SINGLE_TYPES.contains(elementName)) {
+                String elementClassName = elementDeclaration.getQualifiedName();
+                dataType =
+                    new CollectionType(
+                        className,
+                        declaredType.toString(),
+                        elementDataType);
+                if (VALUE_TYPES.contains(elementClassName)) {
                     // do nothing.
                 } else if (isSerializable(elementType)) {
-                    datastoreType.setSerializable(true);
-                    datastoreType.setUnindex(true);
+                    dataType.setSerializable(true);
+                    dataType.setUnindex(true);
                 } else {
                     throw new ValidationException(
                         MessageCode.SILM3GEN1002,
                         env,
-                        datastoreType.getDeclaration(),
-                        elementName);
+                        declaration,
+                        elementClassName);
                 }
-            } else if (isSerializable(declaredType)) {
-                datastoreType.setSerializable(true);
-                datastoreType.setUnindex(true);
-            } else {
-                throw new ValidationException(
-                    MessageCode.SILM3GEN1002,
-                    env,
-                    datastoreType.getDeclaration(),
-                    name);
+                return;
             }
+            if (isSerializable(declaredType)) {
+                dataType = new AnyType(className, declaredType.toString());
+                dataType.setSerializable(true);
+                dataType.setUnindex(true);
+                return;
+            }
+            throw new ValidationException(
+                MessageCode.SILM3GEN1002,
+                env,
+                typeDeclaration,
+                className);
         }
 
         @Override
         public void visitPrimitiveType(PrimitiveType primitiveType) {
             Kind kind = primitiveType.getKind();
+            String className = kind.name().toLowerCase();
             if (PRIMITIVE_TYPES.containsKey(kind)) {
-                String name = (kind.name().toLowerCase());
-                datastoreType.setTypeName(name);
-                datastoreType.setImplicationTypeName(name);
-                datastoreType.setWrapperTypeName(PRIMITIVE_TYPES.get(kind));
-                datastoreType.setPrimitive(true);
+                dataType = createPrimitiveType(className);
             } else {
                 throw new ValidationException(
                     MessageCode.SILM3GEN1002,
                     env,
-                    datastoreType.getDeclaration(),
-                    kind.name().toLowerCase());
+                    declaration,
+                    className);
             }
         }
 
@@ -359,8 +361,10 @@ public class DatastoreTypeFactory {
             if (typeDeclaration != null) {
                 return typeDeclaration;
             }
-            throw new UnknownDeclarationException(env, datastoreType
-                .getDeclaration(), declaredType);
+            throw new UnknownDeclarationException(
+                env,
+                declaration,
+                declaredType);
         }
 
         /**
@@ -373,6 +377,36 @@ public class DatastoreTypeFactory {
          */
         protected boolean isSerializable(TypeMirror typeMirror) {
             return TypeUtil.isSubtype(env, typeMirror, Serializable.class);
+        }
+
+        protected CoreType createCoreType(String className) {
+            env.getMessager().printNotice(
+                "Builder.createCoreType : " + className);
+            if (String.equals(className)) {
+                return new StringType();
+            }
+            if (Key.equals(className)) {
+                return new KeyType();
+            }
+            if (Blob.equals(className)) {
+                return new BlobType();
+            }
+            if (Text.equals(className)) {
+                return new TextType();
+            }
+            throw new AssertionError("not yet implemented. : " + className);
+        }
+
+        protected org.slim3.gen.datastore.PrimitiveType createPrimitiveType(
+                String className) {
+
+            return null;
+        }
+
+        protected DataType createDataType(Declaration declaration,
+                TypeMirror typeMirror) {
+            Builder builder = new Builder(declaration, typeMirror);
+            return builder.build();
         }
     }
 

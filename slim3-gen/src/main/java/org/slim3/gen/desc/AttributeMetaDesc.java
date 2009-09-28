@@ -15,6 +15,8 @@
  */
 package org.slim3.gen.desc;
 
+import org.slim3.gen.datastore.DataType;
+
 /**
  * Represents an attribute meta description.
  * 
@@ -26,26 +28,10 @@ public class AttributeMetaDesc {
     /** the name */
     protected final String name;
 
-    /** the attributeClassName */
-    protected String typeName;
-
-    /** the declaredTypeName */
-    protected String declaredTypeName;
-
-    /** the implicationTypeName */
-    protected String implicationTypeName;
-
-    /** the wrapperTypeName */
-    protected String wrapperTypeName;
-
-    /** the elementTypeName */
-    protected String elementTypeName;
+    protected final DataType dataType;
 
     /** the primaryKey */
     protected boolean primaryKey;
-
-    /** the shortBlob */
-    protected boolean shortBlob;
 
     /** the blob */
     protected boolean blob;
@@ -62,18 +48,6 @@ public class AttributeMetaDesc {
     /** the unindexed */
     protected boolean unindexed;
 
-    /** the collection */
-    protected boolean collection;
-
-    /** the array */
-    protected boolean array;
-
-    /** the primitive */
-    protected boolean primitive;
-
-    /** the interfase */
-    protected boolean interfase;
-
     /** the serialized */
     protected boolean serialized;
 
@@ -89,83 +63,16 @@ public class AttributeMetaDesc {
      * @param name
      *            the name
      */
-    public AttributeMetaDesc(String name) {
+    public AttributeMetaDesc(String name, DataType dataType) {
         this.name = name;
+        this.dataType = dataType;
     }
 
     /**
-     * @return the typeName
+     * @return the dataType
      */
-    public String getTypeName() {
-        return typeName;
-    }
-
-    /**
-     * @param typeName
-     *            the typeName to set
-     */
-    public void setTypeName(String typeName) {
-        this.typeName = typeName;
-    }
-
-    /**
-     * @return the declaredTypeName
-     */
-    public String getDeclaredTypeName() {
-        return declaredTypeName;
-    }
-
-    /**
-     * @param declaredTypeName
-     *            the declaredTypeName to set
-     */
-    public void setDeclaredTypeName(String declaredTypeName) {
-        this.declaredTypeName = declaredTypeName;
-    }
-
-    /**
-     * @return the implicationTypeName
-     */
-    public String getImplicationTypeName() {
-        return implicationTypeName;
-    }
-
-    /**
-     * @param implicationTypeName
-     *            the implicationTypeName to set
-     */
-    public void setImplicationTypeName(String implicationTypeName) {
-        this.implicationTypeName = implicationTypeName;
-    }
-
-    /**
-     * @return the wrapperTypeName
-     */
-    public String getWrapperTypeName() {
-        return wrapperTypeName;
-    }
-
-    /**
-     * @param wrapperTypeName
-     *            the wrapperTypeName to set
-     */
-    public void setWrapperTypeName(String wrapperTypeName) {
-        this.wrapperTypeName = wrapperTypeName;
-    }
-
-    /**
-     * @return the elementTypeName
-     */
-    public String getElementTypeName() {
-        return elementTypeName;
-    }
-
-    /**
-     * @param elementTypeName
-     *            the elementTypeName to set
-     */
-    public void setElementTypeName(String elementTypeName) {
-        this.elementTypeName = elementTypeName;
+    public DataType getDataType() {
+        return dataType;
     }
 
     /**
@@ -181,21 +88,6 @@ public class AttributeMetaDesc {
      */
     public void setPrimaryKey(boolean primaryKey) {
         this.primaryKey = primaryKey;
-    }
-
-    /**
-     * @return the shortBlob
-     */
-    public boolean isShortBlob() {
-        return shortBlob;
-    }
-
-    /**
-     * @param shortBlob
-     *            the shortBlob to set
-     */
-    public void setShortBlob(boolean shortBlob) {
-        this.shortBlob = shortBlob;
     }
 
     /**
@@ -274,66 +166,6 @@ public class AttributeMetaDesc {
     }
 
     /**
-     * @return the collection
-     */
-    public boolean isCollection() {
-        return collection;
-    }
-
-    /**
-     * @param collection
-     *            the collection to set
-     */
-    public void setCollection(boolean collection) {
-        this.collection = collection;
-    }
-
-    /**
-     * @return the array
-     */
-    public boolean isArray() {
-        return array;
-    }
-
-    /**
-     * @param array
-     *            the array to set
-     */
-    public void setArray(boolean array) {
-        this.array = array;
-    }
-
-    /**
-     * @return the primitive
-     */
-    public boolean isPrimitive() {
-        return primitive;
-    }
-
-    /**
-     * @param primitive
-     *            the primitive to set
-     */
-    public void setPrimitive(boolean primitive) {
-        this.primitive = primitive;
-    }
-
-    /**
-     * @return the interfase
-     */
-    public boolean isInterfase() {
-        return interfase;
-    }
-
-    /**
-     * @param interfase
-     *            the interfase to set
-     */
-    public void setInterfase(boolean interfase) {
-        this.interfase = interfase;
-    }
-
-    /**
      * @return the serialized
      */
     public boolean isSerialized() {
@@ -383,51 +215,6 @@ public class AttributeMetaDesc {
      */
     public String getName() {
         return name;
-    }
-
-    @Override
-    public String toString() {
-        return "AttributeMetaDesc [array="
-            + array
-            + ", blob="
-            + blob
-            + ", collection="
-            + collection
-            + ", declaredTypeName="
-            + declaredTypeName
-            + ", elementTypeName="
-            + elementTypeName
-            + ", impermanent="
-            + impermanent
-            + ", implicationTypeName="
-            + implicationTypeName
-            + ", interfase="
-            + interfase
-            + ", name="
-            + name
-            + ", primaryKey="
-            + primaryKey
-            + ", primitive="
-            + primitive
-            + ", readMethodName="
-            + readMethodName
-            + ", serialized="
-            + serialized
-            + ", shortBlob="
-            + shortBlob
-            + ", text="
-            + text
-            + ", typeName="
-            + typeName
-            + ", unindexed="
-            + unindexed
-            + ", version="
-            + version
-            + ", wrapperTypeName="
-            + wrapperTypeName
-            + ", writeMethodName="
-            + writeMethodName
-            + "]";
     }
 
 }

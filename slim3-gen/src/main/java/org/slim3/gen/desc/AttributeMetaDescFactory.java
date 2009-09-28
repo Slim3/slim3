@@ -24,17 +24,20 @@ import static org.slim3.gen.ClassConstants.Key;
 import static org.slim3.gen.ClassConstants.Long;
 import static org.slim3.gen.ClassConstants.String;
 import static org.slim3.gen.ClassConstants.primitive_long;
+import static org.slim3.gen.ClassConstants.primitve_byte_array;
 
 import java.util.List;
 
-import org.slim3.gen.datastore.DatastoreType;
-import org.slim3.gen.datastore.DatastoreTypeFactory;
+import org.slim3.gen.datastore.DataType;
+import org.slim3.gen.datastore.DataTypeFactory;
 import org.slim3.gen.message.MessageCode;
 import org.slim3.gen.processor.ValidationException;
+import org.slim3.gen.util.DeclarationUtil;
 import org.slim3.gen.util.StringUtil;
 import org.slim3.gen.util.TypeUtil;
 
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
+import com.sun.mirror.declaration.Declaration;
 import com.sun.mirror.declaration.FieldDeclaration;
 import com.sun.mirror.declaration.MethodDeclaration;
 import com.sun.mirror.type.TypeMirror;
@@ -86,8 +89,13 @@ public class AttributeMetaDescFactory {
                 "The methodDeclarations parameter is null.");
         }
 
+        DataTypeFactory datastoreTypeFactory = creaetDatastoreTypeFactory();
+        DataType dataType =
+            datastoreTypeFactory.createDatastoreType(
+                fieldDeclaration,
+                fieldDeclaration.getType());
         AttributeMetaDesc attributeMetaDesc =
-            new AttributeMetaDesc(fieldDeclaration.getSimpleName());
+            new AttributeMetaDesc(fieldDeclaration.getSimpleName(), dataType);
         handleField(attributeMetaDesc, fieldDeclaration);
         handleMethod(attributeMetaDesc, fieldDeclaration, methodDeclarations);
         return attributeMetaDesc;
@@ -103,33 +111,18 @@ public class AttributeMetaDescFactory {
      */
     protected void handleField(AttributeMetaDesc attributeMetaDesc,
             FieldDeclaration fieldDeclaration) {
-        DatastoreTypeFactory datastoreTypeFactory =
-            creaetDatastoreTypeFactory();
-        DatastoreType type =
-            datastoreTypeFactory.createDatastoreType(
-                fieldDeclaration,
-                fieldDeclaration.getType());
-        attributeMetaDesc.setTypeName(type.getTypeName());
-        attributeMetaDesc.setDeclaredTypeName(type.getDeclaredTypeName());
-        attributeMetaDesc.setImplicationTypeName(type.getImplicationTypeName());
-        attributeMetaDesc.setWrapperTypeName(type.getWrapperTypeName());
-        attributeMetaDesc.setElementTypeName(type.getElementTypeName());
-        attributeMetaDesc.setCollection(type.isCollection());
-        attributeMetaDesc.setArray(type.isArray());
-        attributeMetaDesc.setPrimitive(type.isPrimitive());
-        attributeMetaDesc.setUnindexed(type.isUnindex());
-        if (type.isAnnotated(Impermanent)) {
-            handleImpermanent(attributeMetaDesc, type);
-        } else if (type.isAnnotated(PrimaryKey)) {
-            handlePrimaryKey(attributeMetaDesc, type);
-        } else if (type.isAnnotated(Version)) {
-            handleVersion(attributeMetaDesc, type);
-        } else if (type.isAnnotated(Text)) {
-            handleText(attributeMetaDesc, type);
-        } else if (type.isAnnotated(Blob)) {
-            handleBlob(attributeMetaDesc, type);
-        } else if (type.isSerializable()) {
-            handleSerializable(attributeMetaDesc, type);
+        if (isAnnotated(Impermanent, fieldDeclaration)) {
+            handleImpermanent(attributeMetaDesc, fieldDeclaration);
+        } else if (isAnnotated(PrimaryKey, fieldDeclaration)) {
+            handlePrimaryKey(attributeMetaDesc, fieldDeclaration);
+        } else if (isAnnotated(Version, fieldDeclaration)) {
+            handleVersion(attributeMetaDesc, fieldDeclaration);
+        } else if (isAnnotated(Text, fieldDeclaration)) {
+            handleText(attributeMetaDesc, fieldDeclaration);
+        } else if (isAnnotated(Blob, fieldDeclaration)) {
+            handleBlob(attributeMetaDesc, fieldDeclaration);
+        } else if (attributeMetaDesc.getDataType().isSerialized()) {
+            handleSerialized(attributeMetaDesc, fieldDeclaration);
         }
     }
 
@@ -142,9 +135,9 @@ public class AttributeMetaDescFactory {
      *            the datastore type
      */
     protected void handleImpermanent(AttributeMetaDesc attributeMetaDesc,
-            DatastoreType type) {
+            FieldDeclaration fieldDeclaration) {
         validateAnnotationConsistency(
-            type,
+            fieldDeclaration,
             Impermanent,
             PrimaryKey,
             Version,
@@ -162,11 +155,18 @@ public class AttributeMetaDescFactory {
      *            the datastore type
      */
     protected void handlePrimaryKey(AttributeMetaDesc attributeMetaDesc,
-            DatastoreType type) {
-        validateAnnotationConsistency(type, PrimaryKey, Version, Text, Blob);
-        if (!Key.equals(type.getTypeName())) {
-            throw new ValidationException(MessageCode.SILM3GEN1007, env, type
-                .getDeclaration());
+            FieldDeclaration fieldDeclaration) {
+        validateAnnotationConsistency(
+            fieldDeclaration,
+            PrimaryKey,
+            Version,
+            Text,
+            Blob);
+        if (!Key.equals(attributeMetaDesc.getDataType().getClassName())) {
+            throw new ValidationException(
+                MessageCode.SILM3GEN1007,
+                env,
+                fieldDeclaration);
         }
         attributeMetaDesc.setPrimaryKey(true);
     }
@@ -180,12 +180,14 @@ public class AttributeMetaDescFactory {
      *            the datastore type
      */
     protected void handleVersion(AttributeMetaDesc attributeMetaDesc,
-            DatastoreType type) {
-        validateAnnotationConsistency(type, Version, Text, Blob);
-        if (!Long.equals(type.getTypeName())
-            && !primitive_long.equals(type.getTypeName())) {
-            throw new ValidationException(MessageCode.SILM3GEN1008, env, type
-                .getDeclaration());
+            FieldDeclaration fieldDeclaration) {
+        validateAnnotationConsistency(fieldDeclaration, Version, Text, Blob);
+        String className = attributeMetaDesc.getDataType().getClassName();
+        if (!Long.equals(className) && !primitive_long.equals(className)) {
+            throw new ValidationException(
+                MessageCode.SILM3GEN1008,
+                env,
+                fieldDeclaration);
         }
         attributeMetaDesc.setVersion(true);
     }
@@ -199,11 +201,13 @@ public class AttributeMetaDescFactory {
      *            the datastore type
      */
     protected void handleText(AttributeMetaDesc attributeMetaDesc,
-            DatastoreType type) {
-        validateAnnotationConsistency(type, Text, Blob);
-        if (!String.equals(type.getTypeName())) {
-            throw new ValidationException(MessageCode.SILM3GEN1009, env, type
-                .getDeclaration());
+            FieldDeclaration fieldDeclaration) {
+        validateAnnotationConsistency(fieldDeclaration, Text, Blob);
+        if (!String.equals(attributeMetaDesc.getDataType().getClassName())) {
+            throw new ValidationException(
+                MessageCode.SILM3GEN1009,
+                env,
+                fieldDeclaration);
         }
         attributeMetaDesc.setText(true);
         attributeMetaDesc.setUnindexed(true);
@@ -218,12 +222,16 @@ public class AttributeMetaDescFactory {
      *            the datastore type
      */
     protected void handleBlob(AttributeMetaDesc attributeMetaDesc,
-            DatastoreType type) {
-        if (!type.isByteArray() && !type.isSerializable()) {
-            throw new ValidationException(MessageCode.SILM3GEN1010, env, type
-                .getDeclaration());
+            FieldDeclaration fieldDeclaration) {
+        DataType dataType = attributeMetaDesc.getDataType();
+        String className = dataType.getClassName();
+        if (!primitve_byte_array.equals(className) && !dataType.isSerialized()) {
+            throw new ValidationException(
+                MessageCode.SILM3GEN1010,
+                env,
+                fieldDeclaration);
         }
-        if (!type.isByteArray()) {
+        if (!primitve_byte_array.equals(className)) {
             attributeMetaDesc.setSerialized(true);
         }
         attributeMetaDesc.setBlob(true);
@@ -237,12 +245,13 @@ public class AttributeMetaDescFactory {
      * @param type
      *            the datastore type
      */
-    protected void handleSerializable(AttributeMetaDesc attributeMetaDesc,
-            DatastoreType type) {
-        if (!type.isByteArray()) {
+    protected void handleSerialized(AttributeMetaDesc attributeMetaDesc,
+            FieldDeclaration fieldDeclaration) {
+        if (!primitve_byte_array.equals(attributeMetaDesc
+            .getDataType()
+            .getClassName())) {
             attributeMetaDesc.setSerialized(true);
         }
-        attributeMetaDesc.setShortBlob(true);
     }
 
     /**
@@ -255,14 +264,15 @@ public class AttributeMetaDescFactory {
      * @param annotations
      *            annotations
      */
-    protected void validateAnnotationConsistency(DatastoreType type,
-            String targetAnnotation, String... annotations) {
+    protected void validateAnnotationConsistency(
+            FieldDeclaration fieldDeclaration, String targetAnnotation,
+            String... annotations) {
         for (String annotation : annotations) {
-            if (type.isAnnotated(annotation)) {
+            if (isAnnotated(annotation, fieldDeclaration)) {
                 throw new ValidationException(
                     MessageCode.SILM3GEN1006,
                     env,
-                    type.getDeclaration(),
+                    fieldDeclaration,
                     targetAnnotation,
                     annotation);
             }
@@ -390,13 +400,18 @@ public class AttributeMetaDescFactory {
         return parameterTypeMirror.equals(fieldTypeMirror);
     }
 
+    protected boolean isAnnotated(String annotation, Declaration declaration) {
+        return DeclarationUtil
+            .getAnnotationMirror(env, declaration, annotation) != null;
+    }
+
     /**
      * Creates a datastore type factory.
      * 
      * @return a datastore type factory
      */
-    protected DatastoreTypeFactory creaetDatastoreTypeFactory() {
-        return new DatastoreTypeFactory(env);
+    protected DataTypeFactory creaetDatastoreTypeFactory() {
+        return new DataTypeFactory(env);
     }
 
 }

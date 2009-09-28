@@ -45,12 +45,19 @@ public final class ClassConstants {
     /** {@code double} */
     public static final String primitive_double = "double";
 
+    /** {@code byte} array */
+    public static final String primitve_byte_array = "byte[]";
+
     /** {@code org.slim3.datastore.ModelMeta} */
     public static final String ModelMeta = "org.slim3.datastore.ModelMeta";
 
-    /** {@code org.slim3.datastore.AttributeMeta} */
-    public static final String AttributeMeta =
-        "org.slim3.datastore.AttributeMeta";
+    /** {@code org.slim3.datastore.CoreAttributeMeta} */
+    public static final String CoreAttributeMeta =
+        "org.slim3.datastore.CoreAttributeMeta";
+
+    /** {@code org.slim3.datastore.StringAttributeMeta} */
+    public static final String StringAttributeMeta =
+        "org.slim3.datastore.StringAttributeMeta";
 
     /** {@code org.slim3.datastore.CollectionAttributeMeta} */
     public static final String CollectionAttributeMeta =
@@ -91,7 +98,10 @@ public final class ClassConstants {
     /** {@code java.lang.String} */
     public static final String String = "java.lang.String";
 
-    /** {@code String} */
+    /** {@code java.lang.Character} */
+    public static final String Character = "java.lang.Character";
+
+    /** {@code java.lang.Boolean} */
     public static final String Boolean = "java.lang.Boolean";
 
     /** {@code java.lang.Short} */
@@ -111,9 +121,6 @@ public final class ClassConstants {
 
     /** {@code java.lang.Double} */
     public static final String Date = "java.util.Date";
-
-    /** {@code java.math.BigDecimal} */
-    public static final String BigDecimal = "java.math.BigDecimal";
 
     /** {@code com.google.appengine.api.users.User} */
     public static final String User = "com.google.appengine.api.users.User";
