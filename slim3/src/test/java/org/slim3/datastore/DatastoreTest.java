@@ -354,6 +354,60 @@ public class DatastoreTest extends DatastoreTestCase {
     /**
      * @throws Exception
      */
+    public void testPutModels() throws Exception {
+        List<Hoge> models = Arrays.asList(new Hoge(), new Hoge());
+        List<Key> keys = Datastore.put(models);
+        assertNotNull(keys);
+        assertEquals(2, keys.size());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testPutModelsForVarargs() throws Exception {
+        List<Key> keys = Datastore.put(new Hoge(), new Hoge());
+        assertNotNull(keys);
+        assertEquals(2, keys.size());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testPutModelsInTx() throws Exception {
+        Key key = KeyFactory.createKey("Hoge", 1);
+        Key key2 = KeyFactory.createKey(key, "Hoge", 1);
+        Hoge hoge = new Hoge();
+        hoge.setKey(key);
+        Hoge hoge2 = new Hoge();
+        hoge2.setKey(key2);
+        List<Hoge> models = Arrays.asList(hoge, hoge2);
+        Transaction tx = ds.beginTransaction();
+        List<Key> keys = Datastore.put(tx, models);
+        tx.rollback();
+        assertNotNull(keys);
+        assertEquals(2, keys.size());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testPutModelsInTxForVarargs() throws Exception {
+        Key key = KeyFactory.createKey("Hoge", 1);
+        Key key2 = KeyFactory.createKey(key, "Hoge", 1);
+        Hoge hoge = new Hoge();
+        hoge.setKey(key);
+        Hoge hoge2 = new Hoge();
+        hoge2.setKey(key2);
+        Transaction tx = ds.beginTransaction();
+        List<Key> keys = Datastore.put(tx, hoge, hoge2);
+        tx.rollback();
+        assertNotNull(keys);
+        assertEquals(2, keys.size());
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testPutEntity() throws Exception {
         assertNotNull(Datastore.putEntity(new Entity("Hoge")));
     }

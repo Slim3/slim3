@@ -764,11 +764,67 @@ public final class Datastore {
      * @throws NullPointerException
      *             if the models parameter is null
      */
-    public static List<Key> put(Iterable<Object> models)
-            throws NullPointerException {
+    public static List<Key> put(Iterable<?> models) throws NullPointerException {
         if (models == null) {
             throw new NullPointerException("The models parameter is null.");
         }
+        return putEntities(modelsToEntities(models));
+    }
+
+    /**
+     * Puts the models to datastore. If there is a current transaction, this
+     * operation will execute within that transaction.
+     * 
+     * @param models
+     *            the models
+     * @return a list of keys
+     */
+    public static List<Key> put(Object... models) {
+        return put(Arrays.asList(models));
+    }
+
+    /**
+     * Puts the models to datastore within the provided transaction.
+     * 
+     * @param tx
+     *            the transaction
+     * @param models
+     *            the models
+     * @return a list of keys
+     * @throws NullPointerException
+     *             if the tx parameter is null or if the models parameter is
+     *             null
+     * @throws IllegalArgumentException
+     *             if the transaction is not active
+     */
+    public static List<Key> put(Transaction tx, Iterable<?> models)
+            throws NullPointerException, IllegalArgumentException {
+        if (models == null) {
+            throw new NullPointerException("The models parameter is null.");
+        }
+        return putEntities(tx, modelsToEntities(models));
+    }
+
+    /**
+     * Puts the models to datastore within the provided transaction.
+     * 
+     * @param tx
+     *            the transaction
+     * @param models
+     *            the models
+     * @return a list of keys
+     * @throws NullPointerException
+     *             if the tx parameter is null
+     * @throws IllegalArgumentException
+     *             if the transaction is not active
+     */
+    public static List<Key> put(Transaction tx, Object... models)
+            throws NullPointerException, IllegalArgumentException {
+        return put(tx, Arrays.asList(models));
+    }
+
+    private static List<Entity> modelsToEntities(Iterable<?> models)
+            throws NullPointerException {
         List<Entity> entities = new ArrayList<Entity>();
         for (Object model : models) {
             if (model == null) {
@@ -779,7 +835,7 @@ public final class Datastore {
             Entity entity = modelMeta.modelToEntity(model);
             entities.add(entity);
         }
-        return putEntities(entities);
+        return entities;
     }
 
     /**
