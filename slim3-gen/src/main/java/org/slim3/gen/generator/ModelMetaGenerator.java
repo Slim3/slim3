@@ -197,7 +197,7 @@ public class ModelMetaGenerator implements Generator {
         @Override
         public Void visitKeyType(KeyType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            printCoreAttributeMetaField("__key__", type.getClassName(), type
+            printKeyAttributeMetaField(p.getName(), type.getClassName(), type
                 .getTypeName());
             return null;
         }
