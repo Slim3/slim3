@@ -247,11 +247,12 @@ public class GWTServiceServlet extends RemoteServiceServlet {
                         + ") is loaded by deferent class loaders.";
             }
             throw new IncompatibleRemoteServiceException(msg, e);
-        }
-        for (Transaction tx : DatastoreServiceFactory
-            .getDatastoreService()
-            .getActiveTransactions()) {
-            tx.rollback();
+        } finally {
+            for (Transaction tx : DatastoreServiceFactory
+                .getDatastoreService()
+                .getActiveTransactions()) {
+                tx.rollback();
+            }
         }
         return result;
     }
