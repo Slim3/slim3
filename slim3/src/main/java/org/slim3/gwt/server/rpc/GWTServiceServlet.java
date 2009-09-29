@@ -17,23 +17,20 @@ package org.slim3.gwt.server.rpc;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collection;
 
-import javax.jdo.JDOHelper;
-import javax.jdo.PersistenceManager;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.datanucleus.store.query.QueryResult;
 import org.slim3.controller.HotReloadingClassLoader;
-import org.slim3.jdo.CurrentPersistenceManager;
 import org.slim3.util.ClassUtil;
 import org.slim3.util.RequestLocator;
 import org.slim3.util.ResponseLocator;
 import org.slim3.util.ServletContextLocator;
 import org.slim3.util.StringUtil;
 
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Transaction;
 import com.google.gwt.user.client.rpc.IncompatibleRemoteServiceException;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.SerializationException;
@@ -251,16 +248,10 @@ public class GWTServiceServlet extends RemoteServiceServlet {
             }
             throw new IncompatibleRemoteServiceException(msg, e);
         }
-        if (result == null) {
-            return null;
-        }
-        PersistenceManager pm = CurrentPersistenceManager.get();
-        if (pm != null) {
-            if (result instanceof QueryResult) {
-                return pm.detachCopyAll((Collection<?>) result);
-            } else if (JDOHelper.isPersistent(result)) {
-                return pm.detachCopy(result);
-            }
+        for (Transaction tx : DatastoreServiceFactory
+            .getDatastoreService()
+            .getActiveTransactions()) {
+            tx.rollback();
         }
         return result;
     }

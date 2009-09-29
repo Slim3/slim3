@@ -44,8 +44,10 @@ import org.slim3.util.StringUtil;
 import org.slim3.util.ThrowableUtil;
 import org.slim3.util.WrapRuntimeException;
 
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.Transaction;
 
 /**
  * A base controller. This controller is created each request.
@@ -144,6 +146,11 @@ public abstract class Controller {
      * 
      */
     protected void tearDown() {
+        for (Transaction tx : DatastoreServiceFactory
+            .getDatastoreService()
+            .getActiveTransactions()) {
+            tx.rollback();
+        }
     }
 
     /**

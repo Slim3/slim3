@@ -147,7 +147,12 @@ public class ByteUtilTest extends TestCase {
     public void testToByteArray() throws Exception {
         assertNull(ByteUtil.toByteArray(null));
         assertNotNull(ByteUtil.toByteArray("aaa"));
-        assertNotNull(ByteUtil.toByteArray(new NoSerializable()));
+        try {
+            ByteUtil.toByteArray(new NoSerializable());
+            fail();
+        } catch (WrapRuntimeException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     /**
