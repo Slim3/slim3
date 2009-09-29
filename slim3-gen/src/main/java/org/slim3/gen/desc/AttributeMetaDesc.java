@@ -45,11 +45,7 @@ public class AttributeMetaDesc {
     /** the impermanent */
     protected boolean impermanent;
 
-    /** the unindexed */
     protected boolean unindexed;
-
-    /** the serialized */
-    protected boolean serialized;
 
     /** the readMethodName */
     protected String readMethodName;
@@ -151,36 +147,6 @@ public class AttributeMetaDesc {
     }
 
     /**
-     * @return the unindexed
-     */
-    public boolean isUnindexed() {
-        return unindexed;
-    }
-
-    /**
-     * @param unindexed
-     *            the unindexed to set
-     */
-    public void setUnindexed(boolean unindexed) {
-        this.unindexed = unindexed;
-    }
-
-    /**
-     * @return the serialized
-     */
-    public boolean isSerialized() {
-        return serialized;
-    }
-
-    /**
-     * @param serialized
-     *            the serialized to set
-     */
-    public void setSerialized(boolean serialized) {
-        this.serialized = serialized;
-    }
-
-    /**
      * @return the readMethodName
      */
     public String getReadMethodName() {
@@ -215,6 +181,21 @@ public class AttributeMetaDesc {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * @return the unindexed
+     */
+    public boolean isUnindexed() {
+        return unindexed;
+    }
+
+    /**
+     * @param unindexed
+     *            the unindexed to set
+     */
+    public void setUnindexed(boolean unindexed) {
+        this.unindexed = unindexed;
     }
 
 }

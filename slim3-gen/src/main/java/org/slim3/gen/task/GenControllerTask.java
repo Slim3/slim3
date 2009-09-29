@@ -40,11 +40,10 @@ public class GenControllerTask extends AbstractGenJavaFileTask {
     protected String controllerPath;
 
     /** the superclass name */
-    protected String superclassName = ClassConstants.JDOController;
+    protected String superclassName = ClassConstants.Controller;
 
     /** the superclass name of testcase */
-    protected String testCaseSuperclassName =
-        ClassConstants.JDOControllerTestCase;
+    protected String testCaseSuperclassName = ClassConstants.ControllerTestCase;
 
     /** {@code true} if the controller uses a view */
     protected boolean useView;

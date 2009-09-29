@@ -25,7 +25,7 @@ public class BlobType extends CoreReferenceType {
 
     public BlobType() {
         super(ClassConstants.Blob);
-        setUnindex(true);
+        setUnindexed(true);
     }
 
     @Override

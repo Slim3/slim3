@@ -21,7 +21,7 @@ import org.slim3.gen.ClassConstants;
  * @author taedium
  * 
  */
-public abstract class PrimitiveByteType extends CorePrimitiveType {
+public class PrimitiveByteType extends PrimitiveType {
 
     public PrimitiveByteType() {
         super(ClassConstants.primitive_byte, ClassConstants.Byte);

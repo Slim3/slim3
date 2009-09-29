@@ -25,7 +25,7 @@ public class PrimitiveCharType extends PrimitiveType {
 
     public PrimitiveCharType() {
         super(ClassConstants.primitive_char, ClassConstants.Character);
-        setUnindex(unindex);
+        setUnindexed(unindexed);
     }
 
     @Override

@@ -19,7 +19,6 @@ import java.io.IOException;
 
 import javax.xml.xpath.XPathExpressionException;
 
-import org.slim3.gen.ClassConstants;
 import org.slim3.gen.Constants;
 import org.slim3.gen.desc.ModelDesc;
 import org.slim3.gen.generator.Generator;
@@ -42,9 +41,6 @@ public class GenModelTask extends AbstractGenJavaFileTask {
     /** the modelRelativeClassName */
     protected String modelRelativeClassName;
 
-    /** the superclass name of testcase */
-    protected String testCaseSuperclassName = ClassConstants.JDOTestCase;
-
     /** the property which represents a model class name */
     protected String modelClassNameProperty;
 
@@ -66,16 +62,6 @@ public class GenModelTask extends AbstractGenJavaFileTask {
      */
     public void setModelRelativeClassName(String modelRelativeClassName) {
         this.modelRelativeClassName = modelRelativeClassName;
-    }
-
-    /**
-     * Sets the testCaseSuperclassName.
-     * 
-     * @param testCaseSuperclassName
-     *            the testCaseSuperclassName to set
-     */
-    public void setTestCaseSuperclassName(String testCaseSuperclassName) {
-        this.testCaseSuperclassName = testCaseSuperclassName;
     }
 
     /**
@@ -111,10 +97,6 @@ public class GenModelTask extends AbstractGenJavaFileTask {
         Generator generator = createModelGenerator(modelDesc);
         generateJavaFile(generator, javaFile);
 
-        JavaFile testCaseJavaFile = createTestCaseJavaFile(modelDesc);
-        Generator testCaseGenerator = createModelTestCaseGenerator(modelDesc);
-        generateJavaFile(testCaseGenerator, testCaseJavaFile);
-
         getProject().setNewProperty(
             modelClassNameProperty,
             modelDesc.getQualifiedName());
@@ -136,7 +118,6 @@ public class GenModelTask extends AbstractGenJavaFileTask {
         ModelDesc modelDesc = new ModelDesc();
         modelDesc.setPackageName(nameBuilder.getPackageName());
         modelDesc.setSimpleName(nameBuilder.getSimpleName());
-        modelDesc.setTestCaseSuperclassName(testCaseSuperclassName);
         return modelDesc;
     }
 

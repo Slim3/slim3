@@ -19,12 +19,13 @@ import static org.slim3.gen.AnnotationConstants.Blob;
 import static org.slim3.gen.AnnotationConstants.Impermanent;
 import static org.slim3.gen.AnnotationConstants.PrimaryKey;
 import static org.slim3.gen.AnnotationConstants.Text;
+import static org.slim3.gen.AnnotationConstants.Unindexed;
 import static org.slim3.gen.AnnotationConstants.Version;
 import static org.slim3.gen.ClassConstants.Key;
 import static org.slim3.gen.ClassConstants.Long;
 import static org.slim3.gen.ClassConstants.String;
-import static org.slim3.gen.ClassConstants.primitive_long;
 import static org.slim3.gen.ClassConstants.primitive_byte_array;
+import static org.slim3.gen.ClassConstants.primitive_long;
 
 import java.util.List;
 
@@ -121,8 +122,8 @@ public class AttributeMetaDescFactory {
             handleText(attributeMetaDesc, fieldDeclaration);
         } else if (isAnnotated(Blob, fieldDeclaration)) {
             handleBlob(attributeMetaDesc, fieldDeclaration);
-        } else if (attributeMetaDesc.getDataType().isSerialized()) {
-            handleSerialized(attributeMetaDesc, fieldDeclaration);
+        } else if (isAnnotated(Unindexed, fieldDeclaration)) {
+            handleUnindexed(attributeMetaDesc, fieldDeclaration);
         }
     }
 
@@ -161,7 +162,8 @@ public class AttributeMetaDescFactory {
             PrimaryKey,
             Version,
             Text,
-            Blob);
+            Blob,
+            Unindexed);
         if (!Key.equals(attributeMetaDesc.getDataType().getClassName())) {
             throw new ValidationException(
                 MessageCode.SILM3GEN1007,
@@ -181,7 +183,12 @@ public class AttributeMetaDescFactory {
      */
     protected void handleVersion(AttributeMetaDesc attributeMetaDesc,
             FieldDeclaration fieldDeclaration) {
-        validateAnnotationConsistency(fieldDeclaration, Version, Text, Blob);
+        validateAnnotationConsistency(
+            fieldDeclaration,
+            Version,
+            Text,
+            Blob,
+            Unindexed);
         String className = attributeMetaDesc.getDataType().getClassName();
         if (!Long.equals(className) && !primitive_long.equals(className)) {
             throw new ValidationException(
@@ -202,7 +209,7 @@ public class AttributeMetaDescFactory {
      */
     protected void handleText(AttributeMetaDesc attributeMetaDesc,
             FieldDeclaration fieldDeclaration) {
-        validateAnnotationConsistency(fieldDeclaration, Text, Blob);
+        validateAnnotationConsistency(fieldDeclaration, Text, Blob, Unindexed);
         if (!String.equals(attributeMetaDesc.getDataType().getClassName())) {
             throw new ValidationException(
                 MessageCode.SILM3GEN1009,
@@ -210,7 +217,6 @@ public class AttributeMetaDescFactory {
                 fieldDeclaration);
         }
         attributeMetaDesc.setText(true);
-        attributeMetaDesc.setUnindexed(true);
     }
 
     /**
@@ -223,6 +229,7 @@ public class AttributeMetaDescFactory {
      */
     protected void handleBlob(AttributeMetaDesc attributeMetaDesc,
             FieldDeclaration fieldDeclaration) {
+        validateAnnotationConsistency(fieldDeclaration, Blob, Unindexed);
         DataType dataType = attributeMetaDesc.getDataType();
         String className = dataType.getClassName();
         if (!primitive_byte_array.equals(className) && !dataType.isSerialized()) {
@@ -231,27 +238,12 @@ public class AttributeMetaDescFactory {
                 env,
                 fieldDeclaration);
         }
-        if (!primitive_byte_array.equals(className)) {
-            attributeMetaDesc.setSerialized(true);
-        }
         attributeMetaDesc.setBlob(true);
     }
 
-    /**
-     * Handles serializable.
-     * 
-     * @param attributeMetaDesc
-     *            the attribute meta description
-     * @param type
-     *            the datastore type
-     */
-    protected void handleSerialized(AttributeMetaDesc attributeMetaDesc,
+    protected void handleUnindexed(AttributeMetaDesc attributeMetaDesc,
             FieldDeclaration fieldDeclaration) {
-        if (!primitive_byte_array.equals(attributeMetaDesc
-            .getDataType()
-            .getClassName())) {
-            attributeMetaDesc.setSerialized(true);
-        }
+        attributeMetaDesc.setUnindexed(true);
     }
 
     /**

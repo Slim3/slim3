@@ -19,7 +19,6 @@ import static org.slim3.gen.ClassConstants.ArrayList;
 import static org.slim3.gen.ClassConstants.Blob;
 import static org.slim3.gen.ClassConstants.Boolean;
 import static org.slim3.gen.ClassConstants.Category;
-import static org.slim3.gen.ClassConstants.Collection;
 import static org.slim3.gen.ClassConstants.Date;
 import static org.slim3.gen.ClassConstants.Double;
 import static org.slim3.gen.ClassConstants.Email;
@@ -218,8 +217,8 @@ public class DataTypeFactory {
                                 className,
                                 arrayType.toString(),
                                 createDataType(typeDeclaration, declaredtype));
-                        dataType.setSerializable(true);
-                        dataType.setUnindex(true);
+                        dataType.setSerialized(true);
+                        dataType.setUnindexed(true);
                         return;
                     }
                     throw new ValidationException(
@@ -244,14 +243,24 @@ public class DataTypeFactory {
                                 componentPrimitiveType);
                         return;
                     }
-                    if (kind == Kind.CHAR) {
+                    if (kind == Kind.BYTE) {
+                        dataType =
+                            new org.slim3.gen.datastore.ArrayType(
+                                className,
+                                arrayType.toString(),
+                                new PrimitiveByteType());
+                        dataType.setSerialized(true);
+                        dataType.setUnindexed(true);
+                        return;
+                    }
+                    if (kind == Kind.CHAR || kind == Kind.BYTE) {
                         dataType =
                             new org.slim3.gen.datastore.ArrayType(
                                 className,
                                 arrayType.toString(),
                                 new PrimitiveCharType());
-                        dataType.setSerializable(true);
-                        dataType.setUnindex(true);
+                        dataType.setSerialized(true);
+                        dataType.setUnindexed(true);
                         return;
                     }
                     throw new AssertionError("not yet implemented");
@@ -279,8 +288,8 @@ public class DataTypeFactory {
             if (isSerializable(declaredType)) {
                 dataType =
                     new ReferenceType(className, declaredType.toString());
-                dataType.setSerializable(true);
-                dataType.setUnindex(true);
+                dataType.setSerialized(true);
+                dataType.setUnindexed(true);
                 return;
             }
             throw new ValidationException(
@@ -349,7 +358,7 @@ public class DataTypeFactory {
 
         protected CollectionType getCollectionType(String className,
                 DeclaredType declaredType) {
-            if (TypeUtil.isSubtype(env, declaredType, Collection.class)) {
+            if (!TypeUtil.isSubtype(env, declaredType, Collection.class)) {
                 return null;
             }
             Collection<TypeMirror> typeArgs =
@@ -389,8 +398,8 @@ public class DataTypeFactory {
                     declaredType,
                     elementCoreReferenceType);
             if (isSerializable(elementType)) {
-                collectionType.setSerializable(true);
-                collectionType.setUnindex(true);
+                collectionType.setSerialized(true);
+                collectionType.setUnindexed(true);
                 return collectionType;
             }
             throw new ValidationException(
@@ -403,9 +412,6 @@ public class DataTypeFactory {
         protected CollectionType createCollectionType(String className,
                 DeclaredType declaredType, DataType elementType) {
             String typeName = declaredType.toString();
-            if (Collection.equals(className)) {
-                return new ArrayListType(className, typeName, elementType);
-            }
             if (List.equals(className)) {
                 return new ArrayListType(className, typeName, elementType);
             }
@@ -436,7 +442,11 @@ public class DataTypeFactory {
             if (TreeSet.equals(className)) {
                 return new TreeSetType(className, typeName, elementType);
             }
-            return null;
+            throw new ValidationException(
+                MessageCode.SILM3GEN1002,
+                env,
+                declaration,
+                className);
         }
 
         protected DataType createDataType(Declaration declaration,

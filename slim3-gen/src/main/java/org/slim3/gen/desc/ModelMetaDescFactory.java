@@ -83,9 +83,10 @@ public class ModelMetaDescFactory {
             throw new NullPointerException(
                 "The classDeclaration parameter is null.");
         }
-        validateNestedLevel(classDeclaration);
-        validateModifier(classDeclaration);
-        validateConstructor(classDeclaration);
+        validateTopLevel(classDeclaration);
+        validatePublicModifier(classDeclaration);
+        validateNonGenericType(classDeclaration);
+        validateDefaultConstructor(classDeclaration);
 
         String modelClassName = classDeclaration.getQualifiedName().toString();
         ModelMetaClassName modelMetaClassName =
@@ -100,12 +101,12 @@ public class ModelMetaDescFactory {
     }
 
     /**
-     * Validates nested level.
+     * Validates that nested level is top level.
      * 
      * @param classDeclaration
      *            the class declaration
      */
-    protected void validateNestedLevel(ClassDeclaration classDeclaration) {
+    protected void validateTopLevel(ClassDeclaration classDeclaration) {
         if (classDeclaration.getDeclaringType() != null) {
             throw new ValidationException(
                 MessageCode.SILM3GEN1019,
@@ -115,12 +116,12 @@ public class ModelMetaDescFactory {
     }
 
     /**
-     * Validates modifier.
+     * Validates that modifier is public.
      * 
      * @param classDeclaration
      *            the class declaration
      */
-    protected void validateModifier(ClassDeclaration classDeclaration) {
+    protected void validatePublicModifier(ClassDeclaration classDeclaration) {
         if (!classDeclaration.getModifiers().contains(Modifier.PUBLIC)) {
             throw new ValidationException(
                 MessageCode.SILM3GEN1017,
@@ -130,12 +131,26 @@ public class ModelMetaDescFactory {
     }
 
     /**
-     * Validates constructor.
+     * Validates that the class is not generic type.
+     * 
+     * @param classDeclaration
+     */
+    protected void validateNonGenericType(ClassDeclaration classDeclaration) {
+        if (!classDeclaration.getFormalTypeParameters().isEmpty()) {
+            throw new ValidationException(
+                MessageCode.SILM3GEN1020,
+                env,
+                classDeclaration);
+        }
+    }
+
+    /**
+     * Validates that the default constructor is existent.
      * 
      * @param classDeclaration
      *            the class declaration
      */
-    protected void validateConstructor(ClassDeclaration classDeclaration) {
+    protected void validateDefaultConstructor(ClassDeclaration classDeclaration) {
         for (ConstructorDeclaration constructor : classDeclaration
             .getConstructors()) {
             if (constructor.getModifiers().contains(Modifier.PUBLIC)) {

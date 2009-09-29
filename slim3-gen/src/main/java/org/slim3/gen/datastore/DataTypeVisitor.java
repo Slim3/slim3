@@ -29,8 +29,6 @@ public interface DataTypeVisitor<R, P, TH extends Throwable> {
 
     R visitBooleanType(BooleanType type, P p) throws TH;
 
-    R visitByteType(ByteType type, P p) throws TH;
-
     R visitShortType(ShortType type, P p) throws TH;
 
     R visitIntegerType(IntegerType type, P p) throws TH;

@@ -25,7 +25,7 @@ public class TextType extends CoreReferenceType {
 
     public TextType() {
         super(ClassConstants.Text);
-        setUnindex(true);
+        setUnindexed(true);
     }
 
     @Override

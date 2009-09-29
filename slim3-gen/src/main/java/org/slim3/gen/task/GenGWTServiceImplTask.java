@@ -41,7 +41,8 @@ public class GenGWTServiceImplTask extends AbstractGenJavaFileTask {
     protected String superclassName = ClassConstants.Object;
 
     /** the superclass name of testcase */
-    protected String testCaseSuperclassName = ClassConstants.ServletJDOTestCase;
+    protected String testCaseSuperclassName =
+        ClassConstants.ServletDatastoreTestCase;
 
     /** the serviceClassName */
     protected String serviceClassName;

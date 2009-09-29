@@ -48,10 +48,6 @@ public class SimpleDataTypeVisitor<R, P, TH extends Throwable> implements
         return visitCoreReferenceType(type, p);
     }
 
-    public R visitByteType(ByteType type, P p) throws TH {
-        return visitCoreReferenceType(type, p);
-    }
-
     public R visitDoubleType(DoubleType type, P p) throws TH {
         return visitCoreReferenceType(type, p);
     }
@@ -145,7 +141,7 @@ public class SimpleDataTypeVisitor<R, P, TH extends Throwable> implements
     }
 
     public R visitPrimitiveByteType(PrimitiveByteType type, P p) throws TH {
-        return visitCorePrimitiveType(type, p);
+        return visitPrimitiveType(type, p);
     }
 
     public R visitPrimitiveBooleanType(PrimitiveBooleanType type, P p)

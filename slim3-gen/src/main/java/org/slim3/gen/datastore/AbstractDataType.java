@@ -15,7 +15,6 @@
  */
 package org.slim3.gen.datastore;
 
-
 /**
  * @author taedium
  * 
@@ -27,10 +26,10 @@ public abstract class AbstractDataType implements DataType {
     protected final String typeName;
 
     /** the unindex */
-    protected boolean unindex;
+    protected boolean unindexed;
 
     /** the serializable */
-    protected boolean serializable;
+    protected boolean serialized;
 
     /**
      * Creates a new {@link DataType}.
@@ -57,31 +56,31 @@ public abstract class AbstractDataType implements DataType {
     /**
      * @return the unindex
      */
-    public boolean isUnindex() {
-        return unindex;
+    public boolean isUnindexed() {
+        return unindexed;
     }
 
     /**
-     * @param unindex
+     * @param unindexed
      *            the unindex to set
      */
-    public void setUnindex(boolean unindex) {
-        this.unindex = unindex;
+    public void setUnindexed(boolean unindexed) {
+        this.unindexed = unindexed;
     }
 
     /**
      * @return the serializable
      */
     public boolean isSerialized() {
-        return serializable;
+        return serialized;
     }
 
     /**
      * @param serializable
      *            the serializable to set
      */
-    public void setSerializable(boolean serializable) {
-        this.serializable = serializable;
+    public void setSerialized(boolean serializable) {
+        this.serialized = serializable;
     }
 
     /**

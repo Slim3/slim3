@@ -65,9 +65,8 @@ public final class ClassConstants {
     public static final String CollectionAttributeMeta =
         "org.slim3.datastore.CollectionAttributeMeta";
 
-    /** {@code org.slim3.controller.JDOController} */
-    public static final String JDOController =
-        "org.slim3.controller.JDOController";
+    /** {@code org.slim3.controller.Controller} */
+    public static final String Controller = "org.slim3.controller.Controller";
 
     /** {@code org.slim3.controller.Navigation} */
     public static final String Navigation = "org.slim3.controller.Navigation";
@@ -75,16 +74,13 @@ public final class ClassConstants {
     /** {@code junit.framework.TestCase} */
     public static final String TestCase = "junit.framework.TestCase";
 
-    /** {@code org.slim3.tester.JDOControllerTestCase} */
-    public static final String JDOControllerTestCase =
-        "org.slim3.tester.JDOControllerTestCase";
+    /** {@code org.slim3.tester.ControllerTestCase} */
+    public static final String ControllerTestCase =
+        "org.slim3.tester.ControllerTestCase";
 
-    /** {@code org.slim3.tester.JDOTestCase} */
-    public static final String JDOTestCase = "org.slim3.tester.JDOTestCase";
-
-    /** {@code org.slim3.tester.ServletJDOTestCase} */
-    public static final String ServletJDOTestCase =
-        "org.slim3.tester.ServletJDOTestCase";
+    /** {@code org.slim3.tester.ServletDatastoreTestCase} */
+    public static final String ServletDatastoreTestCase =
+        "org.slim3.tester.ServletDatastoreTestCase";
 
     /** {@code com.google.gwt.user.client.rpc.AsyncCallback} */
     public static final String AsyncCallback =
