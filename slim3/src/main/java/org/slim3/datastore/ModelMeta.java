@@ -276,7 +276,7 @@ public abstract class ModelMeta<M> {
      *            the serializable object
      * @return a short blob
      */
-    protected ShortBlob serializableToShortBlob(Serializable value) {
+    protected ShortBlob serializableToShortBlob(Object value) {
         return value != null
             ? new ShortBlob(ByteUtil.toByteArray(value))
             : null;
@@ -301,7 +301,7 @@ public abstract class ModelMeta<M> {
      *            the serializable object
      * @return a blob
      */
-    protected Blob serializableToBlob(Serializable value) {
+    protected Blob serializableToBlob(Object value) {
         return value != null ? new Blob(ByteUtil.toByteArray(value)) : null;
     }
 

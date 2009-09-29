@@ -147,6 +147,7 @@ public class ByteUtilTest extends TestCase {
     public void testToByteArray() throws Exception {
         assertNull(ByteUtil.toByteArray(null));
         assertNotNull(ByteUtil.toByteArray("aaa"));
+        assertNotNull(ByteUtil.toByteArray(new NoSerializable()));
     }
 
     /**
@@ -205,5 +206,8 @@ public class ByteUtilTest extends TestCase {
         assertEquals(3, bytes[2]);
         assertEquals(4, bytes[3]);
         assertEquals(5, bytes[4]);
+    }
+
+    private static class NoSerializable {
     }
 }
