@@ -19,31 +19,24 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.TimeZone;
 
-import junit.framework.TestCase;
-
-import org.slim3.tester.MockHttpServletRequest;
-import org.slim3.tester.MockHttpServletResponse;
-import org.slim3.tester.MockServletContext;
+import org.slim3.tester.ControllerTestCase;
 import org.slim3.util.TimeZoneLocator;
+
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 
 /**
  * @author higa
  * 
  */
-public class ControllerTest extends TestCase {
+public class ControllerTest extends ControllerTestCase {
 
     private IndexController controller = new IndexController();
 
-    private MockServletContext servletContext = new MockServletContext();
-
-    private MockHttpServletRequest request =
-        new MockHttpServletRequest(servletContext);
-
-    private MockHttpServletResponse response = new MockHttpServletResponse();
-
     @Override
     protected void setUp() throws Exception {
-        controller.application = servletContext;
+        super.setUp();
+        controller.application = application;
         controller.request = request;
         controller.response = response;
         TimeZoneLocator.set(TimeZone.getTimeZone("UTC"));
@@ -143,10 +136,10 @@ public class ControllerTest extends TestCase {
         controller.applicationScope("aaa", value);
         Integer returnValue = controller.applicationScope("aaa");
         assertEquals(value, returnValue);
-        assertEquals(value, servletContext.getAttribute("aaa"));
+        assertEquals(value, application.getAttribute("aaa"));
         returnValue = controller.removeApplicationScope("aaa");
         assertEquals(value, returnValue);
-        assertNull(servletContext.getAttribute("aaa"));
+        assertNull(application.getAttribute("aaa"));
     }
 
     /**
@@ -155,7 +148,7 @@ public class ControllerTest extends TestCase {
      */
     public void testIsDevelopment() throws Exception {
         assertFalse(controller.isDevelopment());
-        servletContext.setServerInfo("Development");
+        application.setServerInfo("Development");
         assertTrue(controller.isDevelopment());
     }
 
@@ -262,34 +255,18 @@ public class ControllerTest extends TestCase {
      * @throws Exception
      * 
      */
-    public void testKey() throws Exception {
-        request.setAttribute("key", "111");
-        assertEquals("111", controller.key());
+    public void testAsKey() throws Exception {
+        Key key = KeyFactory.createKey("Hoge", 1);
+        request.setAttribute("key", KeyFactory.keyToString(key));
+        assertEquals(key, asKey("key"));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testKeyForKeyIsNull() throws Exception {
-        assertNull(controller.key());
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testVersion() throws Exception {
-        request.setAttribute("version", "111");
-        assertEquals(Long.valueOf(111), controller.version());
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testVersionForVersionIsNull() throws Exception {
-        assertNull(controller.version());
+    public void testAsKeyForKeyIsNull() throws Exception {
+        assertNull(controller.asKey("key"));
     }
 
     /**

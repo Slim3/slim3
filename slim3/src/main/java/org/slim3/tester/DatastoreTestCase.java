@@ -19,6 +19,7 @@ import junit.framework.TestCase;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Query;
 
 /**
  * A test case for local data store.
@@ -51,5 +52,27 @@ public abstract class DatastoreTestCase extends TestCase {
     protected void tearDown() throws Exception {
         datastoreTester.tearDown();
         super.tearDown();
+    }
+
+    /**
+     * Counts the number of the model.
+     * 
+     * @param modelClass
+     *            the model class
+     * @return the number of the model
+     */
+    protected int count(Class<?> modelClass) {
+        return count(modelClass.getSimpleName());
+    }
+
+    /**
+     * Counts the number of the entity.
+     * 
+     * @param kind
+     *            the kind
+     * @return the number of the model
+     */
+    protected int count(String kind) {
+        return ds.prepare(new Query(kind)).countEntities();
     }
 }

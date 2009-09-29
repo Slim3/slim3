@@ -46,11 +46,9 @@ public class DatastoreTester extends ServiceTester {
         LocalDatastoreService datastoreService =
             (LocalDatastoreService) apiProxy.getService("datastore_v3");
         datastoreService.clearProfiles();
-        Transaction tx =
-            DatastoreServiceFactory
-                .getDatastoreService()
-                .getCurrentTransaction(null);
-        if (tx != null && tx.isActive()) {
+        for (Transaction tx : DatastoreServiceFactory
+            .getDatastoreService()
+            .getActiveTransactions()) {
             tx.rollback();
         }
         super.tearDown();

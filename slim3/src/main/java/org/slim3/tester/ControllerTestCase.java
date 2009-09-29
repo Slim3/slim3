@@ -52,6 +52,12 @@ import org.slim3.util.ShortUtil;
 import org.slim3.util.StringUtil;
 import org.slim3.util.TimeZoneLocator;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.Query;
+
 /**
  * A test case for Slim3 Controller.
  * 
@@ -101,6 +107,16 @@ public abstract class ControllerTestCase extends TestCase {
      */
     protected boolean startCalled = false;
 
+    /**
+     * The tester for local datastore.
+     */
+    protected DatastoreTester datastoreTester;
+
+    /**
+     * The datastore service.
+     */
+    protected DatastoreService ds;
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -115,6 +131,9 @@ public abstract class ControllerTestCase extends TestCase {
         RequestLocator.set(request);
         ResponseLocator.set(response);
         filterChain = new MockFilterChain();
+        datastoreTester = new DatastoreTester();
+        datastoreTester.setUp();
+        ds = DatastoreServiceFactory.getDatastoreService();
     }
 
     /**
@@ -141,6 +160,8 @@ public abstract class ControllerTestCase extends TestCase {
 
     @Override
     protected void tearDown() throws Exception {
+        datastoreTester.tearDown();
+        datastoreTester = null;
         application = null;
         config = null;
         filterConfig = null;
@@ -399,21 +420,21 @@ public abstract class ControllerTestCase extends TestCase {
     }
 
     /**
-     * Returns the key attribute value.
+     * Returns the request attribute value as {@link Key}.
      * 
-     * @return the key attribute value
+     * @param name
+     *            the attribute name
+     * @return the request attribute value as {@link Key}
      */
-    protected String key() {
-        return asString("key");
-    }
-
-    /**
-     * Returns the version attribute value.
-     * 
-     * @return the version attribute value
-     */
-    protected Long version() {
-        return asLong("version");
+    protected Key asKey(String name) {
+        Object key = request.getAttribute(name);
+        if (key == null) {
+            return null;
+        }
+        if (key instanceof Key) {
+            return (Key) key;
+        }
+        return KeyFactory.stringToKey(key.toString());
     }
 
     /**
@@ -567,16 +588,6 @@ public abstract class ControllerTestCase extends TestCase {
     }
 
     /**
-     * Returns the destination path. Use {@link #getDestinationPath()} instead.
-     * 
-     * @return the destination path
-     */
-    @Deprecated
-    protected String getNextPath() {
-        return getDestinationPath();
-    }
-
-    /**
      * Returns the controller.
      * 
      * @param <T>
@@ -596,6 +607,28 @@ public abstract class ControllerTestCase extends TestCase {
      */
     protected Errors getErrors() {
         return requestScope(ControllerConstants.ERRORS_KEY);
+    }
+
+    /**
+     * Counts the number of the model.
+     * 
+     * @param modelClass
+     *            the model class
+     * @return the number of the model
+     */
+    protected int count(Class<?> modelClass) {
+        return count(modelClass.getSimpleName());
+    }
+
+    /**
+     * Counts the number of the entity.
+     * 
+     * @param kind
+     *            the kind
+     * @return the number of the model
+     */
+    protected int count(String kind) {
+        return ds.prepare(new Query(kind)).countEntities();
     }
 
     /**

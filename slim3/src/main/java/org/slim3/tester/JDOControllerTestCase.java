@@ -32,11 +32,6 @@ import org.slim3.jdo.SelectQuery;
 public abstract class JDOControllerTestCase extends ControllerTestCase {
 
     /**
-     * The tester for local data store.
-     */
-    protected DatastoreTester datastoreTester;
-
-    /**
      * The persistence manager.
      */
     protected PersistenceManager pm;
@@ -48,13 +43,6 @@ public abstract class JDOControllerTestCase extends ControllerTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        try {
-            Class
-                .forName("com.google.appengine.tools.development.ApiProxyLocal");
-            datastoreTester = new DatastoreTester();
-            datastoreTester.setUp();
-        } catch (Throwable ignore) {
-        }
         CurrentPersistenceManager.set(PMF.get().getPersistenceManager());
         pm = CurrentPersistenceManager.getProxy();
     }
@@ -124,17 +112,6 @@ public abstract class JDOControllerTestCase extends ControllerTestCase {
         begin();
         pm.deletePersistent(model);
         commit();
-    }
-
-    /**
-     * Counts the number of the model.
-     * 
-     * @param modelClass
-     *            the model class
-     * @return the number of the model
-     */
-    protected int count(Class<?> modelClass) {
-        return from(modelClass).getResultList().size();
     }
 
     /**

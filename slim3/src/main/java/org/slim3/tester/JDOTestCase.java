@@ -104,17 +104,6 @@ public abstract class JDOTestCase extends DatastoreTestCase {
     }
 
     /**
-     * Counts the number of the model.
-     * 
-     * @param modelClass
-     *            the model class
-     * @return the number of the model
-     */
-    protected int count(Class<?> modelClass) {
-        return from(modelClass).getResultList().size();
-    }
-
-    /**
      * Begins the current transaction.
      */
     protected void begin() {

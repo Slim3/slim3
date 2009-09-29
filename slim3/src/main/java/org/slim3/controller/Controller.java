@@ -44,6 +44,9 @@ import org.slim3.util.StringUtil;
 import org.slim3.util.ThrowableUtil;
 import org.slim3.util.WrapRuntimeException;
 
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+
 /**
  * A base controller. This controller is created each request.
  * 
@@ -89,7 +92,10 @@ public abstract class Controller {
     public Navigation runBare() {
         Navigation navigation = null;
         Throwable error = null;
-        setUp();
+        navigation = setUp();
+        if (navigation != null) {
+            return navigation;
+        }
         try {
             navigation = run();
         } catch (Throwable t) {
@@ -118,8 +124,11 @@ public abstract class Controller {
     /**
      * Sets up the this controller. This method is called before "run" method is
      * called.
+     * 
+     * @return the navigation
      */
-    protected void setUp() {
+    protected Navigation setUp() {
+        return null;
     }
 
     /**
@@ -132,6 +141,7 @@ public abstract class Controller {
     /**
      * Tears down this controller. This method is called after "run" method is
      * called.
+     * 
      */
     protected void tearDown() {
     }
@@ -141,7 +151,6 @@ public abstract class Controller {
      * 
      * @param error
      *            the error
-     * 
      * @return the navigation.
      */
     protected Navigation handleError(Throwable error) {
@@ -421,21 +430,21 @@ public abstract class Controller {
     }
 
     /**
-     * Returns the key attribute value.
+     * Returns the request attribute value as {@link Key}.
      * 
-     * @return the key attribute value
+     * @param name
+     *            the attribute name
+     * @return the request attribute value as {@link Key}
      */
-    protected String key() {
-        return asString("key");
-    }
-
-    /**
-     * Returns the version attribute value.
-     * 
-     * @return the version attribute value
-     */
-    protected Long version() {
-        return asLong("version");
+    protected Key asKey(String name) {
+        Object key = request.getAttribute(name);
+        if (key == null) {
+            return null;
+        }
+        if (key instanceof Key) {
+            return (Key) key;
+        }
+        return KeyFactory.stringToKey(key.toString());
     }
 
     /**

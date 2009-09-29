@@ -24,6 +24,10 @@ import org.slim3.controller.validator.Errors;
 import org.slim3.tester.controller.HelloController;
 import org.slim3.util.TimeZoneLocator;
 
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+
 /**
  * @author higa
  * 
@@ -162,18 +166,10 @@ public class ControllerTestCaseTest extends ControllerTestCase {
      * @throws Exception
      * 
      */
-    public void testKey() throws Exception {
-        request.setAttribute("key", "111");
-        assertEquals("111", key());
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testVersion() throws Exception {
-        request.setAttribute("version", "111");
-        assertEquals(Long.valueOf(111L), version());
+    public void testAsKey() throws Exception {
+        Key key = KeyFactory.createKey("Hoge", 1);
+        request.setAttribute("key", KeyFactory.keyToString(key));
+        assertEquals(key, asKey("key"));
     }
 
     /**
@@ -296,5 +292,15 @@ public class ControllerTestCaseTest extends ControllerTestCase {
         request.setAttribute(ControllerConstants.ERRORS_KEY, new Errors());
         Errors errors = getErrors();
         assertNotNull(errors);
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testCount() throws Exception {
+        assertEquals(0, count("Hoge"));
+        ds.put(new Entity("Hoge"));
+        assertEquals(1, count("Hoge"));
     }
 }
