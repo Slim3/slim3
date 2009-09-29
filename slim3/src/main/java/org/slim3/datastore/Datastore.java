@@ -344,6 +344,59 @@ public final class Datastore {
         return mapToMap(modelMeta, getEntitiesAsMap(keys));
     }
 
+    /**
+     * Returns models specified by the keys within the provided transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param tx
+     *            the transaction
+     * @param modelMeta
+     *            the meta data of model
+     * @param keys
+     *            the keys
+     * @return entities specified by the key
+     * @throws NullPointerException
+     *             if the tx parameter is null or if the modelMeta parameter is
+     *             null or if the keys parameter is null
+     * @throws IllegalArgumentException
+     *             if the transaction is not active
+     */
+    public static <M> Map<Key, M> getAsMap(Transaction tx,
+            ModelMeta<M> modelMeta, Iterable<Key> keys)
+            throws NullPointerException {
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
+        }
+        return mapToMap(modelMeta, getEntitiesAsMap(tx, keys));
+    }
+
+    /**
+     * Returns models specified by the keys within the provided transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param tx
+     *            the transaction
+     * @param modelMeta
+     *            the meta data of model
+     * @param keys
+     *            the keys
+     * @return entities specified by the key
+     * @throws NullPointerException
+     *             if the tx parameter is null or if the modelMeta parameter is
+     *             null or if the keys parameter is null
+     * @throws IllegalArgumentException
+     *             if the transaction is not active
+     */
+    public static <M> Map<Key, M> getAsMap(Transaction tx,
+            ModelMeta<M> modelMeta, Key... keys) throws NullPointerException {
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
+        }
+        return mapToMap(modelMeta, getEntitiesAsMap(tx, keys));
+    }
+
     private static <M> List<M> mapToList(ModelMeta<M> modelMeta,
             Iterable<Key> keys, Map<Key, Entity> map) {
         List<M> list = new ArrayList<M>(map.size());

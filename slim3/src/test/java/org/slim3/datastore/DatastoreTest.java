@@ -165,6 +165,33 @@ public class DatastoreTest extends DatastoreTestCase {
     /**
      * @throws Exception
      */
+    public void testGetModelsAsMapInTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = ds.beginTransaction();
+        Map<Key, Hoge> map =
+            Datastore.getAsMap(tx, meta, Arrays.asList(key, key2));
+        tx.rollback();
+        assertNotNull(map);
+        assertEquals(2, map.size());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetModelsAsMapInTxForVarargs() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = ds.beginTransaction();
+        Map<Key, Hoge> map = Datastore.getAsMap(tx, meta, key, key2);
+        tx.rollback();
+        assertNotNull(map);
+        assertEquals(2, map.size());
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testGetEntity() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Entity entity = Datastore.getEntity(key);
