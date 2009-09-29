@@ -18,11 +18,17 @@ package org.slim3.gen.datastore;
 import org.slim3.gen.ClassConstants;
 
 /**
+ * Represents {@link Double} type.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class DoubleType extends CoreReferenceType {
 
+    /**
+     * Creates a new {@link DoubleType}.
+     */
     public DoubleType() {
         super(ClassConstants.Double);
     }

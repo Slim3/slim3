@@ -16,11 +16,20 @@
 package org.slim3.gen.datastore;
 
 /**
+ * Represents core reference type.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class CoreReferenceType extends ReferenceType {
 
+    /**
+     * Creates a new {@link CoreReferenceType}.
+     * 
+     * @param className
+     *            the class name
+     */
     public CoreReferenceType(String className) {
         super(className, className);
     }

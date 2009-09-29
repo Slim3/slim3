@@ -18,11 +18,17 @@ package org.slim3.gen.datastore;
 import org.slim3.gen.ClassConstants;
 
 /**
+ * Represents {@link Long} type.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class LongType extends CoreReferenceType {
 
+    /**
+     * Creates a new {@link LongType}.
+     */
     public LongType() {
         super(ClassConstants.Long);
     }

@@ -28,6 +28,7 @@ public class AttributeMetaDesc {
     /** the name */
     protected final String name;
 
+    /** the datastore data type */
     protected final DataType dataType;
 
     /** the primaryKey */
@@ -45,6 +46,7 @@ public class AttributeMetaDesc {
     /** the impermanent */
     protected boolean impermanent;
 
+    /** the unindexed */
     protected boolean unindexed;
 
     /** the readMethodName */
@@ -58,6 +60,8 @@ public class AttributeMetaDesc {
      * 
      * @param name
      *            the name
+     * @param dataType
+     *            the dataType
      */
     public AttributeMetaDesc(String name, DataType dataType) {
         this.name = name;

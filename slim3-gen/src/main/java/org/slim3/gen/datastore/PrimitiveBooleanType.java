@@ -18,11 +18,17 @@ package org.slim3.gen.datastore;
 import org.slim3.gen.ClassConstants;
 
 /**
+ * Represents {@code boolean} type.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class PrimitiveBooleanType extends CorePrimitiveType {
 
+    /**
+     * Creates a new {@link PrimitiveBooleanType}.
+     */
     public PrimitiveBooleanType() {
         super(ClassConstants.primitive_boolean, ClassConstants.Boolean);
     }

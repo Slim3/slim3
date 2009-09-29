@@ -24,6 +24,7 @@ package org.slim3.gen;
  */
 public final class ClassConstants {
 
+    /** {@code char} */
     public static final String primitive_char = "char";
 
     /** {@code byte} */

@@ -18,11 +18,17 @@ package org.slim3.gen.datastore;
 import org.slim3.gen.ClassConstants;
 
 /**
+ * Represents {@link String} type.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class StringType extends CoreReferenceType {
 
+    /**
+     * Creates a new {@link StringType}.
+     */
     public StringType() {
         super(ClassConstants.String);
     }

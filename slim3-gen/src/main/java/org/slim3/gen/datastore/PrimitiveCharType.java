@@ -23,9 +23,11 @@ import org.slim3.gen.ClassConstants;
  */
 public class PrimitiveCharType extends PrimitiveType {
 
+    /**
+     * Creates a new {@link PrimitiveCharType}.
+     */
     public PrimitiveCharType() {
         super(ClassConstants.primitive_char, ClassConstants.Character);
-        setUnindexed(unindexed);
     }
 
     @Override

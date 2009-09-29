@@ -18,11 +18,17 @@ package org.slim3.gen.datastore;
 import org.slim3.gen.ClassConstants;
 
 /**
+ * Represents {@code double} type.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class PrimitiveDoubleType extends CorePrimitiveType {
 
+    /**
+     * Creates a new {@link PrimitiveDoubleType}.
+     */
     public PrimitiveDoubleType() {
         super(ClassConstants.primitive_double, ClassConstants.Double);
     }

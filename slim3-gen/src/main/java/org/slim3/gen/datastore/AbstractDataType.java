@@ -16,30 +16,27 @@
 package org.slim3.gen.datastore;
 
 /**
+ * Represents abstract data type.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public abstract class AbstractDataType implements DataType {
 
+    /** the className */
     protected final String className;
 
+    /** the typeName */
     protected final String typeName;
-
-    /** the unindex */
-    protected boolean unindexed;
 
     /** the serializable */
     protected boolean serialized;
 
     /**
-     * Creates a new {@link DataType}.
      * 
-     * @param env
-     *            the environment
-     * @param declaration
-     *            the declaration
-     * @param typeMirror
-     *            the typemirror
+     * @param className
+     * @param typeName
      */
     public AbstractDataType(String className, String typeName) {
         this.className = className;
@@ -51,21 +48,6 @@ public abstract class AbstractDataType implements DataType {
      */
     public String getClassName() {
         return className;
-    }
-
-    /**
-     * @return the unindex
-     */
-    public boolean isUnindexed() {
-        return unindexed;
-    }
-
-    /**
-     * @param unindexed
-     *            the unindex to set
-     */
-    public void setUnindexed(boolean unindexed) {
-        this.unindexed = unindexed;
     }
 
     /**

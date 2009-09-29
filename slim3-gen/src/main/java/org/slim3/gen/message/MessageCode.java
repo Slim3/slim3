@@ -54,7 +54,7 @@ public enum MessageCode {
     /** */
     SILM3GEN1004("The class[{0}] must be parametalized."),
     /** */
-    SILM3GEN1005("The component class[{0}] is not supported."),
+    SILM3GEN1005("The array type[{0}] is not supported."),
     /** */
     SILM3GEN1006("The annotation[{0}] conflicts with another annotation[{1}]."),
     /** */

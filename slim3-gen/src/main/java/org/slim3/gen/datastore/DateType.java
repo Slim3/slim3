@@ -15,14 +15,22 @@
  */
 package org.slim3.gen.datastore;
 
+import java.util.Date;
+
 import org.slim3.gen.ClassConstants;
 
 /**
+ * Represents {@link DateType} type.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class DateType extends CoreReferenceType {
 
+    /**
+     * Creates a new {@link Date}.
+     */
     public DateType() {
         super(ClassConstants.Date);
     }

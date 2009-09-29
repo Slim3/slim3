@@ -18,11 +18,17 @@ package org.slim3.gen.datastore;
 import org.slim3.gen.ClassConstants;
 
 /**
+ * Represents {@code com.google.appengine.api.datastore.ShortBlob} type.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class ShortBlobType extends CoreReferenceType {
 
+    /**
+     * Creates a new {@link ShortBlobType}.
+     */
     public ShortBlobType() {
         super(ClassConstants.ShortBlob);
     }

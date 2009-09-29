@@ -15,17 +15,24 @@
  */
 package org.slim3.gen.datastore;
 
+import java.sql.Blob;
+
 import org.slim3.gen.ClassConstants;
 
 /**
+ * Represents {@link Blob} type.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class BlobType extends CoreReferenceType {
 
+    /**
+     * Creates a new {@link BlobType}.
+     */
     public BlobType() {
         super(ClassConstants.Blob);
-        setUnindexed(true);
     }
 
     @Override

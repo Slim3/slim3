@@ -16,95 +16,525 @@
 package org.slim3.gen.datastore;
 
 /**
+ * Represents visitor for {@link DataType}.
+ * 
  * @author taedium
+ * @param <R>
+ *            the return type
+ * @param <P>
+ *            the parameter type
+ * @param <TH>
+ *            the throwable type
+ * @since 3.0
  * 
  */
 public interface DataTypeVisitor<R, P, TH extends Throwable> {
 
+    /**
+     * Visits {@link DataType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitDataType(DataType type, P p) throws TH;
 
+    /**
+     * Visits {@link ReferenceType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitReferenceType(ReferenceType type, P p) throws TH;
 
+    /**
+     * Visits {@link CoreReferenceType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitCoreReferenceType(CoreReferenceType type, P p) throws TH;
 
+    /**
+     * Visits {@link BooleanType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitBooleanType(BooleanType type, P p) throws TH;
 
+    /**
+     * Visits {@link ShortType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitShortType(ShortType type, P p) throws TH;
 
+    /**
+     * Visits {@link IntegerType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitIntegerType(IntegerType type, P p) throws TH;
 
+    /**
+     * Visits {@link LongType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitLongType(LongType type, P p) throws TH;
 
+    /**
+     * Visits {@link FloatType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitFloatType(FloatType type, P p) throws TH;
 
+    /**
+     * Visits {@link DoubleType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitDoubleType(DoubleType type, P p) throws TH;
 
+    /**
+     * Visits {@link StringType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitStringType(StringType type, P p) throws TH;
 
+    /**
+     * Visits {@link DateType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitDateType(DateType type, P p) throws TH;
 
+    /**
+     * Visits {@link KeyType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitKeyType(KeyType type, P p) throws TH;
 
+    /**
+     * Visits {@link UserType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitUserType(UserType type, P p) throws TH;
 
+    /**
+     * Visits {@link CategoryType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitCategoryType(CategoryType type, P p) throws TH;
 
+    /**
+     * Visits {@link EmailType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitEmailType(EmailType type, P p) throws TH;
 
+    /**
+     * Visits {@link GeoPtType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitGeoPtType(GeoPtType type, P p) throws TH;
 
+    /**
+     * Visits {@link IMHandleType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitIMHandleType(IMHandleType type, P p) throws TH;
 
+    /**
+     * Visits {@link LinkType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitLinkType(LinkType type, P p) throws TH;
 
+    /**
+     * Visits {@link PhoneNumberType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitPhoneNumberType(PhoneNumberType type, P p) throws TH;
 
+    /**
+     * Visits {@link PostalAddressType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitPostalAddressType(PostalAddressType type, P p) throws TH;
 
+    /**
+     * Visits {@link RatingType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitRatingType(RatingType type, P p) throws TH;
 
+    /**
+     * Visits {@link ShortBlobType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitShortBlobType(ShortBlobType type, P p) throws TH;
 
+    /**
+     * Visits {@link BlobType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitBlobType(BlobType type, P p) throws TH;
 
+    /**
+     * Visits {@link TextType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitTextType(TextType type, P p) throws TH;
 
+    /**
+     * Visits {@link PrimitiveType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitPrimitiveType(PrimitiveType type, P p) throws TH;
 
+    /**
+     * Visits {@link PrimitiveCharType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitPrimitiveCharType(PrimitiveCharType type, P p) throws TH;
 
+    /**
+     * Visits {@link CorePrimitiveType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitCorePrimitiveType(CorePrimitiveType type, P p) throws TH;
 
+    /**
+     * Visits {@link PrimitiveByteType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitPrimitiveByteType(PrimitiveByteType type, P p) throws TH;
 
+    /**
+     * Visits {@link PrimitiveShortType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitPrimitiveShortType(PrimitiveShortType type, P p) throws TH;
 
+    /**
+     * Visits {@link PrimitiveIntType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitPrimitiveIntType(PrimitiveIntType type, P p) throws TH;
 
+    /**
+     * Visits {@link PrimitiveLongType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitPrimitiveLongType(PrimitiveLongType type, P p) throws TH;
 
+    /**
+     * Visits {@link PrimitiveFloatType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitPrimitiveFloatType(PrimitiveFloatType type, P p) throws TH;
 
+    /**
+     * Visits {@link PrimitiveDoubleType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitPrimitiveDoubleType(PrimitiveDoubleType type, P p) throws TH;
 
+    /**
+     * Visits {@link PrimitiveBooleanType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitPrimitiveBooleanType(PrimitiveBooleanType type, P p) throws TH;
 
+    /**
+     * Visits {@link ArrayType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitArrayType(ArrayType type, P p) throws TH;
 
+    /**
+     * Visits {@link CollectionType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitCollectionType(CollectionType type, P p) throws TH;
 
+    /**
+     * Visits {@link ArrayListType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitArrayListType(ArrayListType type, P p) throws TH;
 
-    R visitLinkedListType(LinkedListType type, P p) throws TH;
-
-    R visitStackType(StackType type, P p) throws TH;
-
-    R visitVectorType(VectorType type, P p) throws TH;
-
+    /**
+     * Visits {@link HashSetType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitHashSetType(HashSetType type, P p) throws TH;
 
-    R visitLinkedHashSetType(LinkedHashSetType type, P p) throws TH;
-
+    /**
+     * Visits {@link TreeSetType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
     R visitTreeSetType(TreeSetType type, P p) throws TH;
 
 }

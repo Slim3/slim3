@@ -29,8 +29,6 @@ import static org.slim3.gen.ClassConstants.IMHandle;
 import static org.slim3.gen.ClassConstants.Integer;
 import static org.slim3.gen.ClassConstants.Key;
 import static org.slim3.gen.ClassConstants.Link;
-import static org.slim3.gen.ClassConstants.LinkedHashSet;
-import static org.slim3.gen.ClassConstants.LinkedList;
 import static org.slim3.gen.ClassConstants.List;
 import static org.slim3.gen.ClassConstants.Long;
 import static org.slim3.gen.ClassConstants.PhoneNumber;
@@ -40,12 +38,10 @@ import static org.slim3.gen.ClassConstants.Set;
 import static org.slim3.gen.ClassConstants.Short;
 import static org.slim3.gen.ClassConstants.ShortBlob;
 import static org.slim3.gen.ClassConstants.SortedSet;
-import static org.slim3.gen.ClassConstants.Stack;
 import static org.slim3.gen.ClassConstants.String;
 import static org.slim3.gen.ClassConstants.Text;
 import static org.slim3.gen.ClassConstants.TreeSet;
 import static org.slim3.gen.ClassConstants.User;
-import static org.slim3.gen.ClassConstants.Vector;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -68,7 +64,7 @@ import com.sun.mirror.type.PrimitiveType.Kind;
 import com.sun.mirror.util.SimpleTypeVisitor;
 
 /**
- * Represents a datastore type factory.
+ * Represents a datastore data type factory.
  * 
  * @author taedium
  * @since 3.0
@@ -150,7 +146,7 @@ public class DataTypeFactory {
     }
 
     /**
-     * The datastore type builder.
+     * The datastore data type builder.
      * 
      * @author taedium
      * @since 3.0
@@ -158,6 +154,7 @@ public class DataTypeFactory {
      */
     protected class Builder extends SimpleTypeVisitor {
 
+        /** the declaration */
         protected final Declaration declaration;
 
         /** the typemirror */
@@ -195,80 +192,28 @@ public class DataTypeFactory {
             componentType.accept(new SimpleTypeVisitor() {
 
                 @Override
-                public void visitDeclaredType(DeclaredType declaredtype) {
-                    TypeDeclaration typeDeclaration =
-                        toTypeDeclaration(declaredtype);
-                    String componentClasName =
-                        typeDeclaration.getQualifiedName();
-                    String className = componentClasName + "[]";
-                    CoreReferenceType componentCoreReferenceType =
-                        getCoreReferenceType(componentClasName);
-                    if (componentCoreReferenceType != null) {
-                        dataType =
-                            new org.slim3.gen.datastore.ArrayType(
-                                className,
-                                arrayType.toString(),
-                                componentCoreReferenceType);
-                        return;
-                    }
-                    if (isSerializable(declaredtype)) {
-                        dataType =
-                            new org.slim3.gen.datastore.ArrayType(
-                                className,
-                                arrayType.toString(),
-                                createDataType(typeDeclaration, declaredtype));
-                        dataType.setSerialized(true);
-                        dataType.setUnindexed(true);
-                        return;
-                    }
-                    throw new ValidationException(
-                        MessageCode.SILM3GEN1005,
-                        env,
-                        declaration,
-                        className);
-                }
-
-                @Override
                 public void visitPrimitiveType(PrimitiveType primitiveType) {
                     Kind kind = primitiveType.getKind();
                     String componentClassName = kind.name().toLowerCase();
                     String className = componentClassName + "[]";
-                    CorePrimitiveType componentPrimitiveType =
-                        getCorePrimitiveType(kind);
-                    if (componentPrimitiveType != null) {
-                        dataType =
-                            new org.slim3.gen.datastore.ArrayType(
-                                className,
-                                arrayType.toString(),
-                                componentPrimitiveType);
-                        return;
-                    }
                     if (kind == Kind.BYTE) {
                         dataType =
                             new org.slim3.gen.datastore.ArrayType(
                                 className,
                                 arrayType.toString(),
                                 new PrimitiveByteType());
-                        dataType.setSerialized(true);
-                        dataType.setUnindexed(true);
                         return;
                     }
-                    if (kind == Kind.CHAR || kind == Kind.BYTE) {
-                        dataType =
-                            new org.slim3.gen.datastore.ArrayType(
-                                className,
-                                arrayType.toString(),
-                                new PrimitiveCharType());
-                        dataType.setSerialized(true);
-                        dataType.setUnindexed(true);
-                        return;
-                    }
-                    throw new AssertionError("not yet implemented");
+                    super.visitPrimitiveType(primitiveType);
                 }
 
                 @Override
                 public void visitTypeMirror(TypeMirror typemirror) {
-                    throw new AssertionError("unreachable");
+                    throw new ValidationException(
+                        MessageCode.SILM3GEN1005,
+                        env,
+                        declaration,
+                        arrayType);
                 }
             });
         }
@@ -289,7 +234,6 @@ public class DataTypeFactory {
                 dataType =
                     new ReferenceType(className, declaredType.toString());
                 dataType.setSerialized(true);
-                dataType.setUnindexed(true);
                 return;
             }
             throw new ValidationException(
@@ -348,14 +292,37 @@ public class DataTypeFactory {
             return TypeUtil.isSubtype(env, typeMirror, Serializable.class);
         }
 
+        /**
+         * Returns a core reference type.
+         * 
+         * @param className
+         *            the class name
+         * @return a core reference type
+         */
         protected CoreReferenceType getCoreReferenceType(String className) {
             return CORE_REFERENCE_TYPES.get(className);
         }
 
+        /**
+         * Returns a core primitive type.
+         * 
+         * @param kind
+         *            the primitive kind
+         * @return a core reference type
+         */
         protected CorePrimitiveType getCorePrimitiveType(Kind kind) {
             return CORE_PRIMITIVE_TYPES.get(kind);
         }
 
+        /**
+         * Returns the core primitive type.
+         * 
+         * @param className
+         *            the class name
+         * @param declaredType
+         *            the declaredType
+         * @return the collection type
+         */
         protected CollectionType getCollectionType(String className,
                 DeclaredType declaredType) {
             if (!TypeUtil.isSubtype(env, declaredType, Collection.class)) {
@@ -399,7 +366,6 @@ public class DataTypeFactory {
                     elementCoreReferenceType);
             if (isSerializable(elementType)) {
                 collectionType.setSerialized(true);
-                collectionType.setUnindexed(true);
                 return collectionType;
             }
             throw new ValidationException(
@@ -409,6 +375,17 @@ public class DataTypeFactory {
                 elementDataType.getClassName());
         }
 
+        /**
+         * Creates a {@link CollectionType}.
+         * 
+         * @param className
+         *            the class name
+         * @param declaredType
+         *            the declaredType
+         * @param elementType
+         *            the element data type
+         * @return a collection data type
+         */
         protected CollectionType createCollectionType(String className,
                 DeclaredType declaredType, DataType elementType) {
             String typeName = declaredType.toString();
@@ -418,23 +395,11 @@ public class DataTypeFactory {
             if (ArrayList.equals(className)) {
                 return new ArrayListType(className, typeName, elementType);
             }
-            if (LinkedList.equals(className)) {
-                return new LinkedListType(className, typeName, elementType);
-            }
-            if (Stack.equals(className)) {
-                return new StackType(className, typeName, elementType);
-            }
-            if (Vector.equals(className)) {
-                return new VectorType(className, typeName, elementType);
-            }
             if (Set.equals(className)) {
                 return new HashSetType(className, typeName, elementType);
             }
             if (HashSet.equals(className)) {
                 return new HashSetType(className, typeName, elementType);
-            }
-            if (LinkedHashSet.equals(className)) {
-                return new LinkedHashSetType(className, typeName, elementType);
             }
             if (SortedSet.equals(className)) {
                 return new TreeSetType(className, typeName, elementType);
@@ -449,6 +414,15 @@ public class DataTypeFactory {
                 className);
         }
 
+        /**
+         * Creates a {@link DataType}.
+         * 
+         * @param declaration
+         *            the declaration
+         * @param typeMirror
+         *            the typeMirror
+         * @return a data type
+         */
         protected DataType createDataType(Declaration declaration,
                 TypeMirror typeMirror) {
             Builder builder = new Builder(declaration, typeMirror);

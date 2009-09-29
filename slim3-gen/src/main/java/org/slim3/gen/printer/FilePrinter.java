@@ -30,8 +30,10 @@ import java.util.Formatter;
  */
 public class FilePrinter implements Printer {
 
+    /** the indent space */
     protected static final String INDENT_SPACE = "    ";
 
+    /** the indent */
     protected StringBuilder indent = new StringBuilder();
 
     /** the formatter object */

@@ -18,11 +18,17 @@ package org.slim3.gen.datastore;
 import org.slim3.gen.ClassConstants;
 
 /**
+ * Represents {@link Float} type.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class FloatType extends CoreReferenceType {
 
+    /**
+     * Creates a new {@link FloatType}.
+     */
     public FloatType() {
         super(ClassConstants.Float);
     }

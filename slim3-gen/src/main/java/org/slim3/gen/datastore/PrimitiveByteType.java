@@ -18,11 +18,17 @@ package org.slim3.gen.datastore;
 import org.slim3.gen.ClassConstants;
 
 /**
+ * Represents {@code byte} type.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class PrimitiveByteType extends PrimitiveType {
 
+    /**
+     * Creates a new {@link PrimitiveByteType}.
+     */
     public PrimitiveByteType() {
         super(ClassConstants.primitive_byte, ClassConstants.Byte);
     }

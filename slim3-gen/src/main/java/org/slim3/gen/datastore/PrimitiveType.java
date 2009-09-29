@@ -16,13 +16,25 @@
 package org.slim3.gen.datastore;
 
 /**
+ * Represents primitive type.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public abstract class PrimitiveType extends AbstractDataType {
 
+    /** the primitive wrapper class name */
     protected final String wrapperClassName;
 
+    /**
+     * Creates a new {@link PrimitiveType}.
+     * 
+     * @param className
+     *            the class name
+     * @param wrapperClassName
+     *            the primitive wrapper class name
+     */
     public PrimitiveType(String className, String wrapperClassName) {
         super(className, wrapperClassName);
         this.wrapperClassName = wrapperClassName;

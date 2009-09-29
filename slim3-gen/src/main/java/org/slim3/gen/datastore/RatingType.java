@@ -18,11 +18,17 @@ package org.slim3.gen.datastore;
 import org.slim3.gen.ClassConstants;
 
 /**
+ * Represents {@code com.google.appengine.api.datastore.Rating} type.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class RatingType extends CoreReferenceType {
 
+    /**
+     * Creates a new {@link RatingType}.
+     */
     public RatingType() {
         super(ClassConstants.Rating);
     }

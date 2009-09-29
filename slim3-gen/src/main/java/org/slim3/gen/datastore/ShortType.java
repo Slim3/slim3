@@ -18,11 +18,17 @@ package org.slim3.gen.datastore;
 import org.slim3.gen.ClassConstants;
 
 /**
+ * Represents {@link Short} type.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class ShortType extends CoreReferenceType {
 
+    /**
+     * Creates a new {@link ShortType}.
+     */
     public ShortType() {
         super(ClassConstants.Short);
     }

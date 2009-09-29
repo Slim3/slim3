@@ -18,15 +18,16 @@ package org.slim3.gen.datastore;
 import org.slim3.gen.ClassConstants;
 
 /**
+ * Represents {@code int} type.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class PrimitiveIntType extends CorePrimitiveType {
 
     /**
-     * @param env
-     * @param declaration
-     * @param typeMirror
+     * Creates a new {@link PrimitiveIntType}.
      */
     public PrimitiveIntType() {
         super(ClassConstants.primitive_int, ClassConstants.Integer);

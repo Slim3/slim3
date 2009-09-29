@@ -132,8 +132,8 @@ public class AttributeMetaDescFactory {
      * 
      * @param attributeMetaDesc
      *            the attribute meta description
-     * @param type
-     *            the datastore type
+     * @param fieldDeclaration
+     *            the field declaration
      */
     protected void handleImpermanent(AttributeMetaDesc attributeMetaDesc,
             FieldDeclaration fieldDeclaration) {
@@ -152,8 +152,8 @@ public class AttributeMetaDescFactory {
      * 
      * @param attributeMetaDesc
      *            the attribute meta description
-     * @param type
-     *            the datastore type
+     * @param fieldDeclaration
+     *            the field declaration
      */
     protected void handlePrimaryKey(AttributeMetaDesc attributeMetaDesc,
             FieldDeclaration fieldDeclaration) {
@@ -178,8 +178,8 @@ public class AttributeMetaDescFactory {
      * 
      * @param attributeMetaDesc
      *            the attribute meta description
-     * @param type
-     *            the datastore type
+     * @param fieldDeclaration
+     *            the field declaration
      */
     protected void handleVersion(AttributeMetaDesc attributeMetaDesc,
             FieldDeclaration fieldDeclaration) {
@@ -204,8 +204,8 @@ public class AttributeMetaDescFactory {
      * 
      * @param attributeMetaDesc
      *            the attribute meta description
-     * @param type
-     *            the datastore type
+     * @param fieldDeclaration
+     *            the field declaration
      */
     protected void handleText(AttributeMetaDesc attributeMetaDesc,
             FieldDeclaration fieldDeclaration) {
@@ -224,8 +224,8 @@ public class AttributeMetaDescFactory {
      * 
      * @param attributeMetaDesc
      *            the attribute meta description
-     * @param type
-     *            the datastore type
+     * @param fieldDeclaration
+     *            the field declaration
      */
     protected void handleBlob(AttributeMetaDesc attributeMetaDesc,
             FieldDeclaration fieldDeclaration) {
@@ -241,6 +241,14 @@ public class AttributeMetaDescFactory {
         attributeMetaDesc.setBlob(true);
     }
 
+    /**
+     * Handles unindexed.
+     * 
+     * @param attributeMetaDesc
+     *            the attribute meta description
+     * @param fieldDeclaration
+     *            the field declaration
+     */
     protected void handleUnindexed(AttributeMetaDesc attributeMetaDesc,
             FieldDeclaration fieldDeclaration) {
         attributeMetaDesc.setUnindexed(true);
@@ -249,8 +257,8 @@ public class AttributeMetaDescFactory {
     /**
      * Validates annotation consistency.
      * 
-     * @param type
-     *            the datastore type
+     * @param fieldDeclaration
+     *            the field declaration
      * @param targetAnnotation
      *            the validation target
      * @param annotations
@@ -392,6 +400,15 @@ public class AttributeMetaDescFactory {
         return parameterTypeMirror.equals(fieldTypeMirror);
     }
 
+    /**
+     * Returns {@code true} if annotation is present on the declaration.
+     * 
+     * @param annotation
+     *            the annotation
+     * @param declaration
+     *            the declaration
+     * @return {@code true} if annotation is present on the declaration
+     */
     protected boolean isAnnotated(String annotation, Declaration declaration) {
         return DeclarationUtil
             .getAnnotationMirror(env, declaration, annotation) != null;

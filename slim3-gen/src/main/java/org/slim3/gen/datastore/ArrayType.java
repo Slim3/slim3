@@ -16,29 +16,37 @@
 package org.slim3.gen.datastore;
 
 /**
+ * Represents array type.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class ArrayType extends AbstractDataType {
 
-    protected final DataType componentDataType;
+    /** the component data type */
+    protected final DataType componentType;
 
     /**
-     * @param env
-     * @param declaration
-     * @param typeMirror
+     * Creates a new {@link ArrayType}.
+     * 
+     * @param className
+     *            the class name
+     * @param typeName
+     *            the type name
+     * @param componentType
+     *            the component data type
      */
-    public ArrayType(String className, String typeName,
-            DataType componentDataType) {
+    public ArrayType(String className, String typeName, DataType componentType) {
         super(className, typeName);
-        this.componentDataType = componentDataType;
+        this.componentType = componentType;
     }
 
     /**
      * @return the componentDataType
      */
     public DataType getComponentType() {
-        return componentDataType;
+        return componentType;
     }
 
     public <R, P, TH extends Throwable> R accept(

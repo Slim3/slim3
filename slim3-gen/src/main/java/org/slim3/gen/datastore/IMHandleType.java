@@ -18,11 +18,17 @@ package org.slim3.gen.datastore;
 import org.slim3.gen.ClassConstants;
 
 /**
+ * Represents {@code com.google.appengine.api.datastore.IMHandle} type.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class IMHandleType extends CoreReferenceType {
 
+    /**
+     * Creates a new {@link IMHandleType}.
+     */
     public IMHandleType() {
         super(ClassConstants.IMHandle);
     }

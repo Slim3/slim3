@@ -18,15 +18,16 @@ package org.slim3.gen.datastore;
 import org.slim3.gen.ClassConstants;
 
 /**
+ * Represents {@code long} type.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class PrimitiveLongType extends CorePrimitiveType {
 
     /**
-     * @param env
-     * @param declaration
-     * @param typeMirror
+     * Creates a new {@link PrimitiveLongType}.
      */
     public PrimitiveLongType() {
         super(ClassConstants.primitive_long, ClassConstants.Long);

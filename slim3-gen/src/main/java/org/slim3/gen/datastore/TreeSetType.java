@@ -15,12 +15,27 @@
  */
 package org.slim3.gen.datastore;
 
+import java.util.TreeSet;
+
 /**
+ * Represents {@link TreeSet} type.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class TreeSetType extends CollectionType {
 
+    /**
+     * Creates a new {@link HashSetType}.
+     * 
+     * @param className
+     *            the class name
+     * @param typeName
+     *            the type name
+     * @param elementType
+     *            the element data type
+     */
     public TreeSetType(String className, String typeName, DataType elementType) {
         super(className, typeName, elementType);
     }

@@ -18,15 +18,16 @@ package org.slim3.gen.datastore;
 import org.slim3.gen.ClassConstants;
 
 /**
+ * Represents {@code short} type.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class PrimitiveShortType extends CorePrimitiveType {
 
     /**
-     * @param env
-     * @param declaration
-     * @param typeMirror
+     * Creates a new {@link PrimitiveShortType}.
      */
     public PrimitiveShortType() {
         super(ClassConstants.primitive_short, ClassConstants.Short);

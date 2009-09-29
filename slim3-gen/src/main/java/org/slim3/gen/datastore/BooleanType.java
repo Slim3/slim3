@@ -18,11 +18,17 @@ package org.slim3.gen.datastore;
 import org.slim3.gen.ClassConstants;
 
 /**
+ * Represents {@link Boolean} type.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class BooleanType extends CoreReferenceType {
 
+    /**
+     * Creates a new {@link BooleanType}.
+     */
     public BooleanType() {
         super(ClassConstants.Boolean);
     }

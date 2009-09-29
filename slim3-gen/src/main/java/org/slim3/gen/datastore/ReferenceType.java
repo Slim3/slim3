@@ -15,17 +15,22 @@
  */
 package org.slim3.gen.datastore;
 
-
 /**
+ * Represents reference type.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class ReferenceType extends AbstractDataType {
 
     /**
-     * @param env
-     * @param declaration
-     * @param typeMirror
+     * Creates a new {@link ReferenceType}.
+     * 
+     * @param className
+     *            the class name
+     * @param typeName
+     *            the type name
      */
     public ReferenceType(String className, String typeName) {
         super(className, typeName);

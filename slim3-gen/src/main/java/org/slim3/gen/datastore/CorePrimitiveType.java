@@ -16,11 +16,22 @@
 package org.slim3.gen.datastore;
 
 /**
+ * Represents core primitive type.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public abstract class CorePrimitiveType extends PrimitiveType {
 
+    /**
+     * Creates a new {@link CorePrimitiveType}.
+     * 
+     * @param className
+     *            the class name
+     * @param wrapperClassName
+     *            the primitve wrapper class name
+     */
     public CorePrimitiveType(String className, String wrapperClassName) {
         super(className, wrapperClassName);
     }

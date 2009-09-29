@@ -18,11 +18,17 @@ package org.slim3.gen.datastore;
 import org.slim3.gen.ClassConstants;
 
 /**
+ * Represents {@code float} type.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public class PrimitiveFloatType extends CorePrimitiveType {
 
+    /**
+     * Creates a new {@link PrimitiveFloatType}.
+     */
     public PrimitiveFloatType() {
         super(ClassConstants.primitive_float, ClassConstants.Float);
     }

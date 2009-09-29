@@ -53,8 +53,14 @@ public interface Printer extends Closeable {
      */
     void println();
 
+    /**
+     * Indents a line.
+     */
     void indent();
 
+    /**
+     * Unindents a line.
+     */
     void unindent();
 
     /**

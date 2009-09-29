@@ -16,18 +16,36 @@
 package org.slim3.gen.datastore;
 
 /**
+ * Simple implementation of {@link DataTypeVisitor}.
+ * 
  * @author taedium
+ * @param <R>
+ *            the return type
+ * @param <P>
+ *            the parameter type
+ * @param <TH>
+ *            the throwable type
+ * @since 3.0
  * 
  */
 public class SimpleDataTypeVisitor<R, P, TH extends Throwable> implements
         DataTypeVisitor<R, P, TH> {
 
+    /** the default value */
     protected final R defaultValue;
 
+    /**
+     * Creates a new {@link SimpleDataTypeVisitor}.
+     */
     public SimpleDataTypeVisitor() {
         this(null);
     }
 
+    /**
+     * Creates a new {@link SimpleDataTypeVisitor} with default value.
+     * 
+     * @param defaultValue
+     */
     public SimpleDataTypeVisitor(R defaultValue) {
         this.defaultValue = defaultValue;
     }
@@ -185,26 +203,21 @@ public class SimpleDataTypeVisitor<R, P, TH extends Throwable> implements
         return visitCollectionType(type, p);
     }
 
-    public R visitLinkedHashSetType(LinkedHashSetType type, P p) throws TH {
-        return visitCollectionType(type, p);
-    }
-
-    public R visitLinkedListType(LinkedListType type, P p) throws TH {
-        return visitCollectionType(type, p);
-    }
-
-    public R visitStackType(StackType type, P p) throws TH {
-        return visitCollectionType(type, p);
-    }
-
     public R visitTreeSetType(TreeSetType type, P p) throws TH {
         return visitCollectionType(type, p);
     }
 
-    public R visitVectorType(VectorType type, P p) throws TH {
-        return visitCollectionType(type, p);
-    }
-
+    /**
+     * Handles default action.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return the default value
+     * @throws TH
+     *             the throwable
+     */
     protected R defaultAction(DataType type, P p) throws TH {
         return defaultValue;
     }

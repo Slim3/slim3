@@ -16,7 +16,7 @@
 package org.slim3.gen.datastore;
 
 /**
- * Represents a datastore type.
+ * Represents a datastore data type.
  * 
  * @author taedium
  * @since 3.0
@@ -24,12 +24,44 @@ package org.slim3.gen.datastore;
  */
 public interface DataType {
 
+    /**
+     * Returns the class name.
+     * 
+     * @return the class name
+     */
     String getClassName();
 
+    /**
+     * Returns the type name.
+     * 
+     * @return the type name
+     */
     String getTypeName();
 
+    /**
+     * Returns {@code true} if the type should be serialized.
+     * 
+     * @return {@code true} if the type should be serialized
+     */
     boolean isSerialized();
 
+    /**
+     * Accepts a visitor.
+     * 
+     * @param <R>
+     *            the return type
+     * @param <P>
+     *            the parameter type
+     * @param <TH>
+     *            the throwable type
+     * @param visitor
+     *            the visitor
+     * @param p
+     *            the parameter
+     * @return the result
+     * @throws TH
+     *             the throwable
+     */
     <R, P, TH extends Throwable> R accept(DataTypeVisitor<R, P, TH> visitor, P p)
             throws TH;
 }

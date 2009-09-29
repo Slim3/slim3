@@ -16,13 +16,27 @@
 package org.slim3.gen.datastore;
 
 /**
+ * Represents {@link CollectionType} type.
+ * 
  * @author taedium
+ * @since 3.0
  * 
  */
 public abstract class CollectionType extends AbstractDataType {
 
+    /** the element data type */
     protected final DataType elementType;
 
+    /**
+     * Creates a new {@link CollectionType}.
+     * 
+     * @param className
+     *            the class name
+     * @param typeName
+     *            the type name
+     * @param elementType
+     *            the element data type
+     */
     public CollectionType(String className, String typeName,
             DataType elementType) {
         super(className, typeName);
