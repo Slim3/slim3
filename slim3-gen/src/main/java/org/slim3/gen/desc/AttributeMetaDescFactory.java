@@ -92,7 +92,7 @@ public class AttributeMetaDescFactory {
 
         DataTypeFactory datastoreTypeFactory = creaetDatastoreTypeFactory();
         DataType dataType =
-            datastoreTypeFactory.createDatastoreType(
+            datastoreTypeFactory.createDataType(
                 fieldDeclaration,
                 fieldDeclaration.getType());
         AttributeMetaDesc attributeMetaDesc =

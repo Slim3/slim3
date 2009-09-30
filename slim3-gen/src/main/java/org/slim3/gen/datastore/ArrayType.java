@@ -39,6 +39,10 @@ public class ArrayType extends AbstractDataType {
      */
     public ArrayType(String className, String typeName, DataType componentType) {
         super(className, typeName);
+        if (componentType == null) {
+            throw new NullPointerException(
+                "The componentType parameter is null.");
+        }
         this.componentType = componentType;
     }
 

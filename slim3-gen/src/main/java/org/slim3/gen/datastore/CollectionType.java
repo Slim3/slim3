@@ -40,6 +40,9 @@ public abstract class CollectionType extends AbstractDataType {
     public CollectionType(String className, String typeName,
             DataType elementType) {
         super(className, typeName);
+        if (elementType == null) {
+            throw new NullPointerException("The elementType parameter is null.");
+        }
         this.elementType = elementType;
     }
 

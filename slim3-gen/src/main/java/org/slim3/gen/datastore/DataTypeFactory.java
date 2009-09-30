@@ -42,6 +42,7 @@ import static org.slim3.gen.ClassConstants.String;
 import static org.slim3.gen.ClassConstants.Text;
 import static org.slim3.gen.ClassConstants.TreeSet;
 import static org.slim3.gen.ClassConstants.User;
+import static org.slim3.gen.ClassConstants.primitive_byte;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -133,7 +134,7 @@ public class DataTypeFactory {
      *            the typemirror
      * @return a new {@link DataType}
      */
-    public DataType createDatastoreType(Declaration declaration,
+    public DataType createDataType(Declaration declaration,
             TypeMirror typeMirror) {
         if (declaration == null) {
             throw new NullPointerException("The declaration parameter is null.");
@@ -141,6 +142,20 @@ public class DataTypeFactory {
         if (typeMirror == null) {
             throw new NullPointerException("The typeMirror parameter is null.");
         }
+        return createDataTypeInternal(declaration, typeMirror);
+    }
+
+    /**
+     * Creates a new {@link DataType} internally.
+     * 
+     * @param declaration
+     *            the declaration
+     * @param typeMirror
+     *            the typemirror
+     * @return a new {@link DataType}
+     */
+    protected DataType createDataTypeInternal(Declaration declaration,
+            TypeMirror typeMirror) {
         Builder builder = new Builder(declaration, typeMirror);
         return builder.build();
     }
@@ -194,12 +209,10 @@ public class DataTypeFactory {
                 @Override
                 public void visitPrimitiveType(PrimitiveType primitiveType) {
                     Kind kind = primitiveType.getKind();
-                    String componentClassName = kind.name().toLowerCase();
-                    String className = componentClassName + "[]";
                     if (kind == Kind.BYTE) {
                         dataType =
                             new org.slim3.gen.datastore.ArrayType(
-                                className,
+                                primitive_byte + "[]",
                                 arrayType.toString(),
                                 new PrimitiveByteType());
                         return;
@@ -339,7 +352,7 @@ public class DataTypeFactory {
             }
             TypeMirror elementType = typeArgs.iterator().next();
             DeclaredType elementDeclaredType =
-                TypeUtil.toDeclaredType(typeArgs.iterator().next());
+                TypeUtil.toDeclaredType(elementType);
             if (elementDeclaredType == null) {
                 throw new ValidationException(
                     MessageCode.SILM3GEN1016,
@@ -357,14 +370,14 @@ public class DataTypeFactory {
                     declaredType,
                     elementCoreReferenceType);
             }
-            DataType elementDataType =
-                createDataType(elementDeclaration, elementType);
-            CollectionType collectionType =
-                createCollectionType(
-                    className,
-                    declaredType,
-                    elementCoreReferenceType);
             if (isSerializable(elementType)) {
+                DataType elementDataType =
+                    createDataTypeInternal(elementDeclaration, elementType);
+                CollectionType collectionType =
+                    createCollectionType(
+                        className,
+                        declaredType,
+                        elementDataType);
                 collectionType.setSerialized(true);
                 return collectionType;
             }
@@ -372,7 +385,7 @@ public class DataTypeFactory {
                 MessageCode.SILM3GEN1002,
                 env,
                 declaration,
-                elementDataType.getClassName());
+                elementDeclaration.getQualifiedName());
         }
 
         /**
@@ -389,22 +402,13 @@ public class DataTypeFactory {
         protected CollectionType createCollectionType(String className,
                 DeclaredType declaredType, DataType elementType) {
             String typeName = declaredType.toString();
-            if (List.equals(className)) {
+            if (List.equals(className) || ArrayList.equals(className)) {
                 return new ArrayListType(className, typeName, elementType);
             }
-            if (ArrayList.equals(className)) {
-                return new ArrayListType(className, typeName, elementType);
-            }
-            if (Set.equals(className)) {
+            if (Set.equals(className) || HashSet.equals(className)) {
                 return new HashSetType(className, typeName, elementType);
             }
-            if (HashSet.equals(className)) {
-                return new HashSetType(className, typeName, elementType);
-            }
-            if (SortedSet.equals(className)) {
-                return new TreeSetType(className, typeName, elementType);
-            }
-            if (TreeSet.equals(className)) {
+            if (SortedSet.equals(className) || TreeSet.equals(className)) {
                 return new TreeSetType(className, typeName, elementType);
             }
             throw new ValidationException(
@@ -412,21 +416,6 @@ public class DataTypeFactory {
                 env,
                 declaration,
                 className);
-        }
-
-        /**
-         * Creates a {@link DataType}.
-         * 
-         * @param declaration
-         *            the declaration
-         * @param typeMirror
-         *            the typeMirror
-         * @return a data type
-         */
-        protected DataType createDataType(Declaration declaration,
-                TypeMirror typeMirror) {
-            Builder builder = new Builder(declaration, typeMirror);
-            return builder.build();
         }
 
     }

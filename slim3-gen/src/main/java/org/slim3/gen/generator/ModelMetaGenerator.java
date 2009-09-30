@@ -32,17 +32,14 @@ import org.slim3.gen.ClassConstants;
 import org.slim3.gen.ProductInfo;
 import org.slim3.gen.datastore.ArrayListType;
 import org.slim3.gen.datastore.ArrayType;
-import org.slim3.gen.datastore.BooleanType;
 import org.slim3.gen.datastore.CollectionType;
 import org.slim3.gen.datastore.CorePrimitiveType;
 import org.slim3.gen.datastore.CoreReferenceType;
 import org.slim3.gen.datastore.DataType;
-import org.slim3.gen.datastore.DoubleType;
 import org.slim3.gen.datastore.FloatType;
 import org.slim3.gen.datastore.HashSetType;
 import org.slim3.gen.datastore.IntegerType;
 import org.slim3.gen.datastore.KeyType;
-import org.slim3.gen.datastore.LongType;
 import org.slim3.gen.datastore.PrimitiveBooleanType;
 import org.slim3.gen.datastore.PrimitiveByteType;
 import org.slim3.gen.datastore.PrimitiveDoubleType;
@@ -59,6 +56,7 @@ import org.slim3.gen.desc.AttributeMetaDesc;
 import org.slim3.gen.desc.ModelMetaDesc;
 import org.slim3.gen.printer.Printer;
 import org.slim3.gen.util.ClassUtil;
+import org.slim3.gen.util.StringUtil;
 
 /**
  * Generates a JDO model meta java file.
@@ -86,9 +84,12 @@ public class ModelMetaGenerator implements Generator {
         this.modelMetaDesc = modelMetaDesc;
     }
 
-    public void generate(Printer p) {
-        printPackage(p);
-        printClass(p);
+    public void generate(Printer printer) {
+        if (printer == null) {
+            throw new NullPointerException("The printer parameter is null.");
+        }
+        printPackage(printer);
+        printClass(printer);
     }
 
     /**
@@ -220,14 +221,32 @@ public class ModelMetaGenerator implements Generator {
         }
 
         @Override
+        public Void defaultAction(DataType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            printer
+                .println(
+                    "public %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%4$s\", %5$s.class);",
+                    CoreAttributeMeta,
+                    modelMetaDesc.getModelClassName(),
+                    type.getTypeName(),
+                    p.getName(),
+                    type.getClassName());
+            return null;
+        }
+
+        @Override
         public Void visitArrayType(ArrayType type, AttributeMetaDesc p)
                 throws RuntimeException {
             DataType componentType = type.getComponentType();
-            printCollectionAttributeMetaField(
-                p.getName(),
-                type.getClassName(),
-                type.getTypeName(),
-                componentType.getTypeName());
+            printer
+                .println(
+                    "public %1$s<%2$s, %3$s, %4$s> %5$s = new %1$s<%2$s, %3$s, %4$s>(this, \"%5$s\", %6$s.class);",
+                    CollectionAttributeMeta,
+                    modelMetaDesc.getModelClassName(),
+                    type.getTypeName(),
+                    componentType.getTypeName(),
+                    p.getName(),
+                    type.getClassName());
             return null;
         }
 
@@ -235,119 +254,42 @@ public class ModelMetaGenerator implements Generator {
         public Void visitCollectionType(CollectionType type, AttributeMetaDesc p)
                 throws RuntimeException {
             DataType elementType = type.getElementType();
-            printCollectionAttributeMetaField(
-                p.getName(),
-                type.getClassName(),
-                type.getTypeName(),
-                elementType.getTypeName());
-            return null;
-        }
-
-        @Override
-        public Void visitDataType(DataType type, AttributeMetaDesc p)
-                throws RuntimeException {
-            printCoreAttributeMetaField(p.getName(), type.getClassName(), type
-                .getTypeName());
+            printer
+                .println(
+                    "public %1$s<%2$s, %3$s, %4$s> %5$s = new %1$s<%2$s, %3$s, %4$s>(this, \"%5$s\", %6$s.class);",
+                    CollectionAttributeMeta,
+                    modelMetaDesc.getModelClassName(),
+                    type.getTypeName(),
+                    elementType.getTypeName(),
+                    p.getName(),
+                    type.getClassName());
             return null;
         }
 
         @Override
         public Void visitKeyType(KeyType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            printKeyAttributeMetaField(p.getName(), type.getClassName(), type
-                .getTypeName());
+            printer
+                .println(
+                    "public %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"__key__\", %5$s.class);",
+                    CoreAttributeMeta,
+                    modelMetaDesc.getModelClassName(),
+                    type.getTypeName(),
+                    p.getName(),
+                    type.getClassName());
+
             return null;
         }
 
         @Override
         public Void visitStringType(StringType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            printStringAttributeMetaField(p.getName());
-            return null;
-        }
-
-        /**
-         * Prints core attribute meta field.
-         * 
-         * @param fieldName
-         *            the field name
-         * @param attributeClassName
-         *            the attribute class name
-         * @param attributeTypeName
-         *            the attribute type name
-         */
-        protected void printCoreAttributeMetaField(String fieldName,
-                String attributeClassName, String attributeTypeName) {
-            printer
-                .println(
-                    "public %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%4$s\", %5$s.class);",
-                    CoreAttributeMeta,
-                    modelMetaDesc.getModelClassName(),
-                    attributeTypeName,
-                    fieldName,
-                    attributeClassName);
-        }
-
-        /**
-         * Prints key attribute meta field.
-         * 
-         * @param fieldName
-         *            the field name
-         * @param attributeClassName
-         *            the attribute class name
-         * @param attributeTypeName
-         *            the attribute type name
-         */
-        protected void printKeyAttributeMetaField(String fieldName,
-                String attributeClassName, String attributeTypeName) {
-            printer
-                .println(
-                    "public %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"__key__\", %5$s.class);",
-                    CoreAttributeMeta,
-                    modelMetaDesc.getModelClassName(),
-                    attributeTypeName,
-                    fieldName,
-                    attributeClassName);
-        }
-
-        /**
-         * Prints string attribute meta field.
-         * 
-         * @param fieldName
-         *            the field name
-         */
-        protected void printStringAttributeMetaField(String fieldName) {
             printer.println(
                 "public %1$s<%2$s> %3$s = new %1$s<%2$s>(this, \"%3$s\");",
                 StringAttributeMeta,
                 modelMetaDesc.getModelClassName(),
-                fieldName);
-        }
-
-        /**
-         * Prints collection attribute meta field.
-         * 
-         * @param fieldName
-         *            the field name
-         * @param attributeClassName
-         *            the attribute class name
-         * @param attributeTypeName
-         *            the attribute type name
-         * @param elementTypeName
-         *            the element type name
-         */
-        protected void printCollectionAttributeMetaField(String fieldName,
-                String attributeClassName, String attributeTypeName,
-                String elementTypeName) {
-            printer
-                .println(
-                    "public %1$s<%2$s, %3$s, %4$s> %5$s = new %1$s<%2$s, %3$s, %4$s>(this, \"%5$s\", %6$s.class);",
-                    CollectionAttributeMeta,
-                    modelMetaDesc.getModelClassName(),
-                    attributeTypeName,
-                    elementTypeName,
-                    fieldName,
-                    attributeClassName);
+                p.getName());
+            return null;
         }
 
     }
@@ -379,6 +321,9 @@ public class ModelMetaGenerator implements Generator {
          * Generates the entityToModelMethod.
          */
         public void generate() {
+            // if (isCollectionTypeExistent()) {
+            // printer.println("@SuppressWarnings(\"unchecked\")");
+            // }
             printer.println("@Override");
             printer.println(
                 "public %1$s entityToModel(%2$s entity) {",
@@ -399,6 +344,63 @@ public class ModelMetaGenerator implements Generator {
             printer.unindent();
             printer.println("}");
             printer.println();
+        }
+
+        /**
+         * Returns {@code true} if {@link CollectionType} is included within
+         * attribute meta descs.
+         * 
+         * @return {@code true} if {@link CollectionType} is included within
+         *         attribute meta descs.
+         */
+        protected boolean isCollectionTypeExistent() {
+            for (AttributeMetaDesc attr : modelMetaDesc
+                .getAttributeMetaDescList()) {
+                if (attr.isImpermanent()) {
+                    continue;
+                }
+                DataType dataType = attr.getDataType();
+                Boolean found =
+                    dataType
+                        .accept(
+                            new SimpleDataTypeVisitor<Boolean, Void, RuntimeException>(
+                                false) {
+                                @Override
+                                public Boolean visitCollectionType(
+                                        CollectionType type, Void p)
+                                        throws RuntimeException {
+                                    return true;
+                                }
+                            },
+                            null);
+                if (found) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        protected Void defaultAction(DataType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            if (p.isBlob()) {
+                printer
+                    .println(
+                        "model.%1$s((%2$s) blobToSerializable((%3$s) entity.getProperty(\"%4$s\")));",
+                        p.getWriteMethodName(),
+                        type.getTypeName(),
+                        Blob,
+                        p.getName());
+            } else {
+                printer
+                    .println(
+                        "model.%1$s((%2$s) shortBlobToSerializable((%3$s) entity.getProperty(\"%4$s\")));",
+                        p.getWriteMethodName(),
+                        type.getTypeName(),
+                        ShortBlob,
+                        p.getName());
+            }
+            return null;
         }
 
         @Override
@@ -617,6 +619,22 @@ public class ModelMetaGenerator implements Generator {
                         false) {
 
                         @Override
+                        protected Boolean defaultAction(DataType type, Void p)
+                                throws RuntimeException {
+                            String simpleName =
+                                ClassUtil.getSimpleName(type.getClassName());
+                            printer
+                                .println(
+                                    "model.%1$s(%2$sListTo%3$sList((java.util.List<%4$s>) entity.getProperty(\"%5$s\")));",
+                                    attr.getWriteMethodName(),
+                                    StringUtil.decapitalize(simpleName),
+                                    simpleName,
+                                    type.getClassName(),
+                                    attr.getName());
+                            return true;
+                        }
+
+                        @Override
                         public Boolean visitShortType(ShortType type, Void p)
                                 throws RuntimeException {
                             printer
@@ -630,35 +648,22 @@ public class ModelMetaGenerator implements Generator {
                         @Override
                         public Boolean visitIntegerType(IntegerType type, Void p)
                                 throws RuntimeException {
-                            // TODO Auto-generated method stub
-                            return true;
-                        }
-
-                        @Override
-                        public Boolean visitLongType(LongType type, Void p)
-                                throws RuntimeException {
-                            // TODO Auto-generated method stub
-                            return true;
-                        }
-
-                        @Override
-                        public Boolean visitDoubleType(DoubleType type, Void p)
-                                throws RuntimeException {
-                            // TODO Auto-generated method stub
+                            printer
+                                .println(
+                                    "model.%1$s(longListToIntegerList((java.util.List<Long>) entity.getProperty(\"%2$s\")));",
+                                    attr.getWriteMethodName(),
+                                    attr.getName());
                             return true;
                         }
 
                         @Override
                         public Boolean visitFloatType(FloatType type, Void p)
                                 throws RuntimeException {
-                            // TODO Auto-generated method stub
-                            return true;
-                        }
-
-                        @Override
-                        public Boolean visitBooleanType(BooleanType type, Void p)
-                                throws RuntimeException {
-                            // TODO Auto-generated method stub
+                            printer
+                                .println(
+                                    "model.%1$s(doubleListToFloatList((java.util.List<Double>) entity.getProperty(\"%2$s\")));",
+                                    attr.getWriteMethodName(),
+                                    attr.getName());
                             return true;
                         }
 
@@ -679,11 +684,27 @@ public class ModelMetaGenerator implements Generator {
                         false) {
 
                         @Override
+                        protected Boolean defaultAction(DataType type, Void p)
+                                throws RuntimeException {
+                            String simpleName =
+                                ClassUtil.getSimpleName(type.getClassName());
+                            printer
+                                .println(
+                                    "model.%1$s(%2$sListTo%3$sSet((java.util.List<%4$s>) entity.getProperty(\"%5$s\")));",
+                                    attr.getWriteMethodName(),
+                                    StringUtil.decapitalize(simpleName),
+                                    simpleName,
+                                    type.getClassName(),
+                                    attr.getName());
+                            return true;
+                        }
+
+                        @Override
                         public Boolean visitShortType(ShortType type, Void p)
                                 throws RuntimeException {
                             printer
                                 .println(
-                                    "model.%1$s(longListToShortHashSet((java.util.List<Long>) entity.getProperty(\"%2$s\")));",
+                                    "model.%1$s(longListToShortSet((java.util.List<Long>) entity.getProperty(\"%2$s\")));",
                                     attr.getWriteMethodName(),
                                     attr.getName());
                             return true;
@@ -692,37 +713,25 @@ public class ModelMetaGenerator implements Generator {
                         @Override
                         public Boolean visitIntegerType(IntegerType type, Void p)
                                 throws RuntimeException {
-                            // TODO Auto-generated method stub
-                            return true;
-                        }
-
-                        @Override
-                        public Boolean visitLongType(LongType type, Void p)
-                                throws RuntimeException {
-                            // TODO Auto-generated method stub
-                            return true;
-                        }
-
-                        @Override
-                        public Boolean visitDoubleType(DoubleType type, Void p)
-                                throws RuntimeException {
-                            // TODO Auto-generated method stub
+                            printer
+                                .println(
+                                    "model.%1$s(longListToIntegerSet((java.util.List<Long>) entity.getProperty(\"%2$s\")));",
+                                    attr.getWriteMethodName(),
+                                    attr.getName());
                             return true;
                         }
 
                         @Override
                         public Boolean visitFloatType(FloatType type, Void p)
                                 throws RuntimeException {
-                            // TODO Auto-generated method stub
+                            printer
+                                .println(
+                                    "model.%1$s(doubleListToFloatSet((java.util.List<Double>) entity.getProperty(\"%2$s\")));",
+                                    attr.getWriteMethodName(),
+                                    attr.getName());
                             return true;
                         }
 
-                        @Override
-                        public Boolean visitBooleanType(BooleanType type, Void p)
-                                throws RuntimeException {
-                            // TODO Auto-generated method stub
-                            return true;
-                        }
                     },
                     null);
             return handled ? null : super
@@ -739,11 +748,27 @@ public class ModelMetaGenerator implements Generator {
                         false) {
 
                         @Override
+                        protected Boolean defaultAction(DataType type, Void p)
+                                throws RuntimeException {
+                            String simpleName =
+                                ClassUtil.getSimpleName(type.getClassName());
+                            printer
+                                .println(
+                                    "model.%1$s(%2$sListTo%3$sSortedSet((java.util.List<%4$s>) entity.getProperty(\"%5$s\")));",
+                                    attr.getWriteMethodName(),
+                                    StringUtil.decapitalize(simpleName),
+                                    simpleName,
+                                    type.getClassName(),
+                                    attr.getName());
+                            return true;
+                        }
+
+                        @Override
                         public Boolean visitShortType(ShortType type, Void p)
                                 throws RuntimeException {
                             printer
                                 .println(
-                                    "model.%1$s(longListToShortTreeSet((java.util.List<Long>) entity.getProperty(\"%2$s\")));",
+                                    "model.%1$s(longListToShortSortedSet((java.util.List<Long>) entity.getProperty(\"%2$s\")));",
                                     attr.getWriteMethodName(),
                                     attr.getName());
                             return true;
@@ -752,37 +777,25 @@ public class ModelMetaGenerator implements Generator {
                         @Override
                         public Boolean visitIntegerType(IntegerType type, Void p)
                                 throws RuntimeException {
-                            // TODO Auto-generated method stub
-                            return true;
-                        }
-
-                        @Override
-                        public Boolean visitLongType(LongType type, Void p)
-                                throws RuntimeException {
-                            // TODO Auto-generated method stub
-                            return true;
-                        }
-
-                        @Override
-                        public Boolean visitDoubleType(DoubleType type, Void p)
-                                throws RuntimeException {
-                            // TODO Auto-generated method stub
+                            printer
+                                .println(
+                                    "model.%1$s(longListToIntegerSortedSet((java.util.List<Long>) entity.getProperty(\"%2$s\")));",
+                                    attr.getWriteMethodName(),
+                                    attr.getName());
                             return true;
                         }
 
                         @Override
                         public Boolean visitFloatType(FloatType type, Void p)
                                 throws RuntimeException {
-                            // TODO Auto-generated method stub
+                            printer
+                                .println(
+                                    "model.%1$s(doubleListToFloatSortedSet((java.util.List<Double>) entity.getProperty(\"%2$s\")));",
+                                    attr.getWriteMethodName(),
+                                    attr.getName());
                             return true;
                         }
 
-                        @Override
-                        public Boolean visitBooleanType(BooleanType type, Void p)
-                                throws RuntimeException {
-                            // TODO Auto-generated method stub
-                            return true;
-                        }
                     },
                     null);
             return handled ? null : super

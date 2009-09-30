@@ -37,6 +37,10 @@ public abstract class PrimitiveType extends AbstractDataType {
      */
     public PrimitiveType(String className, String wrapperClassName) {
         super(className, wrapperClassName);
+        if (wrapperClassName == null) {
+            throw new NullPointerException(
+                "The wrapperClassName parameter is null.");
+        }
         this.wrapperClassName = wrapperClassName;
     }
 

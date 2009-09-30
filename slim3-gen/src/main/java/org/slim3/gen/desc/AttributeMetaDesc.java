@@ -64,6 +64,12 @@ public class AttributeMetaDesc {
      *            the dataType
      */
     public AttributeMetaDesc(String name, DataType dataType) {
+        if (name == null) {
+            throw new NullPointerException("The name parameter is null.");
+        }
+        if (dataType == null) {
+            throw new NullPointerException("The dataType parameter is null.");
+        }
         this.name = name;
         this.dataType = dataType;
     }

@@ -39,6 +39,12 @@ public abstract class AbstractDataType implements DataType {
      * @param typeName
      */
     public AbstractDataType(String className, String typeName) {
+        if (className == null) {
+            throw new NullPointerException("The className parameter is null.");
+        }
+        if (typeName == null) {
+            throw new NullPointerException("The typeName parameter is null.");
+        }
         this.className = className;
         this.typeName = typeName;
     }
