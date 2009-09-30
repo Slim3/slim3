@@ -22,6 +22,7 @@ import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.DatastoreTestCase;
 
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
 
 /**
  * @author higa
@@ -66,5 +67,16 @@ public class SelectQueryTest extends DatastoreTestCase {
         SelectQuery<Hoge> query = new SelectQuery<Hoge>(meta);
         Hoge hoge = query.asSingle();
         assertNotNull(hoge);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testAsKeyList() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        SelectQuery<Hoge> query = new SelectQuery<Hoge>(meta);
+        List<Key> list = query.asKeyList();
+        assertEquals(1, list.size());
+        assertEquals(key, list.get(0));
     }
 }

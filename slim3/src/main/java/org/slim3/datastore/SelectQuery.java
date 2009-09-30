@@ -22,6 +22,7 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 
@@ -45,6 +46,11 @@ public class SelectQuery<M> {
      * The filter criteria.
      */
     protected FilterCriterion[] filterCriteria;
+
+    /**
+     * Whether this query returns keys only.
+     */
+    protected boolean keysOnly = false;
 
     /**
      * Constructor.
@@ -74,9 +80,9 @@ public class SelectQuery<M> {
     }
 
     /**
-     * Returns the result as list.
+     * Returns the result as a list.
      * 
-     * @return the result as list
+     * @return the result as a list
      */
     public List<M> asList() {
         PreparedQuery query = prepareQuery();
@@ -103,6 +109,22 @@ public class SelectQuery<M> {
     }
 
     /**
+     * Returns the result as a list of key.
+     * 
+     * @return the result as a list of key
+     */
+    public List<Key> asKeyList() {
+        keysOnly = true;
+        PreparedQuery query = prepareQuery();
+        List<Entity> entityList = query.asList(fetchOptions());
+        List<Key> ret = new ArrayList<Key>(entityList.size());
+        for (Entity e : entityList) {
+            ret.add(e.getKey());
+        }
+        return ret;
+    }
+
+    /**
      * Creates a new query.
      * 
      * @return a new query.
@@ -110,6 +132,7 @@ public class SelectQuery<M> {
     protected PreparedQuery prepareQuery() {
         Query query = new Query(modelMeta.getModelClass().getSimpleName());
         applyFilter(query);
+        applyKeysOnly(query);
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         return ds.prepare(query);
     }
@@ -139,6 +162,19 @@ public class SelectQuery<M> {
                 continue;
             }
             c.apply(query);
+        }
+    }
+
+    /**
+     * Applies the filter to the query.
+     * 
+     * @param query
+     *            the query
+     * 
+     */
+    protected void applyKeysOnly(Query query) {
+        if (keysOnly) {
+            query.setKeysOnly();
         }
     }
 }
