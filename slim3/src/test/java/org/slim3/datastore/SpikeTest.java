@@ -19,7 +19,7 @@ import org.slim3.tester.DatastoreTestCase;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.datastore.Entity;
 
 /**
  * @author higa
@@ -32,9 +32,8 @@ public class SpikeTest extends DatastoreTestCase {
      */
     public void testSpike() throws Exception {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        Transaction tx = ds.beginTransaction();
-        Transaction tx2 = ds.beginTransaction();
-        assertNotSame(tx, tx2);
-        assertSame(tx2, ds.getCurrentTransaction(null));
+        Entity entity = new Entity("Parent");
+        entity.setProperty("name", "aaa");
+        ds.put(entity);
     }
 }

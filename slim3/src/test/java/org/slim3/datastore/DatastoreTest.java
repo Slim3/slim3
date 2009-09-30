@@ -505,6 +505,97 @@ public class DatastoreTest extends DatastoreTestCase {
     /**
      * @throws Exception
      */
+    public void testDelete() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Datastore.delete(key);
+        try {
+            ds.get(key);
+            fail();
+        } catch (EntityNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testDeleteInTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Transaction tx = Datastore.beginTransaction();
+        Datastore.delete(tx, key);
+        tx.rollback();
+        assertNotNull(ds.get(key));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testDeleteEntities() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        Datastore.delete(Arrays.asList(key, key2));
+        try {
+            ds.get(key);
+            fail();
+        } catch (EntityNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+        try {
+            ds.get(key2);
+            fail();
+        } catch (EntityNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testDeleteEntitiesForVarargs() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        Datastore.delete(key, key2);
+        try {
+            ds.get(key);
+            fail();
+        } catch (EntityNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+        try {
+            ds.get(key2);
+            fail();
+        } catch (EntityNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testDeleteEntitiesInTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Transaction tx = Datastore.beginTransaction();
+        Datastore.delete(tx, Arrays.asList(key));
+        tx.rollback();
+        assertNotNull(ds.get(key));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testDeleteEntitiesInTxForVarargs() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = Datastore.beginTransaction();
+        Datastore.delete(key, key2);
+        tx.rollback();
+        assertNotNull(ds.get(key));
+        assertNotNull(ds.get(key2));
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testQuery() throws Exception {
         assertNotNull(Datastore.query(meta));
     }

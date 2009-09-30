@@ -1046,20 +1046,117 @@ public final class Datastore {
     }
 
     /**
-     * Deletes an entity specified by the key.
+     * Deletes entities specified by the keys. If there is a current
+     * transaction, this operation will execute within that transaction.
      * 
-     * @param key
-     *            the key
+     * @param keys
+     *            the keys
      * @throws NullPointerException
-     *             if the key parameter is null
+     *             if the keys parameter is null
      */
-    public static void delete(Key key) throws NullPointerException {
-        if (key == null) {
-            throw new NullPointerException("The key parameter is null.");
+    public static void delete(Iterable<Key> keys) throws NullPointerException {
+        if (keys == null) {
+            throw new NullPointerException("The keys parameter is null.");
         }
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        Transaction tx = ds.getCurrentTransaction(null);
-        deleteInternal(ds, key, tx);
+        deleteInternal(ds, keys);
+    }
+
+    /**
+     * Deletes entities specified by the keys. If there is a current
+     * transaction, this operation will execute within that transaction.
+     * 
+     * @param keys
+     *            the keys
+     */
+    public static void delete(Key... keys) {
+        delete(Arrays.asList(keys));
+    }
+
+    /**
+     * Deletes entities specified by the keys within the provided transaction.
+     * 
+     * @param tx
+     *            the transaction
+     * @param keys
+     *            the keys
+     * @throws NullPointerException
+     *             if the tx parameter is null or if the keys parameter is null
+     * @throws IllegalArgumentException
+     *             if the transaction is not active
+     */
+    public static void delete(Transaction tx, Iterable<Key> keys)
+            throws NullPointerException, IllegalArgumentException {
+        if (tx == null) {
+            throw new NullPointerException("The tx parameter is null.");
+        }
+        if (keys == null) {
+            throw new NullPointerException("The keys parameter is null.");
+        }
+        if (!tx.isActive()) {
+            throw new IllegalArgumentException(
+                "The transaction must be active.");
+        }
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        deleteInternal(ds, tx, keys);
+    }
+
+    /**
+     * Deletes entities specified by the keys within the provided transaction.
+     * 
+     * @param tx
+     *            the transaction
+     * @param keys
+     *            the keys
+     * @throws NullPointerException
+     *             if the tx parameter is null
+     * @throws IllegalArgumentException
+     *             if the transaction is not active
+     */
+    public static void delete(Transaction tx, Key... keys)
+            throws NullPointerException, IllegalArgumentException {
+        delete(tx, Arrays.asList(keys));
+    }
+
+    private static void deleteInternal(DatastoreService ds, Iterable<Key> keys) {
+        try {
+            ds.delete(keys);
+        } catch (DatastoreTimeoutException e) {
+            logger.log(Level.WARNING, e.getMessage(), e);
+            for (int i = 0; i < MAX_RETRY; i++) {
+                try {
+                    ds.delete(keys);
+                    return;
+                } catch (DatastoreTimeoutException e2) {
+                    logger.log(Level.WARNING, "Retry("
+                        + i
+                        + "): "
+                        + e2.getMessage(), e2);
+                }
+            }
+            throw e;
+        }
+    }
+
+    private static void deleteInternal(DatastoreService ds, Transaction tx,
+            Iterable<Key> keys) {
+        try {
+            ds.delete(tx, keys);
+        } catch (DatastoreTimeoutException e) {
+            logger.log(Level.WARNING, e.getMessage(), e);
+            for (int i = 0; i < MAX_RETRY; i++) {
+                try {
+                    ds.delete(tx, keys);
+                    return;
+                } catch (DatastoreTimeoutException e2) {
+                    logger.log(Level.WARNING, "Retry("
+                        + i
+                        + "): "
+                        + e2.getMessage(), e2);
+                }
+            }
+            throw e;
+        }
     }
 
     /**
@@ -1073,33 +1170,6 @@ public final class Datastore {
      */
     public static final <M> SelectQuery<M> query(ModelMeta<M> modelMeta) {
         return new SelectQuery<M>(modelMeta);
-    }
-
-    private static void deleteInternal(DatastoreService ds, Key key,
-            Transaction tx) {
-        try {
-            if (tx != null && tx.isActive()) {
-                ds.delete(tx, key);
-            }
-            ds.delete(key);
-        } catch (DatastoreTimeoutException e) {
-            logger.log(Level.WARNING, e.getMessage(), e);
-            for (int i = 0; i < MAX_RETRY; i++) {
-                try {
-                    if (tx != null && tx.isActive()) {
-                        ds.delete(tx, key);
-                    }
-                    ds.delete(key);
-                    return;
-                } catch (DatastoreTimeoutException e2) {
-                    logger.log(Level.WARNING, "Retry("
-                        + i
-                        + "): "
-                        + e2.getMessage(), e2);
-                }
-            }
-            throw e;
-        }
     }
 
     /**
