@@ -1,0 +1,45 @@
+@CHARSET "utf-8";
+
+body { background-color: #EEEEEE; }
+
+h1 { 
+	height: 33px;
+	font-size: x-large;
+	font-family: "Times New Roman", Times, serif;
+}
+
+ul li { list-style: square; }
+a:hover { background-color: white; }
+
+input.err { background-color: orange; }
+
+#header{
+ width:760px;
+ background-color: orange;
+}
+
+#menu{
+ width:160px;
+ height:400px;
+ text-align:left;
+ vertical-align: top;
+ float:left;
+ background-color: aqua;
+}
+
+#body{
+ width:600px;
+ height:400px;
+ float:left;
+ background-color: white;
+}
+
+#footer{
+ width:760px;
+ text-align:left;
+ background-color: black;
+ color: white;
+ clear: left;
+}
+
+
