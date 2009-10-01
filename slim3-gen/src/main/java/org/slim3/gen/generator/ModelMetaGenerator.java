@@ -57,7 +57,6 @@ import org.slim3.gen.desc.AttributeMetaDesc;
 import org.slim3.gen.desc.ModelMetaDesc;
 import org.slim3.gen.printer.Printer;
 import org.slim3.gen.util.ClassUtil;
-import org.slim3.gen.util.StringUtil;
 
 /**
  * Generates a JDO model meta java file.
@@ -594,7 +593,7 @@ public class ModelMetaGenerator implements Generator {
         }
 
         @Override
-        public Void visitCollectionType(final CollectionType collectionType,
+        public Void visitListType(final ListType collectionType,
                 final AttributeMetaDesc attr) throws RuntimeException {
             DataType elementType = collectionType.getElementType();
             Boolean handled =
@@ -608,38 +607,9 @@ public class ModelMetaGenerator implements Generator {
                                 throws RuntimeException {
                             printer
                                 .println(
-                                    "model.%1$s((java.util.List<%2$s>) entity.getProperty(\"%3$s\"));",
+                                    "model.%1$s(toList(%2$s.class, entity.getProperty(\"%3$s\")));",
                                     attr.getWriteMethodName(),
-                                    type.getTypeName(),
-                                    attr.getName());
-                            return true;
-                        }
-
-                    },
-                    null);
-            return handled ? null : super.visitCollectionType(
-                collectionType,
-                attr);
-        }
-
-        @Override
-        public Void visitListType(final ListType collectionType,
-                final AttributeMetaDesc attr) throws RuntimeException {
-            DataType elementType = collectionType.getElementType();
-            Boolean handled =
-                elementType.accept(
-                    new SimpleDataTypeVisitor<Boolean, Void, RuntimeException>(
-                        false) {
-
-                        @Override
-                        protected Boolean defaultAction(DataType type, Void p)
-                                throws RuntimeException {
-                            printer
-                                .println(
-                                    "model.%1$s((%2$s<%3$s>) entity.getProperty(\"%4$s\"));",
-                                    attr.getWriteMethodName(),
-                                    collectionType.getClassName(),
-                                    type.getTypeName(),
+                                    type.getClassName(),
                                     attr.getName());
                             return true;
                         }
@@ -649,7 +619,7 @@ public class ModelMetaGenerator implements Generator {
                                 throws RuntimeException {
                             printer
                                 .println(
-                                    "model.%1$s(longListToShortList((java.util.List<Long>) entity.getProperty(\"%2$s\")));",
+                                    "model.%1$s(longListToShortList(entity.getProperty(\"%2$s\")));",
                                     attr.getWriteMethodName(),
                                     attr.getName());
                             return true;
@@ -660,7 +630,7 @@ public class ModelMetaGenerator implements Generator {
                                 throws RuntimeException {
                             printer
                                 .println(
-                                    "model.%1$s(longListToIntegerList((java.util.List<Long>) entity.getProperty(\"%2$s\")));",
+                                    "model.%1$s(longListToIntegerList(entity.getProperty(\"%2$s\")));",
                                     attr.getWriteMethodName(),
                                     attr.getName());
                             return true;
@@ -671,7 +641,7 @@ public class ModelMetaGenerator implements Generator {
                                 throws RuntimeException {
                             printer
                                 .println(
-                                    "model.%1$s(doubleListToFloatList((java.util.List<Double>) entity.getProperty(\"%2$s\")));",
+                                    "model.%1$s(doubleListToFloatList(entity.getProperty(\"%2$s\")));",
                                     attr.getWriteMethodName(),
                                     attr.getName());
                             return true;
@@ -692,16 +662,13 @@ public class ModelMetaGenerator implements Generator {
                         false) {
 
                         @Override
-                        protected Boolean defaultAction(DataType type, Void p)
+                        public Boolean visitCoreReferenceType(
+                                CoreReferenceType type, Void p)
                                 throws RuntimeException {
-                            String simpleName =
-                                ClassUtil.getSimpleName(type.getClassName());
                             printer
                                 .println(
-                                    "model.%1$s(%2$sListTo%3$sSet((java.util.List<%4$s>) entity.getProperty(\"%5$s\")));",
+                                    "model.%1$s(toSet(%2$s.class, entity.getProperty(\"%3$s\")));",
                                     attr.getWriteMethodName(),
-                                    StringUtil.decapitalize(simpleName),
-                                    simpleName,
                                     type.getClassName(),
                                     attr.getName());
                             return true;
@@ -712,7 +679,7 @@ public class ModelMetaGenerator implements Generator {
                                 throws RuntimeException {
                             printer
                                 .println(
-                                    "model.%1$s(longListToShortSet((java.util.List<Long>) entity.getProperty(\"%2$s\")));",
+                                    "model.%1$s(longListToShortSet(entity.getProperty(\"%2$s\")));",
                                     attr.getWriteMethodName(),
                                     attr.getName());
                             return true;
@@ -723,7 +690,7 @@ public class ModelMetaGenerator implements Generator {
                                 throws RuntimeException {
                             printer
                                 .println(
-                                    "model.%1$s(longListToIntegerSet((java.util.List<Long>) entity.getProperty(\"%2$s\")));",
+                                    "model.%1$s(longListToIntegerSet(entity.getProperty(\"%2$s\")));",
                                     attr.getWriteMethodName(),
                                     attr.getName());
                             return true;
@@ -734,7 +701,7 @@ public class ModelMetaGenerator implements Generator {
                                 throws RuntimeException {
                             printer
                                 .println(
-                                    "model.%1$s(doubleListToFloatSet((java.util.List<Double>) entity.getProperty(\"%2$s\")));",
+                                    "model.%1$s(doubleListToFloatSet(entity.getProperty(\"%2$s\")));",
                                     attr.getWriteMethodName(),
                                     attr.getName());
                             return true;
@@ -755,16 +722,13 @@ public class ModelMetaGenerator implements Generator {
                         false) {
 
                         @Override
-                        protected Boolean defaultAction(DataType type, Void p)
+                        public Boolean visitCoreReferenceType(
+                                CoreReferenceType type, Void p)
                                 throws RuntimeException {
-                            String simpleName =
-                                ClassUtil.getSimpleName(type.getClassName());
                             printer
                                 .println(
-                                    "model.%1$s(%2$sListTo%3$sSortedSet((java.util.List<%4$s>) entity.getProperty(\"%5$s\")));",
+                                    "model.%1$s(toSortedSet(%2$s.class, entity.getProperty(\"%3$s\")));",
                                     attr.getWriteMethodName(),
-                                    StringUtil.decapitalize(simpleName),
-                                    simpleName,
                                     type.getClassName(),
                                     attr.getName());
                             return true;
@@ -775,7 +739,7 @@ public class ModelMetaGenerator implements Generator {
                                 throws RuntimeException {
                             printer
                                 .println(
-                                    "model.%1$s(longListToShortSortedSet((java.util.List<Long>) entity.getProperty(\"%2$s\")));",
+                                    "model.%1$s(longListToShortSortedSet(entity.getProperty(\"%2$s\")));",
                                     attr.getWriteMethodName(),
                                     attr.getName());
                             return true;
@@ -786,7 +750,7 @@ public class ModelMetaGenerator implements Generator {
                                 throws RuntimeException {
                             printer
                                 .println(
-                                    "model.%1$s(longListToIntegerSortedSet((java.util.List<Long>) entity.getProperty(\"%2$s\")));",
+                                    "model.%1$s(longListToIntegerSortedSet(entity.getProperty(\"%2$s\")));",
                                     attr.getWriteMethodName(),
                                     attr.getName());
                             return true;
@@ -797,7 +761,7 @@ public class ModelMetaGenerator implements Generator {
                                 throws RuntimeException {
                             printer
                                 .println(
-                                    "model.%1$s(doubleListToFloatSortedSet((java.util.List<Double>) entity.getProperty(\"%2$s\")));",
+                                    "model.%1$s(doubleListToFloatSortedSet(entity.getProperty(\"%2$s\")));",
                                     attr.getWriteMethodName(),
                                     attr.getName());
                             return true;
