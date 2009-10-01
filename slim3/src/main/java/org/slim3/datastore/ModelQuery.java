@@ -18,13 +18,9 @@ package org.slim3.datastore;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.FilterOperator;
 
 /**
  * A query class for select.
@@ -35,27 +31,12 @@ import com.google.appengine.api.datastore.Query;
  * @since 3.0
  * 
  */
-public class SelectQuery<M> {
+public class ModelQuery<M> extends AbstractQuery {
 
     /**
      * The meta data of model.
      */
     protected ModelMeta<M> modelMeta;
-
-    /**
-     * The ancestor key.
-     */
-    protected Key ancestorKey;
-
-    /**
-     * The filter criteria.
-     */
-    protected FilterCriterion[] filterCriteria;
-
-    /**
-     * Whether this query returns keys only.
-     */
-    protected boolean keysOnly = false;
 
     /**
      * Constructor.
@@ -65,11 +46,12 @@ public class SelectQuery<M> {
      * @throws NullPointerException
      *             if the modelMeta parameter is null
      */
-    public SelectQuery(ModelMeta<M> modelMeta) throws NullPointerException {
+    public ModelQuery(ModelMeta<M> modelMeta) throws NullPointerException {
         if (modelMeta == null) {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
         this.modelMeta = modelMeta;
+        initialize(modelMeta.getModelClass().getSimpleName());
     }
 
     /**
@@ -83,7 +65,7 @@ public class SelectQuery<M> {
      *             if the modelMeta parameter is null or if the ancestorKey
      *             parameter is null
      */
-    public SelectQuery(ModelMeta<M> modelMeta, Key ancestorKey)
+    public ModelQuery(ModelMeta<M> modelMeta, Key ancestorKey)
             throws NullPointerException {
         if (modelMeta == null) {
             throw new NullPointerException("The modelMeta parameter is null.");
@@ -92,7 +74,7 @@ public class SelectQuery<M> {
             throw new NullPointerException("The ancestorKey parameter is null.");
         }
         this.modelMeta = modelMeta;
-        this.ancestorKey = ancestorKey;
+        initialize(modelMeta.getModelClass().getSimpleName(), ancestorKey);
     }
 
     /**
@@ -102,8 +84,31 @@ public class SelectQuery<M> {
      *            the filter criteria
      * @return this instance
      */
-    public SelectQuery<M> filter(FilterCriterion... criteria) {
-        this.filterCriteria = criteria;
+    public ModelQuery<M> filter(FilterCriterion... criteria) {
+        for (FilterCriterion c : criteria) {
+            if (c == null) {
+                continue;
+            }
+            c.apply(query);
+        }
+        return this;
+    }
+
+    /**
+     * Adds the filter criterion.
+     * 
+     * @param propertyName
+     *            the property name
+     * @param operator
+     *            the filter operator
+     * @param value
+     *            the value
+     * 
+     * @return this instance
+     */
+    public ModelQuery<M> filter(String propertyName, FilterOperator operator,
+            Object value) {
+        query.addFilter(propertyName, operator, value);
         return this;
     }
 
@@ -113,8 +118,7 @@ public class SelectQuery<M> {
      * @return the result as a list
      */
     public List<M> asList() {
-        PreparedQuery query = prepareQuery();
-        List<Entity> entityList = query.asList(fetchOptions());
+        List<Entity> entityList = asEntityList();
         List<M> ret = new ArrayList<M>(entityList.size());
         for (Entity e : entityList) {
             ret.add(modelMeta.entityToModel(e));
@@ -128,81 +132,10 @@ public class SelectQuery<M> {
      * @return the single result
      */
     public M asSingle() {
-        PreparedQuery query = prepareQuery();
-        Entity entity = query.asSingleEntity();
+        Entity entity = asSingleEntity();
         if (entity == null) {
             return null;
         }
         return modelMeta.entityToModel(entity);
-    }
-
-    /**
-     * Returns the result as a list of key.
-     * 
-     * @return the result as a list of key
-     */
-    public List<Key> asKeyList() {
-        keysOnly = true;
-        PreparedQuery query = prepareQuery();
-        List<Entity> entityList = query.asList(fetchOptions());
-        List<Key> ret = new ArrayList<Key>(entityList.size());
-        for (Entity e : entityList) {
-            ret.add(e.getKey());
-        }
-        return ret;
-    }
-
-    /**
-     * Creates a new query.
-     * 
-     * @return a new query.
-     */
-    protected PreparedQuery prepareQuery() {
-        Query query = new Query(modelMeta.getModelClass().getSimpleName());
-        applyFilter(query);
-        applyKeysOnly(query);
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        return ds.prepare(query);
-    }
-
-    /**
-     * Returns fetch options.
-     * 
-     * @return fetch options
-     */
-    protected FetchOptions fetchOptions() {
-        return FetchOptions.Builder.withOffset(0);
-    }
-
-    /**
-     * Applies the filter to the query.
-     * 
-     * @param query
-     *            the query
-     * 
-     */
-    protected void applyFilter(Query query) {
-        if (filterCriteria == null) {
-            return;
-        }
-        for (FilterCriterion c : filterCriteria) {
-            if (c == null) {
-                continue;
-            }
-            c.apply(query);
-        }
-    }
-
-    /**
-     * Applies the filter to the query.
-     * 
-     * @param query
-     *            the query
-     * 
-     */
-    protected void applyKeysOnly(Query query) {
-        if (keysOnly) {
-            query.setKeysOnly();
-        }
     }
 }

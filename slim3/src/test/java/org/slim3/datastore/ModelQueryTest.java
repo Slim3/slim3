@@ -28,7 +28,7 @@ import com.google.appengine.api.datastore.Key;
  * @author higa
  * 
  */
-public class SelectQueryTest extends DatastoreTestCase {
+public class ModelQueryTest extends DatastoreTestCase {
 
     private HogeMeta meta = new HogeMeta();
 
@@ -36,7 +36,7 @@ public class SelectQueryTest extends DatastoreTestCase {
      * @throws Exception
      */
     public void testConstructor() throws Exception {
-        SelectQuery<Hoge> query = new SelectQuery<Hoge>(meta);
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
         assertEquals(meta, query.modelMeta);
     }
 
@@ -44,9 +44,9 @@ public class SelectQueryTest extends DatastoreTestCase {
      * @throws Exception
      */
     public void testFilter() throws Exception {
-        SelectQuery<Hoge> query = new SelectQuery<Hoge>(meta);
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
         assertSame(query, query.filter(meta.myString.equal("aaa")));
-        assertEquals(1, query.filterCriteria.length);
+        assertEquals(1, query.query.getFilterPredicates().size());
     }
 
     /**
@@ -54,7 +54,7 @@ public class SelectQueryTest extends DatastoreTestCase {
      */
     public void testAsList() throws Exception {
         ds.put(new Entity("Hoge"));
-        SelectQuery<Hoge> query = new SelectQuery<Hoge>(meta);
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
         List<Hoge> list = query.asList();
         assertEquals(1, list.size());
     }
@@ -64,7 +64,7 @@ public class SelectQueryTest extends DatastoreTestCase {
      */
     public void testAsSingle() throws Exception {
         ds.put(new Entity("Hoge"));
-        SelectQuery<Hoge> query = new SelectQuery<Hoge>(meta);
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
         Hoge hoge = query.asSingle();
         assertNotNull(hoge);
     }
@@ -74,9 +74,20 @@ public class SelectQueryTest extends DatastoreTestCase {
      */
     public void testAsKeyList() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
-        SelectQuery<Hoge> query = new SelectQuery<Hoge>(meta);
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
         List<Key> list = query.asKeyList();
         assertEquals(1, list.size());
         assertEquals(key, list.get(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testAncestor() throws Exception {
+        Key key = ds.put(new Entity("Parent"));
+        ds.put(new Entity("Hoge", key));
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta, key);
+        List<Hoge> list = query.asList();
+        assertEquals(1, list.size());
     }
 }

@@ -603,6 +603,20 @@ public class DatastoreTest extends DatastoreTestCase {
     /**
      * @throws Exception
      */
+    public void testQueryUsingModelMetaAndAncestorKey() throws Exception {
+        assertNotNull(Datastore.query(meta, KeyFactory.createKey("Parent", 1)));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testQueryUsingAncestorKey() throws Exception {
+        assertNotNull(Datastore.query(KeyFactory.createKey("Parent", 1)));
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testCreateModelMeta() throws Exception {
         ModelMeta<?> modelMeta = Datastore.createModelMeta(Hoge.class);
         assertNotNull(modelMeta);

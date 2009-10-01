@@ -1160,16 +1160,43 @@ public final class Datastore {
     }
 
     /**
-     * Returns a {@link SelectQuery}.
+     * Returns a {@link ModelQuery}.
      * 
      * @param <M>
      *            the model type
      * @param modelMeta
      *            the meta data of model
-     * @return a {@link SelectQuery}
+     * @return a {@link ModelQuery}
      */
-    public static final <M> SelectQuery<M> query(ModelMeta<M> modelMeta) {
-        return new SelectQuery<M>(modelMeta);
+    public static <M> ModelQuery<M> query(ModelMeta<M> modelMeta) {
+        return new ModelQuery<M>(modelMeta);
+    }
+
+    /**
+     * Returns a {@link ModelQuery}.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param ancestorKey
+     *            the ancestor key
+     * @return a {@link ModelQuery}
+     */
+    public static <M> ModelQuery<M> query(ModelMeta<M> modelMeta,
+            Key ancestorKey) {
+        return new ModelQuery<M>(modelMeta, ancestorKey);
+    }
+
+    /**
+     * Returns a {@link AllKindAncestorQuery}.
+     * 
+     * @param ancestorKey
+     *            the ancestor key
+     * @return a {@link AllKindAncestorQuery}
+     */
+    public static AllKindAncestorQuery query(Key ancestorKey) {
+        return new AllKindAncestorQuery(ancestorKey);
     }
 
     /**
