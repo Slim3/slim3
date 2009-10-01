@@ -15,17 +15,10 @@
  */
 package org.slim3.datastore.model;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.Stack;
-import java.util.TreeSet;
-import java.util.Vector;
 
 import org.slim3.datastore.Blob;
 import org.slim3.datastore.Model;
@@ -93,101 +86,29 @@ public class Hoge {
 
     private ShortBlob myShortBlob;
 
-    private short[] myPrimitiveShortArray;
-
-    private Short[] myShortArray;
-
     private List<Short> myShortList;
-
-    private ArrayList<Short> myShortArrayList;
 
     private Set<Short> myShortSet;
 
-    private HashSet<Short> myShortHashSet;
-
     private SortedSet<Short> myShortSortedSet;
-
-    private TreeSet<Short> myShortTreeSet;
-
-    private LinkedList<Short> myShortLinkedList;
-
-    private LinkedHashSet<Short> myShortLinkedHashSet;
-
-    private Stack<Short> myShortStack;
-
-    private Vector<Short> myShortVector;
-
-    private int[] myPrimitiveIntArray;
-
-    private Integer[] myIntegerArray;
 
     private List<Integer> myIntegerList;
 
-    private ArrayList<Integer> myIntegerArrayList;
-
     private Set<Integer> myIntegerSet;
-
-    private HashSet<Integer> myIntegerHashSet;
 
     private SortedSet<Integer> myIntegerSortedSet;
 
-    private TreeSet<Integer> myIntegerTreeSet;
-
-    private LinkedList<Integer> myIntegerLinkedList;
-
-    private LinkedHashSet<Integer> myIntegerLinkedHashSet;
-
-    private Stack<Integer> myIntegerStack;
-
-    private Vector<Integer> myIntegerVector;
-
-    private long[] myPrimitiveLongArray;
-
-    private Long[] myLongArray;
-
     private List<Long> myLongList;
-
-    private ArrayList<Long> myLongArrayList;
 
     private Set<Long> myLongSet;
 
-    private HashSet<Long> myLongHashSet;
-
     private SortedSet<Long> myLongSortedSet;
-
-    private TreeSet<Long> myLongTreeSet;
-
-    private LinkedList<Long> myLongLinkedList;
-
-    private LinkedHashSet<Long> myLongLinkedHashSet;
-
-    private Stack<Long> myLongStack;
-
-    private Vector<Long> myLongVector;
-
-    private float[] myPrimitiveFloatArray;
-
-    private Float[] myFloatArray;
 
     private List<Float> myFloatList;
 
-    private ArrayList<Float> myFloatArrayList;
-
     private Set<Float> myFloatSet;
 
-    private HashSet<Float> myFloatHashSet;
-
     private SortedSet<Float> myFloatSortedSet;
-
-    private TreeSet<Float> myFloatTreeSet;
-
-    private LinkedList<Float> myFloatLinkedList;
-
-    private LinkedHashSet<Float> myFloatLinkedHashSet;
-
-    private Stack<Float> myFloatStack;
-
-    private Vector<Float> myFloatVector;
 
     @Version
     private Long version;
@@ -538,36 +459,6 @@ public class Hoge {
     }
 
     /**
-     * @return the myShortArray
-     */
-    public short[] getMyPrimitiveShortArray() {
-        return myPrimitiveShortArray;
-    }
-
-    /**
-     * @param myShortArray
-     *            the myShortArray to set
-     */
-    public void setMyPrimitiveShortArray(short[] myShortArray) {
-        this.myPrimitiveShortArray = myShortArray;
-    }
-
-    /**
-     * @return the myShortArray
-     */
-    public Short[] getMyShortArray() {
-        return myShortArray;
-    }
-
-    /**
-     * @param myShortArray
-     *            the myShortArray to set
-     */
-    public void setMyShortArray(Short[] myShortArray) {
-        this.myShortArray = myShortArray;
-    }
-
-    /**
      * @return the myShortList
      */
     public List<Short> getMyShortList() {
@@ -580,21 +471,6 @@ public class Hoge {
      */
     public void setMyShortList(List<Short> myShortList) {
         this.myShortList = myShortList;
-    }
-
-    /**
-     * @return the myShortArrayList
-     */
-    public ArrayList<Short> getMyShortArrayList() {
-        return myShortArrayList;
-    }
-
-    /**
-     * @param myShortArrayList
-     *            the myShortArrayList to set
-     */
-    public void setMyShortArrayList(ArrayList<Short> myShortArrayList) {
-        this.myShortArrayList = myShortArrayList;
     }
 
     /**
@@ -613,21 +489,6 @@ public class Hoge {
     }
 
     /**
-     * @return the myShortHashSet
-     */
-    public HashSet<Short> getMyShortHashSet() {
-        return myShortHashSet;
-    }
-
-    /**
-     * @param myShortHashSet
-     *            the myShortHashSet to set
-     */
-    public void setMyShortHashSet(HashSet<Short> myShortHashSet) {
-        this.myShortHashSet = myShortHashSet;
-    }
-
-    /**
      * @return the myShortSortedSet
      */
     public SortedSet<Short> getMyShortSortedSet() {
@@ -640,112 +501,6 @@ public class Hoge {
      */
     public void setMyShortSortedSet(SortedSet<Short> myShortSortedSet) {
         this.myShortSortedSet = myShortSortedSet;
-    }
-
-    /**
-     * @return the myShortTreeSet
-     */
-    public TreeSet<Short> getMyShortTreeSet() {
-        return myShortTreeSet;
-    }
-
-    /**
-     * @param myShortTreeSet
-     *            the myShortTreeSet to set
-     */
-    public void setMyShortTreeSet(TreeSet<Short> myShortTreeSet) {
-        this.myShortTreeSet = myShortTreeSet;
-    }
-
-    /**
-     * @return the myShortLinkedList
-     */
-    public LinkedList<Short> getMyShortLinkedList() {
-        return myShortLinkedList;
-    }
-
-    /**
-     * @param myShortLinkedList
-     *            the myShortLinkedList to set
-     */
-    public void setMyShortLinkedList(LinkedList<Short> myShortLinkedList) {
-        this.myShortLinkedList = myShortLinkedList;
-    }
-
-    /**
-     * @return the myShortLinkedHashSet
-     */
-    public LinkedHashSet<Short> getMyShortLinkedHashSet() {
-        return myShortLinkedHashSet;
-    }
-
-    /**
-     * @param myShortLinkedHashSet
-     *            the myShortLinkedHashSet to set
-     */
-    public void setMyShortLinkedHashSet(
-            LinkedHashSet<Short> myShortLinkedHashSet) {
-        this.myShortLinkedHashSet = myShortLinkedHashSet;
-    }
-
-    /**
-     * @return the myShortStack
-     */
-    public Stack<Short> getMyShortStack() {
-        return myShortStack;
-    }
-
-    /**
-     * @param myShortStack
-     *            the myShortStack to set
-     */
-    public void setMyShortStack(Stack<Short> myShortStack) {
-        this.myShortStack = myShortStack;
-    }
-
-    /**
-     * @return the myShortVector
-     */
-    public Vector<Short> getMyShortVector() {
-        return myShortVector;
-    }
-
-    /**
-     * @param myShortVector
-     *            the myShortVector to set
-     */
-    public void setMyShortVector(Vector<Short> myShortVector) {
-        this.myShortVector = myShortVector;
-    }
-
-    /**
-     * @return the myPrimitiveIntArray
-     */
-    public int[] getMyPrimitiveIntArray() {
-        return myPrimitiveIntArray;
-    }
-
-    /**
-     * @param myPrimitiveIntArray
-     *            the myPrimitiveIntArray to set
-     */
-    public void setMyPrimitiveIntArray(int[] myPrimitiveIntArray) {
-        this.myPrimitiveIntArray = myPrimitiveIntArray;
-    }
-
-    /**
-     * @return the myIntegerArray
-     */
-    public Integer[] getMyIntegerArray() {
-        return myIntegerArray;
-    }
-
-    /**
-     * @param myIntegerArray
-     *            the myIntegerArray to set
-     */
-    public void setMyIntegerArray(Integer[] myIntegerArray) {
-        this.myIntegerArray = myIntegerArray;
     }
 
     /**
@@ -764,21 +519,6 @@ public class Hoge {
     }
 
     /**
-     * @return the myIntegerArrayList
-     */
-    public ArrayList<Integer> getMyIntegerArrayList() {
-        return myIntegerArrayList;
-    }
-
-    /**
-     * @param myIntegerArrayList
-     *            the myIntegerArrayList to set
-     */
-    public void setMyIntegerArrayList(ArrayList<Integer> myIntegerArrayList) {
-        this.myIntegerArrayList = myIntegerArrayList;
-    }
-
-    /**
      * @return the myIntegerSet
      */
     public Set<Integer> getMyIntegerSet() {
@@ -791,21 +531,6 @@ public class Hoge {
      */
     public void setMyIntegerSet(Set<Integer> myIntegerSet) {
         this.myIntegerSet = myIntegerSet;
-    }
-
-    /**
-     * @return the myIntegerHashSet
-     */
-    public HashSet<Integer> getMyIntegerHashSet() {
-        return myIntegerHashSet;
-    }
-
-    /**
-     * @param myIntegerHashSet
-     *            the myIntegerHashSet to set
-     */
-    public void setMyIntegerHashSet(HashSet<Integer> myIntegerHashSet) {
-        this.myIntegerHashSet = myIntegerHashSet;
     }
 
     /**
@@ -824,112 +549,6 @@ public class Hoge {
     }
 
     /**
-     * @return the myIntegerTreeSet
-     */
-    public TreeSet<Integer> getMyIntegerTreeSet() {
-        return myIntegerTreeSet;
-    }
-
-    /**
-     * @param myIntegerTreeSet
-     *            the myIntegerTreeSet to set
-     */
-    public void setMyIntegerTreeSet(TreeSet<Integer> myIntegerTreeSet) {
-        this.myIntegerTreeSet = myIntegerTreeSet;
-    }
-
-    /**
-     * @return the myIntegerLinkedList
-     */
-    public LinkedList<Integer> getMyIntegerLinkedList() {
-        return myIntegerLinkedList;
-    }
-
-    /**
-     * @param myIntegerLinkedList
-     *            the myIntegerLinkedList to set
-     */
-    public void setMyIntegerLinkedList(LinkedList<Integer> myIntegerLinkedList) {
-        this.myIntegerLinkedList = myIntegerLinkedList;
-    }
-
-    /**
-     * @return the myIntegerLinkedHashSet
-     */
-    public LinkedHashSet<Integer> getMyIntegerLinkedHashSet() {
-        return myIntegerLinkedHashSet;
-    }
-
-    /**
-     * @param myIntegerLinkedHashSet
-     *            the myIntegerLinkedHashSet to set
-     */
-    public void setMyIntegerLinkedHashSet(
-            LinkedHashSet<Integer> myIntegerLinkedHashSet) {
-        this.myIntegerLinkedHashSet = myIntegerLinkedHashSet;
-    }
-
-    /**
-     * @return the myIntegerStack
-     */
-    public Stack<Integer> getMyIntegerStack() {
-        return myIntegerStack;
-    }
-
-    /**
-     * @param myIntegerStack
-     *            the myIntegerStack to set
-     */
-    public void setMyIntegerStack(Stack<Integer> myIntegerStack) {
-        this.myIntegerStack = myIntegerStack;
-    }
-
-    /**
-     * @return the myIntegerVector
-     */
-    public Vector<Integer> getMyIntegerVector() {
-        return myIntegerVector;
-    }
-
-    /**
-     * @param myIntegerVector
-     *            the myIntegerVector to set
-     */
-    public void setMyIntegerVector(Vector<Integer> myIntegerVector) {
-        this.myIntegerVector = myIntegerVector;
-    }
-
-    /**
-     * @return the myPrimitiveLongArray
-     */
-    public long[] getMyPrimitiveLongArray() {
-        return myPrimitiveLongArray;
-    }
-
-    /**
-     * @param myPrimitiveLongArray
-     *            the myPrimitiveLongArray to set
-     */
-    public void setMyPrimitiveLongArray(long[] myPrimitiveLongArray) {
-        this.myPrimitiveLongArray = myPrimitiveLongArray;
-    }
-
-    /**
-     * @return the myLongArray
-     */
-    public Long[] getMyLongArray() {
-        return myLongArray;
-    }
-
-    /**
-     * @param myLongArray
-     *            the myLongArray to set
-     */
-    public void setMyLongArray(Long[] myLongArray) {
-        this.myLongArray = myLongArray;
-    }
-
-    /**
      * @return the myLongList
      */
     public List<Long> getMyLongList() {
@@ -942,21 +561,6 @@ public class Hoge {
      */
     public void setMyLongList(List<Long> myLongList) {
         this.myLongList = myLongList;
-    }
-
-    /**
-     * @return the myLongArrayList
-     */
-    public ArrayList<Long> getMyLongArrayList() {
-        return myLongArrayList;
-    }
-
-    /**
-     * @param myLongArrayList
-     *            the myLongArrayList to set
-     */
-    public void setMyLongArrayList(ArrayList<Long> myLongArrayList) {
-        this.myLongArrayList = myLongArrayList;
     }
 
     /**
@@ -975,21 +579,6 @@ public class Hoge {
     }
 
     /**
-     * @return the myLongHashSet
-     */
-    public HashSet<Long> getMyLongHashSet() {
-        return myLongHashSet;
-    }
-
-    /**
-     * @param myLongHashSet
-     *            the myLongHashSet to set
-     */
-    public void setMyLongHashSet(HashSet<Long> myLongHashSet) {
-        this.myLongHashSet = myLongHashSet;
-    }
-
-    /**
      * @return the myLongSortedSet
      */
     public SortedSet<Long> getMyLongSortedSet() {
@@ -1002,111 +591,6 @@ public class Hoge {
      */
     public void setMyLongSortedSet(SortedSet<Long> myLongSortedSet) {
         this.myLongSortedSet = myLongSortedSet;
-    }
-
-    /**
-     * @return the myLongTreeSet
-     */
-    public TreeSet<Long> getMyLongTreeSet() {
-        return myLongTreeSet;
-    }
-
-    /**
-     * @param myLongTreeSet
-     *            the myLongTreeSet to set
-     */
-    public void setMyLongTreeSet(TreeSet<Long> myLongTreeSet) {
-        this.myLongTreeSet = myLongTreeSet;
-    }
-
-    /**
-     * @return the myLongLinkedList
-     */
-    public LinkedList<Long> getMyLongLinkedList() {
-        return myLongLinkedList;
-    }
-
-    /**
-     * @param myLongLinkedList
-     *            the myLongLinkedList to set
-     */
-    public void setMyLongLinkedList(LinkedList<Long> myLongLinkedList) {
-        this.myLongLinkedList = myLongLinkedList;
-    }
-
-    /**
-     * @return the myLongLinkedHashSet
-     */
-    public LinkedHashSet<Long> getMyLongLinkedHashSet() {
-        return myLongLinkedHashSet;
-    }
-
-    /**
-     * @param myLongLinkedHashSet
-     *            the myLongLinkedHashSet to set
-     */
-    public void setMyLongLinkedHashSet(LinkedHashSet<Long> myLongLinkedHashSet) {
-        this.myLongLinkedHashSet = myLongLinkedHashSet;
-    }
-
-    /**
-     * @return the myLongStack
-     */
-    public Stack<Long> getMyLongStack() {
-        return myLongStack;
-    }
-
-    /**
-     * @param myLongStack
-     *            the myLongStack to set
-     */
-    public void setMyLongStack(Stack<Long> myLongStack) {
-        this.myLongStack = myLongStack;
-    }
-
-    /**
-     * @return the myLongVector
-     */
-    public Vector<Long> getMyLongVector() {
-        return myLongVector;
-    }
-
-    /**
-     * @param myLongVector
-     *            the myLongVector to set
-     */
-    public void setMyLongVector(Vector<Long> myLongVector) {
-        this.myLongVector = myLongVector;
-    }
-
-    /**
-     * @return the myPrimitiveFloatArray
-     */
-    public float[] getMyPrimitiveFloatArray() {
-        return myPrimitiveFloatArray;
-    }
-
-    /**
-     * @param myPrimitiveFloatArray
-     *            the myPrimitiveFloatArray to set
-     */
-    public void setMyPrimitiveFloatArray(float[] myPrimitiveFloatArray) {
-        this.myPrimitiveFloatArray = myPrimitiveFloatArray;
-    }
-
-    /**
-     * @return the myFloatArray
-     */
-    public Float[] getMyFloatArray() {
-        return myFloatArray;
-    }
-
-    /**
-     * @param myFloatArray
-     *            the myFloatArray to set
-     */
-    public void setMyFloatArray(Float[] myFloatArray) {
-        this.myFloatArray = myFloatArray;
     }
 
     /**
@@ -1125,21 +609,6 @@ public class Hoge {
     }
 
     /**
-     * @return the myFloatArrayList
-     */
-    public ArrayList<Float> getMyFloatArrayList() {
-        return myFloatArrayList;
-    }
-
-    /**
-     * @param myFloatArrayList
-     *            the myFloatArrayList to set
-     */
-    public void setMyFloatArrayList(ArrayList<Float> myFloatArrayList) {
-        this.myFloatArrayList = myFloatArrayList;
-    }
-
-    /**
      * @return the myFloatSet
      */
     public Set<Float> getMyFloatSet() {
@@ -1155,21 +624,6 @@ public class Hoge {
     }
 
     /**
-     * @return the myFloatHashSet
-     */
-    public HashSet<Float> getMyFloatHashSet() {
-        return myFloatHashSet;
-    }
-
-    /**
-     * @param myFloatHashSet
-     *            the myFloatHashSet to set
-     */
-    public void setMyFloatHashSet(HashSet<Float> myFloatHashSet) {
-        this.myFloatHashSet = myFloatHashSet;
-    }
-
-    /**
      * @return the myFloatSortedSet
      */
     public SortedSet<Float> getMyFloatSortedSet() {
@@ -1182,82 +636,6 @@ public class Hoge {
      */
     public void setMyFloatSortedSet(SortedSet<Float> myFloatSortedSet) {
         this.myFloatSortedSet = myFloatSortedSet;
-    }
-
-    /**
-     * @return the myFloatTreeSet
-     */
-    public TreeSet<Float> getMyFloatTreeSet() {
-        return myFloatTreeSet;
-    }
-
-    /**
-     * @param myFloatTreeSet
-     *            the myFloatTreeSet to set
-     */
-    public void setMyFloatTreeSet(TreeSet<Float> myFloatTreeSet) {
-        this.myFloatTreeSet = myFloatTreeSet;
-    }
-
-    /**
-     * @return the myFloatLinkedList
-     */
-    public LinkedList<Float> getMyFloatLinkedList() {
-        return myFloatLinkedList;
-    }
-
-    /**
-     * @param myFloatLinkedList
-     *            the myFloatLinkedList to set
-     */
-    public void setMyFloatLinkedList(LinkedList<Float> myFloatLinkedList) {
-        this.myFloatLinkedList = myFloatLinkedList;
-    }
-
-    /**
-     * @return the myFloatLinkedHashSet
-     */
-    public LinkedHashSet<Float> getMyFloatLinkedHashSet() {
-        return myFloatLinkedHashSet;
-    }
-
-    /**
-     * @param myFloatLinkedHashSet
-     *            the myFloatLinkedHashSet to set
-     */
-    public void setMyFloatLinkedHashSet(
-            LinkedHashSet<Float> myFloatLinkedHashSet) {
-        this.myFloatLinkedHashSet = myFloatLinkedHashSet;
-    }
-
-    /**
-     * @return the myFloatStack
-     */
-    public Stack<Float> getMyFloatStack() {
-        return myFloatStack;
-    }
-
-    /**
-     * @param myFloatStack
-     *            the myFloatStack to set
-     */
-    public void setMyFloatStack(Stack<Float> myFloatStack) {
-        this.myFloatStack = myFloatStack;
-    }
-
-    /**
-     * @return the myFloatVector
-     */
-    public Vector<Float> getMyFloatVector() {
-        return myFloatVector;
-    }
-
-    /**
-     * @param myFloatVector
-     *            the myFloatVector to set
-     */
-    public void setMyFloatVector(Vector<Float> myFloatVector) {
-        this.myFloatVector = myFloatVector;
     }
 
     /**

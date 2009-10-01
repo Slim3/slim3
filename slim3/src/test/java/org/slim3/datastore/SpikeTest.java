@@ -15,11 +15,15 @@
  */
 package org.slim3.datastore;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.slim3.tester.DatastoreTestCase;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
 
 /**
  * @author higa
@@ -32,8 +36,12 @@ public class SpikeTest extends DatastoreTestCase {
      */
     public void testSpike() throws Exception {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        Entity entity = new Entity("Parent");
-        entity.setProperty("name", "aaa");
-        ds.put(entity);
+        Entity entity = new Entity("Group");
+        entity.setProperty("name", "Admin");
+        Entity entity2 = new Entity("Group");
+        entity2.setProperty("name", "User");
+        List<Key> keys = ds.put(Arrays.asList(entity, entity2));
+        assertEquals("Admin", ds.get(keys.get(0)).getProperty("name"));
+        assertEquals("User", ds.get(keys.get(1)).getProperty("name"));
     }
 }

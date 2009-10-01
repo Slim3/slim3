@@ -18,13 +18,10 @@ package org.slim3.datastore;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.Stack;
-import java.util.Vector;
 
 import junit.framework.TestCase;
 
@@ -231,45 +228,31 @@ public class ModelMetaTest extends TestCase {
     /**
      * @throws Exception
      */
-    public void testLongListToPrimitiveShortArray() throws Exception {
-        List<Long> longList = Arrays.asList(1L);
-        short[] ret = meta.longListToPrimitiveShortArray(longList);
-        assertEquals(1, ret.length);
-        assertEquals(1, ret[0]);
-        assertNull(meta.longListToPrimitiveShortArray(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testPrimitiveShortArrayToLongList() throws Exception {
-        short[] value = new short[] { 1 };
-        List<Long> ret = meta.primitiveShortArrayToLongList(value);
+    public void testToList() throws Exception {
+        List<Long> value = new ArrayList<Long>(Arrays.asList(1L));
+        ArrayList<Long> ret = meta.toList(Long.class, value);
         assertEquals(1, ret.size());
         assertEquals(Long.valueOf(1), ret.get(0));
-        assertNull(meta.primitiveShortArrayToLongList(null));
     }
 
     /**
      * @throws Exception
      */
-    public void testLongListToShortArray() throws Exception {
-        List<Long> value = Arrays.asList(1L);
-        Short[] ret = meta.longListToShortArray(value);
-        assertEquals(1, ret.length);
-        assertEquals(Short.valueOf((short) 1), ret[0]);
-        assertNull(meta.longListToShortArray(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testShortArrayToLongList() throws Exception {
-        Short[] value = new Short[] { 1 };
-        List<Long> ret = meta.shortArrayToLongList(value);
+    public void testToSet() throws Exception {
+        List<Long> value = new ArrayList<Long>(Arrays.asList(1L));
+        HashSet<Long> ret = meta.toSet(Long.class, value);
         assertEquals(1, ret.size());
-        assertEquals(Long.valueOf(1), ret.get(0));
-        assertNull(meta.shortArrayToLongList(null));
+        assertEquals(Long.valueOf(1), ret.iterator().next());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testToSortedSet() throws Exception {
+        List<Long> value = new ArrayList<Long>(Arrays.asList(1L));
+        SortedSet<Long> ret = meta.toSortedSet(Long.class, value);
+        assertEquals(1, ret.size());
+        assertEquals(Long.valueOf(1), ret.iterator().next());
     }
 
     /**
@@ -319,94 +302,6 @@ public class ModelMetaTest extends TestCase {
     /**
      * @throws Exception
      */
-    public void testLongListToShortLinkedList() throws Exception {
-        List<Long> value = Arrays.asList(1L);
-        LinkedList<Short> ret = meta.longListToShortLinkedList(value);
-        assertEquals(1, ret.size());
-        assertEquals(Short.valueOf((short) 1), ret.iterator().next());
-        assertNull(meta.longListToShortLinkedList(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testLongListToShortLinkedHashSet() throws Exception {
-        List<Long> value = Arrays.asList(1L);
-        LinkedHashSet<Short> ret = meta.longListToShortLinkedHashSet(value);
-        assertEquals(1, ret.size());
-        assertEquals(Short.valueOf((short) 1), ret.iterator().next());
-        assertNull(meta.longListToShortLinkedHashSet(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testLongListToShortStack() throws Exception {
-        List<Long> value = Arrays.asList(1L);
-        Stack<Short> ret = meta.longListToShortStack(value);
-        assertEquals(1, ret.size());
-        assertEquals(Short.valueOf((short) 1), ret.iterator().next());
-        assertNull(meta.longListToShortStack(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testLongListToShortVector() throws Exception {
-        List<Long> value = Arrays.asList(1L);
-        Vector<Short> ret = meta.longListToShortVector(value);
-        assertEquals(1, ret.size());
-        assertEquals(Short.valueOf((short) 1), ret.iterator().next());
-        assertNull(meta.longListToShortVector(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testLongListToPrimitiveIntArray() throws Exception {
-        List<Long> longList = Arrays.asList(1L);
-        int[] ret = meta.longListToPrimitiveIntArray(longList);
-        assertEquals(1, ret.length);
-        assertEquals(1, ret[0]);
-        assertNull(meta.longListToPrimitiveIntArray(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testPrimitiveIntArrayToLongList() throws Exception {
-        int[] value = new int[] { 1 };
-        List<Long> ret = meta.primitiveIntArrayToLongList(value);
-        assertEquals(1, ret.size());
-        assertEquals(Long.valueOf(1), ret.get(0));
-        assertNull(meta.primitiveIntArrayToLongList(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testLongListToIntegerArray() throws Exception {
-        List<Long> value = Arrays.asList(1L);
-        Integer[] ret = meta.longListToIntegerArray(value);
-        assertEquals(1, ret.length);
-        assertEquals(Integer.valueOf(1), ret[0]);
-        assertNull(meta.longListToIntegerArray(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testIntegerArrayToLongList() throws Exception {
-        Integer[] value = new Integer[] { 1 };
-        List<Long> ret = meta.integerArrayToLongList(value);
-        assertEquals(1, ret.size());
-        assertEquals(Long.valueOf(1), ret.get(0));
-        assertNull(meta.integerArrayToLongList(null));
-    }
-
-    /**
-     * @throws Exception
-     */
     public void testCopyLongListToIntegerCollection() throws Exception {
         List<Long> value = Arrays.asList(1L);
         Collection<Integer> collection = new ArrayList<Integer>();
@@ -451,204 +346,6 @@ public class ModelMetaTest extends TestCase {
     /**
      * @throws Exception
      */
-    public void testLongListToIntegerLinkedList() throws Exception {
-        List<Long> value = Arrays.asList(1L);
-        LinkedList<Integer> ret = meta.longListToIntegerLinkedList(value);
-        assertEquals(1, ret.size());
-        assertEquals(Integer.valueOf(1), ret.iterator().next());
-        assertNull(meta.longListToIntegerLinkedList(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testLongListToIntegerLinkedHashSet() throws Exception {
-        List<Long> value = Arrays.asList(1L);
-        LinkedHashSet<Integer> ret = meta.longListToIntegerLinkedHashSet(value);
-        assertEquals(1, ret.size());
-        assertEquals(Integer.valueOf(1), ret.iterator().next());
-        assertNull(meta.longListToIntegerLinkedHashSet(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testLongListToIntegerStack() throws Exception {
-        List<Long> value = Arrays.asList(1L);
-        Stack<Integer> ret = meta.longListToIntegerStack(value);
-        assertEquals(1, ret.size());
-        assertEquals(Integer.valueOf(1), ret.iterator().next());
-        assertNull(meta.longListToIntegerStack(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testLongListToIntegerVector() throws Exception {
-        List<Long> value = Arrays.asList(1L);
-        Vector<Integer> ret = meta.longListToIntegerVector(value);
-        assertEquals(1, ret.size());
-        assertEquals(Integer.valueOf(1), ret.iterator().next());
-        assertNull(meta.longListToIntegerVector(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testLongListToPrimitiveLongArray() throws Exception {
-        List<Long> longList = Arrays.asList(1L);
-        long[] ret = meta.longListToPrimitiveLongArray(longList);
-        assertEquals(1, ret.length);
-        assertEquals(1, ret[0]);
-        assertNull(meta.longListToPrimitiveLongArray(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testPrimitiveLongArrayToLongList() throws Exception {
-        long[] value = new long[] { 1 };
-        List<Long> ret = meta.primitiveLongArrayToLongList(value);
-        assertEquals(1, ret.size());
-        assertEquals(Long.valueOf(1), ret.get(0));
-        assertNull(meta.primitiveLongArrayToLongList(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testLongListToLongArray() throws Exception {
-        List<Long> value = Arrays.asList(1L);
-        Long[] ret = meta.longListToLongArray(value);
-        assertEquals(1, ret.length);
-        assertEquals(Long.valueOf(1), ret[0]);
-        assertNull(meta.longListToLongArray(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testLongArrayToLongList() throws Exception {
-        Long[] value = new Long[] { 1L };
-        List<Long> ret = meta.longArrayToLongList(value);
-        assertEquals(1, ret.size());
-        assertEquals(Long.valueOf(1), ret.get(0));
-        assertNull(meta.longArrayToLongList(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testLongListToLongSet() throws Exception {
-        List<Long> value = Arrays.asList(1L);
-        Set<Long> ret = meta.longListToLongSet(value);
-        assertEquals(1, ret.size());
-        assertEquals(Long.valueOf(1), ret.iterator().next());
-        assertNull(meta.longListToLongSet(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testLongListToLongSortedSet() throws Exception {
-        List<Long> value = Arrays.asList(1L);
-        SortedSet<Long> ret = meta.longListToLongSortedSet(value);
-        assertEquals(1, ret.size());
-        assertEquals(Long.valueOf(1), ret.iterator().next());
-        assertNull(meta.longListToLongSortedSet(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testLongListToLongLinkedList() throws Exception {
-        List<Long> value = Arrays.asList(1L);
-        LinkedList<Long> ret = meta.longListToLongLinkedList(value);
-        assertEquals(1, ret.size());
-        assertEquals(Long.valueOf(1), ret.iterator().next());
-        assertNull(meta.longListToLongLinkedList(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testLongListToLongLinkedHashSet() throws Exception {
-        List<Long> value = Arrays.asList(1L);
-        LinkedHashSet<Long> ret = meta.longListToLongLinkedHashSet(value);
-        assertEquals(1, ret.size());
-        assertEquals(Long.valueOf(1), ret.iterator().next());
-        assertNull(meta.longListToLongLinkedHashSet(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testLongListToLongStack() throws Exception {
-        List<Long> value = Arrays.asList(1L);
-        Stack<Long> ret = meta.longListToLongStack(value);
-        assertEquals(1, ret.size());
-        assertEquals(Long.valueOf(1), ret.iterator().next());
-        assertNull(meta.longListToLongStack(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testLongListToLongVector() throws Exception {
-        List<Long> value = Arrays.asList(1L);
-        Vector<Long> ret = meta.longListToLongVector(value);
-        assertEquals(1, ret.size());
-        assertEquals(Long.valueOf(1), ret.iterator().next());
-        assertNull(meta.longListToLongVector(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testDoubleListToPrimitiveFloatArray() throws Exception {
-        List<Double> list = Arrays.asList(1d);
-        float[] ret = meta.doubleListToPrimitiveFloatArray(list);
-        assertEquals(1, ret.length);
-        assertEquals(1f, ret[0]);
-        assertNull(meta.doubleListToPrimitiveFloatArray(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testPrimitiveFloatArrayToDoubleList() throws Exception {
-        float[] value = new float[] { 1 };
-        List<Double> ret = meta.primitiveFloatArrayToDoubleList(value);
-        assertEquals(1, ret.size());
-        assertEquals(Double.valueOf(1), ret.get(0));
-        assertNull(meta.primitiveFloatArrayToDoubleList(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testDoubleListToFloatArray() throws Exception {
-        List<Double> value = Arrays.asList(1d);
-        Float[] ret = meta.doubleListToFloatArray(value);
-        assertEquals(1, ret.length);
-        assertEquals(Float.valueOf(1), ret[0]);
-        assertNull(meta.doubleListToFloatArray(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testFloatArrayToDoubleList() throws Exception {
-        Float[] value = new Float[] { 1f };
-        List<Double> ret = meta.floatArrayToDoubleList(value);
-        assertEquals(1, ret.size());
-        assertEquals(Double.valueOf(1), ret.get(0));
-        assertNull(meta.floatArrayToDoubleList(null));
-    }
-
-    /**
-     * @throws Exception
-     */
     public void testCopyDoubleListToFloatCollection() throws Exception {
         List<Double> value = Arrays.asList(1d);
         Collection<Float> collection = new ArrayList<Float>();
@@ -688,49 +385,5 @@ public class ModelMetaTest extends TestCase {
         assertEquals(1, ret.size());
         assertEquals(Float.valueOf(1), ret.iterator().next());
         assertNull(meta.doubleListToFloatSortedSet(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testDoubleListToFloatLinkedList() throws Exception {
-        List<Double> value = Arrays.asList(1d);
-        LinkedList<Float> ret = meta.doubleListToFloatLinkedList(value);
-        assertEquals(1, ret.size());
-        assertEquals(Float.valueOf(1), ret.iterator().next());
-        assertNull(meta.doubleListToFloatLinkedList(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testDoubleListToFloatLinkedHashSet() throws Exception {
-        List<Double> value = Arrays.asList(1d);
-        LinkedHashSet<Float> ret = meta.doubleListToFloatLinkedHashSet(value);
-        assertEquals(1, ret.size());
-        assertEquals(Float.valueOf(1), ret.iterator().next());
-        assertNull(meta.doubleListToFloatLinkedHashSet(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testDoubleListToFLoatStack() throws Exception {
-        List<Double> value = Arrays.asList(1d);
-        Stack<Float> ret = meta.doubleListToFloatStack(value);
-        assertEquals(1, ret.size());
-        assertEquals(Float.valueOf(1), ret.iterator().next());
-        assertNull(meta.doubleListToFloatStack(null));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testDoubleListToFloatVector() throws Exception {
-        List<Double> value = Arrays.asList(1d);
-        Vector<Float> ret = meta.doubleListToFloatVector(value);
-        assertEquals(1, ret.size());
-        assertEquals(Float.valueOf(1), ret.iterator().next());
-        assertNull(meta.doubleListToFloatVector(null));
     }
 }

@@ -43,6 +43,11 @@ public class SelectQuery<M> {
     protected ModelMeta<M> modelMeta;
 
     /**
+     * The ancestor key.
+     */
+    protected Key ancestorKey;
+
+    /**
      * The filter criteria.
      */
     protected FilterCriterion[] filterCriteria;
@@ -65,6 +70,29 @@ public class SelectQuery<M> {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
         this.modelMeta = modelMeta;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param modelMeta
+     *            the meta data of model
+     * @param ancestorKey
+     *            the ancestor key
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null or if the ancestorKey
+     *             parameter is null
+     */
+    public SelectQuery(ModelMeta<M> modelMeta, Key ancestorKey)
+            throws NullPointerException {
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
+        }
+        if (ancestorKey == null) {
+            throw new NullPointerException("The ancestorKey parameter is null.");
+        }
+        this.modelMeta = modelMeta;
+        this.ancestorKey = ancestorKey;
     }
 
     /**

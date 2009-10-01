@@ -31,9 +31,9 @@ public class CollectionAttributeMetaTest extends TestCase {
      */
     public void testContains() throws Exception {
         HogeMeta meta = new HogeMeta();
-        assertEquals(ContainsCriterion.class, meta.myIntegerArray
+        assertEquals(ContainsCriterion.class, meta.myIntegerList
             .contains(1)
             .getClass());
-        assertNull(meta.myIntegerArray.contains(null));
+        assertNull(meta.myIntegerList.contains(null));
     }
 }
