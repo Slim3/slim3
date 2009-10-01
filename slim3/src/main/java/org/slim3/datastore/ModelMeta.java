@@ -15,7 +15,6 @@
  */
 package org.slim3.datastore;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -255,13 +254,15 @@ public abstract class ModelMeta<M> {
     /**
      * Converts the short blob to a serializable object.
      * 
+     * @param <T>
+     *            the type
      * @param value
      *            the short blob
      * @return a serializable object
      */
-    protected Serializable shortBlobToSerializable(ShortBlob value) {
-        return value != null ? (Serializable) ByteUtil.toObject(value
-            .getBytes()) : null;
+    @SuppressWarnings("unchecked")
+    protected <T> T shortBlobToSerializable(ShortBlob value) {
+        return value != null ? (T) ByteUtil.toObject(value.getBytes()) : null;
     }
 
     /**
@@ -280,13 +281,15 @@ public abstract class ModelMeta<M> {
     /**
      * Converts the blob to a serializable object.
      * 
+     * @param <T>
+     *            the type
      * @param value
      *            the blob
      * @return a serializable object
      */
-    protected Serializable blobToSerializable(Blob value) {
-        return value != null ? (Serializable) ByteUtil.toObject(value
-            .getBytes()) : null;
+    @SuppressWarnings("unchecked")
+    protected <T> T blobToSerializable(Blob value) {
+        return value != null ? (T) ByteUtil.toObject(value.getBytes()) : null;
     }
 
     /**
