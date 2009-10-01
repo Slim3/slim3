@@ -23,14 +23,14 @@
 	<target name="gen-controller">
         <input message="Input a controller path." addproperty="controllerPath"/>
         <gen-controller srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" controllerpath="${controllerPath}"
-            superclassName="${superclassName}" testCaseSuperclassName="${testCaseSuperclassName}" useView="true"/>
+             useView="true"/>
         <gen-view wardir="${warDir}" controllerPath="${controllerPath}"/>
     </target>
 
     <target name="gen-controller-without-view">
         <input message="Input a controller path." addproperty="controllerPath"/>
         <gen-controller srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" controllerpath="${controllerPath}"
-            superclassName="${superclassName}" testCaseSuperclassName="${testCaseSuperclassName}" useView="false"/>
+             useView="false"/>
     </target>
 
     <target name="gen-model">
