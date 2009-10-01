@@ -421,20 +421,22 @@ public class ModelMetaGenerator implements Generator {
             if (p.isBlob()) {
                 printer
                     .println(
-                        "model.%1$s((%2$s) blobToSerializable((%3$s) entity.getProperty(\"%4$s\")));",
-                        p.getWriteMethodName(),
+                        "%1$s _%2$s = blobToSerializable((%3$s) entity.getProperty(\"%2$s\"));",
                         type.getTypeName(),
-                        Blob,
-                        p.getName());
+                        p.getName(),
+                        Blob);
+                printer.println("model.%1$s(_%2$s);", p.getWriteMethodName(), p
+                    .getName());
             } else {
                 printer
                     .println(
-                        "model.%1$s((%2$s) shortBlobToSerializable((%3$s) entity.getProperty(\"%4$s\")));",
-                        p.getWriteMethodName(),
+                        "%1$s _%2$s = shortBlobToSerializable((%3$s) entity.getProperty(\"%2$s\"));",
                         type.getTypeName(),
-                        ShortBlob,
-                        p.getName());
+                        p.getName(),
+                        ShortBlob);
             }
+            printer.println("model.%1$s(_%2$s);", p.getWriteMethodName(), p
+                .getName());
             return null;
         }
 
