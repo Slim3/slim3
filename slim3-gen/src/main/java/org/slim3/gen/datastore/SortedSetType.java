@@ -15,19 +15,17 @@
  */
 package org.slim3.gen.datastore;
 
-import java.util.ArrayList;
-
 /**
- * Represents {@link ArrayList} type.
+ * Represents {@link SortedSetType} type.
  * 
  * @author taedium
  * @since 3.0
  * 
  */
-public class ArrayListType extends ListType {
+public class SortedSetType extends CollectionType {
 
     /**
-     * Creates a new {@link ArrayListType}.
+     * Creates a new {@link SortedSetType}.
      * 
      * @param className
      *            the class name
@@ -36,13 +34,13 @@ public class ArrayListType extends ListType {
      * @param elementType
      *            the element data type
      */
-    public ArrayListType(String className, String typeName, DataType elementType) {
+    public SortedSetType(String className, String typeName, DataType elementType) {
         super(className, typeName, elementType);
     }
 
     @Override
     public <R, P, TH extends Throwable> R accept(
             DataTypeVisitor<R, P, TH> visitor, P p) throws TH {
-        return visitor.visitArrayListType(this, p);
+        return visitor.visitSortedSetType(this, p);
     }
 }

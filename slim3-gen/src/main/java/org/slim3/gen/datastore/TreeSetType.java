@@ -24,7 +24,7 @@ import java.util.TreeSet;
  * @since 3.0
  * 
  */
-public class TreeSetType extends CollectionType {
+public class TreeSetType extends SortedSetType {
 
     /**
      * Creates a new {@link HashSetType}.

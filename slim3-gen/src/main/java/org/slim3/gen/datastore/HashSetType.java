@@ -24,7 +24,7 @@ import java.util.HashSet;
  * @since 3.0
  * 
  */
-public class HashSetType extends CollectionType {
+public class HashSetType extends SetType {
 
     /**
      * Creates a new {@link HashSetType}.

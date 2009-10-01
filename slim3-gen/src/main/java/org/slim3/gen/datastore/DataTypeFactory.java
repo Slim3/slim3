@@ -402,13 +402,22 @@ public class DataTypeFactory {
         protected CollectionType createCollectionType(String className,
                 DeclaredType declaredType, DataType elementType) {
             String typeName = declaredType.toString();
-            if (List.equals(className) || ArrayList.equals(className)) {
+            if (List.equals(className)) {
+                return new ListType(className, typeName, elementType);
+            }
+            if (ArrayList.equals(className)) {
                 return new ArrayListType(className, typeName, elementType);
             }
-            if (Set.equals(className) || HashSet.equals(className)) {
+            if (Set.equals(className)) {
+                return new SetType(className, typeName, elementType);
+            }
+            if (HashSet.equals(className)) {
                 return new HashSetType(className, typeName, elementType);
             }
-            if (SortedSet.equals(className) || TreeSet.equals(className)) {
+            if (SortedSet.equals(className)) {
+                return new SortedSetType(className, typeName, elementType);
+            }
+            if (TreeSet.equals(className)) {
                 return new TreeSetType(className, typeName, elementType);
             }
             throw new ValidationException(
