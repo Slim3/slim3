@@ -48,6 +48,7 @@ import org.slim3.gen.datastore.PrimitiveIntType;
 import org.slim3.gen.datastore.PrimitiveLongType;
 import org.slim3.gen.datastore.PrimitiveShortType;
 import org.slim3.gen.datastore.SetType;
+import org.slim3.gen.datastore.ShortBlobType;
 import org.slim3.gen.datastore.ShortType;
 import org.slim3.gen.datastore.SimpleDataTypeVisitor;
 import org.slim3.gen.datastore.SortedSetType;
@@ -214,12 +215,28 @@ public class ModelMetaGenerator implements Generator {
                 if (attr.isImpermanent()
                     || attr.isBlob()
                     || attr.isText()
-                    || attr.isUnindexed()) {
+                    || attr.isUnindexed()
+                    || attr.getDataType().isSerialized()) {
                     continue;
                 }
                 DataType dataType = attr.getDataType();
                 dataType.accept(this, attr);
             }
+        }
+
+        @Override
+        public Void visitCorePrimitiveType(CorePrimitiveType type,
+                AttributeMetaDesc p) throws RuntimeException {
+            printer
+                .println(
+                    "public %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%4$s\", %5$s.class);",
+                    CoreAttributeMeta,
+                    modelMetaDesc.getModelClassName(),
+                    type.getWrapperClassName(),
+                    p.getName(),
+                    type.getClassName());
+            printer.println();
+            return null;
         }
 
         @Override
@@ -261,6 +278,12 @@ public class ModelMetaGenerator implements Generator {
                 modelMetaDesc.getModelClassName(),
                 p.getName());
             printer.println();
+            return null;
+        }
+
+        @Override
+        public Void visitShortBlobType(ShortBlobType type, AttributeMetaDesc p)
+                throws RuntimeException {
             return null;
         }
 
