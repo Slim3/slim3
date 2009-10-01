@@ -16,13 +16,11 @@ public class PutJDOController extends Controller {
     private static final Logger logger =
         Logger.getLogger(PutJDOController.class.getName());
 
-    private static final int COUNT = 100;
-
     @Override
     public Navigation run() {
         PersistenceManager pm = PMF.get().getPersistenceManager();
         long start = System.currentTimeMillis();
-        for (int i = 0; i < COUNT; i++) {
+        for (int i = 0; i < 100; i++) {
             FooJDO foo = new FooJDO();
             foo.setString01("string" + i);
             foo.setString02("string" + i);

@@ -1,4 +1,10 @@
-<!-- Indices written at Wed, 30 Sep 2009 05:51:20 UTC -->
+<!-- Indices written at Thu, 1 Oct 2009 11:59:10 UTC -->
 
-<datastore-indexes/>
+<datastore-indexes>
 
+    <!-- Used 100 times in query history -->
+    <datastore-index kind="Child" ancestor="true" source="auto">
+        <property name="children_INTEGER_IDX" direction="asc"/>
+    </datastore-index>
+
+</datastore-indexes>

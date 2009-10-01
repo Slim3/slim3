@@ -15,9 +15,6 @@
  */
 package slim3.demo.cool.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
@@ -31,29 +28,11 @@ import com.google.appengine.api.datastore.Key;
  * 
  */
 @PersistenceCapable(identityType = IdentityType.APPLICATION, table = "Parent")
-public class ParentJDO {
+public class ParentJDO2 {
 
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     private Key key;
-
-    @Persistent
-    private List<ChildJDO> children = new ArrayList<ChildJDO>();
-
-    /**
-     * @return the children
-     */
-    public List<ChildJDO> getChildren() {
-        return children;
-    }
-
-    /**
-     * @param children
-     *            the children to set
-     */
-    public void setChildren(List<ChildJDO> children) {
-        this.children = children;
-    }
 
     /**
      * @return the key

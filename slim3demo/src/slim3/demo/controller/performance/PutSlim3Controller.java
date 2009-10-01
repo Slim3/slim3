@@ -14,12 +14,10 @@ public class PutSlim3Controller extends Controller {
     private static final Logger logger =
         Logger.getLogger(PutSlim3Controller.class.getName());
 
-    private static final int COUNT = 100;
-
     @Override
     public Navigation run() {
         long start = System.currentTimeMillis();
-        for (int i = 0; i < COUNT; i++) {
+        for (int i = 0; i < 100; i++) {
             Foo foo = new Foo();
             foo.setString01("string" + i);
             foo.setString02("string" + i);

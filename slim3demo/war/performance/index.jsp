@@ -10,6 +10,7 @@
 <link rel="stylesheet" type="text/css" href="/css/global.css" />
 </head>
 <body>
+
 <table>
 <tr>
 <td>${putLL}</td><td>${deleteLL}</td>
@@ -45,6 +46,57 @@
 <td>
 <form method="post" action="deleteJDO">
 <input type="submit" value="delete JDO"/>
+</form>
+</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td>${putEGLL}</td><td>${deleteEGLL}</td>
+<td>${putEGSlim3}</td><td>${deleteEGSlim3}</td>
+<td>${putEGJDO}</td><td>${deleteEGJDO}</td>
+<td>${putEGJDO2}</td><td>${deleteEGJDO2}</td>
+</tr>
+<tr>
+<td>
+<form method="post" action="putEGLL">
+<input type="submit" value="put EG LL"/>
+</form>
+</td>
+<td>
+<form method="post" action="deleteEGLL">
+<input type="submit" value="delete EG LL"/>
+</form>
+</td>
+<td>
+<form method="post" action="putEGSlim3">
+<input type="submit" value="put EG Slim3"/>
+</form>
+</td>
+<td>
+<form method="post" action="deleteEGSlim3">
+<input type="submit" value="delete EG Slim3"/>
+</form>
+</td>
+<td>
+<form method="post" action="putEGJDO">
+<input type="submit" value="put EG JDO"/>
+</form>
+</td>
+<td>
+<form method="post" action="deleteEGJDO">
+<input type="submit" value="delete EG JDO"/>
+</form>
+</td>
+<td>
+<form method="post" action="putEGJDO2">
+<input type="submit" value="put EG JDO2"/>
+</form>
+</td>
+<td>
+<form method="post" action="deleteEGJDO2">
+<input type="submit" value="delete EG JDO2"/>
 </form>
 </td>
 </tr>

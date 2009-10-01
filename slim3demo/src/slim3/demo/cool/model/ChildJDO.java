@@ -15,29 +15,29 @@
  */
 package slim3.demo.cool.model;
 
-import javax.jdo.annotations.Extension;
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.IdentityType;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
+import com.google.appengine.api.datastore.Key;
+
 /**
  * @author higa
  * 
  */
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
+@PersistenceCapable(identityType = IdentityType.APPLICATION, table = "Child")
 public class ChildJDO {
 
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-    @Extension(vendorName = "datanucleus", key = "gae.encoded-pk", value = "true")
-    private String key;
+    private Key key;
 
     /**
      * @return the key
      */
-    public String getKey() {
+    public Key getKey() {
         return key;
     }
 
@@ -45,7 +45,7 @@ public class ChildJDO {
      * @param key
      *            the key to set
      */
-    public void setKey(String key) {
+    public void setKey(Key key) {
         this.key = key;
     }
 }

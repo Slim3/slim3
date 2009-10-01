@@ -15,13 +15,11 @@ public class PutLLController extends Controller {
     private static final Logger logger =
         Logger.getLogger(PutLLController.class.getName());
 
-    private static final int COUNT = 100;
-
     @Override
     public Navigation run() {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         long start = System.currentTimeMillis();
-        for (int i = 0; i < COUNT; i++) {
+        for (int i = 0; i < 100; i++) {
             Entity entity = new Entity("FooLL");
             entity.setProperty("string01", "string" + i);
             entity.setProperty("string02", "string" + i);

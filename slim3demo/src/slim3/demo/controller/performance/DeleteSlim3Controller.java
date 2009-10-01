@@ -20,8 +20,8 @@ public class DeleteSlim3Controller extends Controller {
     @Override
     public Navigation run() {
         FooMeta f = new FooMeta();
-        List<Key> keys = Datastore.query(f).asKeyList();
         long start = System.currentTimeMillis();
+        List<Key> keys = Datastore.query(f).asKeyList();
         for (Key key : keys) {
             Datastore.delete(key);
         }
