@@ -20,18 +20,19 @@
 	<taskdef name="gen-gwt-service" classname="org.slim3.gen.task.GenGWTServiceTask" classpathref="classpath"/>
     <taskdef name="gen-gwt-service-impl" classname="org.slim3.gen.task.GenGWTServiceImplTask" classpathref="classpath"/>
 	
-	<target name="gen-controller">
+    <target name="gen-controller">
         <input message="Input a controller path." addproperty="controllerPath"/>
         <gen-controller srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" controllerpath="${controllerPath}"
-             useView="true"/>
+            superclassName="${superclassName}" testCaseSuperclassName="${testCaseSuperclassName}" useView="true"/>
         <gen-view wardir="${warDir}" controllerPath="${controllerPath}"/>
     </target>
 
     <target name="gen-controller-without-view">
         <input message="Input a controller path." addproperty="controllerPath"/>
         <gen-controller srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" controllerpath="${controllerPath}"
-             useView="false"/>
+            superclassName="${superclassName}" testCaseSuperclassName="${testCaseSuperclassName}" useView="false"/>
     </target>
+
 
     <target name="gen-model">
         <input message="Input a model name. (ex.  Foo -> root.model.Foo,  bar.Foo -> root.model.bar.Foo)" addproperty="modelRelativeClassName"/>
