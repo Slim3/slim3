@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.slim3.util.ByteUtil;
@@ -351,7 +350,7 @@ public abstract class ModelMeta<M> {
      * @return a sorted set
      */
     @SuppressWarnings("unchecked")
-    protected <T> SortedSet<T> toSortedSet(Class<T> clazz, Object value) {
+    protected <T> TreeSet<T> toSortedSet(Class<T> clazz, Object value) {
         List<T> v = (List<T>) value;
         if (v == null) {
             return null;
