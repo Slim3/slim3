@@ -32,11 +32,13 @@ import com.google.appengine.api.datastore.Query;
 /**
  * An abstract query.
  * 
+ * @param <SUB>
+ *            the sub type
  * @author higa
  * @since 3.0
  * 
  */
-public abstract class AbstractQuery {
+public abstract class AbstractQuery<SUB> {
 
     static final int MAX_RETRY = 10;
 
@@ -154,6 +156,58 @@ public abstract class AbstractQuery {
             throw new NullPointerException("The ancestorKey parameter is null.");
         }
         query = new Query(ancestorKey);
+    }
+
+    /**
+     * Specifies the offset.
+     * 
+     * @param offset
+     *            the offset
+     * @return this instance
+     */
+    @SuppressWarnings("unchecked")
+    public SUB offset(int offset) {
+        fetchOptions.offset(offset);
+        return (SUB) this;
+    }
+
+    /**
+     * Specifies the limit.
+     * 
+     * @param limit
+     *            the limit
+     * @return this instance
+     */
+    @SuppressWarnings("unchecked")
+    public SUB limit(int limit) {
+        fetchOptions.limit(limit);
+        return (SUB) this;
+    }
+
+    /**
+     * Specifies the size of prefetch.
+     * 
+     * @param prefetchSize
+     *            the size of prefetch
+     * @return this instance
+     */
+    @SuppressWarnings("unchecked")
+    public SUB prefetchSize(int prefetchSize) {
+        fetchOptions.prefetchSize(prefetchSize);
+        return (SUB) this;
+    }
+
+    /**
+     * Specifies the size of chunk.
+     * 
+     * @param chunkSize
+     *            the size of chunk
+     * @return this instance
+     */
+    @SuppressWarnings("unchecked")
+    public SUB chunkSize(int chunkSize) {
+        fetchOptions.chunkSize(chunkSize);
+        return (SUB) this;
     }
 
     /**

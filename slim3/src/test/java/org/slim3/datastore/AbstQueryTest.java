@@ -15,11 +15,13 @@
  */
 package org.slim3.datastore;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import org.slim3.tester.DatastoreTestCase;
 
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
@@ -101,7 +103,51 @@ public class AbstQueryTest extends DatastoreTestCase {
         assertTrue(found);
     }
 
-    private static class MyQuery extends AbstractQuery {
+    /**
+     * @throws Exception
+     */
+    public void testOffset() throws Exception {
+        MyQuery q = new MyQuery("Hoge");
+        assertSame(q, q.offset(10));
+        Field f = FetchOptions.class.getDeclaredField("offset");
+        f.setAccessible(true);
+        assertEquals(10, f.getInt(q.fetchOptions));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testLimit() throws Exception {
+        MyQuery q = new MyQuery("Hoge");
+        assertSame(q, q.limit(100));
+        Field f = FetchOptions.class.getDeclaredField("limit");
+        f.setAccessible(true);
+        assertEquals(100, f.getInt(q.fetchOptions));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testPrefetchSize() throws Exception {
+        MyQuery q = new MyQuery("Hoge");
+        assertSame(q, q.prefetchSize(15));
+        Field f = FetchOptions.class.getDeclaredField("prefetchSize");
+        f.setAccessible(true);
+        assertEquals(15, f.getInt(q.fetchOptions));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testChunkSize() throws Exception {
+        MyQuery q = new MyQuery("Hoge");
+        assertSame(q, q.chunkSize(20));
+        Field f = FetchOptions.class.getDeclaredField("chunkSize");
+        f.setAccessible(true);
+        assertEquals(20, f.getInt(q.fetchOptions));
+    }
+
+    private static class MyQuery extends AbstractQuery<MyQuery> {
 
         /**
          * @param ancestorKey

@@ -20,7 +20,6 @@ import java.util.List;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.Query.FilterOperator;
 
 /**
  * A query class for select.
@@ -31,7 +30,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
  * @since 3.0
  * 
  */
-public class ModelQuery<M> extends AbstractQuery {
+public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
 
     /**
      * The meta data of model.
@@ -91,24 +90,6 @@ public class ModelQuery<M> extends AbstractQuery {
             }
             c.apply(query);
         }
-        return this;
-    }
-
-    /**
-     * Adds the filter criterion.
-     * 
-     * @param propertyName
-     *            the property name
-     * @param operator
-     *            the filter operator
-     * @param value
-     *            the value
-     * 
-     * @return this instance
-     */
-    public ModelQuery<M> filter(String propertyName, FilterOperator operator,
-            Object value) {
-        query.addFilter(propertyName, operator, value);
         return this;
     }
 

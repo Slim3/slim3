@@ -596,7 +596,7 @@ public class DatastoreTest extends DatastoreTestCase {
     /**
      * @throws Exception
      */
-    public void testQuery() throws Exception {
+    public void testQueryUsingModelMeta() throws Exception {
         assertNotNull(Datastore.query(meta));
     }
 
@@ -605,6 +605,21 @@ public class DatastoreTest extends DatastoreTestCase {
      */
     public void testQueryUsingModelMetaAndAncestorKey() throws Exception {
         assertNotNull(Datastore.query(meta, KeyFactory.createKey("Parent", 1)));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testQueryUsingKind() throws Exception {
+        assertNotNull(Datastore.query("Hoge"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testQueryUsingKindAndAncestorKey() throws Exception {
+        assertNotNull(Datastore
+            .query("Hoge", KeyFactory.createKey("Parent", 1)));
     }
 
     /**

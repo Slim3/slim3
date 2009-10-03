@@ -20,10 +20,10 @@ import java.util.List;
 
 import org.slim3.tester.DatastoreTestCase;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
 
 /**
  * @author higa
@@ -35,13 +35,18 @@ public class SpikeTest extends DatastoreTestCase {
      * @throws Exception
      */
     public void testSpike() throws Exception {
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        Entity entity = new Entity("Group");
-        entity.setProperty("name", "Admin");
-        Entity entity2 = new Entity("Group");
-        entity2.setProperty("name", "User");
-        List<Key> keys = ds.put(Arrays.asList(entity, entity2));
-        assertEquals("Admin", ds.get(keys.get(0)).getProperty("name"));
-        assertEquals("User", ds.get(keys.get(1)).getProperty("name"));
+        Entity entity = new Entity("Hoge");
+        entity.setProperty("name", "1");
+        Entity entity2 = new Entity("Hoge");
+        entity2.setProperty("name", "3");
+        Entity entity3 = new Entity("Hoge");
+        entity3.setProperty("name", "2");
+        ds.put(Arrays.asList(entity, entity2, entity3));
+        List<Entity> list =
+            ds
+                .prepare(
+                    new Query("Hoge").addSort("name", SortDirection.DESCENDING))
+                .asList(FetchOptions.Builder.withOffset(0));
+        System.out.println(list);
     }
 }

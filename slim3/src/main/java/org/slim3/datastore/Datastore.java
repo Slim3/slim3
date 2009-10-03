@@ -1167,6 +1167,7 @@ public final class Datastore {
      * @param modelMeta
      *            the meta data of model
      * @return a {@link ModelQuery}
+     * @see ModelQuery#ModelQuery(ModelMeta)
      */
     public static <M> ModelQuery<M> query(ModelMeta<M> modelMeta) {
         return new ModelQuery<M>(modelMeta);
@@ -1182,10 +1183,37 @@ public final class Datastore {
      * @param ancestorKey
      *            the ancestor key
      * @return a {@link ModelQuery}
+     * @see ModelQuery#ModelQuery(ModelMeta, Key)
      */
     public static <M> ModelQuery<M> query(ModelMeta<M> modelMeta,
             Key ancestorKey) {
         return new ModelQuery<M>(modelMeta, ancestorKey);
+    }
+
+    /**
+     * Returns a {@link EntityQuery}.
+     * 
+     * @param kind
+     *            the kind
+     * @return a {@link EntityQuery}
+     * @see EntityQuery#EntityQuery(String)
+     */
+    public static EntityQuery query(String kind) {
+        return new EntityQuery(kind);
+    }
+
+    /**
+     * Returns a {@link EntityQuery}.
+     * 
+     * @param kind
+     *            the kind
+     * @param ancestorKey
+     *            the ancestor key
+     * @return a {@link EntityQuery}
+     * @see EntityQuery#EntityQuery(String, Key)
+     */
+    public static EntityQuery query(String kind, Key ancestorKey) {
+        return new EntityQuery(kind, ancestorKey);
     }
 
     /**

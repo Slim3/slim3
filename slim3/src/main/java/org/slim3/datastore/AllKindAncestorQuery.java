@@ -24,7 +24,7 @@ import com.google.appengine.api.datastore.Key;
  * @since 3.0
  * 
  */
-public class AllKindAncestorQuery extends AbstractQuery {
+public class AllKindAncestorQuery extends AbstractQuery<AllKindAncestorQuery> {
 
     /**
      * Constructor.
