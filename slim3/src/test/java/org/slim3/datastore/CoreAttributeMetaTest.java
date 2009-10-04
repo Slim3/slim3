@@ -79,4 +79,14 @@ public class CoreAttributeMetaTest extends TestCase {
             .getClass());
         assertNull(meta.myString.greaterThanOrEqual(null));
     }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testIsNotNull() throws Exception {
+        assertEquals(IsNotNullCriterion.class, meta.myString
+            .isNotNull()
+            .getClass());
+    }
 }

@@ -112,4 +112,13 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
         }
         return new GreaterThanOrEqualCriterion(this, value);
     }
+
+    /**
+     * Returns the "is not null" filter criterion.
+     * 
+     * @return the "is not null" filter criterion
+     */
+    public IsNotNullCriterion isNotNull() {
+        return new IsNotNullCriterion(this);
+    }
 }
