@@ -33,6 +33,16 @@ public class EntityNotFoundRuntimeException extends RuntimeException {
      * 
      * @param key
      *            the key
+     */
+    public EntityNotFoundRuntimeException(Key key) {
+        super("No entity was found matching the key: " + key);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param key
+     *            the key
      * @param cause
      *            the cause
      */

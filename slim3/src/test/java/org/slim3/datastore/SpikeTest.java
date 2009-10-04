@@ -15,14 +15,11 @@
  */
 package org.slim3.datastore;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.slim3.tester.DatastoreTestCase;
 
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
 /**
@@ -41,12 +38,12 @@ public class SpikeTest extends DatastoreTestCase {
         entity2.setProperty("name", "3");
         Entity entity3 = new Entity("Hoge");
         entity3.setProperty("name", "2");
-        ds.put(Arrays.asList(entity, entity2, entity3));
+        Datastore.put(entity, entity2, entity3);
         List<Entity> list =
-            ds
-                .prepare(
-                    new Query("Hoge").addSort("name", SortDirection.DESCENDING))
-                .asList(FetchOptions.Builder.withOffset(0));
+            Datastore
+                .query("Hoge")
+                .sort("name", SortDirection.DESCENDING)
+                .asEntityList();
         System.out.println(list);
     }
 }

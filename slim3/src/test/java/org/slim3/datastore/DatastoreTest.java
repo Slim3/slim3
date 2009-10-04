@@ -194,7 +194,7 @@ public class DatastoreTest extends DatastoreTestCase {
      */
     public void testGetEntity() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
-        Entity entity = Datastore.getEntity(key);
+        Entity entity = Datastore.get(key);
         assertNotNull(entity);
     }
 
@@ -203,7 +203,7 @@ public class DatastoreTest extends DatastoreTestCase {
      */
     public void testGetEntityForNotFound() throws Exception {
         try {
-            Datastore.getEntity(KeyFactory.createKey("Aaa", 1));
+            Datastore.get(KeyFactory.createKey("Aaa", 1));
             fail();
         } catch (EntityNotFoundRuntimeException e) {
             System.out.println(e.getMessage());
@@ -216,7 +216,7 @@ public class DatastoreTest extends DatastoreTestCase {
     public void testGetEntityInTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Transaction tx = ds.beginTransaction();
-        Entity entity = Datastore.getEntity(tx, key);
+        Entity entity = Datastore.get(tx, key);
         tx.rollback();
         assertNotNull(entity);
     }
@@ -228,7 +228,7 @@ public class DatastoreTest extends DatastoreTestCase {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         Map<Key, Entity> map =
-            Datastore.getEntitiesAsMap(Arrays.asList(key, key2));
+            Datastore.getAsMap(Arrays.asList(key, key2));
         assertNotNull(map);
         assertEquals(2, map.size());
     }
@@ -239,7 +239,7 @@ public class DatastoreTest extends DatastoreTestCase {
     public void testGetEntitiesAsMapForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
-        Map<Key, Entity> map = Datastore.getEntitiesAsMap(key, key2);
+        Map<Key, Entity> map = Datastore.getAsMap(key, key2);
         assertNotNull(map);
         assertEquals(2, map.size());
     }
@@ -252,7 +252,7 @@ public class DatastoreTest extends DatastoreTestCase {
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = ds.beginTransaction();
         Map<Key, Entity> map =
-            Datastore.getEntitiesAsMap(tx, Arrays.asList(key, key2));
+            Datastore.getAsMap(tx, Arrays.asList(key, key2));
         tx.rollback();
         assertNotNull(map);
         assertEquals(2, map.size());
@@ -265,7 +265,7 @@ public class DatastoreTest extends DatastoreTestCase {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = ds.beginTransaction();
-        Map<Key, Entity> map = Datastore.getEntitiesAsMap(tx, key, key2);
+        Map<Key, Entity> map = Datastore.getAsMap(tx, key, key2);
         tx.rollback();
         assertNotNull(map);
         assertEquals(2, map.size());
@@ -275,7 +275,7 @@ public class DatastoreTest extends DatastoreTestCase {
      * @throws Exception
      */
     public void testGetEntitiesAsMapForZeroVarargs() throws Exception {
-        Map<Key, Entity> map = Datastore.getEntitiesAsMap();
+        Map<Key, Entity> map = Datastore.getAsMap();
         assertNotNull(map);
         assertEquals(0, map.size());
     }
@@ -286,7 +286,7 @@ public class DatastoreTest extends DatastoreTestCase {
     public void testGetEntities() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
-        List<Entity> list = Datastore.getEntities(Arrays.asList(key, key2));
+        List<Entity> list = Datastore.get(Arrays.asList(key, key2));
         assertNotNull(list);
         assertEquals(2, list.size());
     }
@@ -297,7 +297,7 @@ public class DatastoreTest extends DatastoreTestCase {
     public void testGetEntitiesForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
-        List<Entity> list = Datastore.getEntities(key, key2);
+        List<Entity> list = Datastore.get(key, key2);
         assertNotNull(list);
         assertEquals(2, list.size());
     }
@@ -309,7 +309,7 @@ public class DatastoreTest extends DatastoreTestCase {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = ds.beginTransaction();
-        List<Entity> list = Datastore.getEntities(tx, Arrays.asList(key, key2));
+        List<Entity> list = Datastore.get(tx, Arrays.asList(key, key2));
         tx.rollback();
         assertNotNull(list);
         assertEquals(2, list.size());
@@ -322,7 +322,7 @@ public class DatastoreTest extends DatastoreTestCase {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = ds.beginTransaction();
-        List<Entity> list = Datastore.getEntities(tx, key, key2);
+        List<Entity> list = Datastore.get(tx, key, key2);
         tx.rollback();
         assertNotNull(list);
         assertEquals(2, list.size());
@@ -409,7 +409,7 @@ public class DatastoreTest extends DatastoreTestCase {
      * @throws Exception
      */
     public void testPutEntity() throws Exception {
-        assertNotNull(Datastore.putEntity(new Entity("Hoge")));
+        assertNotNull(Datastore.put(new Entity("Hoge")));
     }
 
     /**
@@ -417,7 +417,7 @@ public class DatastoreTest extends DatastoreTestCase {
      */
     public void testPutEntityInTx() throws Exception {
         Transaction tx = Datastore.beginTransaction();
-        Key key = Datastore.putEntity(tx, new Entity("Hoge"));
+        Key key = Datastore.put(tx, new Entity("Hoge"));
         tx.rollback();
         assertNotNull(key);
         try {
@@ -433,8 +433,8 @@ public class DatastoreTest extends DatastoreTestCase {
      */
     public void testPutEntities() throws Exception {
         List<Key> keys =
-            Datastore.putEntities(Arrays.asList(new Entity("Hoge"), new Entity(
-                "Hoge")));
+            Datastore
+                .put(Arrays.asList(new Entity("Hoge"), new Entity("Hoge")));
         assertNotNull(keys);
         assertEquals(2, keys.size());
     }
@@ -443,8 +443,7 @@ public class DatastoreTest extends DatastoreTestCase {
      * @throws Exception
      */
     public void testPutEntitiesForVarargs() throws Exception {
-        List<Key> keys =
-            Datastore.putEntities(new Entity("Hoge"), new Entity("Hoge"));
+        List<Key> keys = Datastore.put(new Entity("Hoge"), new Entity("Hoge"));
         assertNotNull(keys);
         assertEquals(2, keys.size());
     }
@@ -457,8 +456,7 @@ public class DatastoreTest extends DatastoreTestCase {
         Entity entity2 =
             new Entity(KeyFactory.createKey(entity.getKey(), "Hoge", 1));
         Transaction tx = Datastore.beginTransaction();
-        List<Key> keys =
-            Datastore.putEntities(tx, Arrays.asList(entity, entity2));
+        List<Key> keys = Datastore.put(tx, Arrays.asList(entity, entity2));
         tx.rollback();
         assertNotNull(keys);
         assertEquals(2, keys.size());
@@ -484,7 +482,7 @@ public class DatastoreTest extends DatastoreTestCase {
         Entity entity2 =
             new Entity(KeyFactory.createKey(entity.getKey(), "Hoge", 1));
         Transaction tx = Datastore.beginTransaction();
-        List<Key> keys = Datastore.putEntities(tx, entity, entity2);
+        List<Key> keys = Datastore.put(tx, entity, entity2);
         tx.rollback();
         assertNotNull(keys);
         assertEquals(2, keys.size());

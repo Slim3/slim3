@@ -163,6 +163,27 @@ public final class Datastore {
     }
 
     /**
+     * Returns an entity specified by the key. If there is a current
+     * transaction, this operation will execute within that transaction.
+     * 
+     * @param key
+     *            the key
+     * @return an entity specified by the key
+     * @throws NullPointerException
+     *             if the key parameter is null
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     */
+    public static Entity get(Key key) throws NullPointerException,
+            EntityNotFoundRuntimeException {
+        if (key == null) {
+            throw new NullPointerException("The key parameter is null.");
+        }
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        return getInternal(ds, key);
+    }
+
+    /**
      * Returns a model specified by the key. If there is a current transaction,
      * this operation will execute within that transaction.
      * 
@@ -183,8 +204,40 @@ public final class Datastore {
         if (modelMeta == null) {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
-        Entity entity = getEntity(key);
+        Entity entity = get(key);
         return modelMeta.entityToModel(entity);
+    }
+
+    /**
+     * Returns an entity specified by the key within the provided transaction.
+     * 
+     * @param tx
+     *            the transaction
+     * @param key
+     *            the key
+     * @return an entity specified by the key
+     * @throws NullPointerException
+     *             if the tx parameter is null or if the key parameter is null
+     * @throws IllegalArgumentException
+     *             if the transaction is not active
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     */
+    public static Entity get(Transaction tx, Key key)
+            throws NullPointerException, IllegalArgumentException,
+            EntityNotFoundRuntimeException {
+        if (tx == null) {
+            throw new NullPointerException("The tx parameter is null.");
+        }
+        if (key == null) {
+            throw new NullPointerException("The key parameter is null.");
+        }
+        if (!tx.isActive()) {
+            throw new IllegalArgumentException(
+                "The transaction must be active.");
+        }
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        return getInternal(ds, tx, key);
     }
 
     /**
@@ -209,27 +262,40 @@ public final class Datastore {
         if (modelMeta == null) {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
-        Entity entity = getEntity(tx, key);
+        Entity entity = get(tx, key);
         return modelMeta.entityToModel(entity);
     }
 
     /**
-     * Returns models specified by the keys. If there is a current transaction,
-     * this operation will execute within that transaction.
+     * Returns entities specified by the keys. If there is a current
+     * transaction, this operation will execute within that transaction.
      * 
-     * @param <M>
-     *            the model type
-     * @param modelMeta
-     *            the meta data of model
      * @param keys
      *            the keys
-     * @return models specified by the keys
+     * @return entities specified by the key
      * @throws NullPointerException
-     *             if the modelMeta parameter is null
+     *             if the keys parameter is null
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
      */
-    public static <M> List<M> get(ModelMeta<M> modelMeta, Iterable<Key> keys)
-            throws NullPointerException {
-        return mapToList(modelMeta, keys, getEntitiesAsMap(keys));
+    public static List<Entity> get(Iterable<Key> keys)
+            throws NullPointerException, EntityNotFoundRuntimeException {
+        return mapToList(keys, getAsMap(keys));
+    }
+
+    /**
+     * Returns entities specified by the keys. If there is a current
+     * transaction, this operation will execute within that transaction.
+     * 
+     * @param keys
+     *            the keys
+     * @return entities specified by the key
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     */
+    public static List<Entity> get(Key... keys)
+            throws EntityNotFoundRuntimeException {
+        return get(Arrays.asList(keys));
     }
 
     /**
@@ -245,10 +311,73 @@ public final class Datastore {
      * @return models specified by the keys
      * @throws NullPointerException
      *             if the modelMeta parameter is null
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     */
+    public static <M> List<M> get(ModelMeta<M> modelMeta, Iterable<Key> keys)
+            throws NullPointerException, EntityNotFoundRuntimeException {
+        return mapToList(modelMeta, keys, getAsMap(keys));
+    }
+
+    /**
+     * Returns models specified by the keys. If there is a current transaction,
+     * this operation will execute within that transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param keys
+     *            the keys
+     * @return models specified by the keys
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
      */
     public static <M> List<M> get(ModelMeta<M> modelMeta, Key... keys)
-            throws NullPointerException {
-        return mapToList(modelMeta, Arrays.asList(keys), getEntitiesAsMap(keys));
+            throws NullPointerException, EntityNotFoundRuntimeException {
+        return mapToList(modelMeta, Arrays.asList(keys), getAsMap(keys));
+    }
+
+    /**
+     * Returns entities specified by the keys within the provided transaction.
+     * 
+     * @param tx
+     *            the transaction
+     * @param keys
+     *            the keys
+     * @return entities specified by the key
+     * @throws NullPointerException
+     *             if the tx parameter is null or if the keys parameter is null
+     * @throws IllegalArgumentException
+     *             if the transaction is not active
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     */
+    public static List<Entity> get(Transaction tx, Iterable<Key> keys)
+            throws NullPointerException, EntityNotFoundRuntimeException {
+        return mapToList(keys, getAsMap(tx, keys));
+    }
+
+    /**
+     * Returns entities specified by the keys within the provided transaction.
+     * 
+     * @param tx
+     *            the transaction
+     * @param keys
+     *            the keys
+     * @return entities specified by the key
+     * @throws NullPointerException
+     *             if the tx parameter is null
+     * @throws IllegalArgumentException
+     *             if the transaction is not active
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     */
+    public static List<Entity> get(Transaction tx, Key... keys)
+            throws NullPointerException, EntityNotFoundRuntimeException {
+        return get(tx, Arrays.asList(keys));
     }
 
     /**
@@ -274,7 +403,7 @@ public final class Datastore {
         if (modelMeta == null) {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
-        return mapToList(modelMeta, keys, getEntitiesAsMap(tx, keys));
+        return mapToList(modelMeta, keys, getAsMap(tx, keys));
     }
 
     /**
@@ -301,9 +430,38 @@ public final class Datastore {
         if (modelMeta == null) {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
-        return mapToList(modelMeta, Arrays.asList(keys), getEntitiesAsMap(
-            tx,
-            keys));
+        return mapToList(modelMeta, Arrays.asList(keys), getAsMap(tx, keys));
+    }
+
+    /**
+     * Returns entities specified by the keys. If there is a current
+     * transaction, this operation will execute within that transaction.
+     * 
+     * @param keys
+     *            the keys
+     * @return entities specified by the keys
+     * @throws NullPointerException
+     *             if the keys parameter is null
+     */
+    public static Map<Key, Entity> getAsMap(Iterable<Key> keys)
+            throws NullPointerException {
+        if (keys == null) {
+            throw new NullPointerException("The keys parameter is null.");
+        }
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        return getInternal(ds, keys);
+    }
+
+    /**
+     * Returns entities specified by the keys. If there is a current
+     * transaction, this operation will execute within that transaction.
+     * 
+     * @param keys
+     *            the keys
+     * @return entities specified by the keys
+     */
+    public static Map<Key, Entity> getAsMap(Key... keys) {
+        return getAsMap(Arrays.asList(keys));
     }
 
     /**
@@ -322,7 +480,7 @@ public final class Datastore {
      */
     public static <M> Map<Key, M> getAsMap(ModelMeta<M> modelMeta,
             Iterable<Key> keys) throws NullPointerException {
-        return mapToMap(modelMeta, getEntitiesAsMap(keys));
+        return mapToMap(modelMeta, getAsMap(keys));
     }
 
     /**
@@ -341,7 +499,54 @@ public final class Datastore {
      */
     public static <M> Map<Key, M> getAsMap(ModelMeta<M> modelMeta, Key... keys)
             throws NullPointerException {
-        return mapToMap(modelMeta, getEntitiesAsMap(keys));
+        return mapToMap(modelMeta, getAsMap(keys));
+    }
+
+    /**
+     * Returns entities specified by the keys within the provided transaction.
+     * 
+     * @param tx
+     *            the transaction
+     * @param keys
+     *            the keys
+     * @return entities specified by the keys
+     * @throws NullPointerException
+     *             if the tx parameter is null or if the keys parameter is null
+     * @throws IllegalArgumentException
+     *             if the transaction is not active
+     */
+    public static Map<Key, Entity> getAsMap(Transaction tx, Iterable<Key> keys)
+            throws NullPointerException {
+        if (tx == null) {
+            throw new NullPointerException("The tx parameter is null.");
+        }
+        if (keys == null) {
+            throw new NullPointerException("The keys parameter is null.");
+        }
+        if (!tx.isActive()) {
+            throw new IllegalArgumentException(
+                "The transaction must be active.");
+        }
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        return getInternal(ds, tx, keys);
+    }
+
+    /**
+     * Returns entities specified by the keys within the provided transaction.
+     * 
+     * @param tx
+     *            the transaction
+     * @param keys
+     *            the keys
+     * @return entities specified by the keys
+     * @throws NullPointerException
+     *             if the tx parameter is null
+     * @throws IllegalArgumentException
+     *             if the transaction is not active
+     */
+    public static Map<Key, Entity> getAsMap(Transaction tx, Key... keys)
+            throws NullPointerException, IllegalArgumentException {
+        return getAsMap(tx, Arrays.asList(keys));
     }
 
     /**
@@ -368,7 +573,7 @@ public final class Datastore {
         if (modelMeta == null) {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
-        return mapToMap(modelMeta, getEntitiesAsMap(tx, keys));
+        return mapToMap(modelMeta, getAsMap(tx, keys));
     }
 
     /**
@@ -394,17 +599,19 @@ public final class Datastore {
         if (modelMeta == null) {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
-        return mapToMap(modelMeta, getEntitiesAsMap(tx, keys));
+        return mapToMap(modelMeta, getAsMap(tx, keys));
     }
 
     private static <M> List<M> mapToList(ModelMeta<M> modelMeta,
-            Iterable<Key> keys, Map<Key, Entity> map) {
+            Iterable<Key> keys, Map<Key, Entity> map)
+            throws EntityNotFoundRuntimeException {
         List<M> list = new ArrayList<M>(map.size());
         for (Key key : keys) {
             Entity entity = map.get(key);
-            if (entity != null) {
-                list.add(modelMeta.entityToModel(entity));
+            if (entity == null) {
+                throw new EntityNotFoundRuntimeException(key);
             }
+            list.add(modelMeta.entityToModel(entity));
         }
         return list;
     }
@@ -419,122 +626,6 @@ public final class Datastore {
         return modelMap;
     }
 
-    /**
-     * Returns an entity specified by the key. If there is a current
-     * transaction, this operation will execute within that transaction.
-     * 
-     * @param key
-     *            the key
-     * @return an entity specified by the key
-     * @throws NullPointerException
-     *             if the key parameter is null
-     * @throws EntityNotFoundRuntimeException
-     *             if no entity specified by the key could be found
-     */
-    public static Entity getEntity(Key key) throws NullPointerException,
-            EntityNotFoundRuntimeException {
-        if (key == null) {
-            throw new NullPointerException("The key parameter is null.");
-        }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        return getInternal(ds, key);
-    }
-
-    /**
-     * Returns an entity specified by the key within the provided transaction.
-     * 
-     * @param tx
-     *            the transaction
-     * @param key
-     *            the key
-     * @return an entity specified by the key
-     * @throws NullPointerException
-     *             if the tx parameter is null or if the key parameter is null
-     * @throws IllegalArgumentException
-     *             if the transaction is not active
-     * @throws EntityNotFoundRuntimeException
-     *             if no entity specified by the key could be found
-     */
-    public static Entity getEntity(Transaction tx, Key key)
-            throws NullPointerException, IllegalArgumentException,
-            EntityNotFoundRuntimeException {
-        if (tx == null) {
-            throw new NullPointerException("The tx parameter is null.");
-        }
-        if (key == null) {
-            throw new NullPointerException("The key parameter is null.");
-        }
-        if (!tx.isActive()) {
-            throw new IllegalArgumentException(
-                "The transaction must be active.");
-        }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        return getInternal(ds, tx, key);
-    }
-
-    /**
-     * Returns entities specified by the keys. If there is a current
-     * transaction, this operation will execute within that transaction.
-     * 
-     * @param keys
-     *            the keys
-     * @return entities specified by the key
-     * @throws NullPointerException
-     *             if the keys parameter is null
-     */
-    public static List<Entity> getEntities(Iterable<Key> keys)
-            throws NullPointerException {
-        return mapToList(keys, getEntitiesAsMap(keys));
-    }
-
-    /**
-     * Returns entities specified by the keys. If there is a current
-     * transaction, this operation will execute within that transaction.
-     * 
-     * @param keys
-     *            the keys
-     * @return entities specified by the key
-     */
-    public static List<Entity> getEntities(Key... keys) {
-        return getEntities(Arrays.asList(keys));
-    }
-
-    /**
-     * Returns entities specified by the keys within the provided transaction.
-     * 
-     * @param tx
-     *            the transaction
-     * @param keys
-     *            the keys
-     * @return entities specified by the key
-     * @throws NullPointerException
-     *             if the tx parameter is null or if the keys parameter is null
-     * @throws IllegalArgumentException
-     *             if the transaction is not active
-     */
-    public static List<Entity> getEntities(Transaction tx, Iterable<Key> keys)
-            throws NullPointerException {
-        return mapToList(keys, getEntitiesAsMap(tx, keys));
-    }
-
-    /**
-     * Returns entities specified by the keys within the provided transaction.
-     * 
-     * @param tx
-     *            the transaction
-     * @param keys
-     *            the keys
-     * @return entities specified by the key
-     * @throws NullPointerException
-     *             if the tx parameter is null
-     * @throws IllegalArgumentException
-     *             if the transaction is not active
-     */
-    public static List<Entity> getEntities(Transaction tx, Key... keys)
-            throws NullPointerException {
-        return getEntities(tx, Arrays.asList(keys));
-    }
-
     private static List<Entity> mapToList(Iterable<Key> keys,
             Map<Key, Entity> map) {
         List<Entity> list = new ArrayList<Entity>(map.size());
@@ -545,84 +636,6 @@ public final class Datastore {
             }
         }
         return list;
-    }
-
-    /**
-     * Returns entities specified by the keys. If there is a current
-     * transaction, this operation will execute within that transaction.
-     * 
-     * @param keys
-     *            the keys
-     * @return entities specified by the key
-     * @throws NullPointerException
-     *             if the keys parameter is null
-     */
-    public static Map<Key, Entity> getEntitiesAsMap(Iterable<Key> keys)
-            throws NullPointerException {
-        if (keys == null) {
-            throw new NullPointerException("The keys parameter is null.");
-        }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        return getInternal(ds, keys);
-    }
-
-    /**
-     * Returns entities specified by the keys. If there is a current
-     * transaction, this operation will execute within that transaction.
-     * 
-     * @param keys
-     *            the keys
-     * @return entities specified by the key
-     */
-    public static Map<Key, Entity> getEntitiesAsMap(Key... keys) {
-        return getEntitiesAsMap(Arrays.asList(keys));
-    }
-
-    /**
-     * Returns entities specified by the keys within the provided transaction.
-     * 
-     * @param tx
-     *            the transaction
-     * @param keys
-     *            the keys
-     * @return entities specified by the key
-     * @throws NullPointerException
-     *             if the tx parameter is null or if the keys parameter is null
-     * @throws IllegalArgumentException
-     *             if the transaction is not active
-     */
-    public static Map<Key, Entity> getEntitiesAsMap(Transaction tx,
-            Iterable<Key> keys) throws NullPointerException {
-        if (tx == null) {
-            throw new NullPointerException("The tx parameter is null.");
-        }
-        if (keys == null) {
-            throw new NullPointerException("The keys parameter is null.");
-        }
-        if (!tx.isActive()) {
-            throw new IllegalArgumentException(
-                "The transaction must be active.");
-        }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        return getInternal(ds, tx, keys);
-    }
-
-    /**
-     * Returns entities specified by the keys within the provided transaction.
-     * 
-     * @param tx
-     *            the transaction
-     * @param keys
-     *            the keys
-     * @return entities specified by the key
-     * @throws NullPointerException
-     *             if the tx parameter is null
-     * @throws IllegalArgumentException
-     *             if the transaction is not active
-     */
-    public static Map<Key, Entity> getEntitiesAsMap(Transaction tx, Key... keys)
-            throws NullPointerException, IllegalArgumentException {
-        return getEntitiesAsMap(tx, Arrays.asList(keys));
     }
 
     private static Entity getInternal(DatastoreService ds, Key key) {
@@ -713,6 +726,24 @@ public final class Datastore {
     }
 
     /**
+     * Puts the entity to datastore. If there is a current transaction, this
+     * operation will execute within that transaction.
+     * 
+     * @param entity
+     *            the entity
+     * @return a key
+     * @throws NullPointerException
+     *             if the entity parameter is null
+     */
+    public static Key put(Entity entity) throws NullPointerException {
+        if (entity == null) {
+            throw new NullPointerException("The entity parameter is null.");
+        }
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        return putInternal(ds, entity);
+    }
+
+    /**
      * Puts the model to datastore. If there is a current transaction, this
      * operation will execute within that transaction.
      * 
@@ -728,7 +759,37 @@ public final class Datastore {
         }
         ModelMeta<?> modelMeta = getModelMeta(model.getClass());
         Entity entity = modelMeta.modelToEntity(model);
-        return putEntity(entity);
+        return put(entity);
+    }
+
+    /**
+     * Puts the entity to datastore within the provided transaction.
+     * 
+     * @param tx
+     *            the transaction
+     * @param entity
+     *            the entity
+     * @return a key
+     * @throws NullPointerException
+     *             if the tx parameter is null or if the entity parameter is
+     *             null
+     * @throws IllegalArgumentException
+     *             if the transaction is not active
+     */
+    public static Key put(Transaction tx, Entity entity)
+            throws NullPointerException, IllegalArgumentException {
+        if (tx == null) {
+            throw new NullPointerException("The tx parameter is null.");
+        }
+        if (entity == null) {
+            throw new NullPointerException("The entity parameter is null.");
+        }
+        if (!tx.isActive()) {
+            throw new IllegalArgumentException(
+                "The transaction must be active.");
+        }
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        return putInternal(ds, tx, entity);
     }
 
     /**
@@ -751,15 +812,15 @@ public final class Datastore {
         }
         ModelMeta<?> modelMeta = getModelMeta(model.getClass());
         Entity entity = modelMeta.modelToEntity(model);
-        return putEntity(tx, entity);
+        return put(tx, entity);
     }
 
     /**
-     * Puts the models to datastore. If there is a current transaction, this
-     * operation will execute within that transaction.
+     * Puts the models or entities to datastore. If there is a current
+     * transaction, this operation will execute within that transaction.
      * 
      * @param models
-     *            the models
+     *            the models or entities
      * @return a list of keys
      * @throws NullPointerException
      *             if the models parameter is null
@@ -772,11 +833,11 @@ public final class Datastore {
     }
 
     /**
-     * Puts the models to datastore. If there is a current transaction, this
-     * operation will execute within that transaction.
+     * Puts the models or entities to datastore. If there is a current
+     * transaction, this operation will execute within that transaction.
      * 
      * @param models
-     *            the models
+     *            the models or entities
      * @return a list of keys
      */
     public static List<Key> put(Object... models) {
@@ -784,12 +845,12 @@ public final class Datastore {
     }
 
     /**
-     * Puts the models to datastore within the provided transaction.
+     * Puts the models or entities to datastore within the provided transaction.
      * 
      * @param tx
      *            the transaction
      * @param models
-     *            the models
+     *            the models or entities
      * @return a list of keys
      * @throws NullPointerException
      *             if the tx parameter is null or if the models parameter is
@@ -806,12 +867,12 @@ public final class Datastore {
     }
 
     /**
-     * Puts the models to datastore within the provided transaction.
+     * Puts the models or entities to datastore within the provided transaction.
      * 
      * @param tx
      *            the transaction
      * @param models
-     *            the models
+     *            the models or entities
      * @return a list of keys
      * @throws NullPointerException
      *             if the tx parameter is null
@@ -831,72 +892,18 @@ public final class Datastore {
                 throw new NullPointerException(
                     "The element of the models is null.");
             }
-            ModelMeta<?> modelMeta = getModelMeta(model.getClass());
-            Entity entity = modelMeta.modelToEntity(model);
-            entities.add(entity);
+            if (model instanceof Entity) {
+                entities.add((Entity) model);
+            } else {
+                ModelMeta<?> modelMeta = getModelMeta(model.getClass());
+                Entity entity = modelMeta.modelToEntity(model);
+                entities.add(entity);
+            }
         }
         return entities;
     }
 
-    /**
-     * Puts the entity to datastore. If there is a current transaction, this
-     * operation will execute within that transaction.
-     * 
-     * @param entity
-     *            the entity
-     * @return a key
-     * @throws NullPointerException
-     *             if the entity parameter is null
-     */
-    public static Key putEntity(Entity entity) throws NullPointerException {
-        if (entity == null) {
-            throw new NullPointerException("The entity parameter is null.");
-        }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        return putInternal(ds, entity);
-    }
-
-    /**
-     * Puts the entity to datastore within the provided transaction.
-     * 
-     * @param tx
-     *            the transaction
-     * @param entity
-     *            the entity
-     * @return a key
-     * @throws NullPointerException
-     *             if the tx parameter is null or if the entity parameter is
-     *             null
-     * @throws IllegalArgumentException
-     *             if the transaction is not active
-     */
-    public static Key putEntity(Transaction tx, Entity entity)
-            throws NullPointerException, IllegalArgumentException {
-        if (tx == null) {
-            throw new NullPointerException("The tx parameter is null.");
-        }
-        if (entity == null) {
-            throw new NullPointerException("The entity parameter is null.");
-        }
-        if (!tx.isActive()) {
-            throw new IllegalArgumentException(
-                "The transaction must be active.");
-        }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        return putInternal(ds, tx, entity);
-    }
-
-    /**
-     * Puts the entities to datastore. If there is a current transaction, this
-     * operation will execute within that transaction.
-     * 
-     * @param entities
-     *            the entities
-     * @return a list of keys
-     * @throws NullPointerException
-     *             if the entities parameter is null
-     */
-    public static List<Key> putEntities(Iterable<Entity> entities)
+    private static List<Key> putEntities(Iterable<Entity> entities)
             throws NullPointerException {
         if (entities == null) {
             throw new NullPointerException("The entities parameter is null.");
@@ -905,33 +912,7 @@ public final class Datastore {
         return putInternal(ds, entities);
     }
 
-    /**
-     * Puts the entities to datastore. If there is a current transaction, this
-     * operation will execute within that transaction.
-     * 
-     * @param entities
-     *            the entities
-     * @return a list of keys
-     */
-    public static List<Key> putEntities(Entity... entities) {
-        return putEntities(Arrays.asList(entities));
-    }
-
-    /**
-     * Puts the entities to datastore within the provided transaction.
-     * 
-     * @param tx
-     *            the transaction
-     * @param entities
-     *            the entities
-     * @return a list of keys
-     * @throws NullPointerException
-     *             if the tx parameter is null or if the entities parameter is
-     *             null
-     * @throws IllegalArgumentException
-     *             if the transaction is not active
-     */
-    public static List<Key> putEntities(Transaction tx,
+    private static List<Key> putEntities(Transaction tx,
             Iterable<Entity> entities) throws NullPointerException,
             IllegalArgumentException {
         if (tx == null) {
@@ -946,24 +927,6 @@ public final class Datastore {
         }
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         return putInternal(ds, tx, entities);
-    }
-
-    /**
-     * Puts the entities to datastore within the provided transaction.
-     * 
-     * @param tx
-     *            the transaction
-     * @param entities
-     *            the entities
-     * @return a list of keys
-     * @throws NullPointerException
-     *             if the tx parameter is null
-     * @throws IllegalArgumentException
-     *             if the transaction is not active
-     */
-    public static List<Key> putEntities(Transaction tx, Entity... entities)
-            throws NullPointerException, IllegalArgumentException {
-        return putEntities(tx, Arrays.asList(entities));
     }
 
     private static Key putInternal(DatastoreService ds, Entity entity) {
