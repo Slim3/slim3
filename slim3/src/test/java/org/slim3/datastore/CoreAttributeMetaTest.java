@@ -25,12 +25,13 @@ import org.slim3.datastore.meta.HogeMeta;
  */
 public class CoreAttributeMetaTest extends TestCase {
 
+    private HogeMeta meta = new HogeMeta();
+
     /**
      * @throws Exception
      * 
      */
     public void testEqual() throws Exception {
-        HogeMeta meta = new HogeMeta();
         assertEquals(EqualCriterion.class, meta.myString.equal("a").getClass());
         assertNull(meta.myString.equal(null));
     }
@@ -40,7 +41,6 @@ public class CoreAttributeMetaTest extends TestCase {
      * 
      */
     public void testLessThan() throws Exception {
-        HogeMeta meta = new HogeMeta();
         assertEquals(LessThanCriterion.class, meta.myString
             .lessThan("a")
             .getClass());
@@ -52,7 +52,6 @@ public class CoreAttributeMetaTest extends TestCase {
      * 
      */
     public void testLessThanOrEqual() throws Exception {
-        HogeMeta meta = new HogeMeta();
         assertEquals(LessThanOrEqualCriterion.class, meta.myString
             .lessThanOrEqual("a")
             .getClass());
@@ -64,10 +63,20 @@ public class CoreAttributeMetaTest extends TestCase {
      * 
      */
     public void testGreaterThan() throws Exception {
-        HogeMeta meta = new HogeMeta();
         assertEquals(GreaterThanCriterion.class, meta.myString
             .greaterThan("a")
             .getClass());
         assertNull(meta.myString.greaterThan(null));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testGreaterThanOrEqual() throws Exception {
+        assertEquals(GreaterThanOrEqualCriterion.class, meta.myString
+            .greaterThanOrEqual("a")
+            .getClass());
+        assertNull(meta.myString.greaterThanOrEqual(null));
     }
 }
