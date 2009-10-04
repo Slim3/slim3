@@ -211,31 +211,31 @@ public abstract class AbstractQuery<SUB> {
     }
 
     /**
-     * Returns the result as a list of entities.
+     * Returns entities as a list.
      * 
-     * @return the result as a list of entities
+     * @return entities as a list
      */
-    public List<Entity> asEntityList() {
+    protected List<Entity> asEntityList() {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         PreparedQuery pq = prepareInternal(ds);
         return asListInternal(pq);
     }
 
     /**
-     * Returns the single entity.
+     * Returns a single entity.
      * 
-     * @return the single entity
+     * @return a single entity
      */
-    public Entity asSingleEntity() {
+    protected Entity asSingleEntity() {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         PreparedQuery pq = prepareInternal(ds);
         return asSingleEntityInternal(pq);
     }
 
     /**
-     * Returns the result as a list of key.
+     * Returns a list of keys.
      * 
-     * @return the result as a list of key
+     * @return a list of keys
      */
     public List<Key> asKeyList() {
         query.setKeysOnly();
@@ -248,11 +248,11 @@ public abstract class AbstractQuery<SUB> {
     }
 
     /**
-     * Returns the iterable entities.
+     * Returns entities as {@link Iterable}.
      * 
-     * @return the iterable entities
+     * @return entities as {@link Iterable}
      */
-    public Iterable<Entity> asIterableEntities() {
+    protected Iterable<Entity> asIterableEntities() {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         PreparedQuery pq = prepareInternal(ds);
         return asIterableInternal(pq);

@@ -15,8 +15,12 @@
  */
 package org.slim3.datastore;
 
+import java.util.Iterator;
+import java.util.List;
+
 import org.slim3.tester.DatastoreTestCase;
 
+import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
@@ -57,5 +61,53 @@ public class EntityQueryTest extends DatastoreTestCase {
             .getPropertyName());
         assertEquals(SortDirection.DESCENDING, q.query.getSortPredicates().get(
             0).getDirection());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testAsList() throws Exception {
+        ds.put(new Entity("Hoge"));
+        EntityQuery q = new EntityQuery("Hoge");
+        List<Entity> list = q.asList();
+        assertEquals(1, list.size());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testAsSingleEntity() throws Exception {
+        ds.put(new Entity("Hoge"));
+        EntityQuery q = new EntityQuery("Hoge");
+        Entity entity = q.asSingleEntity();
+        assertNotNull(entity);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testAsIterable() throws Exception {
+        ds.put(new Entity("Hoge"));
+        EntityQuery q = new EntityQuery("Hoge");
+        boolean found = false;
+        for (Entity entity : q.asIterable()) {
+            found = true;
+            assertEquals("Hoge", entity.getKind());
+        }
+        assertTrue(found);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testAsIterator() throws Exception {
+        ds.put(new Entity("Hoge"));
+        EntityQuery q = new EntityQuery("Hoge");
+        boolean found = false;
+        for (Iterator<Entity> i = q.asIterator(); i.hasNext();) {
+            found = true;
+            assertEquals("Hoge", i.next().getKind());
+        }
+        assertTrue(found);
     }
 }
