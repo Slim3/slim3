@@ -15,35 +15,44 @@
  */
 package org.slim3.datastore;
 
+import java.util.List;
+
 import junit.framework.TestCase;
 
 import org.slim3.datastore.meta.HogeMeta;
+
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 /**
  * @author higa
  * 
  */
-public class CoreAttributeMetaTest extends TestCase {
+public class LessThanCriterionTest extends TestCase {
 
     /**
      * @throws Exception
      * 
      */
-    public void testEqual() throws Exception {
+    public void testConstructor() throws Exception {
         HogeMeta meta = new HogeMeta();
-        assertEquals(EqualCriterion.class, meta.myString.equal("a").getClass());
-        assertNull(meta.myString.equal(null));
+        LessThanCriterion c = new LessThanCriterion(meta.myString, "aaa");
+        assertEquals("aaa", c.value);
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testLessThan() throws Exception {
+    public void testApply() throws Exception {
         HogeMeta meta = new HogeMeta();
-        assertEquals(LessThanCriterion.class, meta.myString
-            .lessThan("a")
-            .getClass());
-        assertNull(meta.myString.lessThan(null));
+        Query query = new Query();
+        LessThanCriterion c = new LessThanCriterion(meta.myString, "aaa");
+        c.apply(query);
+        List<FilterPredicate> predicates = query.getFilterPredicates();
+        assertEquals("myString", predicates.get(0).getPropertyName());
+        assertEquals(FilterOperator.LESS_THAN, predicates.get(0).getOperator());
+        assertEquals("aaa", predicates.get(0).getValue());
     }
 }

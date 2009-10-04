@@ -85,10 +85,9 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
      */
     public ModelQuery<M> filter(FilterCriterion... criteria) {
         for (FilterCriterion c : criteria) {
-            if (c == null) {
-                continue;
+            if (c != null) {
+                c.apply(query);
             }
-            c.apply(query);
         }
         return this;
     }

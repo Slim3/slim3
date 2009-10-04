@@ -44,16 +44,30 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
     }
 
     /**
-     * Returns the "equal" filter predicate.
+     * Returns the "equal" filter criterion.
      * 
      * @param value
      *            the value
-     * @return the "equal" filter predicate
+     * @return the "equal" filter criterion
      */
     public EqualCriterion equal(A value) {
         if (isEmpty(value)) {
             return null;
         }
         return new EqualCriterion(this, value);
+    }
+
+    /**
+     * Returns the "less than" filter criterion.
+     * 
+     * @param value
+     *            the value
+     * @return the "less than" filter criterion
+     */
+    public LessThanCriterion lessThan(A value) {
+        if (isEmpty(value)) {
+            return null;
+        }
+        return new LessThanCriterion(this, value);
     }
 }
