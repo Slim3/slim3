@@ -29,7 +29,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
  * @author higa
  * 
  */
-public class EqualCriterionTest extends TestCase {
+public class GreaterThanCriterionTest extends TestCase {
 
     private HogeMeta meta = new HogeMeta();
 
@@ -38,7 +38,7 @@ public class EqualCriterionTest extends TestCase {
      * 
      */
     public void testConstructor() throws Exception {
-        EqualCriterion c = new EqualCriterion(meta.myString, "aaa");
+        GreaterThanCriterion c = new GreaterThanCriterion(meta.myString, "aaa");
         assertEquals("aaa", c.value);
     }
 
@@ -48,11 +48,13 @@ public class EqualCriterionTest extends TestCase {
      */
     public void testApply() throws Exception {
         Query query = new Query();
-        EqualCriterion c = new EqualCriterion(meta.myString, "aaa");
+        GreaterThanCriterion c = new GreaterThanCriterion(meta.myString, "aaa");
         c.apply(query);
         List<FilterPredicate> predicates = query.getFilterPredicates();
         assertEquals("myString", predicates.get(0).getPropertyName());
-        assertEquals(FilterOperator.EQUAL, predicates.get(0).getOperator());
+        assertEquals(FilterOperator.GREATER_THAN, predicates
+            .get(0)
+            .getOperator());
         assertEquals("aaa", predicates.get(0).getValue());
     }
 }

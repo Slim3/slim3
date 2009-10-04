@@ -58,4 +58,16 @@ public class CoreAttributeMetaTest extends TestCase {
             .getClass());
         assertNull(meta.myString.lessThanOrEqual(null));
     }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testGreaterThan() throws Exception {
+        HogeMeta meta = new HogeMeta();
+        assertEquals(GreaterThanCriterion.class, meta.myString
+            .greaterThan("a")
+            .getClass());
+        assertNull(meta.myString.greaterThan(null));
+    }
 }

@@ -31,12 +31,13 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
  */
 public class LessThanOrEqualCriterionTest extends TestCase {
 
+    private HogeMeta meta = new HogeMeta();
+
     /**
      * @throws Exception
      * 
      */
     public void testConstructor() throws Exception {
-        HogeMeta meta = new HogeMeta();
         LessThanOrEqualCriterion c =
             new LessThanOrEqualCriterion(meta.myString, "aaa");
         assertEquals("aaa", c.value);
@@ -47,7 +48,6 @@ public class LessThanOrEqualCriterionTest extends TestCase {
      * 
      */
     public void testApply() throws Exception {
-        HogeMeta meta = new HogeMeta();
         Query query = new Query();
         LessThanOrEqualCriterion c =
             new LessThanOrEqualCriterion(meta.myString, "aaa");

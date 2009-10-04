@@ -84,4 +84,18 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
         }
         return new LessThanOrEqualCriterion(this, value);
     }
+
+    /**
+     * Returns the "greater than" filter criterion.
+     * 
+     * @param value
+     *            the value
+     * @return the "greater than" filter criterion
+     */
+    public GreaterThanCriterion greaterThan(A value) {
+        if (isEmpty(value)) {
+            return null;
+        }
+        return new GreaterThanCriterion(this, value);
+    }
 }
