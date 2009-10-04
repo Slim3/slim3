@@ -70,4 +70,18 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
         }
         return new LessThanCriterion(this, value);
     }
+
+    /**
+     * Returns the "less than or equal" filter criterion.
+     * 
+     * @param value
+     *            the value
+     * @return the "less than or equal" filter criterion
+     */
+    public LessThanOrEqualCriterion lessThanOrEqual(A value) {
+        if (isEmpty(value)) {
+            return null;
+        }
+        return new LessThanOrEqualCriterion(this, value);
+    }
 }
