@@ -45,6 +45,6 @@ public class PutEGSlim3Controller extends Controller {
             tx.commit();
         }
         sessionScope("putEGSlim3", System.currentTimeMillis() - start);
-        return forward(basePath);
+        return redirect(basePath);
     }
 }

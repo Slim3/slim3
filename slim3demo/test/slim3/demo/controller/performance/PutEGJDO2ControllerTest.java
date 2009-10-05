@@ -8,9 +8,11 @@ public class PutEGJDO2ControllerTest extends ControllerTestCase {
         start("/performance/putEGJDO2");
         PutEGJDO2Controller controller = getController();
         assertNotNull(controller);
-        assertFalse(isRedirect());
+        assertTrue(isRedirect());
         assertEquals("/performance/", getDestinationPath());
         assertNotNull(sessionScope("putEGJDO2"));
         System.out.println("putEGJDO2:" + sessionScope("putEGJDO2"));
+        assertEquals(100, count("Parent"));
+        assertEquals(1000, count("Child"));
     }
 }

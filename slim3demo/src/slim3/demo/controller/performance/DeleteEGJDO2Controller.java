@@ -41,6 +41,6 @@ public class DeleteEGJDO2Controller extends Controller {
         query.closeAll();
         pm.close();
         sessionScope("deleteEGJDO2", System.currentTimeMillis() - start);
-        return forward(basePath);
+        return redirect(basePath);
     }
 }

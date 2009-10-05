@@ -8,7 +8,7 @@ public class DeleteJDOControllerTest extends ControllerTestCase {
         start("/performance/deleteJDO");
         DeleteJDOController controller = getController();
         assertNotNull(controller);
-        assertFalse(isRedirect());
+        assertTrue(isRedirect());
         assertEquals("/performance/", getDestinationPath());
         assertNotNull(sessionScope("deleteJDO"));
         System.out.println("deleteJDO:" + sessionScope("deleteJDO"));

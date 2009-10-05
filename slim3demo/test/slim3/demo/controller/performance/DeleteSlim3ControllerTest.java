@@ -8,7 +8,7 @@ public class DeleteSlim3ControllerTest extends ControllerTestCase {
         start("/performance/deleteSlim3");
         DeleteSlim3Controller controller = getController();
         assertNotNull(controller);
-        assertFalse(isRedirect());
+        assertTrue(isRedirect());
         assertEquals("/performance/", getDestinationPath());
         assertNotNull(sessionScope("deleteSlim3"));
         System.out.println("deleteSlim3:" + sessionScope("deleteSlim3"));

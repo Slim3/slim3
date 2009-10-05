@@ -17,7 +17,7 @@ public class PutSlim3Controller extends Controller {
     @Override
     public Navigation run() {
         long start = System.currentTimeMillis();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 300; i++) {
             Foo foo = new Foo();
             foo.setString01("string" + i);
             foo.setString02("string" + i);
@@ -32,6 +32,6 @@ public class PutSlim3Controller extends Controller {
             Datastore.put(foo);
         }
         sessionScope("putSlim3", System.currentTimeMillis() - start);
-        return forward(basePath);
+        return redirect(basePath);
     }
 }

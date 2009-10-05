@@ -26,7 +26,7 @@ import javax.jdo.annotations.PrimaryKey;
  * @author higa
  * 
  */
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
+@PersistenceCapable(identityType = IdentityType.APPLICATION, table = "Foo")
 public class FooJDO {
 
     @PrimaryKey

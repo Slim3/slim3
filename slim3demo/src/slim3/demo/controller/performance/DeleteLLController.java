@@ -23,12 +23,12 @@ public class DeleteLLController extends Controller {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         long start = System.currentTimeMillis();
         List<Entity> entities =
-            ds.prepare(new Query("FooLL").setKeysOnly()).asList(
+            ds.prepare(new Query("Foo").setKeysOnly()).asList(
                 FetchOptions.Builder.withOffset(0));
         for (Entity entity : entities) {
             ds.delete(entity.getKey());
         }
         sessionScope("deleteLL", System.currentTimeMillis() - start);
-        return forward(basePath);
+        return redirect(basePath);
     }
 }

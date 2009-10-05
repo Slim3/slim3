@@ -12,11 +12,11 @@ import org.slim3.controller.Navigation;
 import slim3.demo.cool.jdo.PMF;
 import slim3.demo.cool.model.FooJDO;
 
-public class DeleteJDOController extends Controller {
+public class GetJDOController extends Controller {
 
     @SuppressWarnings("unused")
     private static final Logger logger =
-        Logger.getLogger(DeleteJDOController.class.getName());
+        Logger.getLogger(GetJDOController.class.getName());
 
     @SuppressWarnings("unchecked")
     @Override
@@ -26,11 +26,11 @@ public class DeleteJDOController extends Controller {
         Query query = pm.newQuery(FooJDO.class);
         List<FooJDO> list = (List<FooJDO>) query.execute();
         for (FooJDO foo : list) {
-            pm.deletePersistent(foo);
+            foo.getKey();
         }
         query.closeAll();
         pm.close();
-        sessionScope("deleteJDO", System.currentTimeMillis() - start);
+        sessionScope("getJDO", System.currentTimeMillis() - start);
         return redirect(basePath);
     }
 }

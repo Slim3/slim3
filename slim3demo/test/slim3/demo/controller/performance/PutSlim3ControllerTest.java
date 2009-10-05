@@ -8,9 +8,10 @@ public class PutSlim3ControllerTest extends ControllerTestCase {
         start("/performance/putSlim3");
         PutSlim3Controller controller = getController();
         assertNotNull(controller);
-        assertFalse(isRedirect());
+        assertTrue(isRedirect());
         assertEquals("/performance/", getDestinationPath());
         assertNotNull(sessionScope("putSlim3"));
         System.out.println("putSlim3:" + sessionScope("putSlim3"));
+        assertEquals(300, count("Foo"));
     }
 }

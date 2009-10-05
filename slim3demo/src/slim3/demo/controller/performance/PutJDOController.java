@@ -20,7 +20,7 @@ public class PutJDOController extends Controller {
     public Navigation run() {
         PersistenceManager pm = PMF.get().getPersistenceManager();
         long start = System.currentTimeMillis();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 300; i++) {
             FooJDO foo = new FooJDO();
             foo.setString01("string" + i);
             foo.setString02("string" + i);
@@ -36,6 +36,6 @@ public class PutJDOController extends Controller {
         }
         pm.close();
         sessionScope("putJDO", System.currentTimeMillis() - start);
-        return forward(basePath);
+        return redirect(basePath);
     }
 }

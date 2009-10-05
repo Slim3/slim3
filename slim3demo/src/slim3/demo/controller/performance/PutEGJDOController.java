@@ -32,6 +32,6 @@ public class PutEGJDOController extends Controller {
         }
         pm.close();
         sessionScope("putEGJDO", System.currentTimeMillis() - start);
-        return forward(basePath);
+        return redirect(basePath);
     }
 }

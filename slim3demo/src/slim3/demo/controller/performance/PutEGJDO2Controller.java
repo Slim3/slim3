@@ -48,6 +48,6 @@ public class PutEGJDO2Controller extends Controller {
         }
         pm.close();
         sessionScope("putEGJDO2", System.currentTimeMillis() - start);
-        return forward(basePath);
+        return redirect(basePath);
     }
 }

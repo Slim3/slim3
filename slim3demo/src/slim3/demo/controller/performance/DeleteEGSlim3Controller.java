@@ -36,6 +36,6 @@ public class DeleteEGSlim3Controller extends Controller {
             Datastore.commit(tx);
         }
         sessionScope("deleteEGSlim3", System.currentTimeMillis() - start);
-        return forward(basePath);
+        return redirect(basePath);
     }
 }

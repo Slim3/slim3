@@ -8,7 +8,7 @@ public class DeleteEGLLControllerTest extends ControllerTestCase {
         start("/performance/deleteEGLL");
         DeleteEGLLController controller = getController();
         assertNotNull(controller);
-        assertFalse(isRedirect());
+        assertTrue(isRedirect());
         assertEquals("/performance/", getDestinationPath());
         assertNotNull(sessionScope("deleteEGLL"));
         System.out.println("deleteEGLL:" + sessionScope("deleteEGLL"));

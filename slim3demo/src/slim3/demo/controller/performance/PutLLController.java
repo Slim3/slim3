@@ -19,8 +19,8 @@ public class PutLLController extends Controller {
     public Navigation run() {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         long start = System.currentTimeMillis();
-        for (int i = 0; i < 100; i++) {
-            Entity entity = new Entity("FooLL");
+        for (int i = 0; i < 300; i++) {
+            Entity entity = new Entity("Foo");
             entity.setProperty("string01", "string" + i);
             entity.setProperty("string02", "string" + i);
             entity.setProperty("string03", "string" + i);
@@ -34,6 +34,6 @@ public class PutLLController extends Controller {
             ds.put(entity);
         }
         sessionScope("putLL", System.currentTimeMillis() - start);
-        return forward(basePath);
+        return redirect(basePath);
     }
 }

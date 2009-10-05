@@ -32,7 +32,7 @@
         <dispatcher>INCLUDE</dispatcher>
         <dispatcher>ERROR</dispatcher>
     </filter-mapping>
-    
+
     <security-constraint>
         <web-resource-collection>
             <url-pattern>*.jsp</url-pattern>

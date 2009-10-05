@@ -8,9 +8,10 @@ public class PutLLControllerTest extends ControllerTestCase {
         start("/performance/putLL");
         PutLLController controller = getController();
         assertNotNull(controller);
-        assertFalse(isRedirect());
+        assertTrue(isRedirect());
         assertEquals("/performance/", getDestinationPath());
         assertNotNull(sessionScope("putLL"));
         System.out.println("putLL:" + sessionScope("putLL"));
+        assertEquals(300, count("Foo"));
     }
 }

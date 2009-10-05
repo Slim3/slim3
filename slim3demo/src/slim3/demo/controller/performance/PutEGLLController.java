@@ -38,6 +38,6 @@ public class PutEGLLController extends Controller {
             tx.commit();
         }
         sessionScope("putEGLL", System.currentTimeMillis() - start);
-        return forward(basePath);
+        return redirect(basePath);
     }
 }

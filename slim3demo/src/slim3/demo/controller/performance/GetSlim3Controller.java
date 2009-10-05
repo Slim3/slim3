@@ -8,24 +8,23 @@ import org.slim3.controller.Navigation;
 import org.slim3.datastore.Datastore;
 
 import slim3.demo.meta.FooMeta;
+import slim3.demo.model.Foo;
 
-import com.google.appengine.api.datastore.Key;
-
-public class DeleteSlim3Controller extends Controller {
+public class GetSlim3Controller extends Controller {
 
     @SuppressWarnings("unused")
     private static final Logger logger =
-        Logger.getLogger(DeleteSlim3Controller.class.getName());
+        Logger.getLogger(GetSlim3Controller.class.getName());
 
     @Override
     public Navigation run() {
         FooMeta f = new FooMeta();
         long start = System.currentTimeMillis();
-        List<Key> keys = Datastore.query(f).asKeyList();
-        for (Key key : keys) {
-            Datastore.delete(key);
+        List<Foo> list = Datastore.query(f).asList();
+        for (Foo foo : list) {
+            foo.getKey();
         }
-        sessionScope("deleteSlim3", System.currentTimeMillis() - start);
+        sessionScope("getSlim3", System.currentTimeMillis() - start);
         return redirect(basePath);
     }
 }

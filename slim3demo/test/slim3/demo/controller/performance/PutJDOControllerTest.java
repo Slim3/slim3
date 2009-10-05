@@ -8,9 +8,10 @@ public class PutJDOControllerTest extends ControllerTestCase {
         start("/performance/putJDO");
         PutJDOController controller = getController();
         assertNotNull(controller);
-        assertFalse(isRedirect());
+        assertTrue(isRedirect());
         assertEquals("/performance/", getDestinationPath());
         assertNotNull(sessionScope("putJDO"));
         System.out.println("putJDO:" + sessionScope("putJDO"));
+        assertEquals(300, count("Foo"));
     }
 }
