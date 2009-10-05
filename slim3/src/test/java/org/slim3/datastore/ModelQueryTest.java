@@ -52,6 +52,15 @@ public class ModelQueryTest extends DatastoreTestCase {
     /**
      * @throws Exception
      */
+    public void testSort() throws Exception {
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        assertSame(query, query.sort(meta.myString.asc));
+        assertEquals(1, query.query.getSortPredicates().size());
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testAsList() throws Exception {
         ds.put(new Entity("Hoge"));
         ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);

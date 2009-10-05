@@ -52,6 +52,14 @@ public class AbstAttributeMetaTest extends TestCase {
      * @throws Exception
      * 
      */
+    public void testDesc() throws Exception {
+        assertEquals(DescCriterion.class, meta.myString.desc.getClass());
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
     public void testGetValue() throws Exception {
         Hoge hoge = new Hoge();
         hoge.setMyString("aaa");

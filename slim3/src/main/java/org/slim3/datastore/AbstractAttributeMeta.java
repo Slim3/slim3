@@ -36,6 +36,11 @@ public abstract class AbstractAttributeMeta<M, A> {
     public AscCriterion asc = new AscCriterion(this);
 
     /**
+     * The "descending" sort criterion
+     */
+    public DescCriterion desc = new DescCriterion(this);
+
+    /**
      * The meta data of model.
      */
     protected ModelMeta<M> modelMeta;

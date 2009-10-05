@@ -93,6 +93,20 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
     }
 
     /**
+     * Adds the sort criteria.
+     * 
+     * @param criteria
+     *            the sort criteria
+     * @return this instance
+     */
+    public ModelQuery<M> sort(SortCriterion... criteria) {
+        for (SortCriterion c : criteria) {
+            c.apply(query);
+        }
+        return this;
+    }
+
+    /**
      * Returns the result as a list.
      * 
      * @return the result as a list
