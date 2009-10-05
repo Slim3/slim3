@@ -15,6 +15,8 @@
  */
 package org.slim3.datastore;
 
+import java.util.Collection;
+
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 
@@ -29,34 +31,38 @@ public class ContainsCriterion extends AbstractCriterion implements
         FilterCriterion {
 
     /**
-     * The parameter;
+     * The value.
      */
-    protected Object parameter;
+    protected Object value;
 
     /**
      * Constructor.
      * 
      * @param attributeMeta
      *            the meta data of attribute
-     * @param parameter
-     *            the parameter
+     * @param value
+     *            the value
      * @throws NullPointerException
-     *             if the parameter parameter is null
+     *             if the value parameter is null
      */
     public ContainsCriterion(CollectionAttributeMeta<?, ?, ?> attributeMeta,
-            Object parameter) throws NullPointerException {
+            Object value) throws NullPointerException {
         super(attributeMeta);
-        if (parameter == null) {
-            throw new NullPointerException("The parameter parameter is null.");
+        if (value == null) {
+            throw new NullPointerException("The value parameter is null.");
         }
-        this.parameter = parameter;
+        this.value = value;
     }
 
     public void apply(Query query) {
-        query.addFilter(
-            attributeMeta.getName(),
-            FilterOperator.EQUAL,
-            parameter);
+        query.addFilter(attributeMeta.getName(), FilterOperator.EQUAL, value);
+    }
 
+    public boolean accept(Object model) {
+        Object v = attributeMeta.getValue(model);
+        if (v == null) {
+            return false;
+        }
+        return Collection.class.cast(v).contains(value);
     }
 }

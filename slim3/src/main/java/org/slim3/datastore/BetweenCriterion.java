@@ -73,6 +73,13 @@ public class BetweenCriterion extends AbstractCriterion implements
             attributeMeta.getName(),
             FilterOperator.LESS_THAN_OR_EQUAL,
             end);
+    }
 
+    public boolean accept(Object model) {
+        Object v = attributeMeta.getValue(model);
+        if (v == null) {
+            return false;
+        }
+        return compareValue(v, start) >= 0 && compareValue(v, end) <= 0;
     }
 }

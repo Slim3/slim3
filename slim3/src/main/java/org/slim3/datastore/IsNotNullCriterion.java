@@ -43,6 +43,9 @@ public class IsNotNullCriterion extends AbstractCriterion implements
             attributeMeta.getName(),
             FilterOperator.GREATER_THAN,
             null);
+    }
 
+    public boolean accept(Object model) {
+        return attributeMeta.getValue(model) != null;
     }
 }

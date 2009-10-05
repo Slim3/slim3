@@ -60,6 +60,13 @@ public class StartsWithCriterion extends AbstractCriterion implements
             attributeMeta.getName(),
             FilterOperator.LESS_THAN,
             value + "\ufffd");
+    }
 
+    public boolean accept(Object model) {
+        Object v = attributeMeta.getValue(model);
+        if (v == null) {
+            return false;
+        }
+        return v.toString().startsWith(value.toString());
     }
 }

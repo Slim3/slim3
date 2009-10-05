@@ -15,6 +15,7 @@
  */
 package org.slim3.datastore;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -30,7 +31,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
  * @author higa
  * 
  */
-public class EqualCriterionTest extends TestCase {
+public class ContainsCriterionTest extends TestCase {
 
     private HogeMeta meta = new HogeMeta();
 
@@ -39,8 +40,8 @@ public class EqualCriterionTest extends TestCase {
      * 
      */
     public void testConstructor() throws Exception {
-        EqualCriterion c = new EqualCriterion(meta.myString, "aaa");
-        assertEquals("aaa", c.value);
+        ContainsCriterion c = new ContainsCriterion(meta.myIntegerList, 1);
+        assertEquals(1, c.value);
     }
 
     /**
@@ -49,12 +50,12 @@ public class EqualCriterionTest extends TestCase {
      */
     public void testApply() throws Exception {
         Query query = new Query();
-        EqualCriterion c = new EqualCriterion(meta.myString, "aaa");
+        ContainsCriterion c = new ContainsCriterion(meta.myIntegerList, 1);
         c.apply(query);
         List<FilterPredicate> predicates = query.getFilterPredicates();
-        assertEquals("myString", predicates.get(0).getPropertyName());
+        assertEquals("myIntegerList", predicates.get(0).getPropertyName());
         assertEquals(FilterOperator.EQUAL, predicates.get(0).getOperator());
-        assertEquals("aaa", predicates.get(0).getValue());
+        assertEquals(1, predicates.get(0).getValue());
     }
 
     /**
@@ -62,10 +63,13 @@ public class EqualCriterionTest extends TestCase {
      */
     public void testAccept() throws Exception {
         Hoge hoge = new Hoge();
-        hoge.setMyString("aaa");
-        FilterCriterion c = meta.myString.equal("aaa");
-        assertTrue(c.accept(hoge));
-        hoge.setMyString("bbb");
+        ContainsCriterion c = new ContainsCriterion(meta.myIntegerList, 1);
         assertFalse(c.accept(hoge));
+        hoge.setMyIntegerList(new ArrayList<Integer>());
+        assertFalse(c.accept(hoge));
+        hoge.getMyIntegerList().add(2);
+        assertFalse(c.accept(hoge));
+        hoge.getMyIntegerList().add(1);
+        assertTrue(c.accept(hoge));
     }
 }

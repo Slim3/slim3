@@ -57,6 +57,13 @@ public class LessThanCriterion extends AbstractCriterion implements
             attributeMeta.getName(),
             FilterOperator.LESS_THAN,
             value);
+    }
 
+    public boolean accept(Object model) {
+        Object v = attributeMeta.getValue(model);
+        if (v == null) {
+            return false;
+        }
+        return compareValue(v, value) < 0;
     }
 }

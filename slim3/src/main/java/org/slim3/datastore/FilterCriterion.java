@@ -33,4 +33,13 @@ public interface FilterCriterion {
      *            the query
      */
     void apply(Query query);
+
+    /**
+     * Determines if the model is accepted.
+     * 
+     * @param model
+     *            the model
+     * @return whether the model is accepted
+     */
+    boolean accept(Object model);
 }

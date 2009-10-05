@@ -54,6 +54,13 @@ public class EqualCriterion extends AbstractCriterion implements
 
     public void apply(Query query) {
         query.addFilter(attributeMeta.getName(), FilterOperator.EQUAL, value);
+    }
 
+    public boolean accept(Object model) {
+        Object v = attributeMeta.getValue(model);
+        if (v == null) {
+            return false;
+        }
+        return value.equals(v);
     }
 }

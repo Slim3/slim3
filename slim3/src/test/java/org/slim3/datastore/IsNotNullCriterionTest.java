@@ -20,6 +20,7 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.slim3.datastore.meta.HogeMeta;
+import org.slim3.datastore.model.Hoge;
 
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
@@ -47,5 +48,17 @@ public class IsNotNullCriterionTest extends TestCase {
             .get(0)
             .getOperator());
         assertNull(predicates.get(0).getValue());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testAccept() throws Exception {
+        Hoge hoge = new Hoge();
+        hoge.setMyString("aaa");
+        FilterCriterion c = meta.myString.isNotNull();
+        assertTrue(c.accept(hoge));
+        hoge.setMyString(null);
+        assertFalse(c.accept(hoge));
     }
 }

@@ -20,6 +20,7 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.slim3.datastore.meta.HogeMeta;
+import org.slim3.datastore.model.Hoge;
 
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
@@ -54,5 +55,19 @@ public class LessThanCriterionTest extends TestCase {
         assertEquals("myString", predicates.get(0).getPropertyName());
         assertEquals(FilterOperator.LESS_THAN, predicates.get(0).getOperator());
         assertEquals("aaa", predicates.get(0).getValue());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testAccept() throws Exception {
+        Hoge hoge = new Hoge();
+        hoge.setMyString("c");
+        FilterCriterion c = meta.myString.lessThan("b");
+        assertFalse(c.accept(hoge));
+        hoge.setMyString("b");
+        assertFalse(c.accept(hoge));
+        hoge.setMyString("a");
+        assertTrue(c.accept(hoge));
     }
 }

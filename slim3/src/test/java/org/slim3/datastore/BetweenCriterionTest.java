@@ -20,6 +20,7 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.slim3.datastore.meta.HogeMeta;
+import org.slim3.datastore.model.Hoge;
 
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
@@ -31,12 +32,13 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
  */
 public class BetweenCriterionTest extends TestCase {
 
+    private HogeMeta meta = new HogeMeta();
+
     /**
      * @throws Exception
      * 
      */
     public void testConstructor() throws Exception {
-        HogeMeta meta = new HogeMeta();
         BetweenCriterion c = new BetweenCriterion(meta.myString, "aaa", "ccc");
         assertEquals("aaa", c.start);
         assertEquals("ccc", c.end);
@@ -47,7 +49,6 @@ public class BetweenCriterionTest extends TestCase {
      * 
      */
     public void testApply() throws Exception {
-        HogeMeta meta = new HogeMeta();
         Query query = new Query();
         BetweenCriterion c = new BetweenCriterion(meta.myString, "aaa", "ccc");
         c.apply(query);
@@ -63,5 +64,23 @@ public class BetweenCriterionTest extends TestCase {
             .get(1)
             .getOperator());
         assertEquals("ccc", predicates.get(1).getValue());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testAccept() throws Exception {
+        Hoge hoge = new Hoge();
+        hoge.setMyString("a");
+        FilterCriterion c = meta.myString.between("b", "d");
+        assertFalse(c.accept(hoge));
+        hoge.setMyString("b");
+        assertTrue(c.accept(hoge));
+        hoge.setMyString("c");
+        assertTrue(c.accept(hoge));
+        hoge.setMyString("d");
+        assertTrue(c.accept(hoge));
+        hoge.setMyString("e");
+        assertFalse(c.accept(hoge));
     }
 }

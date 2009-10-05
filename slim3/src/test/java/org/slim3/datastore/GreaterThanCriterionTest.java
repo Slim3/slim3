@@ -20,6 +20,7 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.slim3.datastore.meta.HogeMeta;
+import org.slim3.datastore.model.Hoge;
 
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
@@ -56,5 +57,19 @@ public class GreaterThanCriterionTest extends TestCase {
             .get(0)
             .getOperator());
         assertEquals("aaa", predicates.get(0).getValue());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testAccept() throws Exception {
+        Hoge hoge = new Hoge();
+        hoge.setMyString("c");
+        FilterCriterion c = meta.myString.greaterThan("b");
+        assertTrue(c.accept(hoge));
+        hoge.setMyString("b");
+        assertFalse(c.accept(hoge));
+        hoge.setMyString("a");
+        assertFalse(c.accept(hoge));
     }
 }

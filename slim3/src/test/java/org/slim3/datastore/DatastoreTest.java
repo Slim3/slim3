@@ -15,6 +15,7 @@
  */
 package org.slim3.datastore;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -227,8 +228,7 @@ public class DatastoreTest extends DatastoreTestCase {
     public void testGetEntitiesAsMap() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
-        Map<Key, Entity> map =
-            Datastore.getAsMap(Arrays.asList(key, key2));
+        Map<Key, Entity> map = Datastore.getAsMap(Arrays.asList(key, key2));
         assertNotNull(map);
         assertEquals(2, map.size());
     }
@@ -251,8 +251,7 @@ public class DatastoreTest extends DatastoreTestCase {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = ds.beginTransaction();
-        Map<Key, Entity> map =
-            Datastore.getAsMap(tx, Arrays.asList(key, key2));
+        Map<Key, Entity> map = Datastore.getAsMap(tx, Arrays.asList(key, key2));
         tx.rollback();
         assertNotNull(map);
         assertEquals(2, map.size());
@@ -655,5 +654,54 @@ public class DatastoreTest extends DatastoreTestCase {
         ModelMeta<?> modelMeta = Datastore.getModelMeta(Hoge.class);
         assertNotNull(modelMeta);
         assertSame(modelMeta, Datastore.getModelMeta(Hoge.class));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testFilter() throws Exception {
+        List<Hoge> list = new ArrayList<Hoge>();
+        Hoge hoge = new Hoge();
+        hoge.setMyInteger(1);
+        list.add(hoge);
+        hoge = new Hoge();
+        hoge.setMyInteger(3);
+        list.add(hoge);
+        hoge = new Hoge();
+        hoge.setMyInteger(2);
+        list.add(hoge);
+
+        List<Hoge> filtered =
+            Datastore.filter(
+                list,
+                meta.myInteger.greaterThanOrEqual(2),
+                meta.myInteger.lessThan(3));
+        assertEquals(1, filtered.size());
+        assertEquals(Integer.valueOf(2), filtered.get(0).getMyInteger());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testFilterForNullCriterion() throws Exception {
+        List<Hoge> list = new ArrayList<Hoge>();
+        Hoge hoge = new Hoge();
+        hoge.setMyInteger(1);
+        list.add(hoge);
+        hoge = new Hoge();
+        hoge.setMyInteger(3);
+        list.add(hoge);
+        hoge = new Hoge();
+        hoge.setMyInteger(2);
+        list.add(hoge);
+
+        List<Hoge> filtered =
+            Datastore.filter(
+                list,
+                meta.myInteger.greaterThanOrEqual(null),
+                meta.myInteger.lessThan(3));
+        assertEquals(2, filtered.size());
+        assertEquals(Integer.valueOf(1), filtered.get(0).getMyInteger());
+        assertEquals(Integer.valueOf(2), filtered.get(1).getMyInteger());
     }
 }
