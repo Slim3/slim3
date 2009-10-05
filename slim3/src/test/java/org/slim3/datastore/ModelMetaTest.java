@@ -28,6 +28,7 @@ import junit.framework.TestCase;
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.datastore.model.MySerializable;
+import org.slim3.util.BeanDesc;
 import org.slim3.util.ByteUtil;
 
 import com.google.appengine.api.datastore.ShortBlob;
@@ -385,5 +386,14 @@ public class ModelMetaTest extends TestCase {
         assertEquals(1, ret.size());
         assertEquals(Float.valueOf(1), ret.iterator().next());
         assertNull(meta.doubleListToFloatSortedSet(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetBeanDesc() throws Exception {
+        BeanDesc beanDesc = meta.getBeanDesc();
+        assertNotNull(beanDesc);
+        assertSame(beanDesc, meta.getBeanDesc());
     }
 }

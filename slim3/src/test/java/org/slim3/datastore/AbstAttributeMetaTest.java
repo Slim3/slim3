@@ -18,6 +18,7 @@ package org.slim3.datastore;
 import junit.framework.TestCase;
 
 import org.slim3.datastore.meta.HogeMeta;
+import org.slim3.datastore.model.Hoge;
 
 import com.google.appengine.api.datastore.Key;
 
@@ -27,12 +28,13 @@ import com.google.appengine.api.datastore.Key;
  */
 public class AbstAttributeMetaTest extends TestCase {
 
+    private HogeMeta meta = new HogeMeta();
+
     /**
      * @throws Exception
      * 
      */
     public void testConstructor() throws Exception {
-        HogeMeta meta = new HogeMeta();
         assertEquals(meta, meta.key.modelMeta);
         assertEquals("__key__", meta.key.name);
         assertEquals(Key.class, meta.key.attributeClass);
@@ -42,8 +44,25 @@ public class AbstAttributeMetaTest extends TestCase {
      * @throws Exception
      * 
      */
+    public void testAsc() throws Exception {
+        assertEquals(AscCriterion.class, meta.myString.asc.getClass());
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testGetValue() throws Exception {
+        Hoge hoge = new Hoge();
+        hoge.setMyString("aaa");
+        assertEquals("aaa", meta.myString.getValue(hoge));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
     public void testIsEmpty() throws Exception {
-        HogeMeta meta = new HogeMeta();
         assertTrue(meta.myString.isEmpty(null));
         assertTrue(meta.myString.isEmpty(""));
         assertFalse(meta.myString.isEmpty("aa"));

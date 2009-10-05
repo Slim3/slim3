@@ -21,6 +21,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.TreeSet;
 
+import org.slim3.util.BeanDesc;
+import org.slim3.util.BeanUtil;
 import org.slim3.util.ByteUtil;
 
 import com.google.appengine.api.datastore.Blob;
@@ -43,6 +45,11 @@ public abstract class ModelMeta<M> {
      * The model class.
      */
     protected Class<M> modelClass;
+
+    /**
+     * The bean descriptor.
+     */
+    protected BeanDesc beanDesc;
 
     /**
      * Constructor.
@@ -574,5 +581,18 @@ public abstract class ModelMeta<M> {
         TreeSet<Float> collection = new TreeSet<Float>();
         copyDoubleListToFloatCollection(v, collection);
         return collection;
+    }
+
+    /**
+     * Returns the bean descriptor.
+     * 
+     * @return the bean descriptor
+     */
+    protected BeanDesc getBeanDesc() {
+        if (beanDesc != null) {
+            return beanDesc;
+        }
+        beanDesc = BeanUtil.getBeanDesc(modelClass);
+        return beanDesc;
     }
 }

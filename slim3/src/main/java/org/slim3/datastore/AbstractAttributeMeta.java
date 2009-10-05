@@ -15,6 +15,8 @@
  */
 package org.slim3.datastore;
 
+import org.slim3.util.PropertyDesc;
+
 /**
  * An abstract meta data of attribute.
  * 
@@ -27,6 +29,11 @@ package org.slim3.datastore;
  * 
  */
 public abstract class AbstractAttributeMeta<M, A> {
+
+    /**
+     * The "ascending" sort criterion
+     */
+    public AscCriterion asc = new AscCriterion(this);
 
     /**
      * The meta data of model.
@@ -42,6 +49,11 @@ public abstract class AbstractAttributeMeta<M, A> {
      * The attribute class.
      */
     protected Class<? super A> attributeClass;
+
+    /**
+     * The property descriptor.
+     */
+    protected PropertyDesc propertyDesc;
 
     /**
      * Constructor.
@@ -89,6 +101,29 @@ public abstract class AbstractAttributeMeta<M, A> {
      */
     public Class<? super A> getAttributeClass() {
         return attributeClass;
+    }
+
+    /**
+     * Returns the property value.
+     * 
+     * @param model
+     *            the model
+     * @return the property value
+     * @throws IllegalArgumentException
+     *             if the property is not found
+     */
+    protected Object getValue(Object model) throws IllegalArgumentException {
+        if (propertyDesc == null) {
+            propertyDesc = modelMeta.getBeanDesc().getPropertyDesc(name);
+        }
+        if (propertyDesc == null) {
+            throw new IllegalArgumentException("The property("
+                + name
+                + ") of model("
+                + modelMeta.getModelClass().getName()
+                + ") is not found.");
+        }
+        return propertyDesc.getValue(model);
     }
 
     /**

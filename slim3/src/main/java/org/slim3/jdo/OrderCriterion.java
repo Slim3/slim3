@@ -36,14 +36,14 @@ public interface OrderCriterion {
      * or a positive integer as the first argument is less than, equal to, or
      * greater than the second.
      * 
-     * @param o1
+     * @param model1
      *            the first model
-     * @param o2
+     * @param model2
      *            the second model
      * @return the compared result
      * @throws IllegalStateException
      *             if the model is embedded or if the attribute is not
      *             comparable
      */
-    int compare(Object o1, Object o2) throws IllegalStateException;
+    int compare(Object model1, Object model2) throws IllegalStateException;
 }
