@@ -84,6 +84,23 @@ public class CoreAttributeMetaTest extends TestCase {
      * @throws Exception
      * 
      */
+    public void testBetween() throws Exception {
+        assertEquals(BetweenCriterion.class, meta.myString
+            .between("a", "c")
+            .getClass());
+        assertEquals(GreaterThanOrEqualCriterion.class, meta.myString.between(
+            "a",
+            null).getClass());
+        assertEquals(LessThanOrEqualCriterion.class, meta.myString.between(
+            null,
+            "c").getClass());
+        assertNull(meta.myString.between(null, null));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
     public void testIsNotNull() throws Exception {
         assertEquals(IsNotNullCriterion.class, meta.myString
             .isNotNull()

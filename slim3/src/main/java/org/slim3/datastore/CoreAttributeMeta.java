@@ -50,7 +50,7 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
      *            the value
      * @return the "equal" filter criterion
      */
-    public EqualCriterion equal(A value) {
+    public FilterCriterion equal(A value) {
         if (isEmpty(value)) {
             return null;
         }
@@ -64,7 +64,7 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
      *            the value
      * @return the "less than" filter criterion
      */
-    public LessThanCriterion lessThan(A value) {
+    public FilterCriterion lessThan(A value) {
         if (isEmpty(value)) {
             return null;
         }
@@ -78,7 +78,7 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
      *            the value
      * @return the "less than or equal" filter criterion
      */
-    public LessThanOrEqualCriterion lessThanOrEqual(A value) {
+    public FilterCriterion lessThanOrEqual(A value) {
         if (isEmpty(value)) {
             return null;
         }
@@ -92,7 +92,7 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
      *            the value
      * @return the "greater than" filter criterion
      */
-    public GreaterThanCriterion greaterThan(A value) {
+    public FilterCriterion greaterThan(A value) {
         if (isEmpty(value)) {
             return null;
         }
@@ -106,11 +106,35 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
      *            the value
      * @return the "greater than or equal" filter criterion
      */
-    public GreaterThanOrEqualCriterion greaterThanOrEqual(A value) {
+    public FilterCriterion greaterThanOrEqual(A value) {
         if (isEmpty(value)) {
             return null;
         }
         return new GreaterThanOrEqualCriterion(this, value);
+    }
+
+    /**
+     * Returns the "between" or "greater than or equal" or "less than or equal"
+     * filter criterion.
+     * 
+     * @param start
+     *            the start value
+     * @param end
+     *            the end value
+     * @return the "between" or "greater than or equal" or "less than or equal"
+     *         filter criterion
+     */
+    public FilterCriterion between(A start, A end) {
+        if (isEmpty(start) && isEmpty(end)) {
+            return null;
+        }
+        if (!isEmpty(start) && !isEmpty(end)) {
+            return new BetweenCriterion(this, start, end);
+        }
+        if (!isEmpty(start)) {
+            return new GreaterThanOrEqualCriterion(this, start);
+        }
+        return new LessThanOrEqualCriterion(this, end);
     }
 
     /**
