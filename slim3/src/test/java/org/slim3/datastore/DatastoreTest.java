@@ -704,4 +704,26 @@ public class DatastoreTest extends DatastoreTestCase {
         assertEquals(Integer.valueOf(1), filtered.get(0).getMyInteger());
         assertEquals(Integer.valueOf(2), filtered.get(1).getMyInteger());
     }
+
+    /**
+     * @throws Exception
+     */
+    public void testSort() throws Exception {
+        List<Hoge> list = new ArrayList<Hoge>();
+        Hoge hoge = new Hoge();
+        hoge.setMyInteger(1);
+        list.add(hoge);
+        hoge = new Hoge();
+        hoge.setMyInteger(3);
+        list.add(hoge);
+        hoge = new Hoge();
+        hoge.setMyInteger(2);
+        list.add(hoge);
+
+        List<Hoge> sorted = Datastore.sort(list, meta.myInteger.desc);
+        assertEquals(3, sorted.size());
+        assertEquals(Integer.valueOf(3), sorted.get(0).getMyInteger());
+        assertEquals(Integer.valueOf(2), sorted.get(1).getMyInteger());
+        assertEquals(Integer.valueOf(1), sorted.get(2).getMyInteger());
+    }
 }

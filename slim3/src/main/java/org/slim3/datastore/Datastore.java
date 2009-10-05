@@ -17,6 +17,7 @@ package org.slim3.datastore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1275,6 +1276,31 @@ public final class Datastore {
             }
         }
         return true;
+    }
+
+    /**
+     * Sorts the list.
+     * 
+     * @param <M>
+     *            the model type
+     * @param list
+     *            the model list
+     * @param criteria
+     *            criteria to sort
+     * @return the sorted list
+     * @throws NullPointerException
+     *             if the list parameter is null
+     */
+    public static <M> List<M> sort(List<M> list, SortCriterion... criteria)
+            throws NullPointerException {
+        if (list == null) {
+            throw new NullPointerException("The list parameter is null.");
+        }
+        if (criteria.length == 0) {
+            return list;
+        }
+        Collections.sort(list, new AttributeComparator(criteria));
+        return list;
     }
 
     private Datastore() {
