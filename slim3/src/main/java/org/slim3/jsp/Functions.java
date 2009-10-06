@@ -35,6 +35,9 @@ import org.slim3.util.ResponseLocator;
 import org.slim3.util.StringUtil;
 import org.slim3.util.TimeZoneLocator;
 
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+
 /**
  * JSP functions of Slim3.
  * 
@@ -192,6 +195,20 @@ public final class Functions {
             return errors.values().iterator();
         }
         return null;
+    }
+
+    /**
+     * Returns a string representation of {@link Key}.
+     * 
+     * @param key
+     *            the key
+     * @return a string representation of {@link Key}
+     */
+    public static String key(Key key) {
+        if (key == null) {
+            return "";
+        }
+        return KeyFactory.keyToString(key);
     }
 
     /**

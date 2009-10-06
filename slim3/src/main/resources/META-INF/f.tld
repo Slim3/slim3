@@ -94,7 +94,19 @@
       &lt;c:forEach var="e" items="${f:errors()}"&gt;
     </example>
   </function>
-  
+
+  <function>
+    <description>
+      Represents the key.
+    </description>
+    <name>key</name>
+    <function-class>org.slim3.jsp.Functions</function-class>
+    <function-signature>java.lang.String key(com.google.appengine.api.datastore.Key)</function-signature>
+    <example>
+      ${f:key(key)}
+    </example>
+  </function>
+    
   <function>
     <description>
       Represents the text tag.
