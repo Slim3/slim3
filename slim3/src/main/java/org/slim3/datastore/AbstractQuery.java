@@ -279,6 +279,29 @@ public abstract class AbstractQuery<SUB> {
     }
 
     /**
+     * Returns a number of entities.
+     * 
+     * @return a number of entities
+     */
+    public int count() {
+        query.setKeysOnly();
+        List<Entity> entityList = asEntityList();
+        return entityList.size();
+    }
+
+    /**
+     * Returns a number of entities. This method can only return up to 1,000
+     * results, but this method can return the results quickly.
+     * 
+     * @return a number of entities
+     */
+    public int countQuickly() {
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        PreparedQuery pq = prepareInternal(ds);
+        return countEntitiesInternal(pq);
+    }
+
+    /**
      * Returns entities as {@link Iterable}.
      * 
      * @return entities as {@link Iterable}
@@ -391,6 +414,33 @@ public abstract class AbstractQuery<SUB> {
             for (int i = 0; i < MAX_RETRY; i++) {
                 try {
                     return preparedQuery.asIterable(fetchOptions);
+                } catch (DatastoreTimeoutException e2) {
+                    logger.log(Level.WARNING, "Retry("
+                        + i
+                        + "): "
+                        + e2.getMessage(), e2);
+                }
+            }
+            throw e;
+        }
+    }
+
+    /**
+     * Returns a number of entities internally.
+     * 
+     * @param preparedQuery
+     *            the prepared query
+     * 
+     * @return a number of entities
+     */
+    protected int countEntitiesInternal(PreparedQuery preparedQuery) {
+        try {
+            return preparedQuery.countEntities();
+        } catch (DatastoreTimeoutException e) {
+            logger.log(Level.WARNING, e.getMessage(), e);
+            for (int i = 0; i < MAX_RETRY; i++) {
+                try {
+                    return preparedQuery.countEntities();
                 } catch (DatastoreTimeoutException e2) {
                     logger.log(Level.WARNING, "Retry("
                         + i

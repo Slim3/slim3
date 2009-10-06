@@ -154,6 +154,24 @@ public class AbstQueryTest extends DatastoreTestCase {
     /**
      * @throws Exception
      */
+    public void testCount() throws Exception {
+        ds.put(new Entity("Hoge"));
+        MyQuery query = new MyQuery("Hoge");
+        assertEquals(1, query.count());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testCountQuickly() throws Exception {
+        ds.put(new Entity("Hoge"));
+        MyQuery query = new MyQuery("Hoge");
+        assertEquals(1, query.count());
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testOffset() throws Exception {
         MyQuery q = new MyQuery("Hoge");
         assertSame(q, q.offset(10));
