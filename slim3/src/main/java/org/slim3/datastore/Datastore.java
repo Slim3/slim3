@@ -86,17 +86,16 @@ public final class Datastore {
      *            the transaction
      * @throws NullPointerException
      *             if the tx parameter is null
-     * @throws IllegalArgumentException
+     * @throws IllegalStateException
      *             if the transaction is not active
      */
     public static void commit(Transaction tx) throws NullPointerException,
-            IllegalArgumentException {
+            IllegalStateException {
         if (tx == null) {
             throw new NullPointerException("The tx parameter is null.");
         }
         if (!tx.isActive()) {
-            throw new IllegalArgumentException(
-                "The transaction must be active.");
+            throw new IllegalStateException("The transaction must be active.");
         }
         commitInternal(tx);
     }
@@ -128,17 +127,16 @@ public final class Datastore {
      *            the transaction
      * @throws NullPointerException
      *             if the tx parameter is null
-     * @throws IllegalArgumentException
+     * @throws IllegalStateException
      *             if the transaction is not active
      */
     public static void rollback(Transaction tx) throws NullPointerException,
-            IllegalArgumentException {
+            IllegalStateException {
         if (tx == null) {
             throw new NullPointerException("The tx parameter is null.");
         }
         if (!tx.isActive()) {
-            throw new IllegalArgumentException(
-                "The transaction must be active.");
+            throw new IllegalStateException("The transaction must be active.");
         }
         rollbackInternal(tx);
     }
@@ -218,24 +216,21 @@ public final class Datastore {
      *            the key
      * @return an entity specified by the key
      * @throws NullPointerException
-     *             if the tx parameter is null or if the key parameter is null
-     * @throws IllegalArgumentException
-     *             if the transaction is not active
+     *             if the key parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
      * @throws EntityNotFoundRuntimeException
      *             if no entity specified by the key could be found
      */
     public static Entity get(Transaction tx, Key key)
-            throws NullPointerException, IllegalArgumentException,
+            throws NullPointerException, IllegalStateException,
             EntityNotFoundRuntimeException {
-        if (tx == null) {
-            throw new NullPointerException("The tx parameter is null.");
-        }
         if (key == null) {
             throw new NullPointerException("The key parameter is null.");
         }
-        if (!tx.isActive()) {
-            throw new IllegalArgumentException(
-                "The transaction must be active.");
+        if (tx != null && !tx.isActive()) {
+            throw new IllegalStateException("The transaction must be active.");
         }
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         return getInternal(ds, tx, key);
@@ -255,11 +250,15 @@ public final class Datastore {
      * @return a model specified by the key
      * @throws NullPointerException
      *             if the modelMeta parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
      * @throws EntityNotFoundRuntimeException
      *             if no entity specified by the key could be found
      */
     public static <M> M get(Transaction tx, ModelMeta<M> modelMeta, Key key)
-            throws NullPointerException, EntityNotFoundRuntimeException {
+            throws NullPointerException, IllegalStateException,
+            EntityNotFoundRuntimeException {
         if (modelMeta == null) {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
@@ -350,14 +349,16 @@ public final class Datastore {
      *            the keys
      * @return entities specified by the key
      * @throws NullPointerException
-     *             if the tx parameter is null or if the keys parameter is null
-     * @throws IllegalArgumentException
-     *             if the transaction is not active
+     *             if the keys parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
      * @throws EntityNotFoundRuntimeException
      *             if no entity specified by the key could be found
      */
     public static List<Entity> get(Transaction tx, Iterable<Key> keys)
-            throws NullPointerException, EntityNotFoundRuntimeException {
+            throws NullPointerException, IllegalStateException,
+            EntityNotFoundRuntimeException {
         return mapToList(keys, getAsMap(tx, keys));
     }
 
@@ -369,15 +370,14 @@ public final class Datastore {
      * @param keys
      *            the keys
      * @return entities specified by the key
-     * @throws NullPointerException
-     *             if the tx parameter is null
-     * @throws IllegalArgumentException
-     *             if the transaction is not active
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
      * @throws EntityNotFoundRuntimeException
      *             if no entity specified by the key could be found
      */
     public static List<Entity> get(Transaction tx, Key... keys)
-            throws NullPointerException, EntityNotFoundRuntimeException {
+            throws IllegalStateException, EntityNotFoundRuntimeException {
         return get(tx, Arrays.asList(keys));
     }
 
@@ -395,12 +395,15 @@ public final class Datastore {
      * @return models specified by the keys
      * @throws NullPointerException
      *             if the modelMeta parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
      * @throws EntityNotFoundRuntimeException
      *             if no entity specified by the key could be found
      */
     public static <M> List<M> get(Transaction tx, ModelMeta<M> modelMeta,
             Iterable<Key> keys) throws NullPointerException,
-            EntityNotFoundRuntimeException {
+            IllegalStateException, EntityNotFoundRuntimeException {
         if (modelMeta == null) {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
@@ -420,13 +423,15 @@ public final class Datastore {
      *            the keys
      * @return models specified by the keys
      * @throws NullPointerException
-     *             if the tx parameter is null or if the modelMeta parameter is
-     *             null
+     *             if the modelMeta parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
      * @throws EntityNotFoundRuntimeException
      *             if no entity specified by the key could be found
      */
     public static <M> List<M> get(Transaction tx, ModelMeta<M> modelMeta,
-            Key... keys) throws NullPointerException,
+            Key... keys) throws NullPointerException, IllegalStateException,
             EntityNotFoundRuntimeException {
         if (modelMeta == null) {
             throw new NullPointerException("The modelMeta parameter is null.");
@@ -512,21 +517,18 @@ public final class Datastore {
      *            the keys
      * @return entities specified by the keys
      * @throws NullPointerException
-     *             if the tx parameter is null or if the keys parameter is null
-     * @throws IllegalArgumentException
-     *             if the transaction is not active
+     *             if the keys parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
      */
     public static Map<Key, Entity> getAsMap(Transaction tx, Iterable<Key> keys)
-            throws NullPointerException {
-        if (tx == null) {
-            throw new NullPointerException("The tx parameter is null.");
-        }
+            throws NullPointerException, IllegalStateException {
         if (keys == null) {
             throw new NullPointerException("The keys parameter is null.");
         }
         if (!tx.isActive()) {
-            throw new IllegalArgumentException(
-                "The transaction must be active.");
+            throw new IllegalStateException("The transaction must be active.");
         }
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         return getInternal(ds, tx, keys);
@@ -540,13 +542,12 @@ public final class Datastore {
      * @param keys
      *            the keys
      * @return entities specified by the keys
-     * @throws NullPointerException
-     *             if the tx parameter is null
-     * @throws IllegalArgumentException
-     *             if the transaction is not active
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
      */
     public static Map<Key, Entity> getAsMap(Transaction tx, Key... keys)
-            throws NullPointerException, IllegalArgumentException {
+            throws IllegalStateException {
         return getAsMap(tx, Arrays.asList(keys));
     }
 
@@ -563,14 +564,15 @@ public final class Datastore {
      *            the keys
      * @return entities specified by the key
      * @throws NullPointerException
-     *             if the tx parameter is null or if the modelMeta parameter is
-     *             null or if the keys parameter is null
-     * @throws IllegalArgumentException
-     *             if the transaction is not active
+     *             if the modelMeta parameter is null or if the keys parameter
+     *             is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
      */
     public static <M> Map<Key, M> getAsMap(Transaction tx,
             ModelMeta<M> modelMeta, Iterable<Key> keys)
-            throws NullPointerException {
+            throws NullPointerException, IllegalStateException {
         if (modelMeta == null) {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
@@ -590,13 +592,15 @@ public final class Datastore {
      *            the keys
      * @return entities specified by the key
      * @throws NullPointerException
-     *             if the tx parameter is null or if the modelMeta parameter is
-     *             null or if the keys parameter is null
-     * @throws IllegalArgumentException
-     *             if the transaction is not active
+     *             if the modelMeta parameter is null or if the keys parameter
+     *             is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
      */
     public static <M> Map<Key, M> getAsMap(Transaction tx,
-            ModelMeta<M> modelMeta, Key... keys) throws NullPointerException {
+            ModelMeta<M> modelMeta, Key... keys) throws NullPointerException,
+            IllegalStateException {
         if (modelMeta == null) {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
@@ -772,22 +776,18 @@ public final class Datastore {
      *            the entity
      * @return a key
      * @throws NullPointerException
-     *             if the tx parameter is null or if the entity parameter is
-     *             null
-     * @throws IllegalArgumentException
-     *             if the transaction is not active
+     *             if the entity parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
      */
     public static Key put(Transaction tx, Entity entity)
-            throws NullPointerException, IllegalArgumentException {
-        if (tx == null) {
-            throw new NullPointerException("The tx parameter is null.");
-        }
+            throws NullPointerException, IllegalStateException {
         if (entity == null) {
             throw new NullPointerException("The entity parameter is null.");
         }
         if (!tx.isActive()) {
-            throw new IllegalArgumentException(
-                "The transaction must be active.");
+            throw new IllegalStateException("The transaction must be active.");
         }
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         return putInternal(ds, tx, entity);
@@ -802,12 +802,13 @@ public final class Datastore {
      *            the model
      * @return a key
      * @throws NullPointerException
-     *             if the tx parameter is null or if the model parameter is null
-     * @throws IllegalArgumentException
-     *             if the transaction is not active
+     *             if the model parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
      */
     public static Key put(Transaction tx, Object model)
-            throws NullPointerException {
+            throws NullPointerException, IllegalStateException {
         if (model == null) {
             throw new NullPointerException("The model parameter is null.");
         }
@@ -854,13 +855,13 @@ public final class Datastore {
      *            the models or entities
      * @return a list of keys
      * @throws NullPointerException
-     *             if the tx parameter is null or if the models parameter is
-     *             null
-     * @throws IllegalArgumentException
-     *             if the transaction is not active
+     *             if the models parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
      */
     public static List<Key> put(Transaction tx, Iterable<?> models)
-            throws NullPointerException, IllegalArgumentException {
+            throws NullPointerException, IllegalStateException {
         if (models == null) {
             throw new NullPointerException("The models parameter is null.");
         }
@@ -875,13 +876,12 @@ public final class Datastore {
      * @param models
      *            the models or entities
      * @return a list of keys
-     * @throws NullPointerException
-     *             if the tx parameter is null
-     * @throws IllegalArgumentException
-     *             if the transaction is not active
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
      */
     public static List<Key> put(Transaction tx, Object... models)
-            throws NullPointerException, IllegalArgumentException {
+            throws IllegalStateException {
         return put(tx, Arrays.asList(models));
     }
 
@@ -916,15 +916,11 @@ public final class Datastore {
     private static List<Key> putEntities(Transaction tx,
             Iterable<Entity> entities) throws NullPointerException,
             IllegalArgumentException {
-        if (tx == null) {
-            throw new NullPointerException("The tx parameter is null.");
-        }
         if (entities == null) {
             throw new NullPointerException("The entities parameter is null.");
         }
         if (!tx.isActive()) {
-            throw new IllegalArgumentException(
-                "The transaction must be active.");
+            throw new IllegalStateException("The transaction must be active.");
         }
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         return putInternal(ds, tx, entities);
@@ -1045,21 +1041,18 @@ public final class Datastore {
      * @param keys
      *            the keys
      * @throws NullPointerException
-     *             if the tx parameter is null or if the keys parameter is null
-     * @throws IllegalArgumentException
-     *             if the transaction is not active
+     *             if the keys parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
      */
     public static void delete(Transaction tx, Iterable<Key> keys)
-            throws NullPointerException, IllegalArgumentException {
-        if (tx == null) {
-            throw new NullPointerException("The tx parameter is null.");
-        }
+            throws NullPointerException, IllegalStateException {
         if (keys == null) {
             throw new NullPointerException("The keys parameter is null.");
         }
         if (!tx.isActive()) {
-            throw new IllegalArgumentException(
-                "The transaction must be active.");
+            throw new IllegalStateException("The transaction must be active.");
         }
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         deleteInternal(ds, tx, keys);
@@ -1072,13 +1065,12 @@ public final class Datastore {
      *            the transaction
      * @param keys
      *            the keys
-     * @throws NullPointerException
-     *             if the tx parameter is null
-     * @throws IllegalArgumentException
-     *             if the transaction is not active
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
      */
     public static void delete(Transaction tx, Key... keys)
-            throws NullPointerException, IllegalArgumentException {
+            throws IllegalStateException {
         delete(tx, Arrays.asList(keys));
     }
 

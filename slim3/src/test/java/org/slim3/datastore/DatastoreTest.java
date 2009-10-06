@@ -96,6 +96,21 @@ public class DatastoreTest extends DatastoreTestCase {
     /**
      * @throws Exception
      */
+    public void testGetModelInIllegalTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Transaction tx = ds.beginTransaction();
+        tx.rollback();
+        try {
+            Datastore.get(tx, meta, key);
+            fail();
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testGetModels() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
@@ -131,6 +146,22 @@ public class DatastoreTest extends DatastoreTestCase {
     /**
      * @throws Exception
      */
+    public void testGetModelsInIllegalTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = ds.beginTransaction();
+        tx.rollback();
+        try {
+            Datastore.get(tx, meta, Arrays.asList(key, key2));
+            fail();
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testGetModelsInTxForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
@@ -139,6 +170,22 @@ public class DatastoreTest extends DatastoreTestCase {
         tx.rollback();
         assertNotNull(models);
         assertEquals(2, models.size());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetModelsInIllegalTxForVarargs() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = ds.beginTransaction();
+        tx.rollback();
+        try {
+            Datastore.get(tx, meta, key, key2);
+            fail();
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     /**
@@ -220,6 +267,21 @@ public class DatastoreTest extends DatastoreTestCase {
         Entity entity = Datastore.get(tx, key);
         tx.rollback();
         assertNotNull(entity);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetEntityInIllegalTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Transaction tx = ds.beginTransaction();
+        tx.rollback();
+        try {
+            Datastore.get(tx, key);
+            fail();
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     /**
@@ -317,6 +379,22 @@ public class DatastoreTest extends DatastoreTestCase {
     /**
      * @throws Exception
      */
+    public void testGetEntitiesInIllegalTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = ds.beginTransaction();
+        tx.rollback();
+        try {
+            Datastore.get(tx, Arrays.asList(key, key2));
+            fail();
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testGetEntitiesInTxForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
@@ -325,6 +403,22 @@ public class DatastoreTest extends DatastoreTestCase {
         tx.rollback();
         assertNotNull(list);
         assertEquals(2, list.size());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetEntitiesInIllegalTxForVarargs() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = ds.beginTransaction();
+        tx.rollback();
+        try {
+            Datastore.get(tx, key, key2);
+            fail();
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     /**
@@ -346,6 +440,20 @@ public class DatastoreTest extends DatastoreTestCase {
             ds.get(key);
             fail();
         } catch (EntityNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testPutModelInIllegalTx() throws Exception {
+        Transaction tx = Datastore.beginTransaction();
+        tx.rollback();
+        try {
+            Datastore.put(tx, new Hoge());
+            fail();
+        } catch (IllegalStateException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -390,6 +498,27 @@ public class DatastoreTest extends DatastoreTestCase {
     /**
      * @throws Exception
      */
+    public void testPutModelsInIllegalTx() throws Exception {
+        Key key = KeyFactory.createKey("Hoge", 1);
+        Key key2 = KeyFactory.createKey(key, "Hoge", 1);
+        Hoge hoge = new Hoge();
+        hoge.setKey(key);
+        Hoge hoge2 = new Hoge();
+        hoge2.setKey(key2);
+        List<Hoge> models = Arrays.asList(hoge, hoge2);
+        Transaction tx = ds.beginTransaction();
+        tx.rollback();
+        try {
+            Datastore.put(tx, models);
+            fail();
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testPutModelsInTxForVarargs() throws Exception {
         Key key = KeyFactory.createKey("Hoge", 1);
         Key key2 = KeyFactory.createKey(key, "Hoge", 1);
@@ -398,10 +527,13 @@ public class DatastoreTest extends DatastoreTestCase {
         Hoge hoge2 = new Hoge();
         hoge2.setKey(key2);
         Transaction tx = ds.beginTransaction();
-        List<Key> keys = Datastore.put(tx, hoge, hoge2);
         tx.rollback();
-        assertNotNull(keys);
-        assertEquals(2, keys.size());
+        try {
+            Datastore.put(tx, hoge, hoge2);
+            fail();
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     /**
@@ -423,6 +555,20 @@ public class DatastoreTest extends DatastoreTestCase {
             ds.get(key);
             fail();
         } catch (EntityNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testPutEntityInIllegalTx() throws Exception {
+        Transaction tx = Datastore.beginTransaction();
+        tx.rollback();
+        try {
+            Datastore.put(tx, new Entity("Hoge"));
+            fail();
+        } catch (IllegalStateException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -476,6 +622,23 @@ public class DatastoreTest extends DatastoreTestCase {
     /**
      * @throws Exception
      */
+    public void testPutEntitiesInIllegalTx() throws Exception {
+        Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
+        Entity entity2 =
+            new Entity(KeyFactory.createKey(entity.getKey(), "Hoge", 1));
+        Transaction tx = Datastore.beginTransaction();
+        tx.rollback();
+        try {
+            Datastore.put(tx, Arrays.asList(entity, entity2));
+            fail();
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testPutEntitiesInTxForVarargs() throws Exception {
         Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
         Entity entity2 =
@@ -495,6 +658,23 @@ public class DatastoreTest extends DatastoreTestCase {
             ds.get(keys.get(1));
             fail();
         } catch (EntityNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testPutEntitiesInIllegalTxForVarargs() throws Exception {
+        Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
+        Entity entity2 =
+            new Entity(KeyFactory.createKey(entity.getKey(), "Hoge", 1));
+        Transaction tx = Datastore.beginTransaction();
+        tx.rollback();
+        try {
+            Datastore.put(tx, entity, entity2);
+            fail();
+        } catch (IllegalStateException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -522,6 +702,21 @@ public class DatastoreTest extends DatastoreTestCase {
         Datastore.delete(tx, key);
         tx.rollback();
         assertNotNull(ds.get(key));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testDeleteInIllegalTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Transaction tx = Datastore.beginTransaction();
+        tx.rollback();
+        try {
+            Datastore.delete(tx, key);
+            fail();
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     /**
@@ -580,14 +775,45 @@ public class DatastoreTest extends DatastoreTestCase {
     /**
      * @throws Exception
      */
+    public void testDeleteEntitiesInIllegalTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Transaction tx = Datastore.beginTransaction();
+        tx.rollback();
+        try {
+            Datastore.delete(tx, Arrays.asList(key));
+            fail();
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testDeleteEntitiesInTxForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = Datastore.beginTransaction();
-        Datastore.delete(key, key2);
+        Datastore.delete(tx, key, key2);
         tx.rollback();
         assertNotNull(ds.get(key));
         assertNotNull(ds.get(key2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testDeleteEntitiesInIllegalTxForVarargs() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = Datastore.beginTransaction();
+        tx.rollback();
+        try {
+            Datastore.delete(tx, key, key2);
+            fail();
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     /**

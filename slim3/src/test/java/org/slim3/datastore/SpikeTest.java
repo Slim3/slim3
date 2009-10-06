@@ -15,12 +15,14 @@
  */
 package org.slim3.datastore;
 
-import java.util.List;
-
 import org.slim3.tester.DatastoreTestCase;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.Transaction;
 
 /**
  * @author higa
@@ -32,18 +34,15 @@ public class SpikeTest extends DatastoreTestCase {
      * @throws Exception
      */
     public void testSpike() throws Exception {
-        Entity entity = new Entity("Hoge");
-        entity.setProperty("name", "1");
-        Entity entity2 = new Entity("Hoge");
-        entity2.setProperty("name", "3");
-        Entity entity3 = new Entity("Hoge");
-        entity3.setProperty("name", "2");
-        Datastore.put(entity, entity2, entity3);
-        List<Entity> list =
-            Datastore
-                .query("Hoge")
-                .sort("name", SortDirection.DESCENDING)
-                .asEntityList();
-        System.out.println(list);
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        Transaction tx = ds.beginTransaction();
+        Key key = ds.put(tx, new Entity("Hoge"));
+        tx.rollback();
+        try {
+            ds.get(key);
+            fail();
+        } catch (EntityNotFoundException e) {
+            System.out.println("Transaction is applied");
+        }
     }
 }

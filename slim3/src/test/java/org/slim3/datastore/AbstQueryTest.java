@@ -24,6 +24,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.Transaction;
 
 /**
  * @author higa
@@ -37,6 +38,7 @@ public class AbstQueryTest extends DatastoreTestCase {
     public void testConstructorUsingKind() throws Exception {
         MyQuery q = new MyQuery("Hoge");
         assertEquals("Hoge", q.query.getKind());
+        assertFalse(q.txSet);
     }
 
     /**
@@ -47,6 +49,7 @@ public class AbstQueryTest extends DatastoreTestCase {
         MyQuery q = new MyQuery("Hoge", key);
         assertEquals("Hoge", q.query.getKind());
         assertEquals(key, q.query.getAncestor());
+        assertFalse(q.txSet);
     }
 
     /**
@@ -56,6 +59,51 @@ public class AbstQueryTest extends DatastoreTestCase {
         Key key = KeyFactory.createKey("Hoge", 1);
         MyQuery q = new MyQuery(key);
         assertEquals(key, q.query.getAncestor());
+        assertFalse(q.txSet);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testTx() throws Exception {
+        MyQuery q = new MyQuery("Hoge");
+        assertEquals(q, q.tx(ds.beginTransaction()));
+        assertNotNull(q.tx);
+        assertTrue(q.txSet);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testNoTx() throws Exception {
+        MyQuery q = new MyQuery("Hoge");
+        assertNull(q.tx);
+        assertFalse(q.txSet);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testNullTx() throws Exception {
+        MyQuery q = new MyQuery("Hoge");
+        assertEquals(q, q.tx(null));
+        assertNull(q.tx);
+        assertTrue(q.txSet);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testIllegalTx() throws Exception {
+        MyQuery q = new MyQuery("Hoge");
+        try {
+            Transaction tx = ds.beginTransaction();
+            tx.rollback();
+            q.tx(tx);
+            fail();
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     /**

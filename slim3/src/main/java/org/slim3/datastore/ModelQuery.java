@@ -50,7 +50,7 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
         this.modelMeta = modelMeta;
-        initialize(modelMeta.getModelClass().getSimpleName());
+        setUpQuery(modelMeta.getModelClass().getSimpleName());
     }
 
     /**
@@ -73,7 +73,7 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
             throw new NullPointerException("The ancestorKey parameter is null.");
         }
         this.modelMeta = modelMeta;
-        initialize(modelMeta.getModelClass().getSimpleName(), ancestorKey);
+        setUpQuery(modelMeta.getModelClass().getSimpleName(), ancestorKey);
     }
 
     /**

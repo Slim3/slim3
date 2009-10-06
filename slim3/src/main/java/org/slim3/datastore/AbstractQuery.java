@@ -28,6 +28,7 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Transaction;
 
 /**
  * An abstract query.
@@ -51,6 +52,16 @@ public abstract class AbstractQuery<SUB> {
     protected Query query;
 
     /**
+     * The transaction.
+     */
+    protected Transaction tx;
+
+    /**
+     * Whether the transaction was set.
+     */
+    protected boolean txSet = false;
+
+    /**
      * The fetch options.
      */
     protected FetchOptions fetchOptions = FetchOptions.Builder.withOffset(0);
@@ -65,7 +76,7 @@ public abstract class AbstractQuery<SUB> {
      * 
      */
     public AbstractQuery(String kind) throws NullPointerException {
-        initialize(kind);
+        setUpQuery(kind);
     }
 
     /**
@@ -82,7 +93,7 @@ public abstract class AbstractQuery<SUB> {
      */
     public AbstractQuery(String kind, Key ancestorKey)
             throws NullPointerException {
-        initialize(kind, ancestorKey);
+        setUpQuery(kind, ancestorKey);
     }
 
     /**
@@ -94,7 +105,7 @@ public abstract class AbstractQuery<SUB> {
      *             if the ancestorKey parameter is null
      */
     public AbstractQuery(Key ancestorKey) throws NullPointerException {
-        initialize(ancestorKey);
+        setUpQuery(ancestorKey);
     }
 
     /**
@@ -105,7 +116,7 @@ public abstract class AbstractQuery<SUB> {
     }
 
     /**
-     * Initializes this class.
+     * Sets up an internal query.
      * 
      * @param kind
      *            the kind
@@ -113,7 +124,7 @@ public abstract class AbstractQuery<SUB> {
      *             if the kind parameter is null
      * 
      */
-    protected void initialize(String kind) throws NullPointerException {
+    protected void setUpQuery(String kind) throws NullPointerException {
         if (kind == null) {
             throw new NullPointerException("The kind parameter is null.");
         }
@@ -121,7 +132,7 @@ public abstract class AbstractQuery<SUB> {
     }
 
     /**
-     * Initializes this class.
+     * Sets up an internal query.
      * 
      * @param kind
      *            the kind
@@ -132,7 +143,7 @@ public abstract class AbstractQuery<SUB> {
      *             is null
      * 
      */
-    protected void initialize(String kind, Key ancestorKey)
+    protected void setUpQuery(String kind, Key ancestorKey)
             throws NullPointerException {
         if (kind == null) {
             throw new NullPointerException("The kind parameter is null.");
@@ -144,18 +155,38 @@ public abstract class AbstractQuery<SUB> {
     }
 
     /**
-     * Initializes this class.
+     * Sets up an internal query.
      * 
      * @param ancestorKey
      *            the ancestor key
      * @throws NullPointerException
      *             if the ancestorKey parameter is null
      */
-    protected void initialize(Key ancestorKey) throws NullPointerException {
+    protected void setUpQuery(Key ancestorKey) throws NullPointerException {
         if (ancestorKey == null) {
             throw new NullPointerException("The ancestorKey parameter is null.");
         }
         query = new Query(ancestorKey);
+    }
+
+    /**
+     * Specified the transaction.
+     * 
+     * @param tx
+     *            the transaction
+     * @return this instance
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    @SuppressWarnings("unchecked")
+    public SUB tx(Transaction tx) throws IllegalStateException {
+        if (tx != null && !tx.isActive()) {
+            throw new IllegalStateException("The transaction must be active.");
+        }
+        this.tx = tx;
+        txSet = true;
+        return (SUB) this;
     }
 
     /**
@@ -267,11 +298,17 @@ public abstract class AbstractQuery<SUB> {
      */
     protected PreparedQuery prepareInternal(DatastoreService ds) {
         try {
+            if (txSet) {
+                return ds.prepare(tx, query);
+            }
             return ds.prepare(query);
         } catch (DatastoreTimeoutException e) {
             logger.log(Level.WARNING, e.getMessage(), e);
             for (int i = 0; i < MAX_RETRY; i++) {
                 try {
+                    if (txSet) {
+                        return ds.prepare(tx, query);
+                    }
                     return ds.prepare(query);
                 } catch (DatastoreTimeoutException e2) {
                     logger.log(Level.WARNING, "Retry("
