@@ -18,6 +18,9 @@ package org.slim3.util;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+
 /**
  * A utility class for conversion.
  * 
@@ -53,6 +56,8 @@ public final class ConversionUtil {
             return convertToEnum(value, destinationClass);
         } else if (destinationClass == String.class) {
             return value.toString();
+        } else if (destinationClass == Key.class) {
+            return convertToKey(value);
         } else {
             throw new IllegalArgumentException("The class("
                 + value.getClass().getName()
@@ -143,6 +148,18 @@ public final class ConversionUtil {
     private static Object convertToEnum(Object value, Class<?> destinationClass) {
         int ordinal = IntegerUtil.toPrimitiveInt(value);
         return destinationClass.getEnumConstants()[ordinal];
+    }
+
+    private static Object convertToKey(Object value) {
+        if (value instanceof Key) {
+            return Key.class.cast(value);
+        }
+        if (value instanceof String) {
+            return KeyFactory.stringToKey(String.class.cast(value));
+        }
+        throw new IllegalArgumentException("The class("
+            + value.getClass().getName()
+            + ") can not be converted to a key.");
     }
 
     private ConversionUtil() {
