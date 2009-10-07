@@ -25,10 +25,7 @@
     </path>
 
 	<target name="create-lib" depends="clean">
-		<copy file="src/main/java/org/slim3/jdo/S3Blob.java" tofile="build/classes/org/slim3/gwt/emul/org/slim3/jdo/S3Blob.java"/>
-		<copy file="src/main/java/org/slim3/jdo/S3Text.java" tofile="build/classes/org/slim3/gwt/emul/org/slim3/jdo/S3Text.java"/>
-		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/Blob.txt" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/Blob.java"/>
-		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/Text.txt" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/Text.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/Key.txt" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/Key.java"/>
 	    <jar jarfile="target/slim3-${ver}.jar" basedir="build/classes"/>
 	    <jar jarfile="target/slim3-${ver}-sources.jar" basedir="src/main/java"/>
 	</target>
