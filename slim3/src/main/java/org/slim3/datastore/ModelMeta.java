@@ -24,8 +24,6 @@ import java.util.TreeSet;
 import org.slim3.util.BeanDesc;
 import org.slim3.util.BeanUtil;
 import org.slim3.util.ByteUtil;
-import org.slim3.util.LongUtil;
-import org.slim3.util.PropertyDesc;
 
 import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Entity;
@@ -102,11 +100,7 @@ public abstract class ModelMeta<M> {
      *            the model
      * @return a version property value of the model
      */
-    public long getVersion(Object model) {
-        BeanDesc beanDesc = getBeanDesc();
-        PropertyDesc pd = beanDesc.getPropertyDesc("version");
-        return LongUtil.toPrimitiveLong(pd.getValue(model));
-    }
+    public abstract long getVersion(Object model);
 
     /**
      * Increments the version property value.
@@ -114,12 +108,7 @@ public abstract class ModelMeta<M> {
      * @param model
      *            the model
      */
-    public void incrementVersion(Object model) {
-        BeanDesc beanDesc = getBeanDesc();
-        PropertyDesc pd = beanDesc.getPropertyDesc("version");
-        long version = LongUtil.toPrimitiveLong(pd.getValue(model));
-        pd.setValue(model, version + 1);
-    }
+    public abstract void incrementVersion(Object model);
 
     /**
      * Converts the long to a primitive short.

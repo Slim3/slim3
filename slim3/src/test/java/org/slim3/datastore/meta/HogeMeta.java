@@ -408,4 +408,18 @@ public class HogeMeta extends ModelMeta<Hoge> {
 
         return e;
     }
+
+    @Override
+    public long getVersion(Object model) {
+        Hoge m = (Hoge) model;
+        return m.getVersion() != null ? m.getVersion().longValue() : 0L;
+    }
+
+    @Override
+    public void incrementVersion(Object model) {
+        Hoge m = (Hoge) model;
+        long version = m.getVersion() != null ? m.getVersion().longValue() : 0L;
+        m.setVersion(version + 1);
+
+    }
 }
