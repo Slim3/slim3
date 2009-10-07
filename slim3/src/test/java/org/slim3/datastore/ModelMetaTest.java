@@ -33,6 +33,7 @@ import org.slim3.util.ByteUtil;
 
 import com.google.appengine.api.datastore.ShortBlob;
 import com.google.appengine.api.datastore.Text;
+import com.google.appengine.api.datastore.Query.SortDirection;
 
 /**
  * @author higa
@@ -119,6 +120,24 @@ public class ModelMetaTest extends TestCase {
     public void testBooleanToPrimitiveBoolean() throws Exception {
         assertEquals(true, meta.booleanToPrimitiveBoolean(true));
         assertEquals(false, meta.booleanToPrimitiveBoolean(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testEnumToString() throws Exception {
+        assertEquals("ASCENDING", meta.enumToString(SortDirection.ASCENDING));
+        assertNull(meta.enumToString(null));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testStringToEnum() throws Exception {
+        assertEquals(SortDirection.ASCENDING, meta.stringToEnum(
+            SortDirection.class,
+            "ASCENDING"));
+        assertNull(meta.stringToEnum(SortDirection.class, null));
     }
 
     /**

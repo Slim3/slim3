@@ -21,6 +21,7 @@ import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
 
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.Query.SortDirection;
 
 /**
  * @author higa
@@ -64,6 +65,18 @@ public class AbstAttributeMetaTest extends TestCase {
         Hoge hoge = new Hoge();
         hoge.setMyString("aaa");
         assertEquals("aaa", meta.myString.getValue(hoge));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testConvertValueForDatastore() throws Exception {
+        assertEquals("ASCENDING", meta.myEnum
+            .convertValueForDatastore(SortDirection.ASCENDING));
+        assertEquals("ASCENDING", meta.myString
+            .convertValueForDatastore("ASCENDING"));
+        assertNull(meta.myString.convertValueForDatastore(null));
     }
 
     /**

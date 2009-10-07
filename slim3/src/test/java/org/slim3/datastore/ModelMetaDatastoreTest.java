@@ -32,6 +32,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Text;
+import com.google.appengine.api.datastore.Query.SortDirection;
 
 /**
  * @author higa
@@ -209,6 +210,18 @@ public class ModelMetaDatastoreTest extends DatastoreTestCase {
         Entity entity2 = ds.get(key);
         Hoge model2 = meta.entityToModel(entity2);
         assertEquals(new Date(0), model2.getMyDate());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testEnum() throws Exception {
+        model.setMyEnum(SortDirection.ASCENDING);
+        Entity entity = meta.modelToEntity(model);
+        Key key = ds.put(entity);
+        Entity entity2 = ds.get(key);
+        Hoge model2 = meta.entityToModel(entity2);
+        assertEquals(SortDirection.ASCENDING, model2.getMyEnum());
     }
 
     /**

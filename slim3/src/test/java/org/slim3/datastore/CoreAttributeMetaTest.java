@@ -19,6 +19,8 @@ import junit.framework.TestCase;
 
 import org.slim3.datastore.meta.HogeMeta;
 
+import com.google.appengine.api.datastore.Query.SortDirection;
+
 /**
  * @author higa
  * 
@@ -34,6 +36,9 @@ public class CoreAttributeMetaTest extends TestCase {
     public void testEqual() throws Exception {
         assertEquals(EqualCriterion.class, meta.myString.equal("a").getClass());
         assertNull(meta.myString.equal(null));
+        EqualCriterion c =
+            (EqualCriterion) meta.myEnum.equal(SortDirection.ASCENDING);
+        assertEquals("ASCENDING", c.value);
     }
 
     /**
@@ -45,6 +50,9 @@ public class CoreAttributeMetaTest extends TestCase {
             .lessThan("a")
             .getClass());
         assertNull(meta.myString.lessThan(null));
+        LessThanCriterion c =
+            (LessThanCriterion) meta.myEnum.lessThan(SortDirection.ASCENDING);
+        assertEquals("ASCENDING", c.value);
     }
 
     /**
@@ -56,6 +64,10 @@ public class CoreAttributeMetaTest extends TestCase {
             .lessThanOrEqual("a")
             .getClass());
         assertNull(meta.myString.lessThanOrEqual(null));
+        LessThanOrEqualCriterion c =
+            (LessThanOrEqualCriterion) meta.myEnum
+                .lessThanOrEqual(SortDirection.ASCENDING);
+        assertEquals("ASCENDING", c.value);
     }
 
     /**
@@ -67,6 +79,10 @@ public class CoreAttributeMetaTest extends TestCase {
             .greaterThan("a")
             .getClass());
         assertNull(meta.myString.greaterThan(null));
+        GreaterThanCriterion c =
+            (GreaterThanCriterion) meta.myEnum
+                .greaterThan(SortDirection.ASCENDING);
+        assertEquals("ASCENDING", c.value);
     }
 
     /**
@@ -78,6 +94,10 @@ public class CoreAttributeMetaTest extends TestCase {
             .greaterThanOrEqual("a")
             .getClass());
         assertNull(meta.myString.greaterThanOrEqual(null));
+        GreaterThanOrEqualCriterion c =
+            (GreaterThanOrEqualCriterion) meta.myEnum
+                .greaterThanOrEqual(SortDirection.ASCENDING);
+        assertEquals("ASCENDING", c.value);
     }
 
     /**
@@ -95,6 +115,22 @@ public class CoreAttributeMetaTest extends TestCase {
             null,
             "c").getClass());
         assertNull(meta.myString.between(null, null));
+        BetweenCriterion c =
+            (BetweenCriterion) meta.myEnum.between(
+                SortDirection.ASCENDING,
+                SortDirection.DESCENDING);
+        assertEquals("ASCENDING", c.start);
+        assertEquals("DESCENDING", c.end);
+        GreaterThanOrEqualCriterion c2 =
+            (GreaterThanOrEqualCriterion) meta.myEnum.between(
+                SortDirection.ASCENDING,
+                null);
+        assertEquals("ASCENDING", c2.value);
+        LessThanOrEqualCriterion c3 =
+            (LessThanOrEqualCriterion) meta.myEnum.between(
+                null,
+                SortDirection.DESCENDING);
+        assertEquals("DESCENDING", c3.value);
     }
 
     /**

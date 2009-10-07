@@ -54,7 +54,7 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
         if (isEmpty(value)) {
             return null;
         }
-        return new EqualCriterion(this, value);
+        return new EqualCriterion(this, convertValueForDatastore(value));
     }
 
     /**
@@ -68,7 +68,7 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
         if (isEmpty(value)) {
             return null;
         }
-        return new LessThanCriterion(this, value);
+        return new LessThanCriterion(this, convertValueForDatastore(value));
     }
 
     /**
@@ -82,7 +82,9 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
         if (isEmpty(value)) {
             return null;
         }
-        return new LessThanOrEqualCriterion(this, value);
+        return new LessThanOrEqualCriterion(
+            this,
+            convertValueForDatastore(value));
     }
 
     /**
@@ -96,7 +98,7 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
         if (isEmpty(value)) {
             return null;
         }
-        return new GreaterThanCriterion(this, value);
+        return new GreaterThanCriterion(this, convertValueForDatastore(value));
     }
 
     /**
@@ -110,7 +112,9 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
         if (isEmpty(value)) {
             return null;
         }
-        return new GreaterThanOrEqualCriterion(this, value);
+        return new GreaterThanOrEqualCriterion(
+            this,
+            convertValueForDatastore(value));
     }
 
     /**
@@ -129,12 +133,17 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
             return null;
         }
         if (!isEmpty(start) && !isEmpty(end)) {
-            return new BetweenCriterion(this, start, end);
+            return new BetweenCriterion(
+                this,
+                convertValueForDatastore(start),
+                convertValueForDatastore(end));
         }
         if (!isEmpty(start)) {
-            return new GreaterThanOrEqualCriterion(this, start);
+            return new GreaterThanOrEqualCriterion(
+                this,
+                convertValueForDatastore(start));
         }
-        return new LessThanOrEqualCriterion(this, end);
+        return new LessThanOrEqualCriterion(this, convertValueForDatastore(end));
     }
 
     /**

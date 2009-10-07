@@ -32,6 +32,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.ShortBlob;
 import com.google.appengine.api.datastore.Text;
+import com.google.appengine.api.datastore.Query.SortDirection;
 
 /**
  * @author higa
@@ -140,6 +141,15 @@ public class HogeMeta extends ModelMeta<Hoge> {
      */
     public CoreAttributeMeta<Hoge, Date> myDate =
         new CoreAttributeMeta<Hoge, Date>(this, "myDate", Date.class);
+
+    /**
+     * 
+     */
+    public CoreAttributeMeta<Hoge, SortDirection> myEnum =
+        new CoreAttributeMeta<Hoge, SortDirection>(
+            this,
+            "myEnum",
+            SortDirection.class);
 
     /**
      * 
@@ -258,6 +268,15 @@ public class HogeMeta extends ModelMeta<Hoge> {
     /**
      * 
      */
+    public CollectionAttributeMeta<Hoge, List<SortDirection>, SortDirection> myEnumList =
+        new CollectionAttributeMeta<Hoge, List<SortDirection>, SortDirection>(
+            this,
+            "myEnumList",
+            List.class);
+
+    /**
+     * 
+     */
     public HogeMeta() {
         super(Hoge.class);
     }
@@ -287,6 +306,8 @@ public class HogeMeta extends ModelMeta<Hoge> {
             .getProperty("myPrimitiveBoolean")));
         model.setMyBoolean((Boolean) entity.getProperty("myBoolean"));
         model.setMyDate((Date) entity.getProperty("myDate"));
+        model.setMyEnum(stringToEnum(SortDirection.class, (String) entity
+            .getProperty("myEnum")));
 
         model.setMyStringText(textToString((Text) entity
             .getProperty("myStringText")));
@@ -356,6 +377,7 @@ public class HogeMeta extends ModelMeta<Hoge> {
         e.setProperty("myPrimitiveBoolean", m.isMyPrimitiveBoolean());
         e.setProperty("myBoolean", m.getMyBoolean());
         e.setProperty("myDate", m.getMyDate());
+        e.setProperty("myEnum", enumToString(m.getMyEnum()));
 
         e.setUnindexedProperty(
             "myStringText",

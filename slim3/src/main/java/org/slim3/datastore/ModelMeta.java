@@ -232,6 +232,21 @@ public abstract class ModelMeta<M> {
     }
 
     /**
+     * Converts the string to an {@link Enum}.
+     * 
+     * @param <T>
+     *            the enum type
+     * @param clazz
+     *            the enum class
+     * @param value
+     *            the String
+     * @return an {@link Enum}
+     */
+    protected <T extends Enum<T>> T stringToEnum(Class<T> clazz, String value) {
+        return value != null ? Enum.valueOf(clazz, value) : null;
+    }
+
+    /**
      * Converts the text to a string
      * 
      * @param value

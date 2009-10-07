@@ -20,8 +20,6 @@ import org.slim3.tester.DatastoreTestCase;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.Query.SortDirection;
 
 /**
  * @author higa
@@ -35,9 +33,6 @@ public class SpikeTest extends DatastoreTestCase {
     public void testSpike() throws Exception {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         Entity entity = new Entity("Hoge");
-        entity.setProperty("direction", SortDirection.ASCENDING);
-        Key key = ds.put(entity);
-        Entity entity2 = ds.get(key);
-        assertEquals(SortDirection.ASCENDING, entity2.getProperty("direction"));
+        ds.put(entity);
     }
 }

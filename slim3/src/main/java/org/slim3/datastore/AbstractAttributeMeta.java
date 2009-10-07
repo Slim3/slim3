@@ -132,6 +132,20 @@ public abstract class AbstractAttributeMeta<M, A> {
     }
 
     /**
+     * Converts the value for datastore.
+     * 
+     * @param value
+     *            the value
+     * @return a converted value for datastore
+     */
+    protected Object convertValueForDatastore(Object value) {
+        if (value instanceof Enum<?>) {
+            return Enum.class.cast(value).name();
+        }
+        return value;
+    }
+
+    /**
      * Determines if the parameter is empty.
      * 
      * @param parameter

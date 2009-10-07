@@ -19,6 +19,8 @@ import junit.framework.TestCase;
 
 import org.slim3.datastore.meta.HogeMeta;
 
+import com.google.appengine.api.datastore.Query.SortDirection;
+
 /**
  * @author higa
  * 
@@ -35,5 +37,9 @@ public class CollectionAttributeMetaTest extends TestCase {
             .contains(1)
             .getClass());
         assertNull(meta.myIntegerList.contains(null));
+        ContainsCriterion c =
+            (ContainsCriterion) meta.myEnumList
+                .contains(SortDirection.ASCENDING);
+        assertEquals("ASCENDING", c.value);
     }
 }

@@ -28,6 +28,7 @@ import org.slim3.datastore.Version;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.ShortBlob;
+import com.google.appengine.api.datastore.Query.SortDirection;
 
 /**
  * @author higa
@@ -66,6 +67,8 @@ public class Hoge {
     private Boolean myBoolean;
 
     private Date myDate;
+
+    private SortDirection myEnum;
 
     @Text
     private String myStringText;
@@ -109,6 +112,8 @@ public class Hoge {
     private Set<Float> myFloatSet;
 
     private SortedSet<Float> myFloatSortedSet;
+
+    private List<SortDirection> myEnumList;
 
     @Version
     private Long version;
@@ -336,6 +341,21 @@ public class Hoge {
      */
     public void setMyDate(Date myDate) {
         this.myDate = myDate;
+    }
+
+    /**
+     * @return the myEnum
+     */
+    public SortDirection getMyEnum() {
+        return myEnum;
+    }
+
+    /**
+     * @param myEnum
+     *            the myEnum to set
+     */
+    public void setMyEnum(SortDirection myEnum) {
+        this.myEnum = myEnum;
     }
 
     /**
@@ -636,6 +656,21 @@ public class Hoge {
      */
     public void setMyFloatSortedSet(SortedSet<Float> myFloatSortedSet) {
         this.myFloatSortedSet = myFloatSortedSet;
+    }
+
+    /**
+     * @return the myEnumList
+     */
+    public List<SortDirection> getMyEnumList() {
+        return myEnumList;
+    }
+
+    /**
+     * @param myEnumList
+     *            the myEnumList to set
+     */
+    public void setMyEnumList(List<SortDirection> myEnumList) {
+        this.myEnumList = myEnumList;
     }
 
     /**
