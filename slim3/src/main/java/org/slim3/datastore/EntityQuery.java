@@ -138,4 +138,15 @@ public class EntityQuery extends AbstractQuery<EntityQuery> {
     public Iterator<Entity> asIterator() {
         return asIterable().iterator();
     }
+
+    @Override
+    public <T> T min(String propertyName) throws NullPointerException {
+        return super.min(propertyName);
+    }
+
+    @Override
+    public <T> T max(String propertyName) throws NullPointerException {
+        return super.max(propertyName);
+    }
+
 }

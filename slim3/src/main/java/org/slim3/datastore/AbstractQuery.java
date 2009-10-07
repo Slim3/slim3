@@ -29,6 +29,8 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.SortDirection;
 
 /**
  * An abstract query.
@@ -299,6 +301,59 @@ public abstract class AbstractQuery<SUB> {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         PreparedQuery pq = prepareInternal(ds);
         return countEntitiesInternal(pq);
+    }
+
+    /**
+     * Return a minimum value of the property. It does not include null.
+     * 
+     * @param <T>
+     *            the property type
+     * @param propertyName
+     *            the property name
+     * @return a minimum value of the property
+     * @throws NullPointerException
+     *             if the propertyName parameter is null
+     */
+    @SuppressWarnings("unchecked")
+    protected <T> T min(String propertyName) throws NullPointerException {
+        if (propertyName == null) {
+            throw new NullPointerException(
+                "The propertyName parameter is null.");
+        }
+        query.addFilter(propertyName, FilterOperator.GREATER_THAN, null);
+        query.addSort(propertyName, SortDirection.ASCENDING);
+        fetchOptions.offset(0).limit(1);
+        List<Entity> list = asEntityList();
+        if (list.size() == 0) {
+            return null;
+        }
+        return (T) list.get(0).getProperty(propertyName);
+    }
+
+    /**
+     * Return a maximum value of the property.
+     * 
+     * @param <T>
+     *            the property type
+     * @param propertyName
+     *            the property name
+     * @return a maximum value of the property
+     * @throws NullPointerException
+     *             if the propertyName parameter is null
+     */
+    @SuppressWarnings("unchecked")
+    protected <T> T max(String propertyName) throws NullPointerException {
+        if (propertyName == null) {
+            throw new NullPointerException(
+                "The propertyName parameter is null.");
+        }
+        query.addSort(propertyName, SortDirection.DESCENDING);
+        fetchOptions.offset(0).limit(1);
+        List<Entity> list = asEntityList();
+        if (list.size() == 0) {
+            return null;
+        }
+        return (T) list.get(0).getProperty(propertyName);
     }
 
     /**

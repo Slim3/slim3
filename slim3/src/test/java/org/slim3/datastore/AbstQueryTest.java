@@ -172,6 +172,39 @@ public class AbstQueryTest extends DatastoreTestCase {
     /**
      * @throws Exception
      */
+    public void testMin() throws Exception {
+        Entity entity = new Entity("Hoge");
+        entity.setProperty("age", 10);
+        ds.put(entity);
+        Entity entity2 = new Entity("Hoge");
+        entity2.setProperty("age", 20);
+        ds.put(entity2);
+        Entity entity3 = new Entity("Hoge");
+        entity3.setProperty("age", null);
+        ds.put(entity3);
+        MyQuery query = new MyQuery("Hoge");
+        assertEquals(10L, query.min("age"));
+        assertNull(query.max("name"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testMax() throws Exception {
+        Entity entity = new Entity("Hoge");
+        entity.setProperty("age", 10);
+        ds.put(entity);
+        Entity entity2 = new Entity("Hoge");
+        entity2.setProperty("age", 20);
+        ds.put(entity2);
+        MyQuery query = new MyQuery("Hoge");
+        assertEquals(20L, query.max("age"));
+        assertNull(query.max("name"));
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testOffset() throws Exception {
         MyQuery q = new MyQuery("Hoge");
         assertSame(q, q.offset(10));
