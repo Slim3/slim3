@@ -59,6 +59,7 @@ import com.sun.mirror.declaration.Declaration;
 import com.sun.mirror.declaration.TypeDeclaration;
 import com.sun.mirror.type.ArrayType;
 import com.sun.mirror.type.DeclaredType;
+import com.sun.mirror.type.EnumType;
 import com.sun.mirror.type.PrimitiveType;
 import com.sun.mirror.type.TypeMirror;
 import com.sun.mirror.type.PrimitiveType.Kind;
@@ -235,7 +236,7 @@ public class DataTypeFactory {
         public void visitDeclaredType(DeclaredType declaredType) {
             TypeDeclaration typeDeclaration = toTypeDeclaration(declaredType);
             String className = typeDeclaration.getQualifiedName();
-            dataType = getCoreReferenceType(className);
+            dataType = getCoreReferenceType(className, declaredType);
             if (dataType != null) {
                 return;
             }
@@ -246,7 +247,6 @@ public class DataTypeFactory {
             if (isSerializable(declaredType)) {
                 dataType =
                     new OtherReferenceType(className, declaredType.toString());
-                dataType.setSerialized(true);
                 return;
             }
             throw new ValidationException(
@@ -310,10 +310,28 @@ public class DataTypeFactory {
          * 
          * @param className
          *            the class name
+         * @param declaredType
+         *            the declared type
          * @return a core reference type
          */
-        protected CoreReferenceType getCoreReferenceType(String className) {
-            return CORE_REFERENCE_TYPES.get(className);
+        protected CoreReferenceType getCoreReferenceType(
+                final String className, DeclaredType declaredType) {
+            if (CORE_REFERENCE_TYPES.containsKey(className)) {
+                return CORE_REFERENCE_TYPES.get(className);
+            }
+            class Visitor extends SimpleTypeVisitor {
+
+                CoreReferenceType result;
+
+                @Override
+                public void visitEnumType(EnumType enumType) {
+                    this.result =
+                        new org.slim3.gen.datastore.EnumType(className);
+                }
+            }
+            Visitor visitor = new Visitor();
+            declaredType.accept(visitor);
+            return visitor.result;
         }
 
         /**
@@ -363,7 +381,9 @@ public class DataTypeFactory {
             TypeDeclaration elementDeclaration =
                 toTypeDeclaration(elementDeclaredType);
             CoreReferenceType elementCoreReferenceType =
-                getCoreReferenceType(elementDeclaration.getQualifiedName());
+                getCoreReferenceType(
+                    elementDeclaration.getQualifiedName(),
+                    elementDeclaredType);
             if (elementCoreReferenceType != null) {
                 return createCollectionType(
                     className,

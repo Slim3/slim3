@@ -150,6 +150,10 @@ public class SimpleDataTypeVisitor<R, P, TH extends Throwable> implements
         return visitCoreReferenceType(type, p);
     }
 
+    public R visitEnumType(EnumType type, P p) throws TH {
+        return visitCoreReferenceType(type, p);
+    }
+
     public R visitPrimitiveType(PrimitiveType type, P p) throws TH {
         return visitDataType(type, p);
     }

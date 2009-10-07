@@ -23,6 +23,7 @@ import static org.slim3.gen.ClassConstants.Entity;
 import static org.slim3.gen.ClassConstants.Long;
 import static org.slim3.gen.ClassConstants.Object;
 import static org.slim3.gen.ClassConstants.ShortBlob;
+import static org.slim3.gen.ClassConstants.String;
 import static org.slim3.gen.ClassConstants.StringAttributeMeta;
 import static org.slim3.gen.ClassConstants.Text;
 
@@ -36,10 +37,12 @@ import org.slim3.gen.datastore.CollectionType;
 import org.slim3.gen.datastore.CorePrimitiveType;
 import org.slim3.gen.datastore.CoreReferenceType;
 import org.slim3.gen.datastore.DataType;
+import org.slim3.gen.datastore.EnumType;
 import org.slim3.gen.datastore.FloatType;
 import org.slim3.gen.datastore.IntegerType;
 import org.slim3.gen.datastore.KeyType;
 import org.slim3.gen.datastore.ListType;
+import org.slim3.gen.datastore.LongType;
 import org.slim3.gen.datastore.PrimitiveBooleanType;
 import org.slim3.gen.datastore.PrimitiveByteType;
 import org.slim3.gen.datastore.PrimitiveDoubleType;
@@ -128,6 +131,8 @@ public class ModelMetaGenerator implements Generator {
         printer.println();
         printer.indent();
         printAttributeMetaFields(printer);
+        printGetVersion(printer);
+        printIncrementVersionMethod(printer);
         printEntityToModelMethod(printer);
         printModelToEntityMethod(printer);
         printer.unindent();
@@ -160,7 +165,7 @@ public class ModelMetaGenerator implements Generator {
     }
 
     /**
-     * Generates the entityToModel method.
+     * Generates the {@code entityToModel} method.
      * 
      * @param printer
      *            the prnter
@@ -172,7 +177,7 @@ public class ModelMetaGenerator implements Generator {
     }
 
     /**
-     * Generates the modelToEntity method.
+     * Generates the {@code modelToEntity} method.
      * 
      * @param printer
      *            the prnter
@@ -181,6 +186,125 @@ public class ModelMetaGenerator implements Generator {
         ModelToEntityMethodGenerator generator =
             new ModelToEntityMethodGenerator(printer);
         generator.generate();
+    }
+
+    /**
+     * Generates the {@code getVersion} method.
+     * 
+     * @param printer
+     *            the prnter
+     */
+    protected void printGetVersion(final Printer printer) {
+        printer.println("@Override");
+        printer.println("public long getVersion(Object model) {");
+        final AttributeMetaDesc attr =
+            modelMetaDesc.getVersionAttributeMetaDesc();
+        if (attr == null) {
+            printer
+                .println(
+                    "    throw new IllegalStateException(\"The version property of the model[%1$s] is not defined.\");",
+                    modelMetaDesc.getModelClassName());
+        } else {
+            printer.println("    %1$s m = (%1$s) model;", modelMetaDesc
+                .getModelClassName());
+            DataType dataType = attr.getDataType();
+            dataType.accept(
+                new SimpleDataTypeVisitor<Void, Void, RuntimeException>() {
+
+                    @Override
+                    protected Void defaultAction(DataType type, Void p)
+                            throws RuntimeException {
+                        printer
+                            .println(
+                                "    throw new IllegalStateException(\"The version property of the model[%1$s] is not defined.\");",
+                                modelMetaDesc.getModelClassName());
+                        return null;
+                    }
+
+                    @Override
+                    public Void visitPrimitiveLongType(PrimitiveLongType type,
+                            Void p) throws RuntimeException {
+                        printer.println("    return m.%1$s();", attr
+                            .getReadMethodName());
+                        return null;
+                    }
+
+                    @Override
+                    public Void visitLongType(LongType type, Void p)
+                            throws RuntimeException {
+                        printer
+                            .println(
+                                "    return m.%1$s() != null ? m.%1$s().longValue() : 0L;",
+                                attr.getReadMethodName());
+                        return null;
+                    }
+
+                },
+                null);
+        }
+        printer.println("}");
+        printer.println();
+    }
+
+    /**
+     * Generates the {@code incrementVersion} method.
+     * 
+     * @param printer
+     *            the prnter
+     */
+    protected void printIncrementVersionMethod(final Printer printer) {
+        printer.println("@Override");
+        printer.println("public void incrementVersion(Object model) {");
+        final AttributeMetaDesc attr =
+            modelMetaDesc.getVersionAttributeMetaDesc();
+        if (attr == null) {
+            printer
+                .println(
+                    "    throw new IllegalStateException(\"The version property of the model[%1$s] is not defined.\");",
+                    modelMetaDesc.getModelClassName());
+        } else {
+            printer.println("    %1$s m = (%1$s) model;", modelMetaDesc
+                .getModelClassName());
+            DataType dataType = attr.getDataType();
+            dataType.accept(
+                new SimpleDataTypeVisitor<Void, Void, RuntimeException>() {
+
+                    @Override
+                    protected Void defaultAction(DataType type, Void p)
+                            throws RuntimeException {
+                        printer
+                            .println(
+                                "    throw new IllegalStateException(\"The version property of the model[%1$s] is not defined.\");",
+                                modelMetaDesc.getModelClassName());
+                        return null;
+                    }
+
+                    @Override
+                    public Void visitPrimitiveLongType(PrimitiveLongType type,
+                            Void p) throws RuntimeException {
+                        printer.println("    m.%1$s(m.%2$s() + 1L);", attr
+                            .getWriteMethodName(), attr.getReadMethodName());
+                        return null;
+                    }
+
+                    @Override
+                    public Void visitLongType(LongType type, Void p)
+                            throws RuntimeException {
+                        printer
+                            .println(
+                                "    long version = m.%1$s() != null ? m.%1$s().longValue() : 0L;",
+                                attr.getReadMethodName());
+                        printer.println(
+                            "    m.%1$s(Long.valueOf(version + 1L));",
+                            attr.getWriteMethodName());
+                        return null;
+                    }
+
+                },
+                null);
+        }
+        printer.println("}");
+        printer.println();
     }
 
     /**
@@ -330,7 +454,7 @@ public class ModelMetaGenerator implements Generator {
     }
 
     /**
-     * Represents the entityToModel method generator.
+     * Represents the {@code entityToModel} method generator.
      * 
      * @author taedium
      * @since 3.0
@@ -356,9 +480,6 @@ public class ModelMetaGenerator implements Generator {
          * Generates the entityToModelMethod.
          */
         public void generate() {
-            // if (isCollectionTypeExistent()) {
-            // printer.println("@SuppressWarnings(\"unchecked\")");
-            // }
             printer.println("@Override");
             printer.println(
                 "public %1$s entityToModel(%2$s entity) {",
@@ -379,40 +500,6 @@ public class ModelMetaGenerator implements Generator {
             printer.unindent();
             printer.println("}");
             printer.println();
-        }
-
-        /**
-         * Returns {@code true} if {@link CollectionType} is included within
-         * attribute meta descs.
-         * 
-         * @return {@code true} if {@link CollectionType} is included within
-         *         attribute meta descs.
-         */
-        protected boolean isCollectionTypeExistent() {
-            for (AttributeMetaDesc attr : modelMetaDesc
-                .getAttributeMetaDescList()) {
-                if (attr.isImpermanent()) {
-                    continue;
-                }
-                DataType dataType = attr.getDataType();
-                Boolean found =
-                    dataType
-                        .accept(
-                            new SimpleDataTypeVisitor<Boolean, Void, RuntimeException>(
-                                false) {
-                                @Override
-                                public Boolean visitCollectionType(
-                                        CollectionType type, Void p)
-                                        throws RuntimeException {
-                                    return true;
-                                }
-                            },
-                            null);
-                if (found) {
-                    return true;
-                }
-            }
-            return false;
         }
 
         @Override
@@ -572,6 +659,19 @@ public class ModelMetaGenerator implements Generator {
                 return null;
             }
             return super.visitStringType(type, p);
+        }
+
+        @Override
+        public Void visitEnumType(EnumType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            printer
+                .println(
+                    "model.%1$s(stringToEnum(%2$s.class, (%3$s) entity.getProperty(\"%4$s\")));",
+                    p.getWriteMethodName(),
+                    type.getTypeName(),
+                    String,
+                    p.getName());
+            return null;
         }
 
         @Override
@@ -801,7 +901,7 @@ public class ModelMetaGenerator implements Generator {
     }
 
     /**
-     * Represents the modelToMethod method generator.
+     * Represents the {@code modelToMethod} method generator.
      * 
      * @author taedium
      * @since 3.0
@@ -927,6 +1027,27 @@ public class ModelMetaGenerator implements Generator {
                 return null;
             }
             return super.visitStringType(type, p);
+        }
+
+        @Override
+        public Void visitEnumType(EnumType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            if (type.isSerialized()) {
+                return super.visitCoreReferenceType(type, p);
+            }
+            if (p.isUnindexed()) {
+                printer
+                    .println(
+                        "entity.setUnindexedProperty(\"%1$s\", enumToString(m.%2$s()));",
+                        p.getName(),
+                        p.getReadMethodName());
+            } else {
+                printer.println(
+                    "entity.setProperty(\"%1$s\", enumToString(m.%2$s()));",
+                    p.getName(),
+                    p.getReadMethodName());
+            }
+            return null;
         }
 
         @Override

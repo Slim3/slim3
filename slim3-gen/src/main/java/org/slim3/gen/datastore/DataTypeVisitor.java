@@ -356,6 +356,19 @@ public interface DataTypeVisitor<R, P, TH extends Throwable> {
     R visitTextType(TextType type, P p) throws TH;
 
     /**
+     * Visits {@link EnumType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
+    R visitEnumType(EnumType type, P p) throws TH;
+
+    /**
      * Visits {@link PrimitiveType}.
      * 
      * @param type

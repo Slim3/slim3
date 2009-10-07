@@ -15,8 +15,10 @@
  */
 package org.slim3.gen.datastore;
 
+import java.util.Collection;
+
 /**
- * Represents {@link CollectionType} type.
+ * Represents {@link Collection} type.
  * 
  * @author taedium
  * @since 3.0

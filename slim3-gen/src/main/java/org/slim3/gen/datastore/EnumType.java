@@ -16,31 +16,27 @@
 package org.slim3.gen.datastore;
 
 /**
- * Represents other reference type.
+ * Represents {@Enum} type.
  * 
  * @author taedium
  * @since 3.0
  * 
  */
-public class OtherReferenceType extends ReferenceType {
+public class EnumType extends CoreReferenceType {
 
     /**
-     * Creates a new {@link OtherReferenceType}.
+     * Creates a new {@link EnumType}.
      * 
      * @param className
      *            the class name
-     * @param typeName
-     *            the type name
      */
-    public OtherReferenceType(String className, String typeName) {
-        super(className, typeName);
-        setSerialized(true);
+    public EnumType(String className) {
+        super(className);
     }
 
     @Override
     public <R, P, TH extends Throwable> R accept(
             DataTypeVisitor<R, P, TH> visitor, P p) throws TH {
-        return visitor.visitOtherReferenceType(this, p);
+        return visitor.visitEnumType(this, p);
     }
-
 }
