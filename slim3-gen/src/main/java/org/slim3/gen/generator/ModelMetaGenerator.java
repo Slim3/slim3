@@ -202,7 +202,7 @@ public class ModelMetaGenerator implements Generator {
         if (attr == null) {
             printer
                 .println(
-                    "    throw new IllegalStateException(\"The version property of the model[%1$s] is not defined.\");",
+                    "    throw new IllegalStateException(\"The version property of the model(%1$s) is not defined.\");",
                     modelMetaDesc.getModelClassName());
         } else {
             printer.println("    %1$s m = (%1$s) model;", modelMetaDesc
@@ -216,7 +216,7 @@ public class ModelMetaGenerator implements Generator {
                             throws RuntimeException {
                         printer
                             .println(
-                                "    throw new IllegalStateException(\"The version property of the model[%1$s] is not defined.\");",
+                                "    throw new IllegalStateException(\"The version property of the model(%1$s) is not defined.\");",
                                 modelMetaDesc.getModelClassName());
                         return null;
                     }
@@ -260,7 +260,7 @@ public class ModelMetaGenerator implements Generator {
         if (attr == null) {
             printer
                 .println(
-                    "    throw new IllegalStateException(\"The version property of the model[%1$s] is not defined.\");",
+                    "    throw new IllegalStateException(\"The version property of the model(%1$s) is not defined.\");",
                     modelMetaDesc.getModelClassName());
         } else {
             printer.println("    %1$s m = (%1$s) model;", modelMetaDesc
@@ -274,7 +274,7 @@ public class ModelMetaGenerator implements Generator {
                             throws RuntimeException {
                         printer
                             .println(
-                                "    throw new IllegalStateException(\"The version property of the model[%1$s] is not defined.\");",
+                                "    throw new IllegalStateException(\"The version property of the model(%1$s) is not defined.\");",
                                 modelMetaDesc.getModelClassName());
                         return null;
                     }
