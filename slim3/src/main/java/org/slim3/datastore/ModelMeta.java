@@ -24,6 +24,8 @@ import java.util.TreeSet;
 import org.slim3.util.BeanDesc;
 import org.slim3.util.BeanUtil;
 import org.slim3.util.ByteUtil;
+import org.slim3.util.LongUtil;
+import org.slim3.util.PropertyDesc;
 
 import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Entity;
@@ -92,6 +94,32 @@ public abstract class ModelMeta<M> {
      * @return an entity
      */
     public abstract Entity modelToEntity(Object model);
+
+    /**
+     * Returns version property value of the model.
+     * 
+     * @param model
+     *            the model
+     * @return a version property value of the model
+     */
+    public long getVersion(Object model) {
+        BeanDesc beanDesc = getBeanDesc();
+        PropertyDesc pd = beanDesc.getPropertyDesc("version");
+        return LongUtil.toPrimitiveLong(pd.getValue(model));
+    }
+
+    /**
+     * Increments the version property value.
+     * 
+     * @param model
+     *            the model
+     */
+    public void incrementVersion(Object model) {
+        BeanDesc beanDesc = getBeanDesc();
+        PropertyDesc pd = beanDesc.getPropertyDesc("version");
+        long version = LongUtil.toPrimitiveLong(pd.getValue(model));
+        pd.setValue(model, version + 1);
+    }
 
     /**
      * Converts the long to a primitive short.
@@ -190,6 +218,17 @@ public abstract class ModelMeta<M> {
      */
     protected boolean booleanToPrimitiveBoolean(Boolean value) {
         return value != null ? value : false;
+    }
+
+    /**
+     * Converts the {@link Enum} to a string representation.
+     * 
+     * @param value
+     *            the {@link Enum}
+     * @return a string representation
+     */
+    protected String enumToString(Enum<?> value) {
+        return value != null ? value.name() : null;
     }
 
     /**
