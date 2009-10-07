@@ -16,29 +16,30 @@
 package org.slim3.gen.datastore;
 
 /**
- * Represents reference type.
+ * Represents other reference type.
  * 
  * @author taedium
  * @since 3.0
  * 
  */
-public abstract class ReferenceType extends AbstractDataType {
+public class OtherReferenceType extends ReferenceType {
 
     /**
-     * Creates a new {@link ReferenceType}.
+     * Creates a new {@link OtherReferenceType}.
      * 
      * @param className
      *            the class name
      * @param typeName
      *            the type name
      */
-    public ReferenceType(String className, String typeName) {
+    public OtherReferenceType(String className, String typeName) {
         super(className, typeName);
     }
 
+    @Override
     public <R, P, TH extends Throwable> R accept(
             DataTypeVisitor<R, P, TH> visitor, P p) throws TH {
-        return visitor.visitReferenceType(this, p);
+        return visitor.visitOtherReferenceType(this, p);
     }
 
 }

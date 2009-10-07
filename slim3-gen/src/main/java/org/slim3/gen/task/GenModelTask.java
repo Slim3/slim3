@@ -23,7 +23,6 @@ import org.slim3.gen.Constants;
 import org.slim3.gen.desc.ModelDesc;
 import org.slim3.gen.generator.Generator;
 import org.slim3.gen.generator.ModelGenerator;
-import org.slim3.gen.generator.ModelTestCaseGenerator;
 import org.slim3.gen.message.MessageCode;
 import org.slim3.gen.message.MessageFormatter;
 
@@ -154,17 +153,6 @@ public class GenModelTask extends AbstractGenJavaFileTask {
      */
     protected Generator createModelGenerator(ModelDesc modelDesc) {
         return new ModelGenerator(modelDesc);
-    }
-
-    /**
-     * Creates a {@link Generator} for a test case.
-     * 
-     * @param modelDesc
-     *            the model description
-     * @return a generator
-     */
-    protected Generator createModelTestCaseGenerator(ModelDesc modelDesc) {
-        return new ModelTestCaseGenerator(modelDesc);
     }
 
 }

@@ -19,7 +19,7 @@ import org.slim3.gen.desc.ModelDesc;
 import org.slim3.gen.printer.Printer;
 
 /**
- * Generates a JDO model java file.
+ * Generates a model java file.
  * 
  * @author taedium
  * 

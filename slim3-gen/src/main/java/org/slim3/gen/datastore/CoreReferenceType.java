@@ -22,7 +22,7 @@ package org.slim3.gen.datastore;
  * @since 3.0
  * 
  */
-public class CoreReferenceType extends ReferenceType {
+public abstract class CoreReferenceType extends ReferenceType {
 
     /**
      * Creates a new {@link CoreReferenceType}.

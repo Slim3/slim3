@@ -245,7 +245,7 @@ public class DataTypeFactory {
             }
             if (isSerializable(declaredType)) {
                 dataType =
-                    new ReferenceType(className, declaredType.toString());
+                    new OtherReferenceType(className, declaredType.toString());
                 dataType.setSerialized(true);
                 return;
             }

@@ -60,7 +60,7 @@ import org.slim3.gen.printer.Printer;
 import org.slim3.gen.util.ClassUtil;
 
 /**
- * Generates a JDO model meta java file.
+ * Generates a model meta java file.
  * 
  * @author taedium
  * @since 3.0
