@@ -208,6 +208,42 @@ public final class Datastore {
     }
 
     /**
+     * Returns a model specified by the key. If there is a current transaction,
+     * this operation will execute within that transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param key
+     *            the key
+     * @param cache
+     *            the cache of models. This cache can not be shared with
+     *            multiple threads.
+     * @return a model specified by the key
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null or if the key parameter is
+     *             null or if the cache parameter is null
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     */
+    @SuppressWarnings("unchecked")
+    public static <M> M get(ModelMeta<M> modelMeta, Key key,
+            Map<Key, Object> cache) throws NullPointerException,
+            EntityNotFoundRuntimeException {
+        if (cache == null) {
+            throw new NullPointerException("The cache parameter is null.");
+        }
+        M model = (M) cache.get(key);
+        if (model != null) {
+            return model;
+        }
+        model = get(modelMeta, key);
+        cache.put(key, model);
+        return model;
+    }
+
+    /**
      * Returns an entity specified by the key within the provided transaction.
      * 
      * @param tx
@@ -264,6 +300,46 @@ public final class Datastore {
         }
         Entity entity = get(tx, key);
         return modelMeta.entityToModel(entity);
+    }
+
+    /**
+     * Returns a model specified by the key within the provided transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param tx
+     *            the transaction
+     * @param modelMeta
+     *            the meta data of model
+     * @param key
+     *            the key
+     * @param cache
+     *            the cache of models. This cache can not be shared with
+     *            multiple threads.
+     * @return a model specified by the key
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null or if the key parameter is
+     *             null or if the cache parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     */
+    @SuppressWarnings("unchecked")
+    public static <M> M get(Transaction tx, ModelMeta<M> modelMeta, Key key,
+            Map<Key, Object> cache) throws NullPointerException,
+            IllegalStateException, EntityNotFoundRuntimeException {
+        if (cache == null) {
+            throw new NullPointerException("The cache parameter is null.");
+        }
+        M model = (M) cache.get(key);
+        if (model != null) {
+            return model;
+        }
+        model = get(tx, modelMeta, key);
+        cache.put(key, model);
+        return model;
     }
 
     /**

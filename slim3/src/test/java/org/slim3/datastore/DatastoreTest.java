@@ -17,6 +17,7 @@ package org.slim3.datastore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -85,12 +86,39 @@ public class DatastoreTest extends DatastoreTestCase {
     /**
      * @throws Exception
      */
+    public void testGetModelUsingCache() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Map<Key, Object> cache = new HashMap<Key, Object>();
+        Hoge model = Datastore.get(meta, key, cache);
+        assertNotNull(model);
+        assertSame(model, cache.get(key));
+        ds.delete(key);
+        assertSame(model, Datastore.get(meta, key, cache));
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testGetModelInTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Transaction tx = ds.beginTransaction();
         Hoge model = Datastore.get(tx, meta, key);
         tx.rollback();
         assertNotNull(model);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetModelInTxUsingCache() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Map<Key, Object> cache = new HashMap<Key, Object>();
+        Transaction tx = ds.beginTransaction();
+        Hoge model = Datastore.get(tx, meta, key, cache);
+        assertNotNull(model);
+        assertSame(model, cache.get(key));
+        ds.delete(key);
+        assertSame(model, Datastore.get(tx, meta, key, cache));
     }
 
     /**
