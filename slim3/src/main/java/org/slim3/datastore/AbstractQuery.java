@@ -304,7 +304,7 @@ public abstract class AbstractQuery<SUB> {
     }
 
     /**
-     * Return a minimum value of the property. It does not include null.
+     * Return a minimum value of the property. The value does not include null.
      * 
      * @param <T>
      *            the property type

@@ -99,4 +99,32 @@ public class ModelQueryTest extends DatastoreTestCase {
         List<Hoge> list = query.asList();
         assertEquals(1, list.size());
     }
+
+    /**
+     * @throws Exception
+     */
+    public void testMin() throws Exception {
+        Hoge hoge = new Hoge();
+        hoge.setMyInteger(1);
+        Hoge hoge2 = new Hoge();
+        hoge2.setMyInteger(2);
+        Hoge hoge3 = new Hoge();
+        Datastore.put(hoge, hoge2, hoge3);
+        assertEquals(Integer.valueOf(1), Datastore.query(meta).min(
+            meta.myInteger));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testMax() throws Exception {
+        Hoge hoge = new Hoge();
+        hoge.setMyInteger(1);
+        Hoge hoge2 = new Hoge();
+        hoge2.setMyInteger(2);
+        Hoge hoge3 = new Hoge();
+        Datastore.put(hoge, hoge2, hoge3);
+        assertEquals(Integer.valueOf(2), Datastore.query(meta).max(
+            meta.myInteger));
+    }
 }

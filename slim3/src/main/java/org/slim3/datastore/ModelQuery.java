@@ -18,6 +18,8 @@ package org.slim3.datastore;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slim3.util.ConversionUtil;
+
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 
@@ -132,4 +134,51 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
         }
         return modelMeta.entityToModel(entity);
     }
+
+    /**
+     * Return a minimum value of the property. The value does not include null.
+     * 
+     * @param <A>
+     *            the attribute type
+     * @param attributeMeta
+     *            the meta data of attribute
+     * @return a minimum value of the property
+     * @throws NullPointerException
+     *             if the attributeMeta parameter is null
+     */
+    @SuppressWarnings("unchecked")
+    public <A> A min(CoreAttributeMeta<M, A> attributeMeta)
+            throws NullPointerException {
+        if (attributeMeta == null) {
+            throw new NullPointerException(
+                "The attributeMeta parameter is null.");
+        }
+        Object value = super.min(attributeMeta.getName());
+        return (A) ConversionUtil.convert(value, attributeMeta
+            .getAttributeClass());
+    }
+
+    /**
+     * Return a maximum value of the property.
+     * 
+     * @param <A>
+     *            the attribute type
+     * @param attributeMeta
+     *            the meta data of attribute
+     * @return a maximum value of the property
+     * @throws NullPointerException
+     *             if the attributeMeta parameter is null
+     */
+    @SuppressWarnings("unchecked")
+    public <A> A max(CoreAttributeMeta<M, A> attributeMeta)
+            throws NullPointerException {
+        if (attributeMeta == null) {
+            throw new NullPointerException(
+                "The attributeMeta parameter is null.");
+        }
+        Object value = super.max(attributeMeta.getName());
+        return (A) ConversionUtil.convert(value, attributeMeta
+            .getAttributeClass());
+    }
+
 }
