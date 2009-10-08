@@ -29,6 +29,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.KeyRange;
 import com.google.appengine.api.datastore.Transaction;
 
 /**
@@ -89,11 +90,22 @@ public class DatastoreTest extends DatastoreTestCase {
      * @throws Exception
      */
     public void testAllocateIds() throws Exception {
-        assertNotNull(Datastore.allocateIds("Hoge", 1));
-        assertNotNull(Datastore.allocateIds(meta, 1));
+        KeyRange range = Datastore.allocateIds("Hoge", 2);
+        assertNotNull(range);
+        assertEquals(2, range.getSize());
+
+        range = Datastore.allocateIds(meta, 2);
+        assertNotNull(range);
+        assertEquals(2, range.getSize());
+
         Key parentKey = KeyFactory.createKey("Parent", 1);
-        assertNotNull(Datastore.allocateIds(parentKey, "Hoge", 1));
-        assertNotNull(Datastore.allocateIds(parentKey, meta, 1));
+        range = Datastore.allocateIds(parentKey, "Hoge", 2);
+        assertNotNull(range);
+        assertEquals(2, range.getSize());
+
+        range = Datastore.allocateIds(parentKey, meta, 2);
+        assertNotNull(range);
+        assertEquals(2, range.getSize());
     }
 
     /**

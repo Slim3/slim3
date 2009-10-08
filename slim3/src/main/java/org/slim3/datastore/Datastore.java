@@ -281,7 +281,7 @@ public final class Datastore {
             throw new NullPointerException("The kind parameter is null.");
         }
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        return allocateIdsInternal(ds, parentKey, kind, 1);
+        return allocateIdsInternal(ds, parentKey, kind, num);
     }
 
     /**
