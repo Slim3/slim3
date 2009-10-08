@@ -35,6 +35,7 @@ import com.google.appengine.api.datastore.DatastoreTimeoutException;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyRange;
 import com.google.appengine.api.datastore.Transaction;
 
 /**
@@ -150,6 +151,194 @@ public final class Datastore {
                 try {
                     tx.rollback();
                     return;
+                } catch (DatastoreTimeoutException e2) {
+                    logger.log(Level.WARNING, "Retry("
+                        + i
+                        + "): "
+                        + e2.getMessage(), e2);
+                }
+            }
+            throw e;
+        }
+    }
+
+    /**
+     * Allocates a key within a namespace defined by the kind.
+     * 
+     * @param kind
+     *            the kind
+     * @return keys within a namespace defined by the kind
+     * @throws NullPointerException
+     *             if the kind parameter is null
+     */
+    public static Key allocateId(String kind) throws NullPointerException {
+        return allocateIds(kind, 1).iterator().next();
+    }
+
+    /**
+     * Allocates a key within a namespace defined by the kind of the model.
+     * 
+     * @param modelMeta
+     *            the meta data of the model
+     * @return a key within a namespace defined by the kind of the model
+     */
+    public static Key allocateId(ModelMeta<?> modelMeta) {
+        return allocateIds(modelMeta, 1).iterator().next();
+    }
+
+    /**
+     * Allocates a key within a namespace defined by the parent key and the
+     * kind.
+     * 
+     * @param parentKey
+     *            the parent key
+     * @param kind
+     *            the kind
+     * @return a key within a namespace defined by the parent key and the kind
+     * @throws NullPointerException
+     *             if the parentKey parameter is null or if the kind parameter
+     *             is null
+     */
+    public static Key allocateId(Key parentKey, String kind)
+            throws NullPointerException {
+        return allocateIds(parentKey, kind, 1).iterator().next();
+    }
+
+    /**
+     * Allocates a key within a namespace defined by the parent key and the kind
+     * of the model.
+     * 
+     * @param parentKey
+     *            the parent key
+     * @param modelMeta
+     *            the meta data of the model
+     * @return a key within a namespace defined by the parent key and the kind
+     *         of the model
+     * @throws NullPointerException
+     *             if the parentKey parameter is null or if the modelMeta
+     *             parameter is null
+     */
+    public static Key allocateId(Key parentKey, ModelMeta<?> modelMeta)
+            throws NullPointerException {
+        return allocateIds(parentKey, modelMeta, 1).iterator().next();
+    }
+
+    /**
+     * Allocates keys within a namespace defined by the kind.
+     * 
+     * @param kind
+     *            the kind
+     * @param num
+     *            the number of allocated keys
+     * @return keys within a namespace defined by the kind
+     * @throws NullPointerException
+     *             if the kind parameter is null
+     */
+    public static KeyRange allocateIds(String kind, long num)
+            throws NullPointerException {
+        if (kind == null) {
+            throw new NullPointerException("The kind parameter is null.");
+        }
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        return allocateIdsInternal(ds, kind, num);
+    }
+
+    /**
+     * Allocates keys within a namespace defined by the kind of the model.
+     * 
+     * @param modelMeta
+     *            the meta data of the model
+     * @param num
+     *            the number of allocated keys
+     * @return keys within a namespace defined by the kind of the model
+     */
+    public static KeyRange allocateIds(ModelMeta<?> modelMeta, long num) {
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
+        }
+        return allocateIds(modelMeta.getModelClass().getSimpleName(), num);
+    }
+
+    /**
+     * Allocates keys within a namespace defined by the parent key and the kind.
+     * 
+     * @param parentKey
+     *            the parent key
+     * @param kind
+     *            the kind
+     * @param num
+     * @return keys within a namespace defined by the parent key and the kind
+     * @throws NullPointerException
+     *             if the parentKey parameter is null or if the kind parameter
+     *             is null
+     */
+    public static KeyRange allocateIds(Key parentKey, String kind, int num)
+            throws NullPointerException {
+        if (parentKey == null) {
+            throw new NullPointerException("The parentKey parameter is null.");
+        }
+        if (kind == null) {
+            throw new NullPointerException("The kind parameter is null.");
+        }
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        return allocateIdsInternal(ds, parentKey, kind, 1);
+    }
+
+    /**
+     * Allocates keys within a namespace defined by the parent key and the kind
+     * of the model.
+     * 
+     * @param parentKey
+     *            the parent key
+     * @param modelMeta
+     *            the meta data of the model
+     * @param num
+     * @return keys within a namespace defined by the parent key and the kind of
+     *         the model
+     * @throws NullPointerException
+     *             if the parentKey parameter is null or if the modelMeta
+     *             parameter is null
+     */
+    public static KeyRange allocateIds(Key parentKey, ModelMeta<?> modelMeta,
+            int num) throws NullPointerException {
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
+        }
+        return allocateIds(
+            parentKey,
+            modelMeta.getModelClass().getSimpleName(),
+            num);
+    }
+
+    private static KeyRange allocateIdsInternal(DatastoreService ds,
+            String kind, long num) {
+        try {
+            return ds.allocateIds(kind, num);
+        } catch (DatastoreTimeoutException e) {
+            logger.log(Level.WARNING, e.getMessage(), e);
+            for (int i = 0; i < MAX_RETRY; i++) {
+                try {
+                    return ds.allocateIds(kind, num);
+                } catch (DatastoreTimeoutException e2) {
+                    logger.log(Level.WARNING, "Retry("
+                        + i
+                        + "): "
+                        + e2.getMessage(), e2);
+                }
+            }
+            throw e;
+        }
+    }
+
+    private static KeyRange allocateIdsInternal(DatastoreService ds,
+            Key parentKey, String kind, long num) {
+        try {
+            return ds.allocateIds(parentKey, kind, num);
+        } catch (DatastoreTimeoutException e) {
+            logger.log(Level.WARNING, e.getMessage(), e);
+            for (int i = 0; i < MAX_RETRY; i++) {
+                try {
+                    return ds.allocateIds(parentKey, kind, num);
                 } catch (DatastoreTimeoutException e2) {
                     logger.log(Level.WARNING, "Retry("
                         + i
