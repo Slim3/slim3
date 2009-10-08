@@ -9,11 +9,11 @@ import org.slim3.controller.Controller;
 import org.slim3.controller.Navigation;
 import org.slim3.datastore.Datastore;
 
+import slim3.demo.meta.ChildMeta;
+import slim3.demo.meta.ParentMeta;
 import slim3.demo.model.Child;
 import slim3.demo.model.Parent;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Transaction;
 
@@ -25,24 +25,26 @@ public class PutEGSlim3Controller extends Controller {
 
     @Override
     public Navigation run() {
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        ParentMeta p = new ParentMeta();
+        ChildMeta c = new ChildMeta();
         long start = System.currentTimeMillis();
+        Iterator<Key> parentKeys = Datastore.allocateIds(p, 100).iterator();
         for (int i = 0; i < 100; i++) {
             List<Object> models = new ArrayList<Object>();
-            Key parentKey = ds.allocateIds("Parent", 1).iterator().next();
+            Key parentKey = parentKeys.next();
             Parent parent = new Parent();
             parent.setKey(parentKey);
             models.add(parent);
-            Iterator<Key> ids =
-                ds.allocateIds(parentKey, "Child", 10).iterator();
+            Iterator<Key> childKeys =
+                Datastore.allocateIds(parentKey, c, 10).iterator();
             for (int j = 0; j < 10; j++) {
                 Child child = new Child();
-                child.setKey(ids.next());
+                child.setKey(childKeys.next());
                 models.add(child);
             }
-            Transaction tx = ds.beginTransaction();
+            Transaction tx = Datastore.beginTransaction();
             Datastore.put(tx, models);
-            tx.commit();
+            Datastore.commit(tx);
         }
         sessionScope("putEGSlim3", System.currentTimeMillis() - start);
         return redirect(basePath);

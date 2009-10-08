@@ -24,14 +24,15 @@ public class PutEGLLController extends Controller {
     public Navigation run() {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         long start = System.currentTimeMillis();
+        Iterator<Key> parentKeys = ds.allocateIds("Parent", 100).iterator();
         for (int i = 0; i < 100; i++) {
             List<Entity> entities = new ArrayList<Entity>();
-            Key parentKey = ds.allocateIds("Parent", 1).iterator().next();
+            Key parentKey = parentKeys.next();
             entities.add(new Entity(parentKey));
-            Iterator<Key> ids =
+            Iterator<Key> childKeys =
                 ds.allocateIds(parentKey, "Child", 10).iterator();
             for (int j = 0; j < 10; j++) {
-                entities.add(new Entity(ids.next()));
+                entities.add(new Entity(childKeys.next()));
             }
             Transaction tx = ds.beginTransaction();
             ds.put(tx, entities);
