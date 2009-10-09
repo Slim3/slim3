@@ -487,17 +487,21 @@ public class DatastoreTest extends DatastoreTestCase {
      * @throws Exception
      */
     public void testPutModel() throws Exception {
-        assertNotNull(Datastore.put(new Hoge()));
+        Hoge hoge = new Hoge();
+        assertNotNull(Datastore.put(hoge));
+        assertNotNull(hoge.getKey());
     }
 
     /**
      * @throws Exception
      */
     public void testPutModelInTx() throws Exception {
+        Hoge hoge = new Hoge();
         Transaction tx = Datastore.beginTransaction();
-        Key key = Datastore.put(tx, new Hoge());
+        Key key = Datastore.put(tx, hoge);
         tx.rollback();
         assertNotNull(key);
+        assertNotNull(hoge.getKey());
         try {
             ds.get(key);
             fail();
@@ -528,15 +532,22 @@ public class DatastoreTest extends DatastoreTestCase {
         List<Key> keys = Datastore.put(models);
         assertNotNull(keys);
         assertEquals(2, keys.size());
+        for (Hoge hoge : models) {
+            assertNotNull(hoge.getKey());
+        }
     }
 
     /**
      * @throws Exception
      */
     public void testPutModelsForVarargs() throws Exception {
-        List<Key> keys = Datastore.put(new Hoge(), new Hoge());
+        Hoge hoge = new Hoge();
+        Hoge hoge2 = new Hoge();
+        List<Key> keys = Datastore.put(hoge, hoge2);
         assertNotNull(keys);
         assertEquals(2, keys.size());
+        assertNotNull(hoge.getKey());
+        assertNotNull(hoge2.getKey());
     }
 
     /**
@@ -555,6 +566,8 @@ public class DatastoreTest extends DatastoreTestCase {
         tx.rollback();
         assertNotNull(keys);
         assertEquals(2, keys.size());
+        assertEquals(key, hoge.getKey());
+        assertEquals(key2, hoge2.getKey());
     }
 
     /**
@@ -582,6 +595,25 @@ public class DatastoreTest extends DatastoreTestCase {
      * @throws Exception
      */
     public void testPutModelsInTxForVarargs() throws Exception {
+        Key key = KeyFactory.createKey("Hoge", 1);
+        Key key2 = KeyFactory.createKey(key, "Hoge", 1);
+        Hoge hoge = new Hoge();
+        hoge.setKey(key);
+        Hoge hoge2 = new Hoge();
+        hoge2.setKey(key2);
+        Transaction tx = ds.beginTransaction();
+        List<Key> keys = Datastore.put(tx, hoge, hoge2);
+        tx.rollback();
+        assertNotNull(keys);
+        assertEquals(2, keys.size());
+        assertEquals(key, hoge.getKey());
+        assertEquals(key2, hoge2.getKey());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testPutModelsInIllegalTxForVarargs() throws Exception {
         Key key = KeyFactory.createKey("Hoge", 1);
         Key key2 = KeyFactory.createKey(key, "Hoge", 1);
         Hoge hoge = new Hoge();

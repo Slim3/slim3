@@ -1029,7 +1029,9 @@ public final class Datastore {
         }
         ModelMeta<?> modelMeta = getModelMeta(model.getClass());
         Entity entity = modelMeta.modelToEntity(model);
-        return put(entity);
+        Key key = put(entity);
+        modelMeta.setKey(model, key);
+        return key;
     }
 
     /**
@@ -1079,7 +1081,9 @@ public final class Datastore {
         }
         ModelMeta<?> modelMeta = getModelMeta(model.getClass());
         Entity entity = modelMeta.modelToEntity(model);
-        return put(tx, entity);
+        Key key = put(tx, entity);
+        modelMeta.setKey(model, key);
+        return key;
     }
 
     /**
@@ -1096,7 +1100,9 @@ public final class Datastore {
         if (models == null) {
             throw new NullPointerException("The models parameter is null.");
         }
-        return putEntities(modelsToEntities(models));
+        List<Key> keys = putEntities(modelsToEntities(models));
+        setKeys(models, keys);
+        return keys;
     }
 
     /**
@@ -1130,7 +1136,9 @@ public final class Datastore {
         if (models == null) {
             throw new NullPointerException("The models parameter is null.");
         }
-        return putEntities(tx, modelsToEntities(models));
+        List<Key> keys = putEntities(tx, modelsToEntities(models));
+        setKeys(models, keys);
+        return keys;
     }
 
     /**
@@ -1167,6 +1175,17 @@ public final class Datastore {
             }
         }
         return entities;
+    }
+
+    private static void setKeys(Iterable<?> models, List<Key> keys) {
+        int i = 0;
+        for (Object model : models) {
+            if (!(model instanceof Entity)) {
+                ModelMeta<?> modelMeta = getModelMeta(model.getClass());
+                modelMeta.setKey(model, keys.get(i));
+            }
+            i++;
+        }
     }
 
     private static List<Key> putEntities(Iterable<Entity> entities)

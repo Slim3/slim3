@@ -13,7 +13,7 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.datastore;
+package org.slim3.datastore.meta;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.datastore.model.MySerializable;
 import org.slim3.tester.DatastoreTestCase;

@@ -27,6 +27,7 @@ import org.slim3.util.ByteUtil;
 
 import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.ShortBlob;
 import com.google.appengine.api.datastore.Text;
 
@@ -82,7 +83,7 @@ public abstract class ModelMeta<M> {
      *            the entity
      * @return a model
      */
-    public abstract M entityToModel(Entity entity);
+    protected abstract M entityToModel(Entity entity);
 
     /**
      * Converts the model to an entity.
@@ -91,7 +92,7 @@ public abstract class ModelMeta<M> {
      *            the model
      * @return an entity
      */
-    public abstract Entity modelToEntity(Object model);
+    protected abstract Entity modelToEntity(Object model);
 
     /**
      * Returns version property value of the model.
@@ -100,7 +101,7 @@ public abstract class ModelMeta<M> {
      *            the model
      * @return a version property value of the model
      */
-    public abstract long getVersion(Object model);
+    protected abstract long getVersion(Object model);
 
     /**
      * Increments the version property value.
@@ -108,7 +109,17 @@ public abstract class ModelMeta<M> {
      * @param model
      *            the model
      */
-    public abstract void incrementVersion(Object model);
+    protected abstract void incrementVersion(Object model);
+
+    /**
+     * Sets the key to the model.
+     * 
+     * @param model
+     *            the model
+     * @param key
+     *            the key
+     */
+    protected abstract void setKey(Object model, Key key);
 
     /**
      * Converts the long to a primitive short.
