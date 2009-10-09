@@ -490,6 +490,7 @@ public class DatastoreTest extends DatastoreTestCase {
         Hoge hoge = new Hoge();
         assertNotNull(Datastore.put(hoge));
         assertNotNull(hoge.getKey());
+        assertEquals(Long.valueOf(1), hoge.getVersion());
     }
 
     /**
@@ -502,6 +503,7 @@ public class DatastoreTest extends DatastoreTestCase {
         tx.rollback();
         assertNotNull(key);
         assertNotNull(hoge.getKey());
+        assertEquals(Long.valueOf(1), hoge.getVersion());
         try {
             ds.get(key);
             fail();
@@ -534,6 +536,7 @@ public class DatastoreTest extends DatastoreTestCase {
         assertEquals(2, keys.size());
         for (Hoge hoge : models) {
             assertNotNull(hoge.getKey());
+            assertEquals(Long.valueOf(1), hoge.getVersion());
         }
     }
 
@@ -548,6 +551,8 @@ public class DatastoreTest extends DatastoreTestCase {
         assertEquals(2, keys.size());
         assertNotNull(hoge.getKey());
         assertNotNull(hoge2.getKey());
+        assertEquals(Long.valueOf(1), hoge.getVersion());
+        assertEquals(Long.valueOf(1), hoge2.getVersion());
     }
 
     /**
@@ -568,6 +573,8 @@ public class DatastoreTest extends DatastoreTestCase {
         assertEquals(2, keys.size());
         assertEquals(key, hoge.getKey());
         assertEquals(key2, hoge2.getKey());
+        assertEquals(Long.valueOf(1), hoge.getVersion());
+        assertEquals(Long.valueOf(1), hoge2.getVersion());
     }
 
     /**
@@ -608,6 +615,8 @@ public class DatastoreTest extends DatastoreTestCase {
         assertEquals(2, keys.size());
         assertEquals(key, hoge.getKey());
         assertEquals(key2, hoge2.getKey());
+        assertEquals(Long.valueOf(1), hoge.getVersion());
+        assertEquals(Long.valueOf(1), hoge2.getVersion());
     }
 
     /**

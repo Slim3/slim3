@@ -1028,6 +1028,7 @@ public final class Datastore {
             throw new NullPointerException("The model parameter is null.");
         }
         ModelMeta<?> modelMeta = getModelMeta(model.getClass());
+        modelMeta.incrementVersion(model);
         Entity entity = modelMeta.modelToEntity(model);
         Key key = put(entity);
         modelMeta.setKey(model, key);
@@ -1080,6 +1081,7 @@ public final class Datastore {
             throw new NullPointerException("The model parameter is null.");
         }
         ModelMeta<?> modelMeta = getModelMeta(model.getClass());
+        modelMeta.incrementVersion(model);
         Entity entity = modelMeta.modelToEntity(model);
         Key key = put(tx, entity);
         modelMeta.setKey(model, key);
@@ -1100,8 +1102,12 @@ public final class Datastore {
         if (models == null) {
             throw new NullPointerException("The models parameter is null.");
         }
-        List<Key> keys = putEntities(modelsToEntities(models));
-        setKeys(models, keys);
+        List<ModelMeta<?>> modelMetaList = getModelMetaList(models);
+        List<Key> keys =
+            putEntities(incrementVersionAndConvertToEntities(
+                models,
+                modelMetaList));
+        setKeys(models, keys, modelMetaList);
         return keys;
     }
 
@@ -1136,8 +1142,12 @@ public final class Datastore {
         if (models == null) {
             throw new NullPointerException("The models parameter is null.");
         }
-        List<Key> keys = putEntities(tx, modelsToEntities(models));
-        setKeys(models, keys);
+        List<ModelMeta<?>> modelMetaList = getModelMetaList(models);
+        List<Key> keys =
+            putEntities(tx, incrementVersionAndConvertToEntities(
+                models,
+                modelMetaList));
+        setKeys(models, keys, modelMetaList);
         return keys;
     }
 
@@ -1158,30 +1168,48 @@ public final class Datastore {
         return put(tx, Arrays.asList(models));
     }
 
-    private static List<Entity> modelsToEntities(Iterable<?> models)
+    private static List<ModelMeta<?>> getModelMetaList(Iterable<?> models)
             throws NullPointerException {
-        List<Entity> entities = new ArrayList<Entity>();
+        List<ModelMeta<?>> list = new ArrayList<ModelMeta<?>>();
         for (Object model : models) {
             if (model == null) {
                 throw new NullPointerException(
                     "The element of the models is null.");
             }
             if (model instanceof Entity) {
-                entities.add((Entity) model);
+                list.add(null);
             } else {
-                ModelMeta<?> modelMeta = getModelMeta(model.getClass());
+                list.add(getModelMeta(model.getClass()));
+            }
+        }
+        return list;
+    }
+
+    private static List<Entity> incrementVersionAndConvertToEntities(
+            Iterable<?> models, List<ModelMeta<?>> modelMetaList)
+            throws NullPointerException {
+        List<Entity> entities = new ArrayList<Entity>();
+        int i = 0;
+        for (Object model : models) {
+            ModelMeta<?> modelMeta = modelMetaList.get(i);
+            if (modelMeta == null) {
+                entities.add(Entity.class.cast(model));
+            } else {
+                modelMeta.incrementVersion(model);
                 Entity entity = modelMeta.modelToEntity(model);
                 entities.add(entity);
             }
+            i++;
         }
         return entities;
     }
 
-    private static void setKeys(Iterable<?> models, List<Key> keys) {
+    private static void setKeys(Iterable<?> models, List<Key> keys,
+            List<ModelMeta<?>> modelMetaList) {
         int i = 0;
         for (Object model : models) {
-            if (!(model instanceof Entity)) {
-                ModelMeta<?> modelMeta = getModelMeta(model.getClass());
+            ModelMeta<?> modelMeta = modelMetaList.get(i);
+            if (modelMeta != null) {
                 modelMeta.setKey(model, keys.get(i));
             }
             i++;
@@ -1468,7 +1496,7 @@ public final class Datastore {
     }
 
     /**
-     * Returns a meta data of the model.
+     * Returns a meta data of the model
      * 
      * @param modelClass
      *            the model class
@@ -1489,11 +1517,11 @@ public final class Datastore {
     }
 
     /**
-     * Creates a new meta data of the model.
+     * Creates a meta data of the model
      * 
      * @param modelClass
      *            the model class
-     * @return a new meta data of the model
+     * @return a meta data of the model
      */
     protected static ModelMeta<?> createModelMeta(Class<?> modelClass) {
         try {
