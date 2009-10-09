@@ -7,8 +7,8 @@ import org.slim3.controller.Controller;
 import org.slim3.controller.Navigation;
 import org.slim3.datastore.Datastore;
 
-import slim3.demo.meta.FooMeta;
-import slim3.demo.model.Foo;
+import slim3.demo.meta.BarMeta;
+import slim3.demo.model.Bar;
 
 public class GetSlim3Controller extends Controller {
 
@@ -18,11 +18,11 @@ public class GetSlim3Controller extends Controller {
 
     @Override
     public Navigation run() {
-        FooMeta f = new FooMeta();
+        BarMeta b = new BarMeta();
         long start = System.currentTimeMillis();
-        List<Foo> list = Datastore.query(f).asList();
-        for (Foo foo : list) {
-            foo.getKey();
+        List<Bar> list = Datastore.query(b).asList();
+        for (Bar bar : list) {
+            bar.getKey();
         }
         sessionScope("getSlim3", System.currentTimeMillis() - start);
         return redirect(basePath);

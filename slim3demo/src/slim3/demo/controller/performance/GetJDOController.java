@@ -10,7 +10,7 @@ import org.slim3.controller.Controller;
 import org.slim3.controller.Navigation;
 
 import slim3.demo.cool.jdo.PMF;
-import slim3.demo.cool.model.FooJDO;
+import slim3.demo.cool.model.BarJDO;
 
 public class GetJDOController extends Controller {
 
@@ -23,10 +23,10 @@ public class GetJDOController extends Controller {
     public Navigation run() {
         PersistenceManager pm = PMF.get().getPersistenceManager();
         long start = System.currentTimeMillis();
-        Query query = pm.newQuery(FooJDO.class);
-        List<FooJDO> list = (List<FooJDO>) query.execute();
-        for (FooJDO foo : list) {
-            foo.getKey();
+        Query query = pm.newQuery(BarJDO.class);
+        List<BarJDO> list = (List<BarJDO>) query.execute();
+        for (BarJDO bar : list) {
+            bar.getKey();
         }
         query.closeAll();
         pm.close();

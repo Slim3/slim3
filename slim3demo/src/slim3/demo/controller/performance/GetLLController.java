@@ -23,7 +23,7 @@ public class GetLLController extends Controller {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         long start = System.currentTimeMillis();
         List<Entity> entities =
-            ds.prepare(new Query("Foo")).asList(
+            ds.prepare(new Query("Bar")).asList(
                 FetchOptions.Builder.withOffset(0));
         for (Entity entity : entities) {
             entity.getKey();

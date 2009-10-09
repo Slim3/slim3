@@ -10,22 +10,41 @@
 <link rel="stylesheet" type="text/css" href="/css/global.css" />
 </head>
 <body>
-
+Bar count:${count}
 <table>
 <tr>
-<td>${putLL}</td><td>${getLL}</td><td>${deleteLL}</td>
-<td>${putSlim3}</td><td>${getSlim3}</td><td>${deleteSlim3}</td>
-<td>${putJDO}</td><td>${getJDO}</td><td>${deleteJDO}</td>
+<td>${getLL}</td>
+<td>${getSlim3}</td>
+<td>${getJDO}</td>
+</tr>
+<tr>
+<td>
+<form method="post" action="getLL">
+<input type="submit" value="get LL"/>
+</form>
+</td>
+<td>
+<form method="post" action="getSlim3">
+<input type="submit" value="get Slim3"/>
+</form>
+</td>
+<td>
+<form method="post" action="getJDO">
+<input type="submit" value="get JDO"/>
+</form>
+</td>
+</tr>
+</table>
+<table>
+<tr>
+<td>${putLL}</td><td>${deleteLL}</td>
+<td>${putSlim3}</td><td>${deleteSlim3}</td>
+<td>${putJDO}</td><td>${deleteJDO}</td>
 </tr>
 <tr>
 <td>
 <form method="post" action="putLL">
 <input type="submit" value="put LL"/>
-</form>
-</td>
-<td>
-<form method="post" action="getLL">
-<input type="submit" value="get LL"/>
 </form>
 </td>
 <td>
@@ -39,11 +58,6 @@
 </form>
 </td>
 <td>
-<form method="post" action="getSlim3">
-<input type="submit" value="get Slim3"/>
-</form>
-</td>
-<td>
 <form method="post" action="deleteSlim3">
 <input type="submit" value="delete Slim3"/>
 </form>
@@ -51,11 +65,6 @@
 <td>
 <form method="post" action="putJDO">
 <input type="submit" value="put JDO"/>
-</form>
-</td>
-<td>
-<form method="post" action="getJDO">
-<input type="submit" value="get JDO"/>
 </form>
 </td>
 <td>
