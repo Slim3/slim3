@@ -17,6 +17,7 @@ package org.slim3.datastore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -133,6 +134,23 @@ public class DatastoreTest extends DatastoreTestCase {
     /**
      * @throws Exception
      */
+    public void testGetModelAndCheckVersion() throws Exception {
+        Entity entity = new Entity("Hoge");
+        entity.setProperty("version", 1);
+        Key key = ds.put(entity);
+        Hoge model = Datastore.get(meta, key, 1);
+        assertNotNull(model);
+        try {
+            Datastore.get(meta, key, 0);
+            fail();
+        } catch (ConcurrentModificationException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testGetModelInTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Transaction tx = ds.beginTransaction();
@@ -153,6 +171,24 @@ public class DatastoreTest extends DatastoreTestCase {
         assertSame(model, cache.get(key));
         ds.delete(key);
         assertSame(model, Datastore.get(tx, meta, key, cache));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetModelInTxAndCheckVersion() throws Exception {
+        Entity entity = new Entity("Hoge");
+        entity.setProperty("version", 1);
+        Key key = ds.put(entity);
+        Transaction tx = Datastore.beginTransaction();
+        Hoge model = Datastore.get(tx, meta, key, 1);
+        assertNotNull(model);
+        try {
+            Datastore.get(tx, meta, key, 0);
+            fail();
+        } catch (ConcurrentModificationException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     /**

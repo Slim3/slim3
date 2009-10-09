@@ -351,6 +351,7 @@ public class HogeMeta extends ModelMeta<Hoge> {
             .getProperty("myFloatSet")));
         model.setMyFloatSortedSet(doubleListToFloatSortedSet(entity
             .getProperty("myFloatSortedSet")));
+        model.setVersion((Long) entity.getProperty("version"));
         return model;
     }
 
@@ -406,6 +407,7 @@ public class HogeMeta extends ModelMeta<Hoge> {
         e.setProperty("myFloatSet", m.getMyFloatSet());
         e.setProperty("myFloatSortedSet", m.getMyFloatSortedSet());
 
+        e.setProperty("version", m.getVersion());
         return e;
     }
 

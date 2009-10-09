@@ -18,6 +18,7 @@ package org.slim3.datastore;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -397,6 +398,42 @@ public final class Datastore {
     }
 
     /**
+     * Returns a model specified by the key and checks the version. If there is
+     * a current transaction, this operation will execute within that
+     * transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param key
+     *            the key
+     * @param version
+     *            the version
+     * @return a model specified by the key
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     * @throws ConcurrentModificationException
+     *             if the version of the model is updated
+     */
+    public static <M> M get(ModelMeta<M> modelMeta, Key key, long version)
+            throws NullPointerException, EntityNotFoundRuntimeException,
+            ConcurrentModificationException {
+        M model = get(modelMeta, key);
+        if (version != modelMeta.getVersion(model)) {
+            throw new ConcurrentModificationException(
+                "Failed optimistic lock by key("
+                    + key
+                    + ") and version("
+                    + version
+                    + ").");
+        }
+        return model;
+    }
+
+    /**
      * Returns a model specified by the key. If there is a current transaction,
      * this operation will execute within that transaction.
      * 
@@ -489,6 +526,45 @@ public final class Datastore {
         }
         Entity entity = get(tx, key);
         return modelMeta.entityToModel(entity);
+    }
+
+    /**
+     * Returns a model specified by the key within the provided transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param tx
+     *            the transaction
+     * @param modelMeta
+     *            the meta data of model
+     * @param key
+     *            the key
+     * @param version
+     *            the version
+     * @return a model specified by the key
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     * @throws ConcurrentModificationException
+     *             if the version of the model is updated
+     */
+    public static <M> M get(Transaction tx, ModelMeta<M> modelMeta, Key key,
+            long version) throws NullPointerException, IllegalStateException,
+            EntityNotFoundRuntimeException, ConcurrentModificationException {
+        M model = get(tx, modelMeta, key);
+        if (version != modelMeta.getVersion(model)) {
+            throw new ConcurrentModificationException(
+                "Failed optimistic lock by key("
+                    + key
+                    + ") and version("
+                    + version
+                    + ").");
+        }
+        return model;
     }
 
     /**
