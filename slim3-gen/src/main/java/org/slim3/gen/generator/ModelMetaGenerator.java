@@ -15,17 +15,7 @@
  */
 package org.slim3.gen.generator;
 
-import static org.slim3.gen.ClassConstants.Blob;
-import static org.slim3.gen.ClassConstants.CollectionAttributeMeta;
-import static org.slim3.gen.ClassConstants.CoreAttributeMeta;
-import static org.slim3.gen.ClassConstants.Double;
-import static org.slim3.gen.ClassConstants.Entity;
-import static org.slim3.gen.ClassConstants.Long;
-import static org.slim3.gen.ClassConstants.Object;
-import static org.slim3.gen.ClassConstants.ShortBlob;
-import static org.slim3.gen.ClassConstants.String;
-import static org.slim3.gen.ClassConstants.StringAttributeMeta;
-import static org.slim3.gen.ClassConstants.Text;
+import static org.slim3.gen.ClassConstants.*;
 
 import java.util.Date;
 
@@ -131,6 +121,7 @@ public class ModelMetaGenerator implements Generator {
         printer.println();
         printer.indent();
         printAttributeMetaFields(printer);
+        printSetKeyMethod(printer);
         printGetVersion(printer);
         printIncrementVersionMethod(printer);
         printEntityToModelMethod(printer);
@@ -196,7 +187,7 @@ public class ModelMetaGenerator implements Generator {
      */
     protected void printGetVersion(final Printer printer) {
         printer.println("@Override");
-        printer.println("public long getVersion(Object model) {");
+        printer.println("protected long getVersion(Object model) {");
         final AttributeMetaDesc attr =
             modelMetaDesc.getVersionAttributeMetaDesc();
         if (attr == null) {
@@ -254,7 +245,7 @@ public class ModelMetaGenerator implements Generator {
      */
     protected void printIncrementVersionMethod(final Printer printer) {
         printer.println("@Override");
-        printer.println("public void incrementVersion(Object model) {");
+        printer.println("protected void incrementVersion(Object model) {");
         final AttributeMetaDesc attr =
             modelMetaDesc.getVersionAttributeMetaDesc();
         if (attr == null) {
@@ -302,6 +293,31 @@ public class ModelMetaGenerator implements Generator {
 
                 },
                 null);
+        }
+        printer.println("}");
+        printer.println();
+    }
+
+    /**
+     * Generates the {@code setKey} method.
+     * 
+     * @param printer
+     *            the prnter
+     */
+    protected void printSetKeyMethod(final Printer printer) {
+        printer.println("@Override");
+        printer
+            .println("protected void setKey(Object model, com.google.appengine.api.datastore.Key key) {");
+        final AttributeMetaDesc attr = modelMetaDesc.getKeyAttributeMetaDesc();
+        if (attr == null) {
+            printer
+                .println(
+                    "    throw new IllegalStateException(\"The key property of the model(%1$s) is not defined.\");",
+                    modelMetaDesc.getModelClassName());
+        } else {
+            printer.println("    %1$s m = (%1$s) model;", modelMetaDesc
+                .getModelClassName());
+            printer.println("    m.%1$s(key);", attr.getWriteMethodName());
         }
         printer.println("}");
         printer.println();
@@ -482,7 +498,7 @@ public class ModelMetaGenerator implements Generator {
         public void generate() {
             printer.println("@Override");
             printer.println(
-                "public %1$s entityToModel(%2$s entity) {",
+                "protected %1$s entityToModel(%2$s entity) {",
                 modelMetaDesc.getModelClassName(),
                 Entity);
             printer.indent();
@@ -929,7 +945,7 @@ public class ModelMetaGenerator implements Generator {
         public void generate() {
             printer.println("@Override");
             printer.println(
-                "public %1$s modelToEntity(%2$s model) {",
+                "protected %1$s modelToEntity(%2$s model) {",
                 Entity,
                 Object);
             printer.indent();
