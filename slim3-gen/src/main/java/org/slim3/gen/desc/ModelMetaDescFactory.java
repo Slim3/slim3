@@ -96,7 +96,7 @@ public class ModelMetaDescFactory {
                 modelMetaClassName.getPackageName(),
                 modelMetaClassName.getSimpleName(),
                 modelClassName,
-                modelMetaClassName.getSimpleName());
+                modelMetaClassName.getKind());
         handleAttributes(classDeclaration, modelMetaDesc);
         return modelMetaDesc;
     }

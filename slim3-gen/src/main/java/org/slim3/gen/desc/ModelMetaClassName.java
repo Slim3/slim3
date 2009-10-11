@@ -52,6 +52,9 @@ public class ModelMetaClassName {
     /** the model meta simple name */
     protected final String simpleName;
 
+    /** the kind of entity */
+    protected final String kind;
+
     /**
      * Creates a new {@link ModelMetaClassName}.
      * 
@@ -101,6 +104,7 @@ public class ModelMetaClassName {
             replacePackageName(packageName, sharedPackage, serverPackage);
         this.simpleName =
             ClassUtil.getSimpleName(modelClassName) + Constants.META_SUFFIX;
+        this.kind = ClassUtil.getSimpleName(modelClassName);
     }
 
     /**
@@ -164,4 +168,12 @@ public class ModelMetaClassName {
         return simpleName;
     }
 
+    /**
+     * Returns the kind of entity
+     * 
+     * @return the kind of entity
+     */
+    public String getKind() {
+        return kind;
+    }
 }
