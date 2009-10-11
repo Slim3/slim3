@@ -39,6 +39,9 @@ public class ModelMetaDesc implements ClassDesc {
     /** the modelClassName */
     protected final String modelClassName;
 
+    /** the kind of entity */
+    protected final String kind;
+
     /** the key attribute meta description */
     protected AttributeMetaDesc keyAttributeMetaDesc;
 
@@ -58,9 +61,11 @@ public class ModelMetaDesc implements ClassDesc {
      *            the simple name
      * @param modelClassName
      *            the modelClassName
+     * @param kind
+     *            the kind of entity
      */
     public ModelMetaDesc(String packageName, String simpleName,
-            String modelClassName) {
+            String modelClassName, String kind) {
         if (packageName == null) {
             throw new NullPointerException("The packageName parameter is null.");
         }
@@ -71,9 +76,13 @@ public class ModelMetaDesc implements ClassDesc {
             throw new NullPointerException(
                 "The modelClassName parameter is null.");
         }
+        if (kind == null) {
+            throw new NullPointerException("The kind parameter is null.");
+        }
         this.packageName = packageName;
         this.simpleName = simpleName;
         this.modelClassName = modelClassName;
+        this.kind = kind;
     }
 
     /**
@@ -105,6 +114,15 @@ public class ModelMetaDesc implements ClassDesc {
      */
     public String getModelClassName() {
         return modelClassName;
+    }
+
+    /**
+     * Returns the kind of entity.
+     * 
+     * @return the kind of entity
+     */
+    public String getKind() {
+        return kind;
     }
 
     /**

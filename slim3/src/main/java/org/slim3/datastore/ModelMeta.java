@@ -43,6 +43,11 @@ import com.google.appengine.api.datastore.Text;
 public abstract class ModelMeta<M> {
 
     /**
+     * The kind of entity.
+     */
+    protected String kind;
+
+    /**
      * The model class.
      */
     protected Class<M> modelClass;
@@ -55,16 +60,32 @@ public abstract class ModelMeta<M> {
     /**
      * Constructor.
      * 
+     * @param kind
+     *            the kind of entity
      * @param modelClass
      *            the model class
      * @throws NullPointerException
      *             if the modelClass parameter is null
      */
-    public ModelMeta(Class<M> modelClass) throws NullPointerException {
+    public ModelMeta(String kind, Class<M> modelClass)
+            throws NullPointerException {
+        if (kind == null) {
+            throw new NullPointerException("The kind parameter is null.");
+        }
         if (modelClass == null) {
             throw new NullPointerException("The modelClass parameter is null.");
         }
+        this.kind = kind;
         this.modelClass = modelClass;
+    }
+
+    /**
+     * Returns the kind of entity.
+     * 
+     * @return the kind of entity
+     */
+    public String getKind() {
+        return kind;
     }
 
     /**

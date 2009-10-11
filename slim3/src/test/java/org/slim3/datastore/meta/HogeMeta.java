@@ -278,7 +278,7 @@ public class HogeMeta extends ModelMeta<Hoge> {
      * 
      */
     public HogeMeta() {
-        super(Hoge.class);
+        super("Hoge", Hoge.class);
     }
 
     @Override

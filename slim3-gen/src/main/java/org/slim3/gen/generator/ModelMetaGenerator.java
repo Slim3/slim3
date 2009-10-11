@@ -138,8 +138,8 @@ public class ModelMetaGenerator implements Generator {
      */
     protected void printConstructor(Printer printer) {
         printer.println("public %s() {", modelMetaDesc.getSimpleName());
-        printer.println("    super(%s.class);", modelMetaDesc
-            .getModelClassName());
+        printer.println("    super(\"%1$s\", %2$s.class);", modelMetaDesc
+            .getKind(), modelMetaDesc.getModelClassName());
         printer.println("}");
     }
 
@@ -248,12 +248,7 @@ public class ModelMetaGenerator implements Generator {
         printer.println("protected void incrementVersion(Object model) {");
         final AttributeMetaDesc attr =
             modelMetaDesc.getVersionAttributeMetaDesc();
-        if (attr == null) {
-            printer
-                .println(
-                    "    throw new IllegalStateException(\"The version property of the model(%1$s) is not defined.\");",
-                    modelMetaDesc.getModelClassName());
-        } else {
+        if (attr != null) {
             printer.println("    %1$s m = (%1$s) model;", modelMetaDesc
                 .getModelClassName());
             DataType dataType = attr.getDataType();

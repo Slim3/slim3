@@ -33,4 +33,8 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Model {
 
+    /**
+     * The kind of entity.
+     */
+    String kind() default "";
 }
