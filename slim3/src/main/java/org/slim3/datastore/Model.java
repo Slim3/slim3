@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An annotation for a model.
+ * An annotation for entity.
  * 
  * @author higa
  * @since 3.0

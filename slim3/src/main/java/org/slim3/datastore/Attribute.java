@@ -21,6 +21,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.google.appengine.api.datastore.Blob;
+import com.google.appengine.api.datastore.Text;
+
 /**
  * An annotation for property of entity.
  * 
@@ -31,10 +34,35 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Property {
+public @interface Attribute {
 
     /**
-     * The name.
+     * The property name. The default value is a field name.
      */
     String name() default "";
+
+    /**
+     * Whether this property is a key.
+     */
+    boolean key() default false;
+
+    /**
+     * Whether this property is for version check.
+     */
+    boolean version() default false;
+
+    /**
+     * Whether this property is for {@link Text}.
+     */
+    boolean text() default false;
+
+    /**
+     * Whether this property is for {@link Blob}.
+     */
+    boolean blob() default false;
+
+    /**
+     * Whether this property is unindexed.
+     */
+    boolean unindexed() default false;
 }
