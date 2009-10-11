@@ -694,8 +694,16 @@ public class ModelMetaGenerator implements Generator {
         @Override
         public Void visitKeyType(KeyType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            printer.println("model.%1$s(entity.getKey());", p
-                .getWriteMethodName());
+            if (p.isPrimaryKey()) {
+                printer.println("model.%1$s(entity.getKey());", p
+                    .getWriteMethodName());
+            } else {
+                printer.println(
+                    "model.%1$s((%2$s) entity.getProperty(\"%3$s\"));",
+                    p.getWriteMethodName(),
+                    type.getTypeName(),
+                    p.getName());
+            }
             return null;
         }
 
