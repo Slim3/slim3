@@ -392,13 +392,19 @@ public class ModelMetaGenerator implements Generator {
         @Override
         public Void visitKeyType(KeyType type, AttributeMetaDesc p)
                 throws RuntimeException {
+
+            String propertyName = "__key__";
+            if (!p.isPrimaryKey()) {
+                propertyName = p.getName();
+            }
             printer
                 .println(
-                    "public %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"__key__\", %5$s.class);",
+                    "public %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", %6$s.class);",
                     CoreAttributeMeta,
                     modelMetaDesc.getModelClassName(),
                     type.getTypeName(),
                     p.getName(),
+                    propertyName,
                     type.getClassName());
             printer.println();
             return null;
