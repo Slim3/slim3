@@ -112,6 +112,21 @@ public class DatastoreTest extends DatastoreTestCase {
     /**
      * @throws Exception
      */
+    public void testCreateKey() throws Exception {
+        assertNotNull(Datastore.createKey("Hoge", 1));
+        assertNotNull(Datastore.createKey(meta, 1));
+        assertNotNull(Datastore.createKey("Hoge", "aaa"));
+        assertNotNull(Datastore.createKey(meta, "aaa"));
+        Key parentKey = KeyFactory.createKey("Parent", 1);
+        assertNotNull(Datastore.createKey(parentKey, "Hoge", 1));
+        assertNotNull(Datastore.createKey(parentKey, meta, 1));
+        assertNotNull(Datastore.createKey(parentKey, "Hoge", "aaa"));
+        assertNotNull(Datastore.createKey(parentKey, meta, "aaa"));
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testGetModel() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Hoge model = Datastore.get(meta, key);

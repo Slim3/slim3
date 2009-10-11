@@ -36,6 +36,7 @@ import com.google.appengine.api.datastore.DatastoreTimeoutException;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.KeyRange;
 import com.google.appengine.api.datastore.Transaction;
 
@@ -349,6 +350,184 @@ public final class Datastore {
             }
             throw e;
         }
+    }
+
+    /**
+     * Creates a key.
+     * 
+     * @param kind
+     *            the kind of entity
+     * @param id
+     *            the identifier
+     * @return a key
+     * @throws NullPointerException
+     *             if the kind parameter is null
+     */
+    public static Key createKey(String kind, long id)
+            throws NullPointerException {
+        if (kind == null) {
+            throw new NullPointerException("The kind parameter is null.");
+        }
+        return KeyFactory.createKey(kind, id);
+    }
+
+    /**
+     * Creates a key.
+     * 
+     * @param modelMeta
+     *            the meta data of the model
+     * @param id
+     *            the identifier
+     * @return a key
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null
+     */
+    public static Key createKey(ModelMeta<?> modelMeta, long id)
+            throws NullPointerException {
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
+        }
+        return createKey(modelMeta.getKind(), id);
+    }
+
+    /**
+     * Creates a key.
+     * 
+     * @param kind
+     *            the kind of entity
+     * @param name
+     *            the name
+     * @return a key
+     * @throws NullPointerException
+     *             if the kind parameter is null or if the name parameter is
+     *             null
+     */
+    public static Key createKey(String kind, String name)
+            throws NullPointerException {
+        if (kind == null) {
+            throw new NullPointerException("The kind parameter is null.");
+        }
+        if (name == null) {
+            throw new NullPointerException("The name parameter is null.");
+        }
+        return KeyFactory.createKey(kind, name);
+    }
+
+    /**
+     * Creates a key.
+     * 
+     * @param modelMeta
+     *            the meta data of the model
+     * @param name
+     *            the name
+     * @return a key
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null or if the name parameter
+     *             is null
+     */
+    public static Key createKey(ModelMeta<?> modelMeta, String name)
+            throws NullPointerException {
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
+        }
+        return createKey(modelMeta.getKind(), name);
+    }
+
+    /**
+     * Creates a key.
+     * 
+     * @param parentKey
+     *            the parent key
+     * @param kind
+     *            the kind of entity
+     * @param id
+     *            the identifier
+     * @return a key
+     * @throws NullPointerException
+     *             if the parentKey parameter is null or if the kind parameter
+     *             is null
+     */
+    public static Key createKey(Key parentKey, String kind, long id)
+            throws NullPointerException {
+        if (parentKey == null) {
+            throw new NullPointerException("The parentKey parameter is null.");
+        }
+        if (kind == null) {
+            throw new NullPointerException("The kind parameter is null.");
+        }
+        return KeyFactory.createKey(parentKey, kind, id);
+    }
+
+    /**
+     * Creates a key.
+     * 
+     * @param parentKey
+     *            the parent key
+     * @param modelMeta
+     *            the meta data of the model
+     * @param id
+     *            the identifier
+     * @return a key
+     * @throws NullPointerException
+     *             if the parentKey parameter is null or if the modelMeta
+     *             parameter is null
+     */
+    public static Key createKey(Key parentKey, ModelMeta<?> modelMeta, long id)
+            throws NullPointerException {
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
+        }
+        return createKey(parentKey, modelMeta.getKind(), id);
+    }
+
+    /**
+     * Creates a key.
+     * 
+     * @param parentKey
+     *            the parent key
+     * @param kind
+     *            the kind of entity
+     * @param name
+     *            the name
+     * @return a key
+     * @throws NullPointerException
+     *             if the parentKey parameter is null or if the kind parameter
+     *             is null or if the name parameter is null
+     */
+    public static Key createKey(Key parentKey, String kind, String name)
+            throws NullPointerException {
+        if (parentKey == null) {
+            throw new NullPointerException("The parentKey parameter is null.");
+        }
+        if (kind == null) {
+            throw new NullPointerException("The kind parameter is null.");
+        }
+        if (name == null) {
+            throw new NullPointerException("The name parameter is null.");
+        }
+        return KeyFactory.createKey(parentKey, kind, name);
+    }
+
+    /**
+     * Creates a key.
+     * 
+     * @param parentKey
+     *            the parent key
+     * @param modelMeta
+     *            the meta data of the model
+     * @param name
+     *            the name
+     * @return a key
+     * @throws NullPointerException
+     *             if the parentKey is null or if the modelMeta parameter is
+     *             null or if the name parameter is null
+     */
+    public static Key createKey(Key parentKey, ModelMeta<?> modelMeta,
+            String name) throws NullPointerException {
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
+        }
+        return createKey(parentKey, modelMeta.getKind(), name);
     }
 
     /**
