@@ -44,7 +44,7 @@ public @interface Attribute {
     /**
      * Whether this property is a key.
      */
-    boolean key() default false;
+    boolean primaryKey() default false;
 
     /**
      * Whether this property is for version check.
