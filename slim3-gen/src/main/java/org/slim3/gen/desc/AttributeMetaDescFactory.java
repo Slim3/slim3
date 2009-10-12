@@ -134,10 +134,10 @@ public class AttributeMetaDescFactory {
             attribute,
             AnnotationConstants.version) == Boolean.TRUE) {
             handleVersion(attributeMetaDesc, fieldDeclaration, attribute);
-        } else if (isAnnotated(AnnotationConstants.Text, fieldDeclaration)) {
-            handleText(attributeMetaDesc, fieldDeclaration);
-        } else if (isAnnotated(AnnotationConstants.Blob, fieldDeclaration)) {
-            handleBlob(attributeMetaDesc, fieldDeclaration);
+        } else if (AnnotationMirrorUtil.getElementValue(
+            attribute,
+            AnnotationConstants.lob) == Boolean.TRUE) {
+            handleLob(attributeMetaDesc, fieldDeclaration);
         } else if (isAnnotated(AnnotationConstants.Unindexed, fieldDeclaration)) {
             handleUnindexed(attributeMetaDesc, fieldDeclaration);
         }
@@ -263,46 +263,26 @@ public class AttributeMetaDescFactory {
     }
 
     /**
-     * Handles text.
+     * Handles a large object.
      * 
      * @param attributeMetaDesc
      *            the attribute meta description
      * @param fieldDeclaration
      *            the field declaration
      */
-    protected void handleText(AttributeMetaDesc attributeMetaDesc,
+    protected void handleLob(AttributeMetaDesc attributeMetaDesc,
             FieldDeclaration fieldDeclaration) {
-        if (!ClassConstants.String.equals(attributeMetaDesc
-            .getDataType()
-            .getClassName())) {
+        DataType dataType = attributeMetaDesc.getDataType();
+        String className = dataType.getClassName();
+        if (!ClassConstants.String.equals(className)
+            && !ClassConstants.primitive_byte_array.equals(className)
+            && !dataType.isSerialized()) {
             throw new ValidationException(
                 MessageCode.SILM3GEN1009,
                 env,
                 fieldDeclaration);
         }
-        attributeMetaDesc.setText(true);
-    }
-
-    /**
-     * Handles blob.
-     * 
-     * @param attributeMetaDesc
-     *            the attribute meta description
-     * @param fieldDeclaration
-     *            the field declaration
-     */
-    protected void handleBlob(AttributeMetaDesc attributeMetaDesc,
-            FieldDeclaration fieldDeclaration) {
-        DataType dataType = attributeMetaDesc.getDataType();
-        String className = dataType.getClassName();
-        if (!ClassConstants.primitive_byte_array.equals(className)
-            && !dataType.isSerialized()) {
-            throw new ValidationException(
-                MessageCode.SILM3GEN1010,
-                env,
-                fieldDeclaration);
-        }
-        attributeMetaDesc.setBlob(true);
+        attributeMetaDesc.setLob(true);
     }
 
     /**

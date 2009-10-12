@@ -348,8 +348,7 @@ public class ModelMetaGenerator implements Generator {
             for (AttributeMetaDesc attr : modelMetaDesc
                 .getAttributeMetaDescList()) {
                 if (attr.isImpermanent()
-                    || attr.isBlob()
-                    || attr.isText()
+                    || attr.isLob()
                     || attr.isUnindexed()
                     || attr.getDataType().isSerialized()) {
                     continue;
@@ -526,7 +525,7 @@ public class ModelMetaGenerator implements Generator {
         @Override
         protected Void defaultAction(DataType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            if (p.isBlob()) {
+            if (p.isLob()) {
                 printer
                     .println(
                         "%1$s _%2$s = blobToSerializable((%3$s) entity.getProperty(\"%4$s\"));",
@@ -670,7 +669,7 @@ public class ModelMetaGenerator implements Generator {
         @Override
         public Void visitStringType(StringType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            if (p.isText()) {
+            if (p.isLob()) {
                 printer
                     .println(
                         "model.%1$s(textToString((%2$s) entity.getProperty(\"%3$s\")));",
@@ -723,7 +722,7 @@ public class ModelMetaGenerator implements Generator {
                     public Boolean visitPrimitiveByteType(
                             PrimitiveByteType type, Void p)
                             throws RuntimeException {
-                        if (attr.isBlob()) {
+                        if (attr.isLob()) {
                             printer
                                 .println(
                                     "model.%1$s(blobToBytes((%2$s) entity.getProperty(\"%3$s\")));",
@@ -989,7 +988,7 @@ public class ModelMetaGenerator implements Generator {
         @Override
         protected Void defaultAction(DataType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            if (p.isBlob()) {
+            if (p.isLob()) {
                 printer
                     .println(
                         "entity.setUnindexedProperty(\"%1$s\", serializableToBlob(m.%2$s()));",
@@ -1047,7 +1046,7 @@ public class ModelMetaGenerator implements Generator {
             if (type.isSerialized()) {
                 return super.visitStringType(type, p);
             }
-            if (p.isText()) {
+            if (p.isLob()) {
                 printer
                     .println(
                         "entity.setUnindexedProperty(\"%1$s\", stringToText(m.%2$s()));",
@@ -1102,7 +1101,7 @@ public class ModelMetaGenerator implements Generator {
                     @Override
                     public Void visitPrimitiveByteType(PrimitiveByteType type,
                             Void p) throws RuntimeException {
-                        if (attr.isBlob()) {
+                        if (attr.isLob()) {
                             printer
                                 .println(
                                     "entity.setUnindexedProperty(\"%1$s\", bytesToBlob(m.%2$s()));",

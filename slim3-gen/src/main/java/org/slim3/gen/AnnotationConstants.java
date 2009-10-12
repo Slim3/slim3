@@ -38,12 +38,6 @@ public interface AnnotationConstants {
     /** {@code org.slim3.datastore.Unindexed} */
     String Unindexed = "org.slim3.datastore.Unindexed";
 
-    /** {@code org.slim3.datastore.Blob} */
-    String Blob = "org.slim3.datastore.Blob";
-
-    /** {@code org.slim3.datastore.Text} */
-    String Text = "org.slim3.datastore.Text";
-
     /** {@code org.slim3.datastore.Impermanent} */
     String Impermanent = "org.slim3.datastore.Impermanent";
 

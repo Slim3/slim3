@@ -21,12 +21,12 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.slim3.datastore.Attribute;
-import org.slim3.datastore.Blob;
 import org.slim3.datastore.Model;
-import org.slim3.datastore.Text;
 
+import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.ShortBlob;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
 /**
@@ -69,22 +69,22 @@ public class Hoge {
 
     private SortDirection myEnum;
 
-    @Text
+    @Attribute(lob = true)
     private String myStringText;
 
-    private com.google.appengine.api.datastore.Text myText;
+    private Text myText;
 
     private byte[] myBytes;
 
-    @Blob
+    @Attribute(lob = true)
     private byte[] myBytesBlob;
 
     private MySerializable mySerializable;
 
-    @Blob
+    @Attribute(lob = true)
     private MySerializable mySerializableBlob;
 
-    private com.google.appengine.api.datastore.Blob myBlob;
+    private Blob myBlob;
 
     private ShortBlob myShortBlob;
 

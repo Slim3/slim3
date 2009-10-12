@@ -37,11 +37,8 @@ public class AttributeMetaDesc {
     /** the primaryKey */
     protected boolean primaryKey;
 
-    /** the blob */
-    protected boolean blob;
-
-    /** the text */
-    protected boolean text;
+    /** the lob */
+    protected boolean lob;
 
     /** the version */
     protected boolean version;
@@ -107,33 +104,18 @@ public class AttributeMetaDesc {
     }
 
     /**
-     * @return the blob
+     * @return the lob
      */
-    public boolean isBlob() {
-        return blob;
+    public boolean isLob() {
+        return lob;
     }
 
     /**
-     * @param blob
-     *            the blob to set
+     * @param lob
+     *            the lob
      */
-    public void setBlob(boolean blob) {
-        this.blob = blob;
-    }
-
-    /**
-     * @return the text
-     */
-    public boolean isText() {
-        return text;
-    }
-
-    /**
-     * @param text
-     *            the text to set
-     */
-    public void setText(boolean text) {
-        this.text = text;
+    public void setLob(boolean lob) {
+        this.lob = lob;
     }
 
     /**

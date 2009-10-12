@@ -60,9 +60,7 @@ public enum MessageCode {
     /** */
     SILM3GEN1008("The type annotated with @Attribute(version = true) must be primitive long or java.lang.Long."),
     /** */
-    SILM3GEN1009("The type annotated with @org.slim3.datastore.Text must be java.lang.String."),
-    /** */
-    SILM3GEN1010("The type annotated with @org.slim3.datastore.Blob must be primitive byte array or subtype of java.io.Serializable(except core type and collection type of core type)."),
+    SILM3GEN1009("The type annotated with @Attribute(lob = true) must be java.lang.String or primitive byte array or java.io.Serializable(except core type and collection type of core type)."),
     /** */
     SILM3GEN1011("The getter method is not found."),
     /** */
