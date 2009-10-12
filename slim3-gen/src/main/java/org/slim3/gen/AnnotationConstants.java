@@ -32,6 +32,9 @@ public interface AnnotationConstants {
     /** {@code org.slim3.datastore.Model} */
     String Model = "org.slim3.datastore.Model";
 
+    /** {@code org.slim3.datastore.Attribute} */
+    String Attribute = "org.slim3.datastore.Attribute";
+
     /** {@code org.slim3.datastore.Unindexed} */
     String Unindexed = "org.slim3.datastore.Unindexed";
 
@@ -52,4 +55,7 @@ public interface AnnotationConstants {
 
     /** the name of kind element */
     String kind = "kind";
+
+    /** the name of name element */
+    String name = "name";
 }

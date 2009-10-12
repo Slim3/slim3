@@ -15,29 +15,21 @@
  */
 package org.slim3.gen.desc;
 
-import static org.slim3.gen.AnnotationConstants.Blob;
-import static org.slim3.gen.AnnotationConstants.Impermanent;
-import static org.slim3.gen.AnnotationConstants.PrimaryKey;
-import static org.slim3.gen.AnnotationConstants.Text;
-import static org.slim3.gen.AnnotationConstants.Unindexed;
-import static org.slim3.gen.AnnotationConstants.Version;
-import static org.slim3.gen.ClassConstants.Key;
-import static org.slim3.gen.ClassConstants.Long;
-import static org.slim3.gen.ClassConstants.String;
-import static org.slim3.gen.ClassConstants.primitive_byte_array;
-import static org.slim3.gen.ClassConstants.primitive_long;
-
 import java.util.List;
 
+import org.slim3.gen.AnnotationConstants;
+import org.slim3.gen.ClassConstants;
 import org.slim3.gen.datastore.DataType;
 import org.slim3.gen.datastore.DataTypeFactory;
 import org.slim3.gen.message.MessageCode;
 import org.slim3.gen.processor.ValidationException;
+import org.slim3.gen.util.AnnotationMirrorUtil;
 import org.slim3.gen.util.DeclarationUtil;
 import org.slim3.gen.util.StringUtil;
 import org.slim3.gen.util.TypeUtil;
 
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
+import com.sun.mirror.declaration.AnnotationMirror;
 import com.sun.mirror.declaration.Declaration;
 import com.sun.mirror.declaration.FieldDeclaration;
 import com.sun.mirror.declaration.MethodDeclaration;
@@ -91,12 +83,30 @@ public class AttributeMetaDescFactory {
         }
 
         DataTypeFactory datastoreTypeFactory = creaetDatastoreTypeFactory();
+        String propertyName = fieldDeclaration.getSimpleName();
+        AnnotationMirror attribute =
+            DeclarationUtil.getAnnotationMirror(
+                env,
+                fieldDeclaration,
+                AnnotationConstants.Attribute);
+        if (attribute != null) {
+            String value =
+                AnnotationMirrorUtil.getElementValue(
+                    attribute,
+                    AnnotationConstants.name);
+            if (value != null && value.length() > 0) {
+                propertyName = value;
+            }
+        }
         DataType dataType =
             datastoreTypeFactory.createDataType(
                 fieldDeclaration,
                 fieldDeclaration.getType());
         AttributeMetaDesc attributeMetaDesc =
-            new AttributeMetaDesc(fieldDeclaration.getSimpleName(), dataType);
+            new AttributeMetaDesc(
+                fieldDeclaration.getSimpleName(),
+                dataType,
+                propertyName);
         handleField(attributeMetaDesc, fieldDeclaration);
         handleMethod(attributeMetaDesc, fieldDeclaration, methodDeclarations);
         return attributeMetaDesc;
@@ -112,17 +122,17 @@ public class AttributeMetaDescFactory {
      */
     protected void handleField(AttributeMetaDesc attributeMetaDesc,
             FieldDeclaration fieldDeclaration) {
-        if (isAnnotated(Impermanent, fieldDeclaration)) {
+        if (isAnnotated(AnnotationConstants.Impermanent, fieldDeclaration)) {
             handleImpermanent(attributeMetaDesc, fieldDeclaration);
-        } else if (isAnnotated(PrimaryKey, fieldDeclaration)) {
+        } else if (isAnnotated(AnnotationConstants.PrimaryKey, fieldDeclaration)) {
             handlePrimaryKey(attributeMetaDesc, fieldDeclaration);
-        } else if (isAnnotated(Version, fieldDeclaration)) {
+        } else if (isAnnotated(AnnotationConstants.Version, fieldDeclaration)) {
             handleVersion(attributeMetaDesc, fieldDeclaration);
-        } else if (isAnnotated(Text, fieldDeclaration)) {
+        } else if (isAnnotated(AnnotationConstants.Text, fieldDeclaration)) {
             handleText(attributeMetaDesc, fieldDeclaration);
-        } else if (isAnnotated(Blob, fieldDeclaration)) {
+        } else if (isAnnotated(AnnotationConstants.Blob, fieldDeclaration)) {
             handleBlob(attributeMetaDesc, fieldDeclaration);
-        } else if (isAnnotated(Unindexed, fieldDeclaration)) {
+        } else if (isAnnotated(AnnotationConstants.Unindexed, fieldDeclaration)) {
             handleUnindexed(attributeMetaDesc, fieldDeclaration);
         }
     }
@@ -139,11 +149,11 @@ public class AttributeMetaDescFactory {
             FieldDeclaration fieldDeclaration) {
         validateAnnotationConsistency(
             fieldDeclaration,
-            Impermanent,
-            PrimaryKey,
-            Version,
-            Text,
-            Blob);
+            AnnotationConstants.Impermanent,
+            AnnotationConstants.PrimaryKey,
+            AnnotationConstants.Version,
+            AnnotationConstants.Text,
+            AnnotationConstants.Blob);
         attributeMetaDesc.setImpermanent(true);
     }
 
@@ -159,12 +169,14 @@ public class AttributeMetaDescFactory {
             FieldDeclaration fieldDeclaration) {
         validateAnnotationConsistency(
             fieldDeclaration,
-            PrimaryKey,
-            Version,
-            Text,
-            Blob,
-            Unindexed);
-        if (!Key.equals(attributeMetaDesc.getDataType().getClassName())) {
+            AnnotationConstants.PrimaryKey,
+            AnnotationConstants.Version,
+            AnnotationConstants.Text,
+            AnnotationConstants.Blob,
+            AnnotationConstants.Unindexed);
+        if (!ClassConstants.Key.equals(attributeMetaDesc
+            .getDataType()
+            .getClassName())) {
             throw new ValidationException(
                 MessageCode.SILM3GEN1007,
                 env,
@@ -185,12 +197,13 @@ public class AttributeMetaDescFactory {
             FieldDeclaration fieldDeclaration) {
         validateAnnotationConsistency(
             fieldDeclaration,
-            Version,
-            Text,
-            Blob,
-            Unindexed);
+            AnnotationConstants.Version,
+            AnnotationConstants.Text,
+            AnnotationConstants.Blob,
+            AnnotationConstants.Unindexed);
         String className = attributeMetaDesc.getDataType().getClassName();
-        if (!Long.equals(className) && !primitive_long.equals(className)) {
+        if (!ClassConstants.Long.equals(className)
+            && !ClassConstants.primitive_long.equals(className)) {
             throw new ValidationException(
                 MessageCode.SILM3GEN1008,
                 env,
@@ -209,8 +222,14 @@ public class AttributeMetaDescFactory {
      */
     protected void handleText(AttributeMetaDesc attributeMetaDesc,
             FieldDeclaration fieldDeclaration) {
-        validateAnnotationConsistency(fieldDeclaration, Text, Blob, Unindexed);
-        if (!String.equals(attributeMetaDesc.getDataType().getClassName())) {
+        validateAnnotationConsistency(
+            fieldDeclaration,
+            AnnotationConstants.Text,
+            AnnotationConstants.Blob,
+            AnnotationConstants.Unindexed);
+        if (!ClassConstants.String.equals(attributeMetaDesc
+            .getDataType()
+            .getClassName())) {
             throw new ValidationException(
                 MessageCode.SILM3GEN1009,
                 env,
@@ -229,10 +248,14 @@ public class AttributeMetaDescFactory {
      */
     protected void handleBlob(AttributeMetaDesc attributeMetaDesc,
             FieldDeclaration fieldDeclaration) {
-        validateAnnotationConsistency(fieldDeclaration, Blob, Unindexed);
+        validateAnnotationConsistency(
+            fieldDeclaration,
+            AnnotationConstants.Blob,
+            AnnotationConstants.Unindexed);
         DataType dataType = attributeMetaDesc.getDataType();
         String className = dataType.getClassName();
-        if (!primitive_byte_array.equals(className) && !dataType.isSerialized()) {
+        if (!ClassConstants.primitive_byte_array.equals(className)
+            && !dataType.isSerialized()) {
             throw new ValidationException(
                 MessageCode.SILM3GEN1010,
                 env,
@@ -292,14 +315,13 @@ public class AttributeMetaDescFactory {
     protected void handleMethod(AttributeMetaDesc attributeMetaDesc,
             FieldDeclaration fieldDeclaration,
             List<MethodDeclaration> methodDeclarations) {
-        TypeMirror fieldTypeMirror = fieldDeclaration.getType();
         for (MethodDeclaration m : methodDeclarations) {
-            if (isReadMethod(m, attributeMetaDesc, fieldTypeMirror)) {
+            if (isReadMethod(m, attributeMetaDesc, fieldDeclaration)) {
                 attributeMetaDesc.setReadMethodName(m.getSimpleName());
                 if (attributeMetaDesc.getWriteMethodName() != null) {
                     break;
                 }
-            } else if (isWriteMethod(m, attributeMetaDesc, fieldTypeMirror)) {
+            } else if (isWriteMethod(m, attributeMetaDesc, fieldDeclaration)) {
                 attributeMetaDesc.setWriteMethodName(m.getSimpleName());
                 if (attributeMetaDesc.getReadMethodName() != null) {
                     break;
@@ -339,18 +361,19 @@ public class AttributeMetaDescFactory {
     }
 
     /**
-     * Retrun {@code true} if method is getter method.
+     * Return {@code true} if method is getter method.
      * 
      * @param m
-     *            the method declaraion
+     *            the method declaration
      * @param attributeMetaDesc
      *            the attribute meta description
-     * @param fieldTypeMirror
-     *            the field type
+     * @param fieldDeclaration
+     *            the field declaration
      * @return {@code true} if method is getter method
      */
     protected boolean isReadMethod(MethodDeclaration m,
-            AttributeMetaDesc attributeMetaDesc, TypeMirror fieldTypeMirror) {
+            AttributeMetaDesc attributeMetaDesc,
+            FieldDeclaration fieldDeclaration) {
         String propertyName = null;
         if (m.getSimpleName().startsWith("get")) {
             propertyName =
@@ -364,40 +387,41 @@ public class AttributeMetaDescFactory {
         } else {
             return false;
         }
-        if (!propertyName.equals(attributeMetaDesc.getName())
+        if (!propertyName.equals(fieldDeclaration.getSimpleName())
             || TypeUtil.isVoid(m.getReturnType())
             || m.getParameters().size() != 0) {
             return false;
         }
-        return m.getReturnType().equals(fieldTypeMirror);
+        return m.getReturnType().equals(fieldDeclaration.getType());
     }
 
     /**
-     * Retrun {@code true} if method is setter method.
+     * Return {@code true} if method is setter method.
      * 
      * @param m
-     *            the method declaraion
+     *            the method declaration
      * @param attributeMetaDesc
      *            the attribute meta description
-     * @param fieldTypeMirror
+     * @param fieldDeclaration
      *            the field type
      * @return {@code true} if method is setter method
      */
     protected boolean isWriteMethod(MethodDeclaration m,
-            AttributeMetaDesc attributeMetaDesc, TypeMirror fieldTypeMirror) {
+            AttributeMetaDesc attributeMetaDesc,
+            FieldDeclaration fieldDeclaration) {
         if (!m.getSimpleName().startsWith("set")) {
             return false;
         }
         String propertyName =
             StringUtil.decapitalize(m.getSimpleName().substring(3));
-        if (!propertyName.equals(attributeMetaDesc.getName())
+        if (!propertyName.equals(fieldDeclaration.getSimpleName())
             || !TypeUtil.isVoid(m.getReturnType())
             || m.getParameters().size() != 1) {
             return false;
         }
         TypeMirror parameterTypeMirror =
             m.getParameters().iterator().next().getType();
-        return parameterTypeMirror.equals(fieldTypeMirror);
+        return parameterTypeMirror.equals(fieldDeclaration.getType());
     }
 
     /**
