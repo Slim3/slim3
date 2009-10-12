@@ -19,33 +19,37 @@ package org.slim3.gen;
  * The collection of constants of annotation.
  * 
  * @author taedium
+ * @author higa
  * @since 3.0
  * 
  */
-public class AnnotationConstants {
+public interface AnnotationConstants {
 
     /** {@code com.google.gwt.user.client.rpc.RemoteServiceRelativePath} */
-    public static final String RemoteServiceRelativePath =
+    String RemoteServiceRelativePath =
         "com.google.gwt.user.client.rpc.RemoteServiceRelativePath";
 
     /** {@code org.slim3.datastore.Model} */
-    public static final String Model = "org.slim3.datastore.Model";
+    String Model = "org.slim3.datastore.Model";
 
     /** {@code org.slim3.datastore.Unindexed} */
-    public static final String Unindexed = "org.slim3.datastore.Unindexed";
+    String Unindexed = "org.slim3.datastore.Unindexed";
 
     /** {@code org.slim3.datastore.Blob} */
-    public static final String Blob = "org.slim3.datastore.Blob";
+    String Blob = "org.slim3.datastore.Blob";
 
     /** {@code org.slim3.datastore.Text} */
-    public static final String Text = "org.slim3.datastore.Text";
+    String Text = "org.slim3.datastore.Text";
 
     /** {@code org.slim3.datastore.PrimaryKey} */
-    public static final String PrimaryKey = "org.slim3.datastore.PrimaryKey";
+    String PrimaryKey = "org.slim3.datastore.PrimaryKey";
 
     /** {@code org.slim3.datastore.Version} */
-    public static final String Version = "org.slim3.datastore.Version";
+    String Version = "org.slim3.datastore.Version";
 
     /** {@code org.slim3.datastore.Impermanent} */
-    public static final String Impermanent = "org.slim3.datastore.Impermanent";
+    String Impermanent = "org.slim3.datastore.Impermanent";
+
+    /** the name of kind element */
+    String kind = "kind";
 }

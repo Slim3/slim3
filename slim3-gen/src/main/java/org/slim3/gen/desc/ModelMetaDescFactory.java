@@ -20,13 +20,17 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.slim3.gen.AnnotationConstants;
 import org.slim3.gen.message.MessageCode;
 import org.slim3.gen.processor.AptException;
 import org.slim3.gen.processor.Options;
 import org.slim3.gen.processor.UnknownDeclarationException;
 import org.slim3.gen.processor.ValidationException;
+import org.slim3.gen.util.AnnotationMirrorUtil;
+import org.slim3.gen.util.DeclarationUtil;
 
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
+import com.sun.mirror.declaration.AnnotationMirror;
 import com.sun.mirror.declaration.ClassDeclaration;
 import com.sun.mirror.declaration.ConstructorDeclaration;
 import com.sun.mirror.declaration.FieldDeclaration;
@@ -91,12 +95,27 @@ public class ModelMetaDescFactory {
         String modelClassName = classDeclaration.getQualifiedName().toString();
         ModelMetaClassName modelMetaClassName =
             createModelMetaClassName(modelClassName);
+        String kind = modelMetaClassName.getKind();
+        AnnotationMirror anno =
+            DeclarationUtil.getAnnotationMirror(
+                env,
+                classDeclaration,
+                AnnotationConstants.Model);
+        if (anno != null) {
+            String value =
+                AnnotationMirrorUtil.getElementValue(
+                    anno,
+                    AnnotationConstants.kind);
+            if (value != null && value.length() > 0) {
+                kind = value;
+            }
+        }
         ModelMetaDesc modelMetaDesc =
             new ModelMetaDesc(
                 modelMetaClassName.getPackageName(),
                 modelMetaClassName.getSimpleName(),
                 modelClassName,
-                modelMetaClassName.getKind());
+                kind);
         handleAttributes(classDeclaration, modelMetaDesc);
         return modelMetaDesc;
     }
