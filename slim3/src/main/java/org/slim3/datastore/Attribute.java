@@ -21,9 +21,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.google.appengine.api.datastore.Blob;
-import com.google.appengine.api.datastore.Text;
-
 /**
  * An annotation for property of entity.
  * 
@@ -42,6 +39,11 @@ public @interface Attribute {
     String name() default "";
 
     /**
+     * Whether this property is persisted.
+     */
+    boolean persistent() default true;
+
+    /**
      * Whether this property is a key.
      */
     boolean primaryKey() default false;
@@ -52,14 +54,9 @@ public @interface Attribute {
     boolean version() default false;
 
     /**
-     * Whether this property is for {@link Text}.
+     * Whether this property is for a large object.
      */
-    boolean text() default false;
-
-    /**
-     * Whether this property is for {@link Blob}.
-     */
-    boolean blob() default false;
+    boolean lob() default false;
 
     /**
      * Whether this property is unindexed.
