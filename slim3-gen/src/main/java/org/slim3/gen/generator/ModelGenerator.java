@@ -51,8 +51,8 @@ public class ModelGenerator implements Generator {
         p.println();
         p.println("import com.google.appengine.api.datastore.Key;");
         p.println();
+        p.println("import org.slim3.datastore.Attribute;");
         p.println("import org.slim3.datastore.Model;");
-        p.println("import org.slim3.datastore.PrimaryKey;");
         p.println("import org.slim3.datastore.Version;");
         p.println();
         p.println("@Model");
@@ -61,7 +61,7 @@ public class ModelGenerator implements Generator {
         p.println();
         p.println("    private static final long serialVersionUID = 1L;");
         p.println();
-        p.println("    @PrimaryKey");
+        p.println("    @Attribute(primaryKey = true)");
         p.println("    private Key key;");
         p.println();
         p.println("    @Version");

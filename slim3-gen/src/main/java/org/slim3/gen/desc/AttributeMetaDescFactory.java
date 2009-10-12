@@ -107,7 +107,7 @@ public class AttributeMetaDescFactory {
                 fieldDeclaration.getSimpleName(),
                 dataType,
                 propertyName);
-        handleField(attributeMetaDesc, fieldDeclaration);
+        handleField(attributeMetaDesc, fieldDeclaration, attribute);
         handleMethod(attributeMetaDesc, fieldDeclaration, methodDeclarations);
         return attributeMetaDesc;
     }
@@ -119,13 +119,17 @@ public class AttributeMetaDescFactory {
      *            the attribute meta description
      * @param fieldDeclaration
      *            the field declaration
+     * @param attribute
+     *            the Attribute annotation.
      */
     protected void handleField(AttributeMetaDesc attributeMetaDesc,
-            FieldDeclaration fieldDeclaration) {
+            FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
         if (isAnnotated(AnnotationConstants.Impermanent, fieldDeclaration)) {
             handleImpermanent(attributeMetaDesc, fieldDeclaration);
-        } else if (isAnnotated(AnnotationConstants.PrimaryKey, fieldDeclaration)) {
-            handlePrimaryKey(attributeMetaDesc, fieldDeclaration);
+        } else if (AnnotationMirrorUtil.getElementValue(
+            attribute,
+            AnnotationConstants.primaryKey) == Boolean.TRUE) {
+            handlePrimaryKey(attributeMetaDesc, fieldDeclaration, attribute);
         } else if (isAnnotated(AnnotationConstants.Version, fieldDeclaration)) {
             handleVersion(attributeMetaDesc, fieldDeclaration);
         } else if (isAnnotated(AnnotationConstants.Text, fieldDeclaration)) {
@@ -147,13 +151,6 @@ public class AttributeMetaDescFactory {
      */
     protected void handleImpermanent(AttributeMetaDesc attributeMetaDesc,
             FieldDeclaration fieldDeclaration) {
-        validateAnnotationConsistency(
-            fieldDeclaration,
-            AnnotationConstants.Impermanent,
-            AnnotationConstants.PrimaryKey,
-            AnnotationConstants.Version,
-            AnnotationConstants.Text,
-            AnnotationConstants.Blob);
         attributeMetaDesc.setImpermanent(true);
     }
 
@@ -164,16 +161,51 @@ public class AttributeMetaDescFactory {
      *            the attribute meta description
      * @param fieldDeclaration
      *            the field declaration
+     * @param attribute
+     *            the Attribute annotation mirror
      */
     protected void handlePrimaryKey(AttributeMetaDesc attributeMetaDesc,
-            FieldDeclaration fieldDeclaration) {
-        validateAnnotationConsistency(
-            fieldDeclaration,
-            AnnotationConstants.PrimaryKey,
-            AnnotationConstants.Version,
-            AnnotationConstants.Text,
-            AnnotationConstants.Blob,
-            AnnotationConstants.Unindexed);
+            FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
+        if (AnnotationMirrorUtil.getElementValue(
+            attribute,
+            AnnotationConstants.version) == Boolean.TRUE) {
+            throw new ValidationException(
+                MessageCode.SILM3GEN1021,
+                env,
+                fieldDeclaration,
+                AnnotationConstants.primaryKey,
+                AnnotationConstants.version);
+        }
+        if (AnnotationMirrorUtil.getElementValue(
+            attribute,
+            AnnotationConstants.lob) == Boolean.TRUE) {
+            throw new ValidationException(
+                MessageCode.SILM3GEN1021,
+                env,
+                fieldDeclaration,
+                AnnotationConstants.primaryKey,
+                AnnotationConstants.lob);
+        }
+        if (AnnotationMirrorUtil.getElementValue(
+            attribute,
+            AnnotationConstants.unindexed) == Boolean.TRUE) {
+            throw new ValidationException(
+                MessageCode.SILM3GEN1021,
+                env,
+                fieldDeclaration,
+                AnnotationConstants.primaryKey,
+                AnnotationConstants.unindexed);
+        }
+        if (AnnotationMirrorUtil.getElementValue(
+            attribute,
+            AnnotationConstants.persistent) == Boolean.FALSE) {
+            throw new ValidationException(
+                MessageCode.SILM3GEN1021,
+                env,
+                fieldDeclaration,
+                AnnotationConstants.primaryKey,
+                AnnotationConstants.persistent + " = false");
+        }
         if (!ClassConstants.Key.equals(attributeMetaDesc
             .getDataType()
             .getClassName())) {
@@ -195,12 +227,6 @@ public class AttributeMetaDescFactory {
      */
     protected void handleVersion(AttributeMetaDesc attributeMetaDesc,
             FieldDeclaration fieldDeclaration) {
-        validateAnnotationConsistency(
-            fieldDeclaration,
-            AnnotationConstants.Version,
-            AnnotationConstants.Text,
-            AnnotationConstants.Blob,
-            AnnotationConstants.Unindexed);
         String className = attributeMetaDesc.getDataType().getClassName();
         if (!ClassConstants.Long.equals(className)
             && !ClassConstants.primitive_long.equals(className)) {
@@ -222,11 +248,6 @@ public class AttributeMetaDescFactory {
      */
     protected void handleText(AttributeMetaDesc attributeMetaDesc,
             FieldDeclaration fieldDeclaration) {
-        validateAnnotationConsistency(
-            fieldDeclaration,
-            AnnotationConstants.Text,
-            AnnotationConstants.Blob,
-            AnnotationConstants.Unindexed);
         if (!ClassConstants.String.equals(attributeMetaDesc
             .getDataType()
             .getClassName())) {
@@ -248,10 +269,6 @@ public class AttributeMetaDescFactory {
      */
     protected void handleBlob(AttributeMetaDesc attributeMetaDesc,
             FieldDeclaration fieldDeclaration) {
-        validateAnnotationConsistency(
-            fieldDeclaration,
-            AnnotationConstants.Blob,
-            AnnotationConstants.Unindexed);
         DataType dataType = attributeMetaDesc.getDataType();
         String className = dataType.getClassName();
         if (!ClassConstants.primitive_byte_array.equals(className)
@@ -275,31 +292,6 @@ public class AttributeMetaDescFactory {
     protected void handleUnindexed(AttributeMetaDesc attributeMetaDesc,
             FieldDeclaration fieldDeclaration) {
         attributeMetaDesc.setUnindexed(true);
-    }
-
-    /**
-     * Validates annotation consistency.
-     * 
-     * @param fieldDeclaration
-     *            the field declaration
-     * @param targetAnnotation
-     *            the validation target
-     * @param annotations
-     *            annotations
-     */
-    protected void validateAnnotationConsistency(
-            FieldDeclaration fieldDeclaration, String targetAnnotation,
-            String... annotations) {
-        for (String annotation : annotations) {
-            if (isAnnotated(annotation, fieldDeclaration)) {
-                throw new ValidationException(
-                    MessageCode.SILM3GEN1006,
-                    env,
-                    fieldDeclaration,
-                    targetAnnotation,
-                    annotation);
-            }
-        }
     }
 
     /**

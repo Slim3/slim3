@@ -20,9 +20,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.slim3.datastore.Attribute;
 import org.slim3.datastore.Blob;
 import org.slim3.datastore.Model;
-import org.slim3.datastore.PrimaryKey;
 import org.slim3.datastore.Text;
 import org.slim3.datastore.Version;
 
@@ -37,7 +37,7 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 @Model
 public class Hoge {
 
-    @PrimaryKey
+    @Attribute(primaryKey = true)
     private Key key;
 
     private short myPrimitiveShort;

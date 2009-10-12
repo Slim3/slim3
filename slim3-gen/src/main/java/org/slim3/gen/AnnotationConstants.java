@@ -44,9 +44,6 @@ public interface AnnotationConstants {
     /** {@code org.slim3.datastore.Text} */
     String Text = "org.slim3.datastore.Text";
 
-    /** {@code org.slim3.datastore.PrimaryKey} */
-    String PrimaryKey = "org.slim3.datastore.PrimaryKey";
-
     /** {@code org.slim3.datastore.Version} */
     String Version = "org.slim3.datastore.Version";
 
@@ -58,4 +55,19 @@ public interface AnnotationConstants {
 
     /** the name of name element */
     String name = "name";
+
+    /** the name of primaryKey element */
+    String primaryKey = "primaryKey";
+
+    /** the name of version element */
+    String version = "version";
+
+    /** the name of lob element */
+    String lob = "lob";
+
+    /** the name of unindexed element */
+    String unindexed = "unindexed";
+
+    /** the name of persistent element */
+    String persistent = "persistent";
 }

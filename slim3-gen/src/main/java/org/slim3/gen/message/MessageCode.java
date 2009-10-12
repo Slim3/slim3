@@ -56,9 +56,7 @@ public enum MessageCode {
     /** */
     SILM3GEN1005("The array type[{0}] is not supported."),
     /** */
-    SILM3GEN1006("The annotation[{0}] conflicts with another annotation[{1}]."),
-    /** */
-    SILM3GEN1007("The type annotated with @org.slim3.datastore.PrimaryKey must be com.google.appengine.api.datastore.Key."),
+    SILM3GEN1007("The type annotated with @org.slim3.datastore.Attribute(primaryKey = true) must be com.google.appengine.api.datastore.Key."),
     /** */
     SILM3GEN1008("The type annotated with @org.slim3.datastore.Version must be primitive long or java.lang.Long."),
     /** */
@@ -70,11 +68,11 @@ public enum MessageCode {
     /** */
     SILM3GEN1012("The setter method is not found."),
     /** */
-    SILM3GEN1013("Multi @org.slim3.datastore.PrimaryKey are not allowed."),
+    SILM3GEN1013("Multiple primary keys are not allowed."),
     /** */
-    SILM3GEN1014("Multi @org.slim3.datastore.Version are not allowed."),
+    SILM3GEN1014("Multiple version property are not allowed."),
     /** */
-    SILM3GEN1015("@org.slim3.datastore.PrimaryKey is mandatory."),
+    SILM3GEN1015("You should define @Attribute(primaryKey = true) to one field."),
     /** */
     SILM3GEN1016("The type parameter[{0}] is not supported."),
     /** */
@@ -84,7 +82,9 @@ public enum MessageCode {
     /** */
     SILM3GEN1019("The model class must be top level class."),
     /** */
-    SILM3GEN1020("The type parameter is not supported.");
+    SILM3GEN1020("The type parameter is not supported."),
+    /** */
+    SILM3GEN1021("The element[{0}] of the @Attribute and the element[{1}] of the @Attribute can not be defined at the same time.");
 
     /** the message */
     public final String message;
