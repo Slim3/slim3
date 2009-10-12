@@ -24,7 +24,6 @@ import org.slim3.datastore.Attribute;
 import org.slim3.datastore.Blob;
 import org.slim3.datastore.Model;
 import org.slim3.datastore.Text;
-import org.slim3.datastore.Version;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.ShortBlob;
@@ -115,7 +114,7 @@ public class Hoge {
 
     private List<SortDirection> myEnumList;
 
-    @Version
+    @Attribute(version = true)
     private Long version;
 
     /**

@@ -53,7 +53,6 @@ public class ModelGenerator implements Generator {
         p.println();
         p.println("import org.slim3.datastore.Attribute;");
         p.println("import org.slim3.datastore.Model;");
-        p.println("import org.slim3.datastore.Version;");
         p.println();
         p.println("@Model");
         p.println("public class %s implements Serializable {", modelDesc
@@ -64,7 +63,7 @@ public class ModelGenerator implements Generator {
         p.println("    @Attribute(primaryKey = true)");
         p.println("    private Key key;");
         p.println();
-        p.println("    @Version");
+        p.println("    @Attribute(version = true)");
         p.println("    private Long version;");
         p.println();
         p.println("    /**");

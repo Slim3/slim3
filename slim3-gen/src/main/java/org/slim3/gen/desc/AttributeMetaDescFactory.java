@@ -130,8 +130,10 @@ public class AttributeMetaDescFactory {
             attribute,
             AnnotationConstants.primaryKey) == Boolean.TRUE) {
             handlePrimaryKey(attributeMetaDesc, fieldDeclaration, attribute);
-        } else if (isAnnotated(AnnotationConstants.Version, fieldDeclaration)) {
-            handleVersion(attributeMetaDesc, fieldDeclaration);
+        } else if (AnnotationMirrorUtil.getElementValue(
+            attribute,
+            AnnotationConstants.version) == Boolean.TRUE) {
+            handleVersion(attributeMetaDesc, fieldDeclaration, attribute);
         } else if (isAnnotated(AnnotationConstants.Text, fieldDeclaration)) {
             handleText(attributeMetaDesc, fieldDeclaration);
         } else if (isAnnotated(AnnotationConstants.Blob, fieldDeclaration)) {
@@ -224,9 +226,31 @@ public class AttributeMetaDescFactory {
      *            the attribute meta description
      * @param fieldDeclaration
      *            the field declaration
+     * @param attribute
+     *            the attribute annotation mirror
      */
     protected void handleVersion(AttributeMetaDesc attributeMetaDesc,
-            FieldDeclaration fieldDeclaration) {
+            FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
+        if (AnnotationMirrorUtil.getElementValue(
+            attribute,
+            AnnotationConstants.lob) == Boolean.TRUE) {
+            throw new ValidationException(
+                MessageCode.SILM3GEN1021,
+                env,
+                fieldDeclaration,
+                AnnotationConstants.version,
+                AnnotationConstants.lob);
+        }
+        if (AnnotationMirrorUtil.getElementValue(
+            attribute,
+            AnnotationConstants.persistent) == Boolean.FALSE) {
+            throw new ValidationException(
+                MessageCode.SILM3GEN1021,
+                env,
+                fieldDeclaration,
+                AnnotationConstants.version,
+                AnnotationConstants.persistent + " = false");
+        }
         String className = attributeMetaDesc.getDataType().getClassName();
         if (!ClassConstants.Long.equals(className)
             && !ClassConstants.primitive_long.equals(className)) {

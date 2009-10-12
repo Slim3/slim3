@@ -56,9 +56,9 @@ public enum MessageCode {
     /** */
     SILM3GEN1005("The array type[{0}] is not supported."),
     /** */
-    SILM3GEN1007("The type annotated with @org.slim3.datastore.Attribute(primaryKey = true) must be com.google.appengine.api.datastore.Key."),
+    SILM3GEN1007("The type annotated with @Attribute(primaryKey = true) must be com.google.appengine.api.datastore.Key."),
     /** */
-    SILM3GEN1008("The type annotated with @org.slim3.datastore.Version must be primitive long or java.lang.Long."),
+    SILM3GEN1008("The type annotated with @Attribute(version = true) must be primitive long or java.lang.Long."),
     /** */
     SILM3GEN1009("The type annotated with @org.slim3.datastore.Text must be java.lang.String."),
     /** */
@@ -84,7 +84,7 @@ public enum MessageCode {
     /** */
     SILM3GEN1020("The type parameter is not supported."),
     /** */
-    SILM3GEN1021("The element[{0}] of the @Attribute and the element[{1}] of the @Attribute can not be defined at the same time.");
+    SILM3GEN1021("The element[{0}] and the element[{1}] can not be defined at the same time.");
 
     /** the message */
     public final String message;

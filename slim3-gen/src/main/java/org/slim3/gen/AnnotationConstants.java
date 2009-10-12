@@ -44,9 +44,6 @@ public interface AnnotationConstants {
     /** {@code org.slim3.datastore.Text} */
     String Text = "org.slim3.datastore.Text";
 
-    /** {@code org.slim3.datastore.Version} */
-    String Version = "org.slim3.datastore.Version";
-
     /** {@code org.slim3.datastore.Impermanent} */
     String Impermanent = "org.slim3.datastore.Impermanent";
 
