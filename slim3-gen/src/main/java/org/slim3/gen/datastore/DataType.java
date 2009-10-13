@@ -39,13 +39,6 @@ public interface DataType {
     String getTypeName();
 
     /**
-     * Returns {@code true} if the type should be serialized.
-     * 
-     * @return {@code true} if the type should be serialized
-     */
-    boolean isSerialized();
-
-    /**
      * Accepts a visitor.
      * 
      * @param <R>

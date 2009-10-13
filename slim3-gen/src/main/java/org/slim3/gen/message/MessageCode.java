@@ -54,13 +54,13 @@ public enum MessageCode {
     /** */
     SILM3GEN1004("The class[{0}] must be parametalized."),
     /** */
-    SILM3GEN1005("The array type[{0}] is not supported."),
+    SILM3GEN1005("Specify @Attribute(lob = true) or @Attribute(persistent = false)."),
     /** */
     SILM3GEN1007("The type annotated with @Attribute(primaryKey = true) must be com.google.appengine.api.datastore.Key."),
     /** */
     SILM3GEN1008("The type annotated with @Attribute(version = true) must be primitive long or java.lang.Long."),
     /** */
-    SILM3GEN1009("The type annotated with @Attribute(lob = true) must be java.lang.String or primitive byte array or java.io.Serializable(except core type and collection type of core type)."),
+    SILM3GEN1009("The type annotated with @Attribute(lob = true) is not supported."),
     /** */
     SILM3GEN1011("The getter method is not found."),
     /** */

@@ -30,9 +30,6 @@ public abstract class AbstractDataType implements DataType {
     /** the typeName */
     protected final String typeName;
 
-    /** the serializable */
-    protected boolean serialized;
-
     /**
      * 
      * @param className
@@ -54,21 +51,6 @@ public abstract class AbstractDataType implements DataType {
      */
     public String getClassName() {
         return className;
-    }
-
-    /**
-     * @return the serializable
-     */
-    public boolean isSerialized() {
-        return serialized;
-    }
-
-    /**
-     * @param serializable
-     *            the serializable to set
-     */
-    public void setSerialized(boolean serializable) {
-        this.serialized = serializable;
     }
 
     /**

@@ -34,7 +34,6 @@ public class OtherReferenceType extends ReferenceType {
      */
     public OtherReferenceType(String className, String typeName) {
         super(className, typeName);
-        setSerialized(true);
     }
 
     @Override

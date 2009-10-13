@@ -15,36 +15,8 @@
  */
 package org.slim3.gen.datastore;
 
-import static org.slim3.gen.ClassConstants.ArrayList;
-import static org.slim3.gen.ClassConstants.Blob;
-import static org.slim3.gen.ClassConstants.Boolean;
-import static org.slim3.gen.ClassConstants.Category;
-import static org.slim3.gen.ClassConstants.Date;
-import static org.slim3.gen.ClassConstants.Double;
-import static org.slim3.gen.ClassConstants.Email;
-import static org.slim3.gen.ClassConstants.Float;
-import static org.slim3.gen.ClassConstants.GeoPt;
-import static org.slim3.gen.ClassConstants.HashSet;
-import static org.slim3.gen.ClassConstants.IMHandle;
-import static org.slim3.gen.ClassConstants.Integer;
-import static org.slim3.gen.ClassConstants.Key;
-import static org.slim3.gen.ClassConstants.Link;
-import static org.slim3.gen.ClassConstants.List;
-import static org.slim3.gen.ClassConstants.Long;
-import static org.slim3.gen.ClassConstants.PhoneNumber;
-import static org.slim3.gen.ClassConstants.PostalAddress;
-import static org.slim3.gen.ClassConstants.Rating;
-import static org.slim3.gen.ClassConstants.Set;
-import static org.slim3.gen.ClassConstants.Short;
-import static org.slim3.gen.ClassConstants.ShortBlob;
-import static org.slim3.gen.ClassConstants.SortedSet;
-import static org.slim3.gen.ClassConstants.String;
-import static org.slim3.gen.ClassConstants.Text;
-import static org.slim3.gen.ClassConstants.TreeSet;
-import static org.slim3.gen.ClassConstants.User;
-import static org.slim3.gen.ClassConstants.primitive_byte;
+import static org.slim3.gen.ClassConstants.*;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -223,11 +195,13 @@ public class DataTypeFactory {
 
                 @Override
                 public void visitTypeMirror(TypeMirror typemirror) {
-                    throw new ValidationException(
-                        MessageCode.SILM3GEN1005,
-                        env,
-                        declaration,
-                        arrayType);
+                    dataType =
+                        new org.slim3.gen.datastore.ArrayType(
+                            typeMirror.toString(),
+                            arrayType.toString(),
+                            new OtherReferenceType(
+                                typeMirror.toString(),
+                                typeMirror.toString()));
                 }
             });
         }
@@ -244,16 +218,8 @@ public class DataTypeFactory {
             if (dataType != null) {
                 return;
             }
-            if (isSerializable(declaredType)) {
-                dataType =
-                    new OtherReferenceType(className, declaredType.toString());
-                return;
-            }
-            throw new ValidationException(
-                MessageCode.SILM3GEN1002,
-                env,
-                typeDeclaration,
-                className);
+            dataType =
+                new OtherReferenceType(className, declaredType.toString());
         }
 
         @Override
@@ -291,18 +257,6 @@ public class DataTypeFactory {
                 env,
                 declaration,
                 declaredType);
-        }
-
-        /**
-         * Returns {@code true} if {@code typeMirror} is serializable.
-         * 
-         * @param typeMirror
-         *            the typemirror
-         * @return {@code true} if {@code typeMirror} is serializable, otherwise
-         *         {@code false}.
-         */
-        protected boolean isSerializable(TypeMirror typeMirror) {
-            return TypeUtil.isSubtype(env, typeMirror, Serializable.class);
         }
 
         /**
@@ -390,22 +344,11 @@ public class DataTypeFactory {
                     declaredType,
                     elementCoreReferenceType);
             }
-            if (isSerializable(elementType)) {
-                DataType elementDataType =
-                    createDataTypeInternal(elementDeclaration, elementType);
-                CollectionType collectionType =
-                    createCollectionType(
-                        className,
-                        declaredType,
-                        elementDataType);
-                collectionType.setSerialized(true);
-                return collectionType;
-            }
-            throw new ValidationException(
-                MessageCode.SILM3GEN1002,
-                env,
-                declaration,
-                elementDeclaration.getQualifiedName());
+            DataType elementDataType =
+                createDataTypeInternal(elementDeclaration, elementType);
+            CollectionType collectionType =
+                createCollectionType(className, declaredType, elementDataType);
+            return collectionType;
         }
 
         /**

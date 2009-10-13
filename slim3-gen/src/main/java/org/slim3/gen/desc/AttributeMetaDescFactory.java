@@ -19,8 +19,12 @@ import java.util.List;
 
 import org.slim3.gen.AnnotationConstants;
 import org.slim3.gen.ClassConstants;
+import org.slim3.gen.datastore.ArrayType;
+import org.slim3.gen.datastore.CollectionType;
+import org.slim3.gen.datastore.CoreReferenceType;
 import org.slim3.gen.datastore.DataType;
 import org.slim3.gen.datastore.DataTypeFactory;
+import org.slim3.gen.datastore.OtherReferenceType;
 import org.slim3.gen.message.MessageCode;
 import org.slim3.gen.processor.ValidationException;
 import org.slim3.gen.util.AnnotationMirrorUtil;
@@ -127,22 +131,48 @@ public class AttributeMetaDescFactory {
             attribute,
             AnnotationConstants.primaryKey) == Boolean.TRUE) {
             handlePrimaryKey(attributeMetaDesc, fieldDeclaration, attribute);
-        } else if (AnnotationMirrorUtil.getElementValue(
+        }
+        if (AnnotationMirrorUtil.getElementValue(
             attribute,
             AnnotationConstants.version) == Boolean.TRUE) {
             handleVersion(attributeMetaDesc, fieldDeclaration, attribute);
-        } else if (AnnotationMirrorUtil.getElementValue(
+        }
+        if (AnnotationMirrorUtil.getElementValue(
             attribute,
             AnnotationConstants.lob) == Boolean.TRUE) {
             handleLob(attributeMetaDesc, fieldDeclaration, attribute);
-        } else if (AnnotationMirrorUtil.getElementValue(
+        }
+        if (AnnotationMirrorUtil.getElementValue(
             attribute,
             AnnotationConstants.unindexed) == Boolean.TRUE) {
             handleUnindexed(attributeMetaDesc, fieldDeclaration, attribute);
-        } else if (AnnotationMirrorUtil.getElementValue(
+        }
+        if (AnnotationMirrorUtil.getElementValue(
             attribute,
             AnnotationConstants.persistent) == Boolean.FALSE) {
             handleNotPersistent(attributeMetaDesc, fieldDeclaration);
+        }
+        if (attributeMetaDesc.isPersistent() && !attributeMetaDesc.isLob()) {
+            DataType dataType = attributeMetaDesc.getDataType();
+            if (dataType instanceof OtherReferenceType) {
+                throw new ValidationException(
+                    MessageCode.SILM3GEN1005,
+                    env,
+                    fieldDeclaration);
+            }
+            if (dataType instanceof CollectionType
+                && CollectionType.class.cast(dataType).getElementType() instanceof OtherReferenceType) {
+                throw new ValidationException(
+                    MessageCode.SILM3GEN1005,
+                    env,
+                    fieldDeclaration);
+            }
+            if (dataType instanceof ArrayType) {
+                throw new ValidationException(
+                    MessageCode.SILM3GEN1005,
+                    env,
+                    fieldDeclaration);
+            }
         }
     }
 
@@ -287,11 +317,26 @@ public class AttributeMetaDescFactory {
                 AnnotationConstants.lob,
                 AnnotationConstants.persistent + " = false");
         }
+        if (AnnotationMirrorUtil.getElementValue(
+            attribute,
+            AnnotationConstants.unindexed) == Boolean.FALSE) {
+            throw new ValidationException(
+                MessageCode.SILM3GEN1021,
+                env,
+                fieldDeclaration,
+                AnnotationConstants.lob,
+                AnnotationConstants.unindexed + " = false");
+        }
         DataType dataType = attributeMetaDesc.getDataType();
-        String className = dataType.getClassName();
-        if (!ClassConstants.String.equals(className)
-            && !ClassConstants.primitive_byte_array.equals(className)
-            && !dataType.isSerialized()) {
+        if (dataType instanceof CoreReferenceType
+            && !ClassConstants.String.equals(dataType.getClassName())) {
+            throw new ValidationException(
+                MessageCode.SILM3GEN1009,
+                env,
+                fieldDeclaration);
+        }
+        if (dataType instanceof CollectionType
+            && CollectionType.class.cast(dataType).getElementType() instanceof CoreReferenceType) {
             throw new ValidationException(
                 MessageCode.SILM3GEN1009,
                 env,

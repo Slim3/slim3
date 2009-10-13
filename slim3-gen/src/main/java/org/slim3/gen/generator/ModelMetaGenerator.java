@@ -347,9 +347,7 @@ public class ModelMetaGenerator implements Generator {
         public void generate() {
             for (AttributeMetaDesc attr : modelMetaDesc
                 .getAttributeMetaDescList()) {
-                if (attr.isLob()
-                    || attr.isUnindexed()
-                    || attr.getDataType().isSerialized()) {
+                if (attr.isLob() || attr.isUnindexed()) {
                     continue;
                 }
                 DataType dataType = attr.getDataType();
@@ -521,23 +519,13 @@ public class ModelMetaGenerator implements Generator {
         @Override
         protected Void defaultAction(DataType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            if (p.isLob()) {
-                printer
-                    .println(
-                        "%1$s _%2$s = blobToSerializable((%3$s) entity.getProperty(\"%4$s\"));",
-                        type.getTypeName(),
-                        p.getName(),
-                        Blob,
-                        p.getPropertyName());
-            } else {
-                printer
-                    .println(
-                        "%1$s _%2$s = shortBlobToSerializable((%3$s) entity.getProperty(\"%4$s\"));",
-                        type.getTypeName(),
-                        p.getName(),
-                        ShortBlob,
-                        p.getPropertyName());
-            }
+            printer
+                .println(
+                    "%1$s _%2$s = blobToSerializable((%3$s) entity.getProperty(\"%4$s\"));",
+                    type.getTypeName(),
+                    p.getName(),
+                    Blob,
+                    p.getPropertyName());
             printer.println("model.%1$s(_%2$s);", p.getWriteMethodName(), p
                 .getName());
             return null;
@@ -710,35 +698,31 @@ public class ModelMetaGenerator implements Generator {
         public Void visitArrayType(ArrayType type, final AttributeMetaDesc attr)
                 throws RuntimeException {
             DataType componentType = type.getComponentType();
-            componentType.accept(
-                new SimpleDataTypeVisitor<Boolean, Void, RuntimeException>(
-                    false) {
+            boolean accepted =
+                componentType.accept(
+                    new SimpleDataTypeVisitor<Boolean, Void, RuntimeException>(
+                        false) {
 
-                    @Override
-                    public Boolean visitPrimitiveByteType(
-                            PrimitiveByteType type, Void p)
-                            throws RuntimeException {
-                        if (attr.isLob()) {
+                        @Override
+                        public Boolean visitPrimitiveByteType(
+                                PrimitiveByteType type, Void p)
+                                throws RuntimeException {
                             printer
                                 .println(
                                     "model.%1$s(blobToBytes((%2$s) entity.getProperty(\"%3$s\")));",
                                     attr.getWriteMethodName(),
                                     Blob,
                                     attr.getPropertyName());
-                        } else {
-                            printer
-                                .println(
-                                    "model.%1$s(shortBlobToBytes((%2$s) entity.getProperty(\"%3$s\")));",
-                                    attr.getWriteMethodName(),
-                                    ShortBlob,
-                                    attr.getPropertyName());
-                        }
-                        return true;
-                    }
 
-                },
-                null);
-            return null;
+                            return true;
+                        }
+
+                    },
+                    null);
+            if (accepted) {
+                return null;
+            }
+            return super.visitArrayType(type, attr);
         }
 
         @Override
@@ -984,28 +968,18 @@ public class ModelMetaGenerator implements Generator {
         @Override
         protected Void defaultAction(DataType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            if (p.isLob()) {
-                printer
-                    .println(
-                        "entity.setUnindexedProperty(\"%1$s\", serializableToBlob(m.%2$s()));",
-                        p.getPropertyName(),
-                        p.getReadMethodName());
-            } else {
-                printer
-                    .println(
-                        "entity.setUnindexedProperty(\"%1$s\", serializableToShortBlob(m.%2$s()));",
-                        p.getPropertyName(),
-                        p.getReadMethodName());
-            }
+            printer
+                .println(
+                    "entity.setUnindexedProperty(\"%1$s\", serializableToBlob(m.%2$s()));",
+                    p.getPropertyName(),
+                    p.getReadMethodName());
+
             return null;
         }
 
         @Override
         public Void visitCorePrimitiveType(CorePrimitiveType type,
                 AttributeMetaDesc p) throws RuntimeException {
-            if (type.isSerialized()) {
-                return super.visitCorePrimitiveType(type, p);
-            }
             if (p.isUnindexed()) {
                 printer.println(
                     "entity.setUnindexedProperty(\"%1$s\", m.%2$s());",
@@ -1021,9 +995,6 @@ public class ModelMetaGenerator implements Generator {
         @Override
         public Void visitCoreReferenceType(CoreReferenceType type,
                 AttributeMetaDesc p) throws RuntimeException {
-            if (type.isSerialized()) {
-                return super.visitCoreReferenceType(type, p);
-            }
             if (p.isUnindexed()) {
                 printer.println(
                     "entity.setUnindexedProperty(\"%1$s\", m.%2$s());",
@@ -1039,9 +1010,6 @@ public class ModelMetaGenerator implements Generator {
         @Override
         public Void visitStringType(StringType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            if (type.isSerialized()) {
-                return super.visitStringType(type, p);
-            }
             if (p.isLob()) {
                 printer
                     .println(
@@ -1056,9 +1024,6 @@ public class ModelMetaGenerator implements Generator {
         @Override
         public Void visitEnumType(EnumType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            if (type.isSerialized()) {
-                return super.visitCoreReferenceType(type, p);
-            }
             if (p.isUnindexed()) {
                 printer
                     .println(
@@ -1087,40 +1052,35 @@ public class ModelMetaGenerator implements Generator {
         @Override
         public Void visitArrayType(ArrayType type, final AttributeMetaDesc attr)
                 throws RuntimeException {
-            if (type.isSerialized()) {
-                return super.visitArrayType(type, attr);
-            }
             DataType componentType = type.getComponentType();
-            componentType.accept(
-                new SimpleDataTypeVisitor<Void, Void, RuntimeException>() {
+            boolean accepted =
+                componentType.accept(
+                    new SimpleDataTypeVisitor<Boolean, Void, RuntimeException>(
+                        false) {
 
-                    @Override
-                    public Void visitPrimitiveByteType(PrimitiveByteType type,
-                            Void p) throws RuntimeException {
-                        if (attr.isLob()) {
+                        @Override
+                        public Boolean visitPrimitiveByteType(
+                                PrimitiveByteType type, Void p)
+                                throws RuntimeException {
                             printer
                                 .println(
                                     "entity.setUnindexedProperty(\"%1$s\", bytesToBlob(m.%2$s()));",
                                     attr.getPropertyName(),
                                     attr.getReadMethodName());
-                        } else {
-                            printer
-                                .println(
-                                    "entity.setUnindexedProperty(\"%1$s\", bytesToShortBlob(m.%2$s()));",
-                                    attr.getPropertyName(),
-                                    attr.getReadMethodName());
+                            return true;
                         }
-                        return null;
-                    }
-                },
-                null);
-            return null;
+                    },
+                    null);
+            if (accepted) {
+                return null;
+            }
+            return super.visitArrayType(type, attr);
         }
 
         @Override
         public Void visitCollectionType(CollectionType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            if (type.isSerialized()) {
+            if (p.isLob()) {
                 return super.visitCollectionType(type, p);
             }
             printer.println("entity.setProperty(\"%1$s\", m.%2$s());", p
