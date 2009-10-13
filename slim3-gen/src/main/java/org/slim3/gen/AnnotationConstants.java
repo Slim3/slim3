@@ -38,9 +38,6 @@ public interface AnnotationConstants {
     /** {@code org.slim3.datastore.Unindexed} */
     String Unindexed = "org.slim3.datastore.Unindexed";
 
-    /** {@code org.slim3.datastore.Impermanent} */
-    String Impermanent = "org.slim3.datastore.Impermanent";
-
     /** the name of kind element */
     String kind = "kind";
 

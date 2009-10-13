@@ -213,7 +213,7 @@ public class ModelMetaDescFactory {
         for (FieldDeclaration fieldDeclaration : getFieldDeclarations(classDeclaration)) {
             AttributeMetaDesc attributeMetaDesc =
                 createAttributeMetaDesc(fieldDeclaration, methodDeclarations);
-            if (attributeMetaDesc == null) {
+            if (attributeMetaDesc == null || !attributeMetaDesc.isPersistent()) {
                 continue;
             }
             if (attributeMetaDesc.isPrimaryKey()

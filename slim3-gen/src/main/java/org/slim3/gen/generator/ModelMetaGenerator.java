@@ -347,8 +347,7 @@ public class ModelMetaGenerator implements Generator {
         public void generate() {
             for (AttributeMetaDesc attr : modelMetaDesc
                 .getAttributeMetaDescList()) {
-                if (attr.isImpermanent()
-                    || attr.isLob()
+                if (attr.isLob()
                     || attr.isUnindexed()
                     || attr.getDataType().isSerialized()) {
                     continue;
@@ -510,9 +509,6 @@ public class ModelMetaGenerator implements Generator {
                 .getModelClassName());
             for (AttributeMetaDesc attr : modelMetaDesc
                 .getAttributeMetaDescList()) {
-                if (attr.isImpermanent()) {
-                    continue;
-                }
                 DataType dataType = attr.getDataType();
                 dataType.accept(this, attr);
             }
@@ -974,7 +970,7 @@ public class ModelMetaGenerator implements Generator {
             printer.println("}");
             for (AttributeMetaDesc attr : modelMetaDesc
                 .getAttributeMetaDescList()) {
-                if (attr.isImpermanent() || attr.isPrimaryKey()) {
+                if (attr.isPrimaryKey()) {
                     continue;
                 }
                 DataType dataType = attr.getDataType();

@@ -43,8 +43,8 @@ public class AttributeMetaDesc {
     /** the version */
     protected boolean version;
 
-    /** the impermanent */
-    protected boolean impermanent;
+    /** the persistent */
+    protected boolean persistent = true;
 
     /** the unindexed */
     protected boolean unindexed;
@@ -134,18 +134,22 @@ public class AttributeMetaDesc {
     }
 
     /**
-     * @return the impermanent
+     * Determines if this attribute is persistent.
+     * 
+     * @return whether this attribute is persistent
      */
-    public boolean isImpermanent() {
-        return impermanent;
+    public boolean isPersistent() {
+        return persistent;
     }
 
     /**
-     * @param impermanent
-     *            the impermanent to set
+     * Sets whether this attribute is persistent
+     * 
+     * @param persistent
+     *            whether this attribute is persistent
      */
-    public void setImpermanent(boolean impermanent) {
-        this.impermanent = impermanent;
+    public void setPersistent(boolean persistent) {
+        this.persistent = persistent;
     }
 
     /**

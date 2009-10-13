@@ -124,9 +124,7 @@ public class AttributeMetaDescFactory {
      */
     protected void handleField(AttributeMetaDesc attributeMetaDesc,
             FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
-        if (isAnnotated(AnnotationConstants.Impermanent, fieldDeclaration)) {
-            handleImpermanent(attributeMetaDesc, fieldDeclaration);
-        } else if (AnnotationMirrorUtil.getElementValue(
+        if (AnnotationMirrorUtil.getElementValue(
             attribute,
             AnnotationConstants.primaryKey) == Boolean.TRUE) {
             handlePrimaryKey(attributeMetaDesc, fieldDeclaration, attribute);
@@ -137,23 +135,27 @@ public class AttributeMetaDescFactory {
         } else if (AnnotationMirrorUtil.getElementValue(
             attribute,
             AnnotationConstants.lob) == Boolean.TRUE) {
-            handleLob(attributeMetaDesc, fieldDeclaration);
+            handleLob(attributeMetaDesc, fieldDeclaration, attribute);
         } else if (isAnnotated(AnnotationConstants.Unindexed, fieldDeclaration)) {
             handleUnindexed(attributeMetaDesc, fieldDeclaration);
+        } else if (AnnotationMirrorUtil.getElementValue(
+            attribute,
+            AnnotationConstants.persistent) == Boolean.FALSE) {
+            handleNotPersistent(attributeMetaDesc, fieldDeclaration);
         }
     }
 
     /**
-     * Handles impermanent.
+     * Handles not persistent.
      * 
      * @param attributeMetaDesc
      *            the attribute meta description
      * @param fieldDeclaration
      *            the field declaration
      */
-    protected void handleImpermanent(AttributeMetaDesc attributeMetaDesc,
+    protected void handleNotPersistent(AttributeMetaDesc attributeMetaDesc,
             FieldDeclaration fieldDeclaration) {
-        attributeMetaDesc.setImpermanent(true);
+        attributeMetaDesc.setPersistent(false);
     }
 
     /**
@@ -269,9 +271,21 @@ public class AttributeMetaDescFactory {
      *            the attribute meta description
      * @param fieldDeclaration
      *            the field declaration
+     * @param attribute
+     *            the Attribute annotation mirror
      */
     protected void handleLob(AttributeMetaDesc attributeMetaDesc,
-            FieldDeclaration fieldDeclaration) {
+            FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
+        if (AnnotationMirrorUtil.getElementValue(
+            attribute,
+            AnnotationConstants.persistent) == Boolean.FALSE) {
+            throw new ValidationException(
+                MessageCode.SILM3GEN1021,
+                env,
+                fieldDeclaration,
+                AnnotationConstants.lob,
+                AnnotationConstants.persistent + " = false");
+        }
         DataType dataType = attributeMetaDesc.getDataType();
         String className = dataType.getClassName();
         if (!ClassConstants.String.equals(className)
@@ -324,7 +338,7 @@ public class AttributeMetaDescFactory {
                 }
             }
         }
-        if (!attributeMetaDesc.isImpermanent()) {
+        if (attributeMetaDesc.isPersistent()) {
             validateGetterAndSetterMethods(attributeMetaDesc, fieldDeclaration);
         }
     }
