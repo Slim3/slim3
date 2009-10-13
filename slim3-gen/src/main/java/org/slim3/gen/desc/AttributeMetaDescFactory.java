@@ -30,7 +30,6 @@ import org.slim3.gen.util.TypeUtil;
 
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.declaration.AnnotationMirror;
-import com.sun.mirror.declaration.Declaration;
 import com.sun.mirror.declaration.FieldDeclaration;
 import com.sun.mirror.declaration.MethodDeclaration;
 import com.sun.mirror.type.TypeMirror;
@@ -136,8 +135,10 @@ public class AttributeMetaDescFactory {
             attribute,
             AnnotationConstants.lob) == Boolean.TRUE) {
             handleLob(attributeMetaDesc, fieldDeclaration, attribute);
-        } else if (isAnnotated(AnnotationConstants.Unindexed, fieldDeclaration)) {
-            handleUnindexed(attributeMetaDesc, fieldDeclaration);
+        } else if (AnnotationMirrorUtil.getElementValue(
+            attribute,
+            AnnotationConstants.unindexed) == Boolean.TRUE) {
+            handleUnindexed(attributeMetaDesc, fieldDeclaration, attribute);
         } else if (AnnotationMirrorUtil.getElementValue(
             attribute,
             AnnotationConstants.persistent) == Boolean.FALSE) {
@@ -306,9 +307,21 @@ public class AttributeMetaDescFactory {
      *            the attribute meta description
      * @param fieldDeclaration
      *            the field declaration
+     * @param attribute
+     *            the annotation mirror for Attribute
      */
     protected void handleUnindexed(AttributeMetaDesc attributeMetaDesc,
-            FieldDeclaration fieldDeclaration) {
+            FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
+        if (AnnotationMirrorUtil.getElementValue(
+            attribute,
+            AnnotationConstants.persistent) == Boolean.FALSE) {
+            throw new ValidationException(
+                MessageCode.SILM3GEN1021,
+                env,
+                fieldDeclaration,
+                AnnotationConstants.unindexed,
+                AnnotationConstants.persistent + " = false");
+        }
         attributeMetaDesc.setUnindexed(true);
     }
 
@@ -432,20 +445,6 @@ public class AttributeMetaDescFactory {
         TypeMirror parameterTypeMirror =
             m.getParameters().iterator().next().getType();
         return parameterTypeMirror.equals(fieldDeclaration.getType());
-    }
-
-    /**
-     * Returns {@code true} if annotation is present on the declaration.
-     * 
-     * @param annotation
-     *            the annotation
-     * @param declaration
-     *            the declaration
-     * @return {@code true} if annotation is present on the declaration
-     */
-    protected boolean isAnnotated(String annotation, Declaration declaration) {
-        return DeclarationUtil
-            .getAnnotationMirror(env, declaration, annotation) != null;
     }
 
     /**
