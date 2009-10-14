@@ -154,4 +154,13 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
     public IsNotNullCriterion isNotNull() {
         return new IsNotNullCriterion(this);
     }
+
+    /**
+     * Returns the "is null" filter criterion.
+     * 
+     * @return the "is null" filter criterion
+     */
+    public IsNullCriterion isNull() {
+        return new IsNullCriterion(this);
+    }
 }

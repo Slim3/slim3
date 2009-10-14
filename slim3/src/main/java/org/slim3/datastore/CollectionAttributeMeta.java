@@ -47,16 +47,25 @@ public class CollectionAttributeMeta<M, A, E> extends
     }
 
     /**
-     * Returns the "contains" filter predicate.
+     * Returns the "contains" filter criterion.
      * 
      * @param value
      *            the value
-     * @return the "contains" filter predicate
+     * @return the "contains" filter criterion
      */
     public FilterCriterion contains(E value) {
         if (value == null) {
             return null;
         }
         return new ContainsCriterion(this, convertValueForDatastore(value));
+    }
+
+    /**
+     * Returns the "contains null" filter criterion.
+     * 
+     * @return the "contains null" filter criterion
+     */
+    public FilterCriterion containsNull() {
+        return new ContainsNullCriterion(this);
     }
 }

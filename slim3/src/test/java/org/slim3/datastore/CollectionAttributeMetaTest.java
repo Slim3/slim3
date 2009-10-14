@@ -42,4 +42,15 @@ public class CollectionAttributeMetaTest extends TestCase {
                 .contains(SortDirection.ASCENDING);
         assertEquals("ASCENDING", c.value);
     }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testContainsNull() throws Exception {
+        HogeMeta meta = new HogeMeta();
+        assertEquals(ContainsNullCriterion.class, meta.myIntegerList
+            .containsNull()
+            .getClass());
+    }
 }
