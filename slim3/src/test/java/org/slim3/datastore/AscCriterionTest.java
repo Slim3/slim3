@@ -18,10 +18,9 @@ package org.slim3.datastore;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
+import org.slim3.tester.DatastoreTestCase;
 
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
@@ -31,7 +30,7 @@ import com.google.appengine.api.datastore.Query.SortPredicate;
  * @author higa
  * 
  */
-public class AscCriterionTest extends TestCase {
+public class AscCriterionTest extends DatastoreTestCase {
 
     private HogeMeta meta = new HogeMeta();
 

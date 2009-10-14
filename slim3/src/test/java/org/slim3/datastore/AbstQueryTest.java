@@ -210,7 +210,7 @@ public class AbstQueryTest extends DatastoreTestCase {
         assertSame(q, q.offset(10));
         Field f = FetchOptions.class.getDeclaredField("offset");
         f.setAccessible(true);
-        assertEquals(10, f.getInt(q.fetchOptions));
+        assertEquals(10, f.get(q.fetchOptions));
     }
 
     /**
@@ -221,7 +221,7 @@ public class AbstQueryTest extends DatastoreTestCase {
         assertSame(q, q.limit(100));
         Field f = FetchOptions.class.getDeclaredField("limit");
         f.setAccessible(true);
-        assertEquals(100, f.getInt(q.fetchOptions));
+        assertEquals(100, f.get(q.fetchOptions));
     }
 
     /**
@@ -232,7 +232,7 @@ public class AbstQueryTest extends DatastoreTestCase {
         assertSame(q, q.prefetchSize(15));
         Field f = FetchOptions.class.getDeclaredField("prefetchSize");
         f.setAccessible(true);
-        assertEquals(15, f.getInt(q.fetchOptions));
+        assertEquals(15, f.get(q.fetchOptions));
     }
 
     /**
@@ -243,7 +243,7 @@ public class AbstQueryTest extends DatastoreTestCase {
         assertSame(q, q.chunkSize(20));
         Field f = FetchOptions.class.getDeclaredField("chunkSize");
         f.setAccessible(true);
-        assertEquals(20, f.getInt(q.fetchOptions));
+        assertEquals(20, f.get(q.fetchOptions));
     }
 
     private static class MyQuery extends AbstractQuery<MyQuery> {

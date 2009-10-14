@@ -17,9 +17,8 @@ package org.slim3.datastore;
 
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.slim3.datastore.meta.HogeMeta;
+import org.slim3.tester.DatastoreTestCase;
 
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
@@ -29,7 +28,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
  * @author higa
  * 
  */
-public class StartsWithCriterionTest extends TestCase {
+public class StartsWithCriterionTest extends DatastoreTestCase {
 
     /**
      * @throws Exception

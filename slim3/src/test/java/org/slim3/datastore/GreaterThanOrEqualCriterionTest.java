@@ -17,10 +17,9 @@ package org.slim3.datastore;
 
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
+import org.slim3.tester.DatastoreTestCase;
 
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
@@ -30,7 +29,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
  * @author higa
  * 
  */
-public class GreaterThanOrEqualCriterionTest extends TestCase {
+public class GreaterThanOrEqualCriterionTest extends DatastoreTestCase {
 
     private HogeMeta meta = new HogeMeta();
 
