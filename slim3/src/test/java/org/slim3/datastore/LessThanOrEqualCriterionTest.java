@@ -66,11 +66,23 @@ public class LessThanOrEqualCriterionTest extends DatastoreTestCase {
     public void testAccept() throws Exception {
         Hoge hoge = new Hoge();
         hoge.setMyString("c");
-        FilterCriterion c = meta.myString.lessThanOrEqual("b");
+        FilterCriterion c = new LessThanOrEqualCriterion(meta.myString, "b");
         assertFalse(c.accept(hoge));
         hoge.setMyString("b");
         assertTrue(c.accept(hoge));
         hoge.setMyString("a");
+        assertTrue(c.accept(hoge));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testAcceptForNull() throws Exception {
+        Hoge hoge = new Hoge();
+        hoge.setMyString("c");
+        FilterCriterion c = new LessThanOrEqualCriterion(meta.myString, null);
+        assertFalse(c.accept(hoge));
+        hoge.setMyString(null);
         assertTrue(c.accept(hoge));
     }
 }

@@ -46,9 +46,6 @@ public class StringAttributeMeta<M> extends CoreAttributeMeta<M, String> {
      * @return the "startsWith" filter criterion
      */
     public StartsWithCriterion startsWith(String value) {
-        if (isEmpty(value)) {
-            return null;
-        }
         return new StartsWithCriterion(this, value);
     }
 }

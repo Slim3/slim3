@@ -61,6 +61,15 @@ public abstract class AbstractCriterion {
      */
     @SuppressWarnings("unchecked")
     protected int compareValue(Object v1, Object v2) {
+        if (v1 == null && v2 == null) {
+            return 0;
+        }
+        if (v1 == null) {
+            return -1;
+        }
+        if (v2 == null) {
+            return 1;
+        }
         if (!(v1 instanceof Comparable)) {
             throw new IllegalStateException("The property("
                 + attributeMeta.name

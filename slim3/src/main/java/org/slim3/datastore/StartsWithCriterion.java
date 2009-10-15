@@ -34,22 +34,26 @@ public class StartsWithCriterion extends AbstractCriterion implements
     protected String value;
 
     /**
+     * The high value.
+     */
+    protected String highValue = "\ufffd";
+
+    /**
      * Constructor.
      * 
      * @param attributeMeta
      *            the meta data of attribute
      * @param value
      *            the value
-     * @throws NullPointerException
-     *             if the value parameter is null
+     * @see AbstractCriterion#AbstractCriterion(AbstractAttributeMeta)
      */
     public StartsWithCriterion(CoreAttributeMeta<?, String> attributeMeta,
-            String value) throws NullPointerException {
+            String value) {
         super(attributeMeta);
-        if (value == null) {
-            throw new NullPointerException("The value parameter is null.");
-        }
         this.value = value;
+        if (value != null) {
+            highValue = value + highValue;
+        }
     }
 
     public void apply(Query query) {
@@ -59,14 +63,11 @@ public class StartsWithCriterion extends AbstractCriterion implements
             value).addFilter(
             attributeMeta.getName(),
             FilterOperator.LESS_THAN,
-            value + "\ufffd");
+            highValue);
     }
 
     public boolean accept(Object model) {
         Object v = attributeMeta.getValue(model);
-        if (v == null) {
-            return false;
-        }
-        return v.toString().startsWith(value.toString());
+        return compareValue(v, value) >= 0 && compareValue(v, highValue) < 0;
     }
 }

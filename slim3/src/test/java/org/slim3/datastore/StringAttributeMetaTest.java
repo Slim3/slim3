@@ -34,6 +34,6 @@ public class StringAttributeMetaTest extends TestCase {
         assertEquals(StartsWithCriterion.class, meta.myString
             .startsWith("a")
             .getClass());
-        assertNull(meta.myString.startsWith(null));
+        assertNotNull(meta.myString.startsWith(null));
     }
 }

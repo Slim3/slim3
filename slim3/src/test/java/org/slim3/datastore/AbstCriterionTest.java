@@ -46,6 +46,9 @@ public class AbstCriterionTest extends TestCase {
         assertEquals(-1, criterion.compareValue(1, 2));
         assertEquals(0, criterion.compareValue(1, 1));
         assertEquals(1, criterion.compareValue(2, 1));
+        assertEquals(-1, criterion.compareValue(null, 1));
+        assertEquals(0, criterion.compareValue(null, null));
+        assertEquals(1, criterion.compareValue(1, null));
     }
 
     private static class MyCriterion extends AbstractCriterion {

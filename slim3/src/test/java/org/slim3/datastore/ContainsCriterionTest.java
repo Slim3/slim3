@@ -71,4 +71,19 @@ public class ContainsCriterionTest extends DatastoreTestCase {
         hoge.getMyIntegerList().add(1);
         assertTrue(c.accept(hoge));
     }
+
+    /**
+     * @throws Exception
+     */
+    public void testAcceptForNull() throws Exception {
+        Hoge hoge = new Hoge();
+        ContainsCriterion c = new ContainsCriterion(meta.myIntegerList, null);
+        assertFalse(c.accept(hoge));
+        hoge.setMyIntegerList(new ArrayList<Integer>());
+        assertFalse(c.accept(hoge));
+        hoge.getMyIntegerList().add(2);
+        assertFalse(c.accept(hoge));
+        hoge.getMyIntegerList().add(null);
+        assertTrue(c.accept(hoge));
+    }
 }

@@ -18,6 +18,7 @@ package org.slim3.datastore;
 import java.util.List;
 
 import org.slim3.datastore.meta.HogeMeta;
+import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.DatastoreTestCase;
 
 import com.google.appengine.api.datastore.Query;
@@ -30,12 +31,13 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
  */
 public class StartsWithCriterionTest extends DatastoreTestCase {
 
+    private HogeMeta meta = new HogeMeta();
+
     /**
      * @throws Exception
      * 
      */
     public void testConstructor() throws Exception {
-        HogeMeta meta = new HogeMeta();
         StartsWithCriterion c = new StartsWithCriterion(meta.myString, "aaa");
         assertEquals("aaa", c.value);
     }
@@ -45,7 +47,6 @@ public class StartsWithCriterionTest extends DatastoreTestCase {
      * 
      */
     public void testApply() throws Exception {
-        HogeMeta meta = new HogeMeta();
         Query query = new Query();
         StartsWithCriterion c = new StartsWithCriterion(meta.myString, "aaa");
         c.apply(query);
@@ -59,5 +60,29 @@ public class StartsWithCriterionTest extends DatastoreTestCase {
         assertEquals("myString", predicates.get(1).getPropertyName());
         assertEquals(FilterOperator.LESS_THAN, predicates.get(1).getOperator());
         assertEquals("aaa" + "\ufffd", predicates.get(1).getValue());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testAccept() throws Exception {
+        Hoge hoge = new Hoge();
+        hoge.setMyString("abc");
+        FilterCriterion c = new StartsWithCriterion(meta.myString, "a");
+        assertTrue(c.accept(hoge));
+        hoge.setMyString("b");
+        assertFalse(c.accept(hoge));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testAcceptForNull() throws Exception {
+        Hoge hoge = new Hoge();
+        hoge.setMyString("abc");
+        FilterCriterion c = new StartsWithCriterion(meta.myString, null);
+        assertTrue(c.accept(hoge));
+        hoge.setMyString(null);
+        assertTrue(c.accept(hoge));
     }
 }

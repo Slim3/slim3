@@ -36,21 +36,10 @@ public class CollectionAttributeMetaTest extends TestCase {
         assertEquals(ContainsCriterion.class, meta.myIntegerList
             .contains(1)
             .getClass());
-        assertNull(meta.myIntegerList.contains(null));
+        assertNotNull(meta.myIntegerList.contains(null));
         ContainsCriterion c =
             (ContainsCriterion) meta.myEnumList
                 .contains(SortDirection.ASCENDING);
         assertEquals("ASCENDING", c.value);
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testContainsNull() throws Exception {
-        HogeMeta meta = new HogeMeta();
-        assertEquals(ContainsNullCriterion.class, meta.myIntegerList
-            .containsNull()
-            .getClass());
     }
 }

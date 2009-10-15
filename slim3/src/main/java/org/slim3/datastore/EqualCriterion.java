@@ -40,15 +40,10 @@ public class EqualCriterion extends AbstractCriterion implements
      *            the meta data of attribute
      * @param value
      *            the value
-     * @throws NullPointerException
-     *             if the value parameter is null
+     * @see AbstractCriterion#AbstractCriterion(AbstractAttributeMeta)
      */
-    public EqualCriterion(CoreAttributeMeta<?, ?> attributeMeta, Object value)
-            throws NullPointerException {
+    public EqualCriterion(CoreAttributeMeta<?, ?> attributeMeta, Object value) {
         super(attributeMeta);
-        if (value == null) {
-            throw new NullPointerException("The value parameter is null.");
-        }
         this.value = value;
     }
 
@@ -58,9 +53,6 @@ public class EqualCriterion extends AbstractCriterion implements
 
     public boolean accept(Object model) {
         Object v = attributeMeta.getValue(model);
-        if (v == null) {
-            return false;
-        }
-        return value.equals(v);
+        return compareValue(v, value) == 0;
     }
 }

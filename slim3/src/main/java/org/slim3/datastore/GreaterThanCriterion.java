@@ -40,15 +40,11 @@ public class GreaterThanCriterion extends AbstractCriterion implements
      *            the meta data of attribute
      * @param value
      *            the value
-     * @throws NullPointerException
-     *             if the value parameter is null
+     * @see AbstractCriterion#AbstractCriterion(AbstractAttributeMeta)
      */
     public GreaterThanCriterion(CoreAttributeMeta<?, ?> attributeMeta,
-            Object value) throws NullPointerException {
+            Object value) {
         super(attributeMeta);
-        if (value == null) {
-            throw new NullPointerException("The value parameter is null.");
-        }
         this.value = value;
     }
 
@@ -61,9 +57,6 @@ public class GreaterThanCriterion extends AbstractCriterion implements
 
     public boolean accept(Object model) {
         Object v = attributeMeta.getValue(model);
-        if (v == null) {
-            return false;
-        }
         return compareValue(v, value) > 0;
     }
 }

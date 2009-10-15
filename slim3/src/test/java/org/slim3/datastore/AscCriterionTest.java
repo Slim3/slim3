@@ -55,8 +55,8 @@ public class AscCriterionTest extends DatastoreTestCase {
         assertEquals(0, c.compare(new Hoge(), new Hoge()));
         Hoge hoge = new Hoge();
         hoge.setMyString("aaa");
-        assertEquals(1, c.compare(new Hoge(), hoge));
-        assertEquals(-1, c.compare(hoge, new Hoge()));
+        assertEquals(-1, c.compare(new Hoge(), hoge));
+        assertEquals(1, c.compare(hoge, new Hoge()));
         Hoge hoge2 = new Hoge();
         hoge2.setMyString("bbb");
         assertEquals(-1, c.compare(hoge, hoge2));
@@ -75,8 +75,8 @@ public class AscCriterionTest extends DatastoreTestCase {
         assertEquals(0, c.compare(hoge, hoge2));
 
         hoge.getMyIntegerList().add(1);
-        assertEquals(-1, c.compare(hoge, hoge2));
-        assertEquals(1, c.compare(hoge2, hoge));
+        assertEquals(1, c.compare(hoge, hoge2));
+        assertEquals(-1, c.compare(hoge2, hoge));
 
         hoge2.getMyIntegerList().add(2);
         assertEquals(-1, c.compare(hoge, hoge2));

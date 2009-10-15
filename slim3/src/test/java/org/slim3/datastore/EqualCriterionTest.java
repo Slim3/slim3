@@ -62,9 +62,21 @@ public class EqualCriterionTest extends DatastoreTestCase {
     public void testAccept() throws Exception {
         Hoge hoge = new Hoge();
         hoge.setMyString("aaa");
-        FilterCriterion c = meta.myString.equal("aaa");
+        FilterCriterion c = new EqualCriterion(meta.myString, "aaa");
         assertTrue(c.accept(hoge));
         hoge.setMyString("bbb");
         assertFalse(c.accept(hoge));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testAcceptForNull() throws Exception {
+        Hoge hoge = new Hoge();
+        hoge.setMyString("aaa");
+        FilterCriterion c = new EqualCriterion(meta.myString, null);
+        assertFalse(c.accept(hoge));
+        hoge.setMyString(null);
+        assertTrue(c.accept(hoge));
     }
 }

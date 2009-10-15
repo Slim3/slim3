@@ -53,15 +53,6 @@ public class DescCriterion extends AbstractSortCriterion {
         if (v2 instanceof Collection<?>) {
             v2 = getFirstElement(Collection.class.cast(v2));
         }
-        if (v1 == null && v2 == null) {
-            return 0;
-        }
-        if (v1 == null) {
-            return -1;
-        }
-        if (v2 == null) {
-            return 1;
-        }
         return -1 * compareValue(v1, v2);
     }
 

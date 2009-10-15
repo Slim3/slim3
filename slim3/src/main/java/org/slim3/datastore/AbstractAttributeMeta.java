@@ -144,15 +144,4 @@ public abstract class AbstractAttributeMeta<M, A> {
         }
         return value;
     }
-
-    /**
-     * Determines if the parameter is empty.
-     * 
-     * @param parameter
-     *            the parameter
-     * @return whether the parameter is empty
-     */
-    protected boolean isEmpty(Object parameter) {
-        return parameter == null || "".equals(parameter);
-    }
 }

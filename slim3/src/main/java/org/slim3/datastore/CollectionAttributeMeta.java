@@ -54,18 +54,6 @@ public class CollectionAttributeMeta<M, A, E> extends
      * @return the "contains" filter criterion
      */
     public FilterCriterion contains(E value) {
-        if (value == null) {
-            return null;
-        }
         return new ContainsCriterion(this, convertValueForDatastore(value));
-    }
-
-    /**
-     * Returns the "contains null" filter criterion.
-     * 
-     * @return the "contains null" filter criterion
-     */
-    public FilterCriterion containsNull() {
-        return new ContainsNullCriterion(this);
     }
 }

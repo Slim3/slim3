@@ -66,11 +66,24 @@ public class GreaterThanOrEqualCriterionTest extends DatastoreTestCase {
     public void testAccept() throws Exception {
         Hoge hoge = new Hoge();
         hoge.setMyString("c");
-        FilterCriterion c = meta.myString.greaterThanOrEqual("b");
+        FilterCriterion c = new GreaterThanOrEqualCriterion(meta.myString, "b");
         assertTrue(c.accept(hoge));
         hoge.setMyString("b");
         assertTrue(c.accept(hoge));
         hoge.setMyString("a");
         assertFalse(c.accept(hoge));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testAcceptForNull() throws Exception {
+        Hoge hoge = new Hoge();
+        hoge.setMyString("c");
+        FilterCriterion c =
+            new GreaterThanOrEqualCriterion(meta.myString, null);
+        assertTrue(c.accept(hoge));
+        hoge.setMyString(null);
+        assertTrue(c.accept(hoge));
     }
 }

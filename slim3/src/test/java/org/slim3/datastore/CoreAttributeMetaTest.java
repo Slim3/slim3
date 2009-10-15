@@ -35,7 +35,7 @@ public class CoreAttributeMetaTest extends TestCase {
      */
     public void testEqual() throws Exception {
         assertEquals(EqualCriterion.class, meta.myString.equal("a").getClass());
-        assertNull(meta.myString.equal(null));
+        assertNotNull(meta.myString.equal(null));
         EqualCriterion c =
             (EqualCriterion) meta.myEnum.equal(SortDirection.ASCENDING);
         assertEquals("ASCENDING", c.value);
@@ -49,7 +49,7 @@ public class CoreAttributeMetaTest extends TestCase {
         assertEquals(LessThanCriterion.class, meta.myString
             .lessThan("a")
             .getClass());
-        assertNull(meta.myString.lessThan(null));
+        assertNotNull(meta.myString.lessThan(null));
         LessThanCriterion c =
             (LessThanCriterion) meta.myEnum.lessThan(SortDirection.ASCENDING);
         assertEquals("ASCENDING", c.value);
@@ -63,7 +63,7 @@ public class CoreAttributeMetaTest extends TestCase {
         assertEquals(LessThanOrEqualCriterion.class, meta.myString
             .lessThanOrEqual("a")
             .getClass());
-        assertNull(meta.myString.lessThanOrEqual(null));
+        assertNotNull(meta.myString.lessThanOrEqual(null));
         LessThanOrEqualCriterion c =
             (LessThanOrEqualCriterion) meta.myEnum
                 .lessThanOrEqual(SortDirection.ASCENDING);
@@ -78,7 +78,7 @@ public class CoreAttributeMetaTest extends TestCase {
         assertEquals(GreaterThanCriterion.class, meta.myString
             .greaterThan("a")
             .getClass());
-        assertNull(meta.myString.greaterThan(null));
+        assertNotNull(meta.myString.greaterThan(null));
         GreaterThanCriterion c =
             (GreaterThanCriterion) meta.myEnum
                 .greaterThan(SortDirection.ASCENDING);
@@ -93,7 +93,7 @@ public class CoreAttributeMetaTest extends TestCase {
         assertEquals(GreaterThanOrEqualCriterion.class, meta.myString
             .greaterThanOrEqual("a")
             .getClass());
-        assertNull(meta.myString.greaterThanOrEqual(null));
+        assertNotNull(meta.myString.greaterThanOrEqual(null));
         GreaterThanOrEqualCriterion c =
             (GreaterThanOrEqualCriterion) meta.myEnum
                 .greaterThanOrEqual(SortDirection.ASCENDING);
@@ -104,50 +104,9 @@ public class CoreAttributeMetaTest extends TestCase {
      * @throws Exception
      * 
      */
-    public void testBetween() throws Exception {
-        assertEquals(BetweenCriterion.class, meta.myString
-            .between("a", "c")
-            .getClass());
-        assertEquals(GreaterThanOrEqualCriterion.class, meta.myString.between(
-            "a",
-            null).getClass());
-        assertEquals(LessThanOrEqualCriterion.class, meta.myString.between(
-            null,
-            "c").getClass());
-        assertNull(meta.myString.between(null, null));
-        BetweenCriterion c =
-            (BetweenCriterion) meta.myEnum.between(
-                SortDirection.ASCENDING,
-                SortDirection.DESCENDING);
-        assertEquals("ASCENDING", c.start);
-        assertEquals("DESCENDING", c.end);
-        GreaterThanOrEqualCriterion c2 =
-            (GreaterThanOrEqualCriterion) meta.myEnum.between(
-                SortDirection.ASCENDING,
-                null);
-        assertEquals("ASCENDING", c2.value);
-        LessThanOrEqualCriterion c3 =
-            (LessThanOrEqualCriterion) meta.myEnum.between(
-                null,
-                SortDirection.DESCENDING);
-        assertEquals("DESCENDING", c3.value);
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
     public void testIsNotNull() throws Exception {
         assertEquals(IsNotNullCriterion.class, meta.myString
             .isNotNull()
             .getClass());
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testIsNull() throws Exception {
-        assertEquals(IsNullCriterion.class, meta.myString.isNull().getClass());
     }
 }

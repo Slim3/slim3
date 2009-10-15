@@ -29,6 +29,11 @@ package org.slim3.datastore;
 public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
 
     /**
+     * The "is not null" filter criterion.
+     */
+    protected IsNotNullCriterion isNotNull = new IsNotNullCriterion(this);
+
+    /**
      * Constructor.
      * 
      * @param modelMeta
@@ -51,9 +56,6 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
      * @return the "equal" filter criterion
      */
     public FilterCriterion equal(A value) {
-        if (isEmpty(value)) {
-            return null;
-        }
         return new EqualCriterion(this, convertValueForDatastore(value));
     }
 
@@ -65,9 +67,6 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
      * @return the "less than" filter criterion
      */
     public FilterCriterion lessThan(A value) {
-        if (isEmpty(value)) {
-            return null;
-        }
         return new LessThanCriterion(this, convertValueForDatastore(value));
     }
 
@@ -79,9 +78,6 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
      * @return the "less than or equal" filter criterion
      */
     public FilterCriterion lessThanOrEqual(A value) {
-        if (isEmpty(value)) {
-            return null;
-        }
         return new LessThanOrEqualCriterion(
             this,
             convertValueForDatastore(value));
@@ -95,9 +91,6 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
      * @return the "greater than" filter criterion
      */
     public FilterCriterion greaterThan(A value) {
-        if (isEmpty(value)) {
-            return null;
-        }
         return new GreaterThanCriterion(this, convertValueForDatastore(value));
     }
 
@@ -109,41 +102,9 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
      * @return the "greater than or equal" filter criterion
      */
     public FilterCriterion greaterThanOrEqual(A value) {
-        if (isEmpty(value)) {
-            return null;
-        }
         return new GreaterThanOrEqualCriterion(
             this,
             convertValueForDatastore(value));
-    }
-
-    /**
-     * Returns the "between" or "greater than or equal" or "less than or equal"
-     * filter criterion.
-     * 
-     * @param start
-     *            the start value
-     * @param end
-     *            the end value
-     * @return the "between" or "greater than or equal" or "less than or equal"
-     *         filter criterion
-     */
-    public FilterCriterion between(A start, A end) {
-        if (isEmpty(start) && isEmpty(end)) {
-            return null;
-        }
-        if (!isEmpty(start) && !isEmpty(end)) {
-            return new BetweenCriterion(
-                this,
-                convertValueForDatastore(start),
-                convertValueForDatastore(end));
-        }
-        if (!isEmpty(start)) {
-            return new GreaterThanOrEqualCriterion(
-                this,
-                convertValueForDatastore(start));
-        }
-        return new LessThanOrEqualCriterion(this, convertValueForDatastore(end));
     }
 
     /**
@@ -152,15 +113,6 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
      * @return the "is not null" filter criterion
      */
     public IsNotNullCriterion isNotNull() {
-        return new IsNotNullCriterion(this);
-    }
-
-    /**
-     * Returns the "is null" filter criterion.
-     * 
-     * @return the "is null" filter criterion
-     */
-    public IsNullCriterion isNull() {
-        return new IsNullCriterion(this);
+        return isNotNull;
     }
 }

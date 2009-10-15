@@ -78,14 +78,4 @@ public class AbstAttributeMetaTest extends TestCase {
             .convertValueForDatastore("ASCENDING"));
         assertNull(meta.myString.convertValueForDatastore(null));
     }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testIsEmpty() throws Exception {
-        assertTrue(meta.myString.isEmpty(null));
-        assertTrue(meta.myString.isEmpty(""));
-        assertFalse(meta.myString.isEmpty("aa"));
-    }
 }
