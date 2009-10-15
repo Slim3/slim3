@@ -210,10 +210,15 @@ public class ModelMetaDescFactory {
             ModelMetaDesc modelMetaDesc) {
         List<MethodDeclaration> methodDeclarations =
             getMethodDeclarations(classDeclaration);
+        boolean error = false;
         for (FieldDeclaration fieldDeclaration : getFieldDeclarations(classDeclaration)) {
             AttributeMetaDesc attributeMetaDesc =
                 createAttributeMetaDesc(fieldDeclaration, methodDeclarations);
-            if (attributeMetaDesc == null || !attributeMetaDesc.isPersistent()) {
+            if (attributeMetaDesc == null) {
+                error = true;
+                continue;
+            }
+            if (!attributeMetaDesc.isPersistent()) {
                 continue;
             }
             if (attributeMetaDesc.isPrimaryKey()
@@ -232,7 +237,7 @@ public class ModelMetaDescFactory {
             }
             modelMetaDesc.addAttributeMetaDesc(attributeMetaDesc);
         }
-        if (modelMetaDesc.getKeyAttributeMetaDesc() == null) {
+        if (!error && modelMetaDesc.getKeyAttributeMetaDesc() == null) {
             throw new ValidationException(
                 MessageCode.SILM3GEN1015,
                 env,
