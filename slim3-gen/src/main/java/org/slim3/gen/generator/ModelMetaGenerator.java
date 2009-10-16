@@ -944,8 +944,13 @@ public class ModelMetaGenerator implements Generator {
             printer.println("%1$s m = (%1$s) model;", modelMetaDesc
                 .getModelClassName());
             printer.println("%1$s entity = null;", Entity);
-            printer.println("if (m.getKey() != null) {");
-            printer.println("    entity = new %1$s(m.getKey());", Entity);
+            printer.println("if (m.%1$s() != null) {", modelMetaDesc
+                .getKeyAttributeMetaDesc()
+                .getReadMethodName());
+            printer.println(
+                "    entity = new %1$s(m.%2$s());",
+                Entity,
+                modelMetaDesc.getKeyAttributeMetaDesc().getReadMethodName());
             printer.println("} else {");
             printer.println(
                 "    entity = new %1$s(\"%2$s\");",
