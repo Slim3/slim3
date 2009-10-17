@@ -1,5 +1,5 @@
 <project name="slim3-blank" default="gen-controller" basedir=".">
-	<property file="build.properties" />
+    <property file="build.properties" />
 
     <path id="classpath">
         <fileset dir="war/WEB-INF/classes">
@@ -13,39 +13,36 @@
         </fileset>
     </path>
 
-	<taskdef name="gen-model" classname="org.slim3.gen.task.GenModelTask" classpathref="classpath"/>
+    <taskdef name="gen-model" classname="org.slim3.gen.task.GenModelTask" classpathref="classpath"/>
     <taskdef name="gen-view" classname="org.slim3.gen.task.GenViewTask" classpathref="classpath"/>
     <taskdef name="gen-controller" classname="org.slim3.gen.task.GenControllerTask" classpathref="classpath"/>
-    <taskdef name="gen-dao" classname="org.slim3.gen.task.GenDaoTask" classpathref="classpath"/>
-	<taskdef name="gen-gwt-service" classname="org.slim3.gen.task.GenGWTServiceTask" classpathref="classpath"/>
+    <taskdef name="gen-gwt-service" classname="org.slim3.gen.task.GenGWTServiceTask" classpathref="classpath"/>
     <taskdef name="gen-gwt-service-impl" classname="org.slim3.gen.task.GenGWTServiceImplTask" classpathref="classpath"/>
-	
+    
     <target name="gen-controller">
         <input message="Input a controller path." addproperty="controllerPath"/>
         <gen-controller srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" controllerpath="${controllerPath}"
-            superclassName="${superclassName}" testCaseSuperclassName="${testCaseSuperclassName}" useView="true"/>
+             useView="true"/>
         <gen-view wardir="${warDir}" controllerPath="${controllerPath}"/>
     </target>
 
     <target name="gen-controller-without-view">
         <input message="Input a controller path." addproperty="controllerPath"/>
         <gen-controller srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" controllerpath="${controllerPath}"
-            superclassName="${superclassName}" testCaseSuperclassName="${testCaseSuperclassName}" useView="false"/>
+            useView="false"/>
     </target>
-
 
     <target name="gen-model">
         <input message="Input a model name. (ex.  Foo -> root.model.Foo,  bar.Foo -> root.model.bar.Foo)" addproperty="modelRelativeClassName"/>
         <gen-model srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" modelRelativeClassName="${modelRelativeClassName}" modelClassNameProperty="modelClassName"/>
-        <gen-dao srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" modelRelativeClassName="${modelRelativeClassName}" modelClassName="${modelClassName}"/>
     </target>
 
-	<target name="gen-gwt-service">
+    <target name="gen-gwt-service">
         <input message="Input a GWT service name. (ex.  FooService -> root.client.service.FooService,  bar.FooService -> root.client.service.bar.FooService)" addproperty="serviceRelativeClassName"/>
         <gen-gwt-service srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" serviceRelativeClassName="${serviceRelativeClassName}" serviceClassNameProperty="serviceClassName"/>
         <gen-gwt-service-impl srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" serviceRelativeClassName="${serviceRelativeClassName}" serviceClassName="${serviceClassName}"/>
     </target>
-	
+    
     <target name="copy">
         <copy todir="war/WEB-INF/lib" file="../slim3/target/slim3-${ver}.jar"/>
         <copy todir="libsrc" file="../slim3/target/slim3-${ver}-sources.jar"/>
@@ -55,7 +52,7 @@
         <copy todir="src" file="../slim3/src/main/resources/application_ja.properties"/>
     </target>
 
-	<target name="dist">
+    <target name="dist">
         <delete includeemptydirs="true" failonerror="false">
             <fileset dir="target"/>
         </delete>
