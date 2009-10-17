@@ -29,8 +29,6 @@ import org.slim3.util.ResponseLocator;
 import org.slim3.util.ServletContextLocator;
 import org.slim3.util.StringUtil;
 
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Transaction;
 import com.google.gwt.user.client.rpc.IncompatibleRemoteServiceException;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.SerializationException;
@@ -247,12 +245,6 @@ public class GWTServiceServlet extends RemoteServiceServlet {
                         + ") is loaded by deferent class loaders.";
             }
             throw new IncompatibleRemoteServiceException(msg, e);
-        } finally {
-            for (Transaction tx : DatastoreServiceFactory
-                .getDatastoreService()
-                .getActiveTransactions()) {
-                tx.rollback();
-            }
         }
         return result;
     }
