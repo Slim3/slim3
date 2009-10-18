@@ -15,14 +15,11 @@
  */
 package org.slim3.datastore;
 
-import java.util.ArrayList;
-
 import org.slim3.tester.DatastoreTestCase;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Query.FilterOperator;
 
 /**
  * @author higa
@@ -36,14 +33,11 @@ public class SpikeTest extends DatastoreTestCase {
     public void testSpike() throws Exception {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         Entity entity = new Entity("Hoge");
-        ArrayList<String> list = new ArrayList<String>();
-        list.add(null);
-        list.add("aaa");
-        entity.setProperty("list", list);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 50; i++) {
+            sb.append("aaaaaaaaaa");
+        }
+        entity.setProperty("aaa", sb.toString());
         ds.put(entity);
-        System.out.println(Datastore.query("Hoge").filter(
-            "list",
-            FilterOperator.EQUAL,
-            null).count());
     }
 }

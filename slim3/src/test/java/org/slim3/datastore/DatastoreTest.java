@@ -114,13 +114,17 @@ public class DatastoreTest extends DatastoreTestCase {
      */
     public void testCreateKey() throws Exception {
         assertNotNull(Datastore.createKey("Hoge", 1));
+        assertNotNull(Datastore.createKey(Hoge.class, 1));
         assertNotNull(Datastore.createKey(meta, 1));
         assertNotNull(Datastore.createKey("Hoge", "aaa"));
+        assertNotNull(Datastore.createKey(Hoge.class, "aaa"));
         assertNotNull(Datastore.createKey(meta, "aaa"));
         Key parentKey = KeyFactory.createKey("Parent", 1);
         assertNotNull(Datastore.createKey(parentKey, "Hoge", 1));
+        assertNotNull(Datastore.createKey(parentKey, Hoge.class, 1));
         assertNotNull(Datastore.createKey(parentKey, meta, 1));
         assertNotNull(Datastore.createKey(parentKey, "Hoge", "aaa"));
+        assertNotNull(Datastore.createKey(parentKey, Hoge.class, "aaa"));
         assertNotNull(Datastore.createKey(parentKey, meta, "aaa"));
     }
 

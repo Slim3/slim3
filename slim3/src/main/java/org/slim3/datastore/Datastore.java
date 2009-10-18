@@ -374,6 +374,25 @@ public final class Datastore {
     /**
      * Creates a key.
      * 
+     * @param modelClass
+     *            the model class
+     * @param id
+     *            the identifier
+     * @return a key
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     */
+    public static Key createKey(Class<?> modelClass, long id)
+            throws NullPointerException {
+        if (modelClass == null) {
+            throw new NullPointerException("The modelClass parameter is null.");
+        }
+        return createKey(getModelMeta(modelClass), id);
+    }
+
+    /**
+     * Creates a key.
+     * 
      * @param modelMeta
      *            the meta data of the model
      * @param id
@@ -411,6 +430,26 @@ public final class Datastore {
             throw new NullPointerException("The name parameter is null.");
         }
         return KeyFactory.createKey(kind, name);
+    }
+
+    /**
+     * Creates a key.
+     * 
+     * @param modelClass
+     *            the model class
+     * @param name
+     *            the name
+     * @return a key
+     * @throws NullPointerException
+     *             if the modeClass parameter is null or if the name parameter
+     *             is null
+     */
+    public static Key createKey(Class<?> modelClass, String name)
+            throws NullPointerException {
+        if (modelClass == null) {
+            throw new NullPointerException("The modelClass parameter is null.");
+        }
+        return createKey(getModelMeta(modelClass), name);
     }
 
     /**
@@ -463,6 +502,28 @@ public final class Datastore {
      * 
      * @param parentKey
      *            the parent key
+     * @param modelClass
+     *            the model class
+     * @param id
+     *            the identifier
+     * @return a key
+     * @throws NullPointerException
+     *             if the parentKey parameter is null or if the modelClass
+     *             parameter is null
+     */
+    public static Key createKey(Key parentKey, Class<?> modelClass, long id)
+            throws NullPointerException {
+        if (modelClass == null) {
+            throw new NullPointerException("The modelClass parameter is null.");
+        }
+        return createKey(parentKey, getModelMeta(modelClass), id);
+    }
+
+    /**
+     * Creates a key.
+     * 
+     * @param parentKey
+     *            the parent key
      * @param modelMeta
      *            the meta data of the model
      * @param id
@@ -506,6 +567,28 @@ public final class Datastore {
             throw new NullPointerException("The name parameter is null.");
         }
         return KeyFactory.createKey(parentKey, kind, name);
+    }
+
+    /**
+     * Creates a key.
+     * 
+     * @param parentKey
+     *            the parent key
+     * @param modelClass
+     *            the model class
+     * @param name
+     *            the name
+     * @return a key
+     * @throws NullPointerException
+     *             if the parentKey is null or if the modelClass parameter is
+     *             null or if the name parameter is null
+     */
+    public static Key createKey(Key parentKey, Class<?> modelClass, String name)
+            throws NullPointerException {
+        if (modelClass == null) {
+            throw new NullPointerException("The modelClass parameter is null.");
+        }
+        return createKey(parentKey, getModelMeta(modelClass), name);
     }
 
     /**
