@@ -22,6 +22,7 @@ import org.slim3.util.ConversionUtil;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.PreparedQuery;
 
 /**
  * A query class for select.
@@ -123,11 +124,14 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
     }
 
     /**
-     * Returns the single result.
+     * Returns the single result or null if no entities match.
      * 
      * @return the single result
+     * @throws PreparedQuery.TooManyResultsException
+     *             if the results are multiple
+     * 
      */
-    public M asSingle() {
+    public M asSingle() throws PreparedQuery.TooManyResultsException {
         Entity entity = asSingleEntity();
         if (entity == null) {
             return null;
