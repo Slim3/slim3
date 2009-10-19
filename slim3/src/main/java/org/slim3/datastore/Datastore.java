@@ -180,12 +180,35 @@ public final class Datastore {
     /**
      * Allocates a key within a namespace defined by the kind of the model.
      * 
+     * @param modelClass
+     *            the model class
+     * @return a key within a namespace defined by the kind of the model
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     */
+    public static Key allocateId(Class<?> modelClass)
+            throws NullPointerException {
+        if (modelClass == null) {
+            throw new NullPointerException("The modelClass parameter is null.");
+        }
+        return allocateId(getModelMeta(modelClass));
+    }
+
+    /**
+     * Allocates a key within a namespace defined by the kind of the model.
+     * 
      * @param modelMeta
      *            the meta data of the model
      * @return a key within a namespace defined by the kind of the model
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null
      */
-    public static Key allocateId(ModelMeta<?> modelMeta) {
-        return allocateIds(modelMeta, 1).iterator().next();
+    public static Key allocateId(ModelMeta<?> modelMeta)
+            throws NullPointerException {
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
+        }
+        return allocateId(modelMeta.getKind());
     }
 
     /**
@@ -212,6 +235,28 @@ public final class Datastore {
      * 
      * @param parentKey
      *            the parent key
+     * @param modelClass
+     *            the model class
+     * @return a key within a namespace defined by the parent key and the kind
+     *         of the model
+     * @throws NullPointerException
+     *             if the parentKey parameter is null or if the modelClass
+     *             parameter is null
+     */
+    public static Key allocateId(Key parentKey, Class<?> modelClass)
+            throws NullPointerException {
+        if (modelClass == null) {
+            throw new NullPointerException("The modelClass parameter is null.");
+        }
+        return allocateId(parentKey, getModelMeta(modelClass));
+    }
+
+    /**
+     * Allocates a key within a namespace defined by the parent key and the kind
+     * of the model.
+     * 
+     * @param parentKey
+     *            the parent key
      * @param modelMeta
      *            the meta data of the model
      * @return a key within a namespace defined by the parent key and the kind
@@ -222,7 +267,10 @@ public final class Datastore {
      */
     public static Key allocateId(Key parentKey, ModelMeta<?> modelMeta)
             throws NullPointerException {
-        return allocateIds(parentKey, modelMeta, 1).iterator().next();
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
+        }
+        return allocateId(parentKey, modelMeta.getKind());
     }
 
     /**
@@ -248,6 +296,25 @@ public final class Datastore {
     /**
      * Allocates keys within a namespace defined by the kind of the model.
      * 
+     * @param modelClass
+     *            the model class
+     * @param num
+     *            the number of allocated keys
+     * @return keys within a namespace defined by the kind of the model
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     */
+    public static KeyRange allocateIds(Class<?> modelClass, long num)
+            throws NullPointerException {
+        if (modelClass == null) {
+            throw new NullPointerException("The modelClass parameter is null.");
+        }
+        return allocateIds(getModelMeta(modelClass), num);
+    }
+
+    /**
+     * Allocates keys within a namespace defined by the kind of the model.
+     * 
      * @param modelMeta
      *            the meta data of the model
      * @param num
@@ -258,7 +325,7 @@ public final class Datastore {
         if (modelMeta == null) {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
-        return allocateIds(modelMeta.getModelClass().getSimpleName(), num);
+        return allocateIds(modelMeta.getKind(), num);
     }
 
     /**
@@ -292,6 +359,29 @@ public final class Datastore {
      * 
      * @param parentKey
      *            the parent key
+     * @param modelClass
+     *            the model class
+     * @param num
+     * @return keys within a namespace defined by the parent key and the kind of
+     *         the model
+     * @throws NullPointerException
+     *             if the parentKey parameter is null or if the modelClass
+     *             parameter is null
+     */
+    public static KeyRange allocateIds(Key parentKey, Class<?> modelClass,
+            int num) throws NullPointerException {
+        if (modelClass == null) {
+            throw new NullPointerException("The modelClass parameter is null.");
+        }
+        return allocateIds(parentKey, getModelMeta(modelClass), num);
+    }
+
+    /**
+     * Allocates keys within a namespace defined by the parent key and the kind
+     * of the model.
+     * 
+     * @param parentKey
+     *            the parent key
      * @param modelMeta
      *            the meta data of the model
      * @param num
@@ -306,10 +396,7 @@ public final class Datastore {
         if (modelMeta == null) {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
-        return allocateIds(
-            parentKey,
-            modelMeta.getModelClass().getSimpleName(),
-            num);
+        return allocateIds(parentKey, modelMeta.getKind(), num);
     }
 
     private static KeyRange allocateIdsInternal(DatastoreService ds,

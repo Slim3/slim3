@@ -81,9 +81,11 @@ public class DatastoreTest extends DatastoreTestCase {
      */
     public void testAllocateId() throws Exception {
         assertNotNull(Datastore.allocateId("Hoge"));
+        assertNotNull(Datastore.allocateId(Hoge.class));
         assertNotNull(Datastore.allocateId(meta));
         Key parentKey = KeyFactory.createKey("Parent", 1);
         assertNotNull(Datastore.allocateId(parentKey, "Hoge"));
+        assertNotNull(Datastore.allocateId(parentKey, Hoge.class));
         assertNotNull(Datastore.allocateId(parentKey, meta));
     }
 
@@ -95,12 +97,20 @@ public class DatastoreTest extends DatastoreTestCase {
         assertNotNull(range);
         assertEquals(2, range.getSize());
 
+        range = Datastore.allocateIds(Hoge.class, 2);
+        assertNotNull(range);
+        assertEquals(2, range.getSize());
+
         range = Datastore.allocateIds(meta, 2);
         assertNotNull(range);
         assertEquals(2, range.getSize());
 
         Key parentKey = KeyFactory.createKey("Parent", 1);
         range = Datastore.allocateIds(parentKey, "Hoge", 2);
+        assertNotNull(range);
+        assertEquals(2, range.getSize());
+
+        range = Datastore.allocateIds(parentKey, Hoge.class, 2);
         assertNotNull(range);
         assertEquals(2, range.getSize());
 
