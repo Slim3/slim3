@@ -111,12 +111,14 @@ public class ModelProcessor implements AnnotationProcessor {
             createModelMetaDescFactory(attributeMetaDescFactory);
         ModelMetaDesc modelMetaDesc =
             modelMetaDescFactory.createModelMetaDesc(declaration);
-        Generator generator = createGenerator(modelMetaDesc);
-        generateSupport.generate(generator, modelMetaDesc);
-        if (Options.isDebugEnabled(env)) {
-            Logger.debug(env, MessageFormatter.getMessage(
-                MessageCode.SILM3GEN0003,
-                declaration));
+        if (!modelMetaDesc.isError()) {
+            Generator generator = createGenerator(modelMetaDesc);
+            generateSupport.generate(generator, modelMetaDesc);
+            if (Options.isDebugEnabled(env)) {
+                Logger.debug(env, MessageFormatter.getMessage(
+                    MessageCode.SILM3GEN0003,
+                    declaration));
+            }
         }
     }
 

@@ -52,6 +52,9 @@ public class ModelMetaDesc implements ClassDesc {
     protected final List<AttributeMetaDesc> attributeMetaDescList =
         new ArrayList<AttributeMetaDesc>();
 
+    /** {@code true} if this instance state is error */
+    protected boolean error;
+
     /**
      * Creates a new {@link ModelMetaDesc}.
      * 
@@ -166,6 +169,25 @@ public class ModelMetaDesc implements ClassDesc {
      */
     public AttributeMetaDesc getVersionAttributeMetaDesc() {
         return versionAttributeMetaDesc;
+    }
+
+    /**
+     * Returns {@code true} if this instance is error.
+     * 
+     * @return {@code true} if this instance is error
+     */
+    public boolean isError() {
+        return error;
+    }
+
+    /**
+     * Sets {@code true} if this instance is error.
+     * 
+     * @param error
+     *            {@code true} this instance state is error
+     */
+    public void setError(boolean error) {
+        this.error = error;
     }
 
 }

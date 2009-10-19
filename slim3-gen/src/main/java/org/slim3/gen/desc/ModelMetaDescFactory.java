@@ -210,12 +210,11 @@ public class ModelMetaDescFactory {
             ModelMetaDesc modelMetaDesc) {
         List<MethodDeclaration> methodDeclarations =
             getMethodDeclarations(classDeclaration);
-        boolean error = false;
         for (FieldDeclaration fieldDeclaration : getFieldDeclarations(classDeclaration)) {
             AttributeMetaDesc attributeMetaDesc =
                 createAttributeMetaDesc(fieldDeclaration, methodDeclarations);
             if (attributeMetaDesc == null) {
-                error = true;
+                modelMetaDesc.setError(true);
                 continue;
             }
             if (!attributeMetaDesc.isPersistent()) {
@@ -237,7 +236,8 @@ public class ModelMetaDescFactory {
             }
             modelMetaDesc.addAttributeMetaDesc(attributeMetaDesc);
         }
-        if (!error && modelMetaDesc.getKeyAttributeMetaDesc() == null) {
+        if (!modelMetaDesc.isError()
+            && modelMetaDesc.getKeyAttributeMetaDesc() == null) {
             throw new ValidationException(
                 MessageCode.SILM3GEN1015,
                 env,
