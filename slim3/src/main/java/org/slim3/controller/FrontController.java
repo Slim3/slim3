@@ -106,7 +106,9 @@ public class FrontController implements Filter {
     }
 
     public void init(FilterConfig config) throws ServletException {
-        logger.log(Level.INFO, "Initializing FrontController");
+        logger.log(Level.INFO, "Initializing FrontController("
+            + Runtime.getRuntime().hashCode()
+            + ")");
         checkDuplicateClasses();
         initServletContext(config);
         initCharset();
@@ -114,7 +116,9 @@ public class FrontController implements Filter {
         initDefaultLocale();
         initDefaultTimeZone();
         initRootPackageName();
-        logger.log(Level.INFO, "Initialized FrontController");
+        logger.log(Level.INFO, "Initialized FrontController("
+            + Runtime.getRuntime().hashCode()
+            + ")");
     }
 
     /**
@@ -218,11 +222,15 @@ public class FrontController implements Filter {
     }
 
     public void destroy() {
-        logger.log(Level.INFO, "Destroying FrontController");
+        logger.log(Level.INFO, "Destroying FrontController("
+            + Runtime.getRuntime().hashCode()
+            + ")");
         if (servletContextSet) {
             ServletContextLocator.set(null);
         }
-        logger.log(Level.INFO, "Destroyed FrontController");
+        logger.log(Level.INFO, "Destroyed FrontController("
+            + Runtime.getRuntime().hashCode()
+            + ")");
     }
 
     public void doFilter(ServletRequest request, ServletResponse response,
