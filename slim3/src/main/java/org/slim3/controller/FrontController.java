@@ -111,9 +111,6 @@ public class FrontController implements Filter {
     }
 
     public void init(FilterConfig config) throws ServletException {
-        logger.log(Level.INFO, "Initializing FrontController("
-            + runtimeHash
-            + ")");
         checkDuplicateClasses();
         initServletContext(config);
         initCharset();
@@ -227,9 +224,6 @@ public class FrontController implements Filter {
     }
 
     public void destroy() {
-        logger.log(Level.INFO, "Destroying FrontController("
-            + runtimeHash
-            + ")");
         if (servletContextSet) {
             ServletContextLocator.set(null);
         }
