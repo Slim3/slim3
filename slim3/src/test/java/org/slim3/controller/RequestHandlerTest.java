@@ -54,7 +54,7 @@ public class RequestHandlerTest extends TestCase {
     public void testNormalizeValue() throws Exception {
         RequestHandler handler = new RequestHandler(request);
         assertNull(handler.normalize((String) null));
-        assertNull(handler.normalize(""));
+        assertEquals("", handler.normalize(""));
         assertEquals("aaa", handler.normalize("aaa"));
     }
 
@@ -67,7 +67,7 @@ public class RequestHandlerTest extends TestCase {
         RequestHandler handler = new RequestHandler(request);
         String[] ret = handler.normalize(values);
         assertEquals(3, ret.length);
-        assertNull(ret[0]);
+        assertEquals("", ret[0]);
         assertEquals("aaa", ret[1]);
         assertNull(ret[2]);
     }

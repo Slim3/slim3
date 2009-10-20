@@ -79,9 +79,6 @@ public class RequestHandler {
      * @return the normalized value
      */
     protected String normalize(String value) {
-        if ("".equals(value)) {
-            return null;
-        }
         return value;
     }
 
