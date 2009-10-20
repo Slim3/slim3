@@ -631,6 +631,20 @@ public class BeanUtilTest extends TestCase {
     /**
      * @throws Exception
      */
+    public void testCopyRBForCopyNullAndCopyEmptyString() throws Exception {
+        MockServletContext servletContext = new MockServletContext();
+        MockHttpServletRequest src = new MockHttpServletRequest(servletContext);
+        src.setAttribute("aaa", "");
+        DestRB dest = new DestRB();
+        dest.aaa = "111";
+        BeanUtil
+            .copy(src, dest, new CopyOptions().copyNull().copyEmptyString());
+        assertEquals("", dest.aaa);
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testCopyRBForConverter() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         MockHttpServletRequest src = new MockHttpServletRequest(servletContext);
