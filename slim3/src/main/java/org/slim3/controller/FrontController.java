@@ -100,6 +100,11 @@ public class FrontController implements Filter {
     protected String rootPackageName;
 
     /**
+     * The runtime hash.
+     */
+    protected final long runtimeHash = Runtime.getRuntime().hashCode();
+
+    /**
      * Constructor.
      */
     public FrontController() {
@@ -107,7 +112,7 @@ public class FrontController implements Filter {
 
     public void init(FilterConfig config) throws ServletException {
         logger.log(Level.INFO, "Initializing FrontController("
-            + Runtime.getRuntime().hashCode()
+            + runtimeHash
             + ")");
         checkDuplicateClasses();
         initServletContext(config);
@@ -117,7 +122,7 @@ public class FrontController implements Filter {
         initDefaultTimeZone();
         initRootPackageName();
         logger.log(Level.INFO, "Initialized FrontController("
-            + Runtime.getRuntime().hashCode()
+            + runtimeHash
             + ")");
     }
 
@@ -223,14 +228,13 @@ public class FrontController implements Filter {
 
     public void destroy() {
         logger.log(Level.INFO, "Destroying FrontController("
-            + Runtime.getRuntime().hashCode()
+            + runtimeHash
             + ")");
         if (servletContextSet) {
             ServletContextLocator.set(null);
         }
-        logger.log(Level.INFO, "Destroyed FrontController("
-            + Runtime.getRuntime().hashCode()
-            + ")");
+        logger
+            .log(Level.INFO, "Destroyed FrontController(" + runtimeHash + ")");
     }
 
     public void doFilter(ServletRequest request, ServletResponse response,
