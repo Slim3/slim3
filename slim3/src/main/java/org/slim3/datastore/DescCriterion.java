@@ -15,6 +15,7 @@
  */
 package org.slim3.datastore;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 import com.google.appengine.api.datastore.Query;
@@ -27,7 +28,7 @@ import com.google.appengine.api.datastore.Query.SortDirection;
  * @since 3.0
  * 
  */
-public class DescCriterion extends AbstractSortCriterion {
+public class DescCriterion extends AbstractCriterion implements SortCriterion {
 
     /**
      * Constructor.
@@ -47,13 +48,31 @@ public class DescCriterion extends AbstractSortCriterion {
     public int compare(Object model1, Object model2) {
         Object v1 = attributeMeta.getValue(model1);
         if (v1 instanceof Collection<?>) {
-            v1 = getFirstElement(Collection.class.cast(v1));
+            v1 = getGreatestValue(Collection.class.cast(v1));
         }
         Object v2 = attributeMeta.getValue(model2);
         if (v2 instanceof Collection<?>) {
-            v2 = getFirstElement(Collection.class.cast(v2));
+            v2 = getGreatestValue(Collection.class.cast(v2));
         }
         return -1 * compareValue(v1, v2);
     }
 
+    /**
+     * Returns the greatest value of the collection.
+     * 
+     * @param collection
+     *            the collection
+     * @return the greatest value of the collection
+     */
+    protected Object getGreatestValue(Collection<?> collection) {
+        if (collection.size() == 0) {
+            return null;
+        }
+        if (collection.size() == 1) {
+            return collection.iterator().next();
+        }
+        Object[] array = collection.toArray();
+        Arrays.sort(array);
+        return array[array.length - 1];
+    }
 }

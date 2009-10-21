@@ -16,6 +16,7 @@
 package org.slim3.datastore;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.slim3.datastore.meta.HogeMeta;
@@ -61,6 +62,16 @@ public class AscCriterionTest extends DatastoreTestCase {
         hoge2.setMyString("bbb");
         assertEquals(-1, c.compare(hoge, hoge2));
         assertEquals(1, c.compare(hoge2, hoge));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetSmallestValue() throws Exception {
+        AscCriterion c = new AscCriterion(meta.myIntegerList);
+        assertNull(c.getSmallestValue(new ArrayList<Object>()));
+        assertEquals(1, c.getSmallestValue(Arrays.asList(1)));
+        assertEquals(1, c.getSmallestValue(Arrays.asList(9, 1, 3)));
     }
 
     /**
