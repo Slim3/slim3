@@ -85,10 +85,25 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
      * @param criteria
      *            the filter criteria
      * @return this instance
+     * @throws IllegalArgumentException
+     *             if the model of the criterion is different from the model of
+     *             this query
      */
-    public ModelQuery<M> filter(FilterCriterion... criteria) {
+    public ModelQuery<M> filter(FilterCriterion... criteria)
+            throws IllegalArgumentException {
         for (FilterCriterion c : criteria) {
             if (c != null) {
+                if (c instanceof AbstractCriterion) {
+                    ModelMeta<?> mm =
+                        AbstractCriterion.class.cast(c).attributeMeta.modelMeta;
+                    if (mm.getModelClass() != modelMeta.getModelClass()) {
+                        throw new IllegalArgumentException("The model("
+                            + mm.getModelClass().getName()
+                            + ") of the criterion is different from the model("
+                            + modelMeta.getModelClass().getName()
+                            + ") of this query.");
+                    }
+                }
                 c.apply(query);
             }
         }

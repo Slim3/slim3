@@ -17,6 +17,7 @@ package org.slim3.datastore;
 
 import java.util.List;
 
+import org.slim3.datastore.meta.BarMeta;
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.DatastoreTestCase;
@@ -47,6 +48,19 @@ public class ModelQueryTest extends DatastoreTestCase {
         ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
         assertSame(query, query.filter(meta.myString.equal("aaa")));
         assertEquals(1, query.query.getFilterPredicates().size());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testFilterForIllegalArgument() throws Exception {
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        try {
+            query.filter(new BarMeta().key.equal(null));
+            fail();
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     /**
