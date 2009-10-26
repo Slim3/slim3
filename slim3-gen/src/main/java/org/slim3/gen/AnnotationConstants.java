@@ -55,4 +55,7 @@ public interface AnnotationConstants {
 
     /** the name of persistent element */
     String persistent = "persistent";
+
+    /** {@code org.junit.Test} */
+    String Test = "org.junit.Test";
 }

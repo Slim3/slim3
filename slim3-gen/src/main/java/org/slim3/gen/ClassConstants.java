@@ -203,4 +203,10 @@ public final class ClassConstants {
     /** {@code java.util.TreeSet} */
     public static final String TreeSet = "java.util.TreeSet";
 
+    /** {@code org.junit.Assert} */
+    public static final String Assert = "org.junit.Assert";
+
+    /** {@code org.hamcrest.CoreMatchers} */
+    public static final String CoreMatchers = "org.hamcrest.CoreMatchers";
+
 }
