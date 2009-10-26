@@ -15,76 +15,84 @@
  */
 package org.slim3.gen.desc;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+import org.junit.Test;
 
 /**
  * @author taedium
  * 
  */
-public class ViewDescFactoryTest extends TestCase {
+public class ViewDescFactoryTest {
 
     /**
      * 
      * @throws Exception
      */
+    @Test
     public void testCreateViewDesc_slashOnly() throws Exception {
         ViewDescFactory factory = new ViewDescFactory();
         ViewDesc viewDesc = factory.createViewDesc("/");
-        assertEquals("", viewDesc.getDirName());
-        assertEquals("index.jsp", viewDesc.getFileName());
-        assertEquals("", viewDesc.getRelativePath());
-        assertEquals("Index", viewDesc.getTitle());
+        assertThat(viewDesc.getDirName(), is(""));
+        assertThat(viewDesc.getFileName(), is("index.jsp"));
+        assertThat(viewDesc.getRelativePath(), is(""));
+        assertThat(viewDesc.getTitle(), is("Index"));
     }
 
     /**
      * 
      * @throws Exception
      */
+    @Test
     public void testCreateViewDesc_oneDepth() throws Exception {
         ViewDescFactory factory = new ViewDescFactory();
         ViewDesc viewDesc = factory.createViewDesc("/aaa");
-        assertEquals("", viewDesc.getDirName());
-        assertEquals("aaa.jsp", viewDesc.getFileName());
-        assertEquals("aaa", viewDesc.getRelativePath());
-        assertEquals("Aaa", viewDesc.getTitle());
+        assertThat(viewDesc.getDirName(), is(""));
+        assertThat(viewDesc.getFileName(), is("aaa.jsp"));
+        assertThat(viewDesc.getRelativePath(), is("aaa"));
+        assertThat(viewDesc.getTitle(), is("Aaa"));
     }
 
     /**
      * 
      * @throws Exception
      */
+    @Test
     public void testCreateViewDesc_oneDepth_endsWithSlash() throws Exception {
         ViewDescFactory factory = new ViewDescFactory();
         ViewDesc viewDesc = factory.createViewDesc("/aaa/");
-        assertEquals("/aaa", viewDesc.getDirName());
-        assertEquals("index.jsp", viewDesc.getFileName());
-        assertEquals("", viewDesc.getRelativePath());
-        assertEquals("aaa Index", viewDesc.getTitle());
+        assertThat(viewDesc.getDirName(), is("/aaa"));
+        assertThat(viewDesc.getFileName(), is("index.jsp"));
+        assertThat(viewDesc.getRelativePath(), is(""));
+        assertThat(viewDesc.getTitle(), is("aaa Index"));
     }
 
     /**
      * 
      * @throws Exception
      */
+    @Test
     public void testCreateViewDesc_twoDepth() throws Exception {
         ViewDescFactory factory = new ViewDescFactory();
         ViewDesc viewDesc = factory.createViewDesc("/aaa/bbb");
-        assertEquals("/aaa", viewDesc.getDirName());
-        assertEquals("bbb.jsp", viewDesc.getFileName());
-        assertEquals("bbb", viewDesc.getRelativePath());
-        assertEquals("aaa Bbb", viewDesc.getTitle());
+        assertThat(viewDesc.getDirName(), is("/aaa"));
+        assertThat(viewDesc.getFileName(), is("bbb.jsp"));
+        assertThat(viewDesc.getRelativePath(), is("bbb"));
+        assertThat(viewDesc.getTitle(), is("aaa Bbb"));
     }
 
     /**
      * 
      * @throws Exception
      */
+    @Test
     public void testCreateViewDesc_twoDepth_endsWithSlash() throws Exception {
         ViewDescFactory factory = new ViewDescFactory();
         ViewDesc viewDesc = factory.createViewDesc("/aaa/bbb/");
-        assertEquals("/aaa/bbb", viewDesc.getDirName());
-        assertEquals("index.jsp", viewDesc.getFileName());
-        assertEquals("", viewDesc.getRelativePath());
-        assertEquals("aaa bbb Index", viewDesc.getTitle());
+        assertThat(viewDesc.getDirName(), is("/aaa/bbb"));
+        assertThat(viewDesc.getFileName(), is("index.jsp"));
+        assertThat(viewDesc.getRelativePath(), is(""));
+        assertThat(viewDesc.getTitle(), is("aaa bbb Index"));
     }
 }

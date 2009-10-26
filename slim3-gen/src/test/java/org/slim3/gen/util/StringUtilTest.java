@@ -15,31 +15,37 @@
  */
 package org.slim3.gen.util;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+
+import org.junit.Test;
 
 /**
  * @author taedium
  * 
  */
-public class StringUtilTest extends TestCase {
+public class StringUtilTest {
 
     /**
      * 
      * @throws Exception
      */
+    @Test
     public void testIsEmpty() throws Exception {
-        assertTrue(StringUtil.isEmpty(""));
-        assertTrue(StringUtil.isEmpty(null));
-        assertFalse(StringUtil.isEmpty("a"));
+        assertThat(StringUtil.isEmpty(""), is(true));
+        assertThat(StringUtil.isEmpty(null), is(true));
+        assertThat(StringUtil.isEmpty("a"), is(false));
     }
 
     /**
      * 
      * @throws Exception
      */
+    @Test
     public void testCapitalize() throws Exception {
-        assertEquals("Aaa", StringUtil.capitalize("aaa"));
-        assertEquals("", StringUtil.capitalize(""));
-        assertNull(StringUtil.capitalize(null));
+        assertThat(StringUtil.capitalize("aaa"), is("Aaa"));
+        assertThat(StringUtil.capitalize(""), is(""));
+        assertThat(StringUtil.capitalize(null), is(nullValue()));
     }
 }

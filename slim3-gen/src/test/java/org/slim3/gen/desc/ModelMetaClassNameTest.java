@@ -15,18 +15,22 @@
  */
 package org.slim3.gen.desc;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+import org.junit.Test;
 
 /**
  * @author taedium
  * 
  */
-public class ModelMetaClassNameTest extends TestCase {
+public class ModelMetaClassNameTest {
 
     /**
      * 
      * @throws Exception
      */
+    @Test
     public void test() throws Exception {
         ModelMetaClassName name =
             new ModelMetaClassName(
@@ -35,13 +39,14 @@ public class ModelMetaClassNameTest extends TestCase {
                 "meta",
                 "shared",
                 "server");
-        assertEquals("aaa.bbb.server.meta.CccMeta", name.getQualifiedName());
+        assertThat(name.getQualifiedName(), is("aaa.bbb.server.meta.CccMeta"));
     }
 
     /**
      * 
      * @throws Exception
      */
+    @Test
     public void test_subpackage() throws Exception {
         ModelMetaClassName name =
             new ModelMetaClassName(
@@ -50,6 +55,8 @@ public class ModelMetaClassNameTest extends TestCase {
                 "meta",
                 "shared",
                 "server");
-        assertEquals("aaa.bbb.server.meta.ccc.DddMeta", name.getQualifiedName());
+        assertThat(
+            name.getQualifiedName(),
+            is("aaa.bbb.server.meta.ccc.DddMeta"));
     }
 }

@@ -15,39 +15,45 @@
  */
 package org.slim3.gen.util;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+import org.junit.Test;
 
 /**
  * @author taedium
  * 
  */
-public class ClassUtilTest extends TestCase {
+public class ClassUtilTest {
 
     /**
      * 
      * @throws Exception
      */
+    @Test
     public void testGetPackageName() throws Exception {
-        assertEquals("aaa.bbb", ClassUtil.getPackageName("aaa.bbb.Ccc"));
-        assertEquals("", ClassUtil.getPackageName("Ccc"));
+        assertThat(ClassUtil.getPackageName("aaa.bbb.Ccc"), is("aaa.bbb"));
+        assertThat(ClassUtil.getPackageName("Ccc"), is(""));
     }
 
     /**
      * 
      * @throws Exception
      */
+    @Test
     public void testGetSimpleName() throws Exception {
-        assertEquals("Ccc", ClassUtil.getSimpleName("aaa.bbb.Ccc"));
-        assertEquals("Ccc", ClassUtil.getSimpleName("Ccc"));
+        assertThat(ClassUtil.getSimpleName("aaa.bbb.Ccc"), is("Ccc"));
+        assertThat(ClassUtil.getSimpleName("Ccc"), is("Ccc"));
     }
 
     /**
      * 
      * @throws Exception
      */
+    @Test
     public void testGetQualifiedName() throws Exception {
-        assertEquals("aaa.Bbb", ClassUtil.getQualifiedName("aaa", "Bbb"));
-        assertEquals("Bbb", ClassUtil.getQualifiedName("", "Bbb"));
-        assertEquals("Bbb", ClassUtil.getQualifiedName(null, "Bbb"));
+        assertThat(ClassUtil.getQualifiedName("aaa", "Bbb"), is("aaa.Bbb"));
+        assertThat(ClassUtil.getQualifiedName("", "Bbb"), is("Bbb"));
+        assertThat(ClassUtil.getQualifiedName(null, "Bbb"), is("Bbb"));
     }
 }

@@ -15,39 +15,44 @@
  */
 package org.slim3.gen.task;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+import org.junit.Test;
 
 /**
  * @author taedium
  * 
  */
-public class ClassNameBuilderTest extends TestCase {
+public class ClassNameBuilderTest {
 
     /**
      * 
      * @throws Exception
      */
+    @Test
     public void test() throws Exception {
         ClassNameBuilder builder = new ClassNameBuilder();
         builder.append("aaa");
         builder.append("bbb");
         builder.append("Ccc");
-        assertEquals("aaa.bbb.Ccc", builder.getQualifiedName());
-        assertEquals("aaa.bbb", builder.getPackageName());
-        assertEquals("Ccc", builder.getSimpleName());
+        assertThat(builder.getQualifiedName(), is("aaa.bbb.Ccc"));
+        assertThat(builder.getPackageName(), is("aaa.bbb"));
+        assertThat(builder.getSimpleName(), is("Ccc"));
     }
 
     /**
      * 
      * @throws Exception
      */
+    @Test
     public void test_period() throws Exception {
         ClassNameBuilder builder = new ClassNameBuilder();
         builder.append("aaa.");
         builder.append("bbb");
         builder.append(".Ccc");
-        assertEquals("aaa.bbb.Ccc", builder.getQualifiedName());
-        assertEquals("aaa.bbb", builder.getPackageName());
-        assertEquals("Ccc", builder.getSimpleName());
+        assertThat(builder.getQualifiedName(), is("aaa.bbb.Ccc"));
+        assertThat(builder.getPackageName(), is("aaa.bbb"));
+        assertThat(builder.getSimpleName(), is("Ccc"));
     }
 }

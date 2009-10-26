@@ -15,21 +15,25 @@
  */
 package org.slim3.gen;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+import org.junit.Test;
 
 /**
  * 
  * @author taedium
  * 
  */
-public class ProductInfoTest extends TestCase {
+public class ProductInfoTest {
 
     /**
      * 
      * @throws Exception
      */
+    @Test
     public void test() throws Exception {
-        assertEquals("slim3-gen", ProductInfo.getName());
-        assertEquals("@VERSION@", ProductInfo.getVersion());
+        assertThat(ProductInfo.getName(), is("slim3-gen"));
+        assertThat(ProductInfo.getVersion(), is("@VERSION@"));
     }
 }

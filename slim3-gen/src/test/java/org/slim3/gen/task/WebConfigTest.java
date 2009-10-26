@@ -15,21 +15,26 @@
  */
 package org.slim3.gen.task;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.net.URLDecoder;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * @author taedium
  * 
  */
-public class WebConfigTest extends TestCase {
+public class WebConfigTest {
 
     /**
      * 
      * @throws Exception
      */
+    @Test
     public void testGetRootPackageName_javaee() throws Exception {
         String path =
             getClass().getPackage().getName().replace(".", "/")
@@ -43,13 +48,14 @@ public class WebConfigTest extends TestCase {
                 return webXml;
             }
         };
-        assertEquals("aaa.bbb", webConfig.getRootPackageName());
+        assertThat(webConfig.getRootPackageName(), is("aaa.bbb"));
     }
 
     /**
      * 
      * @throws Exception
      */
+    @Test
     public void testGetRootPackageName_javaee_not_found() throws Exception {
         String path =
             getClass().getPackage().getName().replace(".", "/")
@@ -75,6 +81,7 @@ public class WebConfigTest extends TestCase {
      * 
      * @throws Exception
      */
+    @Test
     public void testGetRootPackageName_j2ee() throws Exception {
         String path =
             getClass().getPackage().getName().replace(".", "/")
@@ -88,13 +95,14 @@ public class WebConfigTest extends TestCase {
                 return webXml;
             }
         };
-        assertEquals("aaa.bbb", webConfig.getRootPackageName());
+        assertThat(webConfig.getRootPackageName(), is("aaa.bbb"));
     }
 
     /**
      * 
      * @throws Exception
      */
+    @Test
     public void testIsGWTServiceServletDefined_javaee() throws Exception {
         String path =
             getClass().getPackage().getName().replace(".", "/")
@@ -108,13 +116,14 @@ public class WebConfigTest extends TestCase {
                 return webXml;
             }
         };
-        assertTrue(webConfig.isGWTServiceServletDefined());
+        assertThat(webConfig.isGWTServiceServletDefined(), is(true));
     }
 
     /**
      * 
      * @throws Exception
      */
+    @Test
     public void testIsGWTServiceServletDefined_javaee_not_found()
             throws Exception {
         String path =
@@ -129,13 +138,14 @@ public class WebConfigTest extends TestCase {
                 return webXml;
             }
         };
-        assertFalse(webConfig.isGWTServiceServletDefined());
+        assertThat(webConfig.isGWTServiceServletDefined(), is(false));
     }
 
     /**
      * 
      * @throws Exception
      */
+    @Test
     public void testIsGWTServiceServletDefined_j2ee() throws Exception {
         String path =
             getClass().getPackage().getName().replace(".", "/")
@@ -149,7 +159,7 @@ public class WebConfigTest extends TestCase {
                 return webXml;
             }
         };
-        assertTrue(webConfig.isGWTServiceServletDefined());
+        assertThat(webConfig.isGWTServiceServletDefined(), is(true));
     }
 
     /**

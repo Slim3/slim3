@@ -15,41 +15,47 @@
  */
 package org.slim3.gen.desc;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class ControllerDescTest extends TestCase {
+public class ControllerDescTest {
 
     /**
      * 
      * @throws Exception
      */
+    @Test
     public void testSimpleViewName() throws Exception {
         ControllerDesc controllerDesc = new ControllerDesc();
         controllerDesc.setViewName("/aaa/index.jsp");
-        assertEquals("index.jsp", controllerDesc.getSimpleViewName());
+        assertThat(controllerDesc.getSimpleViewName(), is("index.jsp"));
     }
 
     /**
      * 
      * @throws Exception
      */
+    @Test
     public void testBasePathForIndex() throws Exception {
         ControllerDesc controllerDesc = new ControllerDesc();
         controllerDesc.setPath("/aaa/");
-        assertEquals("/aaa/", controllerDesc.getBasePath());
+        assertThat(controllerDesc.getBasePath(), is("/aaa/"));
     }
 
     /**
      * 
      * @throws Exception
      */
+    @Test
     public void testBasePath() throws Exception {
         ControllerDesc controllerDesc = new ControllerDesc();
         controllerDesc.setPath("/aaa/bbb");
-        assertEquals("/aaa/", controllerDesc.getBasePath());
+        assertThat(controllerDesc.getBasePath(), is("/aaa/"));
     }
 }

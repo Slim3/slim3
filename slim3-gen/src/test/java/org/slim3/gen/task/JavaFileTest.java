@@ -15,10 +15,12 @@
  */
 package org.slim3.gen.task;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import java.io.File;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.slim3.gen.desc.ClassDesc;
 import org.slim3.gen.util.ClassUtil;
 
@@ -26,43 +28,46 @@ import org.slim3.gen.util.ClassUtil;
  * @author taedium
  * 
  */
-public class JavaFileTest extends TestCase {
+public class JavaFileTest {
 
     /**
      * 
      * @throws Exception
      */
+    @Test
     public void test() throws Exception {
         ClassDesc classDesc = new SimpleClassDesc("aaa", "Bbb");
         JavaFile javaFile = new NoMkdirsJavaFile(new File("src"), classDesc);
         File expectedFile = new File(new File("src", "aaa"), "Bbb.java");
-        assertEquals(expectedFile, javaFile.getFile());
-        assertEquals("aaa.Bbb", javaFile.getClassName());
+        assertThat(javaFile.getFile(), is(expectedFile));
+        assertThat(javaFile.getClassName(), is("aaa.Bbb"));
     }
 
     /**
      * 
      * @throws Exception
      */
+    @Test
     public void testDefaultPackage() throws Exception {
         ClassDesc classDesc = new SimpleClassDesc(null, "Bbb");
         JavaFile javaFile = new NoMkdirsJavaFile(new File("src"), classDesc);
         File expectedFile = new File("src", "Bbb.java");
-        assertEquals(expectedFile, javaFile.getFile());
-        assertEquals("Bbb", javaFile.getClassName());
+        assertThat(javaFile.getFile(), is(expectedFile));
+        assertThat(javaFile.getClassName(), is("Bbb"));
     }
 
     /**
      * 
      * @throws Exception
      */
+    @Test
     public void testSuffix() throws Exception {
         ClassDesc classDesc = new SimpleClassDesc("aaa", "Bbb");
         JavaFile javaFile =
             new NoMkdirsJavaFile(new File("src"), classDesc, "Test");
         File expectedFile = new File(new File("src", "aaa"), "BbbTest.java");
-        assertEquals(expectedFile, javaFile.getFile());
-        assertEquals("aaa.BbbTest", javaFile.getClassName());
+        assertThat(javaFile.getFile(), is(expectedFile));
+        assertThat(javaFile.getClassName(), is("aaa.BbbTest"));
     }
 
     /**
