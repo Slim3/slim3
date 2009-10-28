@@ -15,11 +15,15 @@
  */
 package org.slim3.controller.validator;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.util.Locale;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
 import org.slim3.util.ApplicationMessage;
@@ -29,7 +33,7 @@ import org.slim3.util.RequestMap;
  * @author higa
  * 
  */
-public class ByteTypeValidatorTest extends TestCase {
+public class ByteTypeValidatorTest {
 
     private MockServletContext servletContext = new MockServletContext();
 
@@ -38,57 +42,73 @@ public class ByteTypeValidatorTest extends TestCase {
 
     private Map<String, Object> parameters = new RequestMap(request);
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    /**
+     * @throws Exception
+     */
+    @Before
+    public void setUp() throws Exception {
         ApplicationMessage.setBundle("test", Locale.ENGLISH);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    /**
+     * @throws Exception
+     */
+    @After
+    public void tearDown() throws Exception {
         ApplicationMessage.clearBundle();
-        super.tearDown();
     }
 
     /**
      * @throws Exception
      */
-    public void testValidateForNull() throws Exception {
-        assertNull(ByteTypeValidator.INSTANCE.validate(parameters, "aaa"));
+    @Test
+    public void validateForNull() throws Exception {
+        assertThat(
+            ByteTypeValidator.INSTANCE.validate(parameters, "aaa"),
+            is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testValidateForEmptyString() throws Exception {
+    @Test
+    public void validateForEmptyString() throws Exception {
         request.setAttribute("aaa", "");
-        assertNull(ByteTypeValidator.INSTANCE.validate(parameters, "aaa"));
+        assertThat(
+            ByteTypeValidator.INSTANCE.validate(parameters, "aaa"),
+            is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testValidateForValid() throws Exception {
+    @Test
+    public void validateForValidValue() throws Exception {
         request.setAttribute("aaa", "111");
-        assertNull(ByteTypeValidator.INSTANCE.validate(parameters, "aaa"));
+        assertThat(
+            ByteTypeValidator.INSTANCE.validate(parameters, "aaa"),
+            is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testValidateForInvalid() throws Exception {
+    @Test
+    public void validateForInvalidValue() throws Exception {
         request.setAttribute("aaa", "xxx");
-        assertEquals("Aaa must be a byte.", ByteTypeValidator.INSTANCE
-            .validate(parameters, "aaa"));
+        assertThat(
+            ByteTypeValidator.INSTANCE.validate(parameters, "aaa"),
+            is("Aaa must be a byte."));
     }
 
     /**
      * @throws Exception
      */
-    public void testValidateForInvalidAndMessage() throws Exception {
+    @Test
+    public void validateForInvalidValueAndSpecificMessage() throws Exception {
         request.setAttribute("aaa", "xxx");
-        assertEquals("hoge", new ByteTypeValidator("hoge").validate(
-            parameters,
-            "aaa"));
+        assertThat(
+            new ByteTypeValidator("hoge").validate(parameters, "aaa"),
+            is("hoge"));
     }
 }

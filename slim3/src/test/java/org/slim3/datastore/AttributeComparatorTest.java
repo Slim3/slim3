@@ -15,8 +15,10 @@
  */
 package org.slim3.datastore;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
+import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
 
@@ -24,26 +26,27 @@ import org.slim3.datastore.model.Hoge;
  * @author higa
  * 
  */
-public class AttributeComparatorTest extends TestCase {
+public class AttributeComparatorTest {
 
     private HogeMeta meta = new HogeMeta();
 
     /**
      * @throws Exception
      */
-    public void testCompare() throws Exception {
+    @Test
+    public void compare() throws Exception {
         AttributeComparator comparator =
             new AttributeComparator(meta.myInteger.asc, meta.myString.desc);
         Hoge hoge = new Hoge();
         hoge.setMyInteger(1);
         hoge.setMyString("aaa");
-        assertEquals(0, comparator.compare(hoge, hoge));
+        assertThat(comparator.compare(hoge, hoge), is(0));
         Hoge hoge2 = new Hoge();
         hoge2.setMyInteger(2);
         hoge2.setMyString("bbb");
-        assertEquals(-1, comparator.compare(hoge, hoge2));
-        assertEquals(1, comparator.compare(hoge2, hoge));
+        assertThat(comparator.compare(hoge, hoge2), is(-1));
+        assertThat(comparator.compare(hoge2, hoge), is(1));
         hoge2.setMyInteger(1);
-        assertEquals(1, comparator.compare(hoge, hoge2));
+        assertThat(comparator.compare(hoge, hoge2), is(1));
     }
 }

@@ -15,6 +15,9 @@
  */
 package org.slim3.datastore;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,14 +26,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.datastore.model.MySerializable;
 import org.slim3.util.BeanDesc;
 import org.slim3.util.ByteUtil;
 
+import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.ShortBlob;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Query.SortDirection;
@@ -39,380 +42,408 @@ import com.google.appengine.api.datastore.Query.SortDirection;
  * @author higa
  * 
  */
-public class ModelMetaTest extends TestCase {
+public class ModelMetaTest {
 
     private HogeMeta meta = new HogeMeta();
 
     /**
      * @throws Exception
      */
-    public void testConstructor() throws Exception {
-        assertEquals(Hoge.class, meta.getModelClass());
+    @Test
+    public void constructor() throws Exception {
+        assertThat(meta.getModelClass(), equalTo(Hoge.class));
     }
 
     /**
      * @throws Exception
      */
-    public void testLongToPrimitiveShort() throws Exception {
-        assertEquals((short) 1, meta.longToPrimitiveShort(1L));
-        assertEquals((short) 0, meta.longToPrimitiveShort(null));
+    @Test
+    public void longToPrimitiveShort() throws Exception {
+        assertThat(meta.longToPrimitiveShort(1L), is((short) 1));
+        assertThat(meta.longToPrimitiveShort(null), is((short) 0));
     }
 
     /**
      * @throws Exception
      */
-    public void testLongToShort() throws Exception {
-        assertEquals(Short.valueOf((short) 1), meta.longToShort(1L));
-        assertNull(meta.longToShort(null));
+    @Test
+    public void longToShort() throws Exception {
+        assertThat(meta.longToShort(1L), is((short) 1));
+        assertThat(meta.longToShort(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testLongToPrimitiveInt() throws Exception {
-        assertEquals(1, meta.longToPrimitiveInt(1L));
-        assertEquals(0, meta.longToPrimitiveInt(null));
+    @Test
+    public void longToPrimitiveInt() throws Exception {
+        assertThat(meta.longToPrimitiveInt(1L), is(1));
+        assertThat(meta.longToPrimitiveInt(null), is(0));
     }
 
     /**
      * @throws Exception
      */
-    public void testLongToInteger() throws Exception {
-        assertEquals(Integer.valueOf(1), meta.longToInteger(1L));
-        assertNull(meta.longToInteger(null));
+    @Test
+    public void longToInteger() throws Exception {
+        assertThat(meta.longToInteger(1L), is(1));
+        assertThat(meta.longToInteger(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testLongToPrimitiveLong() throws Exception {
-        assertEquals(1L, meta.longToPrimitiveLong(1L));
-        assertEquals(0L, meta.longToPrimitiveLong(null));
+    @Test
+    public void longToPrimitiveLong() throws Exception {
+        assertThat(meta.longToPrimitiveLong(1L), is(1L));
+        assertThat(meta.longToPrimitiveLong(null), is(0L));
     }
 
     /**
      * @throws Exception
      */
-    public void testDoubleToPrimitiveFloat() throws Exception {
-        assertEquals(1f, meta.doubleToPrimitiveFloat(1d));
-        assertEquals(0f, meta.doubleToPrimitiveFloat(null));
+    @Test
+    public void doubleToPrimitiveFloat() throws Exception {
+        assertThat(meta.doubleToPrimitiveFloat(1d), is(1f));
+        assertThat(meta.doubleToPrimitiveFloat(null), is(0f));
     }
 
     /**
      * @throws Exception
      */
-    public void testDoubleToFloat() throws Exception {
-        assertEquals(Float.valueOf(1), meta.doubleToFloat(1d));
-        assertNull(meta.doubleToFloat(null));
+    @Test
+    public void doubleToFloat() throws Exception {
+        assertThat(meta.doubleToFloat(1d), is(1f));
+        assertThat(meta.doubleToFloat(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testDoubleToPrimitiveDouble() throws Exception {
-        assertEquals(1d, meta.doubleToPrimitiveDouble(1d));
-        assertEquals(0d, meta.doubleToPrimitiveDouble(null));
+    @Test
+    public void doubleToPrimitiveDouble() throws Exception {
+        assertThat(meta.doubleToPrimitiveDouble(1d), is(1d));
+        assertThat(meta.doubleToPrimitiveDouble(null), is(0d));
     }
 
     /**
      * @throws Exception
      */
-    public void testBooleanToPrimitiveBoolean() throws Exception {
-        assertEquals(true, meta.booleanToPrimitiveBoolean(true));
-        assertEquals(false, meta.booleanToPrimitiveBoolean(null));
+    @Test
+    public void booleanToPrimitiveBoolean() throws Exception {
+        assertThat(meta.booleanToPrimitiveBoolean(true), is(true));
+        assertThat(meta.booleanToPrimitiveBoolean(null), is(false));
     }
 
     /**
      * @throws Exception
      */
-    public void testEnumToString() throws Exception {
-        assertEquals("ASCENDING", meta.enumToString(SortDirection.ASCENDING));
-        assertNull(meta.enumToString(null));
+    @Test
+    public void enumToString() throws Exception {
+        assertThat(meta.enumToString(SortDirection.ASCENDING), is("ASCENDING"));
+        assertThat(meta.enumToString(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testStringToEnum() throws Exception {
-        assertEquals(SortDirection.ASCENDING, meta.stringToEnum(
-            SortDirection.class,
-            "ASCENDING"));
-        assertNull(meta.stringToEnum(SortDirection.class, null));
+    @Test
+    public void stringToEnum() throws Exception {
+        assertThat(
+            meta.stringToEnum(SortDirection.class, "ASCENDING"),
+            is(SortDirection.ASCENDING));
+        assertThat(
+            meta.stringToEnum(SortDirection.class, null),
+            is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testTextToString() throws Exception {
-        assertEquals("aaa", meta.textToString(new Text("aaa")));
-        assertNull(meta.textToString(null));
+    @Test
+    public void textToString() throws Exception {
+        assertThat(meta.textToString(new Text("aaa")), is("aaa"));
+        assertThat(meta.textToString(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testStringToText() throws Exception {
-        assertEquals(new Text("aaa"), meta.stringToText("aaa"));
-        assertNull(meta.stringToText(null));
+    @Test
+    public void stringToText() throws Exception {
+        assertThat(meta.stringToText("aaa"), is(new Text("aaa")));
+        assertThat(meta.stringToText(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testShortBlobToBytes() throws Exception {
+    @Test
+    public void shortBlobToBytes() throws Exception {
         byte[] bytes = new byte[] { 1 };
-        byte[] bytes2 = meta.shortBlobToBytes(new ShortBlob(bytes));
-        assertEquals(1, bytes2.length);
-        assertEquals(1, bytes2[0]);
-        assertNull(meta.shortBlobToBytes(null));
+        assertThat(meta.shortBlobToBytes(new ShortBlob(bytes)), is(bytes));
+        assertThat(meta.shortBlobToBytes(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testBytesToShortBlob() throws Exception {
+    @Test
+    public void bytesToShortBlob() throws Exception {
         byte[] bytes = new byte[] { 1 };
-        byte[] bytes2 = meta.bytesToShortBlob(bytes).getBytes();
-        assertEquals(1, bytes2.length);
-        assertEquals(1, bytes2[0]);
-        assertNull(meta.bytesToShortBlob(null));
+        assertThat(meta.bytesToShortBlob(bytes).getBytes(), is(bytes));
+        assertThat(meta.bytesToShortBlob(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testBlobToBytes() throws Exception {
+    @Test
+    public void blobToBytes() throws Exception {
         byte[] bytes = new byte[] { 1 };
-        byte[] bytes2 =
-            meta
-                .blobToBytes(new com.google.appengine.api.datastore.Blob(bytes));
-        assertEquals(1, bytes2.length);
-        assertEquals(1, bytes2[0]);
-        assertNull(meta.blobToBytes(null));
+        assertThat(meta.blobToBytes(new Blob(bytes)), is(bytes));
+        assertThat(meta.blobToBytes(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testBytesToBlob() throws Exception {
+    @Test
+    public void bytesToBlob() throws Exception {
         byte[] bytes = new byte[] { 1 };
-        byte[] bytes2 = meta.bytesToBlob(bytes).getBytes();
-        assertEquals(1, bytes2.length);
-        assertEquals(1, bytes2[0]);
-        assertNull(meta.bytesToBlob(null));
+        assertThat(meta.bytesToBlob(bytes).getBytes(), is(bytes));
+        assertThat(meta.bytesToBlob(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testShortBlobToSerializable() throws Exception {
-        assertEquals("aaa", meta.shortBlobToSerializable(new ShortBlob(ByteUtil
-            .toByteArray("aaa"))));
-        assertNull(meta.shortBlobToSerializable(null));
+    @Test
+    public void shortBlobToSerializable() throws Exception {
+        assertThat((String) meta.shortBlobToSerializable(new ShortBlob(ByteUtil
+            .toByteArray("aaa"))), is("aaa"));
+        assertThat(meta.shortBlobToSerializable(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testSerializableToShortBlob() throws Exception {
+    @Test
+    public void serializableToShortBlob() throws Exception {
         MySerializable serializable = new MySerializable("aaa");
         MySerializable serializable2 =
             (MySerializable) ByteUtil.toObject(meta.serializableToShortBlob(
                 serializable).getBytes());
-        assertEquals("aaa", serializable2.getAaa());
-        assertNull(meta.serializableToShortBlob(null));
+        assertThat(serializable2.getAaa(), is("aaa"));
+        assertThat(meta.serializableToShortBlob(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testBlobToSerializable() throws Exception {
-        assertEquals("aaa", meta
+    @Test
+    public void blobToSerializable() throws Exception {
+        assertThat((String) meta
             .blobToSerializable(new com.google.appengine.api.datastore.Blob(
-                ByteUtil.toByteArray("aaa"))));
-        assertNull(meta.blobToSerializable(null));
+                ByteUtil.toByteArray("aaa"))), is("aaa"));
+        assertThat(meta.blobToSerializable(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testSerializableToBlob() throws Exception {
+    @Test
+    public void serializableToBlob() throws Exception {
         MySerializable serializable = new MySerializable("aaa");
         MySerializable serializable2 =
             (MySerializable) ByteUtil.toObject(meta.serializableToBlob(
                 serializable).getBytes());
-        assertEquals("aaa", serializable2.getAaa());
-        assertNull(meta.serializableToShortBlob(null));
+        assertThat(serializable2.getAaa(), is("aaa"));
+        assertThat(meta.serializableToShortBlob(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testToList() throws Exception {
+    @Test
+    public void toList() throws Exception {
         List<Long> value = new ArrayList<Long>(Arrays.asList(1L));
-        ArrayList<Long> ret = meta.toList(Long.class, value);
-        assertEquals(1, ret.size());
-        assertEquals(Long.valueOf(1), ret.get(0));
+        assertThat(meta.toList(Long.class, value), is(sameInstance(value)));
     }
 
     /**
      * @throws Exception
      */
-    public void testToSet() throws Exception {
+    @Test
+    public void toSet() throws Exception {
         List<Long> value = new ArrayList<Long>(Arrays.asList(1L));
         HashSet<Long> ret = meta.toSet(Long.class, value);
-        assertEquals(1, ret.size());
-        assertEquals(Long.valueOf(1), ret.iterator().next());
+        assertThat(ret.size(), is(1));
+        assertThat(ret.iterator().next(), is(1L));
     }
 
     /**
      * @throws Exception
      */
-    public void testToSortedSet() throws Exception {
+    @Test
+    public void toSortedSet() throws Exception {
         List<Long> value = new ArrayList<Long>(Arrays.asList(1L));
         SortedSet<Long> ret = meta.toSortedSet(Long.class, value);
-        assertEquals(1, ret.size());
-        assertEquals(Long.valueOf(1), ret.iterator().next());
+        assertThat(ret.size(), is(1));
+        assertThat(ret.iterator().next(), is(1L));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyLongListToShortCollection() throws Exception {
+    @Test
+    public void copyLongListToShortCollection() throws Exception {
         List<Long> value = Arrays.asList(1L);
         Collection<Short> collection = new ArrayList<Short>();
         meta.copyLongListToShortCollection(value, collection);
-        assertEquals(1, collection.size());
-        assertEquals(Short.valueOf((short) 1), collection.iterator().next());
+        assertThat(collection.size(), is(1));
+        assertThat(collection.iterator().next(), is((short) 1));
     }
 
     /**
      * @throws Exception
      */
-    public void testLongListToShortList() throws Exception {
+    @Test
+    public void longListToShortList() throws Exception {
         List<Long> value = Arrays.asList(1L);
-        List<Short> ret = meta.longListToShortList(value);
-        assertEquals(1, ret.size());
-        assertEquals(Short.valueOf((short) 1), ret.get(0));
-        assertNull(meta.longListToShortList(null));
+        assertThat(
+            meta.longListToShortList(value),
+            is(Arrays.asList((short) 1)));
+        assertThat(meta.longListToShortList(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testLongListToShortSet() throws Exception {
+    @Test
+    public void longListToShortSet() throws Exception {
         List<Long> value = Arrays.asList(1L);
         Set<Short> ret = meta.longListToShortSet(value);
-        assertEquals(1, ret.size());
-        assertEquals(Short.valueOf((short) 1), ret.iterator().next());
-        assertNull(meta.longListToShortSet(null));
+        assertThat(ret.size(), is(1));
+        assertThat(ret.iterator().next(), is((short) 1));
+        assertThat(meta.longListToShortSet(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testLongListToShortSortedSet() throws Exception {
+    @Test
+    public void longListToShortSortedSet() throws Exception {
         List<Long> value = Arrays.asList(1L);
         SortedSet<Short> ret = meta.longListToShortSortedSet(value);
-        assertEquals(1, ret.size());
-        assertEquals(Short.valueOf((short) 1), ret.iterator().next());
-        assertNull(meta.longListToShortSortedSet(null));
+        assertThat(ret.size(), is(1));
+        assertThat(ret.iterator().next(), is((short) 1));
+        assertThat(meta.longListToShortSortedSet(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyLongListToIntegerCollection() throws Exception {
+    @Test
+    public void copyLongListToIntegerCollection() throws Exception {
         List<Long> value = Arrays.asList(1L);
         Collection<Integer> collection = new ArrayList<Integer>();
         meta.copyLongListToIntegerCollection(value, collection);
-        assertEquals(1, collection.size());
-        assertEquals(Integer.valueOf(1), collection.iterator().next());
+        assertThat(collection.size(), is(1));
+        assertThat(collection.iterator().next(), is(1));
     }
 
     /**
      * @throws Exception
      */
-    public void testLongListToIntegerList() throws Exception {
+    @Test
+    public void longListToIntegerList() throws Exception {
         List<Long> value = Arrays.asList(1L);
         List<Integer> ret = meta.longListToIntegerList(value);
-        assertEquals(1, ret.size());
-        assertEquals(Integer.valueOf(1), ret.get(0));
-        assertNull(meta.longListToIntegerList(null));
+        assertThat(ret.size(), is(1));
+        assertThat(ret.get(0), is(1));
+        assertThat(meta.longListToIntegerList(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testLongListToIntegerSet() throws Exception {
+    @Test
+    public void longListToIntegerSet() throws Exception {
         List<Long> value = Arrays.asList(1L);
         Set<Integer> ret = meta.longListToIntegerSet(value);
-        assertEquals(1, ret.size());
-        assertEquals(Integer.valueOf(1), ret.iterator().next());
-        assertNull(meta.longListToIntegerSet(null));
+        assertThat(ret.size(), is(1));
+        assertThat(ret.iterator().next(), is(1));
+        assertThat(meta.longListToIntegerSet(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testLongListToIntegerSortedSet() throws Exception {
+    @Test
+    public void longListToIntegerSortedSet() throws Exception {
         List<Long> value = Arrays.asList(1L);
         SortedSet<Integer> ret = meta.longListToIntegerSortedSet(value);
-        assertEquals(1, ret.size());
-        assertEquals(Integer.valueOf(1), ret.iterator().next());
-        assertNull(meta.longListToIntegerSortedSet(null));
+        assertThat(ret.size(), is(1));
+        assertThat(ret.iterator().next(), is(1));
+        assertThat(meta.longListToIntegerSortedSet(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyDoubleListToFloatCollection() throws Exception {
+    @Test
+    public void copyDoubleListToFloatCollection() throws Exception {
         List<Double> value = Arrays.asList(1d);
         Collection<Float> collection = new ArrayList<Float>();
         meta.copyDoubleListToFloatCollection(value, collection);
-        assertEquals(1, collection.size());
-        assertEquals(Float.valueOf(1), collection.iterator().next());
+        assertThat(collection.size(), is(1));
+        assertThat(collection.iterator().next(), is(1f));
     }
 
     /**
      * @throws Exception
      */
-    public void testDoubleListToFloatList() throws Exception {
+    @Test
+    public void doubleListToFloatList() throws Exception {
         List<Double> value = Arrays.asList(1d);
         List<Float> ret = meta.doubleListToFloatList(value);
-        assertEquals(1, ret.size());
-        assertEquals(Float.valueOf(1), ret.get(0));
-        assertNull(meta.doubleListToFloatList(null));
+        assertThat(ret.size(), is(1));
+        assertThat(ret.get(0), is(1f));
+        assertThat(meta.doubleListToFloatList(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testDoubleListToFloatSet() throws Exception {
+    @Test
+    public void doubleListToFloatSet() throws Exception {
         List<Double> value = Arrays.asList(1d);
         Set<Float> ret = meta.doubleListToFloatSet(value);
-        assertEquals(1, ret.size());
-        assertEquals(Float.valueOf(1), ret.iterator().next());
-        assertNull(meta.doubleListToFloatSet(null));
+        assertThat(ret.size(), is(1));
+        assertThat(ret.iterator().next(), is(1f));
+        assertThat(meta.doubleListToFloatSet(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testDoubleListToFloatSortedSet() throws Exception {
+    @Test
+    public void doubleListToFloatSortedSet() throws Exception {
         List<Double> value = Arrays.asList(1d);
         SortedSet<Float> ret = meta.doubleListToFloatSortedSet(value);
-        assertEquals(1, ret.size());
-        assertEquals(Float.valueOf(1), ret.iterator().next());
-        assertNull(meta.doubleListToFloatSortedSet(null));
+        assertThat(ret.size(), is(1));
+        assertThat(ret.iterator().next(), is(1f));
+        assertThat(meta.doubleListToFloatSortedSet(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetBeanDesc() throws Exception {
+    @Test
+    public void getBeanDesc() throws Exception {
         BeanDesc beanDesc = meta.getBeanDesc();
-        assertNotNull(beanDesc);
-        assertSame(beanDesc, meta.getBeanDesc());
+        assertThat(beanDesc, is(not(nullValue())));
+        assertThat(beanDesc, is(sameInstance(meta.getBeanDesc())));
     }
 }

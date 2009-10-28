@@ -15,8 +15,10 @@
  */
 package org.slim3.controller;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
+import org.junit.Test;
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
 import org.slim3.util.ByteUtil;
@@ -26,7 +28,7 @@ import org.slim3.util.Cleaner;
  * @author higa
  * 
  */
-public class HotHttpSessionWrapperTest extends TestCase {
+public class HotHttpSessionWrapperTest {
 
     private MockServletContext servletContext = new MockServletContext();
 
@@ -40,39 +42,44 @@ public class HotHttpSessionWrapperTest extends TestCase {
      * @throws Exception
      * 
      */
-    public void testClean() throws Exception {
+    @Test
+    public void cleanAll() throws Exception {
         HotHttpSessionWrapper sessionWrapper =
             (HotHttpSessionWrapper) requestWrapper.getSession();
         sessionWrapper.setAttribute("aaa", "111");
         Cleaner.cleanAll();
-        assertTrue(request.getSession().getAttribute("aaa") instanceof BytesHolder);
+        assertThat(
+            request.getSession().getAttribute("aaa"),
+            is(BytesHolder.class));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testConstructorAndGetAttribute() throws Exception {
+    @Test
+    public void constructorAndGetAttribute() throws Exception {
         request.getSession().setAttribute(
             "aaa",
             new BytesHolder(ByteUtil.toByteArray("111")));
         HotHttpSessionWrapper sessionWrapper =
             (HotHttpSessionWrapper) requestWrapper.getSession();
-        assertEquals("111", request.getSession().getAttribute("aaa"));
-        assertEquals("111", sessionWrapper.getAttribute("aaa"));
+        assertThat((String) request.getSession().getAttribute("aaa"), is("111"));
+        assertThat((String) sessionWrapper.getAttribute("aaa"), is("111"));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testInvalidate() throws Exception {
+    @Test
+    public void invalidate() throws Exception {
         HotHttpSessionWrapper sessionWrapper =
             (HotHttpSessionWrapper) requestWrapper.getSession();
         sessionWrapper.invalidate();
-        assertNull(sessionWrapper.originalSession);
-        assertNull(sessionWrapper.requestWrapper);
-        assertNull(requestWrapper.sessionWrapper);
+        assertThat(sessionWrapper.originalSession, is(nullValue()));
+        assertThat(sessionWrapper.requestWrapper, is(nullValue()));
+        assertThat(requestWrapper.sessionWrapper, is(nullValue()));
         sessionWrapper.invalidate();
     }
 }

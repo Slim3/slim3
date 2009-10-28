@@ -15,13 +15,17 @@
  */
 package org.slim3.controller;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class HotReloadingClassLoaderTest extends TestCase {
+public class HotReloadingClassLoaderTest {
 
     private static final String ROOT_PACKAGE =
         HotReloadingClassLoaderTest.class.getPackage().getName();
@@ -41,9 +45,11 @@ public class HotReloadingClassLoaderTest extends TestCase {
      */
     protected HotReloadingClassLoader hotClassLoader;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    /**
+     * @throws Exception
+     */
+    @Before
+    public void setUp() throws Exception {
         originalClassLoader = Thread.currentThread().getContextClassLoader();
         hotClassLoader =
             new HotReloadingClassLoader(
@@ -52,32 +58,32 @@ public class HotReloadingClassLoaderTest extends TestCase {
                 "cool");
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        originalClassLoader = null;
-        hotClassLoader = null;
-        super.tearDown();
-    }
-
     /**
      * @throws Exception
      * 
      */
-    public void testLoadClass() throws Exception {
-        Class<?> clazz = hotClassLoader.loadClass(CONTROLLER_CLASS_NAME);
-        assertNotNull(clazz);
-        assertSame(hotClassLoader, clazz.getClassLoader());
-        assertSame(clazz, hotClassLoader.loadClass(CONTROLLER_CLASS_NAME));
-        assertNotNull(clazz.getPackage());
+    @Test
+    public void loadClass() throws Exception {
+        @SuppressWarnings("unchecked")
+        Class clazz = hotClassLoader.loadClass(CONTROLLER_CLASS_NAME);
+        assertThat(clazz, is(not(nullValue())));
+        assertThat(
+            (HotReloadingClassLoader) clazz.getClassLoader(),
+            is(sameInstance(hotClassLoader)));
+        assertThat(
+            hotClassLoader.loadClass(CONTROLLER_CLASS_NAME),
+            is(sameInstance(clazz)));
+        assertThat(clazz.getPackage(), is(not(nullValue())));
     }
 
     /**
      * @throws Exception
      */
-    public void testIsTarget() throws Exception {
-        assertTrue(hotClassLoader.isTarget(CONTROLLER_CLASS_NAME));
-        assertFalse(hotClassLoader.isTarget(ROOT_PACKAGE
-            + ".cool.service.AaaService"));
-        assertFalse(hotClassLoader.isTarget(String.class.getName()));
+    @Test
+    public void isTarget() throws Exception {
+        assertThat(hotClassLoader.isTarget(CONTROLLER_CLASS_NAME), is(true));
+        assertThat(hotClassLoader.isTarget(ROOT_PACKAGE
+            + ".cool.service.AaaService"), is(false));
+        assertThat(hotClassLoader.isTarget(String.class.getName()), is(false));
     }
 }

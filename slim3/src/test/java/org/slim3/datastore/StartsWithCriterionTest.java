@@ -15,11 +15,15 @@
  */
 package org.slim3.datastore;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.util.List;
 
+import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
-import org.slim3.tester.DatastoreTestCase;
+import org.slim3.tester.LocalServiceTestCase;
 
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
@@ -29,7 +33,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
  * @author higa
  * 
  */
-public class StartsWithCriterionTest extends DatastoreTestCase {
+public class StartsWithCriterionTest extends LocalServiceTestCase {
 
     private HogeMeta meta = new HogeMeta();
 
@@ -37,52 +41,58 @@ public class StartsWithCriterionTest extends DatastoreTestCase {
      * @throws Exception
      * 
      */
-    public void testConstructor() throws Exception {
+    @Test
+    public void constructor() throws Exception {
         StartsWithCriterion c = new StartsWithCriterion(meta.myString, "aaa");
-        assertEquals("aaa", c.value);
+        assertThat(c.value, is("aaa"));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testApply() throws Exception {
+    @Test
+    public void apply() throws Exception {
         Query query = new Query();
         StartsWithCriterion c = new StartsWithCriterion(meta.myString, "aaa");
         c.apply(query);
         List<FilterPredicate> predicates = query.getFilterPredicates();
-        assertEquals(2, predicates.size());
-        assertEquals("myString", predicates.get(0).getPropertyName());
-        assertEquals(FilterOperator.GREATER_THAN_OR_EQUAL, predicates
-            .get(0)
-            .getOperator());
-        assertEquals("aaa", predicates.get(0).getValue());
-        assertEquals("myString", predicates.get(1).getPropertyName());
-        assertEquals(FilterOperator.LESS_THAN, predicates.get(1).getOperator());
-        assertEquals("aaa" + "\ufffd", predicates.get(1).getValue());
+        assertThat(predicates.size(), is(2));
+        assertThat(predicates.get(0).getPropertyName(), is("myString"));
+        assertThat(
+            predicates.get(0).getOperator(),
+            is(FilterOperator.GREATER_THAN_OR_EQUAL));
+        assertThat((String) predicates.get(0).getValue(), is("aaa"));
+        assertThat(predicates.get(1).getPropertyName(), is("myString"));
+        assertThat(
+            predicates.get(1).getOperator(),
+            is(FilterOperator.LESS_THAN));
+        assertThat((String) predicates.get(1).getValue(), is("aaa" + "\ufffd"));
     }
 
     /**
      * @throws Exception
      */
-    public void testAccept() throws Exception {
+    @Test
+    public void accept() throws Exception {
         Hoge hoge = new Hoge();
         hoge.setMyString("abc");
         FilterCriterion c = new StartsWithCriterion(meta.myString, "a");
-        assertTrue(c.accept(hoge));
+        assertThat(c.accept(hoge), is(true));
         hoge.setMyString("b");
-        assertFalse(c.accept(hoge));
+        assertThat(c.accept(hoge), is(false));
     }
 
     /**
      * @throws Exception
      */
-    public void testAcceptForNull() throws Exception {
+    @Test
+    public void acceptForNull() throws Exception {
         Hoge hoge = new Hoge();
         hoge.setMyString("abc");
         FilterCriterion c = new StartsWithCriterion(meta.myString, null);
-        assertTrue(c.accept(hoge));
+        assertThat(c.accept(hoge), is(true));
         hoge.setMyString(null);
-        assertTrue(c.accept(hoge));
+        assertThat(c.accept(hoge), is(true));
     }
 }

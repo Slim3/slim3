@@ -15,21 +15,24 @@
  */
 package org.slim3.tester;
 
-import com.google.appengine.api.datastore.Entity;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class DatastoreTestCaseTest extends DatastoreTestCase {
+public class ServletTestCaseTest extends ServletTestCase {
 
     /**
      * @throws Exception
      * 
      */
-    public void testCount() throws Exception {
-        assertEquals(0, count("Hoge"));
-        ds.put(new Entity("Hoge"));
-        assertEquals(1, count("Hoge"));
+    @Test
+    public void asInteger() throws Exception {
+        tester.requestScope("aaa", "1");
+        assertThat(tester.asInteger("aaa"), is(1));
     }
 }

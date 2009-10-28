@@ -15,36 +15,45 @@
  */
 package org.slim3.controller.validator;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.util.Locale;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.slim3.util.ApplicationMessage;
 
 /**
  * @author higa
  * 
  */
-public class AbstractValidatorTest extends TestCase {
+public class AbstValidatorTest {
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    /**
+     * @throws Exception
+     */
+    @Before
+    public void setUp() throws Exception {
         ApplicationMessage.setBundle("test", Locale.ENGLISH);
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        ApplicationMessage.clearBundle();
-        super.tearDown();
     }
 
     /**
      * @throws Exception
      */
-    public void testGetLabel() throws Exception {
-        assertEquals("Aaa", new MyValidator().getLabel("aaa"));
+    @After
+    public void tearDown() throws Exception {
+        ApplicationMessage.clearBundle();
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getLabel() throws Exception {
+        assertThat(new MyValidator().getLabel("aaa"), is("Aaa"));
     }
 
     private static class MyValidator extends AbstractValidator {

@@ -15,21 +15,24 @@
  */
 package org.slim3.controller;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
+import org.junit.Test;
 import org.slim3.tester.MockServletContext;
 
 /**
  * @author higa
  * 
  */
-public class FrontControllerRootPackageTest extends TestCase {
+public class FrontControllerRootPackageTest {
 
     /**
      * @throws Exception
      * 
      */
-    public void testNormal() throws Exception {
+    @Test
+    public void initRootPackageName() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         FrontController frontController = new FrontController();
         frontController.servletContext = servletContext;
@@ -37,22 +40,19 @@ public class FrontControllerRootPackageTest extends TestCase {
             ControllerConstants.ROOT_PACKAGE_KEY,
             "aaa");
         frontController.initRootPackageName();
-        assertEquals("aaa", frontController.rootPackageName);
+        assertThat(frontController.rootPackageName, is("aaa"));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testNotFound() throws Exception {
+    @Test(expected = IllegalStateException.class)
+    public void initRootPackageNameWhenRootPackageNameIsNotFound()
+            throws Exception {
         MockServletContext servletContext = new MockServletContext();
         FrontController frontController = new FrontController();
         frontController.servletContext = servletContext;
-        try {
-            frontController.initRootPackageName();
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
+        frontController.initRootPackageName();
     }
 }

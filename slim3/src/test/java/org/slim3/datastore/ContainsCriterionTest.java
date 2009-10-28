@@ -15,12 +15,16 @@
  */
 package org.slim3.datastore;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
-import org.slim3.tester.DatastoreTestCase;
+import org.slim3.tester.LocalServiceTestCase;
 
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
@@ -30,7 +34,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
  * @author higa
  * 
  */
-public class ContainsCriterionTest extends DatastoreTestCase {
+public class ContainsCriterionTest extends LocalServiceTestCase {
 
     private HogeMeta meta = new HogeMeta();
 
@@ -38,52 +42,56 @@ public class ContainsCriterionTest extends DatastoreTestCase {
      * @throws Exception
      * 
      */
-    public void testConstructor() throws Exception {
+    @Test
+    public void constructor() throws Exception {
         ContainsCriterion c = new ContainsCriterion(meta.myIntegerList, 1);
-        assertEquals(1, c.value);
+        assertThat((Integer) c.value, is(1));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testApply() throws Exception {
+    @Test
+    public void apply() throws Exception {
         Query query = new Query();
         ContainsCriterion c = new ContainsCriterion(meta.myIntegerList, 1);
         c.apply(query);
         List<FilterPredicate> predicates = query.getFilterPredicates();
-        assertEquals("myIntegerList", predicates.get(0).getPropertyName());
-        assertEquals(FilterOperator.EQUAL, predicates.get(0).getOperator());
-        assertEquals(1, predicates.get(0).getValue());
+        assertThat(predicates.get(0).getPropertyName(), is("myIntegerList"));
+        assertThat(predicates.get(0).getOperator(), is(FilterOperator.EQUAL));
+        assertThat((Integer) predicates.get(0).getValue(), is(1));
     }
 
     /**
      * @throws Exception
      */
-    public void testAccept() throws Exception {
+    @Test
+    public void accept() throws Exception {
         Hoge hoge = new Hoge();
         ContainsCriterion c = new ContainsCriterion(meta.myIntegerList, 1);
-        assertFalse(c.accept(hoge));
+        assertThat(c.accept(hoge), is(false));
         hoge.setMyIntegerList(new ArrayList<Integer>());
-        assertFalse(c.accept(hoge));
+        assertThat(c.accept(hoge), is(false));
         hoge.getMyIntegerList().add(2);
-        assertFalse(c.accept(hoge));
+        assertThat(c.accept(hoge), is(false));
         hoge.getMyIntegerList().add(1);
-        assertTrue(c.accept(hoge));
+        assertThat(c.accept(hoge), is(true));
     }
 
     /**
      * @throws Exception
      */
-    public void testAcceptForNull() throws Exception {
+    @Test
+    public void acceptForNull() throws Exception {
         Hoge hoge = new Hoge();
         ContainsCriterion c = new ContainsCriterion(meta.myIntegerList, null);
-        assertFalse(c.accept(hoge));
+        assertThat(c.accept(hoge), is(false));
         hoge.setMyIntegerList(new ArrayList<Integer>());
-        assertFalse(c.accept(hoge));
+        assertThat(c.accept(hoge), is(false));
         hoge.getMyIntegerList().add(2);
-        assertFalse(c.accept(hoge));
+        assertThat(c.accept(hoge), is(false));
         hoge.getMyIntegerList().add(null);
-        assertTrue(c.accept(hoge));
+        assertThat(c.accept(hoge), is(true));
     }
 }

@@ -15,22 +15,26 @@
  */
 package org.slim3.tester;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class TestEnvironmentTest extends TestCase {
+public class TestEnvironmentTest {
 
     /**
      * @throws Exception
      * 
      */
-    public void testConstructor() throws Exception {
+    @Test
+    public void constructor() throws Exception {
         TestEnvironment env = new TestEnvironment("higayasuo@gmail.com");
-        assertEquals("higayasuo@gmail.com", env.getEmail());
-        assertTrue(env.isLoggedIn());
-        assertTrue(env.isAdmin());
+        assertThat(env.getEmail(), is("higayasuo@gmail.com"));
+        assertThat(env.isLoggedIn(), is(true));
+        assertThat(env.isAdmin(), is(true));
     }
 }

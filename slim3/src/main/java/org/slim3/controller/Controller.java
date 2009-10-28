@@ -17,7 +17,6 @@ package org.slim3.controller;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,9 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.slim3.controller.validator.Errors;
-import org.slim3.util.BigDecimalUtil;
 import org.slim3.util.BooleanUtil;
-import org.slim3.util.ByteUtil;
 import org.slim3.util.DateUtil;
 import org.slim3.util.DoubleUtil;
 import org.slim3.util.FloatUtil;
@@ -62,7 +59,7 @@ public abstract class Controller {
     /**
      * The servlet context.
      */
-    protected ServletContext application;
+    protected ServletContext servletContext;
 
     /**
      * The request.
@@ -222,30 +219,6 @@ public abstract class Controller {
     }
 
     /**
-     * Returns the request attribute value as byte.
-     * 
-     * @param name
-     *            the attribute name
-     * @return the byte attribute value
-     */
-    protected Byte asByte(String name) {
-        return ByteUtil.toByte(request.getAttribute(name));
-    }
-
-    /**
-     * Returns the request attribute value as byte.
-     * 
-     * @param name
-     *            the attribute name
-     * @param pattern
-     *            the pattern for {@link DecimalFormat}
-     * @return the byte attribute value
-     */
-    protected Byte asByte(String name, String pattern) {
-        return ByteUtil.toByte(NumberUtil.toNumber(asString(name), pattern));
-    }
-
-    /**
      * Returns the request attribute value as short.
      * 
      * @param name
@@ -366,32 +339,6 @@ public abstract class Controller {
     protected Double asDouble(String name, String pattern) {
         return DoubleUtil
             .toDouble(NumberUtil.toNumber(asString(name), pattern));
-    }
-
-    /**
-     * Returns the request attribute value as big decimal.
-     * 
-     * @param name
-     *            the attribute name
-     * @return the big decimal attribute value
-     */
-    protected BigDecimal asBigDecimal(String name) {
-        return BigDecimalUtil.toBigDecimal(request.getAttribute(name));
-    }
-
-    /**
-     * Returns the request attribute value as big decimal.
-     * 
-     * @param name
-     *            the attribute name
-     * @param pattern
-     *            the pattern for {@link DecimalFormat}
-     * @return the big decimal attribute value
-     */
-    protected BigDecimal asBigDecimal(String name, String pattern) {
-        return BigDecimalUtil.toBigDecimal(NumberUtil.toNumber(
-            asString(name),
-            pattern));
     }
 
     /**
@@ -536,7 +483,7 @@ public abstract class Controller {
      */
     @SuppressWarnings("unchecked")
     protected <T> T applicationScope(String name) {
-        return (T) application.getAttribute(name);
+        return (T) servletContext.getAttribute(name);
     }
 
     /**
@@ -548,7 +495,7 @@ public abstract class Controller {
      *            the attribute value
      */
     protected void applicationScope(String name, Object value) {
-        application.setAttribute(name, value);
+        servletContext.setAttribute(name, value);
     }
 
     /**
@@ -562,8 +509,8 @@ public abstract class Controller {
      */
     @SuppressWarnings("unchecked")
     protected <T> T removeApplicationScope(String name) {
-        T value = (T) application.getAttribute(name);
-        application.removeAttribute(name);
+        T value = (T) servletContext.getAttribute(name);
+        servletContext.removeAttribute(name);
         return value;
     }
 
@@ -573,7 +520,7 @@ public abstract class Controller {
      * @return whether this application is running on the development server
      */
     protected boolean isDevelopment() {
-        return application.getServerInfo().indexOf("Development") >= 0;
+        return servletContext.getServerInfo().indexOf("Development") >= 0;
     }
 
     /**

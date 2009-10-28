@@ -15,13 +15,17 @@
  */
 package org.slim3.datastore;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
-import org.slim3.tester.DatastoreTestCase;
+import org.slim3.tester.LocalServiceTestCase;
 
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
@@ -31,7 +35,7 @@ import com.google.appengine.api.datastore.Query.SortPredicate;
  * @author higa
  * 
  */
-public class DescCriterionTest extends DatastoreTestCase {
+public class DescCriterionTest extends LocalServiceTestCase {
 
     private HogeMeta meta = new HogeMeta();
 
@@ -39,58 +43,64 @@ public class DescCriterionTest extends DatastoreTestCase {
      * @throws Exception
      * 
      */
-    public void testApply() throws Exception {
+    @Test
+    public void apply() throws Exception {
         Query query = new Query();
         DescCriterion c = new DescCriterion(meta.myString);
         c.apply(query);
         List<SortPredicate> predicates = query.getSortPredicates();
-        assertEquals("myString", predicates.get(0).getPropertyName());
-        assertEquals(SortDirection.DESCENDING, predicates.get(0).getDirection());
+        assertThat(predicates.get(0).getPropertyName(), is("myString"));
+        assertThat(
+            predicates.get(0).getDirection(),
+            is(SortDirection.DESCENDING));
     }
 
     /**
      * @throws Exception
      */
-    public void testCompare() throws Exception {
+    @Test
+    public void compare() throws Exception {
         DescCriterion c = new DescCriterion(meta.myString);
-        assertEquals(0, c.compare(new Hoge(), new Hoge()));
+        assertThat(c.compare(new Hoge(), new Hoge()), is(0));
         Hoge hoge = new Hoge();
         hoge.setMyString("aaa");
-        assertEquals(1, c.compare(new Hoge(), hoge));
-        assertEquals(-1, c.compare(hoge, new Hoge()));
+        assertThat(c.compare(new Hoge(), hoge), is(1));
+        assertThat(c.compare(hoge, new Hoge()), is(-1));
         Hoge hoge2 = new Hoge();
         hoge2.setMyString("bbb");
-        assertEquals(1, c.compare(hoge, hoge2));
-        assertEquals(-1, c.compare(hoge2, hoge));
+        assertThat(c.compare(hoge, hoge2), is(1));
+        assertThat(c.compare(hoge2, hoge), is(-1));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetGreatestValue() throws Exception {
+    @Test
+    public void getGreatestValue() throws Exception {
         DescCriterion c = new DescCriterion(meta.myIntegerList);
-        assertNull(c.getGreatestValue(new ArrayList<Object>()));
-        assertEquals(1, c.getGreatestValue(Arrays.asList(1)));
-        assertEquals(9, c.getGreatestValue(Arrays.asList(9, 1, 3)));
+        assertThat(c.getGreatestValue(new ArrayList<Object>()), is(nullValue()));
+        assertThat((Integer) c.getGreatestValue(Arrays.asList(1)), is(1));
+        assertThat((Integer) c.getGreatestValue(Arrays.asList(9, 1, 3)), is(9));
     }
 
     /**
      * @throws Exception
      */
-    public void testCompareForCollection() throws Exception {
+    @Test
+    public void compareForCollection() throws Exception {
         DescCriterion c = new DescCriterion(meta.myIntegerList);
         Hoge hoge = new Hoge();
         hoge.setMyIntegerList(new ArrayList<Integer>());
         Hoge hoge2 = new Hoge();
         hoge2.setMyIntegerList(new ArrayList<Integer>());
-        assertEquals(0, c.compare(hoge, hoge2));
+        assertThat(c.compare(hoge, hoge2), is(0));
 
         hoge.getMyIntegerList().add(1);
-        assertEquals(-1, c.compare(hoge, hoge2));
-        assertEquals(1, c.compare(hoge2, hoge));
+        assertThat(c.compare(hoge, hoge2), is(-1));
+        assertThat(c.compare(hoge2, hoge), is(1));
 
         hoge2.getMyIntegerList().add(2);
-        assertEquals(1, c.compare(hoge, hoge2));
-        assertEquals(-1, c.compare(hoge2, hoge));
+        assertThat(c.compare(hoge, hoge2), is(1));
+        assertThat(c.compare(hoge2, hoge), is(-1));
     }
 }

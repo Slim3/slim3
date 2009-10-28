@@ -15,21 +15,23 @@
  */
 package org.slim3.tester;
 
-import org.slim3.tester.HeaderUtil;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class HeaderUtilTest extends TestCase {
+public class HeaderUtilTest {
 
     /**
      * @throws Exception
      * 
      */
-    public void testConvertDateToString() throws Exception {
+    @Test
+    public void convertDateToString() throws Exception {
         System.out.println(HeaderUtil.convertDateToString(0));
     }
 
@@ -37,24 +39,27 @@ public class HeaderUtilTest extends TestCase {
      * @throws Exception
      * 
      */
-    public void testConvertStringToDate() throws Exception {
-        assertEquals(-1, HeaderUtil.convertStringToDate(null));
+    @Test
+    public void convertStringToDate() throws Exception {
+        assertThat(HeaderUtil.convertStringToDate(null), is(-1L));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testConvertIntToString() throws Exception {
-        assertEquals("0", HeaderUtil.convertIntToString(0));
+    @Test
+    public void convertIntToString() throws Exception {
+        assertThat(HeaderUtil.convertIntToString(0), is("0"));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testConvertStringToInt() throws Exception {
-        assertEquals(0, HeaderUtil.convertStringToInt("0"));
-        assertEquals(-1, HeaderUtil.convertStringToInt(null));
+    @Test
+    public void convertStringToInt() throws Exception {
+        assertThat(HeaderUtil.convertStringToInt("0"), is(0));
+        assertThat(HeaderUtil.convertStringToInt(null), is(-1));
     }
 }

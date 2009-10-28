@@ -15,11 +15,15 @@
  */
 package org.slim3.datastore;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.util.List;
 
+import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
-import org.slim3.tester.DatastoreTestCase;
+import org.slim3.tester.LocalServiceTestCase;
 
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
@@ -29,7 +33,7 @@ import com.google.appengine.api.datastore.Query.FilterPredicate;
  * @author higa
  * 
  */
-public class LessThanCriterionTest extends DatastoreTestCase {
+public class LessThanCriterionTest extends LocalServiceTestCase {
 
     private HogeMeta meta = new HogeMeta();
 
@@ -37,48 +41,54 @@ public class LessThanCriterionTest extends DatastoreTestCase {
      * @throws Exception
      * 
      */
-    public void testConstructor() throws Exception {
+    @Test
+    public void constructor() throws Exception {
         LessThanCriterion c = new LessThanCriterion(meta.myString, "aaa");
-        assertEquals("aaa", c.value);
+        assertThat((String) c.value, is("aaa"));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testApply() throws Exception {
+    @Test
+    public void apply() throws Exception {
         Query query = new Query();
         LessThanCriterion c = new LessThanCriterion(meta.myString, "aaa");
         c.apply(query);
         List<FilterPredicate> predicates = query.getFilterPredicates();
-        assertEquals("myString", predicates.get(0).getPropertyName());
-        assertEquals(FilterOperator.LESS_THAN, predicates.get(0).getOperator());
-        assertEquals("aaa", predicates.get(0).getValue());
+        assertThat(predicates.get(0).getPropertyName(), is("myString"));
+        assertThat(
+            predicates.get(0).getOperator(),
+            is(FilterOperator.LESS_THAN));
+        assertThat((String) predicates.get(0).getValue(), is("aaa"));
     }
 
     /**
      * @throws Exception
      */
-    public void testAccept() throws Exception {
+    @Test
+    public void accept() throws Exception {
         Hoge hoge = new Hoge();
         hoge.setMyString("c");
         FilterCriterion c = new LessThanCriterion(meta.myString, "b");
-        assertFalse(c.accept(hoge));
+        assertThat(c.accept(hoge), is(false));
         hoge.setMyString("b");
-        assertFalse(c.accept(hoge));
+        assertThat(c.accept(hoge), is(false));
         hoge.setMyString("a");
-        assertTrue(c.accept(hoge));
+        assertThat(c.accept(hoge), is(true));
     }
 
     /**
      * @throws Exception
      */
-    public void testAcceptForNull() throws Exception {
+    @Test
+    public void acceptForNull() throws Exception {
         Hoge hoge = new Hoge();
         hoge.setMyString("c");
         FilterCriterion c = new LessThanCriterion(meta.myString, null);
-        assertFalse(c.accept(hoge));
+        assertThat(c.accept(hoge), is(false));
         hoge.setMyString(null);
-        assertFalse(c.accept(hoge));
+        assertThat(c.accept(hoge), is(false));
     }
 }

@@ -13,18 +13,31 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.jdo;
+package org.slim3.tester;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
 
 /**
  * @author higa
  * 
  */
-public class SampleDao extends GenericDao<Sample> {
+public class LocalServiceTestCaseTest extends LocalServiceTestCase {
 
     /**
-     * Constructor.
+     * @throws Exception
+     * 
      */
-    public SampleDao() {
-        super(Sample.class, new MockPersistenceManager());
+    @Test
+    public void getCount() throws Exception {
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        ds.put(new Entity("Hoge"));
+        assertThat(tester.count("Hoge"), is(1));
     }
 }

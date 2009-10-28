@@ -15,25 +15,26 @@
  */
 package org.slim3.datastore;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
+import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
 
 /**
  * @author higa
  * 
  */
-public class StringAttributeMetaTest extends TestCase {
+public class StringAttributeMetaTest {
 
     /**
      * @throws Exception
      * 
      */
-    public void testStartsWith() throws Exception {
+    @Test
+    public void startsWith() throws Exception {
         HogeMeta meta = new HogeMeta();
-        assertEquals(StartsWithCriterion.class, meta.myString
-            .startsWith("a")
-            .getClass());
-        assertNotNull(meta.myString.startsWith(null));
+        assertThat(meta.myString.startsWith("a"), is(StartsWithCriterion.class));
+        assertThat(meta.myString.startsWith(null), is(not(nullValue())));
     }
 }

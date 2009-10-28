@@ -15,19 +15,23 @@
  */
 package org.slim3.tester;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class MockFilterChainTest extends TestCase {
+public class MockFilterChainTest {
 
     /**
      * @throws Exception
      * 
      */
-    public void testGetPath() throws Exception {
+    @Test
+    public void getPath() throws Exception {
         String path = "index.jsp";
         MockServletContext servletContext = new MockServletContext();
         MockHttpServletRequest request =
@@ -35,6 +39,6 @@ public class MockFilterChainTest extends TestCase {
         request.setServletPath(path);
         MockFilterChain chain = new MockFilterChain();
         chain.doFilter(request, null);
-        assertEquals(path, chain.getPath());
+        assertThat(chain.getPath(), is(path));
     }
 }

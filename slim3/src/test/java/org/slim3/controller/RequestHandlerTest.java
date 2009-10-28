@@ -15,8 +15,10 @@
  */
 package org.slim3.controller;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
+import org.junit.Test;
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
 
@@ -24,7 +26,7 @@ import org.slim3.tester.MockServletContext;
  * @author higa
  * 
  */
-public class RequestHandlerTest extends TestCase {
+public class RequestHandlerTest {
 
     private MockServletContext servletContext = new MockServletContext();
 
@@ -35,40 +37,43 @@ public class RequestHandlerTest extends TestCase {
      * @throws Exception
      * 
      */
-    public void testHandle() throws Exception {
+    @Test
+    public void handle() throws Exception {
         request.setParameter("aaa", "111");
         request.setParameter("bbbArray", new String[] { "222" });
         RequestHandler handler = new RequestHandler(request);
         handler.handle();
-        assertEquals("111", request.getAttribute("aaa"));
+        assertThat((String) request.getAttribute("aaa"), is("111"));
         String[] bbbArray = (String[]) request.getAttribute("bbbArray");
-        assertNotNull(bbbArray);
-        assertEquals(1, bbbArray.length);
-        assertEquals("222", bbbArray[0]);
+        assertThat(bbbArray, is(not(nullValue())));
+        assertThat(bbbArray.length, is(1));
+        assertThat(bbbArray[0], is("222"));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testNormalizeValue() throws Exception {
+    @Test
+    public void normalizeValue() throws Exception {
         RequestHandler handler = new RequestHandler(request);
-        assertNull(handler.normalize((String) null));
-        assertEquals("", handler.normalize(""));
-        assertEquals("aaa", handler.normalize("aaa"));
+        assertThat(handler.normalizeValue(null), is(nullValue()));
+        assertThat(handler.normalizeValue(""), is(""));
+        assertThat(handler.normalizeValue("aaa"), is("aaa"));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testNormalizeValues() throws Exception {
+    @Test
+    public void normalizeValues() throws Exception {
         String[] values = new String[] { "", "aaa", null };
         RequestHandler handler = new RequestHandler(request);
-        String[] ret = handler.normalize(values);
-        assertEquals(3, ret.length);
-        assertEquals("", ret[0]);
-        assertEquals("aaa", ret[1]);
-        assertNull(ret[2]);
+        String[] ret = handler.normalizeValues(values);
+        assertThat(ret.length, is(3));
+        assertThat(ret[0], is(""));
+        assertThat(ret[1], is("aaa"));
+        assertThat(ret[2], is(nullValue()));
     }
 }

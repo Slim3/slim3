@@ -15,8 +15,10 @@
  */
 package org.slim3.datastore;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
+import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
 
 import com.google.appengine.api.datastore.Query.SortDirection;
@@ -25,21 +27,21 @@ import com.google.appengine.api.datastore.Query.SortDirection;
  * @author higa
  * 
  */
-public class CollectionAttributeMetaTest extends TestCase {
+public class CollectionAttributeMetaTest {
+
+    private HogeMeta meta = new HogeMeta();
 
     /**
      * @throws Exception
      * 
      */
-    public void testContains() throws Exception {
-        HogeMeta meta = new HogeMeta();
-        assertEquals(ContainsCriterion.class, meta.myIntegerList
-            .contains(1)
-            .getClass());
-        assertNotNull(meta.myIntegerList.contains(null));
+    @Test
+    public void contains() throws Exception {
+        assertThat(meta.myIntegerList.contains(1), is(ContainsCriterion.class));
+        assertThat(meta.myIntegerList.contains(null), is(not(nullValue())));
         ContainsCriterion c =
             (ContainsCriterion) meta.myEnumList
                 .contains(SortDirection.ASCENDING);
-        assertEquals("ASCENDING", c.value);
+        assertThat((String) c.value, is("ASCENDING"));
     }
 }

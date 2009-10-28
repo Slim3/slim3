@@ -15,7 +15,11 @@
  */
 package org.slim3.jsp;
 
-import org.slim3.tester.DatastoreTestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+import org.slim3.tester.LocalServiceTestCase;
 
 import com.google.appengine.api.datastore.KeyFactory;
 
@@ -23,15 +27,16 @@ import com.google.appengine.api.datastore.KeyFactory;
  * @author higa
  * 
  */
-public class FunctionsDatastoreTest extends DatastoreTestCase {
+public class FunctionsDatastoreTest extends LocalServiceTestCase {
 
     /**
      * @throws Exception
      */
-    public void testKey() throws Exception {
-        assertEquals("", Functions.key(null));
+    @Test
+    public void key() throws Exception {
+        assertThat(Functions.key(null), is(""));
         String s = Functions.key(KeyFactory.createKey("Hoge", 1));
         System.out.println(s);
-        assertNotNull(s);
+        assertThat(s, is(not(nullValue())));
     }
 }

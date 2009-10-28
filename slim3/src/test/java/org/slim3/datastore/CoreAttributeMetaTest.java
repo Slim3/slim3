@@ -15,8 +15,10 @@
  */
 package org.slim3.datastore;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
+import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
 
 import com.google.appengine.api.datastore.Query.SortDirection;
@@ -25,7 +27,7 @@ import com.google.appengine.api.datastore.Query.SortDirection;
  * @author higa
  * 
  */
-public class CoreAttributeMetaTest extends TestCase {
+public class CoreAttributeMetaTest {
 
     private HogeMeta meta = new HogeMeta();
 
@@ -33,80 +35,82 @@ public class CoreAttributeMetaTest extends TestCase {
      * @throws Exception
      * 
      */
-    public void testEqual() throws Exception {
-        assertEquals(EqualCriterion.class, meta.myString.equal("a").getClass());
-        assertNotNull(meta.myString.equal(null));
+    @Test
+    public void equal() throws Exception {
+        assertThat(meta.myString.equal("a"), is(EqualCriterion.class));
+        assertThat(meta.myString.equal(null), is(not(nullValue())));
         EqualCriterion c =
             (EqualCriterion) meta.myEnum.equal(SortDirection.ASCENDING);
-        assertEquals("ASCENDING", c.value);
+        assertThat((String) c.value, is("ASCENDING"));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testLessThan() throws Exception {
-        assertEquals(LessThanCriterion.class, meta.myString
-            .lessThan("a")
-            .getClass());
-        assertNotNull(meta.myString.lessThan(null));
+    @Test
+    public void lessThan() throws Exception {
+        assertThat(meta.myString.lessThan("a"), is(LessThanCriterion.class));
+        assertThat(meta.myString.lessThan(null), is(not(nullValue())));
         LessThanCriterion c =
             (LessThanCriterion) meta.myEnum.lessThan(SortDirection.ASCENDING);
-        assertEquals("ASCENDING", c.value);
+        assertThat((String) c.value, is("ASCENDING"));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testLessThanOrEqual() throws Exception {
-        assertEquals(LessThanOrEqualCriterion.class, meta.myString
-            .lessThanOrEqual("a")
-            .getClass());
-        assertNotNull(meta.myString.lessThanOrEqual(null));
+    @Test
+    public void lessThanOrEqual() throws Exception {
+        assertThat(
+            meta.myString.lessThanOrEqual("a"),
+            is(LessThanOrEqualCriterion.class));
+        assertThat(meta.myString.lessThanOrEqual(null), is(not(nullValue())));
         LessThanOrEqualCriterion c =
             (LessThanOrEqualCriterion) meta.myEnum
                 .lessThanOrEqual(SortDirection.ASCENDING);
-        assertEquals("ASCENDING", c.value);
+        assertThat((String) c.value, is("ASCENDING"));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testGreaterThan() throws Exception {
-        assertEquals(GreaterThanCriterion.class, meta.myString
-            .greaterThan("a")
-            .getClass());
-        assertNotNull(meta.myString.greaterThan(null));
+    @Test
+    public void greaterThan() throws Exception {
+        assertThat(
+            meta.myString.greaterThan("a"),
+            is(GreaterThanCriterion.class));
+        assertThat(meta.myString.greaterThan(null), is(not(nullValue())));
         GreaterThanCriterion c =
             (GreaterThanCriterion) meta.myEnum
                 .greaterThan(SortDirection.ASCENDING);
-        assertEquals("ASCENDING", c.value);
+        assertThat((String) c.value, is("ASCENDING"));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testGreaterThanOrEqual() throws Exception {
-        assertEquals(GreaterThanOrEqualCriterion.class, meta.myString
-            .greaterThanOrEqual("a")
-            .getClass());
-        assertNotNull(meta.myString.greaterThanOrEqual(null));
+    @Test
+    public void greaterThanOrEqual() throws Exception {
+        assertThat(
+            meta.myString.greaterThanOrEqual("a"),
+            is(GreaterThanOrEqualCriterion.class));
+        assertThat(meta.myString.greaterThanOrEqual(null), is(not(nullValue())));
         GreaterThanOrEqualCriterion c =
             (GreaterThanOrEqualCriterion) meta.myEnum
                 .greaterThanOrEqual(SortDirection.ASCENDING);
-        assertEquals("ASCENDING", c.value);
+        assertThat((String) c.value, is("ASCENDING"));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testIsNotNull() throws Exception {
-        assertEquals(IsNotNullCriterion.class, meta.myString
-            .isNotNull()
-            .getClass());
+    @Test
+    public void isNotNull() throws Exception {
+        assertThat(meta.myString.isNotNull(), is(IsNotNullCriterion.class));
     }
 }

@@ -15,29 +15,29 @@
  */
 package org.slim3.datastore;
 
-import org.slim3.tester.DatastoreTestCase;
+import org.junit.Test;
+import org.slim3.tester.LocalServiceTestCase;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Query;
 
 /**
  * @author higa
  * 
  */
-public class SpikeTest extends DatastoreTestCase {
+public class SpikeTest extends LocalServiceTestCase {
 
     /**
      * @throws Exception
      */
-    public void testSpike() throws Exception {
+    @Test
+    public void spike() throws Exception {
+        Thread t = new Thread();
+        System.out.println(t.getId());
+        System.out.println(t.hashCode());
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        Entity entity = new Entity("Hoge");
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < 50; i++) {
-            sb.append("aaaaaaaaaa");
-        }
-        entity.setProperty("aaa", sb.toString());
-        ds.put(entity);
+        int count = ds.prepare(new Query("Hoge").setKeysOnly()).countEntities();
+        System.out.println(count);
     }
 }

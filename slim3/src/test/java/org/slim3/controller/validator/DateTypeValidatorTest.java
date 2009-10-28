@@ -15,11 +15,15 @@
  */
 package org.slim3.controller.validator;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.util.Locale;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
 import org.slim3.util.ApplicationMessage;
@@ -29,7 +33,7 @@ import org.slim3.util.RequestMap;
  * @author higa
  * 
  */
-public class DateTypeValidatorTest extends TestCase {
+public class DateTypeValidatorTest {
 
     private MockServletContext servletContext = new MockServletContext();
 
@@ -40,57 +44,67 @@ public class DateTypeValidatorTest extends TestCase {
 
     private DateTypeValidator validator = new DateTypeValidator("MM/dd/yyyy");
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    /**
+     * @throws Exception
+     */
+    @Before
+    public void setUp() throws Exception {
         ApplicationMessage.setBundle("test", Locale.ENGLISH);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    /**
+     * @throws Exception
+     */
+    @After
+    public void tearDown() throws Exception {
         ApplicationMessage.clearBundle();
-        super.tearDown();
     }
 
     /**
      * @throws Exception
      */
-    public void testValidateForNull() throws Exception {
-        assertNull(validator.validate(parameters, "aaa"));
+    @Test
+    public void validateForNull() throws Exception {
+        assertThat(validator.validate(parameters, "aaa"), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testValidateForEmptyString() throws Exception {
+    @Test
+    public void validateForEmptyString() throws Exception {
         parameters.put("aaa", "");
-        assertNull(validator.validate(parameters, "aaa"));
+        assertThat(validator.validate(parameters, "aaa"), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testValidateForValid() throws Exception {
+    @Test
+    public void validateForValidValue() throws Exception {
         parameters.put("aaa", "01/01/1970");
-        assertNull(validator.validate(parameters, "aaa"));
+        assertThat(validator.validate(parameters, "aaa"), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testValidateForInvalid() throws Exception {
+    @Test
+    public void validateForInvalidValue() throws Exception {
         parameters.put("aaa", "01/32/1970");
-        assertEquals("Aaa is not a date(MM/dd/yyyy).", validator.validate(
+        assertThat(
+            validator.validate(parameters, "aaa"),
+            is("Aaa is not a date(MM/dd/yyyy)."));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void validateForInvalidValueAndSpecificMessage() throws Exception {
+        parameters.put("aaa", "01/32/1970");
+        assertThat(new DateTypeValidator("MM/dd/yyyy", "hoge").validate(
             parameters,
-            "aaa"));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testValidateForInvalidAndMessage() throws Exception {
-        parameters.put("aaa", "01/32/1970");
-        assertEquals("hoge", new DateTypeValidator("MM/dd/yyyy", "hoge")
-            .validate(parameters, "aaa"));
+            "aaa"), is("hoge"));
     }
 }

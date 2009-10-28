@@ -15,12 +15,17 @@
  */
 package org.slim3.datastore;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
+import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Test;
 import org.slim3.datastore.meta.BarMeta;
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
-import org.slim3.tester.DatastoreTestCase;
+import org.slim3.tester.LocalServiceTestCase;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
@@ -29,116 +34,119 @@ import com.google.appengine.api.datastore.Key;
  * @author higa
  * 
  */
-public class ModelQueryTest extends DatastoreTestCase {
+public class ModelQueryTest extends LocalServiceTestCase {
 
     private HogeMeta meta = new HogeMeta();
 
     /**
      * @throws Exception
      */
-    public void testConstructor() throws Exception {
+    @SuppressWarnings("unchecked")
+    @Test
+    public void constructor() throws Exception {
         ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
-        assertEquals(meta, query.modelMeta);
+        assertThat(query.modelMeta, is(sameInstance((ModelMeta) meta)));
     }
 
     /**
      * @throws Exception
      */
-    public void testFilter() throws Exception {
+    @Test
+    public void filter() throws Exception {
         ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
-        assertSame(query, query.filter(meta.myString.equal("aaa")));
-        assertEquals(1, query.query.getFilterPredicates().size());
+        assertThat(query, is(sameInstance(query.filter(meta.myString
+            .equal("aaa")))));
+        assertThat(query.query.getFilterPredicates().size(), is(1));
     }
 
     /**
      * @throws Exception
      */
-    public void testFilterForIllegalArgument() throws Exception {
+    @Test(expected = IllegalArgumentException.class)
+    public void filterForIllegalArgument() throws Exception {
         ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
-        try {
-            query.filter(new BarMeta().key.equal(null));
-            fail();
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        }
+        query.filter(new BarMeta().key.equal(null));
     }
 
     /**
      * @throws Exception
      */
-    public void testSort() throws Exception {
+    @Test
+    public void sort() throws Exception {
         ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
-        assertSame(query, query.sort(meta.myString.asc));
-        assertEquals(1, query.query.getSortPredicates().size());
+        assertThat(query.sort(meta.myString.asc), is(sameInstance(query)));
+        assertThat(query.query.getSortPredicates().size(), is(1));
     }
 
     /**
      * @throws Exception
      */
-    public void testAsList() throws Exception {
-        ds.put(new Entity("Hoge"));
+    @Test
+    public void asList() throws Exception {
+        Datastore.put(new Entity("Hoge"));
         ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
         List<Hoge> list = query.asList();
-        assertEquals(1, list.size());
+        assertThat(list.size(), is(1));
     }
 
     /**
      * @throws Exception
      */
-    public void testAsSingle() throws Exception {
-        ds.put(new Entity("Hoge"));
+    @Test
+    public void asSingle() throws Exception {
+        Datastore.put(new Entity("Hoge"));
         ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
         Hoge hoge = query.asSingle();
-        assertNotNull(hoge);
+        assertThat(hoge, is(not(nullValue())));
     }
 
     /**
      * @throws Exception
      */
-    public void testAsKeyList() throws Exception {
-        Key key = ds.put(new Entity("Hoge"));
+    @Test
+    public void asKeyList() throws Exception {
+        Key key = Datastore.put(new Entity("Hoge"));
         ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
-        List<Key> list = query.asKeyList();
-        assertEquals(1, list.size());
-        assertEquals(key, list.get(0));
+        assertThat(query.asKeyList(), is(Arrays.asList(key)));
     }
 
     /**
      * @throws Exception
      */
-    public void testAncestor() throws Exception {
-        Key key = ds.put(new Entity("Parent"));
-        ds.put(new Entity("Hoge", key));
+    @Test
+    public void ancestor() throws Exception {
+        Key key = Datastore.put(new Entity("Parent"));
+        Datastore.put(new Entity("Hoge", key));
         ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta, key);
         List<Hoge> list = query.asList();
-        assertEquals(1, list.size());
+        assertThat(list.size(), is(1));
     }
 
     /**
      * @throws Exception
      */
-    public void testMin() throws Exception {
+    @Test
+    public void min() throws Exception {
         Hoge hoge = new Hoge();
         hoge.setMyInteger(1);
         Hoge hoge2 = new Hoge();
         hoge2.setMyInteger(2);
         Hoge hoge3 = new Hoge();
         Datastore.put(hoge, hoge2, hoge3);
-        assertEquals(Integer.valueOf(1), Datastore.query(meta).min(
-            meta.myInteger));
+        assertThat(Datastore.query(meta).min(meta.myInteger), is(1));
     }
 
     /**
      * @throws Exception
      */
-    public void testMax() throws Exception {
+    @Test
+    public void max() throws Exception {
         Hoge hoge = new Hoge();
         hoge.setMyInteger(1);
         Hoge hoge2 = new Hoge();
         hoge2.setMyInteger(2);
         Hoge hoge3 = new Hoge();
         Datastore.put(hoge, hoge2, hoge3);
-        assertEquals(Integer.valueOf(2), Datastore.query(meta).max(
-            meta.myInteger));
+        assertThat(Datastore.query(meta).max(meta.myInteger), is(2));
     }
 }

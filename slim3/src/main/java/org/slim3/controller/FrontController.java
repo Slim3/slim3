@@ -20,6 +20,7 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -100,6 +101,11 @@ public class FrontController implements Filter {
     protected String rootPackageName;
 
     /**
+     * UUID of this application.
+     */
+    protected final String uuid = UUID.randomUUID().toString();
+
+    /**
      * The runtime hash.
      */
     protected final long runtimeHash = Runtime.getRuntime().hashCode();
@@ -118,7 +124,9 @@ public class FrontController implements Filter {
         initDefaultLocale();
         initDefaultTimeZone();
         initRootPackageName();
-        logger.log(Level.INFO, "Initialized FrontController("
+        logger.log(Level.INFO, "Initialized FrontController(UUID:"
+            + uuid
+            + ", runtime:"
             + runtimeHash
             + ")");
     }
@@ -163,6 +171,7 @@ public class FrontController implements Filter {
         } else {
             servletContext = ServletContextLocator.get();
         }
+        servletContext.setAttribute(ControllerConstants.UUID_KEY, uuid);
     }
 
     /**
@@ -227,8 +236,11 @@ public class FrontController implements Filter {
         if (servletContextSet) {
             ServletContextLocator.set(null);
         }
-        logger
-            .log(Level.INFO, "Destroyed FrontController(" + runtimeHash + ")");
+        logger.log(Level.INFO, "Destroyed FrontController(UUID:"
+            + uuid
+            + ", runtime:"
+            + runtimeHash
+            + ")");
     }
 
     public void doFilter(ServletRequest request, ServletResponse response,
@@ -400,7 +412,7 @@ public class FrontController implements Filter {
             return null;
         }
         request.setAttribute(ControllerConstants.CONTROLLER_KEY, controller);
-        controller.application = servletContext;
+        controller.servletContext = servletContext;
         controller.request = request;
         controller.response = response;
         int pos = path.lastIndexOf('/');

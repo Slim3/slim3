@@ -15,8 +15,11 @@
  */
 package org.slim3.controller;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
+import org.junit.After;
+import org.junit.Test;
 import org.slim3.tester.MockServletContext;
 import org.slim3.util.ServletContextLocator;
 
@@ -24,34 +27,40 @@ import org.slim3.util.ServletContextLocator;
  * @author higa
  * 
  */
-public class HotReloadingFilterTest extends TestCase {
+public class HotReloadingFilterTest {
 
     private HotReloadingFilter filter = new HotReloadingFilter();
 
-    @Override
-    protected void tearDown() throws Exception {
+    /**
+     * @throws Exception
+     */
+    @After
+    public void tearDown() throws Exception {
         ServletContextLocator.set(null);
-        super.tearDown();
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testHotReloading() throws Exception {
+    @Test
+    public void hotReloading() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         servletContext.setServerInfo("Development");
         filter.servletContext = servletContext;
         filter.initHotReloading();
-        assertTrue(filter.hotReloading);
-        assertTrue(ServletContextLocator.get() instanceof HotServletContextWrapper);
+        assertThat(filter.hotReloading, is(true));
+        assertThat(
+            ServletContextLocator.get(),
+            is(HotServletContextWrapper.class));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testRootPackage() throws Exception {
+    @Test
+    public void rootPackage() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         filter.servletContext = servletContext;
         servletContext.setInitParameter(
@@ -65,47 +74,46 @@ public class HotReloadingFilterTest extends TestCase {
      * @throws Exception
      * 
      */
-    public void testRootPackageNotFound() throws Exception {
+    @Test(expected = IllegalStateException.class)
+    public void rootPackageWhenRootPackageNameIsNotFound() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         filter.servletContext = servletContext;
-        try {
-            filter.initRootPackageName();
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
+        filter.initRootPackageName();
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testCoolPackage() throws Exception {
+    @Test
+    public void coolPackage() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         filter.servletContext = servletContext;
         servletContext.setInitParameter(
             ControllerConstants.COOL_PACKAGE_KEY,
             "aaa");
         filter.initCoolPackageName();
-        assertEquals("aaa", filter.coolPackageName);
+        assertThat(filter.coolPackageName, is("aaa"));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testCoolPackageForNotFound() throws Exception {
+    @Test
+    public void coolPackageWhenCoolPackageNameIsNotFound() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         filter.servletContext = servletContext;
         filter.initCoolPackageName();
-        assertEquals("cool", filter.coolPackageName);
+        assertThat(filter.coolPackageName, is("cool"));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testCreateHotReloadingRuntimeException() throws Exception {
+    @Test
+    public void createHotReloadingRuntimeException() throws Exception {
         filter.rootPackageName = "tutorial";
         filter.coolPackageName = "cool";
         HotReloadingRuntimeException e =

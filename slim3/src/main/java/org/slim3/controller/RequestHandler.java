@@ -61,12 +61,11 @@ public class RequestHandler {
             .hasMoreElements();) {
             String name = e.nextElement();
             if (name.endsWith(ARRAY_SUFFIX)) {
-                request.setAttribute(name, normalize(request
+                request.setAttribute(name, normalizeValues(request
                     .getParameterValues(name)));
             } else {
-                request.setAttribute(
-                    name,
-                    normalize(request.getParameter(name)));
+                request.setAttribute(name, normalizeValue(request
+                    .getParameter(name)));
             }
         }
     }
@@ -78,7 +77,7 @@ public class RequestHandler {
      *            the value
      * @return the normalized value
      */
-    protected String normalize(String value) {
+    protected String normalizeValue(String value) {
         return value;
     }
 
@@ -89,13 +88,13 @@ public class RequestHandler {
      *            the values
      * @return the normalized values
      */
-    protected String[] normalize(String[] values) {
+    protected String[] normalizeValues(String[] values) {
         if (values == null) {
             return new String[0];
         }
         String[] ret = new String[values.length];
         for (int i = 0; i < values.length; i++) {
-            ret[i] = normalize(values[i]);
+            ret[i] = normalizeValue(values[i]);
         }
         return ret;
     }

@@ -15,8 +15,10 @@
  */
 package org.slim3.gwt.server.rpc;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
+import org.junit.Test;
 import org.slim3.gwt.client.service.HogeService;
 import org.slim3.gwt.server.service.HogeServiceImpl;
 
@@ -24,15 +26,18 @@ import org.slim3.gwt.server.service.HogeServiceImpl;
  * @author higa
  * 
  */
-public class GWTServiceServletTest extends TestCase {
+public class GWTServiceServletTest {
 
     private GWTServiceServlet servlet = new GWTServiceServlet();
 
     /**
      * @throws Exception
      */
-    public void testGetServiceClass() throws Exception {
-        assertEquals(HogeServiceImpl.class, servlet
-            .getServiceClass(HogeService.class.getName()));
+    @SuppressWarnings("unchecked")
+    @Test
+    public void getServiceClass() throws Exception {
+        assertThat(
+            (Class) servlet.getServiceClass(HogeService.class.getName()),
+            equalTo(HogeServiceImpl.class));
     }
 }

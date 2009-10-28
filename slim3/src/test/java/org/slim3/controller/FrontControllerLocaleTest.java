@@ -15,10 +15,12 @@
  */
 package org.slim3.controller;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.util.Locale;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
 
@@ -26,26 +28,28 @@ import org.slim3.tester.MockServletContext;
  * @author higa
  * 
  */
-public class FrontControllerLocaleTest extends TestCase {
+public class FrontControllerLocaleTest {
 
     /**
      * @throws Exception
      * 
      */
-    public void testInitDefaultLocale() throws Exception {
+    @Test
+    public void initDefaultLocale() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         FrontController frontController = new FrontController();
         servletContext.setInitParameter(ControllerConstants.LOCALE_KEY, "de");
         frontController.servletContext = servletContext;
         frontController.initDefaultLocale();
-        assertEquals(Locale.GERMAN, frontController.defaultLocale);
+        assertThat(frontController.defaultLocale, is(Locale.GERMAN));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testProcessLocaleForSession() throws Exception {
+    @Test
+    public void processLocaleForSession() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         MockHttpServletRequest request =
             new MockHttpServletRequest(servletContext);
@@ -54,46 +58,49 @@ public class FrontControllerLocaleTest extends TestCase {
             Locale.GERMAN);
         FrontController frontController = new FrontController();
         frontController.defaultLocale = Locale.FRENCH;
-        assertEquals(Locale.GERMAN, frontController.processLocale(request));
+        assertThat(frontController.processLocale(request), is(Locale.GERMAN));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testProcessLocaleForDefaultLocale() throws Exception {
+    @Test
+    public void processLocaleForDefaultLocale() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         MockHttpServletRequest request =
             new MockHttpServletRequest(servletContext);
         request.addLocale(Locale.GERMAN);
         FrontController frontController = new FrontController();
         frontController.defaultLocale = Locale.FRENCH;
-        assertEquals(Locale.FRENCH, frontController.processLocale(request));
+        assertThat(frontController.processLocale(request), is(Locale.FRENCH));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testProcessLocaleForRequest() throws Exception {
+    @Test
+    public void processLocaleForRequest() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         MockHttpServletRequest request =
             new MockHttpServletRequest(servletContext);
         request.addLocale(Locale.GERMAN);
         FrontController frontController = new FrontController();
-        assertEquals(Locale.GERMAN, frontController.processLocale(request));
+        assertThat(frontController.processLocale(request), is(Locale.GERMAN));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testProcessLocaleForNoSetting() throws Exception {
+    @Test
+    public void processLocaleForNoSetting() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         MockHttpServletRequest request =
             new MockHttpServletRequest(servletContext);
         FrontController frontController = new FrontController();
-        assertEquals(Locale.getDefault(), frontController
-            .processLocale(request));
+        assertThat(frontController.processLocale(request), is(Locale
+            .getDefault()));
     }
 }

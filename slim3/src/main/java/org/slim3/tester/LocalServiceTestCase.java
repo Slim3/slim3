@@ -13,37 +13,44 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.jdo;
+package org.slim3.tester;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
 
 /**
+ * A test case for appengine local services.
+ * 
  * @author higa
+ * @since 3.0
  * 
  */
-public class LeCriterionTest extends TestCase {
-
-    private SampleMeta m = new SampleMeta();
+public abstract class LocalServiceTestCase {
 
     /**
-     * @throws Exception
+     * The tester for appengine local services.
      */
-    public void testGetQueryString() throws Exception {
-        FilterCriterion criterion = m.id.le(1);
-        assertEquals("id <= :0", criterion.getQueryString(":0"));
+    protected LocalServiceTester tester = new LocalServiceTester();
+
+    /**
+     * Sets up this test.
+     * 
+     * @throws Exception
+     *             if an exception occurred
+     */
+    @Before
+    public void setUp() throws Exception {
+        tester.setUp();
     }
 
     /**
+     * Tears down this test
+     * 
      * @throws Exception
+     *             if an exception occurred
      */
-    public void testAccept() throws Exception {
-        Sample sample = new Sample();
-        sample.setId(2L);
-        FilterCriterion criterion = m.id.le(1);
-        assertFalse(criterion.accept(sample));
-        sample.setId(1L);
-        assertTrue(criterion.accept(sample));
-        sample.setId(0L);
-        assertTrue(criterion.accept(sample));
+    @After
+    public void tearDown() throws Exception {
+        tester.tearDown();
     }
 }

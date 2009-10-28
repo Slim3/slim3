@@ -15,57 +15,62 @@
  */
 package org.slim3.tester;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.io.Writer;
 
-import org.slim3.tester.MockHttpServletResponse;
-
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class MockHttpServletResponseTest extends TestCase {
+public class MockHttpServletResponseTest {
 
     private MockHttpServletResponse response = new MockHttpServletResponse();
 
     /**
      * @throws Exception
      */
-    public void testWriter() throws Exception {
+    @Test
+    public void writer() throws Exception {
         Writer writer = response.getWriter();
         String data = "abc";
         writer.write(data);
         response.flushBuffer();
-        assertEquals(data, response.getOutputAsString());
+        assertThat(response.getOutputAsString(), is(data));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testHeader() throws Exception {
+    @Test
+    public void header() throws Exception {
         response.setHeader("aaa", "111");
-        assertEquals("111", response.getHeader("aaa"));
+        assertThat(response.getHeader("aaa"), is("111"));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testIntHeader() throws Exception {
+    @Test
+    public void intHeader() throws Exception {
         response.setIntHeader("aaa", 1);
-        assertEquals("1", response.getHeader("aaa"));
-        assertEquals(1, response.getIntHeader("aaa"));
+        assertThat(response.getHeader("aaa"), is("1"));
+        assertThat(response.getIntHeader("aaa"), is(1));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testDateHeader() throws Exception {
+    @Test
+    public void dateHeader() throws Exception {
         response.setDateHeader("aaa", 1000);
         System.out.println(response.getHeader("aaa"));
-        assertEquals(1000, response.getDateHeader("aaa"));
+        assertThat(response.getDateHeader("aaa"), is(1000L));
     }
 }

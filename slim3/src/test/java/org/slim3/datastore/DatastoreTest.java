@@ -15,6 +15,9 @@
  */
 package org.slim3.datastore;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
@@ -22,10 +25,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
-import org.slim3.tester.DatastoreTestCase;
+import org.slim3.tester.LocalServiceTestCase;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
@@ -37,593 +43,594 @@ import com.google.appengine.api.datastore.Transaction;
  * @author higa
  * 
  */
-public class DatastoreTest extends DatastoreTestCase {
+public class DatastoreTest extends LocalServiceTestCase {
 
     private HogeMeta meta = new HogeMeta();
 
+    private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+
     /**
      * @throws Exception
      */
-    public void testBeginTransaction() throws Exception {
-        assertNotNull(Datastore.beginTransaction());
+    @Test
+    public void beginTransaction() throws Exception {
+        assertThat(Datastore.beginTransaction(), is(not(nullValue())));
     }
 
     /**
      * @throws Exception
      */
-    public void testCommit() throws Exception {
+    @Test
+    public void commit() throws Exception {
         Transaction tx = Datastore.beginTransaction();
         Datastore.commit(tx);
-        assertFalse(tx.isActive());
-        assertNull(ds.getCurrentTransaction(null));
+        assertThat(tx.isActive(), is(false));
+        assertThat(ds.getCurrentTransaction(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testRollback() throws Exception {
+    @Test(expected = EntityNotFoundException.class)
+    public void rollback() throws Exception {
         Transaction tx = Datastore.beginTransaction();
         Key key = ds.put(new Entity("Hoge"));
         Datastore.rollback(tx);
-        assertFalse(tx.isActive());
-        assertNull(ds.getCurrentTransaction(null));
-        try {
-            ds.get(key);
-            fail();
-        } catch (EntityNotFoundException e) {
-            System.out.println(e.getMessage());
-        }
-
+        assertThat(tx.isActive(), is(false));
+        assertThat(ds.getCurrentTransaction(null), is(nullValue()));
+        ds.get(key);
     }
 
     /**
      * @throws Exception
      */
-    public void testAllocateId() throws Exception {
-        assertNotNull(Datastore.allocateId("Hoge"));
-        assertNotNull(Datastore.allocateId(Hoge.class));
-        assertNotNull(Datastore.allocateId(meta));
+    @Test
+    public void allocateId() throws Exception {
+        assertThat(Datastore.allocateId("Hoge"), is(not(nullValue())));
+        assertThat(Datastore.allocateId(Hoge.class), is(not(nullValue())));
+        assertThat(Datastore.allocateId(meta), is(not(nullValue())));
         Key parentKey = KeyFactory.createKey("Parent", 1);
-        assertNotNull(Datastore.allocateId(parentKey, "Hoge"));
-        assertNotNull(Datastore.allocateId(parentKey, Hoge.class));
-        assertNotNull(Datastore.allocateId(parentKey, meta));
+        assertThat(
+            Datastore.allocateId(parentKey, "Hoge"),
+            is(not(nullValue())));
+        assertThat(
+            Datastore.allocateId(parentKey, Hoge.class),
+            is(not(nullValue())));
+        assertThat(Datastore.allocateId(parentKey, meta), is(not(nullValue())));
     }
 
     /**
      * @throws Exception
      */
-    public void testAllocateIds() throws Exception {
+    @Test
+    public void allocateIds() throws Exception {
         KeyRange range = Datastore.allocateIds("Hoge", 2);
-        assertNotNull(range);
-        assertEquals(2, range.getSize());
+        assertThat(range, is(not(nullValue())));
+        assertThat(range.getSize(), is(2L));
 
         range = Datastore.allocateIds(Hoge.class, 2);
-        assertNotNull(range);
-        assertEquals(2, range.getSize());
+        assertThat(range, is(not(nullValue())));
+        assertThat(range.getSize(), is(2L));
 
         range = Datastore.allocateIds(meta, 2);
-        assertNotNull(range);
-        assertEquals(2, range.getSize());
+        assertThat(range, is(not(nullValue())));
+        assertThat(range.getSize(), is(2L));
 
         Key parentKey = KeyFactory.createKey("Parent", 1);
         range = Datastore.allocateIds(parentKey, "Hoge", 2);
-        assertNotNull(range);
-        assertEquals(2, range.getSize());
+        assertThat(range, is(not(nullValue())));
+        assertThat(range.getSize(), is(2L));
 
         range = Datastore.allocateIds(parentKey, Hoge.class, 2);
         assertNotNull(range);
         assertEquals(2, range.getSize());
 
         range = Datastore.allocateIds(parentKey, meta, 2);
-        assertNotNull(range);
-        assertEquals(2, range.getSize());
+        assertThat(range, is(not(nullValue())));
+        assertThat(range.getSize(), is(2L));
     }
 
     /**
      * @throws Exception
      */
-    public void testCreateKey() throws Exception {
-        assertNotNull(Datastore.createKey("Hoge", 1));
-        assertNotNull(Datastore.createKey(Hoge.class, 1));
-        assertNotNull(Datastore.createKey(meta, 1));
-        assertNotNull(Datastore.createKey("Hoge", "aaa"));
-        assertNotNull(Datastore.createKey(Hoge.class, "aaa"));
-        assertNotNull(Datastore.createKey(meta, "aaa"));
+    @Test
+    public void createKey() throws Exception {
+        assertThat(Datastore.createKey("Hoge", 1), is(not(nullValue())));
+        assertThat(Datastore.createKey(Hoge.class, 1), is(not(nullValue())));
+        assertThat(Datastore.createKey(meta, 1), is(not(nullValue())));
+        assertThat(Datastore.createKey("Hoge", "aaa"), is(not(nullValue())));
+        assertThat(Datastore.createKey(Hoge.class, "aaa"), is(not(nullValue())));
+        assertThat(Datastore.createKey(meta, "aaa"), is(not(nullValue())));
         Key parentKey = KeyFactory.createKey("Parent", 1);
-        assertNotNull(Datastore.createKey(parentKey, "Hoge", 1));
-        assertNotNull(Datastore.createKey(parentKey, Hoge.class, 1));
-        assertNotNull(Datastore.createKey(parentKey, meta, 1));
-        assertNotNull(Datastore.createKey(parentKey, "Hoge", "aaa"));
-        assertNotNull(Datastore.createKey(parentKey, Hoge.class, "aaa"));
-        assertNotNull(Datastore.createKey(parentKey, meta, "aaa"));
+        assertThat(
+            Datastore.createKey(parentKey, "Hoge", 1),
+            is(not(nullValue())));
+        assertThat(
+            Datastore.createKey(parentKey, Hoge.class, 1),
+            is(not(nullValue())));
+        assertThat(
+            Datastore.createKey(parentKey, meta, 1),
+            is(not(nullValue())));
+        assertThat(
+            Datastore.createKey(parentKey, "Hoge", "aaa"),
+            is(not(nullValue())));
+        assertThat(
+            Datastore.createKey(parentKey, Hoge.class, "aaa"),
+            is(not(nullValue())));
+        assertThat(
+            Datastore.createKey(parentKey, meta, "aaa"),
+            is(not(nullValue())));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetModel() throws Exception {
+    @Test
+    public void getModel() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Hoge model = Datastore.get(meta, key);
-        assertNotNull(model);
+        assertThat(model, is(not(nullValue())));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetModelUsingCache() throws Exception {
+    @Test
+    public void getModelUsingCache() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Map<Key, Object> cache = new HashMap<Key, Object>();
         Hoge model = Datastore.get(meta, key, cache);
-        assertNotNull(model);
-        assertSame(model, cache.get(key));
+        assertThat(model, is(not(nullValue())));
+        assertThat(model, is(sameInstance(cache.get(key))));
         ds.delete(key);
-        assertSame(model, Datastore.get(meta, key, cache));
+        assertThat(model, is(sameInstance(Datastore.get(meta, key, cache))));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetModelAndCheckVersion() throws Exception {
+    @Test(expected = ConcurrentModificationException.class)
+    public void getModelAndCheckVersion() throws Exception {
         Entity entity = new Entity("Hoge");
         entity.setProperty("version", 1);
         Key key = ds.put(entity);
         Hoge model = Datastore.get(meta, key, 1);
-        assertNotNull(model);
-        try {
-            Datastore.get(meta, key, 0);
-            fail();
-        } catch (ConcurrentModificationException e) {
-            System.out.println(e.getMessage());
-        }
+        assertThat(model, is(not(nullValue())));
+        Datastore.get(meta, key, 0);
     }
 
     /**
      * @throws Exception
      */
-    public void testGetModelInTx() throws Exception {
+    @Test
+    public void getModelInTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Transaction tx = ds.beginTransaction();
         Hoge model = Datastore.get(tx, meta, key);
         tx.rollback();
-        assertNotNull(model);
+        assertThat(model, is(not(nullValue())));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetModelInTxUsingCache() throws Exception {
+    @Test
+    public void getModelInTxUsingCache() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Map<Key, Object> cache = new HashMap<Key, Object>();
         Transaction tx = ds.beginTransaction();
         Hoge model = Datastore.get(tx, meta, key, cache);
-        assertNotNull(model);
-        assertSame(model, cache.get(key));
+        assertThat(model, is(not(nullValue())));
+        assertThat(model, is(sameInstance(cache.get(key))));
         ds.delete(key);
-        assertSame(model, Datastore.get(tx, meta, key, cache));
+        assertThat(model, is(sameInstance(Datastore.get(tx, meta, key, cache))));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetModelInTxAndCheckVersion() throws Exception {
+    @Test(expected = ConcurrentModificationException.class)
+    public void getModelInTxAndCheckVersion() throws Exception {
         Entity entity = new Entity("Hoge");
         entity.setProperty("version", 1);
         Key key = ds.put(entity);
         Transaction tx = Datastore.beginTransaction();
         Hoge model = Datastore.get(tx, meta, key, 1);
-        assertNotNull(model);
-        try {
-            Datastore.get(tx, meta, key, 0);
-            fail();
-        } catch (ConcurrentModificationException e) {
-            System.out.println(e.getMessage());
-        }
+        assertThat(model, is(not(nullValue())));
+        Datastore.get(tx, meta, key, 0);
     }
 
     /**
      * @throws Exception
      */
-    public void testGetModelInIllegalTx() throws Exception {
+    @Test(expected = IllegalStateException.class)
+    public void getModelInIllegalTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Transaction tx = ds.beginTransaction();
         tx.rollback();
-        try {
-            Datastore.get(tx, meta, key);
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
+        Datastore.get(tx, meta, key);
     }
 
     /**
      * @throws Exception
      */
-    public void testGetModels() throws Exception {
+    @Test
+    public void getModels() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         List<Hoge> models = Datastore.get(meta, Arrays.asList(key, key2));
-        assertNotNull(models);
-        assertEquals(2, models.size());
+        assertThat(models, is(not(nullValue())));
+        assertThat(models.size(), is(2));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetModelsForVarargs() throws Exception {
+    @Test
+    public void getModelsForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         List<Hoge> models = Datastore.get(meta, key, key2);
-        assertNotNull(models);
-        assertEquals(2, models.size());
+        assertThat(models, is(not(nullValue())));
+        assertThat(models.size(), is(2));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetModelsInTx() throws Exception {
+    @Test
+    public void getModelsInTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = ds.beginTransaction();
         List<Hoge> models = Datastore.get(tx, meta, Arrays.asList(key, key2));
         tx.rollback();
-        assertNotNull(models);
-        assertEquals(2, models.size());
+        assertThat(models, is(not(nullValue())));
+        assertThat(models.size(), is(2));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetModelsInIllegalTx() throws Exception {
+    @Test(expected = IllegalStateException.class)
+    public void getModelsInIllegalTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = ds.beginTransaction();
         tx.rollback();
-        try {
-            Datastore.get(tx, meta, Arrays.asList(key, key2));
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
+        Datastore.get(tx, meta, Arrays.asList(key, key2));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetModelsInTxForVarargs() throws Exception {
+    @Test
+    public void getModelsInTxForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = ds.beginTransaction();
         List<Hoge> models = Datastore.get(tx, meta, key, key2);
         tx.rollback();
-        assertNotNull(models);
-        assertEquals(2, models.size());
+        assertThat(models, is(not(nullValue())));
+        assertThat(models.size(), is(2));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetModelsInIllegalTxForVarargs() throws Exception {
+    @Test(expected = IllegalStateException.class)
+    public void getModelsInIllegalTxForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = ds.beginTransaction();
         tx.rollback();
-        try {
-            Datastore.get(tx, meta, key, key2);
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
+        Datastore.get(tx, meta, key, key2);
     }
 
     /**
      * @throws Exception
      */
-    public void testGetModelsAsMap() throws Exception {
+    @Test
+    public void getModelsAsMap() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         Map<Key, Hoge> map = Datastore.getAsMap(meta, Arrays.asList(key, key2));
-        assertNotNull(map);
-        assertEquals(2, map.size());
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetModelsAsMapForVarargs() throws Exception {
+    @Test
+    public void getModelsAsMapForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         Map<Key, Hoge> map = Datastore.getAsMap(meta, key, key2);
-        assertNotNull(map);
-        assertEquals(2, map.size());
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetModelsAsMapInTx() throws Exception {
+    @Test
+    public void getModelsAsMapInTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = ds.beginTransaction();
         Map<Key, Hoge> map =
             Datastore.getAsMap(tx, meta, Arrays.asList(key, key2));
         tx.rollback();
-        assertNotNull(map);
-        assertEquals(2, map.size());
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetModelsAsMapInTxForVarargs() throws Exception {
+    @Test
+    public void getModelsAsMapInTxForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = ds.beginTransaction();
         Map<Key, Hoge> map = Datastore.getAsMap(tx, meta, key, key2);
         tx.rollback();
-        assertNotNull(map);
-        assertEquals(2, map.size());
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetEntity() throws Exception {
+    @Test
+    public void getEntity() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Entity entity = Datastore.get(key);
-        assertNotNull(entity);
+        assertThat(entity, is(not(nullValue())));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetEntityForNotFound() throws Exception {
-        try {
-            Datastore.get(KeyFactory.createKey("Aaa", 1));
-            fail();
-        } catch (EntityNotFoundRuntimeException e) {
-            System.out.println(e.getMessage());
-        }
+    @Test(expected = EntityNotFoundRuntimeException.class)
+    public void getEntityWhenEntityIsNotFound() throws Exception {
+        Datastore.get(KeyFactory.createKey("Aaa", 1));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetEntityInTx() throws Exception {
+    @Test
+    public void getEntityInTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Transaction tx = ds.beginTransaction();
         Entity entity = Datastore.get(tx, key);
         tx.rollback();
-        assertNotNull(entity);
+        assertThat(entity, is(not(nullValue())));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetEntityInIllegalTx() throws Exception {
+    @Test(expected = IllegalStateException.class)
+    public void getEntityInIllegalTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Transaction tx = ds.beginTransaction();
         tx.rollback();
-        try {
-            Datastore.get(tx, key);
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
+        Datastore.get(tx, key);
     }
 
     /**
      * @throws Exception
      */
-    public void testGetEntitiesAsMap() throws Exception {
+    @Test
+    public void getEntitiesAsMap() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         Map<Key, Entity> map = Datastore.getAsMap(Arrays.asList(key, key2));
-        assertNotNull(map);
-        assertEquals(2, map.size());
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetEntitiesAsMapForVarargs() throws Exception {
+    @Test
+    public void getEntitiesAsMapForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         Map<Key, Entity> map = Datastore.getAsMap(key, key2);
-        assertNotNull(map);
-        assertEquals(2, map.size());
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetEntitiesAsMapInTx() throws Exception {
+    @Test
+    public void getEntitiesAsMapInTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = ds.beginTransaction();
         Map<Key, Entity> map = Datastore.getAsMap(tx, Arrays.asList(key, key2));
         tx.rollback();
-        assertNotNull(map);
-        assertEquals(2, map.size());
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetEntitiesAsMapInTxForVarargs() throws Exception {
+    @Test
+    public void getEntitiesAsMapInTxForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = ds.beginTransaction();
         Map<Key, Entity> map = Datastore.getAsMap(tx, key, key2);
         tx.rollback();
-        assertNotNull(map);
-        assertEquals(2, map.size());
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetEntitiesAsMapForZeroVarargs() throws Exception {
+    @Test
+    public void getEntitiesAsMapForZeroVarargs() throws Exception {
         Map<Key, Entity> map = Datastore.getAsMap();
-        assertNotNull(map);
-        assertEquals(0, map.size());
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(0));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetEntities() throws Exception {
+    @Test
+    public void getEntities() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         List<Entity> list = Datastore.get(Arrays.asList(key, key2));
-        assertNotNull(list);
-        assertEquals(2, list.size());
+        assertThat(list, is(not(nullValue())));
+        assertThat(list.size(), is(2));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetEntitiesForVarargs() throws Exception {
+    @Test
+    public void getEntitiesForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         List<Entity> list = Datastore.get(key, key2);
-        assertNotNull(list);
-        assertEquals(2, list.size());
+        assertThat(list, is(not(nullValue())));
+        assertThat(list.size(), is(2));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetEntitiesInTx() throws Exception {
+    @Test
+    public void getEntitiesInTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = ds.beginTransaction();
         List<Entity> list = Datastore.get(tx, Arrays.asList(key, key2));
         tx.rollback();
-        assertNotNull(list);
-        assertEquals(2, list.size());
+        assertThat(list, is(not(nullValue())));
+        assertThat(list.size(), is(2));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetEntitiesInIllegalTx() throws Exception {
+    @Test(expected = IllegalStateException.class)
+    public void getEntitiesInIllegalTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = ds.beginTransaction();
         tx.rollback();
-        try {
-            Datastore.get(tx, Arrays.asList(key, key2));
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
+        Datastore.get(tx, Arrays.asList(key, key2));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetEntitiesInTxForVarargs() throws Exception {
+    @Test
+    public void getEntitiesInTxForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = ds.beginTransaction();
         List<Entity> list = Datastore.get(tx, key, key2);
         tx.rollback();
-        assertNotNull(list);
-        assertEquals(2, list.size());
+        assertThat(list, is(not(nullValue())));
+        assertThat(list.size(), is(2));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetEntitiesInIllegalTxForVarargs() throws Exception {
+    @Test(expected = IllegalStateException.class)
+    public void getEntitiesInIllegalTxForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = ds.beginTransaction();
         tx.rollback();
-        try {
-            Datastore.get(tx, key, key2);
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
+        Datastore.get(tx, key, key2);
     }
 
     /**
      * @throws Exception
      */
-    public void testPutModel() throws Exception {
+    @Test
+    public void putModel() throws Exception {
         Hoge hoge = new Hoge();
-        assertNotNull(Datastore.put(hoge));
-        assertNotNull(hoge.getKey());
-        assertEquals(Long.valueOf(1), hoge.getVersion());
+        assertThat(Datastore.put(hoge), is(not(nullValue())));
+        assertThat(hoge.getKey(), is(not(nullValue())));
+        assertThat(hoge.getVersion(), is(1L));
     }
 
     /**
      * @throws Exception
      */
-    public void testPutModelInTx() throws Exception {
+    @Test(expected = EntityNotFoundException.class)
+    public void putModelInTx() throws Exception {
         Hoge hoge = new Hoge();
         Transaction tx = Datastore.beginTransaction();
         Key key = Datastore.put(tx, hoge);
         tx.rollback();
-        assertNotNull(key);
-        assertNotNull(hoge.getKey());
-        assertEquals(Long.valueOf(1), hoge.getVersion());
-        try {
-            ds.get(key);
-            fail();
-        } catch (EntityNotFoundException e) {
-            System.out.println(e.getMessage());
-        }
+        assertThat(key, is(not(nullValue())));
+        assertThat(hoge.getKey(), is(not(nullValue())));
+        assertThat(hoge.getVersion(), is(1L));
+        ds.get(key);
     }
 
     /**
      * @throws Exception
      */
-    public void testPutModelInIllegalTx() throws Exception {
+    @Test(expected = IllegalStateException.class)
+    public void putModelInIllegalTx() throws Exception {
         Transaction tx = Datastore.beginTransaction();
         tx.rollback();
-        try {
-            Datastore.put(tx, new Hoge());
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
+        Datastore.put(tx, new Hoge());
     }
 
     /**
      * @throws Exception
      */
-    public void testPutModels() throws Exception {
+    @Test
+    public void putModels() throws Exception {
         List<Hoge> models = Arrays.asList(new Hoge(), new Hoge());
         List<Key> keys = Datastore.put(models);
-        assertNotNull(keys);
+        assertThat(keys, is(not(nullValue())));
         assertEquals(2, keys.size());
         for (Hoge hoge : models) {
-            assertNotNull(hoge.getKey());
-            assertEquals(Long.valueOf(1), hoge.getVersion());
+            assertThat(hoge.getKey(), is(not(nullValue())));
+            assertThat(hoge.getVersion(), is(1L));
         }
     }
 
     /**
      * @throws Exception
      */
-    public void testPutModelsForVarargs() throws Exception {
+    @Test
+    public void putModelsForVarargs() throws Exception {
         Hoge hoge = new Hoge();
         Hoge hoge2 = new Hoge();
         List<Key> keys = Datastore.put(hoge, hoge2);
-        assertNotNull(keys);
-        assertEquals(2, keys.size());
-        assertNotNull(hoge.getKey());
-        assertNotNull(hoge2.getKey());
-        assertEquals(Long.valueOf(1), hoge.getVersion());
-        assertEquals(Long.valueOf(1), hoge2.getVersion());
+        assertThat(keys, is(not(nullValue())));
+        assertThat(keys.size(), is(2));
+        assertThat(hoge.getKey(), is(not(nullValue())));
+        assertThat(hoge2.getKey(), is(not(nullValue())));
+        assertThat(hoge.getVersion(), is(1L));
+        assertThat(hoge2.getVersion(), is(1L));
     }
 
     /**
      * @throws Exception
      */
-    public void testPutModelsInTx() throws Exception {
+    @Test
+    public void putModelsInTx() throws Exception {
         Key key = KeyFactory.createKey("Hoge", 1);
         Key key2 = KeyFactory.createKey(key, "Hoge", 1);
         Hoge hoge = new Hoge();
@@ -634,18 +641,19 @@ public class DatastoreTest extends DatastoreTestCase {
         Transaction tx = ds.beginTransaction();
         List<Key> keys = Datastore.put(tx, models);
         tx.rollback();
-        assertNotNull(keys);
-        assertEquals(2, keys.size());
-        assertEquals(key, hoge.getKey());
-        assertEquals(key2, hoge2.getKey());
-        assertEquals(Long.valueOf(1), hoge.getVersion());
-        assertEquals(Long.valueOf(1), hoge2.getVersion());
+        assertThat(keys, is(not(nullValue())));
+        assertThat(keys.size(), is(2));
+        assertThat(hoge.getKey(), is(key));
+        assertThat(hoge2.getKey(), is(key2));
+        assertThat(hoge.getVersion(), is(1L));
+        assertThat(hoge2.getVersion(), is(1L));
     }
 
     /**
      * @throws Exception
      */
-    public void testPutModelsInIllegalTx() throws Exception {
+    @Test(expected = IllegalStateException.class)
+    public void putModelsInIllegalTx() throws Exception {
         Key key = KeyFactory.createKey("Hoge", 1);
         Key key2 = KeyFactory.createKey(key, "Hoge", 1);
         Hoge hoge = new Hoge();
@@ -655,18 +663,14 @@ public class DatastoreTest extends DatastoreTestCase {
         List<Hoge> models = Arrays.asList(hoge, hoge2);
         Transaction tx = ds.beginTransaction();
         tx.rollback();
-        try {
-            Datastore.put(tx, models);
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
+        Datastore.put(tx, models);
     }
 
     /**
      * @throws Exception
      */
-    public void testPutModelsInTxForVarargs() throws Exception {
+    @Test
+    public void putModelsInTxForVarargs() throws Exception {
         Key key = KeyFactory.createKey("Hoge", 1);
         Key key2 = KeyFactory.createKey(key, "Hoge", 1);
         Hoge hoge = new Hoge();
@@ -676,18 +680,19 @@ public class DatastoreTest extends DatastoreTestCase {
         Transaction tx = ds.beginTransaction();
         List<Key> keys = Datastore.put(tx, hoge, hoge2);
         tx.rollback();
-        assertNotNull(keys);
-        assertEquals(2, keys.size());
-        assertEquals(key, hoge.getKey());
-        assertEquals(key2, hoge2.getKey());
-        assertEquals(Long.valueOf(1), hoge.getVersion());
-        assertEquals(Long.valueOf(1), hoge2.getVersion());
+        assertThat(keys, is(not(nullValue())));
+        assertThat(keys.size(), is(2));
+        assertThat(hoge.getKey(), is(key));
+        assertThat(hoge2.getKey(), is(key2));
+        assertThat(hoge.getVersion(), is(1L));
+        assertThat(hoge2.getVersion(), is(1L));
     }
 
     /**
      * @throws Exception
      */
-    public void testPutModelsInIllegalTxForVarargs() throws Exception {
+    @Test(expected = IllegalStateException.class)
+    public void putModelsInIllegalTxForVarargs() throws Exception {
         Key key = KeyFactory.createKey("Hoge", 1);
         Key key2 = KeyFactory.createKey(key, "Hoge", 1);
         Hoge hoge = new Hoge();
@@ -696,364 +701,304 @@ public class DatastoreTest extends DatastoreTestCase {
         hoge2.setKey(key2);
         Transaction tx = ds.beginTransaction();
         tx.rollback();
-        try {
-            Datastore.put(tx, hoge, hoge2);
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
+        Datastore.put(tx, hoge, hoge2);
     }
 
     /**
      * @throws Exception
      */
-    public void testPutEntity() throws Exception {
-        assertNotNull(Datastore.put(new Entity("Hoge")));
+    @Test
+    public void putEntity() throws Exception {
+        assertThat(Datastore.put(new Entity("Hoge")), is(not(nullValue())));
     }
 
     /**
      * @throws Exception
      */
-    public void testPutEntityInTx() throws Exception {
+    @Test(expected = EntityNotFoundException.class)
+    public void putEntityInTx() throws Exception {
         Transaction tx = Datastore.beginTransaction();
         Key key = Datastore.put(tx, new Entity("Hoge"));
         tx.rollback();
-        assertNotNull(key);
-        try {
-            ds.get(key);
-            fail();
-        } catch (EntityNotFoundException e) {
-            System.out.println(e.getMessage());
-        }
+        assertThat(key, is(not(nullValue())));
+        ds.get(key);
     }
 
     /**
      * @throws Exception
      */
-    public void testPutEntityInIllegalTx() throws Exception {
+    @Test(expected = IllegalStateException.class)
+    public void putEntityInIllegalTx() throws Exception {
         Transaction tx = Datastore.beginTransaction();
         tx.rollback();
-        try {
-            Datastore.put(tx, new Entity("Hoge"));
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
+        Datastore.put(tx, new Entity("Hoge"));
     }
 
     /**
      * @throws Exception
      */
-    public void testPutEntities() throws Exception {
+    @Test
+    public void putEntities() throws Exception {
         List<Key> keys =
             Datastore
                 .put(Arrays.asList(new Entity("Hoge"), new Entity("Hoge")));
-        assertNotNull(keys);
-        assertEquals(2, keys.size());
+        assertThat(keys, is(not(nullValue())));
+        assertThat(keys.size(), is(2));
     }
 
     /**
      * @throws Exception
      */
-    public void testPutEntitiesForVarargs() throws Exception {
+    @Test
+    public void putEntitiesForVarargs() throws Exception {
         List<Key> keys = Datastore.put(new Entity("Hoge"), new Entity("Hoge"));
-        assertNotNull(keys);
-        assertEquals(2, keys.size());
+        assertThat(keys, is(not(nullValue())));
+        assertThat(keys.size(), is(2));
     }
 
     /**
      * @throws Exception
      */
-    public void testPutEntitiesInTx() throws Exception {
+    @Test
+    public void putEntitiesInTx() throws Exception {
         Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
         Entity entity2 =
             new Entity(KeyFactory.createKey(entity.getKey(), "Hoge", 1));
         Transaction tx = Datastore.beginTransaction();
         List<Key> keys = Datastore.put(tx, Arrays.asList(entity, entity2));
         tx.rollback();
-        assertNotNull(keys);
-        assertEquals(2, keys.size());
-        try {
-            ds.get(keys.get(0));
-            fail();
-        } catch (EntityNotFoundException e) {
-            System.out.println(e.getMessage());
-        }
-        try {
-            ds.get(keys.get(1));
-            fail();
-        } catch (EntityNotFoundException e) {
-            System.out.println(e.getMessage());
-        }
+        assertThat(keys, is(not(nullValue())));
+        assertThat(keys.size(), is(2));
+        assertThat(ds.get(keys).size(), is(0));
     }
 
     /**
      * @throws Exception
      */
-    public void testPutEntitiesInIllegalTx() throws Exception {
+    @Test(expected = IllegalStateException.class)
+    public void putEntitiesInIllegalTx() throws Exception {
         Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
         Entity entity2 =
             new Entity(KeyFactory.createKey(entity.getKey(), "Hoge", 1));
         Transaction tx = Datastore.beginTransaction();
         tx.rollback();
-        try {
-            Datastore.put(tx, Arrays.asList(entity, entity2));
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
+        Datastore.put(tx, Arrays.asList(entity, entity2));
     }
 
     /**
      * @throws Exception
      */
-    public void testPutEntitiesInTxForVarargs() throws Exception {
+    @Test
+    public void putEntitiesInTxForVarargs() throws Exception {
         Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
         Entity entity2 =
             new Entity(KeyFactory.createKey(entity.getKey(), "Hoge", 1));
         Transaction tx = Datastore.beginTransaction();
         List<Key> keys = Datastore.put(tx, entity, entity2);
         tx.rollback();
-        assertNotNull(keys);
-        assertEquals(2, keys.size());
-        try {
-            ds.get(keys.get(0));
-            fail();
-        } catch (EntityNotFoundException e) {
-            System.out.println(e.getMessage());
-        }
-        try {
-            ds.get(keys.get(1));
-            fail();
-        } catch (EntityNotFoundException e) {
-            System.out.println(e.getMessage());
-        }
+        assertThat(keys, is(not(nullValue())));
+        assertThat(keys.size(), is(2));
+        assertThat(ds.get(keys).size(), is(0));
     }
 
     /**
      * @throws Exception
      */
-    public void testPutEntitiesInIllegalTxForVarargs() throws Exception {
+    @Test(expected = IllegalStateException.class)
+    public void putEntitiesInIllegalTxForVarargs() throws Exception {
         Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
         Entity entity2 =
             new Entity(KeyFactory.createKey(entity.getKey(), "Hoge", 1));
         Transaction tx = Datastore.beginTransaction();
         tx.rollback();
-        try {
-            Datastore.put(tx, entity, entity2);
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
+        Datastore.put(tx, entity, entity2);
     }
 
     /**
      * @throws Exception
      */
-    public void testDelete() throws Exception {
+    @Test(expected = EntityNotFoundException.class)
+    public void delete() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Datastore.delete(key);
-        try {
-            ds.get(key);
-            fail();
-        } catch (EntityNotFoundException e) {
-            System.out.println(e.getMessage());
-        }
+        ds.get(key);
     }
 
     /**
      * @throws Exception
      */
-    public void testDeleteInTx() throws Exception {
+    @Test
+    public void deleteInTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Transaction tx = Datastore.beginTransaction();
         Datastore.delete(tx, key);
         tx.rollback();
-        assertNotNull(ds.get(key));
+        assertThat(ds.get(key), is(not(nullValue())));
     }
 
     /**
      * @throws Exception
      */
-    public void testDeleteInIllegalTx() throws Exception {
+    @Test(expected = IllegalStateException.class)
+    public void deleteInIllegalTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Transaction tx = Datastore.beginTransaction();
         tx.rollback();
-        try {
-            Datastore.delete(tx, key);
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
+        Datastore.delete(tx, key);
     }
 
     /**
      * @throws Exception
      */
-    public void testDeleteEntities() throws Exception {
+    @Test
+    public void deleteEntities() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         Datastore.delete(Arrays.asList(key, key2));
-        try {
-            ds.get(key);
-            fail();
-        } catch (EntityNotFoundException e) {
-            System.out.println(e.getMessage());
-        }
-        try {
-            ds.get(key2);
-            fail();
-        } catch (EntityNotFoundException e) {
-            System.out.println(e.getMessage());
-        }
+        assertThat(ds.get(Arrays.asList(key, key2)).size(), is(0));
     }
 
     /**
      * @throws Exception
      */
-    public void testDeleteEntitiesForVarargs() throws Exception {
+    @Test
+    public void deleteEntitiesForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         Datastore.delete(key, key2);
-        try {
-            ds.get(key);
-            fail();
-        } catch (EntityNotFoundException e) {
-            System.out.println(e.getMessage());
-        }
-        try {
-            ds.get(key2);
-            fail();
-        } catch (EntityNotFoundException e) {
-            System.out.println(e.getMessage());
-        }
+        assertThat(ds.get(Arrays.asList(key, key2)).size(), is(0));
     }
 
     /**
      * @throws Exception
      */
-    public void testDeleteEntitiesInTx() throws Exception {
+    @Test
+    public void deleteEntitiesInTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Transaction tx = Datastore.beginTransaction();
         Datastore.delete(tx, Arrays.asList(key));
         tx.rollback();
-        assertNotNull(ds.get(key));
+        assertThat(ds.get(key), is(not(nullValue())));
     }
 
     /**
      * @throws Exception
      */
-    public void testDeleteEntitiesInIllegalTx() throws Exception {
+    @Test(expected = IllegalStateException.class)
+    public void deleteEntitiesInIllegalTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Transaction tx = Datastore.beginTransaction();
         tx.rollback();
-        try {
-            Datastore.delete(tx, Arrays.asList(key));
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
+        Datastore.delete(tx, Arrays.asList(key));
     }
 
     /**
      * @throws Exception
      */
-    public void testDeleteEntitiesInTxForVarargs() throws Exception {
+    @Test
+    public void deleteEntitiesInTxForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = Datastore.beginTransaction();
         Datastore.delete(tx, key, key2);
         tx.rollback();
-        assertNotNull(ds.get(key));
-        assertNotNull(ds.get(key2));
+        assertThat(ds.get(Arrays.asList(key, key2)).size(), is(2));
     }
 
     /**
      * @throws Exception
      */
-    public void testDeleteEntitiesInIllegalTxForVarargs() throws Exception {
+    @Test(expected = IllegalStateException.class)
+    public void deleteEntitiesInIllegalTxForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = Datastore.beginTransaction();
         tx.rollback();
-        try {
-            Datastore.delete(tx, key, key2);
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
+        Datastore.delete(tx, key, key2);
     }
 
     /**
      * @throws Exception
      */
-    public void testQueryUsingModelMeta() throws Exception {
-        assertNotNull(Datastore.query(meta));
+    @Test
+    public void queryUsingModelMeta() throws Exception {
+        assertThat(Datastore.query(meta), is(not(nullValue())));
     }
 
     /**
      * @throws Exception
      */
-    public void testQueryUsingModelMetaAndAncestorKey() throws Exception {
-        assertNotNull(Datastore.query(meta, KeyFactory.createKey("Parent", 1)));
+    @Test
+    public void queryUsingModelMetaAndAncestorKey() throws Exception {
+        assertThat(
+            Datastore.query(meta, KeyFactory.createKey("Parent", 1)),
+            is(not(nullValue())));
     }
 
     /**
      * @throws Exception
      */
-    public void testQueryUsingKind() throws Exception {
-        assertNotNull(Datastore.query("Hoge"));
+    @Test
+    public void queryUsingKind() throws Exception {
+        assertThat(Datastore.query("Hoge"), is(not(nullValue())));
     }
 
     /**
      * @throws Exception
      */
-    public void testQueryUsingKindAndAncestorKey() throws Exception {
-        assertNotNull(Datastore
-            .query("Hoge", KeyFactory.createKey("Parent", 1)));
+    @Test
+    public void queryUsingKindAndAncestorKey() throws Exception {
+        assertThat(
+            Datastore.query("Hoge", KeyFactory.createKey("Parent", 1)),
+            is(not(nullValue())));
     }
 
     /**
      * @throws Exception
      */
-    public void testQueryUsingAncestorKey() throws Exception {
-        assertNotNull(Datastore.query(KeyFactory.createKey("Parent", 1)));
+    @Test
+    public void queryUsingAncestorKey() throws Exception {
+        assertThat(
+            Datastore.query(KeyFactory.createKey("Parent", 1)),
+            is(not(nullValue())));
     }
 
     /**
      * @throws Exception
      */
-    public void testCreateModelMeta() throws Exception {
+    @SuppressWarnings("unchecked")
+    @Test
+    public void createModelMeta() throws Exception {
         ModelMeta<?> modelMeta = Datastore.createModelMeta(Hoge.class);
-        assertNotNull(modelMeta);
-        assertEquals(Hoge.class, modelMeta.getModelClass());
+        assertThat(modelMeta, is(not(nullValue())));
+        assertThat((Class) modelMeta.getModelClass(), equalTo(Hoge.class));
     }
 
     /**
      * @throws Exception
      */
-    public void testCreateModelMetaForNotFound() throws Exception {
-        try {
-            Datastore.createModelMeta(getClass());
-            fail();
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        }
+    @Test(expected = IllegalArgumentException.class)
+    public void createModelMetaWhenModelMetaIsNotFound() throws Exception {
+        Datastore.createModelMeta(getClass());
     }
 
     /**
      * @throws Exception
      */
-    public void testGetModelMeta() throws Exception {
+    @SuppressWarnings("unchecked")
+    @Test
+    public void getModelMeta() throws Exception {
         ModelMeta<?> modelMeta = Datastore.getModelMeta(Hoge.class);
-        assertNotNull(modelMeta);
-        assertSame(modelMeta, Datastore.getModelMeta(Hoge.class));
+        assertThat(modelMeta, is(not(nullValue())));
+        assertThat(modelMeta, is(sameInstance((ModelMeta) Datastore
+            .getModelMeta(Hoge.class))));
     }
 
     /**
      * @throws Exception
      */
-    public void testFilter() throws Exception {
+    @Test
+    public void filter() throws Exception {
         List<Hoge> list = new ArrayList<Hoge>();
         Hoge hoge = new Hoge();
         hoge.setMyInteger(1);
@@ -1070,14 +1015,15 @@ public class DatastoreTest extends DatastoreTestCase {
                 list,
                 meta.myInteger.greaterThanOrEqual(2),
                 meta.myInteger.lessThan(3));
-        assertEquals(1, filtered.size());
-        assertEquals(Integer.valueOf(2), filtered.get(0).getMyInteger());
+        assertThat(filtered.size(), is(1));
+        assertThat(filtered.get(0).getMyInteger(), is(2));
     }
 
     /**
      * @throws Exception
      */
-    public void testFilterForNullCriterion() throws Exception {
+    @Test
+    public void filterForNullCriterion() throws Exception {
         List<Hoge> list = new ArrayList<Hoge>();
         Hoge hoge = new Hoge();
         hoge.setMyInteger(1);
@@ -1094,15 +1040,16 @@ public class DatastoreTest extends DatastoreTestCase {
                 list,
                 meta.myInteger.greaterThanOrEqual(null),
                 meta.myInteger.lessThan(3));
-        assertEquals(2, filtered.size());
-        assertEquals(Integer.valueOf(1), filtered.get(0).getMyInteger());
-        assertEquals(Integer.valueOf(2), filtered.get(1).getMyInteger());
+        assertThat(filtered.size(), is(2));
+        assertThat(filtered.get(0).getMyInteger(), is(1));
+        assertThat(filtered.get(1).getMyInteger(), is(2));
     }
 
     /**
      * @throws Exception
      */
-    public void testSort() throws Exception {
+    @Test
+    public void sort() throws Exception {
         List<Hoge> list = new ArrayList<Hoge>();
         Hoge hoge = new Hoge();
         hoge.setMyInteger(1);
@@ -1115,9 +1062,9 @@ public class DatastoreTest extends DatastoreTestCase {
         list.add(hoge);
 
         List<Hoge> sorted = Datastore.sort(list, meta.myInteger.desc);
-        assertEquals(3, sorted.size());
-        assertEquals(Integer.valueOf(3), sorted.get(0).getMyInteger());
-        assertEquals(Integer.valueOf(2), sorted.get(1).getMyInteger());
-        assertEquals(Integer.valueOf(1), sorted.get(2).getMyInteger());
+        assertThat(sorted.size(), is(3));
+        assertThat(sorted.get(0).getMyInteger(), is(3));
+        assertThat(sorted.get(1).getMyInteger(), is(2));
+        assertThat(sorted.get(2).getMyInteger(), is(1));
     }
 }

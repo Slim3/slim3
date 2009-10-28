@@ -15,21 +15,25 @@
  */
 package org.slim3.controller.upload;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class SizeLimitExceededExceptionTest extends TestCase {
+public class SizeLimitExceededExceptionTest {
 
     /**
      * @throws Exception
      */
-    public void test() throws Exception {
+    @Test
+    public void all() throws Exception {
         SizeLimitExceededException e =
             new SizeLimitExceededException("Hoge", 101, 100);
-        assertEquals(101, e.getActualSize());
-        assertEquals(100, e.getPermittedSize());
+        assertThat(e.getActualSize(), is(101L));
+        assertThat(e.getPermittedSize(), is(100L));
     }
 }

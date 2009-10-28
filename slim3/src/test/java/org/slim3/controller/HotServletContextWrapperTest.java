@@ -15,15 +15,17 @@
  */
 package org.slim3.controller;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
+import org.junit.Test;
 import org.slim3.tester.MockServletContext;
 
 /**
  * @author higa
  * 
  */
-public class HotServletContextWrapperTest extends TestCase {
+public class HotServletContextWrapperTest {
 
     private MockServletContext servletContext = new MockServletContext();
 
@@ -34,7 +36,10 @@ public class HotServletContextWrapperTest extends TestCase {
      * @throws Exception
      * 
      */
-    public void testGetRequestDispatcher() throws Exception {
-        assertTrue(servletContextWrapper.getRequestDispatcher("/index.jsp") instanceof HotRequestDispatcherWrapper);
+    @Test
+    public void getRequestDispatcher() throws Exception {
+        assertThat(
+            servletContextWrapper.getRequestDispatcher("/index.jsp"),
+            is(HotRequestDispatcherWrapper.class));
     }
 }

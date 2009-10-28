@@ -15,23 +15,25 @@
  */
 package org.slim3.controller;
 
-import org.slim3.controller.Navigation;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class NavigationTest extends TestCase {
+public class NavigationTest {
 
     /**
      * @throws Exception
      * 
      */
-    public void testConstructor() throws Exception {
+    @Test
+    public void constructor() throws Exception {
         Navigation nav = new Navigation("index.jsp", false);
-        assertEquals("index.jsp", nav.getPath());
-        assertFalse(nav.isRedirect());
+        assertThat(nav.getPath(), is("index.jsp"));
+        assertThat(nav.isRedirect(), is(false));
     }
 }

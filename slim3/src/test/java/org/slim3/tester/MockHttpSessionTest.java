@@ -15,18 +15,18 @@
  */
 package org.slim3.tester;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.util.Enumeration;
 
-import org.slim3.tester.MockHttpSession;
-import org.slim3.tester.MockServletContext;
-
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class MockHttpSessionTest extends TestCase {
+public class MockHttpSessionTest {
 
     private MockServletContext servletContext = new MockServletContext();
 
@@ -36,44 +36,48 @@ public class MockHttpSessionTest extends TestCase {
      * @throws Exception
      * 
      */
-    public void testAttribute() throws Exception {
+    @Test
+    public void attribute() throws Exception {
         Object value = "111";
         String name = "aaa";
         session.setAttribute(name, value);
-        assertSame(value, session.getAttribute(name));
+        assertThat(session.getAttribute(name), is(value));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testSetAttributeForNull() throws Exception {
+    @Test
+    public void setAttributeForNull() throws Exception {
         Object value = null;
         String name = "aaa";
         session.setAttribute(name, value);
-        assertNull(session.getAttribute(name));
+        assertThat(session.getAttribute(name), is(nullValue()));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testGetAttributeNames() throws Exception {
+    @Test
+    public void getAttributeNames() throws Exception {
         session.setAttribute("aaa", "");
         session.setAttribute("bbb", "");
         Enumeration<String> e = session.getAttributeNames();
         System.out.println(e.nextElement());
         System.out.println(e.nextElement());
-        assertFalse(e.hasMoreElements());
+        assertThat(e.hasMoreElements(), is(false));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testInvalidate() throws Exception {
+    @Test
+    public void invalidate() throws Exception {
         assertTrue(session.isValid());
         session.invalidate();
-        assertFalse(session.isValid());
+        assertThat(session.isValid(), is(false));
     }
 }

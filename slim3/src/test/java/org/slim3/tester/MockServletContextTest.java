@@ -15,6 +15,9 @@
  */
 package org.slim3.tester;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -22,129 +25,139 @@ import java.util.Set;
 
 import javax.servlet.RequestDispatcher;
 
-import org.slim3.tester.MockServletContext;
-
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class MockServletContextTest extends TestCase {
+public class MockServletContextTest {
 
     private MockServletContext servletContext = new MockServletContext();
 
     /**
      * 
      */
-    public void testResourcePaths() {
+    @Test
+    public void resourcePaths() {
         Set<String> paths = new HashSet<String>();
         paths.add("hoge");
         String path = "aaa";
         servletContext.addResourcePaths(path, paths);
-        assertSame(paths, servletContext.getResourcePaths(path));
-        assertEquals(0, servletContext.getResourcePaths("xxx").size());
+        assertThat(servletContext.getResourcePaths(path), is(paths));
+        assertThat(servletContext.getResourcePaths("xxx").size(), is(0));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testResource() throws Exception {
+    @Test
+    public void resource() throws Exception {
         URL url = new URL("http://www.slim3.org/");
         String path = "aaa";
         servletContext.addResource(path, url);
-        assertSame(url, servletContext.getResource(path));
+        assertThat(servletContext.getResource(path), is(url));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testRealPath() throws Exception {
+    @Test
+    public void realPath() throws Exception {
         String realPath = "real/path";
         String path = "aaa";
         servletContext.addRealPath(path, realPath);
-        assertSame(realPath, servletContext.getRealPath(path));
+        assertThat(servletContext.getRealPath(path), is(realPath));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testAttribute() throws Exception {
+    @Test
+    public void attribute() throws Exception {
         Object value = "111";
         String name = "aaa";
         servletContext.setAttribute(name, value);
-        assertSame(value, servletContext.getAttribute(name));
+        assertThat(servletContext.getAttribute(name), is(value));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testSetAttributeForNull() throws Exception {
+    @Test
+    public void setAttributeForNull() throws Exception {
         Object value = null;
         String name = "aaa";
         servletContext.setAttribute(name, value);
-        assertNull(servletContext.getAttribute(name));
+        assertThat(servletContext.getAttribute(name), is(nullValue()));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testGetAttributeNames() throws Exception {
+    @Test
+    public void getAttributeNames() throws Exception {
         servletContext.setAttribute("aaa", "");
         servletContext.setAttribute("bbb", "");
         Enumeration<String> e = servletContext.getAttributeNames();
         System.out.println(e.nextElement());
         System.out.println(e.nextElement());
-        assertFalse(e.hasMoreElements());
+        assertThat(e.hasMoreElements(), is(false));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testInitParameter() throws Exception {
+    @Test
+    public void initParameter() throws Exception {
         String value = "111";
         String name = "aaa";
         servletContext.setInitParameter(name, value);
-        assertSame(value, servletContext.getInitParameter(name));
+        assertThat(servletContext.getInitParameter(name), is(value));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testSetInitParameterForNull() throws Exception {
+    @Test
+    public void setInitParameterForNull() throws Exception {
         String value = null;
         String name = "aaa";
         servletContext.setInitParameter(name, value);
-        assertNull(servletContext.getInitParameter(name));
+        assertThat(servletContext.getInitParameter(name), is(nullValue()));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testGetInitParameterNames() throws Exception {
+    @Test
+    public void getInitParameterNames() throws Exception {
         servletContext.setInitParameter("aaa", "");
         servletContext.setInitParameter("bbb", "");
         Enumeration<String> e = servletContext.getInitParameterNames();
         System.out.println(e.nextElement());
         System.out.println(e.nextElement());
-        assertFalse(e.hasMoreElements());
+        assertThat(e.hasMoreElements(), is(false));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testGetRequestDispatcher() throws Exception {
-        RequestDispatcher dispatcher = servletContext
-                .getRequestDispatcher("/hello/");
-        assertSame(dispatcher, servletContext.getLatestRequestDispatcher());
+    @Test
+    public void getRequestDispatcher() throws Exception {
+        RequestDispatcher dispatcher =
+            servletContext.getRequestDispatcher("/hello/");
+        assertThat(
+            servletContext.getLatestRequestDispatcher(),
+            is(sameInstance(dispatcher)));
     }
 }

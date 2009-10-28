@@ -15,11 +15,16 @@
  */
 package org.slim3.datastore;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.util.Iterator;
-import java.util.List;
 
-import org.slim3.tester.DatastoreTestCase;
+import org.junit.Test;
+import org.slim3.tester.LocalServiceTestCase;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
@@ -28,86 +33,95 @@ import com.google.appengine.api.datastore.Query.SortDirection;
  * @author higa
  * 
  */
-public class EntityQueryTest extends DatastoreTestCase {
+public class EntityQueryTest extends LocalServiceTestCase {
+
+    private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
     /**
      * @throws Exception
      */
-    public void testFilter() throws Exception {
+    @Test
+    public void filter() throws Exception {
         EntityQuery q = new EntityQuery("Hoge");
-        assertSame(q, q.filter("aaa", FilterOperator.EQUAL, "111"));
-        assertEquals(1, q.query.getFilterPredicates().size());
-        assertEquals("aaa", q.query
-            .getFilterPredicates()
-            .get(0)
-            .getPropertyName());
-        assertEquals(FilterOperator.EQUAL, q.query
-            .getFilterPredicates()
-            .get(0)
-            .getOperator());
-        assertEquals("111", q.query.getFilterPredicates().get(0).getValue());
+        assertThat(
+            q.filter("aaa", FilterOperator.EQUAL, "111"),
+            is(sameInstance(q)));
+        assertThat(q.query.getFilterPredicates().size(), is(1));
+        assertThat(
+            q.query.getFilterPredicates().get(0).getPropertyName(),
+            is("aaa"));
+        assertThat(
+            q.query.getFilterPredicates().get(0).getOperator(),
+            is(FilterOperator.EQUAL));
+        assertThat(
+            (String) q.query.getFilterPredicates().get(0).getValue(),
+            is("111"));
     }
 
     /**
      * @throws Exception
      */
-    public void testSort() throws Exception {
+    @Test
+    public void sort() throws Exception {
         EntityQuery q = new EntityQuery("Hoge");
-        assertSame(q, q.sort("aaa", SortDirection.DESCENDING));
-        assertEquals(1, q.query.getSortPredicates().size());
-        assertEquals("aaa", q.query
-            .getSortPredicates()
-            .get(0)
-            .getPropertyName());
-        assertEquals(SortDirection.DESCENDING, q.query.getSortPredicates().get(
-            0).getDirection());
+        assertThat(q.sort("aaa", SortDirection.DESCENDING), is(sameInstance(q)));
+        assertThat(q.query.getSortPredicates().size(), is(1));
+        assertThat(
+            q.query.getSortPredicates().get(0).getPropertyName(),
+            is("aaa"));
+        assertThat(
+            q.query.getSortPredicates().get(0).getDirection(),
+            is(SortDirection.DESCENDING));
     }
 
     /**
      * @throws Exception
      */
-    public void testAsList() throws Exception {
+    @Test
+    public void asList() throws Exception {
         ds.put(new Entity("Hoge"));
         EntityQuery q = new EntityQuery("Hoge");
-        List<Entity> list = q.asList();
-        assertEquals(1, list.size());
+        assertThat(q.asList().size(), is(1));
     }
 
     /**
      * @throws Exception
      */
-    public void testAsSingleEntity() throws Exception {
+    @Test
+    public void asSingleEntity() throws Exception {
         ds.put(new Entity("Hoge"));
         EntityQuery q = new EntityQuery("Hoge");
         Entity entity = q.asSingleEntity();
-        assertNotNull(entity);
+        assertThat(entity, is(not(nullValue())));
     }
 
     /**
      * @throws Exception
      */
-    public void testAsIterable() throws Exception {
+    @Test
+    public void asIterable() throws Exception {
         ds.put(new Entity("Hoge"));
         EntityQuery q = new EntityQuery("Hoge");
         boolean found = false;
         for (Entity entity : q.asIterable()) {
             found = true;
-            assertEquals("Hoge", entity.getKind());
+            assertThat(entity.getKind(), is("Hoge"));
         }
-        assertTrue(found);
+        assertThat(found, is(true));
     }
 
     /**
      * @throws Exception
      */
-    public void testAsIterator() throws Exception {
+    @Test
+    public void asIterator() throws Exception {
         ds.put(new Entity("Hoge"));
         EntityQuery q = new EntityQuery("Hoge");
         boolean found = false;
         for (Iterator<Entity> i = q.asIterator(); i.hasNext();) {
             found = true;
-            assertEquals("Hoge", i.next().getKind());
+            assertThat(i.next().getKind(), is("Hoge"));
         }
-        assertTrue(found);
+        assertThat(found, is(true));
     }
 }

@@ -15,6 +15,10 @@
  */
 package org.slim3.tester.controller;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
 import org.slim3.tester.ControllerTestCase;
 
 /**
@@ -26,11 +30,12 @@ public class IndexControllerTest extends ControllerTestCase {
     /**
      * @throws Exception
      */
-    public void testExecute() throws Exception {
-        start("/");
-        IndexController controller = getController();
-        assertNotNull(controller);
-        assertFalse(isRedirect());
-        assertEquals("/index.jsp", getDestinationPath());
+    @Test
+    public void run() throws Exception {
+        tester.start("/");
+        IndexController controller = tester.getController();
+        assertThat(controller, is(not(nullValue())));
+        assertThat(tester.isRedirect(), is(false));
+        assertThat(tester.getDestinationPath(), is("/index.jsp"));
     }
 }

@@ -15,11 +15,18 @@
  */
 package org.slim3.datastore;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.List;
 
-import org.slim3.tester.DatastoreTestCase;
+import org.junit.Test;
+import org.slim3.tester.LocalServiceTestCase;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
@@ -30,42 +37,45 @@ import com.google.appengine.api.datastore.Transaction;
  * @author higa
  * 
  */
-public class AbstQueryTest extends DatastoreTestCase {
+public class AbstQueryTest extends LocalServiceTestCase {
+
+    private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
     /**
      * @throws Exception
      */
-    public void testConstructorUsingKind() throws Exception {
+    @Test
+    public void constructorUsingKind() throws Exception {
         MyQuery q = new MyQuery("Hoge");
-        assertEquals("Hoge", q.query.getKind());
-        assertFalse(q.txSet);
+        assertThat(q.query.getKind(), is("Hoge"));
     }
 
     /**
      * @throws Exception
      */
-    public void testConstructorUsingKindAndAncestorKey() throws Exception {
+    @Test
+    public void constructorUsingKindAndAncestorKey() throws Exception {
         Key key = KeyFactory.createKey("Hoge", 1);
         MyQuery q = new MyQuery("Hoge", key);
-        assertEquals("Hoge", q.query.getKind());
-        assertEquals(key, q.query.getAncestor());
-        assertFalse(q.txSet);
+        assertThat(q.query.getKind(), is("Hoge"));
+        assertThat(q.query.getAncestor(), is(key));
     }
 
     /**
      * @throws Exception
      */
-    public void testConstructorUsingAncestorKey() throws Exception {
+    @Test
+    public void constructorUsingAncestorKey() throws Exception {
         Key key = KeyFactory.createKey("Hoge", 1);
         MyQuery q = new MyQuery(key);
-        assertEquals(key, q.query.getAncestor());
-        assertFalse(q.txSet);
+        assertThat(q.query.getAncestor(), is(key));
     }
 
     /**
      * @throws Exception
      */
-    public void testTx() throws Exception {
+    @Test
+    public void tx() throws Exception {
         MyQuery q = new MyQuery("Hoge");
         assertEquals(q, q.tx(ds.beginTransaction()));
         assertNotNull(q.tx);
@@ -75,104 +85,106 @@ public class AbstQueryTest extends DatastoreTestCase {
     /**
      * @throws Exception
      */
-    public void testNoTx() throws Exception {
+    @Test
+    public void noTx() throws Exception {
         MyQuery q = new MyQuery("Hoge");
-        assertNull(q.tx);
-        assertFalse(q.txSet);
+        assertThat(q.tx, is(nullValue()));
+        assertThat(q.txSet, is(false));
     }
 
     /**
      * @throws Exception
      */
-    public void testNullTx() throws Exception {
+    @Test
+    public void nullTx() throws Exception {
         MyQuery q = new MyQuery("Hoge");
-        assertEquals(q, q.tx(null));
-        assertNull(q.tx);
-        assertTrue(q.txSet);
+        q.tx(null);
+        assertThat(q.tx, is(nullValue()));
+        assertThat(q.txSet, is(true));
     }
 
     /**
      * @throws Exception
      */
-    public void testIllegalTx() throws Exception {
+    @Test(expected = IllegalStateException.class)
+    public void illegalTx() throws Exception {
         MyQuery q = new MyQuery("Hoge");
-        try {
-            Transaction tx = ds.beginTransaction();
-            tx.rollback();
-            q.tx(tx);
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
+        Transaction tx = ds.beginTransaction();
+        tx.rollback();
+        q.tx(tx);
     }
 
     /**
      * @throws Exception
      */
-    public void testAsEntityList() throws Exception {
+    @Test
+    public void asEntityList() throws Exception {
         ds.put(new Entity("Hoge"));
         MyQuery query = new MyQuery("Hoge");
         List<Entity> list = query.asEntityList();
-        assertEquals(1, list.size());
+        assertThat(list.size(), is(1));
     }
 
     /**
      * @throws Exception
      */
-    public void testAsSingleEntity() throws Exception {
+    @Test
+    public void asSingleEntity() throws Exception {
         ds.put(new Entity("Hoge"));
         MyQuery query = new MyQuery("Hoge");
-        Entity entity = query.asSingleEntity();
-        assertNotNull(entity);
+        assertThat(query.asSingleEntity(), is(not(nullValue())));
     }
 
     /**
      * @throws Exception
      */
-    public void testAsKeyList() throws Exception {
+    @Test
+    public void asKeyList() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         MyQuery query = new MyQuery("Hoge");
-        List<Key> list = query.asKeyList();
-        assertEquals(1, list.size());
-        assertEquals(key, list.get(0));
+        assertThat(query.asKeyList(), is(Arrays.asList(key)));
     }
 
     /**
      * @throws Exception
      */
-    public void testAsIterableEntities() throws Exception {
+    @Test
+    public void asIterableEntities() throws Exception {
         ds.put(new Entity("Hoge"));
         MyQuery query = new MyQuery("Hoge");
         boolean found = false;
         for (Entity entity : query.asIterableEntities()) {
             found = true;
-            assertEquals("Hoge", entity.getKind());
+            assertThat(entity.getKind(), is("Hoge"));
         }
-        assertTrue(found);
+        assertThat(found, is(true));
     }
 
     /**
      * @throws Exception
      */
-    public void testCount() throws Exception {
+    @Test
+    public void count() throws Exception {
         ds.put(new Entity("Hoge"));
         MyQuery query = new MyQuery("Hoge");
-        assertEquals(1, query.count());
+        assertThat(query.count(), is(1));
     }
 
     /**
      * @throws Exception
      */
-    public void testCountQuickly() throws Exception {
+    @Test
+    public void countQuickly() throws Exception {
         ds.put(new Entity("Hoge"));
         MyQuery query = new MyQuery("Hoge");
-        assertEquals(1, query.count());
+        assertThat(query.countQuickly(), is(1));
     }
 
     /**
      * @throws Exception
      */
-    public void testMin() throws Exception {
+    @Test
+    public void min() throws Exception {
         Entity entity = new Entity("Hoge");
         entity.setProperty("age", 10);
         ds.put(entity);
@@ -183,14 +195,15 @@ public class AbstQueryTest extends DatastoreTestCase {
         entity3.setProperty("age", null);
         ds.put(entity3);
         MyQuery query = new MyQuery("Hoge");
-        assertEquals(10L, query.min("age"));
-        assertNull(query.max("name"));
+        assertThat((Long) query.min("age"), is(10L));
+        assertThat(query.max("name"), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testMax() throws Exception {
+    @Test
+    public void max() throws Exception {
         Entity entity = new Entity("Hoge");
         entity.setProperty("age", 10);
         ds.put(entity);
@@ -198,52 +211,56 @@ public class AbstQueryTest extends DatastoreTestCase {
         entity2.setProperty("age", 20);
         ds.put(entity2);
         MyQuery query = new MyQuery("Hoge");
-        assertEquals(20L, query.max("age"));
-        assertNull(query.max("name"));
+        assertThat((Long) query.max("age"), is(20L));
+        assertThat(query.max("name"), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testOffset() throws Exception {
+    @Test
+    public void offset() throws Exception {
         MyQuery q = new MyQuery("Hoge");
-        assertSame(q, q.offset(10));
+        assertThat(q.offset(10), is(sameInstance(q)));
         Field f = FetchOptions.class.getDeclaredField("offset");
         f.setAccessible(true);
-        assertEquals(10, f.get(q.fetchOptions));
+        assertThat((Integer) f.get(q.fetchOptions), is(10));
     }
 
     /**
      * @throws Exception
      */
-    public void testLimit() throws Exception {
+    @Test
+    public void limit() throws Exception {
         MyQuery q = new MyQuery("Hoge");
-        assertSame(q, q.limit(100));
+        assertThat(q.limit(100), is(sameInstance(q)));
         Field f = FetchOptions.class.getDeclaredField("limit");
         f.setAccessible(true);
-        assertEquals(100, f.get(q.fetchOptions));
+        assertThat((Integer) f.get(q.fetchOptions), is(100));
     }
 
     /**
      * @throws Exception
      */
-    public void testPrefetchSize() throws Exception {
+    @Test
+    public void prefetchSize() throws Exception {
         MyQuery q = new MyQuery("Hoge");
-        assertSame(q, q.prefetchSize(15));
+        assertThat(q.prefetchSize(15), is(sameInstance(q)));
         Field f = FetchOptions.class.getDeclaredField("prefetchSize");
         f.setAccessible(true);
-        assertEquals(15, f.get(q.fetchOptions));
+        assertThat((Integer) f.get(q.fetchOptions), is(15));
     }
 
     /**
      * @throws Exception
      */
-    public void testChunkSize() throws Exception {
+    @Test
+    public void chunkSize() throws Exception {
         MyQuery q = new MyQuery("Hoge");
-        assertSame(q, q.chunkSize(20));
+        assertThat(q.chunkSize(20), is(sameInstance(q)));
         Field f = FetchOptions.class.getDeclaredField("chunkSize");
         f.setAccessible(true);
-        assertEquals(20, f.get(q.fetchOptions));
+        assertThat((Integer) f.get(q.fetchOptions), is(20));
     }
 
     private static class MyQuery extends AbstractQuery<MyQuery> {

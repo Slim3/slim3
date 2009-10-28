@@ -15,8 +15,10 @@
  */
 package org.slim3.datastore;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
+import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
 
@@ -24,31 +26,36 @@ import org.slim3.datastore.model.Hoge;
  * @author higa
  * 
  */
-public class AbstCriterionTest extends TestCase {
+public class AbstCriterionTest {
+
+    private HogeMeta meta = new HogeMeta();
 
     /**
      * @throws Exception
      * 
      */
-    public void testConstructor() throws Exception {
-        HogeMeta meta = new HogeMeta();
+    @SuppressWarnings("unchecked")
+    @Test
+    public void constructor() throws Exception {
         MyCriterion criterion = new MyCriterion(meta.myInteger);
-        assertEquals(meta.myInteger, criterion.attributeMeta);
+        assertThat(
+            (CoreAttributeMeta) criterion.attributeMeta,
+            is(sameInstance(meta.myInteger)));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testCompareValue() throws Exception {
-        HogeMeta meta = new HogeMeta();
+    @Test
+    public void compareValue() throws Exception {
         MyCriterion criterion = new MyCriterion(meta.myInteger);
-        assertEquals(-1, criterion.compareValue(1, 2));
-        assertEquals(0, criterion.compareValue(1, 1));
-        assertEquals(1, criterion.compareValue(2, 1));
-        assertEquals(-1, criterion.compareValue(null, 1));
-        assertEquals(0, criterion.compareValue(null, null));
-        assertEquals(1, criterion.compareValue(1, null));
+        assertThat(criterion.compareValue(1, 2), is(-1));
+        assertThat(criterion.compareValue(1, 1), is(0));
+        assertThat(criterion.compareValue(2, 1), is(1));
+        assertThat(criterion.compareValue(null, 1), is(-1));
+        assertThat(criterion.compareValue(null, null), is(0));
+        assertThat(criterion.compareValue(1, null), is(1));
     }
 
     private static class MyCriterion extends AbstractCriterion {

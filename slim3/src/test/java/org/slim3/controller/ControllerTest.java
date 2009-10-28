@@ -15,12 +15,13 @@
  */
 package org.slim3.controller;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.TimeZone;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
+import java.util.Date;
+
+import org.junit.Test;
 import org.slim3.tester.ControllerTestCase;
-import org.slim3.util.TimeZoneLocator;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -34,261 +35,261 @@ public class ControllerTest extends ControllerTestCase {
     private IndexController controller = new IndexController();
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
-        controller.application = application;
-        controller.request = request;
-        controller.response = response;
-        TimeZoneLocator.set(TimeZone.getTimeZone("UTC"));
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        TimeZoneLocator.set(null);
-        super.tearDown();
+        controller.servletContext = tester.servletContext;
+        controller.request = tester.request;
+        controller.response = tester.response;
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testForward() throws Exception {
+    @Test
+    public void forward() throws Exception {
         Navigation nav = controller.forward("index.jsp");
-        assertEquals("index.jsp", nav.getPath());
-        assertFalse(nav.isRedirect());
+        assertThat(nav.getPath(), is("index.jsp"));
+        assertThat(nav.isRedirect(), is(false));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testForwardForOtherController() throws Exception {
+    @Test
+    public void forwardForOtherController() throws Exception {
         Navigation nav = controller.forward("/hello/index");
-        assertEquals("/hello/index", nav.getPath());
-        assertFalse(nav.isRedirect());
+        assertThat(nav.getPath(), is("/hello/index"));
+        assertThat(nav.isRedirect(), is(false));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testRedirect() throws Exception {
+    @Test
+    public void redirect() throws Exception {
         Navigation nav = controller.redirect("index");
-        assertEquals("index", nav.getPath());
-        assertTrue(nav.isRedirect());
+        assertThat(nav.getPath(), is("index"));
+        assertThat(nav.isRedirect(), is(true));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testParam() throws Exception {
-        request.setParameter("aaa", "111");
-        assertEquals("111", controller.param("aaa"));
+    @Test
+    public void param() throws Exception {
+        tester.request.setParameter("aaa", "111");
+        assertThat(controller.param("aaa"), is("111"));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testParamValues() throws Exception {
+    @Test
+    public void paramValues() throws Exception {
         String[] array = new String[] { "111" };
-        request.setParameter("aaa", array);
-        assertEquals(array, controller.paramValues("aaa"));
+        tester.request.setParameter("aaa", array);
+        assertThat(controller.paramValues("aaa"), is(array));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testRequestScope() throws Exception {
+    @Test
+    public void requestScope() throws Exception {
         Integer value = 1;
         controller.requestScope("aaa", value);
         Integer returnValue = controller.requestScope("aaa");
-        assertEquals(value, returnValue);
-        assertEquals(value, request.getAttribute("aaa"));
+        assertThat(returnValue, is(value));
+        assertThat(tester.asInteger("aaa"), is(value));
         returnValue = controller.removeRequestScope("aaa");
-        assertEquals(value, returnValue);
-        assertNull(request.getAttribute("aaa"));
+        assertThat(returnValue, is(value));
+        assertThat(tester.request.getAttribute("aaa"), is(nullValue()));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testSessionScope() throws Exception {
+    @Test
+    public void sessionScope() throws Exception {
         Integer value = 1;
         controller.sessionScope("aaa", value);
         Integer returnValue = controller.sessionScope("aaa");
-        assertEquals(value, returnValue);
-        assertEquals(value, request.getSession().getAttribute("aaa"));
+        assertThat(returnValue, is(value));
+        assertThat(
+            (Integer) tester.request.getSession().getAttribute("aaa"),
+            is(value));
         returnValue = controller.removeSessionScope("aaa");
-        assertEquals(value, returnValue);
-        assertNull(request.getSession().getAttribute("aaa"));
+        assertThat(returnValue, is(value));
+        assertThat(
+            tester.request.getSession().getAttribute("aaa"),
+            is(nullValue()));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testApplicationScope() throws Exception {
+    @Test
+    public void applicationScope() throws Exception {
         Integer value = 1;
         controller.applicationScope("aaa", value);
         Integer returnValue = controller.applicationScope("aaa");
-        assertEquals(value, returnValue);
-        assertEquals(value, application.getAttribute("aaa"));
+        assertThat(returnValue, is(value));
+        assertThat(
+            (Integer) tester.servletContext.getAttribute("aaa"),
+            is(value));
         returnValue = controller.removeApplicationScope("aaa");
-        assertEquals(value, returnValue);
-        assertNull(application.getAttribute("aaa"));
+        assertThat(returnValue, is(value));
+        assertThat(tester.servletContext.getAttribute("aaa"), is(nullValue()));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testIsDevelopment() throws Exception {
-        assertFalse(controller.isDevelopment());
-        application.setServerInfo("Development");
-        assertTrue(controller.isDevelopment());
+    @Test
+    public void isDevelopment() throws Exception {
+        assertThat(controller.isDevelopment(), is(false));
+        tester.servletContext.setServerInfo("Development");
+        assertThat(controller.isDevelopment(), is(true));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testDownload() throws Exception {
+    @Test
+    public void download() throws Exception {
         controller.download("aaa.txt", new byte[] { 1 });
-        byte[] bytes = response.getOutputAsByteArray();
-        assertEquals(1, bytes.length);
-        assertEquals(1, bytes[0]);
+        byte[] bytes = tester.response.getOutputAsByteArray();
+        assertThat(bytes.length, is(1));
+        assertThat(bytes[0], is((byte) 1));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testAsByte() throws Exception {
-        request.setAttribute("aaa", "1");
-        assertEquals(new Byte("1"), controller.asByte("aaa"));
-        assertEquals(new Byte("1"), controller.asByte("aaa", "###"));
+    @Test
+    public void asShort() throws Exception {
+        tester.request.setAttribute("aaa", "1");
+        assertThat(controller.asShort("aaa"), is((short) 1));
+        assertThat(controller.asShort("aaa", "###"), is((short) 1));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testAsShort() throws Exception {
-        request.setAttribute("aaa", "1");
-        assertEquals(new Short("1"), controller.asShort("aaa"));
-        assertEquals(new Short("1"), controller.asShort("aaa", "###"));
+    @Test
+    public void asInteger() throws Exception {
+        tester.request.setAttribute("aaa", "1");
+        assertThat(controller.asInteger("aaa"), is(1));
+        assertThat(controller.asInteger("aaa", "###"), is(1));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testAsInteger() throws Exception {
-        request.setAttribute("aaa", "1");
-        assertEquals(new Integer("1"), controller.asInteger("aaa"));
-        assertEquals(new Integer("1"), controller.asInteger("aaa", "###"));
+    @Test
+    public void asLong() throws Exception {
+        tester.request.setAttribute("aaa", "1");
+        assertThat(controller.asLong("aaa"), is((long) 1));
+        assertThat(controller.asLong("aaa", "###"), is((long) 1));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testAsLong() throws Exception {
-        request.setAttribute("aaa", "1");
-        assertEquals(new Long("1"), controller.asLong("aaa"));
-        assertEquals(new Long("1"), controller.asLong("aaa", "###"));
+    @Test
+    public void asFloat() throws Exception {
+        tester.request.setAttribute("aaa", "1");
+        assertThat(controller.asFloat("aaa"), is(1f));
+        assertThat(controller.asFloat("aaa", "###"), is(1f));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testAsFloat() throws Exception {
-        request.setAttribute("aaa", "1");
-        assertEquals(new Float("1"), controller.asFloat("aaa"));
-        assertEquals(new Float("1"), controller.asFloat("aaa", "###"));
+    @Test
+    public void asDouble() throws Exception {
+        tester.request.setAttribute("aaa", "1");
+        assertThat(controller.asDouble("aaa"), is(1d));
+        assertThat(controller.asDouble("aaa", "###"), is(1d));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testAsDouble() throws Exception {
-        request.setAttribute("aaa", "1");
-        assertEquals(new Double("1"), controller.asDouble("aaa"));
-        assertEquals(new Double("1"), controller.asDouble("aaa", "###"));
+    @Test
+    public void asDateForDatePattern() throws Exception {
+        tester.request.setAttribute("aaa", "01011970");
+        assertThat(controller.asDate("aaa", "MMddyyyy"), is(new Date(0)));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testAsBigDecimal() throws Exception {
-        request.setAttribute("aaa", "1");
-        assertEquals(new BigDecimal("1"), controller.asBigDecimal("aaa"));
-        assertEquals(new BigDecimal("1"), controller.asBigDecimal("aaa", "###"));
+    @Test
+    public void asDateForTimePattern() throws Exception {
+        tester.request.setAttribute("aaa", "000000");
+        assertThat(controller.asDate("aaa", "hhmmss"), is(new Date(0)));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testAsDateForDate() throws Exception {
-        request.setAttribute("aaa", "19700101");
-        assertEquals(new Date(0), controller.asDate("aaa", "yyyyMMdd"));
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testAsDateForTime() throws Exception {
-        request.setAttribute("aaa", "000000");
-        assertEquals(new Date(0), controller.asDate("aaa", "hhmmss"));
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testAsKey() throws Exception {
+    @Test
+    public void asKey() throws Exception {
         Key key = KeyFactory.createKey("Hoge", 1);
-        request.setAttribute("key", KeyFactory.keyToString(key));
-        assertEquals(key, asKey("key"));
+        tester.request.setAttribute("key", KeyFactory.keyToString(key));
+        assertThat(tester.asKey("key"), is(key));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testAsKeyForKeyIsNull() throws Exception {
-        assertNull(controller.asKey("key"));
+    @Test
+    public void asKeyForKeyIsNull() throws Exception {
+        assertThat(controller.asKey("key"), is(nullValue()));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testIsGet() throws Exception {
-        request.setMethod("get");
-        assertTrue(controller.isGet());
-        request.setMethod("post");
-        assertFalse(controller.isGet());
+    @Test
+    public void isGet() throws Exception {
+        tester.request.setMethod("get");
+        assertThat(controller.isGet(), is(true));
+        tester.request.setMethod("post");
+        assertThat(controller.isGet(), is(false));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testIsPost() throws Exception {
-        request.setMethod("post");
-        assertTrue(controller.isPost());
-        request.setMethod("get");
-        assertFalse(controller.isPost());
+    @Test
+    public void isPost() throws Exception {
+        tester.request.setMethod("post");
+        assertThat(controller.isPost(), is(true));
+        tester.request.setMethod("get");
+        assertThat(controller.isPost(), is(false));
     }
 
     private static class IndexController extends Controller {

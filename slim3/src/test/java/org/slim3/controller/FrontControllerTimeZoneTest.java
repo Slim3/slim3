@@ -15,10 +15,12 @@
  */
 package org.slim3.controller;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.util.TimeZone;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
 
@@ -26,13 +28,14 @@ import org.slim3.tester.MockServletContext;
  * @author higa
  * 
  */
-public class FrontControllerTimeZoneTest extends TestCase {
+public class FrontControllerTimeZoneTest {
 
     /**
      * @throws Exception
      * 
      */
-    public void testInitDefaultTimeZone() throws Exception {
+    @Test
+    public void initDefaultTimeZone() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         FrontController frontController = new FrontController();
         servletContext.setInitParameter(
@@ -40,16 +43,16 @@ public class FrontControllerTimeZoneTest extends TestCase {
             "PST");
         frontController.servletContext = servletContext;
         frontController.initDefaultTimeZone();
-        assertEquals(
-            TimeZone.getTimeZone("PST"),
-            frontController.defaultTimeZone);
+        assertThat(frontController.defaultTimeZone, is(TimeZone
+            .getTimeZone("PST")));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testProcessTimeZoneForSession() throws Exception {
+    @Test
+    public void processTimeZoneForSession() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         MockHttpServletRequest request =
             new MockHttpServletRequest(servletContext);
@@ -58,34 +61,36 @@ public class FrontControllerTimeZoneTest extends TestCase {
             "PST");
         FrontController frontController = new FrontController();
         frontController.defaultTimeZone = TimeZone.getTimeZone("JST");
-        assertEquals(TimeZone.getTimeZone("PST"), frontController
-            .processTimeZone(request));
+        assertThat(frontController.processTimeZone(request), is(TimeZone
+            .getTimeZone("PST")));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testProcessTimeZoneForDefaultLocale() throws Exception {
+    @Test
+    public void processTimeZoneForDefaultLocale() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         MockHttpServletRequest request =
             new MockHttpServletRequest(servletContext);
         FrontController frontController = new FrontController();
         frontController.defaultTimeZone = TimeZone.getTimeZone("PST");
-        assertEquals(TimeZone.getTimeZone("PST"), frontController
-            .processTimeZone(request));
+        assertThat(frontController.processTimeZone(request), is(TimeZone
+            .getTimeZone("PST")));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testProcessTimeZoneForNoSetting() throws Exception {
+    @Test
+    public void processTimeZoneForNoSetting() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         MockHttpServletRequest request =
             new MockHttpServletRequest(servletContext);
         FrontController frontController = new FrontController();
-        assertEquals(TimeZone.getDefault(), frontController
-            .processTimeZone(request));
+        assertThat(frontController.processTimeZone(request), is(TimeZone
+            .getDefault()));
     }
 }

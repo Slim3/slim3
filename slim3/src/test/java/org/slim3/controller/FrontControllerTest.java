@@ -15,6 +15,10 @@
  */
 package org.slim3.controller;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
 import org.slim3.controller.controller.HogeController;
 import org.slim3.controller.controller.IndexController;
 import org.slim3.controller.controller.hello.ListController;
@@ -32,279 +36,358 @@ public class FrontControllerTest extends ControllerTestCase {
         FrontControllerTest.class.getPackage().getName();
 
     @Override
-    protected void setUpContextParameter() {
-        super.setUpContextParameter();
-        application.setInitParameter(
+    public void setUp() throws Exception {
+        tester.servletContext.setInitParameter(
             ControllerConstants.ROOT_PACKAGE_KEY,
             ROOT_PACKAGE);
+        super.setUp();
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testInit() throws Exception {
-        assertEquals(
-            ControllerConstants.DEFAULT_REQUEST_CHARSET,
-            frontController.charset);
-        assertEquals(
-            ControllerConstants.DEFAULT_LOCALIZATION_CONTEXT,
-            frontController.bundleName);
-        assertNotNull(ServletContextLocator.get());
-        assertEquals(ROOT_PACKAGE, frontController.rootPackageName);
+    @Test
+    public void init() throws Exception {
+        assertThat(
+            tester.frontController.charset,
+            is(ControllerConstants.DEFAULT_REQUEST_CHARSET));
+        assertThat(
+            tester.frontController.bundleName,
+            is(ControllerConstants.DEFAULT_LOCALIZATION_CONTEXT));
+        assertThat(ServletContextLocator.get(), is(not(nullValue())));
+        assertThat(tester.frontController.rootPackageName, is(ROOT_PACKAGE));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testToControllerClassName() throws Exception {
-        assertEquals(ListController.class.getName(), frontController
-            .toControllerClassName("/hello/list"));
-        assertEquals(HogeController.class.getName(), frontController
-            .toControllerClassName("/hoge"));
-        assertEquals(IndexController.class.getName(), frontController
-            .toControllerClassName("/"));
+    @Test
+    public void toControllerClassName() throws Exception {
+        assertThat(
+            tester.frontController.toControllerClassName("/hello/list"),
+            is(ListController.class.getName()));
+        assertThat(
+            tester.frontController.toControllerClassName("/hoge"),
+            is(HogeController.class.getName()));
+        assertThat(
+            tester.frontController.toControllerClassName("/"),
+            is(IndexController.class.getName()));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testGetControllerPackageName() throws Exception {
-        assertEquals("controller", frontController.getControllerPackageName());
-        application
-            .setAttribute("slim3.controllerPackage", "server.controller");
-        assertEquals("server.controller", frontController
-            .getControllerPackageName());
+    @Test
+    public void getControllerPackageName() throws Exception {
+        assertThat(
+            tester.frontController.getControllerPackageName(),
+            is("controller"));
+        tester.servletContext.setAttribute(
+            "slim3.controllerPackage",
+            "server.controller");
+        assertThat(
+            tester.frontController.getControllerPackageName(),
+            is("server.controller"));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testCreateController() throws Exception {
-        Controller controller = frontController.createController("/hello/list");
-        assertNotNull(controller);
-        assertEquals(ListController.class, controller.getClass());
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testCreateControllerForRoot() throws Exception {
-        Controller controller = frontController.createController("/hoge");
-        assertNotNull(controller);
-        assertEquals(HogeController.class, controller.getClass());
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testCreateControllerForRootIndexController() throws Exception {
-        Controller controller = frontController.createController("/");
-        assertNotNull(controller);
-        assertEquals(IndexController.class, controller.getClass());
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testCreateControllerForIndexController() throws Exception {
-        Controller controller = frontController.createController("/hello/");
-        assertNotNull(controller);
-        assertEquals(
-            org.slim3.controller.controller.hello.IndexController.class,
-            controller.getClass());
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testCreateControllerForBadController() throws Exception {
-        try {
-            frontController.createController("/bad");
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testCreateControllerForClassNotFound() throws Exception {
-        assertNull(frontController.createController("/xxx"));
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    public void testGetController() throws Exception {
+    @Test
+    public void createController() throws Exception {
         Controller controller =
-            frontController.getController(request, response, "/");
-        assertNotNull(controller.application);
-        assertNotNull(controller.request);
-        assertNotNull(controller.response);
-        assertEquals("/", controller.basePath);
-        assertSame(controller, requestScope(ControllerConstants.CONTROLLER_KEY));
+            tester.frontController.createController("/hello/list");
+        assertThat(controller, is(not(nullValue())));
+        assertThat(controller, is(ListController.class));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void createControllerForRootController() throws Exception {
+        Controller controller =
+            tester.frontController.createController("/hoge");
+        assertThat(controller, is(not(nullValue())));
+        assertThat(controller, is(HogeController.class));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void createControllerForRootIndexController() throws Exception {
+        Controller controller = tester.frontController.createController("/");
+        assertThat(controller, is(not(nullValue())));
+        assertThat(controller, is(IndexController.class));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void createControllerForIndexController() throws Exception {
+        Controller controller =
+            tester.frontController.createController("/hello/");
+        assertThat(controller, is(not(nullValue())));
+        assertThat(
+            controller,
+            is(org.slim3.controller.controller.hello.IndexController.class));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test(expected = IllegalStateException.class)
+    public void createControllerForControllerThatDoesNotExtendController()
+            throws Exception {
+        tester.frontController.createController("/bad");
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void createControllerForClassNotFound() throws Exception {
+        assertThat(
+            tester.frontController.createController("/xxx"),
+            is(nullValue()));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void getController() throws Exception {
+        Controller controller =
+            tester.frontController.getController(
+                tester.request,
+                tester.response,
+                "/");
+        assertThat(controller.servletContext, is(not(nullValue())));
+        assertThat(controller.request, is(not(nullValue())));
+        assertThat(controller.response, is(not(nullValue())));
+        assertThat(controller.basePath, is("/"));
+        assertThat(controller, is(sameInstance(tester
+            .requestScope(ControllerConstants.CONTROLLER_KEY))));
         Errors errors = controller.errors;
-        assertNotNull(errors);
-        assertSame(errors, requestScope(ControllerConstants.ERRORS_KEY));
+        assertThat(errors, is(not(nullValue())));
+        assertThat(errors, is(sameInstance(tester
+            .requestScope(ControllerConstants.ERRORS_KEY))));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testGetControllerForErrors() throws Exception {
+    @Test
+    public void getControllerForErrors() throws Exception {
         Errors errors = new Errors();
-        requestScope(ControllerConstants.ERRORS_KEY, errors);
+        tester.requestScope(ControllerConstants.ERRORS_KEY, errors);
         Controller controller =
-            frontController.getController(request, response, "/");
-        assertSame(errors, controller.errors);
-        assertSame(errors, requestScope(ControllerConstants.ERRORS_KEY));
+            tester.frontController.getController(
+                tester.request,
+                tester.response,
+                "/");
+        assertThat(errors, is(sameInstance(controller.errors)));
+        assertThat(errors, is(sameInstance(tester
+            .requestScope(ControllerConstants.ERRORS_KEY))));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testGetControllerForJsp() throws Exception {
-        assertNull(frontController.getController(
-            request,
-            response,
-            "/index.jsp"));
+    @Test
+    public void getControllerForJsp() throws Exception {
+        assertThat(tester.frontController.getController(
+            tester.request,
+            tester.response,
+            "/index.jsp"), is(nullValue()));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testDoRedirect() throws Exception {
+    @Test
+    public void doRedirect() throws Exception {
         String path = "http://www.google.com";
-        Controller controller = frontController.createController("/");
-        frontController.doRedirect(request, response, controller, path);
-        assertEquals(path, response.getRedirectPath());
+        Controller controller = tester.frontController.createController("/");
+        tester.frontController.doRedirect(
+            tester.request,
+            tester.response,
+            controller,
+            path);
+        assertThat(tester.response.getRedirectPath(), is(path));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testDoRedirectForContextRelativePath() throws Exception {
-        application.setContextPath("/slim3-tutorial");
-        Controller controller = frontController.createController("/");
-        frontController
-            .doRedirect(request, response, controller, "/hello/list");
-        assertEquals("/slim3-tutorial/hello/list", response.getRedirectPath());
+    @Test
+    public void doRedirectForContextRelativePath() throws Exception {
+        tester.servletContext.setContextPath("/slim3-tutorial");
+        Controller controller = tester.frontController.createController("/");
+        tester.frontController.doRedirect(
+            tester.request,
+            tester.response,
+            controller,
+            "/hello/list");
+        assertThat(
+            tester.response.getRedirectPath(),
+            is("/slim3-tutorial/hello/list"));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testDoForward() throws Exception {
+    @Test
+    public void doForward() throws Exception {
         Controller controller =
-            frontController.getController(request, response, "/");
-        frontController.doForward(request, response, controller, "index.jsp");
-        assertEquals("/index.jsp", application
-            .getLatestRequestDispatcher()
-            .getPath());
+            tester.frontController.getController(
+                tester.request,
+                tester.response,
+                "/");
+        tester.frontController.doForward(
+            tester.request,
+            tester.response,
+            controller,
+            "index.jsp");
+        assertThat(
+            tester.servletContext.getLatestRequestDispatcher().getPath(),
+            is("/index.jsp"));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testDoForwardForApplicationRelativePath() throws Exception {
+    @Test
+    public void doForwardForApplicationRelativePath() throws Exception {
         Controller controller =
-            frontController.getController(request, response, "/hoge");
-        frontController.doForward(request, response, controller, "index.jsp");
-        assertEquals("/index.jsp", application
-            .getLatestRequestDispatcher()
-            .getPath());
+            tester.frontController.getController(
+                tester.request,
+                tester.response,
+                "/hoge");
+        tester.frontController.doForward(
+            tester.request,
+            tester.response,
+            controller,
+            "index.jsp");
+        assertThat(
+            tester.servletContext.getLatestRequestDispatcher().getPath(),
+            is("/index.jsp"));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testHandleNavigationForNoNavigation() throws Exception {
-        Controller controller = frontController.createController("/");
-        frontController.handleNavigation(request, response, controller, null);
-        assertNull(response.getRedirectPath());
-        assertNull(application.getLatestRequestDispatcher());
+    @Test
+    public void handleNavigationForNoNavigation() throws Exception {
+        Controller controller = tester.frontController.createController("/");
+        tester.frontController.handleNavigation(
+            tester.request,
+            tester.response,
+            controller,
+            null);
+        assertThat(tester.response.getRedirectPath(), is(nullValue()));
+        assertThat(
+            tester.servletContext.getLatestRequestDispatcher(),
+            is(nullValue()));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testHandleNavigationForRedirect() throws Exception {
+    @Test
+    public void handleNavigationForRedirect() throws Exception {
         String path = "http://www.google.com";
-        Controller controller = frontController.createController("/");
+        Controller controller = tester.frontController.createController("/");
         Navigation navigation = controller.redirect(path);
-        frontController.handleNavigation(
-            request,
-            response,
+        tester.frontController.handleNavigation(
+            tester.request,
+            tester.response,
             controller,
             navigation);
-        assertEquals(path, response.getRedirectPath());
+        assertThat(tester.response.getRedirectPath(), is(path));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testHandleNavigationForForward() throws Exception {
+    @Test
+    public void handleNavigationForForward() throws Exception {
         Controller controller =
-            frontController.getController(request, response, "/");
+            tester.frontController.getController(
+                tester.request,
+                tester.response,
+                "/");
         Navigation navigation = controller.forward("index.jsp");
-        frontController.handleNavigation(
-            request,
-            response,
+        tester.frontController.handleNavigation(
+            tester.request,
+            tester.response,
             controller,
             navigation);
-        assertEquals("/index.jsp", application
-            .getLatestRequestDispatcher()
-            .getPath());
+        assertThat(
+            tester.servletContext.getLatestRequestDispatcher().getPath(),
+            is("/index.jsp"));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testProcessController() throws Exception {
-        param("aaa", "111");
+    @Test
+    public void processController() throws Exception {
+        tester.param("aaa", "111");
         Controller controller =
-            frontController.getController(request, response, "/");
-        frontController.processController(request, response, controller);
-        assertNotNull(controller.application);
-        assertNotNull(controller.request);
-        assertNotNull(controller.response);
-        assertEquals("/index.jsp", application
-            .getLatestRequestDispatcher()
-            .getPath());
-        assertEquals("111", requestScope("aaa"));
+            tester.frontController.getController(
+                tester.request,
+                tester.response,
+                "/");
+        tester.frontController.processController(
+            tester.request,
+            tester.response,
+            controller);
+        assertThat(controller.servletContext, is(not(nullValue())));
+        assertThat(controller.request, is(not(nullValue())));
+        assertThat(controller.response, is(not(nullValue())));
+        assertThat(
+            tester.servletContext.getLatestRequestDispatcher().getPath(),
+            is("/index.jsp"));
+        assertThat(tester.asString("aaa"), is("111"));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testDoFilter() throws Exception {
-        request.setServletPath("/");
-        frontController.doFilter(request, response, filterChain);
-        assertEquals("UTF-8", request.getCharacterEncoding());
-        assertEquals("/index.jsp", application
-            .getLatestRequestDispatcher()
-            .getPath());
+    @Test
+    public void doFilter() throws Exception {
+        tester.request.setServletPath("/");
+        tester.frontController.doFilter(
+            tester.request,
+            tester.response,
+            tester.filterChain);
+        assertThat(tester.request.getCharacterEncoding(), is("UTF-8"));
+        assertThat(
+            tester.servletContext.getLatestRequestDispatcher().getPath(),
+            is("/index.jsp"));
     }
 }

@@ -15,8 +15,10 @@
  */
 package org.slim3.controller;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
+import org.junit.Test;
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockHttpServletResponse;
 import org.slim3.tester.MockRequestDispatcher;
@@ -26,7 +28,7 @@ import org.slim3.tester.MockServletContext;
  * @author higa
  * 
  */
-public class HotRequestDispatcherWrapperTest extends TestCase {
+public class HotRequestDispatcherWrapperTest {
 
     private MockServletContext servletContext = new MockServletContext();
 
@@ -48,49 +50,71 @@ public class HotRequestDispatcherWrapperTest extends TestCase {
      * @throws Exception
      * 
      */
-    public void testGetOriginal() throws Exception {
-        assertSame(request, dispatcherWrapper.getOriginalRequest(request));
-        assertSame(request, dispatcherWrapper
-            .getOriginalRequest(requestWrapper));
+    @Test
+    public void getOriginal() throws Exception {
+        assertThat((MockHttpServletRequest) dispatcherWrapper
+            .getOriginalRequest(request), is(sameInstance(request)));
+        assertThat((MockHttpServletRequest) dispatcherWrapper
+            .getOriginalRequest(requestWrapper), is(sameInstance(request)));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testForward() throws Exception {
+    @Test
+    public void forward() throws Exception {
         dispatcherWrapper.forward(request, response);
-        assertSame(request, dispatcher.getRequest());
-        assertSame(response, dispatcher.getResponse());
+        assertThat(
+            (MockHttpServletRequest) dispatcher.getRequest(),
+            is(sameInstance(request)));
+        assertThat(
+            (MockHttpServletResponse) dispatcher.getResponse(),
+            is(sameInstance(response)));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testForwardForWrapper() throws Exception {
+    @Test
+    public void forwardForRequestWrapper() throws Exception {
         dispatcherWrapper.forward(requestWrapper, response);
-        assertSame(request, dispatcher.getRequest());
-        assertSame(response, dispatcher.getResponse());
+        assertThat(
+            (MockHttpServletRequest) dispatcher.getRequest(),
+            is(sameInstance(request)));
+        assertThat(
+            (MockHttpServletResponse) dispatcher.getResponse(),
+            is(sameInstance(response)));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testInclude() throws Exception {
+    @Test
+    public void include() throws Exception {
         dispatcherWrapper.include(request, response);
-        assertSame(request, dispatcher.getRequest());
-        assertSame(response, dispatcher.getResponse());
+        assertThat(
+            (MockHttpServletRequest) dispatcher.getRequest(),
+            is(sameInstance(request)));
+        assertThat(
+            (MockHttpServletResponse) dispatcher.getResponse(),
+            is(sameInstance(response)));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testIncludeForWrapper() throws Exception {
+    @Test
+    public void includeForRequestWrapper() throws Exception {
         dispatcherWrapper.include(requestWrapper, response);
-        assertSame(request, dispatcher.getRequest());
-        assertSame(response, dispatcher.getResponse());
+        assertThat(
+            (MockHttpServletRequest) dispatcher.getRequest(),
+            is(sameInstance(request)));
+        assertThat(
+            (MockHttpServletResponse) dispatcher.getResponse(),
+            is(sameInstance(response)));
     }
 }

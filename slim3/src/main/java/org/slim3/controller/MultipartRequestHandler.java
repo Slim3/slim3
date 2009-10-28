@@ -61,7 +61,7 @@ public class MultipartRequestHandler extends RequestHandler {
                 InputStream stream = item.openStream();
                 if (item.isFormField()) {
                     String value =
-                        normalize(Streams.asString(stream, request
+                        normalizeValue(Streams.asString(stream, request
                             .getCharacterEncoding()));
                     if (name.endsWith(ARRAY_SUFFIX)) {
                         String[] array = (String[]) request.getAttribute(name);

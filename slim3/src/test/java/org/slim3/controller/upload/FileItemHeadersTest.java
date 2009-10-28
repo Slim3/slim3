@@ -15,32 +15,36 @@
  */
 package org.slim3.controller.upload;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.util.Iterator;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class FileItemHeadersTest extends TestCase {
+public class FileItemHeadersTest {
 
     /**
      * @throws Exception
      */
-    public void test() throws Exception {
+    @Test
+    public void all() throws Exception {
         FileItemHeaders headers = new FileItemHeaders();
         headers.addHeader("aaa", "aaa1");
         headers.addHeader("aaa", "aaa2");
         headers.addHeader("bbb", "bbb1");
-        assertEquals("aaa1", headers.getHeader("aaa"));
+        assertThat(headers.getHeader("aaa"), is("aaa1"));
         Iterator<String> i = headers.getHeaders("aaa");
-        assertEquals("aaa1", i.next());
-        assertEquals("aaa2", i.next());
-        assertFalse(i.hasNext());
+        assertThat(i.next(), is("aaa1"));
+        assertThat(i.next(), is("aaa2"));
+        assertThat(i.hasNext(), is(false));
         Iterator<String> names = headers.getHeaderNames();
-        assertEquals("aaa", names.next());
-        assertEquals("bbb", names.next());
-        assertFalse(names.hasNext());
+        assertThat(names.next(), is("aaa"));
+        assertThat(names.next(), is("bbb"));
+        assertThat(names.hasNext(), is(false));
     }
 }

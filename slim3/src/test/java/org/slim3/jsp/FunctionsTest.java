@@ -15,13 +15,17 @@
  */
 package org.slim3.jsp;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.slim3.controller.ControllerConstants;
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockHttpServletResponse;
@@ -33,7 +37,7 @@ import org.slim3.util.ResponseLocator;
  * @author higa
  * 
  */
-public class FunctionsTest extends TestCase {
+public class FunctionsTest {
 
     private MockServletContext servletContext = new MockServletContext();
 
@@ -42,14 +46,20 @@ public class FunctionsTest extends TestCase {
 
     private MockHttpServletResponse response = new MockHttpServletResponse();
 
-    @Override
-    protected void setUp() throws Exception {
+    /**
+     * @throws Exception
+     */
+    @Before
+    public void setUp() throws Exception {
         RequestLocator.set(request);
         ResponseLocator.set(response);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    /**
+     * @throws Exception
+     */
+    @After
+    public void tearDown() throws Exception {
         RequestLocator.set(null);
         ResponseLocator.set(null);
     }
@@ -57,452 +67,452 @@ public class FunctionsTest extends TestCase {
     /**
      * @throws Exception
      */
-    public void testHForString() throws Exception {
-        assertEquals("&lt;a&gt;", Functions.h("<a>"));
+    @Test
+    public void hForString() throws Exception {
+        assertThat(Functions.h("<a>"), is("&lt;a&gt;"));
     }
 
     /**
      * @throws Exception
      */
-    public void testHForCharArray() throws Exception {
-        assertEquals("[1]", Functions.h(new char[] { '1' }));
+    @Test
+    public void hForCharArray() throws Exception {
+        assertThat(Functions.h(new char[] { '1' }), is("[1]"));
     }
 
     /**
      * @throws Exception
      */
-    public void testHForByteArray() throws Exception {
-        assertEquals("[1]", Functions.h(new byte[] { 1 }));
+    @Test
+    public void hForByteArray() throws Exception {
+        assertThat(Functions.h(new byte[] { 1 }), is("[1]"));
     }
 
     /**
      * @throws Exception
      */
-    public void testHForShortArray() throws Exception {
-        assertEquals("[1]", Functions.h(new short[] { 1 }));
+    @Test
+    public void hForShortArray() throws Exception {
+        assertThat(Functions.h(new short[] { 1 }), is("[1]"));
     }
 
     /**
      * @throws Exception
      */
-    public void testHForIntArray() throws Exception {
-        assertEquals("[1]", Functions.h(new int[] { 1 }));
+    @Test
+    public void hForIntArray() throws Exception {
+        assertThat(Functions.h(new int[] { 1 }), is("[1]"));
     }
 
     /**
      * @throws Exception
      */
-    public void testHForFloatArray() throws Exception {
-        assertEquals("[1.0]", Functions.h(new float[] { 1 }));
+    @Test
+    public void hForFloatArray() throws Exception {
+        assertThat(Functions.h(new float[] { 1 }), is("[1.0]"));
     }
 
     /**
      * @throws Exception
      */
-    public void testHForDoubleArray() throws Exception {
-        assertEquals("[1.0]", Functions.h(new double[] { 1 }));
+    @Test
+    public void hForDoubleArray() throws Exception {
+        assertThat(Functions.h(new double[] { 1 }), is("[1.0]"));
     }
 
     /**
      * @throws Exception
      */
-    public void testHForBooleanArray() throws Exception {
-        assertEquals("[true]", Functions.h(new boolean[] { true }));
+    @Test
+    public void hForBooleanArray() throws Exception {
+        assertThat(Functions.h(new boolean[] { true }), is("[true]"));
     }
 
     /**
      * @throws Exception
      */
-    public void testHForStringArray() throws Exception {
+    @Test
+    public void hForStringArray() throws Exception {
         assertEquals("[1]", Functions.h(new String[] { "1" }));
     }
 
     /**
      * @throws Exception
      */
-    public void testHForObjectArray() throws Exception {
-        assertEquals("[1]", Functions.h(new Integer[] { Integer.valueOf(1) }));
+    @Test
+    public void hForObjectArray() throws Exception {
+        assertThat(Functions.h(new Integer[] { Integer.valueOf(1) }), is("[1]"));
     }
 
     /**
      * @throws Exception
      */
-    public void testHForNbsp() throws Exception {
-        assertEquals("&nbsp;", Functions.h(" "));
+    @Test
+    public void hForNbsp() throws Exception {
+        assertThat(Functions.h(" "), is("&nbsp;"));
     }
 
     /**
      * @throws Exception
      */
-    public void testHForDate() throws Exception {
+    @Test
+    public void hForDate() throws Exception {
         String s = Functions.h(new Date());
         System.out.println(s);
-        assertNotNull(s);
+        assertThat(s, is(not(nullValue())));
     }
 
     /**
      * @throws Exception
      */
-    public void testHForNumber() throws Exception {
+    @Test
+    public void hForNumber() throws Exception {
         String s = Functions.h(1.123);
         System.out.println(s);
-        assertNotNull(s);
+        assertThat(s, is(not(nullValue())));
     }
 
     /**
      * @throws Exception
      */
-    public void testUrlForExternal() throws Exception {
+    @Test
+    public void urlForExternal() throws Exception {
         String input = "http://www.google.com";
-        assertEquals(input, Functions.url(input));
+        assertThat(Functions.url(input), is(input));
     }
 
     /**
      * @throws Exception
      */
-    public void testUrlForNull() throws Exception {
+    @Test
+    public void urlForNull() throws Exception {
         servletContext.setContextPath("/aaa");
         request.setServletPath("/bbb/hoge");
-        assertEquals("/aaa/bbb/", Functions.url(null));
+        assertThat(Functions.url(null), is("/aaa/bbb/"));
     }
 
     /**
      * @throws Exception
      */
-    public void testUrlForNullAndNoContextPath() throws Exception {
+    @Test
+    public void urlForNullAndNoContextPath() throws Exception {
         request.setServletPath("/bbb/hoge");
-        assertEquals("/bbb/", Functions.url(null));
+        assertThat(Functions.url(null), is("/bbb/"));
     }
 
     /**
      * @throws Exception
      */
-    public void testUrlForControllerRelativePath() throws Exception {
+    @Test
+    public void urlForControllerRelativePath() throws Exception {
         request.setServletPath("/bbb/hoge");
-        assertEquals("/bbb/foo", Functions.url("foo"));
+        assertThat(Functions.url("foo"), is("/bbb/foo"));
     }
 
     /**
      * @throws Exception
      */
-    public void testUrlForOtherController() throws Exception {
+    @Test
+    public void urlForOtherController() throws Exception {
         request.setServletPath("/bbb/hoge");
-        assertEquals("/hello/sayHello", Functions.url("/hello/sayHello"));
+        assertThat(Functions.url("/hello/sayHello"), is("/hello/sayHello"));
     }
 
     /**
      * @throws Exception
      */
-    public void testBrForCRLF() throws Exception {
-        assertEquals("<br />", Functions.br("\r\n"));
+    @Test
+    public void brForCRLF() throws Exception {
+        assertThat(Functions.br("\r\n"), is("<br />"));
     }
 
     /**
      * @throws Exception
      */
-    public void testBrForCR() throws Exception {
-        assertEquals("<br />", Functions.br("\r"));
+    @Test
+    public void brForCR() throws Exception {
+        assertThat(Functions.br("\r"), is("<br />"));
     }
 
     /**
      * @throws Exception
      */
-    public void testBrForLF() throws Exception {
-        assertEquals("<br />", Functions.br("\n"));
+    @Test
+    public void brForLF() throws Exception {
+        assertThat(Functions.br("\n"), is("<br />"));
     }
 
     /**
      * @throws Exception
      */
-    public void testBrForNull() throws Exception {
-        assertEquals("", Functions.br(null));
+    @Test
+    public void brForNull() throws Exception {
+        assertThat(Functions.br(null), is(""));
     }
 
     /**
      * @throws Exception
      */
-    public void testLocale() throws Exception {
-        assertNotNull(Functions.locale());
+    @Test
+    public void locale() throws Exception {
+        assertThat(Functions.locale(), is(not(nullValue())));
     }
 
     /**
      * @throws Exception
      */
-    public void testTimeZone() throws Exception {
-        assertNotNull(Functions.timeZone());
+    @Test
+    public void timeZone() throws Exception {
+        assertThat(Functions.timeZone(), is(not(nullValue())));
     }
 
     /**
      * @throws Exception
      */
-    public void testErrorClass() throws Exception {
+    @Test
+    public void errorClass() throws Exception {
         Map<String, String> errors = new HashMap<String, String>();
         errors.put("aaa", "Aaa is required.");
         request.setAttribute(ControllerConstants.ERRORS_KEY, errors);
-        assertEquals("error", Functions.errorClass("aaa", "error"));
+        assertThat(Functions.errorClass("aaa", "error"), is("error"));
     }
 
     /**
      * @throws Exception
      */
-    public void testErrorClassForNoError() throws Exception {
-        assertEquals("", Functions.errorClass("aaa", "error"));
+    @Test
+    public void errorClassForNoError() throws Exception {
+        assertThat(Functions.errorClass("aaa", "error"), is(""));
     }
 
     /**
      * @throws Exception
      */
-    public void testErrors() throws Exception {
+    @Test
+    public void errors() throws Exception {
         Map<String, String> errors = new HashMap<String, String>();
         errors.put("aaa", "Aaa is required.");
         request.setAttribute(ControllerConstants.ERRORS_KEY, errors);
         Iterator<String> iterator = Functions.errors();
-        assertNotNull(iterator);
-        assertEquals("Aaa is required.", iterator.next());
+        assertThat(iterator, is(not(nullValue())));
+        assertThat(iterator.next(), is("Aaa is required."));
     }
 
     /**
      * @throws Exception
      */
-    public void testErrorsForNoErrors() throws Exception {
-        assertNull(Functions.errors());
+    @Test
+    public void errorsForNoErrors() throws Exception {
+        assertThat(Functions.errors(), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testText() throws Exception {
+    @Test
+    public void text() throws Exception {
         request.setAttribute("aaa", "111");
-        assertEquals("name = \"aaa\" value = \"111\"", Functions.text("aaa"));
+        assertThat(Functions.text("aaa"), is("name = \"aaa\" value = \"111\""));
     }
 
     /**
      * @throws Exception
      */
-    public void testTextForBadName() throws Exception {
-        try {
-            Functions.text("aaaArray");
-            fail();
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        }
+    @Test(expected = IllegalArgumentException.class)
+    public void textForBadName() throws Exception {
+        Functions.text("aaaArray");
     }
 
     /**
      * @throws Exception
      */
-    public void testHidden() throws Exception {
+    @Test
+    public void hidden() throws Exception {
         request.setAttribute("aaa", "111");
-        assertEquals("name = \"aaa\" value = \"111\"", Functions.hidden("aaa"));
+        assertThat(
+            Functions.hidden("aaa"),
+            is("name = \"aaa\" value = \"111\""));
     }
 
     /**
      * @throws Exception
      */
-    public void testHiddenForBadName() throws Exception {
-        try {
-            Functions.hidden("aaaArray");
-            fail();
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        }
+    @Test(expected = IllegalArgumentException.class)
+    public void hiddenForBadName() throws Exception {
+        Functions.hidden("aaaArray");
     }
 
     /**
      * @throws Exception
      */
-    public void testCheckbox() throws Exception {
+    @Test
+    public void checkbox() throws Exception {
         request.setAttribute("aaa", "111");
         request.setAttribute("ccc", "false");
-        assertEquals("name = \"aaa\" checked = \"checked\"", Functions
-            .checkbox("aaa"));
-        assertEquals("name = \"bbb\"", Functions.checkbox("bbb"));
-        assertEquals("name = \"ccc\"", Functions.checkbox("ccc"));
+        assertThat(
+            Functions.checkbox("aaa"),
+            is("name = \"aaa\" checked = \"checked\""));
+        assertThat(Functions.checkbox("bbb"), is("name = \"bbb\""));
+        assertThat(Functions.checkbox("ccc"), is("name = \"ccc\""));
     }
 
     /**
      * @throws Exception
      */
-    public void testCheckboxForBadName() throws Exception {
-        try {
-            Functions.checkbox("aaaArray");
-            fail();
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        }
+    @Test(expected = IllegalArgumentException.class)
+    public void checkboxForBadName() throws Exception {
+        Functions.checkbox("aaaArray");
     }
 
     /**
      * @throws Exception
      */
-    public void testMultibox() throws Exception {
+    @Test
+    public void multibox() throws Exception {
         String[] aaaArray = new String[] { "111" };
         request.setAttribute("aaaArray", aaaArray);
-        assertEquals(
-            "name = \"aaaArray\" value = \"111\" checked = \"checked\"",
-            Functions.multibox("aaaArray", "111"));
-        assertEquals("name = \"aaaArray\" value = \"222\"", Functions.multibox(
-            "aaaArray",
-            "222"));
+        assertThat(
+            Functions.multibox("aaaArray", "111"),
+            is("name = \"aaaArray\" value = \"111\" checked = \"checked\""));
+        assertThat(
+            Functions.multibox("aaaArray", "222"),
+            is("name = \"aaaArray\" value = \"222\""));
     }
 
     /**
      * @throws Exception
      */
-    public void testMultiboxForNull() throws Exception {
-        assertEquals("name = \"aaaArray\" value = \"111\"", Functions.multibox(
-            "aaaArray",
-            "111"));
+    @Test
+    public void multiboxForNull() throws Exception {
+        assertThat(
+            Functions.multibox("aaaArray", "111"),
+            is("name = \"aaaArray\" value = \"111\""));
     }
 
     /**
      * @throws Exception
      */
-    public void testMultiboxForBadName() throws Exception {
+    @Test(expected = IllegalArgumentException.class)
+    public void multiboxForBadName() throws Exception {
         String[] aaaArray = new String[] { "111" };
         request.setAttribute("aaa", aaaArray);
-        try {
-            Functions.multibox("aaa", "111");
-            fail();
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        }
+        Functions.multibox("aaa", "111");
     }
 
     /**
      * @throws Exception
      */
-    public void testMultiboxForNotArray() throws Exception {
+    @Test(expected = IllegalStateException.class)
+    public void multiboxForNotArray() throws Exception {
         String aaaArray = "111";
         request.setAttribute("aaaArray", aaaArray);
-        try {
-            Functions.multibox("aaaArray", "111");
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
+        Functions.multibox("aaaArray", "111");
     }
 
     /**
      * @throws Exception
      */
-    public void testMultiboxForNotStringArray() throws Exception {
+    @Test(expected = IllegalStateException.class)
+    public void multiboxForNotStringArray() throws Exception {
         int[] aaaArray = new int[] { 1 };
         request.setAttribute("aaaArray", aaaArray);
-        try {
-            Functions.multibox("aaaArray", "111");
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
+        Functions.multibox("aaaArray", "111");
     }
 
     /**
      * @throws Exception
      */
-    public void testRadio() throws Exception {
+    @Test
+    public void radio() throws Exception {
         request.setAttribute("aaa", "111");
-        assertEquals(
-            "name = \"aaa\" value = \"111\" checked = \"checked\"",
-            Functions.radio("aaa", "111"));
-        assertEquals("name = \"aaa\" value = \"222\"", Functions.radio(
-            "aaa",
-            "222"));
+        assertThat(
+            Functions.radio("aaa", "111"),
+            is("name = \"aaa\" value = \"111\" checked = \"checked\""));
+        assertThat(
+            Functions.radio("aaa", "222"),
+            is("name = \"aaa\" value = \"222\""));
     }
 
     /**
      * @throws Exception
      */
-    public void testRadioForBadName() throws Exception {
-        try {
-            Functions.radio("aaaArray", "111");
-            fail();
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        }
+    @Test(expected = IllegalArgumentException.class)
+    public void radioForBadName() throws Exception {
+        Functions.radio("aaaArray", "111");
     }
 
     /**
      * @throws Exception
      */
-    public void testSelect() throws Exception {
+    @Test
+    public void select() throws Exception {
         request.setAttribute("aaa", new Integer(111));
-        assertEquals("value = \"111\" selected = \"selected\"", Functions
-            .select("aaa", "111"));
-        assertEquals("value = \"222\"", Functions.select("aaa", "222"));
+        assertThat(
+            Functions.select("aaa", "111"),
+            is("value = \"111\" selected = \"selected\""));
+        assertThat(Functions.select("aaa", "222"), is("value = \"222\""));
     }
 
     /**
      * @throws Exception
      */
-    public void testSelectForBadName() throws Exception {
-        try {
-            Functions.select("aaaArray", "111");
-            fail();
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        }
+    @Test(expected = IllegalArgumentException.class)
+    public void selectForBadName() throws Exception {
+        Functions.select("aaaArray", "111");
     }
 
     /**
      * @throws Exception
      */
-    public void testMultiselect() throws Exception {
+    @Test
+    public void multiselect() throws Exception {
         String[] aaaArray = new String[] { "111" };
         request.setAttribute("aaaArray", aaaArray);
-        assertEquals("value = \"111\" selected = \"selected\"", Functions
-            .multiselect("aaaArray", "111"));
-        assertEquals("value = \"222\"", Functions
-            .multiselect("aaaArray", "222"));
+        assertThat(
+            Functions.multiselect("aaaArray", "111"),
+            is("value = \"111\" selected = \"selected\""));
+        assertThat(
+            Functions.multiselect("aaaArray", "222"),
+            is("value = \"222\""));
     }
 
     /**
      * @throws Exception
      */
-    public void testMultiselectForNull() throws Exception {
-        assertEquals("value = \"111\"", Functions
-            .multiselect("aaaArray", "111"));
+    @Test
+    public void multiselectForNull() throws Exception {
+        assertThat(
+            Functions.multiselect("aaaArray", "111"),
+            is("value = \"111\""));
     }
 
     /**
      * @throws Exception
      */
-    public void testMultiselectForBadName() throws Exception {
+    @Test(expected = IllegalArgumentException.class)
+    public void multiselectForBadName() throws Exception {
         String[] aaaArray = new String[] { "111" };
         request.setAttribute("aaa", aaaArray);
-        try {
-            Functions.multiselect("aaa", "111");
-            fail();
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        }
+        Functions.multiselect("aaa", "111");
     }
 
     /**
      * @throws Exception
      */
-    public void testMultiselectForNotArray() throws Exception {
+    @Test(expected = IllegalStateException.class)
+    public void multiselectForNotArray() throws Exception {
         String aaaArray = "111";
         request.setAttribute("aaaArray", aaaArray);
-        try {
-            Functions.multiselect("aaaArray", "111");
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
+        Functions.multiselect("aaaArray", "111");
     }
 
     /**
      * @throws Exception
      */
-    public void testMultiselectForNotStringArray() throws Exception {
+    @Test(expected = IllegalStateException.class)
+    public void multiselectForNotStringArray() throws Exception {
         int[] aaaArray = new int[] { 1 };
         request.setAttribute("aaaArray", aaaArray);
-        try {
-            Functions.multiselect("aaaArray", "111");
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
+        Functions.multiselect("aaaArray", "111");
     }
 }

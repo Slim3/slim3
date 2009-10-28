@@ -15,8 +15,10 @@
  */
 package org.slim3.datastore;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
+import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
 
@@ -27,7 +29,7 @@ import com.google.appengine.api.datastore.Query.SortDirection;
  * @author higa
  * 
  */
-public class AbstAttributeMetaTest extends TestCase {
+public class AbstAttributeMetaTest {
 
     private HogeMeta meta = new HogeMeta();
 
@@ -35,47 +37,56 @@ public class AbstAttributeMetaTest extends TestCase {
      * @throws Exception
      * 
      */
-    public void testConstructor() throws Exception {
-        assertEquals(meta, meta.key.modelMeta);
-        assertEquals("__key__", meta.key.name);
-        assertEquals(Key.class, meta.key.attributeClass);
+    @SuppressWarnings("unchecked")
+    @Test
+    public void constructor() throws Exception {
+        assertThat((HogeMeta) meta.key.modelMeta, is(sameInstance(meta)));
+        assertThat(meta.key.name, is("__key__"));
+        assertThat((Class) meta.key.attributeClass, equalTo(Key.class));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testAsc() throws Exception {
-        assertEquals(AscCriterion.class, meta.myString.asc.getClass());
+    @Test
+    public void asc() throws Exception {
+        assertThat(meta.myString.asc, is(AscCriterion.class));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testDesc() throws Exception {
-        assertEquals(DescCriterion.class, meta.myString.desc.getClass());
+    @Test
+    public void desc() throws Exception {
+        assertThat(meta.myString.desc, is(DescCriterion.class));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testGetValue() throws Exception {
+    @Test
+    public void getValue() throws Exception {
         Hoge hoge = new Hoge();
         hoge.setMyString("aaa");
-        assertEquals("aaa", meta.myString.getValue(hoge));
+        assertThat((String) meta.myString.getValue(hoge), is("aaa"));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testConvertValueForDatastore() throws Exception {
-        assertEquals("ASCENDING", meta.myEnum
-            .convertValueForDatastore(SortDirection.ASCENDING));
-        assertEquals("ASCENDING", meta.myString
-            .convertValueForDatastore("ASCENDING"));
-        assertNull(meta.myString.convertValueForDatastore(null));
+    @Test
+    public void convertValueForDatastore() throws Exception {
+        assertThat((String) meta.myEnum
+            .convertValueForDatastore(SortDirection.ASCENDING), is("ASCENDING"));
+        assertThat(
+            (String) meta.myString.convertValueForDatastore("ASCENDING"),
+            is("ASCENDING"));
+        assertThat(
+            meta.myString.convertValueForDatastore(null),
+            is(nullValue()));
     }
 }

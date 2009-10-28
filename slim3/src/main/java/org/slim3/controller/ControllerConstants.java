@@ -25,6 +25,11 @@ package org.slim3.controller;
 public interface ControllerConstants {
 
     /**
+     * The key of this application's UUID.
+     */
+    String UUID_KEY = "slim3.uuid";
+
+    /**
      * The key of hot reloading.
      */
     String HOT_RELOADING_KEY = "slim3.hotReloading";
@@ -104,4 +109,9 @@ public interface ControllerConstants {
      * The default controller package name.
      */
     String DEFAULT_CONTROLLER_PACKAGE = "controller";
+
+    /**
+     * The server controller package name.
+     */
+    String SERVER_CONTROLLER_PACKAGE = "server.controller";
 }

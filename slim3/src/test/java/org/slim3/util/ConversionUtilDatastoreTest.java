@@ -15,7 +15,11 @@
  */
 package org.slim3.util;
 
-import org.slim3.tester.DatastoreTestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+import org.slim3.tester.LocalServiceTestCase;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -24,17 +28,18 @@ import com.google.appengine.api.datastore.KeyFactory;
  * @author higa
  * 
  */
-public class ConversionUtilDatastoreTest extends DatastoreTestCase {
+public class ConversionUtilDatastoreTest extends LocalServiceTestCase {
 
     /**
      * 
      * @throws Exception
      */
-    public void testConvertToKey() throws Exception {
+    @Test
+    public void convertToKey() throws Exception {
         Key key = KeyFactory.createKey("Hoge", 1);
-        assertSame(key, ConversionUtil.convert(key, Key.class));
-        assertEquals(key, ConversionUtil.convert(
+        assertThat((Key) ConversionUtil.convert(key, Key.class), is(key));
+        assertThat((Key) ConversionUtil.convert(
             KeyFactory.keyToString(key),
-            Key.class));
+            Key.class), is(key));
     }
 }

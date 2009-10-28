@@ -15,55 +15,59 @@
  */
 package org.slim3.tester;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.util.Enumeration;
 
-import org.slim3.tester.MockFilterConfig;
-import org.slim3.tester.MockServletContext;
-
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class MockFilterConfigTest extends TestCase {
+public class MockFilterConfigTest {
 
     private MockServletContext servletContext = new MockServletContext();
 
-    private MockFilterConfig filterConfig = new MockFilterConfig(servletContext);
+    private MockFilterConfig filterConfig =
+        new MockFilterConfig(servletContext);
 
     /**
      * @throws Exception
      * 
      */
-    public void testInitParameter() throws Exception {
+    @Test
+    public void initParameter() throws Exception {
         String value = "111";
         String name = "aaa";
         filterConfig.setInitParameter(name, value);
-        assertSame(value, filterConfig.getInitParameter(name));
+        assertThat(filterConfig.getInitParameter(name), is(sameInstance(value)));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testSetInitParameterForNull() throws Exception {
+    @Test
+    public void setInitParameterForNull() throws Exception {
         String value = null;
         String name = "aaa";
         filterConfig.setInitParameter(name, value);
-        assertNull(filterConfig.getInitParameter(name));
+        assertThat(filterConfig.getInitParameter(name), is(nullValue()));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testGetInitParameterNames() throws Exception {
+    @Test
+    public void getInitParameterNames() throws Exception {
         filterConfig.setInitParameter("aaa", "");
         filterConfig.setInitParameter("bbb", "");
         Enumeration<String> e = filterConfig.getInitParameterNames();
         System.out.println(e.nextElement());
         System.out.println(e.nextElement());
-        assertFalse(e.hasMoreElements());
+        assertThat(e.hasMoreElements(), is(false));
     }
 }

@@ -13,35 +13,44 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.jdo;
+package org.slim3.tester;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
 
 /**
+ * A test case for appengine local services.
+ * 
  * @author higa
+ * @since 3.0
  * 
  */
-public class EqCriterionTest extends TestCase {
-
-    private SampleMeta m = new SampleMeta();
+public abstract class ServletTestCase {
 
     /**
-     * @throws Exception
+     * The tester for servlet environment.
      */
-    public void testGetQueryString() throws Exception {
-        EqCriterion criterion = m.id.eq(1);
-        assertEquals("id == :0", criterion.getQueryString(":0"));
+    protected ServletTester tester = new ServletTester();
+
+    /**
+     * Sets up this test.
+     * 
+     * @throws Exception
+     *             if an exception occurred
+     */
+    @Before
+    public void setUp() throws Exception {
+        tester.setUp();
     }
 
     /**
+     * Tears down this test
+     * 
      * @throws Exception
+     *             if an exception occurred
      */
-    public void testAccept() throws Exception {
-        Sample sample = new Sample();
-        sample.setId(1L);
-        EqCriterion criterion = m.id.eq(1);
-        assertTrue(criterion.accept(sample));
-        sample.setId(2L);
-        assertFalse(criterion.accept(sample));
+    @After
+    public void tearDown() throws Exception {
+        tester.tearDown();
     }
 }

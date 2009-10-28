@@ -15,10 +15,12 @@
  */
 package org.slim3.controller;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import javax.servlet.http.HttpSession;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
 
@@ -26,7 +28,7 @@ import org.slim3.tester.MockServletContext;
  * @author higa
  * 
  */
-public class HotHttpServletRequestWrapperTest extends TestCase {
+public class HotHttpServletRequestWrapperTest {
 
     private MockServletContext servletContext = new MockServletContext();
 
@@ -37,53 +39,60 @@ public class HotHttpServletRequestWrapperTest extends TestCase {
      * @throws Exception
      * 
      */
-    public void testConstructor() throws Exception {
+    @Test
+    public void constructor() throws Exception {
         HotHttpServletRequestWrapper requestWrapper =
             new HotHttpServletRequestWrapper(request);
-        assertNull(requestWrapper.sessionWrapper);
+        assertThat(requestWrapper.sessionWrapper, is(nullValue()));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testConstructorWithSession() throws Exception {
+    @Test
+    public void constructorWithSession() throws Exception {
         request.getSession();
         HotHttpServletRequestWrapper requestWrapper =
             new HotHttpServletRequestWrapper(request);
-        assertNotNull(requestWrapper.sessionWrapper);
+        assertThat(requestWrapper.sessionWrapper, is(not(nullValue())));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testGetSession() throws Exception {
+    @Test
+    public void getSession() throws Exception {
         HotHttpServletRequestWrapper requestWrapper =
             new HotHttpServletRequestWrapper(request);
         HttpSession session = requestWrapper.getSession();
-        assertNotNull(session);
-        assertSame(session, requestWrapper.getSession());
+        assertThat(session, is(not(nullValue())));
+        assertThat(requestWrapper.getSession(), is(sameInstance(session)));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testInvalidateSession() throws Exception {
+    @Test
+    public void invalidateSession() throws Exception {
         HotHttpServletRequestWrapper requestWrapper =
             new HotHttpServletRequestWrapper(request);
         requestWrapper.getSession().invalidate();
-        assertNull(requestWrapper.sessionWrapper);
+        assertThat(requestWrapper.sessionWrapper, is(nullValue()));
     }
 
     /**
      * @throws Exception
      * 
      */
-    public void testGetRequestDispatcher() throws Exception {
+    @Test
+    public void getRequestDispatcher() throws Exception {
         HotHttpServletRequestWrapper requestWrapper =
             new HotHttpServletRequestWrapper(request);
-        assertTrue(requestWrapper.getRequestDispatcher("/index.jsp") instanceof HotRequestDispatcherWrapper);
+        assertThat(
+            requestWrapper.getRequestDispatcher("/index.jsp"),
+            is(HotRequestDispatcherWrapper.class));
     }
 }
