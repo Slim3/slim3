@@ -21,7 +21,6 @@ import org.slim3.gen.Constants;
 import org.slim3.gen.desc.ServiceDesc;
 import org.slim3.gen.printer.Printer;
 import org.slim3.gen.util.ClassUtil;
-import org.slim3.gen.util.StringUtil;
 
 /**
  * Generates a service test case java file.
@@ -63,13 +62,12 @@ public class ServiceTestCaseGenerator implements Generator {
             Constants.TEST_SUFFIX,
             ClassUtil.getSimpleName(serviceDesc.getTestCaseSuperclassName()));
         p.println();
+        p.println("    private %1$s service = new %1$s();", serviceDesc
+            .getSimpleName());
+        p.println();
         p.println("    @%s", ClassUtil.getSimpleName(AnnotationConstants.Test));
         p.println("    public void test() throws Exception {");
-        p.println("        %1$s %2$s = new %1$s();", serviceDesc
-            .getSimpleName(), StringUtil.decapitalize(serviceDesc
-            .getSimpleName()));
-        p.println("        assertThat(%1$s, is(notNullValue()));", StringUtil
-            .decapitalize(serviceDesc.getSimpleName()));
+        p.println("        assertThat(service, is(notNullValue()));");
         p.println("    }");
         p.println("}");
     }
