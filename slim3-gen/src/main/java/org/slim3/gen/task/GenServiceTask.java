@@ -42,7 +42,7 @@ public class GenServiceTask extends AbstractGenJavaFileTask {
 
     /** the superclass name of testcase */
     protected String testCaseSuperclassName =
-        ClassConstants.ServletDatastoreTestCase;
+        ClassConstants.LocalServiceTestCase;
 
     /** the serviceRelativeClassName */
     protected String serviceRelativeClassName;
@@ -133,8 +133,6 @@ public class GenServiceTask extends AbstractGenJavaFileTask {
         WebConfig config = createWebConfig();
         StringBuilder buf = new StringBuilder();
         buf.append(config.getRootPackageName());
-        buf.append(".");
-        buf.append(Constants.SERVER_PACKAGE);
         buf.append(".");
         buf.append(Constants.SERVICE_PACKAGE);
         return buf.toString();

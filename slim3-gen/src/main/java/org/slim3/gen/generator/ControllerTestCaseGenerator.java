@@ -15,6 +15,8 @@
  */
 package org.slim3.gen.generator;
 
+import org.slim3.gen.AnnotationConstants;
+import org.slim3.gen.ClassConstants;
 import org.slim3.gen.Constants;
 import org.slim3.gen.desc.ControllerDesc;
 import org.slim3.gen.printer.Printer;
@@ -51,26 +53,31 @@ public class ControllerTestCaseGenerator implements Generator {
             p.println("package %s;", controllerDesc.getPackageName());
             p.println();
         }
+        p.println("import %s;", AnnotationConstants.Test);
+        p.println("import static %s.*;", ClassConstants.Assert);
+        p.println("import static %s.*;", ClassConstants.CoreMatchers);
         p.println("import %s;", controllerDesc.getTestCaseSuperclassName());
         p.println();
         p.println("public class %s%s extends %s {", controllerDesc
             .getSimpleName(), Constants.TEST_SUFFIX, ClassUtil
             .getSimpleName(controllerDesc.getTestCaseSuperclassName()));
         p.println();
-        p.println("    public void testRun() throws Exception {");
-        p.println("        start(\"%s\");", controllerDesc.getPath());
-        p.println("        %s controller = getController();", controllerDesc
-            .getSimpleName());
-        p.println("        assertNotNull(controller);");
+        p.println("    @Test");
+        p.println("    public void run() throws Exception {");
+        p.println("        tester.start(\"%s\");", controllerDesc.getPath());
+        p.println(
+            "        %s controller = tester.getController();",
+            controllerDesc.getSimpleName());
+        p.println("        assertThat(controller, is(notNullValue()));");
         if (controllerDesc.isUseView()) {
-            p.println("        assertFalse(isRedirect());");
+            p.println("        assertThat(tester.isRedirect(), is(false));");
             p.println(
-                "        assertEquals(\"%s\", getDestinationPath());",
+                "        assertThat(tester.getDestinationPath(), is(\"%s\"));",
                 controllerDesc.getViewName());
         } else {
-            p.println("        assertTrue(isRedirect());");
+            p.println("        assertThat(tester.isRedirect(), is(true));");
             p.println(
-                "        assertEquals(\"%s\", getDestinationPath());",
+                "        assertThat(tester.getDestinationPath(), is(\"%s\"));",
                 controllerDesc.getBasePath());
         }
         p.println("    }");

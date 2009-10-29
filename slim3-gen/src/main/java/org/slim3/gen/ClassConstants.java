@@ -79,9 +79,13 @@ public final class ClassConstants {
     public static final String ControllerTestCase =
         "org.slim3.tester.ControllerTestCase";
 
-    /** {@code org.slim3.tester.ServletDatastoreTestCase} */
-    public static final String ServletDatastoreTestCase =
-        "org.slim3.tester.ServletDatastoreTestCase";
+    /** {@code org.slim3.tester.ServletTestCase} */
+    public static final String ServletTestCase =
+        "org.slim3.tester.ServletTestCase";
+
+    /** {@code org.slim3.tester.LocalServiceTestCase} */
+    public static final String LocalServiceTestCase =
+        "org.slim3.tester.LocalServiceTestCase";
 
     /** {@code com.google.gwt.user.client.rpc.AsyncCallback} */
     public static final String AsyncCallback =
