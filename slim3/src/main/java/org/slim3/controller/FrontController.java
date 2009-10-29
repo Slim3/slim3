@@ -106,11 +106,6 @@ public class FrontController implements Filter {
     protected final String uuid = UUID.randomUUID().toString();
 
     /**
-     * The runtime hash.
-     */
-    protected final long runtimeHash = Runtime.getRuntime().hashCode();
-
-    /**
      * Constructor.
      */
     public FrontController() {
@@ -124,11 +119,8 @@ public class FrontController implements Filter {
         initDefaultLocale();
         initDefaultTimeZone();
         initRootPackageName();
-        logger.log(Level.INFO, "Initialized FrontController(UUID:"
-            + uuid
-            + ", runtime:"
-            + runtimeHash
-            + ")");
+        logger
+            .log(Level.INFO, "Initialized FrontController(UUID:" + uuid + ")");
     }
 
     /**
@@ -236,11 +228,7 @@ public class FrontController implements Filter {
         if (servletContextSet) {
             ServletContextLocator.set(null);
         }
-        logger.log(Level.INFO, "Destroyed FrontController(UUID:"
-            + uuid
-            + ", runtime:"
-            + runtimeHash
-            + ")");
+        logger.log(Level.INFO, "Destroyed FrontController(UUID:" + uuid + ")");
     }
 
     public void doFilter(ServletRequest request, ServletResponse response,
