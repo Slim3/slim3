@@ -15,7 +15,8 @@
 
     <taskdef name="gen-model" classname="org.slim3.gen.task.GenModelTask" classpathref="classpath"/>
     <taskdef name="gen-view" classname="org.slim3.gen.task.GenViewTask" classpathref="classpath"/>
-    <taskdef name="gen-controller" classname="org.slim3.gen.task.GenControllerTask" classpathref="classpath"/>
+	<taskdef name="gen-service" classname="org.slim3.gen.task.GenServiceTask" classpathref="classpath"/>
+	<taskdef name="gen-controller" classname="org.slim3.gen.task.GenControllerTask" classpathref="classpath"/>
     <taskdef name="gen-gwt-service" classname="org.slim3.gen.task.GenGWTServiceTask" classpathref="classpath"/>
     <taskdef name="gen-gwt-service-impl" classname="org.slim3.gen.task.GenGWTServiceImplTask" classpathref="classpath"/>
     
@@ -37,7 +38,12 @@
         <gen-model srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" modelRelativeClassName="${modelRelativeClassName}" modelClassNameProperty="modelClassName"/>
     </target>
 
-    <target name="gen-gwt-service">
+    <target name="gen-service">
+        <input message="Input a service name. (ex.  FooService -> root.service.FooService,  bar.FooService -> root.service.bar.FooService)" addproperty="serviceRelativeClassName"/>
+        <gen-service srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" serviceRelativeClassName="${serviceRelativeClassName}"/>
+    </target>
+   
+	<target name="gen-gwt-service">
         <input message="Input a GWT service name. (ex.  FooService -> root.client.service.FooService,  bar.FooService -> root.client.service.bar.FooService)" addproperty="serviceRelativeClassName"/>
         <gen-gwt-service srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" serviceRelativeClassName="${serviceRelativeClassName}" serviceClassNameProperty="serviceClassName"/>
         <gen-gwt-service-impl srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" serviceRelativeClassName="${serviceRelativeClassName}" serviceClassName="${serviceClassName}"/>
