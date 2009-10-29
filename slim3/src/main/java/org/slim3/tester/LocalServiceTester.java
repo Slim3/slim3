@@ -16,6 +16,7 @@
 package org.slim3.tester;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -30,9 +31,8 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Transaction;
-import com.google.appengine.api.datastore.dev.LocalDatastoreService;
-import com.google.appengine.tools.development.ApiProxyLocalImpl;
 import com.google.apphosting.api.ApiProxy;
+import com.google.apphosting.api.ApiProxy.Delegate;
 
 /**
  * A tester for local services.
@@ -72,40 +72,59 @@ public class LocalServiceTester {
         "appengine-local-runtime.jar";
 
     /**
-     * The name of {@link LocalDatastoreService}.
+     * The name of local datastore service.
      */
     protected static final String LOCAL_DETASTORE_SERVICE_NAME = "datastore_v3";
+
     /**
-     * The base path for api proxy local implementation.
+     * The no storage property key.
      */
-    protected String basePath = "build";
+    protected static final String NO_STORAGE_PROPERTY = "datastore.no_storage";
+
+    /**
+     * The ApiProxyLocalImpl instance.
+     */
+    protected static Object apiProxyLocalImpl;
+
+    /**
+     * The local datastore service.
+     */
+    protected static Object localDatastoreService;
+
+    /**
+     * The clearProfiles method.
+     */
+    protected static Method clearProfilesMethod;
 
     static {
-        loadLibraries();
+        ClassLoader loader = loadLibraries();
+        prepareLocalServices(loader);
     }
 
     /**
      * Loads appengine libraries.
+     * 
+     * @return {@link ClassLoader} to prepare local services
      */
-    protected static void loadLibraries() {
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        if (!(loader instanceof URLClassLoader)) {
-            return;
+    protected static ClassLoader loadLibraries() {
+        ClassLoader loader = LocalServiceTester.class.getClassLoader();
+        if (loader instanceof URLClassLoader) {
+            File libDir = getLibDir();
+            File implDir = new File(libDir, IMPL_DIR_NAME);
+            List<URL> urls = new ArrayList<URL>();
+            try {
+                loader.loadClass(API_PROXY_LOCAL_IMPL_CLASS_NAME);
+            } catch (ClassNotFoundException e) {
+                urls.add(getLibraryURL(implDir, LOCAL_RUNTIME_LIB_NAME));
+            }
+            try {
+                loader.loadClass(LOCAL_DATASTORE_SERVICE_CLASS_NAME);
+            } catch (ClassNotFoundException e) {
+                urls.add(getLibraryURL(implDir, API_STUBS_LIB_NAME));
+            }
+            loadLibraries(loader, urls);
         }
-        File libDir = getLibDir();
-        File implDir = new File(libDir, IMPL_DIR_NAME);
-        List<URL> urls = new ArrayList<URL>();
-        try {
-            loader.loadClass(API_PROXY_LOCAL_IMPL_CLASS_NAME);
-        } catch (ClassNotFoundException e) {
-            urls.add(getLibraryURL(implDir, LOCAL_RUNTIME_LIB_NAME));
-        }
-        try {
-            loader.loadClass(LOCAL_DATASTORE_SERVICE_CLASS_NAME);
-        } catch (ClassNotFoundException e) {
-            urls.add(getLibraryURL(implDir, API_STUBS_LIB_NAME));
-        }
-        loadLibraries(loader, urls);
+        return loader;
     }
 
     /**
@@ -171,22 +190,41 @@ public class LocalServiceTester {
     }
 
     /**
-     * Returns the base path.
+     * Prepares local services.
      * 
-     * @return the base path
+     * @param loader
+     *            the {@link ClassLoader}
      */
-    public String getBasePath() {
-        return basePath;
-    }
-
-    /**
-     * Sets the base path.
-     * 
-     * @param basePath
-     *            the base path
-     */
-    public void setBasePath(String basePath) {
-        this.basePath = basePath;
+    protected static void prepareLocalServices(ClassLoader loader) {
+        try {
+            Class<?> apiProxyLocalImplClass =
+                loader.loadClass(API_PROXY_LOCAL_IMPL_CLASS_NAME);
+            Constructor<?> con =
+                apiProxyLocalImplClass.getDeclaredConstructor(File.class);
+            con.setAccessible(true);
+            apiProxyLocalImpl = con.newInstance(new File("build"));
+            Method setPropertyMethod =
+                apiProxyLocalImplClass.getMethod(
+                    "setProperty",
+                    String.class,
+                    String.class);
+            setPropertyMethod.invoke(
+                apiProxyLocalImpl,
+                NO_STORAGE_PROPERTY,
+                Boolean.TRUE.toString());
+            Method getServiceMethod =
+                apiProxyLocalImplClass.getMethod("getService", String.class);
+            localDatastoreService =
+                getServiceMethod.invoke(
+                    apiProxyLocalImpl,
+                    LOCAL_DETASTORE_SERVICE_NAME);
+            Class<?> localDatastoreServiceClass =
+                loader.loadClass(LOCAL_DATASTORE_SERVICE_CLASS_NAME);
+            clearProfilesMethod =
+                localDatastoreServiceClass.getMethod("clearProfiles");
+        } catch (Throwable cause) {
+            ThrowableUtil.wrapAndThrow(cause);
+        }
     }
 
     /**
@@ -198,12 +236,7 @@ public class LocalServiceTester {
      */
     public void setUp() throws Exception {
         ApiProxy.setEnvironmentForCurrentThread(new TestEnvironment());
-        ApiProxyLocalImpl delegate = new ApiProxyLocalImpl(new File(basePath)) {
-        };
-        ApiProxy.setDelegate(delegate);
-        delegate.setProperty(
-            LocalDatastoreService.NO_STORAGE_PROPERTY,
-            Boolean.TRUE.toString());
+        ApiProxy.setDelegate((Delegate<?>) apiProxyLocalImpl);
     }
 
     /**
@@ -213,11 +246,7 @@ public class LocalServiceTester {
      *             if an exception has occurred
      */
     public void tearDown() throws Exception {
-        ApiProxyLocalImpl delegate = (ApiProxyLocalImpl) ApiProxy.getDelegate();
-        LocalDatastoreService datastoreService =
-            (LocalDatastoreService) delegate
-                .getService(LOCAL_DETASTORE_SERVICE_NAME);
-        datastoreService.clearProfiles();
+        clearProfilesMethod.invoke(localDatastoreService);
         for (Transaction tx : DatastoreServiceFactory
             .getDatastoreService()
             .getActiveTransactions()) {
