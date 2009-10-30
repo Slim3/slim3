@@ -35,11 +35,14 @@ Bar count:${count}
 </td>
 </tr>
 </table>
-<a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/model/Bar.java" target="_blank">Bar source for Slim3</a><br />
-<a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/cool/model/BarJDO.java" target="_blank">Bar source for JDO</a><br />
-<a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/controller/performance/GetLLController.java" target="_blank">Controller for Low level API</a><br />
-<a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/controller/performance/GetSlim3Controller.java" target="_blank">Controller for Slim3</a><br />
-<a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/controller/performance/GetJDOController.java" target="_blank">Controller for JDO</a><br />
-<a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/service/PerformanceService.java">PerformanceService</a>
+Source codes:
+<ul>
+<li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/model/Bar.java" target="_blank">Model for Slim3</a></li>
+<li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/cool/model/BarJDO.java" target="_blank">Model for JDO</a></li>
+<li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/controller/performance/GetLLController.java" target="_blank">Controller for Low level API</a></li>
+<li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/controller/performance/GetSlim3Controller.java" target="_blank">Controller for Slim3</a></li>
+<li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/controller/performance/GetJDOController.java" target="_blank">Controller for JDO</a></li>
+<li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/service/PerformanceService.java" target="_blank">Service</li>
+</ul>
 </body>
 </html>
