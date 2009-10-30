@@ -133,6 +133,10 @@ public class GenServiceTask extends AbstractGenJavaFileTask {
         WebConfig config = createWebConfig();
         StringBuilder buf = new StringBuilder();
         buf.append(config.getRootPackageName());
+        if (config.isGWTServiceServletDefined()) {
+            buf.append(".");
+            buf.append(Constants.SERVER_PACKAGE);
+        }
         buf.append(".");
         buf.append(Constants.SERVICE_PACKAGE);
         return buf.toString();

@@ -19,10 +19,12 @@ import java.io.IOException;
 
 import javax.xml.xpath.XPathExpressionException;
 
+import org.slim3.gen.ClassConstants;
 import org.slim3.gen.Constants;
 import org.slim3.gen.desc.ModelDesc;
 import org.slim3.gen.generator.Generator;
 import org.slim3.gen.generator.ModelGenerator;
+import org.slim3.gen.generator.ModelTestCaseGenerator;
 import org.slim3.gen.message.MessageCode;
 import org.slim3.gen.message.MessageFormatter;
 
@@ -36,6 +38,9 @@ public class GenModelTask extends AbstractGenJavaFileTask {
 
     /** the packageName */
     protected String packageName;
+
+    /** the superclass name of testcase */
+    protected String testCaseSuperclassName = ClassConstants.Object;
 
     /** the modelRelativeClassName */
     protected String modelRelativeClassName;
@@ -96,6 +101,10 @@ public class GenModelTask extends AbstractGenJavaFileTask {
         Generator generator = createModelGenerator(modelDesc);
         generateJavaFile(generator, javaFile);
 
+        JavaFile testCaseJavaFile = createTestCaseJavaFile(modelDesc);
+        Generator testCaseGenerator = createModelTestCaseGenerator(modelDesc);
+        generateJavaFile(testCaseGenerator, testCaseJavaFile);
+
         getProject().setNewProperty(
             modelClassNameProperty,
             modelDesc.getQualifiedName());
@@ -117,6 +126,7 @@ public class GenModelTask extends AbstractGenJavaFileTask {
         ModelDesc modelDesc = new ModelDesc();
         modelDesc.setPackageName(nameBuilder.getPackageName());
         modelDesc.setSimpleName(nameBuilder.getSimpleName());
+        modelDesc.setTestCaseSuperclassName(testCaseSuperclassName);
         return modelDesc;
     }
 
@@ -153,6 +163,17 @@ public class GenModelTask extends AbstractGenJavaFileTask {
      */
     protected Generator createModelGenerator(ModelDesc modelDesc) {
         return new ModelGenerator(modelDesc);
+    }
+
+    /**
+     * Creates a {@link Generator} for a test case.
+     * 
+     * @param modelDesc
+     *            the model description
+     * @return a generator
+     */
+    protected Generator createModelTestCaseGenerator(ModelDesc modelDesc) {
+        return new ModelTestCaseGenerator(modelDesc);
     }
 
 }
