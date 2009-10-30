@@ -1322,13 +1322,14 @@ public final class Datastore {
     }
 
     private static List<Entity> mapToList(Iterable<Key> keys,
-            Map<Key, Entity> map) {
+            Map<Key, Entity> map) throws EntityNotFoundRuntimeException {
         List<Entity> list = new ArrayList<Entity>(map.size());
         for (Key key : keys) {
             Entity entity = map.get(key);
-            if (entity != null) {
-                list.add(entity);
+            if (entity == null) {
+                throw new EntityNotFoundRuntimeException(key);
             }
+            list.add(entity);
         }
         return list;
     }

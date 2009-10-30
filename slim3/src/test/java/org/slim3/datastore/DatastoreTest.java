@@ -278,6 +278,16 @@ public class DatastoreTest extends LocalServiceTestCase {
     /**
      * @throws Exception
      */
+    @Test(expected = EntityNotFoundRuntimeException.class)
+    public void getModelsWhenEntityNotFound() throws Exception {
+        Key key = KeyFactory.createKey("Hoge", 1);
+        Key key2 = KeyFactory.createKey("Hoge", 1);
+        Datastore.get(meta, key, key2);
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test
     public void getModelsInTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
@@ -505,6 +515,16 @@ public class DatastoreTest extends LocalServiceTestCase {
         List<Entity> list = Datastore.get(key, key2);
         assertThat(list, is(not(nullValue())));
         assertThat(list.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = EntityNotFoundRuntimeException.class)
+    public void getEntitiesWhenEntityNotFound() throws Exception {
+        Key key = KeyFactory.createKey("Hoge", 1);
+        Key key2 = KeyFactory.createKey("Hoge", 1);
+        Datastore.get(key, key2);
     }
 
     /**
