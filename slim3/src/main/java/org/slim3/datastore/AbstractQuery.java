@@ -66,7 +66,8 @@ public abstract class AbstractQuery<SUB> {
     /**
      * The fetch options.
      */
-    protected FetchOptions fetchOptions = FetchOptions.Builder.withOffset(0);
+    protected FetchOptions fetchOptions =
+        FetchOptions.Builder.withOffset(0).limit(Integer.MAX_VALUE);
 
     /**
      * Constructor.
