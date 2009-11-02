@@ -42,8 +42,6 @@ public enum MessageCode {
     /** */
     SILM3GEN0009("The property[{0}] has already been set."),
     /** */
-    SILM3GEN0010("Neither @javax.jdo.annotations.Persistent nor @javax.jdo.annotations.NotPersistent is found."),
-    /** */
     SILM3GEN0011("@com.google.gwt.user.client.rpc.RemoteServiceRelativePath is available only to an interface."),
     /** */
     SILM3GEN0012("The processor[{0}] is skipped."),
