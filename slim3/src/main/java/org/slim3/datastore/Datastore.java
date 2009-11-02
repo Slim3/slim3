@@ -761,15 +761,19 @@ public final class Datastore {
      *            the version
      * @return a model specified by the key
      * @throws NullPointerException
-     *             if the modelMeta parameter is null
+     *             if the modelMeta parameter is null or if the version
+     *             parameter is null
      * @throws EntityNotFoundRuntimeException
      *             if no entity specified by the key could be found
      * @throws ConcurrentModificationException
      *             if the version of the model is updated
      */
-    public static <M> M get(ModelMeta<M> modelMeta, Key key, long version)
+    public static <M> M get(ModelMeta<M> modelMeta, Key key, Long version)
             throws NullPointerException, EntityNotFoundRuntimeException,
             ConcurrentModificationException {
+        if (version == null) {
+            throw new NullPointerException("The version parameter is null.");
+        }
         M model = get(modelMeta, key);
         if (version != modelMeta.getVersion(model)) {
             throw new ConcurrentModificationException(
@@ -892,7 +896,8 @@ public final class Datastore {
      *            the version
      * @return a model specified by the key
      * @throws NullPointerException
-     *             if the modelMeta parameter is null
+     *             if the modelMeta parameter is null or if the version
+     *             parameter is null
      * @throws IllegalStateException
      *             if the transaction is not null and the transaction is not
      *             active
@@ -902,8 +907,11 @@ public final class Datastore {
      *             if the version of the model is updated
      */
     public static <M> M get(Transaction tx, ModelMeta<M> modelMeta, Key key,
-            long version) throws NullPointerException, IllegalStateException,
+            Long version) throws NullPointerException, IllegalStateException,
             EntityNotFoundRuntimeException, ConcurrentModificationException {
+        if (version == null) {
+            throw new NullPointerException("The version parameter is null.");
+        }
         M model = get(tx, modelMeta, key);
         if (version != modelMeta.getVersion(model)) {
             throw new ConcurrentModificationException(

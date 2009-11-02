@@ -194,9 +194,9 @@ public class DatastoreTest extends LocalServiceTestCase {
         Entity entity = new Entity("Hoge");
         entity.setProperty("version", 1);
         Key key = ds.put(entity);
-        Hoge model = Datastore.get(meta, key, 1);
+        Hoge model = Datastore.get(meta, key, 1L);
         assertThat(model, is(not(nullValue())));
-        Datastore.get(meta, key, 0);
+        Datastore.get(meta, key, 0L);
     }
 
     /**
@@ -235,9 +235,9 @@ public class DatastoreTest extends LocalServiceTestCase {
         entity.setProperty("version", 1);
         Key key = ds.put(entity);
         Transaction tx = Datastore.beginTransaction();
-        Hoge model = Datastore.get(tx, meta, key, 1);
+        Hoge model = Datastore.get(tx, meta, key, 1L);
         assertThat(model, is(not(nullValue())));
-        Datastore.get(tx, meta, key, 0);
+        Datastore.get(tx, meta, key, 0L);
     }
 
     /**
