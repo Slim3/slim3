@@ -48,14 +48,14 @@ public class CopyOptions {
     protected String[] excludedPropertyNames = EMPTY_STRINGS;
 
     /**
-     * Whether null is copied.
+     * Whether null is excluded.
      */
-    protected boolean copyNull = false;
+    protected boolean excludeNull = false;
 
     /**
      * Whether empty string is copied.
      */
-    protected boolean copyEmptyString = false;
+    protected boolean excludeEmptyString = false;
 
     /**
      * The converters that are bound to the specific property.
@@ -93,22 +93,22 @@ public class CopyOptions {
     }
 
     /**
-     * Specifies whether null is copied.
+     * Specifies whether null is excluded.
      * 
      * @return this instance
      */
-    public CopyOptions copyNull() {
-        copyNull = true;
+    public CopyOptions excludeNull() {
+        excludeNull = true;
         return this;
     }
 
     /**
-     * Specifies whether empty string is copied.
+     * Specifies whether empty string is excluded.
      * 
      * @return this instance
      */
-    public CopyOptions copyEmptyString() {
-        copyEmptyString = true;
+    public CopyOptions excludeEmptyString() {
+        excludeEmptyString = true;
         return this;
     }
 
@@ -205,10 +205,10 @@ public class CopyOptions {
      */
     protected boolean isTargetValue(Object value) {
         if (value == null) {
-            return copyNull;
+            return !excludeNull;
         }
         if ("".equals(value)) {
-            return copyEmptyString;
+            return !excludeEmptyString;
         }
         return true;
     }

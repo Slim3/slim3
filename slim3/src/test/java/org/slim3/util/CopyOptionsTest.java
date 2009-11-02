@@ -95,18 +95,7 @@ public class CopyOptionsTest {
     @Test
     public void isTargetValue() throws Exception {
         assertThat(options.isTargetValue("hoge"), is(true));
-        assertThat(options.isTargetValue(""), is(false));
-        assertThat(options.isTargetValue(null), is(false));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void isTargetValueForCopyNull() throws Exception {
-        options.copyNull();
-        assertThat(options.isTargetValue("hoge"), is(true));
-        assertThat(options.isTargetValue(""), is(false));
+        assertThat(options.isTargetValue(""), is(true));
         assertThat(options.isTargetValue(null), is(true));
     }
 
@@ -114,11 +103,22 @@ public class CopyOptionsTest {
      * @throws Exception
      */
     @Test
-    public void isTargetValueForCopyEmptyString() throws Exception {
-        options.copyEmptyString();
+    public void isTargetValueForExcludeNull() throws Exception {
+        options.excludeNull();
         assertThat(options.isTargetValue("hoge"), is(true));
         assertThat(options.isTargetValue(""), is(true));
         assertThat(options.isTargetValue(null), is(false));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void isTargetValueForExcludeEmptyString() throws Exception {
+        options.excludeEmptyString();
+        assertThat(options.isTargetValue("hoge"), is(true));
+        assertThat(options.isTargetValue(""), is(false));
+        assertThat(options.isTargetValue(null), is(true));
     }
 
     /**

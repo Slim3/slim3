@@ -18,10 +18,6 @@ package org.slim3.datastore;
 import org.junit.Test;
 import org.slim3.tester.LocalServiceTestCase;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Query;
-
 /**
  * @author higa
  * 
@@ -33,11 +29,5 @@ public class SpikeTest extends LocalServiceTestCase {
      */
     @Test
     public void spike() throws Exception {
-        Thread t = new Thread();
-        System.out.println(t.getId());
-        System.out.println(t.hashCode());
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        int count = ds.prepare(new Query("Hoge").setKeysOnly()).countEntities();
-        System.out.println(count);
     }
 }
