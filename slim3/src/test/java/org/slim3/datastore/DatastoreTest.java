@@ -159,7 +159,7 @@ public class DatastoreTest extends LocalServiceTestCase {
             is(not(nullValue())));
         assertThat(
             Datastore.createKey(parentKey, meta, "aaa"),
-            is(not(nullValue())));
+            is(notNullValue()));
     }
 
     /**
@@ -169,7 +169,33 @@ public class DatastoreTest extends LocalServiceTestCase {
     public void getModel() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Hoge model = Datastore.get(meta, key);
-        assertThat(model, is(not(nullValue())));
+        assertThat(model, is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelUsingClass() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Hoge model = Datastore.get(Hoge.class, key);
+        assertThat(model, is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelUsingClassAndCache() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Map<Key, Object> cache = new HashMap<Key, Object>();
+        Hoge model = Datastore.get(Hoge.class, key, cache);
+        assertThat(model, is(notNullValue()));
+        assertThat(model, is(sameInstance(cache.get(key))));
+        ds.delete(key);
+        assertThat(
+            model,
+            is(sameInstance(Datastore.get(Hoge.class, key, cache))));
     }
 
     /**
@@ -190,12 +216,25 @@ public class DatastoreTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test(expected = ConcurrentModificationException.class)
+    public void getModelUsingClassAndCheckVersion() throws Exception {
+        Entity entity = new Entity("Hoge");
+        entity.setProperty("version", 1);
+        Key key = ds.put(entity);
+        Hoge model = Datastore.get(Hoge.class, key, 1L);
+        assertThat(model, is(notNullValue()));
+        Datastore.get(Hoge.class, key, 0L);
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = ConcurrentModificationException.class)
     public void getModelAndCheckVersion() throws Exception {
         Entity entity = new Entity("Hoge");
         entity.setProperty("version", 1);
         Key key = ds.put(entity);
         Hoge model = Datastore.get(meta, key, 1L);
-        assertThat(model, is(not(nullValue())));
+        assertThat(model, is(notNullValue()));
         Datastore.get(meta, key, 0L);
     }
 
@@ -215,6 +254,37 @@ public class DatastoreTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
+    public void getModelInTxUsingClass() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Transaction tx = ds.beginTransaction();
+        Hoge model = Datastore.get(tx, Hoge.class, key);
+        tx.rollback();
+        assertThat(model, is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelInTxUsingClassAndCache() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Map<Key, Object> cache = new HashMap<Key, Object>();
+        Transaction tx = ds.beginTransaction();
+        Hoge model = Datastore.get(tx, Hoge.class, key, cache);
+        assertThat(model, is(notNullValue()));
+        assertThat(model, is(sameInstance(cache.get(key))));
+        ds.delete(key);
+        assertThat(model, is(sameInstance(Datastore.get(
+            tx,
+            Hoge.class,
+            key,
+            cache))));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getModelInTxUsingCache() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Map<Key, Object> cache = new HashMap<Key, Object>();
@@ -224,6 +294,20 @@ public class DatastoreTest extends LocalServiceTestCase {
         assertThat(model, is(sameInstance(cache.get(key))));
         ds.delete(key);
         assertThat(model, is(sameInstance(Datastore.get(tx, meta, key, cache))));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = ConcurrentModificationException.class)
+    public void getModelInTxUsingClassAndCheckVersion() throws Exception {
+        Entity entity = new Entity("Hoge");
+        entity.setProperty("version", 1);
+        Key key = ds.put(entity);
+        Transaction tx = Datastore.beginTransaction();
+        Hoge model = Datastore.get(tx, Hoge.class, key, 1L);
+        assertThat(model, is(notNullValue()));
+        Datastore.get(tx, Hoge.class, key, 0L);
     }
 
     /**

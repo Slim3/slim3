@@ -727,6 +727,32 @@ public final class Datastore {
      * 
      * @param <M>
      *            the model type
+     * @param modelClass
+     *            the model class
+     * @param key
+     *            the key
+     * @return a model specified by the key
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     */
+    public static <M> M get(Class<M> modelClass, Key key)
+            throws NullPointerException, EntityNotFoundRuntimeException {
+        if (modelClass == null) {
+            throw new NullPointerException("The modelClass parameter is null.");
+        }
+        Entity entity = get(key);
+        ModelMeta<M> modelMeta = getModelMeta(modelClass);
+        return modelMeta.entityToModel(entity);
+    }
+
+    /**
+     * Returns a model specified by the key. If there is a current transaction,
+     * this operation will execute within that transaction.
+     * 
+     * @param <M>
+     *            the model type
      * @param modelMeta
      *            the meta data of model
      * @param key
@@ -744,6 +770,38 @@ public final class Datastore {
         }
         Entity entity = get(key);
         return modelMeta.entityToModel(entity);
+    }
+
+    /**
+     * Returns a model specified by the key and checks the version. If there is
+     * a current transaction, this operation will execute within that
+     * transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param key
+     *            the key
+     * @param version
+     *            the version
+     * @return a model specified by the key
+     * @throws NullPointerException
+     *             if the modelClass parameter is null or if the version
+     *             parameter is null
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     * @throws ConcurrentModificationException
+     *             if the version of the model is updated
+     */
+    public static <M> M get(Class<M> modelClass, Key key, Long version)
+            throws NullPointerException, EntityNotFoundRuntimeException,
+            ConcurrentModificationException {
+        if (modelClass == null) {
+            throw new NullPointerException("The modelClass parameter is null.");
+        }
+        ModelMeta<M> modelMeta = getModelMeta(modelClass);
+        return get(modelMeta, key, version);
     }
 
     /**
@@ -784,6 +842,35 @@ public final class Datastore {
                     + ").");
         }
         return model;
+    }
+
+    /**
+     * Returns a model specified by the key. If there is a current transaction,
+     * this operation will execute within that transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param key
+     *            the key
+     * @param cache
+     *            the cache of models. This cache can not be shared with
+     *            multiple threads.
+     * @return a model specified by the key
+     * @throws NullPointerException
+     *             if the modelClass parameter is null or if the key parameter
+     *             is null or if the cache parameter is null
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     */
+    public static <M> M get(Class<M> modelClass, Key key, Map<Key, Object> cache)
+            throws NullPointerException, EntityNotFoundRuntimeException {
+        if (modelClass == null) {
+            throw new NullPointerException("The modelClass parameter is null.");
+        }
+        ModelMeta<M> modelMeta = getModelMeta(modelClass);
+        return get(modelMeta, key, cache);
     }
 
     /**
@@ -858,6 +945,37 @@ public final class Datastore {
      *            the model type
      * @param tx
      *            the transaction
+     * @param modelClass
+     *            the model class
+     * @param key
+     *            the key
+     * @return a model specified by the key
+     * @throws NullPointerException
+     *             if the modelClass parameter is null or the key parameter is
+     *             null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     */
+    public static <M> M get(Transaction tx, Class<M> modelClass, Key key)
+            throws NullPointerException, IllegalStateException,
+            EntityNotFoundRuntimeException {
+        if (modelClass == null) {
+            throw new NullPointerException("The modelClass parameter is null.");
+        }
+        ModelMeta<M> modelMeta = getModelMeta(modelClass);
+        return get(tx, modelMeta, key);
+    }
+
+    /**
+     * Returns a model specified by the key within the provided transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param tx
+     *            the transaction
      * @param modelMeta
      *            the meta data of model
      * @param key
@@ -888,6 +1006,41 @@ public final class Datastore {
      *            the model type
      * @param tx
      *            the transaction
+     * @param modelClass
+     *            the model class
+     * @param key
+     *            the key
+     * @param version
+     *            the version
+     * @return a model specified by the key
+     * @throws NullPointerException
+     *             if the modelClass parameter is null or if the key parameter
+     *             is null or if the version parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     * @throws ConcurrentModificationException
+     *             if the version of the model is updated
+     */
+    public static <M> M get(Transaction tx, Class<M> modelClass, Key key,
+            Long version) throws NullPointerException, IllegalStateException,
+            EntityNotFoundRuntimeException, ConcurrentModificationException {
+        if (modelClass == null) {
+            throw new NullPointerException("The modelClass parameter is null.");
+        }
+        ModelMeta<M> modelMeta = getModelMeta(modelClass);
+        return get(tx, modelMeta, key, version);
+    }
+
+    /**
+     * Returns a model specified by the key within the provided transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param tx
+     *            the transaction
      * @param modelMeta
      *            the meta data of model
      * @param key
@@ -896,8 +1049,8 @@ public final class Datastore {
      *            the version
      * @return a model specified by the key
      * @throws NullPointerException
-     *             if the modelMeta parameter is null or if the version
-     *             parameter is null
+     *             if the modelMeta parameter is null or if the key parameter is
+     *             null or if the version parameter is null
      * @throws IllegalStateException
      *             if the transaction is not null and the transaction is not
      *             active
@@ -922,6 +1075,40 @@ public final class Datastore {
                     + ").");
         }
         return model;
+    }
+
+    /**
+     * Returns a model specified by the key within the provided transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param tx
+     *            the transaction
+     * @param modelClass
+     *            the model class
+     * @param key
+     *            the key
+     * @param cache
+     *            the cache of models. This cache can not be shared with
+     *            multiple threads.
+     * @return a model specified by the key
+     * @throws NullPointerException
+     *             if the modelClass parameter is null or if the key parameter
+     *             is null or if the cache parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     */
+    public static <M> M get(Transaction tx, Class<M> modelClass, Key key,
+            Map<Key, Object> cache) throws NullPointerException,
+            IllegalStateException, EntityNotFoundRuntimeException {
+        if (modelClass == null) {
+            throw new NullPointerException("The modelClass parameter is null.");
+        }
+        ModelMeta<M> modelMeta = getModelMeta(modelClass);
+        return get(tx, modelMeta, key, cache);
     }
 
     /**
@@ -1932,32 +2119,38 @@ public final class Datastore {
     /**
      * Returns a meta data of the model
      * 
+     * @param <M>
+     *            the model type
      * @param modelClass
      *            the model class
      * @return a meta data of the model
      */
-    protected static ModelMeta<?> getModelMeta(Class<?> modelClass) {
+    @SuppressWarnings("unchecked")
+    protected static <M> ModelMeta<M> getModelMeta(Class<M> modelClass) {
         if (!initialized) {
             initialize();
         }
-        ModelMeta<?> modelMeta = modelMetaCache.get(modelClass.getName());
+        ModelMeta<M> modelMeta =
+            (ModelMeta<M>) modelMetaCache.get(modelClass.getName());
         if (modelMeta != null) {
             return modelMeta;
         }
         modelMeta = createModelMeta(modelClass);
         ModelMeta<?> old =
             modelMetaCache.putIfAbsent(modelClass.getName(), modelMeta);
-        return old != null ? old : modelMeta;
+        return old != null ? (ModelMeta<M>) old : modelMeta;
     }
 
     /**
      * Creates a meta data of the model
      * 
+     * @param <M>
+     *            the model type
      * @param modelClass
      *            the model class
      * @return a meta data of the model
      */
-    protected static ModelMeta<?> createModelMeta(Class<?> modelClass) {
+    protected static <M> ModelMeta<M> createModelMeta(Class<M> modelClass) {
         try {
             String metaClassName =
                 modelClass.getName().replace(".model.", ".meta.") + "Meta";
