@@ -15,131 +15,135 @@
  */
 package org.slim3.util;
 
-import org.slim3.util.ShortUtil;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class ShortUtilTest extends TestCase {
+public class ShortUtilTest {
 
     /**
      * @throws Exception
      */
-    public void testToShortForNull() throws Exception {
-        assertNull(ShortUtil.toShort(null));
+    @Test
+    public void toShortForNull() throws Exception {
+        assertThat(ShortUtil.toShort(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testToShortForEmptyString() throws Exception {
-        assertNull(ShortUtil.toShort(""));
+    @Test
+    public void toShortForEmptyString() throws Exception {
+        assertThat(ShortUtil.toShort(""), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testToShortForShort() throws Exception {
+    @Test
+    public void toShortForShort() throws Exception {
         Short value = Short.valueOf("1");
-        assertEquals(value, ShortUtil.toShort(value));
+        assertThat(ShortUtil.toShort(value), is(value));
     }
 
     /**
      * @throws Exception
      */
-    public void testToShortForNumber() throws Exception {
-        Integer i = Integer.valueOf(1);
-        assertEquals((short) 1, ShortUtil.toShort(i).shortValue());
+    @Test
+    public void toShortForNumber() throws Exception {
+        assertThat(ShortUtil.toShort(1).shortValue(), is((short) 1));
     }
 
     /**
      * @throws Exception
      */
-    public void testToShortForString() throws Exception {
-        assertEquals((short) 1, ShortUtil.toShort("1").shortValue());
+    @Test
+    public void toShortForString() throws Exception {
+        assertThat(ShortUtil.toShort("1").shortValue(), is((short) 1));
     }
 
     /**
      * @throws Exception
      */
-    public void testToShortForTrue() throws Exception {
-        assertEquals((short) 1, ShortUtil.toShort(Boolean.TRUE).shortValue());
+    @Test
+    public void toShortForTrue() throws Exception {
+        assertThat(ShortUtil.toShort(Boolean.TRUE).shortValue(), is((short) 1));
     }
 
     /**
      * @throws Exception
      */
-    public void testToShortForFalse() throws Exception {
-        assertEquals((short) 0, ShortUtil.toShort(Boolean.FALSE).shortValue());
+    @Test
+    public void toShortForFalse() throws Exception {
+        assertThat(ShortUtil.toShort(Boolean.FALSE).shortValue(), is((short) 0));
     }
 
     /**
      * @throws Exception
      */
-    public void testToShortForException() throws Exception {
-        try {
-            ShortUtil.toShort("xx");
-            fail();
-        } catch (NumberFormatException e) {
-            System.out.println(e);
-        }
+    @Test(expected = NumberFormatException.class)
+    public void toShortForIllegalArgument() throws Exception {
+        ShortUtil.toShort("xx");
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveShortForNull() throws Exception {
-        assertEquals(0, ShortUtil.toPrimitiveShort(null));
+    @Test
+    public void toPrimitiveShortForNull() throws Exception {
+        assertThat(ShortUtil.toPrimitiveShort(null), is((short) 0));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveShortForEmptyString() throws Exception {
-        assertEquals(0, ShortUtil.toPrimitiveShort(""));
+    @Test
+    public void toPrimitiveShortForEmptyString() throws Exception {
+        assertThat(ShortUtil.toPrimitiveShort(""), is((short) 0));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveShortForNumber() throws Exception {
-        Integer i = Integer.valueOf(1);
-        assertEquals((short) 1, ShortUtil.toPrimitiveShort(i));
+    @Test
+    public void toPrimitiveShortForNumber() throws Exception {
+        assertThat(ShortUtil.toPrimitiveShort(1), is((short) 1));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveShortForString() throws Exception {
-        assertEquals((short) 1, ShortUtil.toPrimitiveShort("1"));
+    @Test
+    public void toPrimitiveShortForString() throws Exception {
+        assertThat(ShortUtil.toPrimitiveShort("1"), is((short) 1));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveShortForTrue() throws Exception {
-        assertEquals((short) 1, ShortUtil.toPrimitiveShort(Boolean.TRUE));
+    @Test
+    public void toPrimitiveShortForTrue() throws Exception {
+        assertThat(ShortUtil.toPrimitiveShort(Boolean.TRUE), is((short) 1));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveShortForFalse() throws Exception {
-        assertEquals((short) 0, ShortUtil.toPrimitiveShort(Boolean.FALSE));
+    @Test
+    public void toPrimitiveShortForFalse() throws Exception {
+        assertThat(ShortUtil.toPrimitiveShort(Boolean.FALSE), is((short) 0));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveShortForException() throws Exception {
-        try {
-            ShortUtil.toPrimitiveShort("xx");
-            fail();
-        } catch (NumberFormatException e) {
-            System.out.println(e);
-        }
+    @Test(expected = NumberFormatException.class)
+    public void toPrimitiveShortForIllegalArgument() throws Exception {
+        ShortUtil.toPrimitiveShort("xx");
     }
 }

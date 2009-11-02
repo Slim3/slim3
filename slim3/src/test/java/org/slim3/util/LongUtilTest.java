@@ -15,131 +15,135 @@
  */
 package org.slim3.util;
 
-import org.slim3.util.LongUtil;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class LongUtilTest extends TestCase {
+public class LongUtilTest {
 
     /**
      * @throws Exception
      */
-    public void testToLongForNull() throws Exception {
-        assertNull(LongUtil.toLong(null));
+    @Test
+    public void toLongForNull() throws Exception {
+        assertThat(LongUtil.toLong(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testToLongForEmptyString() throws Exception {
-        assertNull(LongUtil.toLong(""));
+    @Test
+    public void toLongForEmptyString() throws Exception {
+        assertThat(LongUtil.toLong(""), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testToLongForLong() throws Exception {
+    @Test
+    public void toLongForLong() throws Exception {
         Long value = Long.valueOf(1);
-        assertEquals(value, LongUtil.toLong(value));
+        assertThat(LongUtil.toLong(value), is(value));
     }
 
     /**
      * @throws Exception
      */
-    public void testToLongForNumber() throws Exception {
-        Integer i = Integer.valueOf(1);
-        assertEquals(1, LongUtil.toLong(i).longValue());
+    @Test
+    public void toLongForNumber() throws Exception {
+        assertThat(LongUtil.toLong(1).longValue(), is(1L));
     }
 
     /**
      * @throws Exception
      */
-    public void testToLongForString() throws Exception {
-        assertEquals(1, LongUtil.toLong("1").longValue());
+    @Test
+    public void toLongForString() throws Exception {
+        assertThat(LongUtil.toLong("1").longValue(), is(1L));
     }
 
     /**
      * @throws Exception
      */
-    public void testToLongForTrue() throws Exception {
-        assertEquals(1, LongUtil.toLong(Boolean.TRUE).longValue());
+    @Test
+    public void toLongForTrue() throws Exception {
+        assertThat(LongUtil.toLong(Boolean.TRUE).longValue(), is(1L));
     }
 
     /**
      * @throws Exception
      */
-    public void testToLongForFalse() throws Exception {
-        assertEquals(0, LongUtil.toLong(Boolean.FALSE).longValue());
+    @Test
+    public void toLongForFalse() throws Exception {
+        assertThat(LongUtil.toLong(Boolean.FALSE).longValue(), is(0L));
     }
 
     /**
      * @throws Exception
      */
-    public void testToLongForException() throws Exception {
-        try {
-            LongUtil.toLong("xx");
-            fail();
-        } catch (NumberFormatException e) {
-            System.out.println(e);
-        }
+    @Test(expected = NumberFormatException.class)
+    public void toLongForException() throws Exception {
+        LongUtil.toLong("xx");
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveLongForNull() throws Exception {
-        assertEquals(0, LongUtil.toPrimitiveLong(null));
+    @Test
+    public void toPrimitiveLongForNull() throws Exception {
+        assertThat(LongUtil.toPrimitiveLong(null), is(0L));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveLongForEmptyString() throws Exception {
-        assertEquals(0, LongUtil.toPrimitiveLong(""));
+    @Test
+    public void toPrimitiveLongForEmptyString() throws Exception {
+        assertThat(LongUtil.toPrimitiveLong(""), is(0L));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveLongForNumber() throws Exception {
-        Integer i = Integer.valueOf(1);
-        assertEquals(1, LongUtil.toPrimitiveLong(i));
+    @Test
+    public void toPrimitiveLongForNumber() throws Exception {
+        assertThat(LongUtil.toPrimitiveLong(1), is(1L));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveLongForString() throws Exception {
-        assertEquals(1, LongUtil.toPrimitiveLong("1"));
+    @Test
+    public void toPrimitiveLongForString() throws Exception {
+        assertThat(LongUtil.toPrimitiveLong("1"), is(1L));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveLongForTrue() throws Exception {
-        assertEquals(1, LongUtil.toPrimitiveLong(Boolean.TRUE));
+    @Test
+    public void toPrimitiveLongForTrue() throws Exception {
+        assertThat(LongUtil.toPrimitiveLong(Boolean.TRUE), is(1L));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveLongForFalse() throws Exception {
-        assertEquals(0, LongUtil.toPrimitiveLong(Boolean.FALSE));
+    @Test
+    public void toPrimitiveLongForFalse() throws Exception {
+        assertThat(LongUtil.toPrimitiveLong(Boolean.FALSE), is(0L));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveLongForException() throws Exception {
-        try {
-            LongUtil.toPrimitiveLong("xx");
-            fail();
-        } catch (NumberFormatException e) {
-            System.out.println(e);
-        }
+    @Test(expected = NumberFormatException.class)
+    public void toPrimitiveLongForException() throws Exception {
+        LongUtil.toPrimitiveLong("xx");
     }
 }

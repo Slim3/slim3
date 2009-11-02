@@ -15,19 +15,26 @@
  */
 package org.slim3.util;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.junit.After;
+import org.junit.Test;
 import org.slim3.tester.MockHttpServletResponse;
-import org.slim3.util.ResponseLocator;
 
 /**
  * @author higa
  * 
  */
-public class ResponseLocatorTest extends TestCase {
+public class ResponseLocatorTest {
 
-    @Override
-    protected void tearDown() throws Exception {
+    /**
+     * @throws Exception
+     */
+    @After
+    public void tearDown() throws Exception {
         ResponseLocator.set(null);
     }
 
@@ -35,9 +42,10 @@ public class ResponseLocatorTest extends TestCase {
      * @throws Exception
      * 
      */
+    @Test
     public void test() throws Exception {
-        MockHttpServletResponse response = new MockHttpServletResponse();
+        HttpServletResponse response = new MockHttpServletResponse();
         ResponseLocator.set(response);
-        assertSame(response, ResponseLocator.get());
+        assertThat(ResponseLocator.get(), is(sameInstance(response)));
     }
 }

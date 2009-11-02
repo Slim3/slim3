@@ -15,57 +15,58 @@
  */
 package org.slim3.util;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class ClassUtilTest extends TestCase {
+public class ClassUtilTest {
 
     /**
      * 
      */
-    public void testNewInstance() {
+    @Test
+    public void newInstance() {
         String s = ClassUtil.newInstance(String.class);
-        assertNotNull(s);
+        assertThat(s, is(notNullValue()));
     }
 
     /**
      * 
      */
-    public void testNewInstanceForClassName() {
+    @Test
+    public void newInstanceForClassName() {
         String s =
             ClassUtil.newInstance("java.lang.String", Thread
                 .currentThread()
                 .getContextClassLoader());
-        assertNotNull(s);
+        assertThat(s, is(notNullValue()));
     }
 
     /**
      * 
      */
-    public void testForName() {
+    @SuppressWarnings("unchecked")
+    @Test
+    public void forName() {
         Class<?> clazz =
             ClassUtil.forName("java.lang.String", Thread
                 .currentThread()
                 .getContextClassLoader());
-        assertNotNull(clazz);
-        assertEquals(String.class, clazz);
+        assertThat(clazz, is(notNullValue()));
+        assertThat((Class) clazz, equalTo(String.class));
     }
 
     /**
      * 
      */
-    public void testForNameForBadName() {
-        try {
-            ClassUtil.forName("xxx", Thread
-                .currentThread()
-                .getContextClassLoader());
-            fail();
-        } catch (WrapRuntimeException e) {
-            System.out.println(e.getMessage());
-        }
+    @Test(expected = WrapRuntimeException.class)
+    public void forNameForBadName() {
+        ClassUtil
+            .forName("xxx", Thread.currentThread().getContextClassLoader());
     }
 }

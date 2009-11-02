@@ -15,58 +15,53 @@
  */
 package org.slim3.util;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.util.Date;
 
-import org.slim3.util.DateConverter;
-
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class DateConverterTest extends TestCase {
+public class DateConverterTest {
 
     /**
      * @throws Exception
      */
-    public void testGetAsObjectAndGetAsString() throws Exception {
-        DateConverter converter = new DateConverter("yyyy/MM/dd");
-        Date result = (Date) converter.getAsObject("2008/01/16");
-        System.out.println(result);
-        assertEquals("2008/01/16", converter.getAsString(result));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testGetAsStringForCastException() throws Exception {
-        DateConverter converter = new DateConverter("yyyy/MM/dd");
-        try {
-            converter.getAsString("aaa");
-            fail();
-        } catch (IllegalArgumentException e) {
-            System.out.println(e);
-        }
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testConstructorForNull() throws Exception {
-        try {
-            new DateConverter(null);
-        } catch (NullPointerException e) {
-            System.out.println(e);
-        }
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testIsTarget() throws Exception {
+    @Test
+    public void getAsObjectAndGetAsString() throws Exception {
         DateConverter converter = new DateConverter("MM/dd/yyyy");
-        assertTrue(converter.isTarget(java.util.Date.class));
-        assertTrue(converter.isTarget(java.sql.Date.class));
+        Date result = converter.getAsObject("01/16/2008");
+        assertThat(converter.getAsString(result), is("01/16/2008"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void getAsStringForCastException() throws Exception {
+        DateConverter converter = new DateConverter("yyyy/MM/dd");
+        converter.getAsString("aaa");
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = NullPointerException.class)
+    public void constructorForNull() throws Exception {
+        new DateConverter(null);
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void isTarget() throws Exception {
+        DateConverter converter = new DateConverter("MM/dd/yyyy");
+        assertThat(converter.isTarget(java.util.Date.class), is(true));
+        assertThat(converter.isTarget(java.sql.Date.class), is(true));
     }
 }

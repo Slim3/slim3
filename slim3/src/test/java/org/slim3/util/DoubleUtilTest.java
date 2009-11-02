@@ -15,131 +15,136 @@
  */
 package org.slim3.util;
 
-import org.slim3.util.DoubleUtil;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class DoubleUtilTest extends TestCase {
+public class DoubleUtilTest {
 
     /**
      * @throws Exception
      */
-    public void testToDoubleForNull() throws Exception {
-        assertNull(DoubleUtil.toDouble(null));
+    @Test
+    public void toDoubleForNull() throws Exception {
+        assertThat(DoubleUtil.toDouble(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testToDoubleForEmptyString() throws Exception {
-        assertNull(DoubleUtil.toDouble(""));
+    @Test
+    public void toDoubleForEmptyString() throws Exception {
+        assertThat(DoubleUtil.toDouble(""), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testToDoubleForDouble() throws Exception {
+    @Test
+    public void toDoubleForDouble() throws Exception {
         Double value = Double.valueOf(1);
-        assertEquals(value, DoubleUtil.toDouble(value));
+        assertThat(DoubleUtil.toDouble(value), is(value));
     }
 
     /**
      * @throws Exception
      */
-    public void testToDoubleForNumber() throws Exception {
+    @Test
+    public void toDoubleForNumber() throws Exception {
         Integer i = Integer.valueOf(1);
-        assertEquals(1d, DoubleUtil.toDouble(i).doubleValue());
+        assertThat(DoubleUtil.toDouble(i).doubleValue(), is(1d));
     }
 
     /**
      * @throws Exception
      */
-    public void testToDoubleForString() throws Exception {
-        assertEquals(1d, DoubleUtil.toDouble("1").doubleValue());
+    @Test
+    public void toDoubleForString() throws Exception {
+        assertThat(DoubleUtil.toDouble("1").doubleValue(), is(1d));
     }
 
     /**
      * @throws Exception
      */
-    public void testToDoubleForTrue() throws Exception {
-        assertEquals(1d, DoubleUtil.toDouble(Boolean.TRUE).doubleValue());
+    @Test
+    public void toDoubleForTrue() throws Exception {
+        assertThat(DoubleUtil.toDouble(Boolean.TRUE).doubleValue(), is(1d));
     }
 
     /**
      * @throws Exception
      */
-    public void testToDoubleForFalse() throws Exception {
-        assertEquals(0d, DoubleUtil.toDouble(Boolean.FALSE).doubleValue());
+    @Test
+    public void toDoubleForFalse() throws Exception {
+        assertThat(DoubleUtil.toDouble(Boolean.FALSE).doubleValue(), is(0d));
     }
 
     /**
      * @throws Exception
      */
-    public void testToDoubleForException() throws Exception {
-        try {
-            DoubleUtil.toDouble("xx");
-            fail();
-        } catch (NumberFormatException e) {
-            System.out.println(e);
-        }
+    @Test(expected = NumberFormatException.class)
+    public void toDoubleForException() throws Exception {
+        DoubleUtil.toDouble("xx");
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveDoubleForNull() throws Exception {
-        assertEquals(0d, DoubleUtil.toPrimitiveDouble(null));
+    @Test
+    public void toPrimitiveDoubleForNull() throws Exception {
+        assertThat(DoubleUtil.toPrimitiveDouble(null), is(0d));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveDoubleForEmptyString() throws Exception {
-        assertEquals(0d, DoubleUtil.toPrimitiveDouble(""));
+    @Test
+    public void toPrimitiveDoubleForEmptyString() throws Exception {
+        assertThat(DoubleUtil.toPrimitiveDouble(""), is(0d));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveDoubleForNumber() throws Exception {
-        Integer i = Integer.valueOf(1);
-        assertEquals(1d, DoubleUtil.toPrimitiveDouble(i));
+    @Test
+    public void toPrimitiveDoubleForNumber() throws Exception {
+        assertThat(DoubleUtil.toPrimitiveDouble(1), is(1d));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveDoubleForString() throws Exception {
-        assertEquals(1d, DoubleUtil.toPrimitiveDouble("1"));
+    @Test
+    public void toPrimitiveDoubleForString() throws Exception {
+        assertThat(DoubleUtil.toPrimitiveDouble("1"), is(1d));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveDoubleForTrue() throws Exception {
-        assertEquals(1d, DoubleUtil.toPrimitiveDouble(Boolean.TRUE));
+    @Test
+    public void toPrimitiveDoubleForTrue() throws Exception {
+        assertThat(DoubleUtil.toPrimitiveDouble(Boolean.TRUE), is(1d));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveDoubleForFalse() throws Exception {
-        assertEquals(0d, DoubleUtil.toPrimitiveDouble(Boolean.FALSE));
+    @Test
+    public void toPrimitiveDoubleForFalse() throws Exception {
+        assertThat(DoubleUtil.toPrimitiveDouble(Boolean.FALSE), is(0d));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveDoubleForException() throws Exception {
-        try {
-            DoubleUtil.toPrimitiveDouble("xx");
-            fail();
-        } catch (NumberFormatException e) {
-            System.out.println(e);
-        }
+    @Test(expected = NumberFormatException.class)
+    public void toPrimitiveDoubleForException() throws Exception {
+        DoubleUtil.toPrimitiveDouble("xx");
     }
 }

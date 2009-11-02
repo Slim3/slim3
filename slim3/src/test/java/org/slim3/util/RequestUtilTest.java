@@ -15,8 +15,10 @@
  */
 package org.slim3.util;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
+import org.junit.Test;
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
 
@@ -24,7 +26,7 @@ import org.slim3.tester.MockServletContext;
  * @author higa
  * 
  */
-public class RequestUtilTest extends TestCase {
+public class RequestUtilTest {
 
     private MockServletContext servletContext = new MockServletContext();
 
@@ -34,18 +36,20 @@ public class RequestUtilTest extends TestCase {
     /**
      * @throws Exception
      */
-    public void testGetPath() throws Exception {
+    @Test
+    public void getPath() throws Exception {
         request.setServletPath("/aaa");
-        assertEquals("/aaa", RequestUtil.getPath(request));
+        assertThat(RequestUtil.getPath(request), is("/aaa"));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetExtension() throws Exception {
-        assertEquals("html", RequestUtil.getExtension("aaa.html"));
-        assertEquals("html", RequestUtil.getExtension("/aaa.html"));
-        assertNull(RequestUtil.getExtension("/aaa"));
-        assertNull(RequestUtil.getExtension("/aaa.bbb/ccc"));
+    @Test
+    public void getExtension() throws Exception {
+        assertThat(RequestUtil.getExtension("aaa.html"), is("html"));
+        assertThat(RequestUtil.getExtension("/aaa.html"), is("html"));
+        assertThat(RequestUtil.getExtension("/aaa"), is(nullValue()));
+        assertThat(RequestUtil.getExtension("/aaa.bbb/ccc"), is(nullValue()));
     }
 }

@@ -37,8 +37,8 @@ public class ConversionUtilDatastoreTest extends LocalServiceTestCase {
     @Test
     public void convertToKey() throws Exception {
         Key key = KeyFactory.createKey("Hoge", 1);
-        assertThat((Key) ConversionUtil.convert(key, Key.class), is(key));
-        assertThat((Key) ConversionUtil.convert(
+        assertThat(ConversionUtil.convert(key, Key.class), is(key));
+        assertThat(ConversionUtil.convert(
             KeyFactory.keyToString(key),
             Key.class), is(key));
     }

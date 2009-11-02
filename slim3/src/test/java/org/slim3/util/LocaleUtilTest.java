@@ -15,22 +15,26 @@
  */
 package org.slim3.util;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.util.Locale;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class LocaleUtilTest extends TestCase {
+public class LocaleUtilTest {
 
     /**
      * @throws Exception
      */
-    public void testParse() throws Exception {
-        assertNull(LocaleUtil.parse(null));
-        assertEquals(Locale.ENGLISH, LocaleUtil.parse("en"));
-        assertEquals(Locale.US, LocaleUtil.parse("en_US"));
+    @Test
+    public void parse() throws Exception {
+        assertThat(LocaleUtil.parse(null), is(nullValue()));
+        assertThat(LocaleUtil.parse("en"), is(Locale.ENGLISH));
+        assertThat(LocaleUtil.parse("en_US"), is(Locale.US));
     }
 }

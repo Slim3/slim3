@@ -15,75 +15,89 @@
  */
 package org.slim3.util;
 
-import org.slim3.util.CaseInsensitiveMap;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class CaseInsensitiveMapTest extends TestCase {
+public class CaseInsensitiveMapTest {
 
     private CaseInsensitiveMap<String> map;
 
-    @Override
-    protected void setUp() throws Exception {
+    /**
+     * @throws Exception
+     */
+    @Before
+    public void setUp() throws Exception {
         map = new CaseInsensitiveMap<String>();
         map.put("one", "1");
         map.put("two", "2");
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    /**
+     * @throws Exception
+     */
+    @After
+    public void tearDown() throws Exception {
         map = null;
     }
 
     /**
      * @throws Exception
      */
-    public void testContainsKey() throws Exception {
-        assertTrue("1", map.containsKey("ONE"));
-        assertTrue("2", map.containsKey("one"));
-        assertTrue("3", !map.containsKey("onex"));
+    @Test
+    public void containsKey() throws Exception {
+        assertThat(map.containsKey("ONE"), is(true));
+        assertThat(map.containsKey("one"), is(true));
+        assertThat(map.containsKey("onex"), is(false));
     }
 
     /**
      * @throws Exception
      */
-    public void testGet() throws Exception {
-        assertEquals("1", "1", map.get("ONE"));
-        assertEquals("2", "1", map.get("One"));
-        assertEquals("3", null, map.get("hoge"));
+    @Test
+    public void get() throws Exception {
+        assertThat(map.get("ONE"), is("1"));
+        assertThat(map.get("One"), is("1"));
+        assertThat(map.get("hoge"), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testPut() throws Exception {
-        assertEquals("1", "1", map.put("One", "11"));
-        assertEquals("2", "11", map.get("one"));
+    @Test
+    public void put() throws Exception {
+        assertThat(map.put("One", "11"), is("1"));
+        assertThat(map.get("one"), is("11"));
     }
 
     /**
      * @throws Exception
      */
-    public void testRemove() throws Exception {
-        assertEquals("1", "1", map.remove("ONE"));
-        assertEquals("2", 1, map.size());
-        assertEquals("3", null, map.remove("dummy"));
+    @Test
+    public void remove() throws Exception {
+        assertThat(map.remove("ONE"), is("1"));
+        assertThat(map.size(), is(1));
+        assertThat(map.remove("dummy"), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testPutAll() throws Exception {
+    @Test
+    public void putAll() throws Exception {
         CaseInsensitiveMap<String> m = new CaseInsensitiveMap<String>();
         m.put("three", "3");
         m.put("four", "4");
         map.putAll(m);
-        assertEquals("1", "3", map.get("THREE"));
-        assertEquals("2", "4", map.get("FOUR"));
-        assertEquals("3", 4, map.size());
+        assertThat(map.get("THREE"), is("3"));
+        assertThat(map.get("FOUR"), is("4"));
+        assertThat(map.size(), is(4));
     }
 }

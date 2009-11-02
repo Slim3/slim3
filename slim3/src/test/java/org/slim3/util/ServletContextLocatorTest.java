@@ -15,19 +15,26 @@
  */
 package org.slim3.util;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
+import javax.servlet.ServletContext;
+
+import org.junit.After;
+import org.junit.Test;
 import org.slim3.tester.MockServletContext;
-import org.slim3.util.ServletContextLocator;
 
 /**
  * @author higa
  * 
  */
-public class ServletContextLocatorTest extends TestCase {
+public class ServletContextLocatorTest {
 
-    @Override
-    protected void tearDown() throws Exception {
+    /**
+     * @throws Exception
+     */
+    @After
+    public void tearDown() throws Exception {
         ServletContextLocator.set(null);
     }
 
@@ -35,9 +42,12 @@ public class ServletContextLocatorTest extends TestCase {
      * @throws Exception
      * 
      */
+    @Test
     public void test() throws Exception {
-        MockServletContext servletContext = new MockServletContext();
+        ServletContext servletContext = new MockServletContext();
         ServletContextLocator.set(servletContext);
-        assertSame(servletContext, ServletContextLocator.get());
+        assertThat(
+            ServletContextLocator.get(),
+            is(sameInstance(servletContext)));
     }
 }

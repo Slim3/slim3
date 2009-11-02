@@ -15,43 +15,50 @@
  */
 package org.slim3.util;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.math.BigDecimal;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class BigDecimalUtilTest extends TestCase {
+public class BigDecimalUtilTest {
 
     /**
      * @throws Exception
      */
-    public void testToBigDecimalForNull() throws Exception {
-        assertNull(BigDecimalUtil.toBigDecimal(null));
+    @Test
+    public void toBigDecimalForNull() throws Exception {
+        assertThat(BigDecimalUtil.toBigDecimal(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testToBigDecimalForBigDecimal() throws Exception {
+    @Test
+    public void toBigDecimalForBigDecimal() throws Exception {
         BigDecimal value = new BigDecimal(1);
-        assertSame(value, BigDecimalUtil.toBigDecimal(value));
+        assertThat(BigDecimalUtil.toBigDecimal(value), is(value));
     }
 
     /**
      * @throws Exception
      */
-    public void testToBigDecimalForString() throws Exception {
+    @Test
+    public void toBigDecimalForString() throws Exception {
         BigDecimal value = new BigDecimal("1");
-        assertEquals(value, BigDecimalUtil.toBigDecimal("1"));
+        assertThat(BigDecimalUtil.toBigDecimal("1"), is(value));
     }
 
     /**
      * @throws Exception
      */
-    public void testToBigDecimalForEmptyString() throws Exception {
-        assertNull(BigDecimalUtil.toBigDecimal(""));
+    @Test
+    public void toBigDecimalForEmptyString() throws Exception {
+        assertThat(BigDecimalUtil.toBigDecimal(""), is(nullValue()));
     }
 }

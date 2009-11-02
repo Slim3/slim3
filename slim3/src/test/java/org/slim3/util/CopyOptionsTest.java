@@ -15,252 +15,269 @@
  */
 package org.slim3.util;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.util.Date;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * @author higa
  */
-public class CopyOptionsTest extends TestCase {
+public class CopyOptionsTest {
 
     private CopyOptions options = new CopyOptions();
 
     /**
      * @throws Exception
      */
-    public void testInclude() throws Exception {
-        assertSame(options, options.include("hoge"));
-        assertEquals(1, options.includedPropertyNames.length);
-        assertEquals("hoge", options.includedPropertyNames[0]);
+    @Test
+    public void include() throws Exception {
+        assertThat(options.include("hoge"), is(sameInstance(options)));
+        assertThat(options.includedPropertyNames.length, is(1));
+        assertThat(options.includedPropertyNames[0], is("hoge"));
     }
 
     /**
      * @throws Exception
      */
-    public void testExclude() throws Exception {
-        assertSame(options, options.exclude("hoge"));
-        assertEquals(1, options.excludedPropertyNames.length);
-        assertEquals("hoge", options.excludedPropertyNames[0]);
+    @Test
+    public void exclude() throws Exception {
+        assertThat(options.exclude("hoge"), is(sameInstance(options)));
+        assertThat(options.excludedPropertyNames.length, is(1));
+        assertThat(options.excludedPropertyNames[0], is("hoge"));
     }
 
     /**
      * @throws Exception
      */
-    public void testIsTargetProperty() throws Exception {
-        assertTrue(options.isTargetProperty("hoge"));
+    @Test
+    public void isTargetProperty() throws Exception {
+        assertThat(options.isTargetProperty("hoge"), is(true));
     }
 
     /**
      * @throws Exception
      */
-    public void testIsTargetPropertyForInclude() throws Exception {
+    @Test
+    public void isTargetPropertyForInclude() throws Exception {
         options.include("hoge");
-        assertTrue(options.isTargetProperty("hoge"));
-        assertFalse(options.isTargetProperty("hoge2"));
+        assertThat(options.isTargetProperty("hoge"), is(true));
+        assertThat(options.isTargetProperty("hoge2"), is(false));
     }
 
     /**
      * @throws Exception
      */
-    public void testIsTargetPropertyForExclude() throws Exception {
+    @Test
+    public void isTargetPropertyForExclude() throws Exception {
         options.exclude("hoge");
-        assertFalse(options.isTargetProperty("hoge"));
-        assertTrue(options.isTargetProperty("hoge2"));
+        assertThat(options.isTargetProperty("hoge"), is(false));
+        assertThat(options.isTargetProperty("hoge2"), is(true));
     }
 
     /**
      * @throws Exception
      */
-    public void testIsTargetPropertyForIncludeExclude() throws Exception {
+    @Test
+    public void isTargetPropertyForIncludeExclude() throws Exception {
         options.include("hoge", "hoge2").exclude("hoge2", "hoge3");
-        assertTrue(options.isTargetProperty("hoge"));
-        assertFalse(options.isTargetProperty("hoge2"));
-        assertFalse(options.isTargetProperty("hoge3"));
-        assertFalse(options.isTargetProperty("hoge4"));
+        assertThat(options.isTargetProperty("hoge"), is(true));
+        assertThat(options.isTargetProperty("hoge2"), is(false));
+        assertThat(options.isTargetProperty("hoge3"), is(false));
+        assertThat(options.isTargetProperty("hoge4"), is(false));
     }
 
     /**
      * @throws Exception
      */
-    public void testIsTargetValue() throws Exception {
-        assertTrue(options.isTargetValue("hoge"));
-        assertFalse(options.isTargetValue(""));
-        assertFalse(options.isTargetValue(null));
+    @Test
+    public void isTargetValue() throws Exception {
+        assertThat(options.isTargetValue("hoge"), is(true));
+        assertThat(options.isTargetValue(""), is(false));
+        assertThat(options.isTargetValue(null), is(false));
     }
 
     /**
      * @throws Exception
      */
-    public void testIsTargetValueForCopyNull() throws Exception {
+    @Test
+    public void isTargetValueForCopyNull() throws Exception {
         options.copyNull();
-        assertTrue(options.isTargetValue("hoge"));
-        assertFalse(options.isTargetValue(""));
-        assertTrue(options.isTargetValue(null));
+        assertThat(options.isTargetValue("hoge"), is(true));
+        assertThat(options.isTargetValue(""), is(false));
+        assertThat(options.isTargetValue(null), is(true));
     }
 
     /**
      * @throws Exception
      */
-    public void testIsTargetValueForCopyEmptyString() throws Exception {
+    @Test
+    public void isTargetValueForCopyEmptyString() throws Exception {
         options.copyEmptyString();
-        assertTrue(options.isTargetValue("hoge"));
-        assertTrue(options.isTargetValue(""));
-        assertFalse(options.isTargetValue(null));
+        assertThat(options.isTargetValue("hoge"), is(true));
+        assertThat(options.isTargetValue(""), is(true));
+        assertThat(options.isTargetValue(null), is(false));
     }
 
     /**
      * @throws Exception
      */
-    public void testFindConvererForDate() throws Exception {
+    @SuppressWarnings("unchecked")
+    @Test
+    public void findConvererForDate() throws Exception {
         Converter converter =
             options.dateConverter("MM/dd/yyyy").findConverter(
                 java.sql.Date.class);
-        assertNotNull(converter);
-        assertEquals(DateConverter.class, converter.getClass());
+        assertThat(converter, is(notNullValue()));
+        assertThat((Class) converter.getClass(), equalTo(DateConverter.class));
     }
 
     /**
      * @throws Exception
      */
-    public void testFindConvererForNumber() throws Exception {
+    @SuppressWarnings("unchecked")
+    @Test
+    public void findConvererForNumber() throws Exception {
         Converter converter =
             options.numberConverter("#,###").findConverter(Long.class);
-        assertNotNull(converter);
-        assertEquals(NumberConverter.class, converter.getClass());
+        assertThat(converter, is(notNullValue()));
+        assertThat((Class) converter.getClass(), equalTo(NumberConverter.class));
     }
 
     /**
      * @throws Exception
      */
-    public void testConvertObjectForConverterSpecifiedByProperty()
-            throws Exception {
+    @Test
+    public void convertObjectForConverterSpecifiedByProperty() throws Exception {
         Object value =
             options
                 .dateConverter("yyyyMMdd")
                 .dateConverter("yyyy", "aaa")
                 .convertObject(new Date(0), "aaa", String.class);
-        assertEquals("1970", value);
+        assertThat((String) value, is("1970"));
     }
 
     /**
      * @throws Exception
      */
-    public void testConvertObjectForDestClassNullWithConverter()
-            throws Exception {
+    @Test
+    public void convertObjectForDestClassNullWithConverter() throws Exception {
         Object value =
             options.dateConverter("yyyy", "aaa").convertObject(
                 new Date(0),
                 "aaa",
                 null);
-        assertEquals("1970", value);
+        assertThat((String) value, is("1970"));
     }
 
     /**
      * @throws Exception
      */
-    public void testConvertObjectForDestClassStringWithConverter()
-            throws Exception {
+    @Test
+    public void convertObjectForDestClassStringWithConverter() throws Exception {
         Object value =
             options.dateConverter("yyyy").convertObject(
                 new Date(0),
                 "aaa",
                 String.class);
-        assertEquals("1970", value);
+        assertThat((String) value, is("1970"));
     }
 
     /**
      * @throws Exception
      */
-    public void testConvertObjectForDestNullNoConverter() throws Exception {
-        assertEquals(new Integer(0), options.convertObject(
-            new Integer(0),
-            "aaa",
-            null));
-        assertEquals(new Date(0), options.convertObject(
-            new Date(0),
-            "aaa",
-            null));
+    @Test
+    public void convertObjectForDestNullNoConverter() throws Exception {
+        assertThat(
+            (Integer) options.convertObject(new Integer(0), "aaa", null),
+            is(0));
+        assertThat(
+            (Date) options.convertObject(new Date(0), "aaa", null),
+            is(new Date(0)));
     }
 
     /**
      * @throws Exception
      */
-    public void testConvertObjectForDestNotString() throws Exception {
+    @Test
+    public void convertObjectForDestNotString() throws Exception {
         Object value =
             options.dateConverter("yyyy").convertObject(
                 new Date(0),
                 "aaa",
                 Date.class);
-        assertEquals(new Date(0), value);
+        assertThat((Date) value, is(new Date(0)));
     }
 
     /**
      * @throws Exception
      */
-    public void testConvertStringForConverterSpecifiedByProperty()
-            throws Exception {
+    @Test
+    public void convertStringForConverterSpecifiedByProperty() throws Exception {
         Object value =
             options
                 .numberConverter("###")
                 .numberConverter("#,###", "aaa")
                 .convertString("1,111", "aaa", Long.class);
-        assertEquals(new Long(1111), value);
+        assertThat((Long) value, is(1111L));
     }
 
     /**
      * @throws Exception
      */
-    public void testConvertStringForDestTypeNull() throws Exception {
+    @Test
+    public void convertStringForDestTypeNull() throws Exception {
         Object value =
             options.numberConverter("###").convertString("1,111", "aaa", null);
-        assertEquals("1,111", value);
+        assertThat((String) value, is("1,111"));
     }
 
     /**
      * @throws Exception
      */
-    public void testConvertStringForDestTypeString() throws Exception {
+    @Test
+    public void convertStringForDestTypeString() throws Exception {
         Object value =
             options.numberConverter("###").convertString(
                 "1,111",
                 "aaa",
                 String.class);
-        assertEquals("1,111", value);
+        assertThat((String) value, is("1,111"));
     }
 
     /**
      * @throws Exception
      */
-    public void testConvertStringForConverterSpecifiedByClass()
-            throws Exception {
+    @Test
+    public void convertStringForConverterSpecifiedByClass() throws Exception {
         Object value =
             options.numberConverter("###").convertString(
                 "111",
                 "aaa",
                 Long.class);
-        assertEquals(new Long(111), value);
+        assertThat((Long) value, is(111L));
     }
 
     /**
      * @throws Exception
      */
-    public void testConvertValueForNull() throws Exception {
-        assertNull(options.convertValue(null, "aaa", Integer.class));
+    @Test
+    public void convertValueForNull() throws Exception {
+        assertThat(
+            options.convertValue(null, "aaa", Integer.class),
+            is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testConvertValueForBadValue() throws Exception {
-        try {
-            options.dateConverter("yyyy", "aaa").convertValue(
-                new Integer(0),
-                "aaa",
-                String.class);
-            fail();
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        }
+    @Test(expected = IllegalArgumentException.class)
+    public void convertValueForBadValue() throws Exception {
+        options.dateConverter("yyyy", "aaa").convertValue(
+            new Integer(0),
+            "aaa",
+            String.class);
     }
 }

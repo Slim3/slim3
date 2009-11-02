@@ -15,77 +15,70 @@
  */
 package org.slim3.util;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
-import org.slim3.util.NumberUtil;
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class NumberUtilTest extends TestCase {
+public class NumberUtilTest {
 
     /**
      * @throws Exception
      */
-    public void testToNumber() throws Exception {
-        assertEquals(Long.valueOf(100), NumberUtil.toNumber("100", "###"));
+    @Test
+    public void toNumber() throws Exception {
+        assertThat((Long) NumberUtil.toNumber("100", "###"), is(100L));
     }
 
     /**
      * @throws Exception
      */
-    public void testToNumberForTextEmpty() throws Exception {
-        assertNull(NumberUtil.toNumber("", "###"));
+    @Test
+    public void toNumberForEmptyString() throws Exception {
+        assertThat(NumberUtil.toNumber("", "###"), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testToNumberForPattenNull() throws Exception {
-        try {
-            NumberUtil.toNumber("100", null);
-            fail();
-        } catch (NullPointerException t) {
-            System.out.println(t);
-        }
+    @Test(expected = NullPointerException.class)
+    public void toNumberForPattenNull() throws Exception {
+        NumberUtil.toNumber("100", null);
     }
 
     /**
      * @throws Exception
      */
-    public void testToNumberForBadText() throws Exception {
-        try {
-            NumberUtil.toNumber("abc", "###");
-            fail();
-        } catch (WrapRuntimeException e) {
-            System.out.println(e.getMessage());
-        }
+    @Test(expected = WrapRuntimeException.class)
+    public void toNumberForBadText() throws Exception {
+        NumberUtil.toNumber("abc", "###");
     }
 
     /**
      * @throws Exception
      */
+    @Test
     public void testToString() throws Exception {
-        assertEquals("1,000", NumberUtil.toString(new Integer(1000), "#,###"));
+        assertThat(NumberUtil.toString(new Integer(1000), "#,###"), is("1,000"));
     }
 
     /**
      * @throws Exception
      */
-    public void testToStringForValueNull() throws Exception {
-        assertNull(NumberUtil.toString(null, "#,###"));
+    @Test
+    public void toStringWhenValueIsNull() throws Exception {
+        assertThat(NumberUtil.toString(null, "#,###"), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testToStringForPattenNull() throws Exception {
-        try {
-            NumberUtil.toString(new Integer(1000), null);
-            fail();
-        } catch (NullPointerException t) {
-            System.out.println(t);
-        }
+    @Test(expected = NullPointerException.class)
+    public void toStringWhenPattenIsNull() throws Exception {
+        NumberUtil.toString(new Integer(1000), null);
     }
 }

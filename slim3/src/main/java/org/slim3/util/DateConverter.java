@@ -24,7 +24,7 @@ import java.util.Date;
  * @author higa
  * @since 3.0
  */
-public class DateConverter implements Converter {
+public class DateConverter implements Converter<Date> {
 
     /**
      * The pattern for {@link DecimalFormat}.
@@ -46,7 +46,7 @@ public class DateConverter implements Converter {
         this.pattern = pattern;
     }
 
-    public Object getAsObject(String value) {
+    public Date getAsObject(String value) {
         return DateUtil.toDate(value, pattern);
     }
 

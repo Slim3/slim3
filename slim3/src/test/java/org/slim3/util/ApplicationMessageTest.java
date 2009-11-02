@@ -15,39 +15,52 @@
  */
 package org.slim3.util;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.util.Locale;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class ApplicationMessageTest extends TestCase {
+public class ApplicationMessageTest {
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    /**
+     * @throws Exception
+     */
+    @Before
+    public void setUp() throws Exception {
         ApplicationMessage.setBundle("test", Locale.ENGLISH);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    /**
+     * @throws Exception
+     */
+    @After
+    public void tearDown() throws Exception {
         ApplicationMessage.clearBundle();
-        super.tearDown();
     }
 
     /**
      * @throws Exception
      */
-    public void testGet() throws Exception {
-        assertEquals("hoge is required.", ApplicationMessage.get("aaa", "hoge"));
+    @Test
+    public void get() throws Exception {
+        assertThat(
+            ApplicationMessage.get("aaa", "hoge"),
+            is("hoge is required."));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetForKeyNotFound() throws Exception {
-        assertNull(ApplicationMessage.get("xxx"));
+    @Test
+    public void getForKeyNotFound() throws Exception {
+        assertThat(ApplicationMessage.get("xxx"), is(nullValue()));
     }
 }

@@ -15,62 +15,70 @@
  */
 package org.slim3.util;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class ArrayUtilTest extends TestCase {
+public class ArrayUtilTest {
 
     /**
      * @throws Exception
      */
-    public void testAdd() throws Exception {
+    @Test
+    public void add() throws Exception {
         String[] array = new String[] { "aaa", "bbb" };
         String[] ret = ArrayUtil.add(array, "ccc");
-        assertEquals(3, ret.length);
-        assertEquals("aaa", ret[0]);
-        assertEquals("bbb", ret[1]);
-        assertEquals("ccc", ret[2]);
+        assertThat(ret.length, is(3));
+        assertThat(ret[0], is("aaa"));
+        assertThat(ret[1], is("bbb"));
+        assertThat(ret[2], is("ccc"));
     }
 
     /**
      * @throws Exception
      */
-    public void testAddForArrayNull() throws Exception {
+    @Test
+    public void addForArrayNull() throws Exception {
         String[] ret = ArrayUtil.add(null, "aaa");
-        assertEquals(1, ret.length);
-        assertEquals("aaa", ret[0]);
+        assertThat(ret.length, is(1));
+        assertThat(ret[0], is("aaa"));
     }
 
     /**
      * @throws Exception
      */
-    public void testAddForValueNull() throws Exception {
+    @Test
+    public void addForValueNull() throws Exception {
         String[] array = new String[] { "aaa", "bbb" };
         String[] ret = ArrayUtil.add(array, null);
-        assertEquals(3, ret.length);
-        assertEquals("aaa", ret[0]);
-        assertEquals("bbb", ret[1]);
-        assertNull(ret[2]);
+        assertThat(ret.length, is(3));
+        assertThat(ret[0], is("aaa"));
+        assertThat(ret[1], is("bbb"));
+        assertThat(ret[2], is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testAddForArrayNullAndValueNull() throws Exception {
-        assertNull(ArrayUtil.add(null, null));
+    @Test
+    public void addForArrayNullAndValueNull() throws Exception {
+        assertThat(ArrayUtil.add(null, null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testAddForNestedArray() throws Exception {
+    @Test
+    public void addForNestedArray() throws Exception {
         byte[][] array = new byte[][] { new byte[] { 1 } };
         byte[][] ret = ArrayUtil.add(array, new byte[] { 2 });
-        assertEquals(2, ret.length);
-        assertEquals(1, ret[0][0]);
-        assertEquals(2, ret[1][0]);
+        assertThat(ret.length, is(2));
+        assertThat(ret[0][0], is((byte) 1));
+        assertThat(ret[1][0], is((byte) 2));
     }
 }

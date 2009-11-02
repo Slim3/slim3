@@ -15,131 +15,137 @@
  */
 package org.slim3.util;
 
-import org.slim3.util.FloatUtil;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class FloatUtilTest extends TestCase {
+public class FloatUtilTest {
 
     /**
      * @throws Exception
      */
-    public void testToFloatForNull() throws Exception {
-        assertNull(FloatUtil.toFloat(null));
+    @Test
+    public void toFloatForNull() throws Exception {
+        assertThat(FloatUtil.toFloat(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testToFloatForEmptyString() throws Exception {
-        assertNull(FloatUtil.toFloat(""));
+    @Test
+    public void toFloatForEmptyString() throws Exception {
+        assertThat(FloatUtil.toFloat(""), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testToFloatForFloat() throws Exception {
+    @Test
+    public void toFloatForFloat() throws Exception {
         Float value = Float.valueOf(1);
-        assertEquals(value, FloatUtil.toFloat(value));
+        assertThat(FloatUtil.toFloat(value), is(value));
     }
 
     /**
      * @throws Exception
      */
-    public void testToFloatForNumber() throws Exception {
+    @Test
+    public void toFloatForNumber() throws Exception {
         Integer i = Integer.valueOf(1);
-        assertEquals(1f, FloatUtil.toFloat(i).floatValue());
+        assertThat(FloatUtil.toFloat(i).floatValue(), is(1f));
     }
 
     /**
      * @throws Exception
      */
-    public void testToFloatForString() throws Exception {
-        assertEquals(1f, FloatUtil.toFloat("1").floatValue());
+    @Test
+    public void toFloatForString() throws Exception {
+        assertThat(FloatUtil.toFloat("1").floatValue(), is(1f));
     }
 
     /**
      * @throws Exception
      */
-    public void testToFloatForTrue() throws Exception {
-        assertEquals(1f, FloatUtil.toFloat(Boolean.TRUE).floatValue());
+    @Test
+    public void toFloatForTrue() throws Exception {
+        assertThat(FloatUtil.toFloat(Boolean.TRUE).floatValue(), is(1f));
     }
 
     /**
      * @throws Exception
      */
-    public void testToFloatForFalse() throws Exception {
-        assertEquals(0f, FloatUtil.toFloat(Boolean.FALSE).floatValue());
+    @Test
+    public void toFloatForFalse() throws Exception {
+        assertThat(FloatUtil.toFloat(Boolean.FALSE).floatValue(), is(0f));
     }
 
     /**
      * @throws Exception
      */
-    public void testToFloatForException() throws Exception {
-        try {
-            FloatUtil.toFloat("xx");
-            fail();
-        } catch (NumberFormatException e) {
-            System.out.println(e);
-        }
+    @Test(expected = NumberFormatException.class)
+    public void toFloatForException() throws Exception {
+        FloatUtil.toFloat("xx");
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveFloatForNull() throws Exception {
-        assertEquals(0f, FloatUtil.toPrimitiveFloat(null));
+    @Test
+    public void toPrimitiveFloatForNull() throws Exception {
+        assertThat(FloatUtil.toPrimitiveFloat(null), is(0f));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveFloatForEmptyString() throws Exception {
-        assertEquals(0f, FloatUtil.toPrimitiveFloat(""));
+    @Test
+    public void toPrimitiveFloatForEmptyString() throws Exception {
+        assertThat(FloatUtil.toPrimitiveFloat(""), is(0f));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveFloatForNumber() throws Exception {
+    @Test
+    public void toPrimitiveFloatForNumber() throws Exception {
         Integer i = Integer.valueOf(1);
-        assertEquals(1f, FloatUtil.toPrimitiveFloat(i));
+        assertThat(FloatUtil.toPrimitiveFloat(i), is(1f));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveFloatForString() throws Exception {
-        assertEquals(1f, FloatUtil.toPrimitiveFloat("1"));
+    @Test
+    public void toPrimitiveFloatForString() throws Exception {
+        assertThat(FloatUtil.toPrimitiveFloat("1"), is(1f));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveFloatForTrue() throws Exception {
-        assertEquals(1f, FloatUtil.toPrimitiveFloat(Boolean.TRUE));
+    @Test
+    public void toPrimitiveFloatForTrue() throws Exception {
+        assertThat(FloatUtil.toPrimitiveFloat(Boolean.TRUE), is(1f));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveFloatForFalse() throws Exception {
-        assertEquals(0f, FloatUtil.toPrimitiveFloat(Boolean.FALSE));
+    @Test
+    public void toPrimitiveFloatForFalse() throws Exception {
+        assertThat(FloatUtil.toPrimitiveFloat(Boolean.FALSE), is(0f));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveFloatForException() throws Exception {
-        try {
-            FloatUtil.toPrimitiveFloat("xx");
-            fail();
-        } catch (NumberFormatException e) {
-            System.out.println(e);
-        }
+    @Test(expected = NumberFormatException.class)
+    public void toPrimitiveFloatForIllegalArgument() throws Exception {
+        FloatUtil.toPrimitiveFloat("xx");
     }
 }

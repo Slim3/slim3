@@ -15,64 +15,61 @@
  */
 package org.slim3.util;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.sql.Timestamp;
 
-import org.slim3.util.NumberConverter;
-
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class NumberConverterTest extends TestCase {
+public class NumberConverterTest {
 
     /**
      * @throws Exception
      */
-    public void testGetAsObject() throws Exception {
+    @Test
+    public void getAsObject() throws Exception {
         NumberConverter converter = new NumberConverter("##0");
-        assertEquals(new Long("100"), converter.getAsObject("100"));
+        assertThat((Long) converter.getAsObject("100"), is(100L));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetAsString() throws Exception {
+    @Test
+    public void getAsString() throws Exception {
         NumberConverter converter = new NumberConverter("##0");
-        assertEquals("100", converter.getAsString(new Integer("100")));
+        assertThat(converter.getAsString(new Integer("100")), is("100"));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetAsStringForCastException() throws Exception {
+    @Test(expected = IllegalArgumentException.class)
+    public void getAsStringForCastException() throws Exception {
         NumberConverter converter = new NumberConverter("##0");
-        try {
-            converter.getAsString("aaa");
-            fail();
-        } catch (IllegalArgumentException e) {
-            System.out.println(e);
-        }
+        converter.getAsString("aaa");
     }
 
     /**
      * @throws Exception
      */
-    public void testConstructorForNull() throws Exception {
-        try {
-            new NumberConverter(null);
-        } catch (NullPointerException e) {
-            System.out.println(e);
-        }
+    @Test(expected = NullPointerException.class)
+    public void constructorForNull() throws Exception {
+        new NumberConverter(null);
     }
 
     /**
      * @throws Exception
      */
-    public void testIsTarget() throws Exception {
+    @Test
+    public void isTarget() throws Exception {
         NumberConverter converter = new NumberConverter("##0");
-        assertTrue(converter.isTarget(Integer.class));
-        assertFalse(converter.isTarget(Timestamp.class));
+        assertThat(converter.isTarget(Integer.class), is(true));
+        assertThat(converter.isTarget(Timestamp.class), is(false));
     }
 }

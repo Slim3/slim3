@@ -19,10 +19,12 @@ package org.slim3.util;
  * An interface that converts string and object.
  * 
  * @author higa
+ * @param <T>
+ *            the type
  * @since 3.0
  * 
  */
-public interface Converter {
+public interface Converter<T> {
 
     /**
      * Returns the value as string.
@@ -40,7 +42,7 @@ public interface Converter {
      *            the value
      * @return the converted value
      */
-    Object getAsObject(String value);
+    T getAsObject(String value);
 
     /**
      * Determines if the class is target.

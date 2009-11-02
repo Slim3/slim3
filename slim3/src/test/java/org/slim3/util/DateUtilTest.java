@@ -15,137 +15,148 @@
  */
 package org.slim3.util;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-import junit.framework.TestCase;
-
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class DateUtilTest extends TestCase {
+public class DateUtilTest {
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    /**
+     * @throws Exception
+     */
+    @Before
+    public void setUp() throws Exception {
         TimeZoneLocator.set(TimeZone.getTimeZone("UTC"));
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    /**
+     * @throws Exception
+     */
+    @After
+    public void tearDown() throws Exception {
         TimeZoneLocator.set(null);
-        super.tearDown();
     }
 
     /**
      * @throws Exception
      */
-    public void testToDateForNull() throws Exception {
-        assertNull(DateUtil.toDate(null));
+    @Test
+    public void toDateForNull() throws Exception {
+        assertThat(DateUtil.toDate(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testToDateForNullUsingPattern() throws Exception {
-        assertNull(DateUtil.toDate(null, "MM/dd/yyyy"));
+    @Test
+    public void toDateForNullUsingPattern() throws Exception {
+        assertThat(DateUtil.toDate(null, "MM/dd/yyyy"), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testToDateForPatternNull() throws Exception {
-        System.out.println(DateUtil.toDate("1970-01-01"));
+    @Test
+    public void toDateForPatternNull() throws Exception {
+        assertThat(DateUtil.toDate("1970-01-01"), is(notNullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testToDateForDate() throws Exception {
+    @Test
+    public void toDateForDate() throws Exception {
         Date date = new Date();
-        assertEquals(date, DateUtil.toDate(date));
+        assertThat(DateUtil.toDate(date), is(date));
     }
 
     /**
      * @throws Exception
      */
-    public void testToDateForCalendar() throws Exception {
+    @Test
+    public void toDateForCalendar() throws Exception {
         Date date = new Date();
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
-        assertEquals(date, DateUtil.toDate(cal));
+        assertThat(DateUtil.toDate(cal), is(date));
     }
 
     /**
      * @throws Exception
      */
-    public void testToDateForString() throws Exception {
-        assertNotNull(DateUtil.toDate("01/17/2008", "MM/dd/yyyy"));
+    @Test
+    public void toDateForString() throws Exception {
+        assertThat(
+            DateUtil.toDate("01/17/2008", "MM/dd/yyyy"),
+            is(notNullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testToDateForTimeString() throws Exception {
-        System.out.println(DateUtil.toDate(
-            "12:34:56",
-            DateUtil.ISO_TIME_PATTERN));
-        assertNotNull(DateUtil.toDate("12:34:56", DateUtil.ISO_TIME_PATTERN));
+    @Test
+    public void toDateForTimeString() throws Exception {
+        assertThat(
+            DateUtil.toDate("12:34:56", DateUtil.ISO_TIME_PATTERN),
+            is(notNullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testToDateForBadText() throws Exception {
-        try {
-            DateUtil.toDate("xx/17/2008", "MM/dd/yyyy");
-            fail();
-        } catch (WrapRuntimeException e) {
-            System.out.println(e.getMessage());
-        }
+    @Test(expected = WrapRuntimeException.class)
+    public void toDateForBadText() throws Exception {
+        DateUtil.toDate("xx/17/2008", "MM/dd/yyyy");
     }
 
     /**
      * @throws Exception
      */
-    public void testToDateForEmptyString() throws Exception {
-        assertNull(DateUtil.toDate(""));
+    @Test
+    public void toDateForEmptyString() throws Exception {
+        assertThat(DateUtil.toDate(""), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testToDateWithPattern() throws Exception {
-        assertEquals(new Date(0), DateUtil.toDate("01/01/1970", "MM/dd/yyyy"));
-        System.out.println(DateUtil.toDate("00:00:00", "hh:mm:ss"));
+    @Test
+    public void toDateWithPattern() throws Exception {
+        assertThat(DateUtil.toDate("01/01/1970", "MM/dd/yyyy"), is(new Date(0)));
     }
 
     /**
      * @throws Exception
      */
-    public void testToDateWithPatternForBadText() throws Exception {
-        try {
-            DateUtil.toDate("xx/17/2008", "yyyyMMdd");
-            fail();
-        } catch (WrapRuntimeException e) {
-            System.out.println(e.getMessage());
-        }
+    @Test(expected = WrapRuntimeException.class)
+    public void toDateWithPatternForBadText() throws Exception {
+        DateUtil.toDate("xx/17/2008", "yyyyMMdd");
     }
 
     /**
      * @throws Exception
      */
-    public void testToCalendar() throws Exception {
-        assertNotNull(DateUtil.toCalendar(new Date()));
+    @Test
+    public void toCalendar() throws Exception {
+        assertThat(DateUtil.toCalendar(new Date()), is(notNullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testClearTimePartForCalendar() throws Exception {
+    @Test
+    public void clearTimePartForCalendar() throws Exception {
         java.util.Date date = new java.util.Date();
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
@@ -155,13 +166,14 @@ public class DateUtilTest extends TestCase {
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
-        assertEquals(cal, DateUtil.clearTimePart(cal2));
+        assertThat(DateUtil.clearTimePart(cal2), is(cal));
     }
 
     /**
      * @throws Exception
      */
-    public void testClearTimePartForDate() throws Exception {
+    @Test
+    public void clearTimePartForDate() throws Exception {
         java.util.Date date = new java.util.Date();
         Calendar cal = Calendar.getInstance(TimeZoneLocator.get());
         cal.setTime(date);
@@ -169,13 +181,14 @@ public class DateUtilTest extends TestCase {
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
-        assertEquals(cal.getTime(), DateUtil.clearTimePart(date));
+        assertThat(DateUtil.clearTimePart(date), is(cal.getTime()));
     }
 
     /**
      * @throws Exception
      */
-    public void testToDateAndClearTimePart() throws Exception {
+    @Test
+    public void toDateAndClearTimePart() throws Exception {
         java.util.Date date = new java.util.Date();
         Calendar cal = Calendar.getInstance(TimeZoneLocator.get());
         cal.setTime(date);
@@ -183,13 +196,14 @@ public class DateUtilTest extends TestCase {
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
-        assertEquals(cal.getTime(), DateUtil.toDateAndClearTimePart(date));
+        assertThat(DateUtil.toDateAndClearTimePart(date), is(cal.getTime()));
     }
 
     /**
      * @throws Exception
      */
-    public void testClearDatePartForCalendar() throws Exception {
+    @Test
+    public void clearDatePartForCalendar() throws Exception {
         java.util.Date date = new java.util.Date();
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
@@ -198,51 +212,52 @@ public class DateUtilTest extends TestCase {
         cal.set(Calendar.YEAR, 1970);
         cal.set(Calendar.MONTH, Calendar.JANUARY);
         cal.set(Calendar.DATE, 1);
-        assertEquals(cal, DateUtil.clearDatePart(cal2));
+        assertThat(DateUtil.clearDatePart(cal2), is(cal));
     }
 
     /**
      * @throws Exception
      */
-    public void testClearDatePartForDate() throws Exception {
+    @Test
+    public void clearDatePartForDate() throws Exception {
         java.util.Date date = new java.util.Date();
         Calendar cal = Calendar.getInstance(TimeZoneLocator.get());
         cal.setTime(date);
         cal.set(Calendar.YEAR, 1970);
         cal.set(Calendar.MONTH, Calendar.JANUARY);
         cal.set(Calendar.DATE, 1);
-        assertEquals(cal.getTime(), DateUtil.clearDatePart(date));
+        assertThat(DateUtil.clearDatePart(date), is(cal.getTime()));
     }
 
     /**
      * @throws Exception
      */
-    public void testToDateAndClearDatePart() throws Exception {
+    @Test
+    public void toDateAndClearDatePart() throws Exception {
         java.util.Date date = new java.util.Date();
         Calendar cal = Calendar.getInstance(TimeZoneLocator.get());
         cal.setTime(date);
         cal.set(Calendar.YEAR, 1970);
         cal.set(Calendar.MONTH, Calendar.JANUARY);
         cal.set(Calendar.DATE, 1);
-        assertEquals(cal.getTime(), DateUtil.toDateAndClearDatePart(date));
+        assertThat(DateUtil.toDateAndClearDatePart(date), is(cal.getTime()));
     }
 
     /**
      * @throws Exception
      */
+    @Test
     public void testToString() throws Exception {
-        assertEquals("01/01/1970", DateUtil.toString(new Date(0), "MM/dd/yyyy"));
+        assertThat(
+            DateUtil.toString(new Date(0), "MM/dd/yyyy"),
+            is("01/01/1970"));
     }
 
     /**
      * @throws Exception
      */
-    public void testToStringForException() throws Exception {
-        try {
-            DateUtil.toString(new Date(0), "xxx");
-            fail();
-        } catch (IllegalArgumentException e) {
-            System.out.println(e);
-        }
+    @Test(expected = IllegalArgumentException.class)
+    public void toStringForIllegalArgument() throws Exception {
+        DateUtil.toString(new Date(0), "xxx");
     }
 }

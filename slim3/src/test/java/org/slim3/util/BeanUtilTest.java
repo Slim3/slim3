@@ -15,12 +15,14 @@
  */
 package org.slim3.util;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
 
@@ -28,610 +30,661 @@ import org.slim3.tester.MockServletContext;
  * @author higa
  * 
  */
-public class BeanUtilTest extends TestCase {
+public class BeanUtilTest {
 
     /**
      * @throws Exception
      */
-    public void testGetBeanDesc() throws Exception {
+    @Test
+    public void getBeanDesc() throws Exception {
         BeanDesc beanDesc = BeanUtil.getBeanDesc(getClass());
-        assertNotNull(beanDesc);
-        assertSame(beanDesc, BeanUtil.getBeanDesc(getClass()));
+        assertThat(beanDesc, is(notNullValue()));
+        assertThat(BeanUtil.getBeanDesc(getClass()), is(sameInstance(beanDesc)));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBB() throws Exception {
+    @Test
+    public void copyBB() throws Exception {
         SrcBB src = new SrcBB();
         src.aaa = "111";
         DestBB dest = new DestBB();
         BeanUtil.copy(src, dest);
-        assertEquals("111", dest.aaa);
+        assertThat(dest.aaa, is("111"));
     }
 
     /**
      * @throws Exception
      */
-    public void testBBCopyFromReadOnlyToWriteOnly() throws Exception {
+    @Test
+    public void copyBBFromReadOnlyToWriteOnly() throws Exception {
         SrcBB src = new SrcBB();
         src.bbb = "111";
         DestBB dest = new DestBB();
         BeanUtil.copy(src, dest);
-        assertEquals("111", dest.bbb);
+        assertThat(dest.bbb, is("111"));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBBFromReadOnlyToReadOnly() throws Exception {
+    @Test
+    public void copyBBFromReadOnlyToReadOnly() throws Exception {
         SrcBB src = new SrcBB();
         src.ccc = "111";
         DestBB dest = new DestBB();
         BeanUtil.copy(src, dest);
-        assertNull(dest.ccc);
+        assertThat(dest.ccc, is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBBFromWriteOnlyToWriteOnly() throws Exception {
+    @Test
+    public void copyBBFromWriteOnlyToWriteOnly() throws Exception {
         SrcBB src = new SrcBB();
         src.ddd = "111";
         DestBB dest = new DestBB();
         BeanUtil.copy(src, dest);
-        assertNull(dest.ddd);
+        assertThat(dest.ddd, is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBBFromWriteOnlyToReadOnly() throws Exception {
+    @Test
+    public void copyBBFromWriteOnlyToReadOnly() throws Exception {
         SrcBB src = new SrcBB();
         src.eee = "111";
         DestBB dest = new DestBB();
         BeanUtil.copy(src, dest);
-        assertNull(dest.eee);
+        assertThat(dest.eee, is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBBForInclude() throws Exception {
+    @Test
+    public void copyBBForInclude() throws Exception {
         SrcBB src = new SrcBB();
         src.aaa = "111";
         src.bbb = "222";
         DestBB dest = new DestBB();
         BeanUtil.copy(src, dest, new CopyOptions().include("aaa"));
-        assertEquals("111", dest.aaa);
-        assertNull(dest.bbb);
+        assertThat(dest.aaa, is("111"));
+        assertThat(dest.bbb, is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBBForExclude() throws Exception {
+    @Test
+    public void copyBBForExclude() throws Exception {
         SrcBB src = new SrcBB();
         src.aaa = "111";
         src.bbb = "222";
         DestBB dest = new DestBB();
         BeanUtil.copy(src, dest, new CopyOptions().exclude("bbb"));
-        assertEquals("111", dest.aaa);
-        assertNull(dest.bbb);
+        assertThat(dest.aaa, is("111"));
+        assertThat(dest.bbb, is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBBForNull() throws Exception {
+    @Test
+    public void copyBBForNull() throws Exception {
         SrcBB src = new SrcBB();
         DestBB dest = new DestBB();
         dest.aaa = "111";
         BeanUtil.copy(src, dest);
-        assertEquals("111", dest.aaa);
+        assertThat(dest.aaa, is("111"));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBBForCopyNull() throws Exception {
+    @Test
+    public void copyBBForCopyNull() throws Exception {
         SrcBB src = new SrcBB();
         DestBB dest = new DestBB();
         dest.aaa = "111";
         BeanUtil.copy(src, dest, new CopyOptions().copyNull());
-        assertNull(dest.aaa);
+        assertThat(dest.aaa, is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBBForEmptyString() throws Exception {
+    @Test
+    public void copyBBForEmptyString() throws Exception {
         SrcBB src = new SrcBB();
         src.aaa = "";
         DestBB dest = new DestBB();
         dest.aaa = "111";
         BeanUtil.copy(src, dest);
-        assertEquals("111", dest.aaa);
+        assertThat(dest.aaa, is("111"));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBBForCopyEmptyString() throws Exception {
+    @Test
+    public void copyBBForCopyEmptyString() throws Exception {
         SrcBB src = new SrcBB();
         src.aaa = "";
         DestBB dest = new DestBB();
         dest.aaa = "111";
         BeanUtil.copy(src, dest, new CopyOptions().copyEmptyString());
-        assertEquals("", dest.aaa);
+        assertThat(dest.aaa, is(""));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBBForConverter() throws Exception {
+    @Test
+    public void copyBBForConverter() throws Exception {
         SrcBB src = new SrcBB();
         src.fff = "1,000";
         DestBB dest = new DestBB();
         BeanUtil.copy(src, dest, new CopyOptions().numberConverter("#,##0"));
-        assertEquals(new Integer(1000), dest.fff);
+        assertThat(dest.fff, is(1000));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBM() throws Exception {
+    @Test
+    public void copyBM() throws Exception {
         SrcBM src = new SrcBM();
         src.aaa = "111";
         Map<String, Object> dest = new HashMap<String, Object>();
         BeanUtil.copy(src, dest);
-        assertEquals("111", dest.get("aaa"));
+        assertThat((String) dest.get("aaa"), is("111"));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBMFromReadOnly() throws Exception {
+    @Test
+    public void copyBMFromReadOnly() throws Exception {
         SrcBM src = new SrcBM();
         src.bbb = "111";
         Map<String, Object> dest = new HashMap<String, Object>();
         BeanUtil.copy(src, dest);
-        assertEquals("111", dest.get("bbb"));
+        assertThat((String) dest.get("bbb"), is("111"));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBMFromWriteOnly() throws Exception {
+    @Test
+    public void copyBMFromWriteOnly() throws Exception {
         SrcBM src = new SrcBM();
         src.ccc = "111";
         Map<String, Object> dest = new HashMap<String, Object>();
         BeanUtil.copy(src, dest);
-        assertNull(dest.get("ccc"));
+        assertThat(dest.get("ccc"), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBMForInclude() throws Exception {
+    @Test
+    public void copyBMForInclude() throws Exception {
         SrcBM src = new SrcBM();
         src.aaa = "111";
         src.bbb = "222";
         Map<String, Object> dest = new HashMap<String, Object>();
         BeanUtil.copy(src, dest, new CopyOptions().include("aaa"));
-        assertEquals("111", dest.get("aaa"));
-        assertNull(dest.get("bbb"));
+        assertThat((String) dest.get("aaa"), is("111"));
+        assertThat(dest.get("bbb"), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBMForExclude() throws Exception {
+    @Test
+    public void copyBMForExclude() throws Exception {
         SrcBM src = new SrcBM();
         src.aaa = "111";
         src.bbb = "222";
         Map<String, Object> dest = new HashMap<String, Object>();
         BeanUtil.copy(src, dest, new CopyOptions().exclude("bbb"));
-        assertEquals("111", dest.get("aaa"));
-        assertNull(dest.get("bbb"));
+        assertThat((String) dest.get("aaa"), is("111"));
+        assertThat(dest.get("bbb"), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBMForNull() throws Exception {
+    @Test
+    public void copyBMForNull() throws Exception {
         SrcBM src = new SrcBM();
         Map<String, Object> dest = new HashMap<String, Object>();
         dest.put("aaa", "111");
         BeanUtil.copy(src, dest);
-        assertEquals("111", dest.get("aaa"));
+        assertThat((String) dest.get("aaa"), is("111"));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBMForCopyNull() throws Exception {
+    @Test
+    public void copyBMForCopyNull() throws Exception {
         SrcBM src = new SrcBM();
         Map<String, Object> dest = new HashMap<String, Object>();
         dest.put("aaa", "111");
         BeanUtil.copy(src, dest, new CopyOptions().copyNull());
-        assertNull(dest.get("aaa"));
+        assertThat(dest.get("aaa"), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBMForEmptyString() throws Exception {
+    @Test
+    public void copyBMForEmptyString() throws Exception {
         SrcBM src = new SrcBM();
         src.aaa = "";
         Map<String, Object> dest = new HashMap<String, Object>();
         dest.put("aaa", "111");
         BeanUtil.copy(src, dest);
-        assertEquals("111", dest.get("aaa"));
+        assertThat((String) dest.get("aaa"), is("111"));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBMForCopyEmptyString() throws Exception {
+    @Test
+    public void copyBMForCopyEmptyString() throws Exception {
         SrcBM src = new SrcBM();
         src.aaa = "";
         Map<String, Object> dest = new HashMap<String, Object>();
         dest.put("aaa", "111");
         BeanUtil.copy(src, dest, new CopyOptions().copyEmptyString());
-        assertEquals("", dest.get("aaa"));
+        assertThat((String) dest.get("aaa"), is(""));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBMForConverter() throws Exception {
+    @Test
+    public void copyBMForConverter() throws Exception {
         SrcBM src = new SrcBM();
         src.aaa = "1,000";
         Map<String, Object> dest = new HashMap<String, Object>();
         BeanUtil.copy(src, dest, new CopyOptions().numberConverter(
             "#,##0",
             "aaa"));
-        assertEquals(new Long(1000), dest.get("aaa"));
+        assertThat((Long) dest.get("aaa"), is(1000L));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyMB() throws Exception {
+    @Test
+    public void copyMB() throws Exception {
         Map<String, Object> src = new HashMap<String, Object>();
         src.put("aaa", "111");
         DestMB dest = new DestMB();
         BeanUtil.copy(src, dest);
-        assertEquals("111", dest.aaa);
+        assertThat(dest.aaa, is("111"));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyMBToReadOnly() throws Exception {
+    @Test
+    public void copyMBToReadOnly() throws Exception {
         Map<String, Object> src = new HashMap<String, Object>();
         src.put("bbb", "111");
         DestMB dest = new DestMB();
         BeanUtil.copy(src, dest);
-        assertNull(dest.bbb);
+        assertThat(dest.bbb, is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyMBToWriteOnly() throws Exception {
+    @Test
+    public void copyMBToWriteOnly() throws Exception {
         Map<String, Object> src = new HashMap<String, Object>();
         src.put("ccc", "111");
         DestMB dest = new DestMB();
         BeanUtil.copy(src, dest);
-        assertEquals("111", dest.ccc);
+        assertThat(dest.ccc, is("111"));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyMBForInclude() throws Exception {
+    @Test
+    public void copyMBForInclude() throws Exception {
         Map<String, Object> src = new HashMap<String, Object>();
         src.put("aaa", "111");
         src.put("ccc", "222");
         DestMB dest = new DestMB();
         BeanUtil.copy(src, dest, new CopyOptions().include("aaa"));
-        assertEquals("111", dest.aaa);
-        assertNull(dest.ccc);
+        assertThat(dest.aaa, is("111"));
+        assertThat(dest.ccc, is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyMBForExclude() throws Exception {
+    @Test
+    public void copyMBForExclude() throws Exception {
         Map<String, Object> src = new HashMap<String, Object>();
         src.put("aaa", "111");
         src.put("ccc", "222");
         DestMB dest = new DestMB();
         BeanUtil.copy(src, dest, new CopyOptions().exclude("ccc"));
-        assertEquals("111", dest.aaa);
-        assertNull(dest.ccc);
+        assertThat(dest.aaa, is("111"));
+        assertThat(dest.ccc, is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyMBForNull() throws Exception {
+    @Test
+    public void copyMBForNull() throws Exception {
         Map<String, Object> src = new HashMap<String, Object>();
         DestMB dest = new DestMB();
         dest.aaa = "111";
         BeanUtil.copy(src, dest);
-        assertEquals("111", dest.aaa);
+        assertThat(dest.aaa, is("111"));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyMBForCopyNull() throws Exception {
+    @Test
+    public void copyMBForCopyNull() throws Exception {
         Map<String, Object> src = new HashMap<String, Object>();
         src.put("aaa", null);
         DestMB dest = new DestMB();
         dest.aaa = "111";
         BeanUtil.copy(src, dest, new CopyOptions().copyNull());
-        assertNull(dest.aaa);
+        assertThat(dest.aaa, is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyMBForEmptyString() throws Exception {
+    @Test
+    public void copyMBForEmptyString() throws Exception {
         Map<String, Object> src = new HashMap<String, Object>();
         src.put("aaa", "");
         DestMB dest = new DestMB();
         dest.aaa = "111";
         BeanUtil.copy(src, dest);
-        assertEquals("111", dest.aaa);
+        assertThat(dest.aaa, is("111"));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyMBForCopyEmptyString() throws Exception {
+    @Test
+    public void copyMBForCopyEmptyString() throws Exception {
         Map<String, Object> src = new HashMap<String, Object>();
         src.put("aaa", "");
         DestMB dest = new DestMB();
         dest.aaa = "111";
         BeanUtil.copy(src, dest, new CopyOptions().copyEmptyString());
-        assertEquals("", dest.aaa);
+        assertThat(dest.aaa, is(""));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyMBForConverter() throws Exception {
+    @Test
+    public void copyMBForConverter() throws Exception {
         Map<String, Object> src = new HashMap<String, Object>();
         src.put("ddd", "1,000");
         DestMB dest = new DestMB();
         BeanUtil.copy(src, dest, new CopyOptions().numberConverter("#,##0"));
-        assertEquals(new Integer(1000), dest.ddd);
+        assertThat(dest.ddd, is(1000));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyMM() throws Exception {
+    @Test
+    public void copyMM() throws Exception {
         Map<String, Object> src = new HashMap<String, Object>();
         src.put("aaa", "111");
         Date date = new Date();
         src.put("bbb", date);
         Map<String, Object> dest = new HashMap<String, Object>();
         BeanUtil.copy(src, dest);
-        assertEquals("111", dest.get("aaa"));
-        assertEquals(date, dest.get("bbb"));
+        assertThat((String) dest.get("aaa"), is("111"));
+        assertThat((Date) dest.get("bbb"), is(date));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyMMForInclude() throws Exception {
+    @Test
+    public void copyMMForInclude() throws Exception {
         Map<String, Object> src = new HashMap<String, Object>();
         src.put("aaa", "111");
         src.put("bbb", "222");
         Map<String, Object> dest = new HashMap<String, Object>();
         BeanUtil.copy(src, dest, new CopyOptions().include("aaa"));
-        assertEquals("111", dest.get("aaa"));
-        assertNull(dest.get("bbb"));
+        assertThat((String) dest.get("aaa"), is("111"));
+        assertThat(dest.get("bbb"), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyMMForExclude() throws Exception {
+    @Test
+    public void copyMMForExclude() throws Exception {
         Map<String, Object> src = new HashMap<String, Object>();
         src.put("aaa", "111");
         src.put("bbb", "222");
         Map<String, Object> dest = new HashMap<String, Object>();
         BeanUtil.copy(src, dest, new CopyOptions().exclude("bbb"));
-        assertEquals("111", dest.get("aaa"));
-        assertNull(dest.get("bbb"));
+        assertThat((String) dest.get("aaa"), is("111"));
+        assertThat(dest.get("bbb"), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyMMForNull() throws Exception {
+    @Test
+    public void copyMMForNull() throws Exception {
         Map<String, Object> src = new HashMap<String, Object>();
         src.put("aaa", null);
         Map<String, Object> dest = new HashMap<String, Object>();
         dest.put("aaa", "111");
         BeanUtil.copy(src, dest);
-        assertEquals("111", dest.get("aaa"));
+        assertThat((String) dest.get("aaa"), is("111"));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyMMForCopyNull() throws Exception {
+    @Test
+    public void copyMMForCopyNull() throws Exception {
         Map<String, Object> src = new HashMap<String, Object>();
         src.put("aaa", null);
         Map<String, Object> dest = new HashMap<String, Object>();
         dest.put("aaa", "111");
         BeanUtil.copy(src, dest, new CopyOptions().copyNull());
-        assertNull(dest.get("aaa"));
+        assertThat(dest.get("aaa"), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyMMForEmptyString() throws Exception {
+    @Test
+    public void copyMMForEmptyString() throws Exception {
         Map<String, Object> src = new HashMap<String, Object>();
         src.put("aaa", "");
         Map<String, Object> dest = new HashMap<String, Object>();
         dest.put("aaa", "111");
         BeanUtil.copy(src, dest);
-        assertEquals("111", dest.get("aaa"));
+        assertThat((String) dest.get("aaa"), is("111"));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyMMForCopyEmptyString() throws Exception {
+    @Test
+    public void copyMMForCopyEmptyString() throws Exception {
         Map<String, Object> src = new HashMap<String, Object>();
         src.put("aaa", "");
         Map<String, Object> dest = new HashMap<String, Object>();
         dest.put("aaa", "111");
         BeanUtil.copy(src, dest, new CopyOptions().copyEmptyString());
-        assertEquals("", dest.get("aaa"));
+        assertThat((String) dest.get("aaa"), is(""));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyMMForConverter() throws Exception {
+    @Test
+    public void copyMMForConverter() throws Exception {
         Map<String, Object> src = new HashMap<String, Object>();
         src.put("aaa", "1,000");
         Map<String, Object> dest = new HashMap<String, Object>();
         BeanUtil.copy(src, dest, new CopyOptions().numberConverter(
             "#,##0",
             "aaa"));
-        assertEquals(new Long(1000), dest.get("aaa"));
+        assertThat((Long) dest.get("aaa"), is(1000L));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyRB() throws Exception {
+    @Test
+    public void copyRB() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         MockHttpServletRequest src = new MockHttpServletRequest(servletContext);
         src.setAttribute("aaa", "111");
         DestRB dest = new DestRB();
         BeanUtil.copy(src, dest);
-        assertEquals("111", dest.aaa);
+        assertThat(dest.aaa, is("111"));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyRBToReadOnly() throws Exception {
+    @Test
+    public void copyRBToReadOnly() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         MockHttpServletRequest src = new MockHttpServletRequest(servletContext);
         src.setAttribute("bbb", "111");
         DestRB dest = new DestRB();
         BeanUtil.copy(src, dest);
-        assertNull(dest.bbb);
+        assertThat(dest.bbb, is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyRBToWriteOnly() throws Exception {
+    @Test
+    public void copyRBToWriteOnly() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         MockHttpServletRequest src = new MockHttpServletRequest(servletContext);
         src.setAttribute("ccc", "111");
         DestRB dest = new DestRB();
         BeanUtil.copy(src, dest);
-        assertEquals("111", dest.ccc);
+        assertThat(dest.ccc, is("111"));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyRBForInclude() throws Exception {
+    @Test
+    public void copyRBForInclude() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         MockHttpServletRequest src = new MockHttpServletRequest(servletContext);
         src.setAttribute("aaa", "111");
         src.setAttribute("ccc", "222");
         DestRB dest = new DestRB();
         BeanUtil.copy(src, dest, new CopyOptions().include("aaa"));
-        assertEquals("111", dest.aaa);
-        assertNull(dest.ccc);
+        assertThat(dest.aaa, is("111"));
+        assertThat(dest.ccc, is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyRBForExclude() throws Exception {
+    @Test
+    public void copyRBForExclude() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         MockHttpServletRequest src = new MockHttpServletRequest(servletContext);
         src.setAttribute("aaa", "111");
         src.setAttribute("ccc", "222");
         DestRB dest = new DestRB();
         BeanUtil.copy(src, dest, new CopyOptions().exclude("ccc"));
-        assertEquals("111", dest.aaa);
-        assertNull(dest.ccc);
+        assertThat(dest.aaa, is("111"));
+        assertThat(dest.ccc, is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyRBForNull() throws Exception {
+    @Test
+    public void copyRBForNull() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         MockHttpServletRequest src = new MockHttpServletRequest(servletContext);
         DestRB dest = new DestRB();
         dest.aaa = "111";
         BeanUtil.copy(src, dest);
-        assertEquals("111", dest.aaa);
+        assertThat(dest.aaa, is("111"));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyRBForCopyNull() throws Exception {
+    @Test
+    public void copyRBForCopyNull() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         MockHttpServletRequest src = new MockHttpServletRequest(servletContext);
         src.setAttribute("aaa", null);
         DestRB dest = new DestRB();
         dest.aaa = "111";
         BeanUtil.copy(src, dest, new CopyOptions().copyNull());
-        assertNull(dest.aaa);
+        assertThat(dest.aaa, is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyRBForEmptyString() throws Exception {
+    @Test
+    public void copyRBForEmptyString() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         MockHttpServletRequest src = new MockHttpServletRequest(servletContext);
         src.setAttribute("aaa", "");
         DestRB dest = new DestRB();
         dest.aaa = "111";
         BeanUtil.copy(src, dest);
-        assertEquals("111", dest.aaa);
+        assertThat(dest.aaa, is("111"));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyRBForCopyEmptyString() throws Exception {
+    @Test
+    public void copyRBForCopyEmptyString() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         MockHttpServletRequest src = new MockHttpServletRequest(servletContext);
         src.setAttribute("aaa", "");
         DestRB dest = new DestRB();
         dest.aaa = "111";
         BeanUtil.copy(src, dest, new CopyOptions().copyEmptyString());
-        assertEquals("", dest.aaa);
+        assertThat(dest.aaa, is(""));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyRBForCopyNullAndCopyEmptyString() throws Exception {
+    @Test
+    public void copyRBForCopyNullAndCopyEmptyString() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         MockHttpServletRequest src = new MockHttpServletRequest(servletContext);
         src.setAttribute("aaa", "");
@@ -639,64 +692,69 @@ public class BeanUtilTest extends TestCase {
         dest.aaa = "111";
         BeanUtil
             .copy(src, dest, new CopyOptions().copyNull().copyEmptyString());
-        assertEquals("", dest.aaa);
+        assertThat(dest.aaa, is(""));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyRBForConverter() throws Exception {
+    @Test
+    public void copyRBForConverter() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         MockHttpServletRequest src = new MockHttpServletRequest(servletContext);
         src.setAttribute("ddd", "1,000");
         DestRB dest = new DestRB();
         BeanUtil.copy(src, dest, new CopyOptions().numberConverter("#,##0"));
-        assertEquals(new Integer(1000), dest.ddd);
+        assertThat(dest.ddd, is(1000));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBR() throws Exception {
+    @Test
+    public void copyBR() throws Exception {
         SrcBR src = new SrcBR();
         src.aaa = "111";
         MockServletContext servletContext = new MockServletContext();
         MockHttpServletRequest dest =
             new MockHttpServletRequest(servletContext);
         BeanUtil.copy(src, dest);
-        assertEquals("111", dest.getAttribute("aaa"));
+        assertThat((String) dest.getAttribute("aaa"), is("111"));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBRFromReadOnly() throws Exception {
+    @Test
+    public void copyBRFromReadOnly() throws Exception {
         SrcBR src = new SrcBR();
         src.bbb = "111";
         MockServletContext servletContext = new MockServletContext();
         MockHttpServletRequest dest =
             new MockHttpServletRequest(servletContext);
         BeanUtil.copy(src, dest);
-        assertEquals("111", dest.getAttribute("bbb"));
+        assertThat((String) dest.getAttribute("bbb"), is("111"));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBRFromWriteOnly() throws Exception {
+    @Test
+    public void copyBRFromWriteOnly() throws Exception {
         SrcBR src = new SrcBR();
         src.ccc = "111";
         MockServletContext servletContext = new MockServletContext();
         MockHttpServletRequest dest =
             new MockHttpServletRequest(servletContext);
         BeanUtil.copy(src, dest);
-        assertNull(dest.getAttribute("ccc"));
+        assertThat(dest.getAttribute("ccc"), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBRForInclude() throws Exception {
+    @Test
+    public void copyBRForInclude() throws Exception {
         SrcBR src = new SrcBR();
         src.aaa = "111";
         src.bbb = "222";
@@ -704,14 +762,15 @@ public class BeanUtilTest extends TestCase {
         MockHttpServletRequest dest =
             new MockHttpServletRequest(servletContext);
         BeanUtil.copy(src, dest, new CopyOptions().include("aaa"));
-        assertEquals("111", dest.getAttribute("aaa"));
-        assertNull(dest.getAttribute("bbb"));
+        assertThat((String) dest.getAttribute("aaa"), is("111"));
+        assertThat(dest.getAttribute("bbb"), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBRForExclude() throws Exception {
+    @Test
+    public void copyBRForExclude() throws Exception {
         SrcBR src = new SrcBR();
         src.aaa = "111";
         src.bbb = "222";
@@ -719,40 +778,43 @@ public class BeanUtilTest extends TestCase {
         MockHttpServletRequest dest =
             new MockHttpServletRequest(servletContext);
         BeanUtil.copy(src, dest, new CopyOptions().exclude("bbb"));
-        assertEquals("111", dest.getAttribute("aaa"));
-        assertNull(dest.getAttribute("bbb"));
+        assertThat((String) dest.getAttribute("aaa"), is("111"));
+        assertThat(dest.getAttribute("bbb"), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBRForNull() throws Exception {
+    @Test
+    public void copyBRForNull() throws Exception {
         SrcBR src = new SrcBR();
         MockServletContext servletContext = new MockServletContext();
         MockHttpServletRequest dest =
             new MockHttpServletRequest(servletContext);
         dest.setAttribute("aaa", "111");
         BeanUtil.copy(src, dest);
-        assertEquals("111", dest.getAttribute("aaa"));
+        assertThat((String) dest.getAttribute("aaa"), is("111"));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBRForCopyNull() throws Exception {
+    @Test
+    public void copyBRForCopyNull() throws Exception {
         SrcBR src = new SrcBR();
         MockServletContext servletContext = new MockServletContext();
         MockHttpServletRequest dest =
             new MockHttpServletRequest(servletContext);
         dest.setAttribute("aaa", "111");
         BeanUtil.copy(src, dest, new CopyOptions().copyNull());
-        assertNull(dest.getAttribute("aaa"));
+        assertThat(dest.getAttribute("aaa"), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBRForEmptyString() throws Exception {
+    @Test
+    public void copyBRForEmptyString() throws Exception {
         SrcBR src = new SrcBR();
         src.aaa = "";
         MockServletContext servletContext = new MockServletContext();
@@ -760,13 +822,14 @@ public class BeanUtilTest extends TestCase {
             new MockHttpServletRequest(servletContext);
         dest.setAttribute("aaa", "111");
         BeanUtil.copy(src, dest);
-        assertEquals("111", dest.getAttribute("aaa"));
+        assertThat((String) dest.getAttribute("aaa"), is("111"));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBRForCopyEmptyString() throws Exception {
+    @Test
+    public void copyBRForCopyEmptyString() throws Exception {
         SrcBR src = new SrcBR();
         src.aaa = "";
         MockServletContext servletContext = new MockServletContext();
@@ -774,13 +837,14 @@ public class BeanUtilTest extends TestCase {
             new MockHttpServletRequest(servletContext);
         dest.setAttribute("aaa", "111");
         BeanUtil.copy(src, dest, new CopyOptions().copyEmptyString());
-        assertEquals("", dest.getAttribute("aaa"));
+        assertThat((String) dest.getAttribute("aaa"), is(""));
     }
 
     /**
      * @throws Exception
      */
-    public void testCopyBRForConverter() throws Exception {
+    @Test
+    public void copyBRForConverter() throws Exception {
         SrcBR src = new SrcBR();
         src.aaa = "1,000";
         MockServletContext servletContext = new MockServletContext();
@@ -789,7 +853,7 @@ public class BeanUtilTest extends TestCase {
         BeanUtil.copy(src, dest, new CopyOptions().numberConverter(
             "#,##0",
             "aaa"));
-        assertEquals(new Long(1000), dest.getAttribute("aaa"));
+        assertThat((Long) dest.getAttribute("aaa"), is(1000L));
     }
 
     /**

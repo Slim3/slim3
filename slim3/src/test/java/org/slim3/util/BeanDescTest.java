@@ -15,45 +15,52 @@
  */
 package org.slim3.util;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class BeanDescTest extends TestCase {
+public class BeanDescTest {
+
+    private BeanDesc beanDesc = BeanDesc.create(MyBean.class);
 
     /**
      * 
      */
-    public void testPropertyDesc() {
-        BeanDesc beanDesc = BeanDesc.create(MyBean.class);
+    @SuppressWarnings("unchecked")
+    @Test
+    public void propertyDesc() {
         PropertyDesc pd = beanDesc.getPropertyDesc("aaa");
-        assertNotNull(pd);
-        assertEquals("aaa", pd.getName());
-        assertEquals(String.class, pd.getPropertyClass());
-        assertNotNull(pd.getReadMethod());
-        assertNotNull(pd.getWriteMethod());
+        assertThat(pd, is(notNullValue()));
+        assertThat(pd.getName(), is("aaa"));
+        assertThat(pd.getPropertyClass(), equalTo((Class) String.class));
+        assertThat(pd.getReadMethod(), is(notNullValue()));
+        assertThat(pd.getWriteMethod(), is(notNullValue()));
     }
 
     /**
      * 
      */
-    public void testPropertyDescForReadOnly() {
-        BeanDesc beanDesc = BeanDesc.create(MyBean.class);
+    @SuppressWarnings("unchecked")
+    @Test
+    public void propertyDescForReadOnly() {
         PropertyDesc pd = beanDesc.getPropertyDesc("bbb");
-        assertNotNull(pd);
-        assertEquals("bbb", pd.getName());
-        assertEquals(String.class, pd.getPropertyClass());
-        assertNotNull(pd.getReadMethod());
-        assertNull(pd.getWriteMethod());
+        assertThat(pd, is(notNullValue()));
+        assertThat(pd.getName(), is("bbb"));
+        assertThat(pd.getPropertyClass(), equalTo((Class) String.class));
+        assertThat(pd.getReadMethod(), is(notNullValue()));
+        assertThat(pd.getWriteMethod(), is(nullValue()));
     }
 
     /**
      * 
      */
-    public void testPropertyDescForWriteOnly() {
-        BeanDesc beanDesc = BeanDesc.create(MyBean.class);
+    @Test
+    public void propertyDescForWriteOnly() {
         PropertyDesc pd = beanDesc.getPropertyDesc("ccc");
         assertNotNull(pd);
         assertEquals("ccc", pd.getName());
@@ -65,43 +72,45 @@ public class BeanDescTest extends TestCase {
     /**
      * 
      */
-    public void testPropertyDescForBoolean() {
-        BeanDesc beanDesc = BeanDesc.create(MyBean.class);
+    @SuppressWarnings("unchecked")
+    @Test
+    public void propertyDescForBoolean() {
         PropertyDesc pd = beanDesc.getPropertyDesc("ddd");
-        assertNotNull(pd);
-        assertEquals("ddd", pd.getName());
-        assertEquals(boolean.class, pd.getPropertyClass());
-        assertNotNull(pd.getReadMethod());
-        assertNull(pd.getWriteMethod());
+        assertThat(pd, is(notNullValue()));
+        assertThat(pd.getName(), is("ddd"));
+        assertThat((Class) pd.getPropertyClass(), equalTo(boolean.class));
+        assertThat(pd.getReadMethod(), is(notNullValue()));
+        assertThat(pd.getWriteMethod(), is(nullValue()));
     }
 
     /**
      * 
      */
-    public void testPropertyDescForBooleanWrapper() {
-        BeanDesc beanDesc = BeanDesc.create(MyBean.class);
+    @SuppressWarnings("unchecked")
+    @Test
+    public void propertyDescForBooleanWrapper() {
         PropertyDesc pd = beanDesc.getPropertyDesc("eee");
-        assertNotNull(pd);
-        assertEquals("eee", pd.getName());
-        assertEquals(Boolean.class, pd.getPropertyClass());
-        assertNotNull(pd.getReadMethod());
-        assertNull(pd.getWriteMethod());
+        assertThat(pd, is(notNullValue()));
+        assertThat(pd.getName(), is("eee"));
+        assertThat((Class) pd.getPropertyClass(), equalTo(Boolean.class));
+        assertThat(pd.getReadMethod(), is(notNullValue()));
+        assertThat(pd.getWriteMethod(), is(nullValue()));
     }
 
     /**
      * 
      */
-    public void testPropertyDescForIsBooleanWrapper() {
-        BeanDesc beanDesc = BeanDesc.create(MyBean.class);
-        assertNull(beanDesc.getPropertyDesc("fff"));
+    @Test
+    public void propertyDescForIsBooleanWrapper() {
+        assertThat(beanDesc.getPropertyDesc("fff"), is(nullValue()));
     }
 
     /**
      * 
      */
-    public void testPropertyDescForIllegalProperty() {
-        BeanDesc beanDesc = BeanDesc.create(MyBean.class);
-        assertNull(beanDesc.getPropertyDesc("hhh"));
+    @Test
+    public void propertyDescForIllegalProperty() {
+        assertThat(beanDesc.getPropertyDesc("hhh"), is(nullValue()));
     }
 
     @SuppressWarnings("unused")

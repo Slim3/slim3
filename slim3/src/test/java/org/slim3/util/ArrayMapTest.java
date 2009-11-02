@@ -15,32 +15,41 @@
  */
 package org.slim3.util;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.slim3.util.ArrayMap;
-
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class ArrayMapTest extends TestCase {
+public class ArrayMapTest {
 
     private ArrayMap<String, String> map;
 
-    @Override
-    protected void setUp() throws Exception {
+    /**
+     * @throws Exception
+     */
+    @Before
+    public void setUp() throws Exception {
         map = new ArrayMap<String, String>();
         map.put(null, null);
         map.put("1", "test");
         map.put("2", "test2");
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    /**
+     * @throws Exception
+     */
+    @After
+    public void tearDown() throws Exception {
         map = null;
     }
 
@@ -48,10 +57,11 @@ public class ArrayMapTest extends TestCase {
      * 
      * @throws Exception
      */
-    public void testSize() throws Exception {
-        assertEquals(3, map.size());
+    @Test
+    public void size() throws Exception {
+        assertThat(map.size(), is(3));
         map.put("3", "test3");
-        assertEquals(4, map.size());
+        assertThat(map.size(), is(4));
     }
 
     /**
@@ -59,61 +69,67 @@ public class ArrayMapTest extends TestCase {
      * 
      * @throws Exception
      */
-    public void testIsEmpty() throws Exception {
-        assertTrue(!map.isEmpty());
+    @Test
+    public void isEmpty() throws Exception {
+        assertThat(map.isEmpty(), is(false));
         map.clear();
-        assertTrue(map.isEmpty());
+        assertThat(map.isEmpty(), is(true));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testContainsValue() throws Exception {
-        assertTrue(map.containsValue("test2"));
-        assertTrue(!map.containsValue("test3"));
+    @Test
+    public void containsValue() throws Exception {
+        assertThat(map.containsValue("test2"), is(true));
+        assertThat(map.containsValue("test3"), is(false));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testContainsKey() throws Exception {
-        assertTrue(map.containsKey("2"));
-        assertTrue(!map.containsKey("3"));
+    @Test
+    public void containsKey() throws Exception {
+        assertThat(map.containsKey("2"), is(true));
+        assertThat(map.containsKey("3"), is(false));
         map.put("3", null);
-        assertTrue(map.containsKey("3"));
+        assertThat(map.containsKey("3"), is(true));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testIndexOf() throws Exception {
-        assertEquals(1, map.indexOf("test"));
-        assertEquals(0, map.indexOf(null));
-        assertEquals(-1, map.indexOf("test3"));
+    @Test
+    public void indexOf() throws Exception {
+        assertThat(map.indexOf("test"), is(1));
+        assertThat(map.indexOf(null), is(0));
+        assertThat(map.indexOf("test3"), is(-1));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testGet() throws Exception {
-        assertEquals("test", map.get("1"));
-        assertNull(map.get(null));
-        assertNull(map.get("test3"));
-        assertNull(map.get(0));
+    @Test
+    public void get() throws Exception {
+        assertThat(map.get("1"), is("test"));
+        assertThat(map.get(null), is(nullValue()));
+        assertThat(map.get("test3"), is(nullValue()));
+        assertThat(map.get(0), is(nullValue()));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testPut() throws Exception {
-        assertEquals("test", map.put("1", "test3"));
-        assertEquals("test3", map.get("1"));
-        assertEquals("test3", map.get(1));
+    @Test
+    public void put() throws Exception {
+        assertThat(map.put("1", "test3"), is("test"));
+        assertThat(map.get("1"), is("test3"));
+        assertThat(map.get(1), is("test3"));
         map.put(null, "test4");
         map.put(null, "test5");
     }
@@ -122,69 +138,72 @@ public class ArrayMapTest extends TestCase {
      * 
      * @throws Exception
      */
-    public void testRemove() throws Exception {
-        assertEquals("test", map.remove("1"));
-        assertEquals(2, map.size());
-        assertEquals(null, map.remove("dummy"));
-        assertEquals(null, map.remove(0));
+    @Test
+    public void remove() throws Exception {
+        assertThat(map.remove("1"), is("test"));
+        assertThat(map.size(), is(2));
+        assertThat(map.remove("dummy"), is(nullValue()));
+        assertThat(map.remove(0), is(nullValue()));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testRemove2() throws Exception {
+    @Test
+    public void remove2() throws Exception {
         Map<String, String> m = new ArrayMap<String, String>();
         m.put("1", "d");
         m.remove("1");
-        assertFalse(m.containsKey("1"));
+        assertThat(m.containsKey("1"), is(false));
         m.put("1", "d");
         m.remove("1");
-        assertFalse(m.containsKey("1"));
+        assertThat(m.containsKey("1"), is(false));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testRemove3() throws Exception {
+    @Test
+    public void remove3() throws Exception {
         Map<MyKey, String> m = new ArrayMap<MyKey, String>();
         m.put(new MyKey("1"), "d");
         m.put(new MyKey("2"), "d");
         m.remove(new MyKey("1"));
-        assertFalse(m.containsKey(new MyKey("1")));
+        assertThat(m.containsKey(new MyKey("1")), is(false));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testRemove4() throws Exception {
+    @Test
+    public void remove4() throws Exception {
         ArrayMap<String, String> m = new ArrayMap<String, String>();
         m.put("1", "d");
         m.put("2", "d");
-        System.out.println("remove before:" + m);
         m.remove("2");
-        System.out.println("remove after:" + m);
-        assertFalse(m.containsKey("2"));
-        assertTrue(m.containsKey("1"));
-        assertEquals("d", m.get("1"));
-        assertNull(null, m.get("2"));
-        assertEquals("d", m.get(0));
+        assertThat(m.containsKey("2"), is(false));
+        assertThat(m.containsKey("1"), is(true));
+        assertThat(m.get("1"), is("d"));
+        assertThat(m.get("2"), is(nullValue()));
+        assertThat(m.get(0), is("d"));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testPutAll() throws Exception {
+    @Test
+    public void putAll() throws Exception {
         Map<String, String> m = new HashMap<String, String>();
         m.put("3", "test3");
         m.put("4", "test4");
         map.putAll(m);
-        assertEquals("test3", map.get("3"));
-        assertEquals("test4", map.get("4"));
-        assertEquals(5, map.size());
+        assertThat(map.get("3"), is("test3"));
+        assertThat(map.get("4"), is("test4"));
+        assertThat(map.size(), is(5));
     }
 
     /**
@@ -192,40 +211,44 @@ public class ArrayMapTest extends TestCase {
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    public void testEqaulas() throws Exception {
+    @Test
+    public void equals() throws Exception {
         Map<String, String> copy = (ArrayMap<String, String>) map.clone();
-        assertTrue(map.equals(copy));
-        assertFalse(map.equals(null));
+        assertThat(map.equals(copy), is(true));
+        assertThat(map.equals(null), is(false));
         map.put("3", "test3");
-        assertFalse(map.equals(copy));
+        assertThat(map.equals(copy), is(false));
     }
 
     /**
      * 
      * @throws Exception
      */
+    @Test
     public void testToString() throws Exception {
-        assertNotNull(map.toString());
+        assertThat(map.toString(), is(notNullValue()));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testClear() throws Exception {
+    @Test
+    public void clear() throws Exception {
         map.clear();
-        assertEquals(0, map.size());
+        assertThat(map.size(), is(0));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testEntrySet() throws Exception {
+    @Test
+    public void entrySet() throws Exception {
         Iterator<Map.Entry<String, String>> i = map.entrySet().iterator();
-        assertNull(i.next().getKey());
-        assertEquals("1", i.next().getKey());
-        assertEquals("2", i.next().getKey());
+        assertThat(i.next().getKey(), is(nullValue()));
+        assertThat(i.next().getKey(), is("1"));
+        assertThat(i.next().getKey(), is("2"));
     }
 
     private static class MyKey {

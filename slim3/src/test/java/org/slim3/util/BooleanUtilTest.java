@@ -15,79 +15,91 @@
  */
 package org.slim3.util;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class BooleanUtilTest extends TestCase {
+public class BooleanUtilTest {
 
     /**
      * @throws Exception
      */
-    public void testToBooleanForNull() throws Exception {
-        assertNull(BooleanUtil.toBoolean(null));
+    @Test
+    public void toBooleanForNull() throws Exception {
+        assertThat(BooleanUtil.toBoolean(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testToBooleanForEmptyString() throws Exception {
-        assertFalse(BooleanUtil.toBoolean(""));
+    @Test
+    public void toBooleanForEmptyString() throws Exception {
+        assertThat(BooleanUtil.toBoolean(""), is(false));
     }
 
     /**
      * @throws Exception
      */
-    public void testToBooleanForBoolean() throws Exception {
-        assertSame(Boolean.TRUE, BooleanUtil.toBoolean(Boolean.TRUE));
+    @Test
+    public void toBooleanForBoolean() throws Exception {
+        assertThat(BooleanUtil.toBoolean(Boolean.TRUE), is(true));
     }
 
     /**
      * @throws Exception
      */
-    public void testToBooleanForString() throws Exception {
-        assertEquals(Boolean.TRUE, BooleanUtil.toBoolean("1"));
-        assertEquals(Boolean.FALSE, BooleanUtil.toBoolean("0"));
-        assertEquals(Boolean.TRUE, BooleanUtil.toBoolean("true"));
-        assertEquals(Boolean.FALSE, BooleanUtil.toBoolean("false"));
-        assertEquals(Boolean.TRUE, BooleanUtil.toBoolean("on"));
+    @Test
+    public void toBooleanForString() throws Exception {
+        assertThat(BooleanUtil.toBoolean("1"), is(true));
+        assertThat(BooleanUtil.toBoolean("0"), is(false));
+        assertThat(BooleanUtil.toBoolean("true"), is(true));
+        assertThat(BooleanUtil.toBoolean("false"), is(false));
+        assertThat(BooleanUtil.toBoolean("on"), is(true));
     }
 
     /**
      * @throws Exception
      */
-    public void testToBooleanForObject() throws Exception {
-        assertEquals(Boolean.TRUE, BooleanUtil.toBoolean(new Object()));
+    @Test
+    public void toBooleanForObject() throws Exception {
+        assertThat(BooleanUtil.toBoolean(new Object()), is(true));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveBooleanForNull() throws Exception {
-        assertFalse(BooleanUtil.toPrimitiveBoolean(null));
+    @Test
+    public void toPrimitiveBooleanForNull() throws Exception {
+        assertThat(BooleanUtil.toPrimitiveBoolean(null), is(false));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveBooleanForEmptyString() throws Exception {
-        assertFalse(BooleanUtil.toPrimitiveBoolean(""));
+    @Test
+    public void toPrimitiveBooleanForEmptyString() throws Exception {
+        assertThat(BooleanUtil.toPrimitiveBoolean(""), is(false));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveBooleanForBoolean() throws Exception {
-        assertTrue(BooleanUtil.toPrimitiveBoolean(Boolean.TRUE));
+    @Test
+    public void toPrimitiveBooleanForBoolean() throws Exception {
+        assertThat(BooleanUtil.toPrimitiveBoolean(Boolean.TRUE), is(true));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveInt() throws Exception {
-        assertEquals(1, BooleanUtil.toPrimitiveInt(true));
-        assertEquals(0, BooleanUtil.toPrimitiveInt(false));
+    @Test
+    public void toPrimitiveInt() throws Exception {
+        assertThat(BooleanUtil.toPrimitiveInt(true), is(1));
+        assertThat(BooleanUtil.toPrimitiveInt(false), is(0));
     }
 }

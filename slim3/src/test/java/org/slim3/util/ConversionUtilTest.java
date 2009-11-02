@@ -15,245 +15,247 @@
  */
 package org.slim3.util;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.Date;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class ConversionUtilTest extends TestCase {
+public class ConversionUtilTest {
 
     /**
      * 
      * @throws Exception
      */
-    public void testConvertNullToCharacter() throws Exception {
-        try {
-            ConversionUtil.convert(null, char.class);
-            fail();
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        }
+    @Test(expected = IllegalArgumentException.class)
+    public void convertNullToCharacter() throws Exception {
+        ConversionUtil.convert(null, char.class);
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testConvertNullToByte() throws Exception {
-        assertEquals(Byte.valueOf((byte) 0), ConversionUtil.convert(
-            null,
-            byte.class));
+    @Test
+    public void convertNullToByte() throws Exception {
+        assertThat(ConversionUtil.convert(null, byte.class), is((byte) 0));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testConvertNullToShort() throws Exception {
-        assertEquals(Short.valueOf((short) 0), ConversionUtil.convert(
-            null,
-            short.class));
+    @Test
+    public void convertNullToShort() throws Exception {
+        assertThat(ConversionUtil.convert(null, short.class), is((short) 0));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testConvertNullToInteger() throws Exception {
-        assertEquals(Integer.valueOf(0), ConversionUtil
-            .convert(null, int.class));
+    @Test
+    public void convertNullToInteger() throws Exception {
+        assertThat(ConversionUtil.convert(null, int.class), is(0));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testConvertNullToLong() throws Exception {
-        assertEquals(Long.valueOf(0), ConversionUtil.convert(null, long.class));
+    @Test
+    public void convertNullToLong() throws Exception {
+        assertThat(ConversionUtil.convert(null, long.class), is(0L));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testConvertNullToFloat() throws Exception {
-        assertEquals(Float.valueOf(0), ConversionUtil
-            .convert(null, float.class));
+    @Test
+    public void convertNullToFloat() throws Exception {
+        assertThat(ConversionUtil.convert(null, float.class), is(0f));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testConvertNullToDouble() throws Exception {
-        assertEquals(Double.valueOf(0), ConversionUtil.convert(
-            null,
-            double.class));
+    @Test
+    public void convertNullToDouble() throws Exception {
+        assertThat(ConversionUtil.convert(null, double.class), is(0d));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testConvertNullToBoolean() throws Exception {
-        assertEquals(Boolean.FALSE, ConversionUtil.convert(null, boolean.class));
+    @Test
+    public void convertNullToBoolean() throws Exception {
+        assertThat(ConversionUtil.convert(null, boolean.class), is(false));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testConvertNullToNotPrimitive() throws Exception {
-        assertNull(ConversionUtil.convert(null, Object.class));
+    @Test
+    public void convertNullToNotPrimitive() throws Exception {
+        assertThat(ConversionUtil.convert(null, Object.class), is(nullValue()));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testConvertForSameClass() throws Exception {
+    @Test
+    public void convertForSameClass() throws Exception {
         MyDto dto = new MyDto();
-        assertSame(dto, ConversionUtil.convert(dto, MyDto.class));
+        assertThat(
+            ConversionUtil.convert(dto, MyDto.class),
+            is(sameInstance(dto)));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testConvertForAssignableClass() throws Exception {
+    @Test
+    public void convertForAssignableClass() throws Exception {
         MyDto2 dto = new MyDto2();
-        assertSame(dto, ConversionUtil.convert(dto, MyDto.class));
+        assertThat(
+            (MyDto2) ConversionUtil.convert(dto, MyDto.class),
+            is(sameInstance(dto)));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testConvertStringToByte() throws Exception {
-        assertEquals(Byte.valueOf((byte) 1), ConversionUtil.convert(
-            "1",
-            Byte.class));
+    @Test
+    public void convertStringToByte() throws Exception {
+        assertThat(ConversionUtil.convert("1", Byte.class), is((byte) 1));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testConvertStringToShort() throws Exception {
-        assertEquals(Short.valueOf((short) 1), ConversionUtil.convert(
-            "1",
-            Short.class));
+    @Test
+    public void convertStringToShort() throws Exception {
+        assertThat(ConversionUtil.convert("1", Short.class), is((short) 1));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testConvertStringToInteger() throws Exception {
-        assertEquals(Integer.valueOf(1), ConversionUtil.convert(
-            "1",
-            Integer.class));
+    @Test
+    public void convertStringToInteger() throws Exception {
+        assertThat(ConversionUtil.convert("1", Integer.class), is(1));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testConvertStringToLong() throws Exception {
-        assertEquals(Long.valueOf(1), ConversionUtil.convert("1", Long.class));
+    @Test
+    public void convertStringToLong() throws Exception {
+        assertThat(ConversionUtil.convert("1", Long.class), is(1L));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testConvertStringToFloat() throws Exception {
-        assertEquals(Float.valueOf(1), ConversionUtil.convert("1", Float.class));
+    @Test
+    public void convertStringToFloat() throws Exception {
+        assertThat(ConversionUtil.convert("1", Float.class), is(1f));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testConvertStringToDouble() throws Exception {
-        assertEquals(Double.valueOf(1), ConversionUtil.convert(
-            "1",
-            Double.class));
+    @Test
+    public void convertStringToDouble() throws Exception {
+        assertThat(ConversionUtil.convert("1", Double.class), is(1d));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testConvertStringToBigInteger() throws Exception {
-        try {
-            ConversionUtil.convert("1", BigInteger.class);
-            fail();
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        }
+    @Test(expected = IllegalArgumentException.class)
+    public void convertStringToBigInteger() throws Exception {
+        ConversionUtil.convert("1", BigInteger.class);
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testConvertStringToBigDecimal() throws Exception {
-        assertEquals(new BigDecimal(1), ConversionUtil.convert(
-            "1",
-            BigDecimal.class));
+    @Test
+    public void convertStringToBigDecimal() throws Exception {
+        assertThat(
+            ConversionUtil.convert("1", BigDecimal.class),
+            is(new BigDecimal("1")));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testConvertCalendarToDate() throws Exception {
+    @Test
+    public void convertCalendarToDate() throws Exception {
         Calendar cal = Calendar.getInstance();
-        assertEquals(cal.getTime(), ConversionUtil.convert(cal, Date.class));
+        assertThat(ConversionUtil.convert(cal, Date.class), is(cal.getTime()));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testConvertStringToBoolean() throws Exception {
-        assertEquals(Boolean.TRUE, ConversionUtil.convert("1", Boolean.class));
+    @Test
+    public void convertStringToBoolean() throws Exception {
+        assertThat(ConversionUtil.convert("1", Boolean.class), is(true));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testConvertIntegerToEnum() throws Exception {
-        assertEquals(MyEnum.TWO, ConversionUtil.convert(1, MyEnum.class));
+    @Test
+    public void convertIntegerToEnum() throws Exception {
+        assertThat(ConversionUtil.convert(1, MyEnum.class), is(MyEnum.TWO));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testConvertBooleanToString() throws Exception {
-        assertEquals("true", ConversionUtil.convert(Boolean.TRUE, String.class));
+    @Test
+    public void convertBooleanToString() throws Exception {
+        assertThat(
+            ConversionUtil.convert(Boolean.TRUE, String.class),
+            is("true"));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testConvertForIllegalArgument() throws Exception {
-        try {
-            ConversionUtil.convert(1, MyDto.class);
-            fail();
-        } catch (IllegalArgumentException e) {
-            System.out.println(e);
-        }
+    @Test(expected = IllegalArgumentException.class)
+    public void convertForIllegalArgument() throws Exception {
+        ConversionUtil.convert(1, MyDto.class);
     }
 
     private static enum MyEnum {

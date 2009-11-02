@@ -15,20 +15,27 @@
  */
 package org.slim3.util;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.junit.After;
+import org.junit.Test;
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
-import org.slim3.util.RequestLocator;
 
 /**
  * @author higa
  * 
  */
-public class RequestLocatorTest extends TestCase {
+public class RequestLocatorTest {
 
-    @Override
-    protected void tearDown() throws Exception {
+    /**
+     * @throws Exception
+     */
+    @After
+    public void tearDown() throws Exception {
         RequestLocator.set(null);
     }
 
@@ -36,11 +43,14 @@ public class RequestLocatorTest extends TestCase {
      * @throws Exception
      * 
      */
+    @Test
     public void test() throws Exception {
         MockServletContext servletContext = new MockServletContext();
         MockHttpServletRequest request =
             new MockHttpServletRequest(servletContext);
         RequestLocator.set(request);
-        assertSame(request, RequestLocator.get());
+        assertThat(
+            RequestLocator.get(),
+            is(sameInstance((HttpServletRequest) request)));
     }
 }

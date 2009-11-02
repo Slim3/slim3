@@ -15,35 +15,43 @@
  */
 package org.slim3.util;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.util.TimeZone;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class TimeZoneLocatorTest extends TestCase {
+public class TimeZoneLocatorTest {
 
-    @Override
-    protected void tearDown() throws Exception {
+    /**
+     * @throws Exception
+     */
+    @After
+    public void tearDown() throws Exception {
         TimeZoneLocator.set(null);
-        super.tearDown();
     }
 
     /**
      * @throws Exception
      */
-    public void testSetAndGet() throws Exception {
+    @Test
+    public void setAndGet() throws Exception {
         TimeZone tz = TimeZone.getTimeZone("PST");
         TimeZoneLocator.set(tz);
-        assertEquals(tz, TimeZoneLocator.get());
+        assertThat(TimeZoneLocator.get(), is(sameInstance(tz)));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetForNoSetting() throws Exception {
-        assertEquals(TimeZone.getDefault(), TimeZoneLocator.get());
+    @Test
+    public void getForNoSetting() throws Exception {
+        assertThat(TimeZoneLocator.get(), is(TimeZone.getDefault()));
     }
 }

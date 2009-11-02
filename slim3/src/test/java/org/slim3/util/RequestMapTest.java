@@ -15,6 +15,9 @@
  */
 package org.slim3.util;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -22,8 +25,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import junit.framework.TestCase;
-
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.slim3.tester.MockHttpServletRequest;
 import org.slim3.tester.MockServletContext;
 
@@ -31,7 +35,7 @@ import org.slim3.tester.MockServletContext;
  * @author higa
  * 
  */
-public class RequestMapTest extends TestCase {
+public class RequestMapTest {
 
     private MockServletContext servletContext = new MockServletContext();
 
@@ -40,9 +44,11 @@ public class RequestMapTest extends TestCase {
 
     private RequestMap map = new RequestMap(request);
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    /**
+     * @throws Exception
+     */
+    @Before
+    public void setUp() throws Exception {
         request.setAttribute("aaa", "111");
         request.setAttribute("bbb", "222");
     }
@@ -50,124 +56,135 @@ public class RequestMapTest extends TestCase {
     /**
      * @throws Exception
      */
-    public void testClear() throws Exception {
+    @After
+    public void clear() throws Exception {
         map.clear();
-        assertEquals(0, map.size());
     }
 
     /**
      * @throws Exception
      */
-    public void testContainsKey() throws Exception {
-        assertTrue(map.containsKey("aaa"));
-        assertTrue(map.containsKey("bbb"));
-        assertFalse(map.containsKey("ccc"));
+    @Test
+    public void containsKey() throws Exception {
+        assertThat(map.containsKey("aaa"), is(true));
+        assertThat(map.containsKey("bbb"), is(true));
+        assertThat(map.containsKey("ccc"), is(false));
     }
 
     /**
      * @throws Exception
      */
-    public void testContainsValue() throws Exception {
-        assertTrue(map.containsValue("111"));
-        assertTrue(map.containsValue("222"));
-        assertFalse(map.containsValue("333"));
+    @Test
+    public void containsValue() throws Exception {
+        assertThat(map.containsValue("111"), is(true));
+        assertThat(map.containsValue("222"), is(true));
+        assertThat(map.containsValue("333"), is(false));
     }
 
     /**
      * @throws Exception
      */
-    public void testEntrySet() throws Exception {
+    @Test
+    public void entrySet() throws Exception {
         Set<Entry<String, Object>> entrySet = map.entrySet();
-        assertNotNull(entrySet);
-        assertEquals(2, entrySet.size());
+        assertThat(entrySet, is(notNullValue()));
+        assertThat(entrySet.size(), is(2));
         Iterator<Entry<String, Object>> iterator = entrySet.iterator();
         Entry<String, Object> entry = iterator.next();
-        assertEquals("aaa", entry.getKey());
-        assertEquals("111", entry.getValue());
+        assertThat(entry.getKey(), is("aaa"));
+        assertThat((String) entry.getValue(), is("111"));
         entry = iterator.next();
-        assertEquals("bbb", entry.getKey());
-        assertEquals("222", entry.getValue());
-        assertFalse(iterator.hasNext());
+        assertThat(entry.getKey(), is("bbb"));
+        assertThat((String) entry.getValue(), is("222"));
+        assertThat(iterator.hasNext(), is(false));
     }
 
     /**
      * @throws Exception
      */
-    public void testGet() throws Exception {
-        assertEquals("111", map.get("aaa"));
-        assertNull(map.get("ccc"));
+    @Test
+    public void get() throws Exception {
+        assertThat((String) map.get("aaa"), is("111"));
+        assertThat(map.get("ccc"), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testIsEmpty() throws Exception {
-        assertFalse(map.isEmpty());
+    @Test
+    public void isEmpty() throws Exception {
+        assertThat(map.isEmpty(), is(false));
         map.clear();
-        assertTrue(map.isEmpty());
+        assertThat(map.isEmpty(), is(true));
     }
 
     /**
      * @throws Exception
      */
-    public void testKeySet() throws Exception {
+    @Test
+    public void keySet() throws Exception {
         Set<String> keySet = map.keySet();
-        assertNotNull(keySet);
-        assertEquals(2, keySet.size());
+        assertThat(keySet, is(notNullValue()));
+        assertThat(keySet.size(), is(2));
         Iterator<String> iterator = keySet.iterator();
-        assertEquals("aaa", iterator.next());
-        assertEquals("bbb", iterator.next());
-        assertFalse(iterator.hasNext());
+        assertThat(iterator.next(), is("aaa"));
+        assertThat(iterator.next(), is("bbb"));
+        assertThat(iterator.hasNext(), is(false));
     }
 
     /**
      * @throws Exception
      */
-    public void testPut() throws Exception {
-        assertEquals("111", map.put("aaa", "333"));
-        assertEquals("333", request.getAttribute("aaa"));
-        assertNull(map.put("ccc", "333"));
+    @Test
+    public void put() throws Exception {
+        assertThat((String) map.put("aaa", "333"), is("111"));
+        assertThat((String) request.getAttribute("aaa"), is("333"));
+        assertThat(map.put("ccc", "333"), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testPutAll() throws Exception {
+    @Test
+    public void putAll() throws Exception {
         Map<String, Object> m = new HashMap<String, Object>();
         m.put("ccc", "333");
         m.put("ddd", "444");
         map.putAll(m);
-        assertEquals(4, map.size());
-        assertEquals("333", request.getAttribute("ccc"));
-        assertEquals("444", request.getAttribute("ddd"));
+        assertThat(map.size(), is(4));
+        assertThat((String) request.getAttribute("ccc"), is("333"));
+        assertThat((String) request.getAttribute("ddd"), is("444"));
     }
 
     /**
      * @throws Exception
      */
-    public void testRemove() throws Exception {
-        assertEquals("111", map.remove("aaa"));
-        assertNull(request.getAttribute("aaa"));
-        assertEquals(1, map.size());
+    @Test
+    public void remove() throws Exception {
+        assertThat((String) map.remove("aaa"), is("111"));
+        assertThat(request.getAttribute("aaa"), is(nullValue()));
+        assertThat(map.size(), is(1));
     }
 
     /**
      * @throws Exception
      */
-    public void testSize() throws Exception {
-        assertEquals(2, map.size());
+    @Test
+    public void size() throws Exception {
+        assertThat(map.size(), is(2));
     }
 
     /**
      * @throws Exception
      */
-    public void testValues() throws Exception {
+    @Test
+    public void values() throws Exception {
         Collection<Object> values = map.values();
-        assertNotNull(values);
-        assertEquals(2, values.size());
+        assertThat(values, is(notNullValue()));
+        assertThat(values.size(), is(2));
         Iterator<Object> iterator = values.iterator();
-        assertEquals("111", iterator.next());
-        assertEquals("222", iterator.next());
-        assertFalse(iterator.hasNext());
+        assertThat((String) iterator.next(), is("111"));
+        assertThat((String) iterator.next(), is("222"));
+        assertThat(iterator.hasNext(), is(false));
     }
 }

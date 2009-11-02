@@ -15,64 +15,74 @@
  */
 package org.slim3.util;
 
-import org.slim3.util.Cleanable;
-import org.slim3.util.Cleaner;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
- * @author koichik
  * @author higa
  * 
  */
-public class CleanerTest extends TestCase {
+public class CleanerTest {
 
     private int count;
 
-    @Override
-    protected void setUp() throws Exception {
-        Cleaner.cleanAll();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
+    /**
+     * @throws Exception
+     */
+    @Before
+    public void setUp() throws Exception {
         Cleaner.cleanAll();
     }
 
     /**
      * @throws Exception
      */
-    public void testForSingle() throws Exception {
-        Cleaner.add(new TestCleanable());
-        assertEquals(1, Cleaner.cleanables.size());
+    @After
+    public void tearDown() throws Exception {
         Cleaner.cleanAll();
-        assertEquals(1, count);
-        assertEquals(0, Cleaner.cleanables.size());
     }
 
     /**
      * @throws Exception
      */
-    public void testForMulti() throws Exception {
+    @Test
+    public void forSingle() throws Exception {
         Cleaner.add(new TestCleanable());
-        Cleaner.add(new TestCleanable());
-        assertEquals(2, Cleaner.cleanables.size());
+        assertThat(Cleaner.cleanables.size(), is(1));
         Cleaner.cleanAll();
-        assertEquals(2, count);
-        assertEquals(0, Cleaner.cleanables.size());
+        assertThat(count, is(1));
+        assertThat(Cleaner.cleanables.size(), is(0));
     }
 
     /**
      * @throws Exception
      */
-    public void testForException() throws Exception {
+    @Test
+    public void forMulti() throws Exception {
+        Cleaner.add(new TestCleanable());
+        Cleaner.add(new TestCleanable());
+        assertThat(Cleaner.cleanables.size(), is(2));
+        Cleaner.cleanAll();
+        assertThat(count, is(2));
+        assertThat(Cleaner.cleanables.size(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void forException() throws Exception {
         Cleaner.add(new TestCleanable());
         Cleaner.add(new TestCleanable2());
         Cleaner.add(new TestCleanable());
-        assertEquals(3, Cleaner.cleanables.size());
+        assertThat(Cleaner.cleanables.size(), is(3));
         Cleaner.cleanAll();
-        assertEquals(3, count);
-        assertEquals(0, Cleaner.cleanables.size());
+        assertThat(count, is(3));
+        assertThat(Cleaner.cleanables.size(), is(0));
     }
 
     /**

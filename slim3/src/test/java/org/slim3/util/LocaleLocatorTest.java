@@ -15,35 +15,43 @@
  */
 package org.slim3.util;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.util.Locale;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class LocaleLocatorTest extends TestCase {
+public class LocaleLocatorTest {
 
-    @Override
-    protected void tearDown() throws Exception {
+    /**
+     * @throws Exception
+     */
+    @Before
+    public void tearDown() throws Exception {
         LocaleLocator.set(null);
-        super.tearDown();
     }
 
     /**
      * @throws Exception
      */
-    public void testSetAndGet() throws Exception {
+    @Test
+    public void setAndGet() throws Exception {
         Locale locale = Locale.GERMAN;
         LocaleLocator.set(locale);
-        assertSame(locale, LocaleLocator.get());
+        assertThat(LocaleLocator.get(), is(sameInstance(locale)));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetForNoSetting() throws Exception {
-        assertEquals(Locale.getDefault(), LocaleLocator.get());
+    @Test
+    public void getForNoSetting() throws Exception {
+        assertThat(LocaleLocator.get(), is(Locale.getDefault()));
     }
 }

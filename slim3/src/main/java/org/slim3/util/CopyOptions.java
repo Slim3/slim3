@@ -60,13 +60,13 @@ public class CopyOptions {
     /**
      * The converters that are bound to the specific property.
      */
-    protected Map<String, Converter> converterMap =
-        new HashMap<String, Converter>();
+    protected Map<String, Converter<?>> converterMap =
+        new HashMap<String, Converter<?>>();
 
     /**
      * The converters that are not bound to any properties.
      */
-    protected List<Converter> converters = new ArrayList<Converter>();
+    protected List<Converter<?>> converters = new ArrayList<Converter<?>>();
 
     /**
      * Specifies the included property names.
@@ -123,8 +123,8 @@ public class CopyOptions {
      * @throws NullPointerException
      *             if the converter parameter is null
      */
-    public CopyOptions converter(Converter converter, String... propertyNames)
-            throws NullPointerException {
+    public CopyOptions converter(Converter<?> converter,
+            String... propertyNames) throws NullPointerException {
         if (converter == null) {
             throw new NullPointerException("The converter parameter is null.");
         }
@@ -263,7 +263,7 @@ public class CopyOptions {
      */
     protected Object convertString(String value, String propertyName,
             Class<?> destPropertyClass) {
-        Converter converter = converterMap.get(propertyName);
+        Converter<?> converter = converterMap.get(propertyName);
         if (converter != null) {
             return converter.getAsObject(value);
         }
@@ -293,7 +293,7 @@ public class CopyOptions {
      */
     protected Object convertObject(Object value, String propertyName,
             Class<?> destPropertyClass) {
-        Converter converter = converterMap.get(propertyName);
+        Converter<?> converter = converterMap.get(propertyName);
         if (converter != null) {
             return converter.getAsString(value);
         }
@@ -317,10 +317,10 @@ public class CopyOptions {
      *            the target class.
      * @return converter
      */
-    protected Converter findConverter(Class<?> targetClass) {
+    protected Converter<?> findConverter(Class<?> targetClass) {
         for (Class<?> clazz = targetClass; clazz != null
             && clazz != Object.class; clazz = clazz.getSuperclass()) {
-            for (Converter c : converters) {
+            for (Converter<?> c : converters) {
                 if (c.isTarget(clazz)) {
                     return c;
                 }

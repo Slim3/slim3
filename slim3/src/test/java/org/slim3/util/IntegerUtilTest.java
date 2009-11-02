@@ -15,139 +15,146 @@
  */
 package org.slim3.util;
 
-import org.slim3.util.IntegerUtil;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class IntegerUtilTest extends TestCase {
+public class IntegerUtilTest {
 
     /**
      * @throws Exception
      */
-    public void testToIntegerForNull() throws Exception {
-        assertNull(IntegerUtil.toInteger(null));
+    @Test
+    public void toIntegerForNull() throws Exception {
+        assertThat(IntegerUtil.toInteger(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testToIntegerForEmptyString() throws Exception {
-        assertNull(IntegerUtil.toInteger(""));
+    @Test
+    public void toIntegerForEmptyString() throws Exception {
+        assertThat(IntegerUtil.toInteger(""), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testToIntegerForInteger() throws Exception {
+    @Test
+    public void toIntegerForInteger() throws Exception {
         Integer value = Integer.valueOf(1);
-        assertEquals(value, IntegerUtil.toInteger(value));
+        assertThat(IntegerUtil.toInteger(value), is(value));
     }
 
     /**
      * @throws Exception
      */
-    public void testToIntegerForNumber() throws Exception {
+    @Test
+    public void toIntegerForNumber() throws Exception {
         Integer i = Integer.valueOf(1);
-        assertEquals(1, IntegerUtil.toInteger(i).intValue());
+        assertThat(IntegerUtil.toInteger(i).intValue(), is(1));
     }
 
     /**
      * @throws Exception
      */
-    public void testToIntegerForString() throws Exception {
-        assertEquals(1, IntegerUtil.toInteger("1").intValue());
+    @Test
+    public void toIntegerForString() throws Exception {
+        assertThat(IntegerUtil.toInteger("1").intValue(), is(1));
     }
 
     /**
      * @throws Exception
      */
-    public void testToIntegerForTrue() throws Exception {
-        assertEquals(1, IntegerUtil.toInteger(Boolean.TRUE).intValue());
+    @Test
+    public void toIntegerForTrue() throws Exception {
+        assertThat(IntegerUtil.toInteger(Boolean.TRUE).intValue(), is(1));
     }
 
     /**
      * @throws Exception
      */
-    public void testToIntegerForFalse() throws Exception {
-        assertEquals(0, IntegerUtil.toInteger(Boolean.FALSE).intValue());
+    @Test
+    public void toIntegerForFalse() throws Exception {
+        assertThat(IntegerUtil.toInteger(Boolean.FALSE).intValue(), is(0));
     }
 
     /**
      * @throws Exception
      */
-    public void testToIntegerForEnum() throws Exception {
-        assertEquals(1, IntegerUtil.toInteger(MyEnum.TWO).intValue());
+    @Test
+    public void toIntegerForEnum() throws Exception {
+        assertThat(IntegerUtil.toInteger(MyEnum.TWO).intValue(), is(1));
     }
 
     /**
      * @throws Exception
      */
-    public void testToIntegerForException() throws Exception {
-        try {
-            IntegerUtil.toInteger("xx");
-            fail();
-        } catch (NumberFormatException e) {
-            System.out.println(e);
-        }
+    @Test(expected = NumberFormatException.class)
+    public void toIntegerForException() throws Exception {
+        IntegerUtil.toInteger("xx");
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveIntForNull() throws Exception {
-        assertEquals(0, IntegerUtil.toPrimitiveInt(null));
+    @Test
+    public void toPrimitiveIntForNull() throws Exception {
+        assertThat(IntegerUtil.toPrimitiveInt(null), is(0));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveIntForEmptyString() throws Exception {
-        assertEquals(0, IntegerUtil.toPrimitiveInt(""));
+    @Test
+    public void toPrimitiveIntForEmptyString() throws Exception {
+        assertThat(IntegerUtil.toPrimitiveInt(""), is(0));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveIntForNumber() throws Exception {
+    @Test
+    public void toPrimitiveIntForNumber() throws Exception {
         Integer i = Integer.valueOf(1);
-        assertEquals(1, IntegerUtil.toPrimitiveInt(i));
+        assertThat(IntegerUtil.toPrimitiveInt(i), is(1));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveIntForString() throws Exception {
-        assertEquals(1, IntegerUtil.toPrimitiveInt("1"));
+    @Test
+    public void toPrimitiveIntForString() throws Exception {
+        assertThat(IntegerUtil.toPrimitiveInt("1"), is(1));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveIntForTrue() throws Exception {
-        assertEquals(1, IntegerUtil.toPrimitiveInt(Boolean.TRUE));
+    @Test
+    public void toPrimitiveIntForTrue() throws Exception {
+        assertThat(IntegerUtil.toPrimitiveInt(Boolean.TRUE), is(1));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveIntForFalse() throws Exception {
-        assertEquals(0, IntegerUtil.toPrimitiveInt(Boolean.FALSE));
+    @Test
+    public void toPrimitiveIntForFalse() throws Exception {
+        assertThat(IntegerUtil.toPrimitiveInt(Boolean.FALSE), is(0));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveIntForException() throws Exception {
-        try {
-            IntegerUtil.toPrimitiveInt("xx");
-            fail();
-        } catch (NumberFormatException e) {
-            System.out.println(e);
-        }
+    @Test(expected = NumberFormatException.class)
+    public void toPrimitiveIntForException() throws Exception {
+        IntegerUtil.toPrimitiveInt("xx");
     }
 
     private static enum MyEnum {

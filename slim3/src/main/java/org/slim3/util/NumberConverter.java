@@ -23,7 +23,7 @@ import java.text.DecimalFormat;
  * @author higa
  * @since 3.0
  */
-public class NumberConverter implements Converter {
+public class NumberConverter implements Converter<Number> {
 
     /**
      * The pattern for {@link DecimalFormat}.
@@ -45,7 +45,7 @@ public class NumberConverter implements Converter {
         this.pattern = pattern;
     }
 
-    public Object getAsObject(String value) {
+    public Number getAsObject(String value) {
         return NumberUtil.toNumber(value, pattern);
     }
 

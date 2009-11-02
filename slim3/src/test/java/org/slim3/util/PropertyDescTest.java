@@ -15,16 +15,18 @@
  */
 package org.slim3.util;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.lang.reflect.Method;
 
-import junit.framework.TestCase;
-
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class PropertyDescTest extends TestCase {
+public class PropertyDescTest {
 
     private int aaa = 1;
 
@@ -47,92 +49,84 @@ public class PropertyDescTest extends TestCase {
      * 
      * @throws Exception
      */
-    public void testSetReadMethod() throws Exception {
+    @Test
+    public void setReadMethod() throws Exception {
         PropertyDesc pd = new PropertyDesc("aaa", int.class, getClass());
         Method m = getClass().getDeclaredMethod("getAaa");
         pd.setReadMethod(m);
-        assertSame(m, pd.getReadMethod());
-        assertTrue(pd.isReadable());
-        assertFalse(pd.isWritable());
+        assertThat(pd.getReadMethod(), is(sameInstance(m)));
+        assertThat(pd.isReadable(), is(true));
+        assertThat(pd.isWritable(), is(false));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testSetWriteMethod() throws Exception {
+    @Test
+    public void setWriteMethod() throws Exception {
         PropertyDesc pd = new PropertyDesc("aaa", int.class, getClass());
         Method m = getClass().getDeclaredMethod("setAaa", int.class);
         pd.setWriteMethod(m);
-        assertSame(m, pd.getWriteMethod());
-        assertFalse(pd.isReadable());
-        assertTrue(pd.isWritable());
+        assertThat(pd.getWriteMethod(), is(sameInstance(m)));
+        assertThat(pd.isReadable(), is(false));
+        assertThat(pd.isWritable(), is(true));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testGetValue() throws Exception {
+    @Test
+    public void getValue() throws Exception {
         PropertyDesc pd = new PropertyDesc("aaa", int.class, getClass());
         Method m = getClass().getDeclaredMethod("getAaa");
         pd.setReadMethod(m);
-        assertEquals(1, pd.getValue(this));
+        assertThat((Integer) pd.getValue(this), is(1));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testGetValueForNotReadable() throws Exception {
+    @Test(expected = IllegalStateException.class)
+    public void valueForNotReadable() throws Exception {
         PropertyDesc pd = new PropertyDesc("aaa", int.class, getClass());
-        try {
-            pd.getValue(this);
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
+        pd.getValue(this);
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testSetValue() throws Exception {
+    @Test
+    public void setValue() throws Exception {
         PropertyDesc pd = new PropertyDesc("aaa", int.class, getClass());
         Method m = getClass().getDeclaredMethod("setAaa", int.class);
         pd.setWriteMethod(m);
         pd.setValue(this, "2");
-        assertEquals(2, aaa);
+        assertThat(aaa, is(2));
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testSetValueForNotWritable() throws Exception {
+    @Test(expected = IllegalStateException.class)
+    public void setValueForNotWritable() throws Exception {
         PropertyDesc pd = new PropertyDesc("aaa", int.class, getClass());
-        try {
-            pd.setValue(this, null);
-            fail();
-        } catch (IllegalStateException e) {
-            System.out.println(e);
-        }
+        pd.setValue(this, null);
     }
 
     /**
      * 
      * @throws Exception
      */
-    public void testSetValueForIllegalValue() throws Exception {
+    @Test(expected = WrapRuntimeException.class)
+    public void setValueForIllegalValue() throws Exception {
         PropertyDesc pd = new PropertyDesc("aaa", int.class, getClass());
         Method m = getClass().getDeclaredMethod("setAaa", int.class);
         pd.setWriteMethod(m);
-        try {
-            pd.setValue(this, "xxx");
-            fail();
-        } catch (WrapRuntimeException e) {
-            System.out.println(e.getMessage());
-        }
+        pd.setValue(this, "xxx");
     }
 }

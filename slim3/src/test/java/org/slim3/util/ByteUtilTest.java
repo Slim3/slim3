@@ -15,202 +15,212 @@
  */
 package org.slim3.util;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class ByteUtilTest extends TestCase {
+public class ByteUtilTest {
 
     /**
      * @throws Exception
      */
-    public void testToByteForNull() throws Exception {
-        assertNull(ByteUtil.toByte(null));
+    @Test
+    public void toByteForNull() throws Exception {
+        assertThat(ByteUtil.toByte(null), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testToByteForEmptyString() throws Exception {
-        assertNull(ByteUtil.toByte(""));
+    @Test
+    public void toByteForEmptyString() throws Exception {
+        assertThat(ByteUtil.toByte(""), is(nullValue()));
     }
 
     /**
      * @throws Exception
      */
-    public void testToByteForByte() throws Exception {
+    @Test
+    public void toByteForByte() throws Exception {
         Byte value = Byte.valueOf("1");
-        assertEquals(value, ByteUtil.toByte(value));
+        assertThat(ByteUtil.toByte(value), is(value));
     }
 
     /**
      * @throws Exception
      */
-    public void testToByteForNumber() throws Exception {
+    @Test
+    public void toByteForNumber() throws Exception {
         Integer i = Integer.valueOf(1);
-        assertEquals((byte) 1, ByteUtil.toByte(i).byteValue());
+        assertThat(ByteUtil.toByte(i).byteValue(), is((byte) 1));
     }
 
     /**
      * @throws Exception
      */
-    public void testToByteForString() throws Exception {
-        assertEquals((byte) 1, ByteUtil.toByte("1").byteValue());
+    @Test
+    public void toByteForString() throws Exception {
+        assertThat(ByteUtil.toByte("1").byteValue(), is((byte) 1));
     }
 
     /**
      * @throws Exception
      */
-    public void testToByteForTrue() throws Exception {
-        assertEquals((byte) 1, ByteUtil.toByte(Boolean.TRUE).byteValue());
+    @Test
+    public void toByteForTrue() throws Exception {
+        assertThat(ByteUtil.toByte(Boolean.TRUE).byteValue(), is((byte) 1));
     }
 
     /**
      * @throws Exception
      */
-    public void testToByteForFalse() throws Exception {
-        assertEquals((byte) 0, ByteUtil.toByte(Boolean.FALSE).byteValue());
+    @Test
+    public void toByteForFalse() throws Exception {
+        assertThat(ByteUtil.toByte(Boolean.FALSE).byteValue(), is((byte) 0));
     }
 
     /**
      * @throws Exception
      */
-    public void testToByteForException() throws Exception {
-        try {
-            ByteUtil.toByte("xx");
-            fail();
-        } catch (NumberFormatException e) {
-            System.out.println(e);
-        }
+    @Test(expected = NumberFormatException.class)
+    public void toByteForException() throws Exception {
+        ByteUtil.toByte("xx");
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveByteForNull() throws Exception {
-        assertEquals(0, ByteUtil.toPrimitiveByte(null));
+    @Test
+    public void toPrimitiveByteForNull() throws Exception {
+        assertThat(ByteUtil.toPrimitiveByte(null), is((byte) 0));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveByteForEmptyString() throws Exception {
-        assertEquals(0, ByteUtil.toPrimitiveByte(""));
+    @Test
+    public void toPrimitiveByteForEmptyString() throws Exception {
+        assertThat(ByteUtil.toPrimitiveByte(""), is((byte) 0));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveByteForNumber() throws Exception {
+    @Test
+    public void toPrimitiveByteForNumber() throws Exception {
         Integer i = Integer.valueOf(1);
-        assertEquals((byte) 1, ByteUtil.toPrimitiveByte(i));
+        assertThat(ByteUtil.toPrimitiveByte(i), is((byte) 1));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveByteForString() throws Exception {
-        assertEquals((byte) 1, ByteUtil.toPrimitiveByte("1"));
+    @Test
+    public void toPrimitiveByteForString() throws Exception {
+        assertThat(ByteUtil.toPrimitiveByte("1"), is((byte) 1));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveByteForTrue() throws Exception {
-        assertEquals((byte) 1, ByteUtil.toPrimitiveByte(Boolean.TRUE));
+    @Test
+    public void toPrimitiveByteForTrue() throws Exception {
+        assertThat(ByteUtil.toPrimitiveByte(Boolean.TRUE), is((byte) 1));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveByteForFalse() throws Exception {
-        assertEquals((byte) 0, ByteUtil.toPrimitiveByte(Boolean.FALSE));
+    @Test
+    public void toPrimitiveByteForFalse() throws Exception {
+        assertThat(ByteUtil.toPrimitiveByte(Boolean.FALSE), is((byte) 0));
     }
 
     /**
      * @throws Exception
      */
-    public void testToPrimitiveByteForException() throws Exception {
-        try {
-            ByteUtil.toPrimitiveByte("xx");
-            fail();
-        } catch (NumberFormatException e) {
-            System.out.println(e);
-        }
+    @Test(expected = NumberFormatException.class)
+    public void toPrimitiveByteForIllegalArgument() throws Exception {
+        ByteUtil.toPrimitiveByte("xx");
     }
 
     /**
      * @throws Exception
      */
-    public void testToByteArray() throws Exception {
-        assertNull(ByteUtil.toByteArray(null));
-        assertNotNull(ByteUtil.toByteArray("aaa"));
-        try {
-            ByteUtil.toByteArray(new NoSerializable());
-            fail();
-        } catch (WrapRuntimeException e) {
-            System.out.println(e.getMessage());
-        }
+    @Test(expected = WrapRuntimeException.class)
+    public void toByteArray() throws Exception {
+        assertThat(ByteUtil.toByteArray(null), is(nullValue()));
+        assertThat(ByteUtil.toByteArray("aaa"), is(notNullValue()));
+        ByteUtil.toByteArray(new NoSerializable());
     }
 
     /**
      * @throws Exception
      */
-    public void testToObject() throws Exception {
-        assertNull(ByteUtil.toObject(null));
-        assertEquals("aaa", ByteUtil.toObject(ByteUtil.toByteArray("aaa")));
+    @Test
+    public void toObject() throws Exception {
+        assertThat(ByteUtil.toObject(null), is(nullValue()));
+        assertThat(
+            (String) ByteUtil.toObject(ByteUtil.toByteArray("aaa")),
+            is("aaa"));
     }
 
     /**
      * @throws Exception
      */
-    public void testSplitForNoMod() throws Exception {
+    @Test
+    public void splitForNoMod() throws Exception {
         byte[] bytes = new byte[] { 1, 2, 3, 4 };
         byte[][] ret = ByteUtil.split(bytes, 2);
-        assertEquals(2, ret.length);
-        assertEquals(2, ret[0].length);
-        assertEquals(1, ret[0][0]);
-        assertEquals(2, ret[0][1]);
-        assertEquals(2, ret[1].length);
-        assertEquals(3, ret[1][0]);
-        assertEquals(4, ret[1][1]);
+        assertThat(ret.length, is(2));
+        assertThat(ret[0].length, is(2));
+        assertThat(ret[0][0], is((byte) 1));
+        assertThat(ret[0][1], is((byte) 2));
+        assertThat(ret[1].length, is(2));
+        assertThat(ret[1][0], is((byte) 3));
+        assertThat(ret[1][1], is((byte) 4));
     }
 
     /**
      * @throws Exception
      */
-    public void testSplitForMod() throws Exception {
+    @Test
+    public void splitForMod() throws Exception {
         byte[] bytes = new byte[] { 1, 2, 3, 4, 5 };
         byte[][] ret = ByteUtil.split(bytes, 2);
-        assertEquals(3, ret.length);
-        assertEquals(2, ret[0].length);
-        assertEquals(1, ret[0][0]);
-        assertEquals(2, ret[0][1]);
-        assertEquals(2, ret[1].length);
-        assertEquals(3, ret[1][0]);
-        assertEquals(4, ret[1][1]);
-        assertEquals(1, ret[2].length);
-        assertEquals(5, ret[2][0]);
+        assertThat(ret.length, is(3));
+        assertThat(ret[0].length, is(2));
+        assertThat(ret[0][0], is((byte) 1));
+        assertThat(ret[0][1], is((byte) 2));
+        assertThat(ret[1].length, is(2));
+        assertThat(ret[1][0], is((byte) 3));
+        assertThat(ret[1][1], is((byte) 4));
+        assertThat(ret[2].length, is(1));
+        assertThat(ret[2][0], is((byte) 5));
     }
 
     /**
      * @throws Exception
      */
-    public void testJoin() throws Exception {
+    @Test
+    public void join() throws Exception {
         byte[][] bytesArray =
             new byte[][] {
                 new byte[] { 1, 2 },
                 new byte[] { 3, 4 },
                 new byte[] { 5 } };
         byte[] bytes = ByteUtil.join(bytesArray);
-        assertEquals(5, bytes.length);
-        assertEquals(1, bytes[0]);
-        assertEquals(2, bytes[1]);
-        assertEquals(3, bytes[2]);
-        assertEquals(4, bytes[3]);
-        assertEquals(5, bytes[4]);
+        assertThat(bytes.length, is(5));
+        assertThat(bytes[0], is((byte) 1));
+        assertThat(bytes[1], is((byte) 2));
+        assertThat(bytes[2], is((byte) 3));
+        assertThat(bytes[3], is((byte) 4));
+        assertThat(bytes[4], is((byte) 5));
     }
 
     private static class NoSerializable {

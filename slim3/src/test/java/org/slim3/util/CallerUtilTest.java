@@ -15,36 +15,44 @@
  */
 package org.slim3.util;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class CallerUtilTest extends TestCase {
+public class CallerUtilTest {
 
     /**
      * @throws Exception
      */
-    public void testGetCallerStack() throws Exception {
+    @SuppressWarnings("unchecked")
+    @Test
+    public void getCallerStack() throws Exception {
         Class<?>[] stack = CallerUtil.getCallerStack();
-        assertNotNull(stack);
-        assertEquals(getClass(), stack[2]);
+        assertThat(stack, is(notNullValue()));
+        assertThat((Class) stack[2], equalTo(getClass()));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetCaller() throws Exception {
-        assertEquals(getClass(), new Hoge().getCaller());
+    @SuppressWarnings("unchecked")
+    @Test
+    public void getCaller() throws Exception {
+        assertThat((Class) new Hoge().getCaller(), equalTo(getClass()));
     }
 
     /**
      * @throws Exception
      */
-    public void testGetCallerClassLoader() throws Exception {
-        assertEquals(getClass().getClassLoader(), new Hoge()
-            .getCallerClassLoader());
+    @Test
+    public void getCallerClassLoader() throws Exception {
+        assertThat(new Hoge().getCallerClassLoader(), is(getClass()
+            .getClassLoader()));
     }
 
     private static class Hoge {

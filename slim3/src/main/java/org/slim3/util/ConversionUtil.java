@@ -33,31 +33,34 @@ public final class ConversionUtil {
     /**
      * Converts the value into the destination class.
      * 
+     * @param <T>
+     *            the type
      * @param value
      *            the value
      * @param destinationClass
      *            the destination class
      * @return a converted value
      */
-    public static Object convert(Object value, Class<?> destinationClass) {
+    @SuppressWarnings("unchecked")
+    public static <T> T convert(Object value, Class<T> destinationClass) {
         if (destinationClass.isPrimitive()) {
-            return convertToPrimitiveWrapper(value, destinationClass);
+            return (T) convertToPrimitiveWrapper(value, destinationClass);
         } else if (value == null) {
             return null;
         } else if (destinationClass.isInstance(value)) {
-            return value;
+            return (T) value;
         } else if (Number.class.isAssignableFrom(destinationClass)) {
-            return convertToNumber(value, destinationClass);
+            return (T) convertToNumber(value, destinationClass);
         } else if (java.util.Date.class.isAssignableFrom(destinationClass)) {
-            return convertToDate(value, destinationClass);
+            return (T) convertToDate(value, destinationClass);
         } else if (destinationClass == Boolean.class) {
-            return BooleanUtil.toBoolean(value);
+            return (T) BooleanUtil.toBoolean(value);
         } else if (destinationClass.isEnum()) {
-            return convertToEnum(value, destinationClass);
+            return (T) convertToEnum(value, destinationClass);
         } else if (destinationClass == String.class) {
-            return value.toString();
+            return (T) value.toString();
         } else if (destinationClass == Key.class) {
-            return convertToKey(value);
+            return (T) convertToKey(value);
         } else {
             throw new IllegalArgumentException("The class("
                 + value.getClass().getName()

@@ -15,130 +15,148 @@
  */
 package org.slim3.util;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class StringUtilTest extends TestCase {
+public class StringUtilTest {
 
     /**
      * @throws Exception
      */
-    public void testIsEmptyForNull() throws Exception {
-        assertTrue(StringUtil.isEmpty(null));
+    @Test
+    public void isEmptyForNull() throws Exception {
+        assertThat(StringUtil.isEmpty(null), is(true));
     }
 
     /**
      * @throws Exception
      */
-    public void testIsEmptyForEmptyString() throws Exception {
-        assertTrue(StringUtil.isEmpty(""));
+    @Test
+    public void isEmptyForEmptyString() throws Exception {
+        assertThat(StringUtil.isEmpty(""), is(true));
     }
 
     /**
      * @throws Exception
      */
-    public void testIsEmptyForNotEmptyString() throws Exception {
-        assertFalse(StringUtil.isEmpty("a"));
+    @Test
+    public void isEmptyForNotEmptyString() throws Exception {
+        assertThat(StringUtil.isEmpty("a"), is(false));
     }
 
     /**
      * @throws Exception
      */
-    public void testDecapitalize() throws Exception {
-        assertEquals("aaa", StringUtil.decapitalize("Aaa"));
+    @Test
+    public void decapitalize() throws Exception {
+        assertThat(StringUtil.decapitalize("Aaa"), is("aaa"));
     }
 
     /**
      * @throws Exception
      */
-    public void testDecapitalizeForOneCharacter() throws Exception {
-        assertEquals("a", StringUtil.decapitalize("A"));
+    @Test
+    public void decapitalizeForOneCharacter() throws Exception {
+        assertThat(StringUtil.decapitalize("A"), is("a"));
     }
 
     /**
      * @throws Exception
      */
-    public void testDecapitalizeForEmpty() throws Exception {
-        assertEquals("", StringUtil.decapitalize(""));
+    @Test
+    public void decapitalizeForEmptyString() throws Exception {
+        assertThat(StringUtil.decapitalize(""), is(""));
     }
 
     /**
      * @throws Exception
      */
-    public void testDecapitalizeForNoDecapitalize() throws Exception {
-        assertEquals("URL", StringUtil.decapitalize("URL"));
+    @Test
+    public void decapitalizeForAllUpperCase() throws Exception {
+        assertThat(StringUtil.decapitalize("URL"), is("URL"));
     }
 
     /**
      * @throws Exception
      */
-    public void testCapitalize() throws Exception {
-        assertEquals("Aaa", StringUtil.capitalize("aaa"));
+    @Test
+    public void capitalize() throws Exception {
+        assertThat(StringUtil.capitalize("aaa"), is("Aaa"));
     }
 
     /**
      * @throws Exception
      */
-    public void testCapitalizeForChapitalizedString() throws Exception {
-        assertEquals("Aaa", StringUtil.capitalize("Aaa"));
+    @Test
+    public void capitalizeForChapitalizedString() throws Exception {
+        assertThat(StringUtil.capitalize("Aaa"), is("Aaa"));
     }
 
     /**
      * @throws Exception
      */
-    public void testCapitalizeForEmpty() throws Exception {
-        assertEquals("", StringUtil.capitalize(""));
+    @Test
+    public void capitalizeForEmptyString() throws Exception {
+        assertThat(StringUtil.capitalize(""), is(""));
     }
 
     /**
      * @throws Exception
      */
-    public void testSplit() throws Exception {
+    @Test
+    public void split() throws Exception {
         String[] array = StringUtil.split("aaa\nbbb", "\n");
-        assertEquals(2, array.length);
-        assertEquals("aaa", array[0]);
-        assertEquals("bbb", array[1]);
+        assertThat(array.length, is(2));
+        assertThat(array[0], is("aaa"));
+        assertThat(array[1], is("bbb"));
     }
 
     /**
      * 
      */
-    public void testSplitIncludingBlankDelimiter() {
+    @Test
+    public void splitIncludingBlankDelimiter() {
         String[] array = StringUtil.split("aaa, bbb", ", ");
-        assertEquals(2, array.length);
-        assertEquals("aaa", array[0]);
-        assertEquals("bbb", array[1]);
+        assertThat(array.length, is(2));
+        assertThat(array[0], is("aaa"));
+        assertThat(array[1], is("bbb"));
     }
 
     /**
      * @throws Exception
      */
-    public void testSplitBySize() throws Exception {
+    @Test
+    public void splitBySize() throws Exception {
         String[] array = StringUtil.split("abc", 2);
-        assertEquals(2, array.length);
-        assertEquals("ab", array[0]);
-        assertEquals("c", array[1]);
+        assertThat(array.length, is(2));
+        assertThat(array[0], is("ab"));
+        assertThat(array[1], is("c"));
         array = StringUtil.split("abcd", 2);
-        assertEquals(2, array.length);
-        assertEquals("ab", array[0]);
-        assertEquals("cd", array[1]);
+        assertThat(array.length, is(2));
+        assertThat(array[0], is("ab"));
+        assertThat(array[1], is("cd"));
     }
 
     /**
      * @throws Exception
      */
-    public void testJoin() throws Exception {
-        assertEquals("abc", StringUtil.join(new String[] { "ab", "c" }));
+    @Test
+    public void join() throws Exception {
+        assertThat(StringUtil.join(new String[] { "ab", "c" }), is("abc"));
     }
 
     /**
      * 
      */
+    @Test
     public void testToString() {
-        assertEquals("2", StringUtil.toString(2));
-        assertNull(StringUtil.toString(null));
+        assertThat(StringUtil.toString(2), is("2"));
+        assertThat(StringUtil.toString(null), is(nullValue()));
     }
 }

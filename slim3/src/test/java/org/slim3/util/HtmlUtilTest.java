@@ -15,18 +15,22 @@
  */
 package org.slim3.util;
 
-import junit.framework.TestCase;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
 
 /**
  * @author higa
  * 
  */
-public class HtmlUtilTest extends TestCase {
+public class HtmlUtilTest {
 
     /**
      * @throws Exception
      */
-    public void testEscape() throws Exception {
-        assertEquals("&lt;a&gt;", HtmlUtil.escape("<a>"));
+    @Test
+    public void escape() throws Exception {
+        assertThat(HtmlUtil.escape("<a>"), is("&lt;a&gt;"));
     }
 }
