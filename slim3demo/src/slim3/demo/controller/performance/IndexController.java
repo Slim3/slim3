@@ -14,6 +14,12 @@ public class IndexController extends Controller {
 
     @Override
     public Navigation run() {
+        // DatastoreService datastore =
+        // DatastoreServiceFactory.getDatastoreService();
+        // Query query = new Query("__Stat_Kind__");
+        // query.addFilter("kind_name", FilterOperator.EQUAL, "Bar");
+        // Entity stat = datastore.prepare(query).asSingleEntity();
+        // Long count = (Long) stat.getProperty("count");
         requestScope("count", Datastore.query("Bar").count());
         return forward("index.jsp");
     }
