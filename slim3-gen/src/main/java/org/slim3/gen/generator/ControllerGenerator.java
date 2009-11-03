@@ -51,19 +51,12 @@ public class ControllerGenerator implements Generator {
             p.println("package %s;", controllerDesc.getPackageName());
             p.println();
         }
-        p.println("import java.util.logging.Logger;");
         p.println("import %s;", controllerDesc.getSuperclassName());
         p.println("import %s;", ClassConstants.Navigation);
         p.println();
         p.println("public class %s extends %s {", controllerDesc
             .getSimpleName(), ClassUtil.getSimpleName(controllerDesc
             .getSuperclassName()));
-        p.println();
-        p.println("    @SuppressWarnings(\"unused\")");
-        p
-            .println(
-                "    private static final Logger logger = Logger.getLogger(%s.class.getName());",
-                controllerDesc.getSimpleName());
         p.println();
         p.println("    @Override");
         p.println("    public %s run() {", ClassUtil
