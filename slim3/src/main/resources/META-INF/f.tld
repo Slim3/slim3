@@ -130,7 +130,19 @@
       &lt;input type="hidden" ${f:hidden("aaa")}/&gt;
     </example>
   </function>
-  
+
+  <function>
+    <description>
+      Represents the hidden tag of key.
+    </description>
+    <name>hiddenKey</name>
+    <function-class>org.slim3.jsp.Functions</function-class>
+    <function-signature>java.lang.String hiddenKey(java.lang.String)</function-signature>
+    <example>
+      &lt;input type="hidden" ${f:hiddenKey("key")}/&gt;
+    </example>
+  </function>
+    
   <function>
     <description>
       Represents the checkbox tag.

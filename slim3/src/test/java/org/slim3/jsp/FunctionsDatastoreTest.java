@@ -19,15 +19,16 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.slim3.tester.LocalServiceTestCase;
+import org.slim3.tester.ServletTestCase;
 
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
 /**
  * @author higa
  * 
  */
-public class FunctionsDatastoreTest extends LocalServiceTestCase {
+public class FunctionsDatastoreTest extends ServletTestCase {
 
     /**
      * @throws Exception
@@ -38,5 +39,18 @@ public class FunctionsDatastoreTest extends LocalServiceTestCase {
         String s = Functions.key(KeyFactory.createKey("Hoge", 1));
         System.out.println(s);
         assertThat(s, is(not(nullValue())));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void hiddenKey() throws Exception {
+        Key key = KeyFactory.createKey("Hoge", 1);
+        String encodedKey = KeyFactory.keyToString(key);
+        tester.request.setAttribute("aaa", key);
+        assertThat(Functions.hiddenKey("aaa"), is("name = \"aaa\" value = \""
+            + encodedKey
+            + "\""));
     }
 }
