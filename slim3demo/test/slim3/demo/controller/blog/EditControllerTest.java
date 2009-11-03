@@ -9,8 +9,6 @@ import org.slim3.tester.ControllerTestCase;
 
 import slim3.demo.model.Blog;
 
-import com.google.appengine.api.datastore.KeyFactory;
-
 public class EditControllerTest extends ControllerTestCase {
 
     @Test
@@ -19,7 +17,7 @@ public class EditControllerTest extends ControllerTestCase {
         blog.setTitle("aaa");
         blog.setContent("111");
         Datastore.put(blog);
-        tester.param("key", KeyFactory.keyToString(blog.getKey()));
+        tester.param("key", Datastore.keyToString(blog.getKey()));
         tester.param("version", blog.getVersion());
         tester.start("/blog/edit");
         EditController controller = tester.getController();

@@ -4,5 +4,6 @@
 <div id="menu">
 <ul>
 <li><a href="${f:h('/performance/')}">Performance</a></li>
+<li><a href="${f:h('/blog/')}">Blog</a></li>
 </ul>
 </div>
