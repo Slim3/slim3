@@ -701,6 +701,39 @@ public final class Datastore {
     }
 
     /**
+     * Converts the key to an encoded string.
+     * 
+     * @param key
+     *            the key
+     * @return an encoded string
+     * @throws NullPointerException
+     *             if the key parameter is null
+     */
+    public static String keyToString(Key key) throws NullPointerException {
+        if (key == null) {
+            throw new NullPointerException("The key parameter is null.");
+        }
+        return KeyFactory.keyToString(key);
+    }
+
+    /**
+     * Converts the encoded string to a key.
+     * 
+     * @param encodedKey
+     *            the encoded string
+     * @return a key
+     * @throws NullPointerException
+     *             if the encodedKey parameter is null
+     */
+    public static Key stringToKey(String encodedKey)
+            throws NullPointerException {
+        if (encodedKey == null) {
+            throw new NullPointerException("The encodedKey parameter is null.");
+        }
+        return KeyFactory.stringToKey(encodedKey);
+    }
+
+    /**
      * Returns an entity specified by the key. If there is a current
      * transaction, this operation will execute within that transaction.
      * 

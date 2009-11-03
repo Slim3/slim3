@@ -166,6 +166,26 @@ public class DatastoreTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
+    public void keyToString() throws Exception {
+        Key key = Datastore.createKey("Hoge", 1);
+        String encodedKey = KeyFactory.keyToString(key);
+        assertThat(Datastore.keyToString(key), is(encodedKey));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void stringToKey() throws Exception {
+        Key key = Datastore.createKey("Hoge", 1);
+        String encodedKey = KeyFactory.keyToString(key);
+        assertThat(Datastore.stringToKey(encodedKey), is(key));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getModel() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Hoge model = Datastore.get(meta, key);
