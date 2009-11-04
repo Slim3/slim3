@@ -16,7 +16,7 @@
 <jsp:include page="/menu.jsp" />
 <div id="body">
 
-<h1>Welcome to Slim3</h1>
+<h1>Welcome to <a href="http://slim3.org">Slim3</a></h1>
 
 </div>
 <jsp:include page="/footer.jsp" />
