@@ -10,6 +10,14 @@
 <link rel="stylesheet" type="text/css" href="/css/global.css" />
 </head>
 <body>
+Source:
+<ul>
+<li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/controller/locale/IndexController.java">IndexController</a></li>
+<li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/controller/locale/ChangeController.java">ChangeController</a></li>
+<li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/war/locale/index.jsp">index.jsp</a></li>
+</ul>
+<hr />
+
 <fmt:setLocale value="${f:locale()}"/>
 <a href="${f:url('change?locale=en')}"><fmt:message key="en"/></a>
 <a href="${f:url('change?locale=ja')}"><fmt:message key="ja"/></a><br />

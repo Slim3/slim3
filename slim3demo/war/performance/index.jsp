@@ -10,7 +10,18 @@
 <link rel="stylesheet" type="text/css" href="/css/global.css" />
 </head>
 <body>
-Bar count:${count}
+Source:
+<ul>
+<li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/controller/performance/GetLLController.java" target="_blank">Controller for Low level API</a></li>
+<li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/controller/performance/GetSlim3Controller.java" target="_blank">Controller for Slim3</a></li>
+<li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/controller/performance/GetJDOController.java" target="_blank">Controller for JDO</a></li>
+<li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/service/PerformanceService.java" target="_blank">PerformanceService</a></li>
+<li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/model/Bar.java" target="_blank">Model for Slim3</a></li>
+<li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/cool/model/BarJDO.java" target="_blank">Model for JDO</a></li>
+</ul>
+<hr />
+
+The number of entities: ${count}
 <table>
 <tr>
 <td>${getLL} millis</td>
@@ -35,14 +46,6 @@ Bar count:${count}
 </td>
 </tr>
 </table>
-Source codes:
-<ul>
-<li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/model/Bar.java" target="_blank">Model for Slim3</a></li>
-<li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/cool/model/BarJDO.java" target="_blank">Model for JDO</a></li>
-<li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/controller/performance/GetLLController.java" target="_blank">Controller for Low level API</a></li>
-<li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/controller/performance/GetSlim3Controller.java" target="_blank">Controller for Slim3</a></li>
-<li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/controller/performance/GetJDOController.java" target="_blank">Controller for JDO</a></li>
-<li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/service/PerformanceService.java" target="_blank">Service</li>
-</ul>
+
 </body>
 </html>

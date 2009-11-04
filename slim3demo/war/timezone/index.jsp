@@ -10,6 +10,14 @@
 <link rel="stylesheet" type="text/css" href="/css/global.css" />
 </head>
 <body>
+Source:
+<ul>
+<li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/controller/timezone/IndexController.java">IndexController</a></li>
+<li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/controller/timezone/ChangeController.java">ChangeController</a></li>
+<li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/war/timezone/index.jsp">index.jsp</a></li>
+</ul>
+<hr />
+
 <fmt:setTimeZone value="${f:timeZone()}"/>
 <a href="${f:url('change?timeZone=UTC')}">UTC</a>
 <a href="${f:url('change?timeZone=PST')}">PST</a>

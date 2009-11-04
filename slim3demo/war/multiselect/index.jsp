@@ -10,6 +10,13 @@
 <link rel="stylesheet" type="text/css" href="/css/global.css" />
 </head>
 <body>
+Source:
+<ul>
+<li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/controller/multiselect/IndexController.java">IndexController</a></li>
+<li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/war/multiselect/index.jsp">index.jsp</a></li>
+</ul>
+<hr />
+
 <form method="post" action="${f:url('')}">
 aaaArray:${f:h(aaaArray)}<br />
 <select name="aaaArray" multiple="multiple" size="3">
