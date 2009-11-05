@@ -258,7 +258,7 @@ public class FrontController implements Filter {
             throws IOException, ServletException {
         String path = RequestUtil.getPath(request);
         String ext = RequestUtil.getExtension(path);
-        if (ext == null || ext.startsWith("s3")) {
+        if (ControllerUtil.isTargetExtension(ext)) {
             HttpServletRequest previousRequest = RequestLocator.get();
             RequestLocator.set(request);
             HttpServletResponse previousResponse = ResponseLocator.get();

@@ -181,15 +181,11 @@ public class HotReloadingFilter implements Filter {
             throws IOException, ServletException {
         String path = RequestUtil.getPath(request);
         String ext = RequestUtil.getExtension(path);
-        if (ext == null || ext.startsWith("s3")) {
-            if (hotReloading) {
-                ClassLoader previousLoader =
-                    Thread.currentThread().getContextClassLoader();
-                if (!(previousLoader instanceof HotReloadingClassLoader)) {
-                    doHotReloading(request, response, chain, previousLoader);
-                } else {
-                    chain.doFilter(request, response);
-                }
+        if (ControllerUtil.isTargetExtension(ext) && hotReloading) {
+            ClassLoader previousLoader =
+                Thread.currentThread().getContextClassLoader();
+            if (!(previousLoader instanceof HotReloadingClassLoader)) {
+                doHotReloading(request, response, chain, previousLoader);
             } else {
                 chain.doFilter(request, response);
             }

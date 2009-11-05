@@ -13,34 +13,27 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.datastore;
+package org.slim3.controller;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.slim3.tester.LocalServiceTestCase;
-
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Transaction;
 
 /**
  * @author higa
  * 
  */
-public class SpikeTest extends LocalServiceTestCase {
+public class ControllerUtilTest {
 
     /**
      * @throws Exception
+     * 
      */
     @Test
-    public void spike() throws Exception {
-        Transaction tx = Datastore.beginTransaction();
-        Transaction tx2 = Datastore.beginTransaction();
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        assertThat(ds.getCurrentTransaction(null), is(tx2));
-        tx2.commit();
-        assertThat(ds.getCurrentTransaction(null), is(tx));
+    public void isTargetExtension() throws Exception {
+        assertThat(ControllerUtil.isTargetExtension(null), is(true));
+        assertThat(ControllerUtil.isTargetExtension("s3get"), is(true));
+        assertThat(ControllerUtil.isTargetExtension("css"), is(false));
     }
 }
