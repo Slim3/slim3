@@ -66,7 +66,7 @@ public class ModelGenerator implements Generator {
         p.println("    @Attribute(version = true)");
         p.println("    private Long version;");
         p.println();
-        p.println("    private Integer schemaVersion;");
+        p.println("    private Integer schemaVersion = 1;");
         p.println();
         p.println("    /**");
         p.println("     * Returns the key.");
