@@ -23,18 +23,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.slim3.util.ClassUtil;
 import org.slim3.util.Cleanable;
 import org.slim3.util.Cleaner;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.DatastoreTimeoutException;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.KeyRange;
@@ -48,10 +42,6 @@ import com.google.appengine.api.datastore.Transaction;
  * 
  */
 public final class Datastore {
-
-    static final int MAX_RETRY = 10;
-
-    private static Logger logger = Logger.getLogger(Datastore.class.getName());
 
     private static ConcurrentHashMap<String, ModelMeta<?>> modelMetaCache =
         new ConcurrentHashMap<String, ModelMeta<?>>(87);
@@ -78,8 +68,7 @@ public final class Datastore {
      * @return a begun transaction
      */
     public static Transaction beginTransaction() {
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        return ds.beginTransaction();
+        return DatastoreUtil.beginTransaction();
     }
 
     /**
@@ -94,33 +83,7 @@ public final class Datastore {
      */
     public static void commit(Transaction tx) throws NullPointerException,
             IllegalStateException {
-        if (tx == null) {
-            throw new NullPointerException("The tx parameter is null.");
-        }
-        if (!tx.isActive()) {
-            throw new IllegalStateException("The transaction must be active.");
-        }
-        commitInternal(tx);
-    }
-
-    private static void commitInternal(Transaction tx) {
-        try {
-            tx.commit();
-        } catch (DatastoreTimeoutException e) {
-            logger.log(Level.WARNING, e.getMessage(), e);
-            for (int i = 0; i < MAX_RETRY; i++) {
-                try {
-                    tx.commit();
-                    return;
-                } catch (DatastoreTimeoutException e2) {
-                    logger.log(Level.WARNING, "Retry("
-                        + i
-                        + "): "
-                        + e2.getMessage(), e2);
-                }
-            }
-            throw e;
-        }
+        DatastoreUtil.commit(tx);
     }
 
     /**
@@ -135,33 +98,7 @@ public final class Datastore {
      */
     public static void rollback(Transaction tx) throws NullPointerException,
             IllegalStateException {
-        if (tx == null) {
-            throw new NullPointerException("The tx parameter is null.");
-        }
-        if (!tx.isActive()) {
-            throw new IllegalStateException("The transaction must be active.");
-        }
-        rollbackInternal(tx);
-    }
-
-    private static void rollbackInternal(Transaction tx) {
-        try {
-            tx.rollback();
-        } catch (DatastoreTimeoutException e) {
-            logger.log(Level.WARNING, e.getMessage(), e);
-            for (int i = 0; i < MAX_RETRY; i++) {
-                try {
-                    tx.rollback();
-                    return;
-                } catch (DatastoreTimeoutException e2) {
-                    logger.log(Level.WARNING, "Retry("
-                        + i
-                        + "): "
-                        + e2.getMessage(), e2);
-                }
-            }
-            throw e;
-        }
+        DatastoreUtil.rollback(tx);
     }
 
     /**
@@ -286,11 +223,7 @@ public final class Datastore {
      */
     public static KeyRange allocateIds(String kind, long num)
             throws NullPointerException {
-        if (kind == null) {
-            throw new NullPointerException("The kind parameter is null.");
-        }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        return allocateIdsInternal(ds, kind, num);
+        return DatastoreUtil.allocateIds(kind, num);
     }
 
     /**
@@ -343,14 +276,7 @@ public final class Datastore {
      */
     public static KeyRange allocateIds(Key parentKey, String kind, int num)
             throws NullPointerException {
-        if (parentKey == null) {
-            throw new NullPointerException("The parentKey parameter is null.");
-        }
-        if (kind == null) {
-            throw new NullPointerException("The kind parameter is null.");
-        }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        return allocateIdsInternal(ds, parentKey, kind, num);
+        return DatastoreUtil.allocateIds(parentKey, kind, num);
     }
 
     /**
@@ -397,46 +323,6 @@ public final class Datastore {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
         return allocateIds(parentKey, modelMeta.getKind(), num);
-    }
-
-    private static KeyRange allocateIdsInternal(DatastoreService ds,
-            String kind, long num) {
-        try {
-            return ds.allocateIds(kind, num);
-        } catch (DatastoreTimeoutException e) {
-            logger.log(Level.WARNING, e.getMessage(), e);
-            for (int i = 0; i < MAX_RETRY; i++) {
-                try {
-                    return ds.allocateIds(kind, num);
-                } catch (DatastoreTimeoutException e2) {
-                    logger.log(Level.WARNING, "Retry("
-                        + i
-                        + "): "
-                        + e2.getMessage(), e2);
-                }
-            }
-            throw e;
-        }
-    }
-
-    private static KeyRange allocateIdsInternal(DatastoreService ds,
-            Key parentKey, String kind, long num) {
-        try {
-            return ds.allocateIds(parentKey, kind, num);
-        } catch (DatastoreTimeoutException e) {
-            logger.log(Level.WARNING, e.getMessage(), e);
-            for (int i = 0; i < MAX_RETRY; i++) {
-                try {
-                    return ds.allocateIds(parentKey, kind, num);
-                } catch (DatastoreTimeoutException e2) {
-                    logger.log(Level.WARNING, "Retry("
-                        + i
-                        + "): "
-                        + e2.getMessage(), e2);
-                }
-            }
-            throw e;
-        }
     }
 
     /**
@@ -747,11 +633,7 @@ public final class Datastore {
      */
     public static Entity get(Key key) throws NullPointerException,
             EntityNotFoundRuntimeException {
-        if (key == null) {
-            throw new NullPointerException("The key parameter is null.");
-        }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        return getInternal(ds, key);
+        return DatastoreUtil.get(key);
     }
 
     /**
@@ -961,14 +843,7 @@ public final class Datastore {
     public static Entity get(Transaction tx, Key key)
             throws NullPointerException, IllegalStateException,
             EntityNotFoundRuntimeException {
-        if (key == null) {
-            throw new NullPointerException("The key parameter is null.");
-        }
-        if (tx != null && !tx.isActive()) {
-            throw new IllegalStateException("The transaction must be active.");
-        }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        return getInternal(ds, tx, key);
+        return DatastoreUtil.get(tx, key);
     }
 
     /**
@@ -1369,11 +1244,7 @@ public final class Datastore {
      */
     public static Map<Key, Entity> getAsMap(Iterable<Key> keys)
             throws NullPointerException {
-        if (keys == null) {
-            throw new NullPointerException("The keys parameter is null.");
-        }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        return getInternal(ds, keys);
+        return DatastoreUtil.get(keys);
     }
 
     /**
@@ -1442,14 +1313,7 @@ public final class Datastore {
      */
     public static Map<Key, Entity> getAsMap(Transaction tx, Iterable<Key> keys)
             throws NullPointerException, IllegalStateException {
-        if (keys == null) {
-            throw new NullPointerException("The keys parameter is null.");
-        }
-        if (!tx.isActive()) {
-            throw new IllegalStateException("The transaction must be active.");
-        }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        return getInternal(ds, tx, keys);
+        return DatastoreUtil.get(tx, keys);
     }
 
     /**
@@ -1562,93 +1426,6 @@ public final class Datastore {
         return list;
     }
 
-    private static Entity getInternal(DatastoreService ds, Key key) {
-        try {
-            try {
-                return ds.get(key);
-            } catch (DatastoreTimeoutException e) {
-                logger.log(Level.WARNING, e.getMessage(), e);
-                for (int i = 0; i < MAX_RETRY; i++) {
-                    try {
-                        return ds.get(key);
-                    } catch (DatastoreTimeoutException e2) {
-                        logger.log(Level.WARNING, "Retry("
-                            + i
-                            + "): "
-                            + e2.getMessage(), e2);
-                    }
-                }
-                throw e;
-            }
-        } catch (EntityNotFoundException cause) {
-            throw new EntityNotFoundRuntimeException(key, cause);
-        }
-    }
-
-    private static Entity getInternal(DatastoreService ds, Transaction tx,
-            Key key) {
-        try {
-            try {
-                return ds.get(tx, key);
-            } catch (DatastoreTimeoutException e) {
-                logger.log(Level.WARNING, e.getMessage(), e);
-                for (int i = 0; i < MAX_RETRY; i++) {
-                    try {
-                        return ds.get(tx, key);
-                    } catch (DatastoreTimeoutException e2) {
-                        logger.log(Level.WARNING, "Retry("
-                            + i
-                            + "): "
-                            + e2.getMessage(), e2);
-                    }
-                }
-                throw e;
-            }
-        } catch (EntityNotFoundException cause) {
-            throw new EntityNotFoundRuntimeException(key, cause);
-        }
-    }
-
-    private static Map<Key, Entity> getInternal(DatastoreService ds,
-            Iterable<Key> keys) {
-        try {
-            return ds.get(keys);
-        } catch (DatastoreTimeoutException e) {
-            logger.log(Level.WARNING, e.getMessage(), e);
-            for (int i = 0; i < MAX_RETRY; i++) {
-                try {
-                    return ds.get(keys);
-                } catch (DatastoreTimeoutException e2) {
-                    logger.log(Level.WARNING, "Retry("
-                        + i
-                        + "): "
-                        + e2.getMessage(), e2);
-                }
-            }
-            throw e;
-        }
-    }
-
-    private static Map<Key, Entity> getInternal(DatastoreService ds,
-            Transaction tx, Iterable<Key> keys) {
-        try {
-            return ds.get(tx, keys);
-        } catch (DatastoreTimeoutException e) {
-            logger.log(Level.WARNING, e.getMessage(), e);
-            for (int i = 0; i < MAX_RETRY; i++) {
-                try {
-                    return ds.get(tx, keys);
-                } catch (DatastoreTimeoutException e2) {
-                    logger.log(Level.WARNING, "Retry("
-                        + i
-                        + "): "
-                        + e2.getMessage(), e2);
-                }
-            }
-            throw e;
-        }
-    }
-
     /**
      * Puts the entity to datastore. If there is a current transaction, this
      * operation will execute within that transaction.
@@ -1660,11 +1437,7 @@ public final class Datastore {
      *             if the entity parameter is null
      */
     public static Key put(Entity entity) throws NullPointerException {
-        if (entity == null) {
-            throw new NullPointerException("The entity parameter is null.");
-        }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        return putInternal(ds, entity);
+        return DatastoreUtil.put(entity);
     }
 
     /**
@@ -1705,14 +1478,7 @@ public final class Datastore {
      */
     public static Key put(Transaction tx, Entity entity)
             throws NullPointerException, IllegalStateException {
-        if (entity == null) {
-            throw new NullPointerException("The entity parameter is null.");
-        }
-        if (!tx.isActive()) {
-            throw new IllegalStateException("The transaction must be active.");
-        }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        return putInternal(ds, tx, entity);
+        return DatastoreUtil.put(tx, entity);
     }
 
     /**
@@ -1758,7 +1524,7 @@ public final class Datastore {
         }
         List<ModelMeta<?>> modelMetaList = getModelMetaList(models);
         List<Key> keys =
-            putEntities(incrementVersionAndConvertToEntities(
+            DatastoreUtil.put(incrementVersionAndConvertToEntities(
                 models,
                 modelMetaList));
         setKeys(models, keys, modelMetaList);
@@ -1798,7 +1564,7 @@ public final class Datastore {
         }
         List<ModelMeta<?>> modelMetaList = getModelMetaList(models);
         List<Key> keys =
-            putEntities(tx, incrementVersionAndConvertToEntities(
+            DatastoreUtil.put(tx, incrementVersionAndConvertToEntities(
                 models,
                 modelMetaList));
         setKeys(models, keys, modelMetaList);
@@ -1870,107 +1636,6 @@ public final class Datastore {
         }
     }
 
-    private static List<Key> putEntities(Iterable<Entity> entities)
-            throws NullPointerException {
-        if (entities == null) {
-            throw new NullPointerException("The entities parameter is null.");
-        }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        return putInternal(ds, entities);
-    }
-
-    private static List<Key> putEntities(Transaction tx,
-            Iterable<Entity> entities) throws NullPointerException,
-            IllegalArgumentException {
-        if (entities == null) {
-            throw new NullPointerException("The entities parameter is null.");
-        }
-        if (!tx.isActive()) {
-            throw new IllegalStateException("The transaction must be active.");
-        }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        return putInternal(ds, tx, entities);
-    }
-
-    private static Key putInternal(DatastoreService ds, Entity entity) {
-        try {
-            return ds.put(entity);
-        } catch (DatastoreTimeoutException e) {
-            logger.log(Level.WARNING, e.getMessage(), e);
-            for (int i = 0; i < MAX_RETRY; i++) {
-                try {
-                    return ds.put(entity);
-                } catch (DatastoreTimeoutException e2) {
-                    logger.log(Level.WARNING, "Retry("
-                        + i
-                        + "): "
-                        + e2.getMessage(), e2);
-                }
-            }
-            throw e;
-        }
-    }
-
-    private static Key putInternal(DatastoreService ds, Transaction tx,
-            Entity entity) {
-        try {
-            return ds.put(tx, entity);
-        } catch (DatastoreTimeoutException e) {
-            logger.log(Level.WARNING, e.getMessage(), e);
-            for (int i = 0; i < MAX_RETRY; i++) {
-                try {
-                    return ds.put(tx, entity);
-                } catch (DatastoreTimeoutException e2) {
-                    logger.log(Level.WARNING, "Retry("
-                        + i
-                        + "): "
-                        + e2.getMessage(), e2);
-                }
-            }
-            throw e;
-        }
-    }
-
-    private static List<Key> putInternal(DatastoreService ds,
-            Iterable<Entity> entities) {
-        try {
-            return ds.put(entities);
-        } catch (DatastoreTimeoutException e) {
-            logger.log(Level.WARNING, e.getMessage(), e);
-            for (int i = 0; i < MAX_RETRY; i++) {
-                try {
-                    return ds.put(entities);
-                } catch (DatastoreTimeoutException e2) {
-                    logger.log(Level.WARNING, "Retry("
-                        + i
-                        + "): "
-                        + e2.getMessage(), e2);
-                }
-            }
-            throw e;
-        }
-    }
-
-    private static List<Key> putInternal(DatastoreService ds, Transaction tx,
-            Iterable<Entity> entities) {
-        try {
-            return ds.put(tx, entities);
-        } catch (DatastoreTimeoutException e) {
-            logger.log(Level.WARNING, e.getMessage(), e);
-            for (int i = 0; i < MAX_RETRY; i++) {
-                try {
-                    return ds.put(tx, entities);
-                } catch (DatastoreTimeoutException e2) {
-                    logger.log(Level.WARNING, "Retry("
-                        + i
-                        + "): "
-                        + e2.getMessage(), e2);
-                }
-            }
-            throw e;
-        }
-    }
-
     /**
      * Deletes entities specified by the keys. If there is a current
      * transaction, this operation will execute within that transaction.
@@ -1981,11 +1646,7 @@ public final class Datastore {
      *             if the keys parameter is null
      */
     public static void delete(Iterable<Key> keys) throws NullPointerException {
-        if (keys == null) {
-            throw new NullPointerException("The keys parameter is null.");
-        }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        deleteInternal(ds, keys);
+        DatastoreUtil.delete(keys);
     }
 
     /**
@@ -2014,14 +1675,7 @@ public final class Datastore {
      */
     public static void delete(Transaction tx, Iterable<Key> keys)
             throws NullPointerException, IllegalStateException {
-        if (keys == null) {
-            throw new NullPointerException("The keys parameter is null.");
-        }
-        if (!tx.isActive()) {
-            throw new IllegalStateException("The transaction must be active.");
-        }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        deleteInternal(ds, tx, keys);
+        DatastoreUtil.delete(tx, keys);
     }
 
     /**
@@ -2038,47 +1692,6 @@ public final class Datastore {
     public static void delete(Transaction tx, Key... keys)
             throws IllegalStateException {
         delete(tx, Arrays.asList(keys));
-    }
-
-    private static void deleteInternal(DatastoreService ds, Iterable<Key> keys) {
-        try {
-            ds.delete(keys);
-        } catch (DatastoreTimeoutException e) {
-            logger.log(Level.WARNING, e.getMessage(), e);
-            for (int i = 0; i < MAX_RETRY; i++) {
-                try {
-                    ds.delete(keys);
-                    return;
-                } catch (DatastoreTimeoutException e2) {
-                    logger.log(Level.WARNING, "Retry("
-                        + i
-                        + "): "
-                        + e2.getMessage(), e2);
-                }
-            }
-            throw e;
-        }
-    }
-
-    private static void deleteInternal(DatastoreService ds, Transaction tx,
-            Iterable<Key> keys) {
-        try {
-            ds.delete(tx, keys);
-        } catch (DatastoreTimeoutException e) {
-            logger.log(Level.WARNING, e.getMessage(), e);
-            for (int i = 0; i < MAX_RETRY; i++) {
-                try {
-                    ds.delete(tx, keys);
-                    return;
-                } catch (DatastoreTimeoutException e2) {
-                    logger.log(Level.WARNING, "Retry("
-                        + i
-                        + "): "
-                        + e2.getMessage(), e2);
-                }
-            }
-            throw e;
-        }
     }
 
     /**
@@ -2159,7 +1772,7 @@ public final class Datastore {
      * @return a meta data of the model
      */
     @SuppressWarnings("unchecked")
-    protected static <M> ModelMeta<M> getModelMeta(Class<M> modelClass) {
+    public static <M> ModelMeta<M> getModelMeta(Class<M> modelClass) {
         if (!initialized) {
             initialize();
         }
@@ -2183,7 +1796,7 @@ public final class Datastore {
      *            the model class
      * @return a meta data of the model
      */
-    protected static <M> ModelMeta<M> createModelMeta(Class<M> modelClass) {
+    private static <M> ModelMeta<M> createModelMeta(Class<M> modelClass) {
         try {
             String metaClassName =
                 modelClass.getName().replace(".model.", ".meta.") + "Meta";

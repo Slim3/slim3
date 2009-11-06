@@ -54,7 +54,7 @@ public class DatastoreTest extends LocalServiceTestCase {
      */
     @Test
     public void beginTransaction() throws Exception {
-        assertThat(Datastore.beginTransaction(), is(not(nullValue())));
+        assertThat(Datastore.beginTransaction(), is(notNullValue()));
     }
 
     /**
@@ -62,7 +62,7 @@ public class DatastoreTest extends LocalServiceTestCase {
      */
     @Test
     public void commit() throws Exception {
-        Transaction tx = Datastore.beginTransaction();
+        Transaction tx = ds.beginTransaction();
         Datastore.commit(tx);
         assertThat(tx.isActive(), is(false));
         assertThat(ds.getCurrentTransaction(null), is(nullValue()));
@@ -73,7 +73,7 @@ public class DatastoreTest extends LocalServiceTestCase {
      */
     @Test(expected = EntityNotFoundException.class)
     public void rollback() throws Exception {
-        Transaction tx = Datastore.beginTransaction();
+        Transaction tx = ds.beginTransaction();
         Key key = ds.put(new Entity("Hoge"));
         Datastore.rollback(tx);
         assertThat(tx.isActive(), is(false));
@@ -105,28 +105,34 @@ public class DatastoreTest extends LocalServiceTestCase {
     @Test
     public void allocateIds() throws Exception {
         KeyRange range = Datastore.allocateIds("Hoge", 2);
-        assertThat(range, is(not(nullValue())));
+        assertThat(range, is(notNullValue()));
         assertThat(range.getSize(), is(2L));
 
         range = Datastore.allocateIds(Hoge.class, 2);
-        assertThat(range, is(not(nullValue())));
+        assertThat(range, is(notNullValue()));
         assertThat(range.getSize(), is(2L));
 
         range = Datastore.allocateIds(meta, 2);
-        assertThat(range, is(not(nullValue())));
+        assertThat(range, is(notNullValue()));
         assertThat(range.getSize(), is(2L));
+    }
 
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void allocateIdsWithParentKey() throws Exception {
         Key parentKey = KeyFactory.createKey("Parent", 1);
-        range = Datastore.allocateIds(parentKey, "Hoge", 2);
-        assertThat(range, is(not(nullValue())));
+        KeyRange range = Datastore.allocateIds(parentKey, "Hoge", 2);
+        assertThat(range, is(notNullValue()));
         assertThat(range.getSize(), is(2L));
 
         range = Datastore.allocateIds(parentKey, Hoge.class, 2);
-        assertNotNull(range);
+        assertThat(range, is(notNullValue()));
         assertEquals(2, range.getSize());
 
         range = Datastore.allocateIds(parentKey, meta, 2);
-        assertThat(range, is(not(nullValue())));
+        assertThat(range, is(notNullValue()));
         assertThat(range.getSize(), is(2L));
     }
 
@@ -501,15 +507,7 @@ public class DatastoreTest extends LocalServiceTestCase {
     public void getEntity() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Entity entity = Datastore.get(key);
-        assertThat(entity, is(not(nullValue())));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test(expected = EntityNotFoundRuntimeException.class)
-    public void getEntityWhenEntityIsNotFound() throws Exception {
-        Datastore.get(KeyFactory.createKey("Aaa", 1));
+        assertThat(entity, is(notNullValue()));
     }
 
     /**
@@ -527,23 +525,12 @@ public class DatastoreTest extends LocalServiceTestCase {
     /**
      * @throws Exception
      */
-    @Test(expected = IllegalStateException.class)
-    public void getEntityInIllegalTx() throws Exception {
-        Key key = ds.put(new Entity("Hoge"));
-        Transaction tx = ds.beginTransaction();
-        tx.rollback();
-        Datastore.get(tx, key);
-    }
-
-    /**
-     * @throws Exception
-     */
     @Test
     public void getEntitiesAsMap() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         Map<Key, Entity> map = Datastore.getAsMap(Arrays.asList(key, key2));
-        assertThat(map, is(not(nullValue())));
+        assertThat(map, is(notNullValue()));
         assertThat(map.size(), is(2));
     }
 
@@ -555,7 +542,7 @@ public class DatastoreTest extends LocalServiceTestCase {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         Map<Key, Entity> map = Datastore.getAsMap(key, key2);
-        assertThat(map, is(not(nullValue())));
+        assertThat(map, is(notNullValue()));
         assertThat(map.size(), is(2));
     }
 
@@ -568,8 +555,7 @@ public class DatastoreTest extends LocalServiceTestCase {
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = ds.beginTransaction();
         Map<Key, Entity> map = Datastore.getAsMap(tx, Arrays.asList(key, key2));
-        tx.rollback();
-        assertThat(map, is(not(nullValue())));
+        assertThat(map, is(notNullValue()));
         assertThat(map.size(), is(2));
     }
 
@@ -833,7 +819,7 @@ public class DatastoreTest extends LocalServiceTestCase {
      */
     @Test
     public void putEntity() throws Exception {
-        assertThat(Datastore.put(new Entity("Hoge")), is(not(nullValue())));
+        assertThat(Datastore.put(new Entity("Hoge")), is(notNullValue()));
     }
 
     /**
@@ -841,10 +827,10 @@ public class DatastoreTest extends LocalServiceTestCase {
      */
     @Test(expected = EntityNotFoundException.class)
     public void putEntityInTx() throws Exception {
-        Transaction tx = Datastore.beginTransaction();
+        Transaction tx = ds.beginTransaction();
         Key key = Datastore.put(tx, new Entity("Hoge"));
         tx.rollback();
-        assertThat(key, is(not(nullValue())));
+        assertThat(key, is(notNullValue()));
         ds.get(key);
     }
 
@@ -866,7 +852,7 @@ public class DatastoreTest extends LocalServiceTestCase {
         List<Key> keys =
             Datastore
                 .put(Arrays.asList(new Entity("Hoge"), new Entity("Hoge")));
-        assertThat(keys, is(not(nullValue())));
+        assertThat(keys, is(notNullValue()));
         assertThat(keys.size(), is(2));
     }
 
@@ -888,10 +874,10 @@ public class DatastoreTest extends LocalServiceTestCase {
         Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
         Entity entity2 =
             new Entity(KeyFactory.createKey(entity.getKey(), "Hoge", 1));
-        Transaction tx = Datastore.beginTransaction();
+        Transaction tx = ds.beginTransaction();
         List<Key> keys = Datastore.put(tx, Arrays.asList(entity, entity2));
         tx.rollback();
-        assertThat(keys, is(not(nullValue())));
+        assertThat(keys, is(notNullValue()));
         assertThat(keys.size(), is(2));
         assertThat(ds.get(keys).size(), is(0));
     }
@@ -999,10 +985,10 @@ public class DatastoreTest extends LocalServiceTestCase {
     @Test
     public void deleteEntitiesInTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
-        Transaction tx = Datastore.beginTransaction();
+        Transaction tx = ds.beginTransaction();
         Datastore.delete(tx, Arrays.asList(key));
         tx.rollback();
-        assertThat(ds.get(key), is(not(nullValue())));
+        assertThat(ds.get(key), is(notNullValue()));
     }
 
     /**
@@ -1092,30 +1078,19 @@ public class DatastoreTest extends LocalServiceTestCase {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void createModelMeta() throws Exception {
-        ModelMeta<?> modelMeta = Datastore.createModelMeta(Hoge.class);
-        assertThat(modelMeta, is(not(nullValue())));
-        assertThat((Class) modelMeta.getModelClass(), equalTo(Hoge.class));
+    public void getModelMeta() throws Exception {
+        ModelMeta<?> modelMeta = Datastore.getModelMeta(Hoge.class);
+        assertThat(modelMeta, is(notNullValue()));
+        assertThat(modelMeta, is(sameInstance((ModelMeta) Datastore
+            .getModelMeta(Hoge.class))));
     }
 
     /**
      * @throws Exception
      */
     @Test(expected = IllegalArgumentException.class)
-    public void createModelMetaWhenModelMetaIsNotFound() throws Exception {
-        Datastore.createModelMeta(getClass());
-    }
-
-    /**
-     * @throws Exception
-     */
-    @SuppressWarnings("unchecked")
-    @Test
-    public void getModelMeta() throws Exception {
-        ModelMeta<?> modelMeta = Datastore.getModelMeta(Hoge.class);
-        assertThat(modelMeta, is(not(nullValue())));
-        assertThat(modelMeta, is(sameInstance((ModelMeta) Datastore
-            .getModelMeta(Hoge.class))));
+    public void getModelMetaWhenModelMetaIsNotFound() throws Exception {
+        Datastore.getModelMeta(getClass());
     }
 
     /**
