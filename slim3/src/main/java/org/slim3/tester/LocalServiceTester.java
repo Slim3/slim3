@@ -16,11 +16,13 @@
 package org.slim3.tester;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -156,11 +158,15 @@ public class LocalServiceTester {
      * @return a lib directory
      */
     protected static File getLibDir() {
-        return new File(ApiProxy.class
-            .getProtectionDomain()
-            .getCodeSource()
-            .getLocation()
-            .getFile()).getParentFile().getParentFile();
+        try {
+            return new File(URLDecoder.decode(ApiProxy.class
+                .getProtectionDomain()
+                .getCodeSource()
+                .getLocation()
+                .getFile(), "UTF-8")).getParentFile().getParentFile();
+        } catch (UnsupportedEncodingException e) {
+            throw new WrapRuntimeException(e);
+        }
 
     }
 
