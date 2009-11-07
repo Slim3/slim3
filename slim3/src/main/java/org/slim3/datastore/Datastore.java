@@ -93,11 +93,8 @@ public final class Datastore {
      *            the transaction
      * @throws NullPointerException
      *             if the tx parameter is null
-     * @throws IllegalStateException
-     *             if the transaction is not active
      */
-    public static void rollback(Transaction tx) throws NullPointerException,
-            IllegalStateException {
+    public static void rollback(Transaction tx) throws NullPointerException {
         DatastoreUtil.rollback(tx);
     }
 
@@ -1699,13 +1696,62 @@ public final class Datastore {
      * 
      * @param <M>
      *            the model type
+     * @param modelClass
+     *            the model class
+     * @return a {@link ModelQuery}
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     */
+    public static <M> ModelQuery<M> query(Class<M> modelClass)
+            throws NullPointerException {
+        if (modelClass == null) {
+            throw new NullPointerException("The modelClass parameter is null.");
+        }
+        return new ModelQuery<M>(getModelMeta(modelClass));
+    }
+
+    /**
+     * Returns a {@link ModelQuery}.
+     * 
+     * @param <M>
+     *            the model type
      * @param modelMeta
      *            the meta data of model
      * @return a {@link ModelQuery}
-     * @see ModelQuery#ModelQuery(ModelMeta)
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null
      */
-    public static <M> ModelQuery<M> query(ModelMeta<M> modelMeta) {
+    public static <M> ModelQuery<M> query(ModelMeta<M> modelMeta)
+            throws NullPointerException {
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
+        }
         return new ModelQuery<M>(modelMeta);
+    }
+
+    /**
+     * Returns a {@link ModelQuery}.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param ancestorKey
+     *            the ancestor key
+     * @return a {@link ModelQuery}
+     * @throws NullPointerException
+     *             if the modelClass parameter is null or if the ancestorKey
+     *             parameter is null
+     */
+    public static <M> ModelQuery<M> query(Class<M> modelClass, Key ancestorKey)
+            throws NullPointerException {
+        if (modelClass == null) {
+            throw new NullPointerException("The modelClass parameter is null.");
+        }
+        if (ancestorKey == null) {
+            throw new NullPointerException("The ancestorKey parameter is null.");
+        }
+        return new ModelQuery<M>(getModelMeta(modelClass), ancestorKey);
     }
 
     /**
@@ -1718,10 +1764,18 @@ public final class Datastore {
      * @param ancestorKey
      *            the ancestor key
      * @return a {@link ModelQuery}
-     * @see ModelQuery#ModelQuery(ModelMeta, Key)
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null or if the ancestorKey
+     *             parameter is null
      */
     public static <M> ModelQuery<M> query(ModelMeta<M> modelMeta,
-            Key ancestorKey) {
+            Key ancestorKey) throws NullPointerException {
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
+        }
+        if (ancestorKey == null) {
+            throw new NullPointerException("The ancestorKey parameter is null.");
+        }
         return new ModelQuery<M>(modelMeta, ancestorKey);
     }
 

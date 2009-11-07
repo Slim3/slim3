@@ -1031,8 +1031,25 @@ public class DatastoreTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
+    public void queryUsingModelClass() throws Exception {
+        assertThat(Datastore.query(Hoge.class), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void queryUsingModelMeta() throws Exception {
-        assertThat(Datastore.query(meta), is(not(nullValue())));
+        assertThat(Datastore.query(meta), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void queryUsingModelClassAndAncestorKey() throws Exception {
+        assertThat(Datastore.query(Hoge.class, KeyFactory
+            .createKey("Parent", 1)), is(notNullValue()));
     }
 
     /**
@@ -1042,7 +1059,7 @@ public class DatastoreTest extends LocalServiceTestCase {
     public void queryUsingModelMetaAndAncestorKey() throws Exception {
         assertThat(
             Datastore.query(meta, KeyFactory.createKey("Parent", 1)),
-            is(not(nullValue())));
+            is(notNullValue()));
     }
 
     /**

@@ -112,16 +112,13 @@ public final class DatastoreUtil {
      *            the transaction
      * @throws NullPointerException
      *             if the tx parameter is null
-     * @throws IllegalStateException
-     *             if the transaction is not active
      */
-    public static void rollback(Transaction tx) throws NullPointerException,
-            IllegalStateException {
+    public static void rollback(Transaction tx) throws NullPointerException {
         if (tx == null) {
             throw new NullPointerException("The tx parameter is null.");
         }
         if (!tx.isActive()) {
-            throw new IllegalStateException("The transaction must be active.");
+            return;
         }
         try {
             tx.rollback();
