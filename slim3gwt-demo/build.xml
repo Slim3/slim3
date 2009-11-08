@@ -17,8 +17,7 @@
     <taskdef name="gen-view" classname="org.slim3.gen.task.GenViewTask" classpathref="classpath"/>
     <taskdef name="gen-controller" classname="org.slim3.gen.task.GenControllerTask" classpathref="classpath"/>
 	<taskdef name="gen-service" classname="org.slim3.gen.task.GenServiceTask" classpathref="classpath"/>
-	<taskdef name="gen-dao" classname="org.slim3.gen.task.GenDaoTask" classpathref="classpath"/>
-    <taskdef name="gen-gwt-service" classname="org.slim3.gen.task.GenGWTServiceTask" classpathref="classpath"/>
+	<taskdef name="gen-gwt-service" classname="org.slim3.gen.task.GenGWTServiceTask" classpathref="classpath"/>
     <taskdef name="gen-gwt-service-impl" classname="org.slim3.gen.task.GenGWTServiceImplTask" classpathref="classpath"/>
 	
 	<target name="gen-controller">
