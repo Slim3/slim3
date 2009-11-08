@@ -56,6 +56,14 @@ public class AbstValidatorTest {
         assertThat(new MyValidator().getLabel("aaa"), is("Aaa"));
     }
 
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getLabelWhenMessageIsNotFound() throws Exception {
+        assertThat(new MyValidator().getLabel("xxx"), is("xxx"));
+    }
+
     private static class MyValidator extends AbstractValidator {
 
         public String validate(Map<String, Object> parameters, String name) {

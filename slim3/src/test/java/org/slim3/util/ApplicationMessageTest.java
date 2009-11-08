@@ -19,6 +19,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import java.util.Locale;
+import java.util.MissingResourceException;
 
 import org.junit.After;
 import org.junit.Before;
@@ -59,8 +60,8 @@ public class ApplicationMessageTest {
     /**
      * @throws Exception
      */
-    @Test
-    public void getForKeyNotFound() throws Exception {
-        assertThat(ApplicationMessage.get("xxx"), is(nullValue()));
+    @Test(expected = MissingResourceException.class)
+    public void getWhenMessageIsNotFound() throws Exception {
+        ApplicationMessage.get("xxx");
     }
 }

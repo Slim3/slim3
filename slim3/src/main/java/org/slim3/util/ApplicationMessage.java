@@ -71,19 +71,18 @@ public final class ApplicationMessage {
      * @param args
      *            the arguments
      * @return the message
+     * @throws MissingResourceException
+     *             if the message is missing
      */
-    public static String get(String key, Object... args) {
+    public static String get(String key, Object... args)
+            throws MissingResourceException {
         ResourceBundle bundle = bundles.get();
         if (bundle == null) {
             throw new IllegalStateException(
                 "The bundle attached to the current thread is not found.");
         }
-        try {
-            String pattern = bundle.getString(key);
-            return MessageFormat.format(pattern, args);
-        } catch (MissingResourceException ignore) {
-            return null;
-        }
+        String pattern = bundle.getString(key);
+        return MessageFormat.format(pattern, args);
     }
 
     private ApplicationMessage() {

@@ -15,6 +15,8 @@
  */
 package org.slim3.controller.validator;
 
+import java.util.MissingResourceException;
+
 import org.slim3.util.ApplicationMessage;
 
 /**
@@ -55,9 +57,12 @@ public abstract class AbstractValidator implements Validator {
      * @return the label
      */
     protected String getLabel(String name) {
-        String label = ApplicationMessage.get("label." + name);
-        if (label != null) {
-            return label;
+        try {
+            String label = ApplicationMessage.get("label." + name);
+            if (label != null) {
+                return label;
+            }
+        } catch (MissingResourceException ignore) {
         }
         return name;
     }
