@@ -1865,7 +1865,7 @@ public final class Datastore {
     }
 
     /**
-     * Filters the list.
+     * Filters the list in memory.
      * 
      * @param <M>
      *            the model type
@@ -1875,38 +1875,12 @@ public final class Datastore {
      *            the filter criteria
      * @return the filtered list.
      * @throws NullPointerException
-     *             if the list parameter is null or if the model is null
+     *             if the list parameter is null or if the model of the list is
+     *             null
      */
-    public static <M> List<M> filter(List<M> list, FilterCriterion... criteria)
-            throws NullPointerException {
-        if (list == null) {
-            throw new NullPointerException("The list parameter is null.");
-        }
-        if (criteria.length == 0) {
-            return list;
-        }
-        List<M> newList = new ArrayList<M>(list.size());
-        for (M model : list) {
-            if (model == null) {
-                throw new NullPointerException("The model is null.");
-            }
-            if (accept(model, criteria)) {
-                newList.add(model);
-            }
-        }
-        return newList;
-    }
-
-    private static boolean accept(Object model, FilterCriterion... criteria) {
-        for (FilterCriterion c : criteria) {
-            if (c == null) {
-                continue;
-            }
-            if (!c.accept(model)) {
-                return false;
-            }
-        }
-        return true;
+    public static <M> List<M> filterInMemory(List<M> list,
+            FilterCriterion... criteria) throws NullPointerException {
+        return DatastoreUtil.filterInMemory(list, Arrays.asList(criteria));
     }
 
     /**

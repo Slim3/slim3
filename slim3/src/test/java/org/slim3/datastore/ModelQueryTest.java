@@ -29,6 +29,7 @@ import org.slim3.tester.LocalServiceTestCase;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.PreparedQuery.TooManyResultsException;
 
 /**
  * @author higa
@@ -93,6 +94,24 @@ public class ModelQueryTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
+    public void asListAndFilterInMemory() throws Exception {
+        Hoge hoge = new Hoge();
+        hoge.setMyString("aaa");
+        Datastore.put(hoge);
+        Hoge hoge2 = new Hoge();
+        hoge2.setMyString("bbb");
+        Datastore.put(hoge2);
+        List<Hoge> list =
+            new ModelQuery<Hoge>(meta).filterInMemory(
+                meta.myString.equal("aaa")).asList();
+        assertThat(list.size(), is(1));
+        assertThat(list.get(0).getMyString(), is("aaa"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void asSingle() throws Exception {
         Datastore.put(new Entity("Hoge"));
         ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
@@ -103,11 +122,58 @@ public class ModelQueryTest extends LocalServiceTestCase {
     /**
      * @throws Exception
      */
+    @Test(expected = TooManyResultsException.class)
+    public void asSingleWhenTooManyResults() throws Exception {
+        Datastore.put(new Entity("Hoge"));
+        Datastore.put(new Entity("Hoge"));
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        query.asSingle();
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asSingleAndFilterInMemory() throws Exception {
+        Hoge hoge = new Hoge();
+        hoge.setMyString("aaa");
+        Datastore.put(hoge);
+        Hoge hoge2 = new Hoge();
+        hoge2.setMyString("bbb");
+        Datastore.put(hoge2);
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        Hoge ret = query.filterInMemory(meta.myString.equal("aaa")).asSingle();
+        assertThat(ret, is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asSingleWhenNoEntity() throws Exception {
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        Hoge ret = query.filterInMemory(meta.myString.equal("aaa")).asSingle();
+        assertThat(ret, is(nullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test
     public void asKeyList() throws Exception {
         Key key = Datastore.put(new Entity("Hoge"));
         ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
         assertThat(query.asKeyList(), is(Arrays.asList(key)));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalStateException.class)
+    public void asKeyListAndFilterInMemory() throws Exception {
+        Datastore.put(new Entity("Hoge"));
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        query.filterInMemory(meta.myString.equal("aaa")).asKeyList();
     }
 
     /**
@@ -139,6 +205,21 @@ public class ModelQueryTest extends LocalServiceTestCase {
     /**
      * @throws Exception
      */
+    @Test(expected = IllegalStateException.class)
+    public void minAndFilterInMemory() throws Exception {
+        Hoge hoge = new Hoge();
+        hoge.setMyInteger(1);
+        Hoge hoge2 = new Hoge();
+        hoge2.setMyInteger(2);
+        Hoge hoge3 = new Hoge();
+        Datastore.put(hoge, hoge2, hoge3);
+        Datastore.query(meta).filterInMemory(meta.myInteger.equal(1)).min(
+            meta.myInteger);
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test
     public void max() throws Exception {
         Hoge hoge = new Hoge();
@@ -148,5 +229,38 @@ public class ModelQueryTest extends LocalServiceTestCase {
         Hoge hoge3 = new Hoge();
         Datastore.put(hoge, hoge2, hoge3);
         assertThat(Datastore.query(meta).max(meta.myInteger), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalStateException.class)
+    public void maxAndFilerInMemory() throws Exception {
+        Hoge hoge = new Hoge();
+        hoge.setMyInteger(1);
+        Hoge hoge2 = new Hoge();
+        hoge2.setMyInteger(2);
+        Hoge hoge3 = new Hoge();
+        Datastore.put(hoge, hoge2, hoge3);
+        Datastore.query(meta).filterInMemory(meta.myInteger.equal(1)).max(
+            meta.myInteger);
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalStateException.class)
+    public void countAndFilterInMemory() throws Exception {
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        query.filterInMemory(meta.myString.equal("aaa")).count();
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalStateException.class)
+    public void countQuicklyAndFilterInMemory() throws Exception {
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        query.filterInMemory(meta.myString.equal("aaa")).countQuickly();
     }
 }

@@ -1114,7 +1114,7 @@ public class DatastoreTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
-    public void filter() throws Exception {
+    public void filterInMemory() throws Exception {
         List<Hoge> list = new ArrayList<Hoge>();
         Hoge hoge = new Hoge();
         hoge.setMyInteger(1);
@@ -1127,38 +1127,12 @@ public class DatastoreTest extends LocalServiceTestCase {
         list.add(hoge);
 
         List<Hoge> filtered =
-            Datastore.filter(
+            Datastore.filterInMemory(
                 list,
                 meta.myInteger.greaterThanOrEqual(2),
                 meta.myInteger.lessThan(3));
         assertThat(filtered.size(), is(1));
         assertThat(filtered.get(0).getMyInteger(), is(2));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void filterForNullCriterion() throws Exception {
-        List<Hoge> list = new ArrayList<Hoge>();
-        Hoge hoge = new Hoge();
-        hoge.setMyInteger(1);
-        list.add(hoge);
-        hoge = new Hoge();
-        hoge.setMyInteger(3);
-        list.add(hoge);
-        hoge = new Hoge();
-        hoge.setMyInteger(2);
-        list.add(hoge);
-
-        List<Hoge> filtered =
-            Datastore.filter(
-                list,
-                meta.myInteger.greaterThanOrEqual(null),
-                meta.myInteger.lessThan(3));
-        assertThat(filtered.size(), is(2));
-        assertThat(filtered.get(0).getMyInteger(), is(1));
-        assertThat(filtered.get(1).getMyInteger(), is(2));
     }
 
     /**

@@ -15,6 +15,7 @@
  */
 package org.slim3.datastore;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -598,6 +599,72 @@ public final class DatastoreUtil {
             }
             throw e;
         }
+    }
+
+    /**
+     * Filters the list in memory.
+     * 
+     * @param <M>
+     *            the model type
+     * @param list
+     *            the model list
+     * @param criteria
+     *            the filter criteria
+     * @return the filtered list.
+     * @throws NullPointerException
+     *             if the list parameter is null or if the criteria parameter is
+     *             null or if the model of the list is null
+     * @throws IllegalArgumentException
+     *             if the model class of the filter is different from the model
+     *             class of this list
+     */
+    public static <M> List<M> filterInMemory(List<M> list,
+            List<FilterCriterion> criteria) throws NullPointerException,
+            IllegalArgumentException {
+        if (list == null) {
+            throw new NullPointerException("The list parameter is null.");
+        }
+        if (criteria == null) {
+            throw new NullPointerException("The criteria parameter is null.");
+        }
+        if (criteria.size() == 0) {
+            return list;
+        }
+        List<M> newList = new ArrayList<M>(list.size());
+        for (M model : list) {
+            if (model == null) {
+                throw new NullPointerException("The model is null.");
+            }
+            if (accept(model, criteria)) {
+                newList.add(model);
+            }
+        }
+        return newList;
+    }
+
+    private static boolean accept(Object model, List<FilterCriterion> criteria) {
+        for (FilterCriterion c : criteria) {
+            if (c == null) {
+                continue;
+            }
+            if (c instanceof AbstractCriterion) {
+                ModelMeta<?> mm =
+                    AbstractCriterion.class.cast(c).attributeMeta.modelMeta;
+                if (mm.getModelClass() != model.getClass()) {
+                    throw new IllegalArgumentException("The model("
+                        + mm.getModelClass().getName()
+                        + ") of the filter("
+                        + c
+                        + ") is different from the model("
+                        + model.getClass().getName()
+                        + ") of this list.");
+                }
+            }
+            if (!c.accept(model)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private DatastoreUtil() {

@@ -19,7 +19,6 @@ import org.junit.Test;
 import org.slim3.tester.LocalServiceTestCase;
 
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Transaction;
 
 /**
  * @author higa
@@ -32,11 +31,7 @@ public class SpikeTest extends LocalServiceTestCase {
      */
     @Test
     public void spike() throws Exception {
-        Transaction tx = Datastore.beginTransaction();
-        Entity entity = new Entity("Hoge");
-        Datastore.put(entity);
-        entity.setProperty("aaa", 1);
-        Datastore.put(entity);
-        tx.commit();
+        Datastore.put(new Entity("Hoge"));
+        Datastore.query("Hoge").asSingleEntity();
     }
 }

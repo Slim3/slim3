@@ -18,11 +18,14 @@ package org.slim3.datastore;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+import org.slim3.datastore.meta.HogeMeta;
+import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.LocalServiceTestCase;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -41,6 +44,8 @@ import com.google.appengine.api.datastore.Transaction;
 public class DatastoreUtilTest extends LocalServiceTestCase {
 
     private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+
+    private HogeMeta meta = new HogeMeta();
 
     /**
      * @throws Exception
@@ -305,5 +310,28 @@ public class DatastoreUtilTest extends LocalServiceTestCase {
         Transaction tx = ds.beginTransaction();
         tx.rollback();
         DatastoreUtil.delete(tx, Arrays.asList(key));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void filterInMemory() throws Exception {
+        List<Hoge> list = new ArrayList<Hoge>();
+        Hoge hoge = new Hoge();
+        hoge.setMyInteger(1);
+        list.add(hoge);
+        hoge = new Hoge();
+        hoge.setMyInteger(3);
+        list.add(hoge);
+        hoge = new Hoge();
+        hoge.setMyInteger(2);
+        list.add(hoge);
+
+        List<Hoge> filtered =
+            DatastoreUtil.filterInMemory(list, Arrays.asList(meta.myInteger
+                .greaterThanOrEqual(2), meta.myInteger.lessThan(3)));
+        assertThat(filtered.size(), is(1));
+        assertThat(filtered.get(0).getMyInteger(), is(2));
     }
 }
