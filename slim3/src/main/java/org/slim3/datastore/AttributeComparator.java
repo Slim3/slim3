@@ -16,6 +16,7 @@
 package org.slim3.datastore;
 
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * A {@link Comparator} for attribute value.
@@ -29,7 +30,7 @@ public class AttributeComparator implements Comparator<Object> {
     /**
      * The sort criteria.
      */
-    protected SortCriterion[] sortCriteria;
+    protected List<SortCriterion> sortCriteria;
 
     /**
      * Constructor.
@@ -39,7 +40,7 @@ public class AttributeComparator implements Comparator<Object> {
      * @throws NullPointerException
      *             if the sortCriteria parameter is null
      */
-    public AttributeComparator(SortCriterion... sortCriteria)
+    public AttributeComparator(List<SortCriterion> sortCriteria)
             throws NullPointerException {
         if (sortCriteria == null) {
             throw new NullPointerException(

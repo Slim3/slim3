@@ -334,4 +334,29 @@ public class DatastoreUtilTest extends LocalServiceTestCase {
         assertThat(filtered.size(), is(1));
         assertThat(filtered.get(0).getMyInteger(), is(2));
     }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void sortInMemory() throws Exception {
+        List<Hoge> list = new ArrayList<Hoge>();
+        Hoge hoge = new Hoge();
+        hoge.setMyInteger(1);
+        list.add(hoge);
+        hoge = new Hoge();
+        hoge.setMyInteger(3);
+        list.add(hoge);
+        hoge = new Hoge();
+        hoge.setMyInteger(2);
+        list.add(hoge);
+
+        List<Hoge> sorted =
+            DatastoreUtil
+                .sortInMemory(list, Arrays.asList(meta.myInteger.desc));
+        assertThat(sorted.size(), is(3));
+        assertThat(sorted.get(0).getMyInteger(), is(3));
+        assertThat(sorted.get(1).getMyInteger(), is(2));
+        assertThat(sorted.get(2).getMyInteger(), is(1));
+    }
 }

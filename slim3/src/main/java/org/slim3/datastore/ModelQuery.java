@@ -16,6 +16,7 @@
 package org.slim3.datastore;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.slim3.util.ConversionUtil;
@@ -43,8 +44,14 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
     /**
      * The in-memory filter criteria.
      */
-    protected List<FilterCriterion> inMemoryFilterList =
+    protected List<FilterCriterion> inMemoryFilterCriteria =
         new ArrayList<FilterCriterion>();
+
+    /**
+     * The in-memory sort criteria.
+     */
+    protected List<SortCriterion> inMemorySortCriteria =
+        new ArrayList<SortCriterion>();
 
     /**
      * Constructor.
@@ -91,27 +98,10 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
      * @param criteria
      *            the filter criteria
      * @return this instance
-     * @throws IllegalArgumentException
-     *             if the model class of the filter is different from the model
-     *             class of this query
      */
-    public ModelQuery<M> filter(FilterCriterion... criteria)
-            throws IllegalArgumentException {
+    public ModelQuery<M> filter(FilterCriterion... criteria) {
         for (FilterCriterion c : criteria) {
             if (c != null) {
-                if (c instanceof AbstractCriterion) {
-                    ModelMeta<?> mm =
-                        AbstractCriterion.class.cast(c).attributeMeta.modelMeta;
-                    if (mm.getModelClass() != modelMeta.getModelClass()) {
-                        throw new IllegalArgumentException("The model("
-                            + mm.getModelClass().getName()
-                            + ") of the filter("
-                            + c
-                            + ") is different from the model("
-                            + modelMeta.getModelClass().getName()
-                            + ") of this query.");
-                    }
-                }
                 c.apply(query);
             }
         }
@@ -124,27 +114,11 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
      * @param criteria
      *            the in-memory filter criteria
      * @return this instance
-     * @throws IllegalArgumentException
-     *             if the model class of the filter is different from the model
-     *             class of this query
      */
     public ModelQuery<M> filterInMemory(FilterCriterion... criteria) {
         for (FilterCriterion c : criteria) {
             if (c != null) {
-                if (c instanceof AbstractCriterion) {
-                    ModelMeta<?> mm =
-                        AbstractCriterion.class.cast(c).attributeMeta.modelMeta;
-                    if (mm.getModelClass() != modelMeta.getModelClass()) {
-                        throw new IllegalArgumentException("The model("
-                            + mm.getModelClass().getName()
-                            + ") of the filter("
-                            + c
-                            + ") is different from the model("
-                            + modelMeta.getModelClass().getName()
-                            + ") of this query.");
-                    }
-                }
-                inMemoryFilterList.add(c);
+                inMemoryFilterCriteria.add(c);
             }
         }
         return this;
@@ -159,7 +133,25 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
      */
     public ModelQuery<M> sort(SortCriterion... criteria) {
         for (SortCriterion c : criteria) {
-            c.apply(query);
+            if (c != null) {
+                c.apply(query);
+            }
+        }
+        return this;
+    }
+
+    /**
+     * Adds the in-memory sort criteria.
+     * 
+     * @param criteria
+     *            the in-memory sort criteria
+     * @return this instance
+     */
+    public ModelQuery<M> sortInMemory(SortCriterion... criteria) {
+        for (SortCriterion c : criteria) {
+            if (c != null) {
+                inMemorySortCriteria.add(c);
+            }
         }
         return this;
     }
@@ -175,7 +167,8 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
         for (Entity e : entityList) {
             ret.add(modelMeta.entityToModel(e));
         }
-        return DatastoreUtil.filterInMemory(ret, inMemoryFilterList);
+        ret = DatastoreUtil.filterInMemory(ret, inMemoryFilterCriteria);
+        return DatastoreUtil.sortInMemory(ret, inMemorySortCriteria);
     }
 
     /**
@@ -206,9 +199,26 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
      */
     @Override
     public List<Key> asKeyList() throws IllegalStateException {
-        if (inMemoryFilterList.size() > 0) {
+        if (inMemoryFilterCriteria.size() > 0) {
             throw new IllegalStateException(
                 "In the case of asKeyList(), you cannot specify filterInMemory().");
+        }
+        if (inMemorySortCriteria.size() > 0 && inMemorySortCriteria.size() == 1) {
+            SortCriterion c = inMemorySortCriteria.get(0);
+            if (c instanceof AbstractCriterion) {
+                if (AbstractCriterion.class.cast(c).attributeMeta.name
+                    .equals(Entity.KEY_RESERVED_PROPERTY)) {
+                    List<Key> keys = super.asKeyList();
+                    if (c instanceof AscCriterion) {
+                        Collections.sort(keys);
+                    } else {
+                        Collections.sort(keys, KeyDescComparator.INSTANCE);
+                    }
+                    return keys;
+                }
+            }
+            throw new IllegalStateException(
+                "In the case of asKeyList(), you cannot specify sortInMemory() except for primary key.");
         }
         return super.asKeyList();
     }
@@ -224,7 +234,8 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
      * @throws NullPointerException
      *             if the attributeMeta parameter is null
      * @throws IllegalStateException
-     *             if in-memory filers are specified
+     *             if in-memory filers are specified or if in-memory sorts are
+     *             specified
      */
     @SuppressWarnings("unchecked")
     public <A> A min(CoreAttributeMeta<M, A> attributeMeta)
@@ -233,9 +244,13 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
             throw new NullPointerException(
                 "The attributeMeta parameter is null.");
         }
-        if (inMemoryFilterList.size() > 0) {
+        if (inMemoryFilterCriteria.size() > 0) {
             throw new IllegalStateException(
                 "In the case of min(), you cannot specify filterInMemory().");
+        }
+        if (inMemorySortCriteria.size() > 0) {
+            throw new IllegalStateException(
+                "In the case of min(), you cannot specify sortInMemory().");
         }
         Object value = super.min(attributeMeta.getName());
         return (A) ConversionUtil.convert(value, attributeMeta
@@ -253,7 +268,8 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
      * @throws NullPointerException
      *             if the attributeMeta parameter is null
      * @throws IllegalStateException
-     *             if in-memory filters are specified
+     *             if in-memory filters are specified or if in-memory sorts are
+     *             specified
      */
     @SuppressWarnings("unchecked")
     public <A> A max(CoreAttributeMeta<M, A> attributeMeta)
@@ -262,9 +278,13 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
             throw new NullPointerException(
                 "The attributeMeta parameter is null.");
         }
-        if (inMemoryFilterList.size() > 0) {
+        if (inMemoryFilterCriteria.size() > 0) {
             throw new IllegalStateException(
                 "In the case of max(), you cannot specify filterInMemory().");
+        }
+        if (inMemorySortCriteria.size() > 0) {
+            throw new IllegalStateException(
+                "In the case of max(), you cannot specify sortInMemory().");
         }
         Object value = super.max(attributeMeta.getName());
         return (A) ConversionUtil.convert(value, attributeMeta
@@ -276,13 +296,18 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
      * 
      * @return a number of entities
      * @throws IllegalStateException
-     *             if in-memory filers are specified
+     *             if in-memory filers are specified or if in-memory sorts are
+     *             specified
      */
     @Override
     public int count() throws IllegalStateException {
-        if (inMemoryFilterList.size() > 0) {
+        if (inMemoryFilterCriteria.size() > 0) {
             throw new IllegalStateException(
                 "In the case of count(), you cannot specify filterInMemory().");
+        }
+        if (inMemorySortCriteria.size() > 0) {
+            throw new IllegalStateException(
+                "In the case of count(), you cannot specify sortInMemory().");
         }
         return super.count();
     }
@@ -297,9 +322,13 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
      */
     @Override
     public int countQuickly() throws IllegalStateException {
-        if (inMemoryFilterList.size() > 0) {
+        if (inMemoryFilterCriteria.size() > 0) {
             throw new IllegalStateException(
                 "In the case of countQuickly(), you cannot specify filterInMemory().");
+        }
+        if (inMemorySortCriteria.size() > 0) {
+            throw new IllegalStateException(
+                "In the case of countQuickly(), you cannot specify sortInMemory().");
         }
         return super.countQuickly();
     }

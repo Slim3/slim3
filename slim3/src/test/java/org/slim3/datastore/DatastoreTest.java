@@ -1139,7 +1139,7 @@ public class DatastoreTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
-    public void sort() throws Exception {
+    public void sortInMemory() throws Exception {
         List<Hoge> list = new ArrayList<Hoge>();
         Hoge hoge = new Hoge();
         hoge.setMyInteger(1);
@@ -1151,7 +1151,7 @@ public class DatastoreTest extends LocalServiceTestCase {
         hoge.setMyInteger(2);
         list.add(hoge);
 
-        List<Hoge> sorted = Datastore.sort(list, meta.myInteger.desc);
+        List<Hoge> sorted = Datastore.sortInMemory(list, meta.myInteger.desc);
         assertThat(sorted.size(), is(3));
         assertThat(sorted.get(0).getMyInteger(), is(3));
         assertThat(sorted.get(1).getMyInteger(), is(2));

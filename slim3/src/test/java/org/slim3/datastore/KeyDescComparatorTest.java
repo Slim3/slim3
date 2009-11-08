@@ -18,39 +18,31 @@ package org.slim3.datastore;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
-import java.util.Arrays;
-
 import org.junit.Test;
-import org.slim3.datastore.meta.HogeMeta;
-import org.slim3.datastore.model.Hoge;
+import org.slim3.tester.LocalServiceTestCase;
+
+import com.google.appengine.api.datastore.KeyFactory;
 
 /**
  * @author higa
  * 
  */
-public class AttributeComparatorTest {
-
-    private HogeMeta meta = new HogeMeta();
+public class KeyDescComparatorTest extends LocalServiceTestCase {
 
     /**
      * @throws Exception
+     * 
      */
     @Test
     public void compare() throws Exception {
-        AttributeComparator comparator =
-            new AttributeComparator(Arrays.asList(
-                meta.myInteger.asc,
-                meta.myString.desc));
-        Hoge hoge = new Hoge();
-        hoge.setMyInteger(1);
-        hoge.setMyString("aaa");
-        assertThat(comparator.compare(hoge, hoge), is(0));
-        Hoge hoge2 = new Hoge();
-        hoge2.setMyInteger(2);
-        hoge2.setMyString("bbb");
-        assertThat(comparator.compare(hoge, hoge2), is(-1));
-        assertThat(comparator.compare(hoge2, hoge), is(1));
-        hoge2.setMyInteger(1);
-        assertThat(comparator.compare(hoge, hoge2), is(1));
+        assertThat(KeyDescComparator.INSTANCE.compare(KeyFactory.createKey(
+            "Hoge",
+            1), KeyFactory.createKey("Hoge", 2)), is(1));
+        assertThat(KeyDescComparator.INSTANCE.compare(KeyFactory.createKey(
+            "Hoge",
+            2), KeyFactory.createKey("Hoge", 1)), is(-1));
+        assertThat(KeyDescComparator.INSTANCE.compare(KeyFactory.createKey(
+            "Hoge",
+            1), KeyFactory.createKey("Hoge", 1)), is(0));
     }
 }

@@ -17,7 +17,6 @@ package org.slim3.datastore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
@@ -1894,18 +1893,12 @@ public final class Datastore {
      *            criteria to sort
      * @return the sorted list
      * @throws NullPointerException
-     *             if the list parameter is null
+     *             if the list parameter is null or if the criteria parameter is
+     *             null
      */
-    public static <M> List<M> sort(List<M> list, SortCriterion... criteria)
-            throws NullPointerException {
-        if (list == null) {
-            throw new NullPointerException("The list parameter is null.");
-        }
-        if (criteria.length == 0) {
-            return list;
-        }
-        Collections.sort(list, new AttributeComparator(criteria));
-        return list;
+    public static <M> List<M> sortInMemory(List<M> list,
+            SortCriterion... criteria) throws NullPointerException {
+        return DatastoreUtil.sortInMemory(list, Arrays.asList(criteria));
     }
 
     private Datastore() {

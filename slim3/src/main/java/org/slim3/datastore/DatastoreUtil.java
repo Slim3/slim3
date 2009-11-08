@@ -16,6 +16,7 @@
 package org.slim3.datastore;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -614,13 +615,9 @@ public final class DatastoreUtil {
      * @throws NullPointerException
      *             if the list parameter is null or if the criteria parameter is
      *             null or if the model of the list is null
-     * @throws IllegalArgumentException
-     *             if the model class of the filter is different from the model
-     *             class of this list
      */
     public static <M> List<M> filterInMemory(List<M> list,
-            List<FilterCriterion> criteria) throws NullPointerException,
-            IllegalArgumentException {
+            List<FilterCriterion> criteria) throws NullPointerException {
         if (list == null) {
             throw new NullPointerException("The list parameter is null.");
         }
@@ -647,24 +644,40 @@ public final class DatastoreUtil {
             if (c == null) {
                 continue;
             }
-            if (c instanceof AbstractCriterion) {
-                ModelMeta<?> mm =
-                    AbstractCriterion.class.cast(c).attributeMeta.modelMeta;
-                if (mm.getModelClass() != model.getClass()) {
-                    throw new IllegalArgumentException("The model("
-                        + mm.getModelClass().getName()
-                        + ") of the filter("
-                        + c
-                        + ") is different from the model("
-                        + model.getClass().getName()
-                        + ") of this list.");
-                }
-            }
             if (!c.accept(model)) {
                 return false;
             }
         }
         return true;
+    }
+
+    /**
+     * Sorts the list in memory.
+     * 
+     * @param <M>
+     *            the model type
+     * @param list
+     *            the model list
+     * @param criteria
+     *            criteria to sort
+     * @return the sorted list
+     * @throws NullPointerException
+     *             if the list parameter is null of if the criteria parameter is
+     *             null
+     */
+    public static <M> List<M> sortInMemory(List<M> list,
+            List<SortCriterion> criteria) throws NullPointerException {
+        if (list == null) {
+            throw new NullPointerException("The list parameter is null.");
+        }
+        if (criteria == null) {
+            throw new NullPointerException("The criteria parameter is null.");
+        }
+        if (criteria.size() == 0) {
+            return list;
+        }
+        Collections.sort(list, new AttributeComparator(criteria));
+        return list;
     }
 
     private DatastoreUtil() {
