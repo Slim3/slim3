@@ -384,6 +384,7 @@ public class ModelMetaGenerator implements Generator {
         @Override
         public Void visitCoreReferenceType(CoreReferenceType type,
                 AttributeMetaDesc p) throws RuntimeException {
+            printer.println("/** */");
             printer
                 .println(
                     "public %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", %6$s.class);",
@@ -405,6 +406,7 @@ public class ModelMetaGenerator implements Generator {
             if (!p.isPrimaryKey()) {
                 propertyName = p.getPropertyName();
             }
+            printer.println("/** */");
             printer
                 .println(
                     "public %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", %6$s.class);",
@@ -421,6 +423,7 @@ public class ModelMetaGenerator implements Generator {
         @Override
         public Void visitStringType(StringType type, AttributeMetaDesc p)
                 throws RuntimeException {
+            printer.println("/** */");
             printer.println(
                 "public %1$s<%2$s> %3$s = new %1$s<%2$s>(this, \"%4$s\");",
                 StringAttributeMeta,
@@ -460,6 +463,7 @@ public class ModelMetaGenerator implements Generator {
                     public Void visitCoreReferenceType(
                             CoreReferenceType elementType, Void p)
                             throws RuntimeException {
+                        printer.println("/** */");
                         printer
                             .println(
                                 "public %1$s<%2$s, %3$s, %4$s> %5$s = new %1$s<%2$s, %3$s, %4$s>(this, \"%6$s\", %7$s.class);",
