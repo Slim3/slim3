@@ -24,6 +24,7 @@ import org.slim3.util.ConversionUtil;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query.FilterOperator;
 
 /**
  * A query class for select.
@@ -162,6 +163,7 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
      * @return the result as a list
      */
     public List<M> asList() {
+        addFilterIfPolyModel();
         List<Entity> entityList = asEntityList();
         List<M> ret = new ArrayList<M>(entityList.size());
         for (Entity e : entityList) {
@@ -203,12 +205,13 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
             throw new IllegalStateException(
                 "In the case of asKeyList(), you cannot specify filterInMemory().");
         }
+        addFilterIfPolyModel();
+        List<Key> keys = super.asKeyList();
         if (inMemorySortCriteria.size() > 0 && inMemorySortCriteria.size() == 1) {
             SortCriterion c = inMemorySortCriteria.get(0);
             if (c instanceof AbstractCriterion) {
                 if (AbstractCriterion.class.cast(c).attributeMeta.name
                     .equals(Entity.KEY_RESERVED_PROPERTY)) {
-                    List<Key> keys = super.asKeyList();
                     if (c instanceof AscCriterion) {
                         Collections.sort(keys);
                     } else {
@@ -220,7 +223,7 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
             throw new IllegalStateException(
                 "In the case of asKeyList(), you cannot specify sortInMemory() except for primary key.");
         }
-        return super.asKeyList();
+        return keys;
     }
 
     /**
@@ -252,6 +255,7 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
             throw new IllegalStateException(
                 "In the case of min(), you cannot specify sortInMemory().");
         }
+        addFilterIfPolyModel();
         Object value = super.min(attributeMeta.getName());
         return (A) ConversionUtil.convert(value, attributeMeta
             .getAttributeClass());
@@ -286,6 +290,7 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
             throw new IllegalStateException(
                 "In the case of max(), you cannot specify sortInMemory().");
         }
+        addFilterIfPolyModel();
         Object value = super.max(attributeMeta.getName());
         return (A) ConversionUtil.convert(value, attributeMeta
             .getAttributeClass());
@@ -309,6 +314,7 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
             throw new IllegalStateException(
                 "In the case of count(), you cannot specify sortInMemory().");
         }
+        addFilterIfPolyModel();
         return super.count();
     }
 
@@ -330,7 +336,20 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
             throw new IllegalStateException(
                 "In the case of countQuickly(), you cannot specify sortInMemory().");
         }
+        addFilterIfPolyModel();
         return super.countQuickly();
     }
 
+    /**
+     * Adds a filter for polymorphic model.
+     */
+    protected void addFilterIfPolyModel() {
+        if (modelMeta.getSimpleClassName() == null) {
+            return;
+        }
+        query.addFilter(
+            ModelMeta.SIMPLE_CLASS_NAME_RESERVED_PROPERTY,
+            FilterOperator.EQUAL,
+            modelMeta.getSimpleClassName());
+    }
 }

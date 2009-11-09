@@ -43,6 +43,12 @@ import com.google.appengine.api.datastore.Text;
 public abstract class ModelMeta<M> {
 
     /**
+     * The reserved property name for the simple class name.
+     */
+    public static final String SIMPLE_CLASS_NAME_RESERVED_PROPERTY =
+        "slim3.simpleClassName";
+
+    /**
      * The kind of entity.
      */
     protected String kind;
@@ -53,11 +59,10 @@ public abstract class ModelMeta<M> {
     protected Class<M> modelClass;
 
     /**
-     * The path of simple class name. If you create class hierarchies such as A
-     * -> B -> C, the path of A is null, the path of B is B/, the path of C is
-     * B/C/.
+     * The simple class name. If you create polymorphic models such as A -> B,
+     * the path of A is null, the path of B is B.
      */
-    protected String simpleClassNamePath;
+    protected String simpleClassName;
 
     /**
      * The bean descriptor.
@@ -86,13 +91,13 @@ public abstract class ModelMeta<M> {
      *            the kind of entity
      * @param modelClass
      *            the model class
-     * @param simpleClassNamePath
-     *            the path of simple class name
+     * @param simpleClassName
+     *            the simple class name
      * @throws NullPointerException
      *             if the modelClass parameter is null
      */
-    public ModelMeta(String kind, Class<M> modelClass,
-            String simpleClassNamePath) throws NullPointerException {
+    public ModelMeta(String kind, Class<M> modelClass, String simpleClassName)
+            throws NullPointerException {
         if (kind == null) {
             throw new NullPointerException("The kind parameter is null.");
         }
@@ -101,7 +106,7 @@ public abstract class ModelMeta<M> {
         }
         this.kind = kind;
         this.modelClass = modelClass;
-        this.simpleClassNamePath = simpleClassNamePath;
+        this.simpleClassName = simpleClassName;
     }
 
     /**
@@ -123,12 +128,12 @@ public abstract class ModelMeta<M> {
     }
 
     /**
-     * Returns the path of simple class name.
+     * Returns the simple class name.
      * 
-     * @return the path of simple class name
+     * @return the simple class name
      */
-    public String getSimpleClassNamePath() {
-        return simpleClassNamePath;
+    public String getSimpleClassName() {
+        return simpleClassName;
     }
 
     /**

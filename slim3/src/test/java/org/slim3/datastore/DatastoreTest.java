@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
+import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.LocalServiceTestCase;
 
@@ -675,9 +676,24 @@ public class DatastoreTest extends LocalServiceTestCase {
     @Test
     public void putModel() throws Exception {
         Hoge hoge = new Hoge();
-        assertThat(Datastore.put(hoge), is(not(nullValue())));
-        assertThat(hoge.getKey(), is(not(nullValue())));
+        assertThat(Datastore.put(hoge), is(notNullValue()));
+        assertThat(hoge.getKey(), is(notNullValue()));
         assertThat(hoge.getVersion(), is(1L));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void putPolyModel() throws Exception {
+        Bbb bbb = new Bbb();
+        assertThat(Datastore.put(bbb), is(notNullValue()));
+        assertThat(bbb.getKey().getKind(), is("Aaa"));
+        Entity entity = Datastore.get(bbb.getKey());
+        assertThat(
+            (String) entity
+                .getProperty(ModelMeta.SIMPLE_CLASS_NAME_RESERVED_PROPERTY),
+            is("Bbb"));
     }
 
     /**
@@ -693,6 +709,23 @@ public class DatastoreTest extends LocalServiceTestCase {
         assertThat(hoge.getKey(), is(not(nullValue())));
         assertThat(hoge.getVersion(), is(1L));
         ds.get(key);
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void putPolyModelInTx() throws Exception {
+        Bbb bbb = new Bbb();
+        Transaction tx = Datastore.beginTransaction();
+        assertThat(Datastore.put(tx, bbb), is(notNullValue()));
+        assertThat(bbb.getKey().getKind(), is("Aaa"));
+        tx.commit();
+        Entity entity = Datastore.get(bbb.getKey());
+        assertThat(
+            (String) entity
+                .getProperty(ModelMeta.SIMPLE_CLASS_NAME_RESERVED_PROPERTY),
+            is("Bbb"));
     }
 
     /**
@@ -718,6 +751,24 @@ public class DatastoreTest extends LocalServiceTestCase {
             assertThat(hoge.getKey(), is(not(nullValue())));
             assertThat(hoge.getVersion(), is(1L));
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void putPolyModels() throws Exception {
+        Bbb bbb = new Bbb();
+        Bbb bbb2 = new Bbb();
+        List<Key> keys = Datastore.put(bbb, bbb2);
+        assertThat(keys.size(), is(2));
+        assertThat(keys.get(0).getKind(), is("Aaa"));
+        assertThat(keys.get(1).getKind(), is("Aaa"));
+        List<Entity> entities = Datastore.get(keys);
+        assertThat((String) entities.get(0).getProperty(
+            ModelMeta.SIMPLE_CLASS_NAME_RESERVED_PROPERTY), is("Bbb"));
+        assertThat((String) entities.get(1).getProperty(
+            ModelMeta.SIMPLE_CLASS_NAME_RESERVED_PROPERTY), is("Bbb"));
     }
 
     /**
@@ -757,6 +808,24 @@ public class DatastoreTest extends LocalServiceTestCase {
         assertThat(hoge2.getKey(), is(key2));
         assertThat(hoge.getVersion(), is(1L));
         assertThat(hoge2.getVersion(), is(1L));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void putPolyModelsInNullTx() throws Exception {
+        Bbb bbb = new Bbb();
+        Bbb bbb2 = new Bbb();
+        List<Key> keys = Datastore.put(null, bbb, bbb2);
+        assertThat(keys.size(), is(2));
+        assertThat(keys.get(0).getKind(), is("Aaa"));
+        assertThat(keys.get(1).getKind(), is("Aaa"));
+        List<Entity> entities = Datastore.get(keys);
+        assertThat((String) entities.get(0).getProperty(
+            ModelMeta.SIMPLE_CLASS_NAME_RESERVED_PROPERTY), is("Bbb"));
+        assertThat((String) entities.get(1).getProperty(
+            ModelMeta.SIMPLE_CLASS_NAME_RESERVED_PROPERTY), is("Bbb"));
     }
 
     /**

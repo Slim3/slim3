@@ -1451,8 +1451,7 @@ public final class Datastore {
             throw new NullPointerException("The model parameter is null.");
         }
         ModelMeta<?> modelMeta = getModelMeta(model.getClass());
-        modelMeta.incrementVersion(model);
-        Entity entity = modelMeta.modelToEntity(model);
+        Entity entity = updatePropertiesAndConvertToEntity(modelMeta, model);
         Key key = put(entity);
         modelMeta.setKey(model, key);
         return key;
@@ -1497,8 +1496,7 @@ public final class Datastore {
             throw new NullPointerException("The model parameter is null.");
         }
         ModelMeta<?> modelMeta = getModelMeta(model.getClass());
-        modelMeta.incrementVersion(model);
-        Entity entity = modelMeta.modelToEntity(model);
+        Entity entity = updatePropertiesAndConvertToEntity(modelMeta, model);
         Key key = put(tx, entity);
         modelMeta.setKey(model, key);
         return key;
@@ -1520,7 +1518,7 @@ public final class Datastore {
         }
         List<ModelMeta<?>> modelMetaList = getModelMetaList(models);
         List<Key> keys =
-            DatastoreUtil.put(incrementVersionAndConvertToEntities(
+            DatastoreUtil.put(updatePropertiesAndConvertToEntities(
                 models,
                 modelMetaList));
         setKeys(models, keys, modelMetaList);
@@ -1560,7 +1558,7 @@ public final class Datastore {
         }
         List<ModelMeta<?>> modelMetaList = getModelMetaList(models);
         List<Key> keys =
-            DatastoreUtil.put(tx, incrementVersionAndConvertToEntities(
+            DatastoreUtil.put(tx, updatePropertiesAndConvertToEntities(
                 models,
                 modelMetaList));
         setKeys(models, keys, modelMetaList);
@@ -1601,7 +1599,19 @@ public final class Datastore {
         return list;
     }
 
-    private static List<Entity> incrementVersionAndConvertToEntities(
+    private static Entity updatePropertiesAndConvertToEntity(
+            ModelMeta<?> modelMeta, Object model) throws NullPointerException {
+        modelMeta.incrementVersion(model);
+        Entity entity = modelMeta.modelToEntity(model);
+        if (modelMeta.getSimpleClassName() != null) {
+            entity.setProperty(
+                ModelMeta.SIMPLE_CLASS_NAME_RESERVED_PROPERTY,
+                modelMeta.getSimpleClassName());
+        }
+        return entity;
+    }
+
+    private static List<Entity> updatePropertiesAndConvertToEntities(
             Iterable<?> models, List<ModelMeta<?>> modelMetaList)
             throws NullPointerException {
         List<Entity> entities = new ArrayList<Entity>();
@@ -1611,8 +1621,8 @@ public final class Datastore {
             if (modelMeta == null) {
                 entities.add(Entity.class.cast(model));
             } else {
-                modelMeta.incrementVersion(model);
-                Entity entity = modelMeta.modelToEntity(model);
+                Entity entity =
+                    updatePropertiesAndConvertToEntity(modelMeta, model);
                 entities.add(entity);
             }
             i++;

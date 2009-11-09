@@ -22,7 +22,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
+import org.slim3.datastore.meta.AaaMeta;
+import org.slim3.datastore.meta.BbbMeta;
 import org.slim3.datastore.meta.HogeMeta;
+import org.slim3.datastore.model.Aaa;
+import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.LocalServiceTestCase;
 
@@ -37,6 +41,10 @@ import com.google.appengine.api.datastore.PreparedQuery.TooManyResultsException;
 public class ModelQueryTest extends LocalServiceTestCase {
 
     private HogeMeta meta = new HogeMeta();
+
+    private AaaMeta aaaMeta = new AaaMeta();
+
+    private BbbMeta bbbMeta = new BbbMeta();
 
     /**
      * @throws Exception
@@ -116,6 +124,23 @@ public class ModelQueryTest extends LocalServiceTestCase {
         assertThat(list.size(), is(2));
         assertThat(list.get(0).getMyString(), is("bbb"));
         assertThat(list.get(1).getMyString(), is("aaa"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListForPolyModel() throws Exception {
+        Datastore.put(new Aaa());
+        Datastore.put(new Bbb());
+
+        ModelQuery<Aaa> query = new ModelQuery<Aaa>(aaaMeta);
+        List<Aaa> list = query.asList();
+        assertThat(list.size(), is(2));
+
+        ModelQuery<Bbb> query2 = new ModelQuery<Bbb>(bbbMeta);
+        List<Bbb> list2 = query2.asList();
+        assertThat(list2.size(), is(1));
     }
 
     /**
@@ -245,6 +270,23 @@ public class ModelQueryTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
+    public void asKeyListForPolyModel() throws Exception {
+        Datastore.put(new Aaa());
+        Datastore.put(new Bbb());
+
+        ModelQuery<Aaa> query = new ModelQuery<Aaa>(aaaMeta);
+        List<Key> list = query.asKeyList();
+        assertThat(list.size(), is(2));
+
+        ModelQuery<Bbb> query2 = new ModelQuery<Bbb>(bbbMeta);
+        List<Key> list2 = query2.asKeyList();
+        assertThat(list2.size(), is(1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void ancestor() throws Exception {
         Key key = Datastore.put(new Entity("Parent"));
         Datastore.put(new Entity("Hoge", key));
@@ -301,6 +343,25 @@ public class ModelQueryTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
+    public void minForPolyModel() throws Exception {
+        Aaa aaa = new Aaa();
+        aaa.setVersion(1L);
+        Bbb bbb = new Bbb();
+        bbb.setVersion(2L);
+        Datastore.put(aaa);
+        Datastore.put(bbb);
+
+        ModelQuery<Aaa> query = new ModelQuery<Aaa>(aaaMeta);
+        assertThat(query.min(aaaMeta.version), is(2L));
+
+        ModelQuery<Bbb> query2 = new ModelQuery<Bbb>(bbbMeta);
+        assertThat(query2.min(bbbMeta.version), is(3L));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void max() throws Exception {
         Hoge hoge = new Hoge();
         hoge.setMyInteger(1);
@@ -344,6 +405,25 @@ public class ModelQueryTest extends LocalServiceTestCase {
     /**
      * @throws Exception
      */
+    @Test
+    public void maxForPolyModel() throws Exception {
+        Aaa aaa = new Aaa();
+        aaa.setVersion(2L);
+        Bbb bbb = new Bbb();
+        bbb.setVersion(1L);
+        Datastore.put(aaa);
+        Datastore.put(bbb);
+
+        ModelQuery<Aaa> query = new ModelQuery<Aaa>(aaaMeta);
+        assertThat(query.max(aaaMeta.version), is(3L));
+
+        ModelQuery<Bbb> query2 = new ModelQuery<Bbb>(bbbMeta);
+        assertThat(query2.max(bbbMeta.version), is(2L));
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test(expected = IllegalStateException.class)
     public void countAndFilterInMemory() throws Exception {
         ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
@@ -362,6 +442,21 @@ public class ModelQueryTest extends LocalServiceTestCase {
     /**
      * @throws Exception
      */
+    @Test
+    public void countForPolyModel() throws Exception {
+        Datastore.put(new Aaa());
+        Datastore.put(new Bbb());
+
+        ModelQuery<Aaa> query = new ModelQuery<Aaa>(aaaMeta);
+        assertThat(query.count(), is(2));
+
+        ModelQuery<Bbb> query2 = new ModelQuery<Bbb>(bbbMeta);
+        assertThat(query2.count(), is(1));
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test(expected = IllegalStateException.class)
     public void countQuicklyAndFilterInMemory() throws Exception {
         ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
@@ -375,5 +470,20 @@ public class ModelQueryTest extends LocalServiceTestCase {
     public void countQuicklyAndSortInMemory() throws Exception {
         ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
         query.sortInMemory(meta.myString.asc).countQuickly();
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void countQuicklyForPolyModel() throws Exception {
+        Datastore.put(new Aaa());
+        Datastore.put(new Bbb());
+
+        ModelQuery<Aaa> query = new ModelQuery<Aaa>(aaaMeta);
+        assertThat(query.countQuickly(), is(2));
+
+        ModelQuery<Bbb> query2 = new ModelQuery<Bbb>(bbbMeta);
+        assertThat(query2.countQuickly(), is(1));
     }
 }
