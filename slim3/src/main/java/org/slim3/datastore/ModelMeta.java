@@ -54,8 +54,8 @@ public abstract class ModelMeta<M> {
 
     /**
      * The path of simple class name. If you create class hierarchies such as A
-     * -> B -> C, the path of A is null, the path of B is B, the path of C is
-     * B/C.
+     * -> B -> C, the path of A is null, the path of B is B/, the path of C is
+     * B/C/.
      */
     protected String simpleClassNamePath;
 
