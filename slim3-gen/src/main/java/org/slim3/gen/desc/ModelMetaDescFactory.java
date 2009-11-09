@@ -95,24 +95,19 @@ public class ModelMetaDescFactory {
         String modelClassName = classDeclaration.getQualifiedName().toString();
         ModelMetaClassName modelMetaClassName =
             createModelMetaClassName(modelClassName);
-        String kind = modelMetaClassName.getKind();
-        AnnotationMirror anno =
-            DeclarationUtil.getAnnotationMirror(
-                env,
-                classDeclaration,
-                AnnotationConstants.Model);
-        if (anno == null) {
-            throw new IllegalStateException(AnnotationConstants.Model
-                + " is not found.");
+
+        String kind = null;
+        String simpleClassNamePath = null;
+        PolyModelDesc polyModelDesc = createPolyModelDesc(classDeclaration);
+        if (polyModelDesc == null) {
+            kind = modelMetaClassName.getKind();
+            simpleClassNamePath = null;
+        } else {
+            kind = polyModelDesc.getKind();
+            simpleClassNamePath = polyModelDesc.getSimpleClassNamePath();
+            validateKind(classDeclaration);
         }
-        String value =
-            AnnotationMirrorUtil
-                .getElementValue(anno, AnnotationConstants.kind);
-        if (value != null && value.length() > 0) {
-            kind = value;
-        }
-        String simpleClassNamePath =
-            createSimpleClassNamePath(classDeclaration, anno);
+
         ModelMetaDesc modelMetaDesc =
             new ModelMetaDesc(
                 modelMetaClassName.getPackageName(),
@@ -125,16 +120,15 @@ public class ModelMetaDescFactory {
     }
 
     /**
-     * Create the path of simple class name.
+     * Creates the poly model description.
      * 
      * @param classDeclaration
      *            the model declaration.
-     * @param annotationMirror
-     *            the model annotation mirror.
-     * @return the path of simple class name
+     * @return the poly model description.
      */
-    protected String createSimpleClassNamePath(
-            ClassDeclaration classDeclaration, AnnotationMirror annotationMirror) {
+    protected PolyModelDesc createPolyModelDesc(
+            ClassDeclaration classDeclaration) {
+        String kind = null;
         LinkedList<String> simpleNames = new LinkedList<String>();
         for (ClassDeclaration c = classDeclaration; c != null
             && !c.getQualifiedName().equals(Object.class.getName()); c =
@@ -145,6 +139,19 @@ public class ModelMetaDescFactory {
                     c,
                     AnnotationConstants.Model);
             if (anno != null) {
+                String value =
+                    AnnotationMirrorUtil.getElementValue(
+                        anno,
+                        AnnotationConstants.kind);
+                if (value != null && value.length() > 0) {
+                    kind = value;
+                } else {
+                    ModelMetaClassName modelMetaClassName =
+                        createModelMetaClassName(c
+                            .getQualifiedName()
+                            .toString());
+                    kind = modelMetaClassName.getKind();
+                }
                 simpleNames.addFirst(c.getSimpleName());
             }
         }
@@ -152,22 +159,12 @@ public class ModelMetaDescFactory {
             return null;
         }
         simpleNames.removeFirst();
-        String value =
-            AnnotationMirrorUtil.getElementValue(
-                annotationMirror,
-                AnnotationConstants.kind);
-        if (value != null && value.length() > 0) {
-            throw new ValidationException(
-                MessageCode.SILM3GEN1022,
-                env,
-                classDeclaration);
-        }
         StringBuilder buf = new StringBuilder();
         for (String simpleName : simpleNames) {
             buf.append(simpleName);
             buf.append("/");
         }
-        return buf.toString();
+        return new PolyModelDesc(kind, buf.toString());
     }
 
     /**
@@ -233,6 +230,33 @@ public class ModelMetaDescFactory {
             MessageCode.SILM3GEN1018,
             env,
             classDeclaration);
+    }
+
+    /**
+     * Validates that the kind is unspecified.
+     * 
+     * @param classDeclaration
+     *            the class declaration
+     */
+    protected void validateKind(ClassDeclaration classDeclaration) {
+        AnnotationMirror anno =
+            DeclarationUtil.getAnnotationMirror(
+                env,
+                classDeclaration,
+                AnnotationConstants.Model);
+        if (anno == null) {
+            throw new IllegalStateException(AnnotationConstants.Model
+                + " not found.");
+        }
+        String value =
+            AnnotationMirrorUtil
+                .getElementValue(anno, AnnotationConstants.kind);
+        if (value != null && value.length() > 0) {
+            throw new ValidationException(
+                MessageCode.SILM3GEN1022,
+                env,
+                classDeclaration);
+        }
     }
 
     /**
@@ -441,4 +465,55 @@ public class ModelMetaDescFactory {
         }
     }
 
+    /**
+     * The poly model description.
+     * 
+     * @author taedium
+     * 
+     */
+    public static class PolyModelDesc {
+
+        /** the kind */
+        protected final String kind;
+
+        /** the path of simple class name */
+        protected final String simpleClassNamePath;
+
+        /**
+         * @param kind
+         *            the kind
+         * @param simpleClassNamePath
+         *            the path of simple class name
+         */
+        public PolyModelDesc(String kind, String simpleClassNamePath) {
+            if (kind == null) {
+                throw new NullPointerException("The kind parameter is null.");
+            }
+            if (simpleClassNamePath == null) {
+                throw new NullPointerException(
+                    "The simpleClassNamePath parameter is null.");
+            }
+            this.kind = kind;
+            this.simpleClassNamePath = simpleClassNamePath;
+        }
+
+        /**
+         * Returns the kind.
+         * 
+         * @return the kind
+         */
+        public String getKind() {
+            return kind;
+        }
+
+        /**
+         * Returns the path of simple class name.
+         * 
+         * @return the path of simple class name
+         */
+        public String getSimpleClassNamePath() {
+            return simpleClassNamePath;
+        }
+
+    }
 }
