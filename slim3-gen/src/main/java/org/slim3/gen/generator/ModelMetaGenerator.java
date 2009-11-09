@@ -110,6 +110,7 @@ public class ModelMetaGenerator implements Generator {
                 ProductInfo.getName(),
                 ProductInfo.getVersion(),
                 new Date());
+        printer.println("/** */");
         printer.println("public final class %s extends %s<%s> {", modelMetaDesc
             .getSimpleName(), ClassConstants.ModelMeta, modelMetaDesc
             .getModelClassName());
@@ -136,6 +137,7 @@ public class ModelMetaGenerator implements Generator {
      *            the printer
      */
     protected void printConstructor(Printer printer) {
+        printer.println("/** */");
         printer.println("public %s() {", modelMetaDesc.getSimpleName());
         if (modelMetaDesc.getSimpleClassNamePath() == null) {
             printer.println("    super(\"%1$s\", %2$s.class);", modelMetaDesc
@@ -365,6 +367,7 @@ public class ModelMetaGenerator implements Generator {
         @Override
         public Void visitCorePrimitiveType(CorePrimitiveType type,
                 AttributeMetaDesc p) throws RuntimeException {
+            printer.println("/** */");
             printer
                 .println(
                     "public %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", %6$s.class);",
