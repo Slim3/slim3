@@ -92,6 +92,16 @@ public class ModelMetaDescFactory {
         validateNonGenericType(classDeclaration);
         validateDefaultConstructor(classDeclaration);
 
+        AnnotationMirror anno =
+            DeclarationUtil.getAnnotationMirror(
+                env,
+                classDeclaration,
+                AnnotationConstants.Model);
+        if (anno == null) {
+            throw new IllegalStateException(AnnotationConstants.Model
+                + " not found.");
+        }
+
         String modelClassName = classDeclaration.getQualifiedName().toString();
         ModelMetaClassName modelMetaClassName =
             createModelMetaClassName(modelClassName);
@@ -100,7 +110,7 @@ public class ModelMetaDescFactory {
         String simpleClassNamePath = null;
         PolyModelDesc polyModelDesc = createPolyModelDesc(classDeclaration);
         if (polyModelDesc == null) {
-            kind = modelMetaClassName.getKind();
+            kind = getKind(anno, modelMetaClassName.getKind());
             simpleClassNamePath = null;
         } else {
             kind = polyModelDesc.getKind();
@@ -139,19 +149,9 @@ public class ModelMetaDescFactory {
                     c,
                     AnnotationConstants.Model);
             if (anno != null) {
-                String value =
-                    AnnotationMirrorUtil.getElementValue(
-                        anno,
-                        AnnotationConstants.kind);
-                if (value != null && value.length() > 0) {
-                    kind = value;
-                } else {
-                    ModelMetaClassName modelMetaClassName =
-                        createModelMetaClassName(c
-                            .getQualifiedName()
-                            .toString());
-                    kind = modelMetaClassName.getKind();
-                }
+                ModelMetaClassName modelMetaClassName =
+                    createModelMetaClassName(c.getQualifiedName().toString());
+                kind = getKind(anno, modelMetaClassName.getKind());
                 simpleNames.addFirst(c.getSimpleName());
             }
         }
@@ -165,6 +165,25 @@ public class ModelMetaDescFactory {
             buf.append("/");
         }
         return new PolyModelDesc(kind, buf.toString());
+    }
+
+    /**
+     * Returns the kind.
+     * 
+     * @param anno
+     *            the model annotation mirror.
+     * @param defaultKind
+     *            the default kind.
+     * @return the kind
+     */
+    protected String getKind(AnnotationMirror anno, String defaultKind) {
+        String value =
+            AnnotationMirrorUtil
+                .getElementValue(anno, AnnotationConstants.kind);
+        if (value != null && value.length() > 0) {
+            return value;
+        }
+        return defaultKind;
     }
 
     /**
