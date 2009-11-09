@@ -200,4 +200,52 @@ public class ServletTesterTest {
             (Integer) tester.servletContext.getAttribute("aaa"),
             is(value));
     }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void isRedirectWhenRedirect() throws Exception {
+        assertThat(tester.isRedirect(), is(false));
+        tester.response.sendRedirect("/");
+        assertThat(tester.isRedirect(), is(true));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void isRedirectWhenForward() throws Exception {
+        assertThat(tester.isRedirect(), is(false));
+        tester.servletContext.getRequestDispatcher("/").forward(
+            tester.request,
+            tester.response);
+        assertThat(tester.isRedirect(), is(false));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void getDestinationPathWhenRedirect() throws Exception {
+        assertThat(tester.getDestinationPath(), is(nullValue()));
+        tester.response.sendRedirect("/");
+        assertThat(tester.getDestinationPath(), is("/"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void getDestinationPathForward() throws Exception {
+        assertThat(tester.getDestinationPath(), is(nullValue()));
+        tester.servletContext.getRequestDispatcher("/").forward(
+            tester.request,
+            tester.response);
+        assertThat(tester.getDestinationPath(), is("/"));
+    }
 }

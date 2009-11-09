@@ -51,11 +51,6 @@ public class ControllerTester extends ServletTester {
     public MockFilterChain filterChain = new MockFilterChain();
 
     /**
-     * Whether "start" method was called.
-     */
-    protected boolean startCalled = false;
-
-    /**
      * The test class.
      */
     protected Class<?> testClass;
@@ -88,7 +83,6 @@ public class ControllerTester extends ServletTester {
         frontController.destroy();
         frontController = null;
         filterChain = null;
-        startCalled = false;
         super.tearDown();
     }
 
@@ -118,7 +112,6 @@ public class ControllerTester extends ServletTester {
         }
         request.setServletPath(path);
         frontController.doFilter(request, response, filterChain);
-        startCalled = true;
     }
 
     /**
@@ -126,7 +119,8 @@ public class ControllerTester extends ServletTester {
      */
     protected void setUpServletContext() {
         String rootPackageName =
-            servletContext.getInitParameter(ControllerConstants.ROOT_PACKAGE_KEY);
+            servletContext
+                .getInitParameter(ControllerConstants.ROOT_PACKAGE_KEY);
         if (rootPackageName != null) {
             if (rootPackageName
                 .endsWith(ControllerConstants.SERVER_CONTROLLER_PACKAGE)) {
@@ -155,28 +149,15 @@ public class ControllerTester extends ServletTester {
     }
 
     /**
-     * Determines if the test result is "redirect".
-     * 
-     * @return whether the test result is "redirect"
-     */
-    public boolean isRedirect() {
-        return response.getRedirectPath() != null;
-    }
-
-    /**
      * Returns the destination path.
      * 
      * @return the destination path
      */
+    @Override
     public String getDestinationPath() {
-        assertStartWasCalled();
-        MockRequestDispatcher dispatcher =
-            servletContext.getLatestRequestDispatcher();
-        if (dispatcher != null) {
-            return dispatcher.getPath();
-        }
-        if (response.getRedirectPath() != null) {
-            return response.getRedirectPath();
+        String path = super.getDestinationPath();
+        if (path != null) {
+            return path;
         }
         return filterChain.getPath();
     }
@@ -190,7 +171,6 @@ public class ControllerTester extends ServletTester {
      */
     @SuppressWarnings("unchecked")
     public <T extends Controller> T getController() {
-        assertStartWasCalled();
         return (T) request.getAttribute(ControllerConstants.CONTROLLER_KEY);
     }
 
@@ -201,15 +181,5 @@ public class ControllerTester extends ServletTester {
      */
     public Errors getErrors() {
         return requestScope(ControllerConstants.ERRORS_KEY);
-    }
-
-    /**
-     * Asserts that "start" method was called.
-     */
-    protected void assertStartWasCalled() {
-        if (!startCalled) {
-            throw new IllegalStateException(
-                "Call ControllerTester#start() before getting the test results.");
-        }
     }
 }

@@ -105,29 +105,12 @@ public class ControllerTesterTest {
      * @throws Exception
      * 
      */
-    @Test(expected = IllegalStateException.class)
-    public void getDestinationPathBeforStarting() throws Exception {
-        tester.getDestinationPath();
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
     @Test
     public void getController() throws Exception {
+        assertThat(tester.getController(), is(nullValue()));
         tester.start("/hello");
         HelloController controller = tester.getController();
-        assertThat(controller, is(not(nullValue())));
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    @Test(expected = IllegalStateException.class)
-    public void getControllerBeforStarting() throws Exception {
-        tester.getController();
+        assertThat(controller, is(notNullValue()));
     }
 
     /**

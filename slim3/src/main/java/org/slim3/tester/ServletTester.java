@@ -402,4 +402,30 @@ public class ServletTester extends LocalServiceTester {
     public void applicationScope(String name, Object value) {
         servletContext.setAttribute(name, value);
     }
+
+    /**
+     * Determines if the test result is "redirect".
+     * 
+     * @return whether the test result is "redirect"
+     */
+    public boolean isRedirect() {
+        return response.getRedirectPath() != null;
+    }
+
+    /**
+     * Returns the destination path.
+     * 
+     * @return the destination path
+     */
+    public String getDestinationPath() {
+        MockRequestDispatcher dispatcher =
+            servletContext.getLatestRequestDispatcher();
+        if (dispatcher != null) {
+            return dispatcher.getPath();
+        }
+        if (response.getRedirectPath() != null) {
+            return response.getRedirectPath();
+        }
+        return null;
+    }
 }
