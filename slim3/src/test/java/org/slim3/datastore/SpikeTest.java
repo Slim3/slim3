@@ -31,7 +31,9 @@ public class SpikeTest extends LocalServiceTestCase {
      */
     @Test
     public void spike() throws Exception {
-        Datastore.put(new Entity("Hoge"));
+        Entity entity = new Entity("Hoge");
+        entity.setProperty("__aaa__", 1);
+        Datastore.put(entity);
         Datastore.query("Hoge").asSingleEntity();
     }
 }

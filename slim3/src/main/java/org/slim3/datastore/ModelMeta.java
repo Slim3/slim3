@@ -53,6 +53,13 @@ public abstract class ModelMeta<M> {
     protected Class<M> modelClass;
 
     /**
+     * The path of simple class name. If you create class hierarchies such as A
+     * -> B -> C, the path of A is null, the path of B is B, the path of C is
+     * B/C.
+     */
+    protected String simpleClassNamePath;
+
+    /**
      * The bean descriptor.
      */
     protected BeanDesc beanDesc;
@@ -69,6 +76,23 @@ public abstract class ModelMeta<M> {
      */
     public ModelMeta(String kind, Class<M> modelClass)
             throws NullPointerException {
+        this(kind, modelClass, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param kind
+     *            the kind of entity
+     * @param modelClass
+     *            the model class
+     * @param simpleClassNamePath
+     *            the path of simple class name
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     */
+    public ModelMeta(String kind, Class<M> modelClass,
+            String simpleClassNamePath) throws NullPointerException {
         if (kind == null) {
             throw new NullPointerException("The kind parameter is null.");
         }
@@ -77,6 +101,7 @@ public abstract class ModelMeta<M> {
         }
         this.kind = kind;
         this.modelClass = modelClass;
+        this.simpleClassNamePath = simpleClassNamePath;
     }
 
     /**
@@ -95,6 +120,15 @@ public abstract class ModelMeta<M> {
      */
     public Class<M> getModelClass() {
         return modelClass;
+    }
+
+    /**
+     * Returns the path of simple class name.
+     * 
+     * @return the path of simple class name
+     */
+    public String getSimpleClassNamePath() {
+        return simpleClassNamePath;
     }
 
     /**
