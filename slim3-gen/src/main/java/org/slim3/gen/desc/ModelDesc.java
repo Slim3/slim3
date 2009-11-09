@@ -31,6 +31,9 @@ public class ModelDesc implements ClassDesc {
     /** the simpleName */
     protected String simpleName;
 
+    /** the superclass name */
+    protected String superclassName;
+
     /** the testCaseSuperclassName */
     protected String testCaseSuperclassName;
 
@@ -74,6 +77,25 @@ public class ModelDesc implements ClassDesc {
 
     public String getQualifiedName() {
         return ClassUtil.getQualifiedName(packageName, simpleName);
+    }
+
+    /**
+     * Returns the superclass name.
+     * 
+     * @return the superclass name
+     */
+    public String getSuperclassName() {
+        return superclassName;
+    }
+
+    /**
+     * Sets the superclass name.
+     * 
+     * @param superclassName
+     *            the superclass name
+     */
+    public void setSuperclassName(String superclassName) {
+        this.superclassName = superclassName;
     }
 
     /**

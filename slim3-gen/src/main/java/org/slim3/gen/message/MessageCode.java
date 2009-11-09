@@ -44,7 +44,9 @@ public enum MessageCode {
     /** */
     SILM3GEN0011("@com.google.gwt.user.client.rpc.RemoteServiceRelativePath is available only to an interface."),
     /** */
-    SILM3GEN0012("The processor[{0}] is skipped."),
+    SILM3GEN0012("The second token[{0}] of the input[{1}] is illegal. It must be \"extends\"."),
+    /** */
+    SILM3GEN0013("The input[{0}] consists of [{1}] tokens. The token count must be 1 or 3."),
     /** */
     SILM3GEN1001("Unknown type[{0}] is found."),
     /** */

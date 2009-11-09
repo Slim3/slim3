@@ -15,8 +15,10 @@
  */
 package org.slim3.gen.generator;
 
+import org.slim3.gen.ClassConstants;
 import org.slim3.gen.desc.ModelDesc;
 import org.slim3.gen.printer.Printer;
+import org.slim3.gen.util.ClassUtil;
 
 /**
  * Generates a model java file.
@@ -49,81 +51,97 @@ public class ModelGenerator implements Generator {
         }
         p.println("import java.io.Serializable;");
         p.println();
-        p.println("import com.google.appengine.api.datastore.Key;");
-        p.println();
-        p.println("import org.slim3.datastore.Attribute;");
-        p.println("import org.slim3.datastore.Model;");
+        if (ClassConstants.Object.equals(modelDesc.getSuperclassName())) {
+            p.println("import com.google.appengine.api.datastore.Key;");
+            p.println();
+            p.println("import org.slim3.datastore.Attribute;");
+            p.println("import org.slim3.datastore.Model;");
+        } else {
+            p.println("import org.slim3.datastore.Model;");
+            p.println();
+            p.println("import %s;", modelDesc.getSuperclassName());
+        }
         p.println();
         p.println("@Model");
-        p.println("public class %s implements Serializable {", modelDesc
-            .getSimpleName());
+        if (ClassConstants.Object.equals(modelDesc.getSuperclassName())) {
+            p.println("public class %s implements Serializable {", modelDesc
+                .getSimpleName());
+        } else {
+            p.println(
+                "public class %s extends %s implements Serializable {",
+                modelDesc.getSimpleName(),
+                ClassUtil.getSimpleName(modelDesc.getSuperclassName()));
+        }
         p.println();
         p.println("    private static final long serialVersionUID = 1L;");
         p.println();
-        p.println("    @Attribute(primaryKey = true)");
-        p.println("    private Key key;");
-        p.println();
-        p.println("    @Attribute(version = true)");
-        p.println("    private Long version;");
-        p.println();
-        p.println("    private Integer schemaVersion = 1;");
-        p.println();
-        p.println("    /**");
-        p.println("     * Returns the key.");
-        p.println("     *");
-        p.println("     * @return the key");
-        p.println("     */");
-        p.println("    public Key getKey() {");
-        p.println("        return key;");
-        p.println("    }");
-        p.println();
-        p.println("    /**");
-        p.println("     * Sets the key.");
-        p.println("     *");
-        p.println("     * @param key");
-        p.println("     *            the key");
-        p.println("     */");
-        p.println("    public void setKey(Key key) {");
-        p.println("        this.key = key;");
-        p.println("    }");
-        p.println();
-        p.println("    /**");
-        p.println("     * Returns the version.");
-        p.println("     *");
-        p.println("     * @return the version");
-        p.println("     */");
-        p.println("    public Long getVersion() {");
-        p.println("        return version;");
-        p.println("    }");
-        p.println();
-        p.println("    /**");
-        p.println("     * Sets the version.");
-        p.println("     *");
-        p.println("     * @param version");
-        p.println("     *            the version");
-        p.println("     */");
-        p.println("    public void setVersion(Long version) {");
-        p.println("        this.version = version;");
-        p.println("    }");
-        p.println();
-        p.println("    /**");
-        p.println("     * Returns the schema version.");
-        p.println("     *");
-        p.println("     * @return the schema version");
-        p.println("     */");
-        p.println("    public Integer getSchemaVersion() {");
-        p.println("        return schemaVersion;");
-        p.println("    }");
-        p.println();
-        p.println("    /**");
-        p.println("     * Sets the schema version.");
-        p.println("     *");
-        p.println("     * @param schemaVersion");
-        p.println("     *            the schema version");
-        p.println("     */");
-        p.println("    public void setSchemaVersion(Integer schemaVersion) {");
-        p.println("        this.schemaVersion = schemaVersion;");
-        p.println("    }");
+        if (ClassConstants.Object.equals(modelDesc.getSuperclassName())) {
+            p.println("    @Attribute(primaryKey = true)");
+            p.println("    private Key key;");
+            p.println();
+            p.println("    @Attribute(version = true)");
+            p.println("    private Long version;");
+            p.println();
+            p.println("    private Integer schemaVersion = 1;");
+            p.println();
+            p.println("    /**");
+            p.println("     * Returns the key.");
+            p.println("     *");
+            p.println("     * @return the key");
+            p.println("     */");
+            p.println("    public Key getKey() {");
+            p.println("        return key;");
+            p.println("    }");
+            p.println();
+            p.println("    /**");
+            p.println("     * Sets the key.");
+            p.println("     *");
+            p.println("     * @param key");
+            p.println("     *            the key");
+            p.println("     */");
+            p.println("    public void setKey(Key key) {");
+            p.println("        this.key = key;");
+            p.println("    }");
+            p.println();
+            p.println("    /**");
+            p.println("     * Returns the version.");
+            p.println("     *");
+            p.println("     * @return the version");
+            p.println("     */");
+            p.println("    public Long getVersion() {");
+            p.println("        return version;");
+            p.println("    }");
+            p.println();
+            p.println("    /**");
+            p.println("     * Sets the version.");
+            p.println("     *");
+            p.println("     * @param version");
+            p.println("     *            the version");
+            p.println("     */");
+            p.println("    public void setVersion(Long version) {");
+            p.println("        this.version = version;");
+            p.println("    }");
+            p.println();
+            p.println("    /**");
+            p.println("     * Returns the schema version.");
+            p.println("     *");
+            p.println("     * @return the schema version");
+            p.println("     */");
+            p.println("    public Integer getSchemaVersion() {");
+            p.println("        return schemaVersion;");
+            p.println("    }");
+            p.println();
+            p.println("    /**");
+            p.println("     * Sets the schema version.");
+            p.println("     *");
+            p.println("     * @param schemaVersion");
+            p.println("     *            the schema version");
+            p.println("     */");
+            p
+                .println("    public void setSchemaVersion(Integer schemaVersion) {");
+            p.println("        this.schemaVersion = schemaVersion;");
+            p.println("    }");
+        }
         p.println("}");
     }
 }

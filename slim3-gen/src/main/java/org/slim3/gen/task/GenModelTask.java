@@ -16,6 +16,7 @@
 package org.slim3.gen.task;
 
 import java.io.IOException;
+import java.util.StringTokenizer;
 
 import javax.xml.xpath.XPathExpressionException;
 
@@ -119,15 +120,59 @@ public class GenModelTask extends AbstractGenJavaFileTask {
      */
     private ModelDesc createModelDesc() throws IOException,
             XPathExpressionException {
-        ClassNameBuilder nameBuilder = new ClassNameBuilder();
-        nameBuilder.append(getModelBasePackageName());
-        nameBuilder.append(modelRelativeClassName);
+        ParsedText parsedText = parse(modelRelativeClassName);
 
         ModelDesc modelDesc = new ModelDesc();
-        modelDesc.setPackageName(nameBuilder.getPackageName());
-        modelDesc.setSimpleName(nameBuilder.getSimpleName());
+        ClassNameBuilder classNameBuilder = new ClassNameBuilder();
+        classNameBuilder.append(getModelBasePackageName());
+        classNameBuilder.append(parsedText.modelRelativeClassName);
+        modelDesc.setPackageName(classNameBuilder.getPackageName());
+        modelDesc.setSimpleName(classNameBuilder.getSimpleName());
+        if (parsedText.modelRelativeSuperclassName == null) {
+            modelDesc.setSuperclassName(ClassConstants.Object);
+        } else {
+            ClassNameBuilder superclassNameBuilder = new ClassNameBuilder();
+            superclassNameBuilder.append(getModelBasePackageName());
+            superclassNameBuilder
+                .append(parsedText.modelRelativeSuperclassName);
+            modelDesc.setSuperclassName(superclassNameBuilder
+                .getQualifiedName());
+        }
         modelDesc.setTestCaseSuperclassName(testCaseSuperclassName);
         return modelDesc;
+    }
+
+    /**
+     * 
+     * @param input
+     *            the input
+     * @return the parsed text.
+     */
+    protected ParsedText parse(String input) {
+        StringTokenizer tokenizer = new StringTokenizer(input, " ");
+        int count = tokenizer.countTokens();
+        if (count == 1) {
+            ParsedText parsedText = new ParsedText();
+            parsedText.modelRelativeClassName = tokenizer.nextToken();
+            return parsedText;
+        }
+        if (count == 3) {
+            ParsedText parsedText = new ParsedText();
+            parsedText.modelRelativeClassName = tokenizer.nextToken();
+            String keyword = tokenizer.nextToken();
+            if (!"extends".equals(keyword)) {
+                throw new RuntimeException(MessageFormatter.getSimpleMessage(
+                    MessageCode.SILM3GEN0012,
+                    keyword,
+                    input));
+            }
+            parsedText.modelRelativeSuperclassName = tokenizer.nextToken();
+            return parsedText;
+        }
+        throw new RuntimeException(MessageFormatter.getSimpleMessage(
+            MessageCode.SILM3GEN0013,
+            input,
+            count));
     }
 
     /**
@@ -176,4 +221,18 @@ public class GenModelTask extends AbstractGenJavaFileTask {
         return new ModelTestCaseGenerator(modelDesc);
     }
 
+    /**
+     * The parsed text.
+     * 
+     * @author taedium
+     * 
+     */
+    protected static class ParsedText {
+
+        /** the modelRelativeClassName */
+        protected String modelRelativeClassName;
+
+        /** the modelRelativeSuperclassName */
+        protected String modelRelativeSuperclassName;
+    }
 }
