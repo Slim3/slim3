@@ -80,7 +80,9 @@ public enum MessageCode {
     /** */
     SILM3GEN1020("The type parameter is not supported."),
     /** */
-    SILM3GEN1021("The element[{0}] and the element[{1}] can not be defined at the same time.");
+    SILM3GEN1021("The element[{0}] and the element[{1}] can not be defined at the same time."),
+    /** */
+    SILM3GEN1022("The kind element is not supported for a child model.");
 
     /** the message */
     public final String message;

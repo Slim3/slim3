@@ -101,23 +101,73 @@ public class ModelMetaDescFactory {
                 env,
                 classDeclaration,
                 AnnotationConstants.Model);
-        if (anno != null) {
-            String value =
-                AnnotationMirrorUtil.getElementValue(
-                    anno,
-                    AnnotationConstants.kind);
-            if (value != null && value.length() > 0) {
-                kind = value;
-            }
+        if (anno == null) {
+            throw new IllegalStateException(AnnotationConstants.Model
+                + " is not found.");
         }
+        String value =
+            AnnotationMirrorUtil
+                .getElementValue(anno, AnnotationConstants.kind);
+        if (value != null && value.length() > 0) {
+            kind = value;
+        }
+        String simpleClassNamePath =
+            createSimpleClassNamePath(classDeclaration, anno);
         ModelMetaDesc modelMetaDesc =
             new ModelMetaDesc(
                 modelMetaClassName.getPackageName(),
                 modelMetaClassName.getSimpleName(),
                 modelClassName,
-                kind);
+                kind,
+                simpleClassNamePath);
         handleAttributes(classDeclaration, modelMetaDesc);
         return modelMetaDesc;
+    }
+
+    /**
+     * Create the simple class name path.
+     * 
+     * @param classDeclaration
+     *            the model declaration.
+     * @param annotationMirror
+     *            the model annotation mirror.
+     * @return the simple class name path
+     */
+    protected String createSimpleClassNamePath(
+            ClassDeclaration classDeclaration, AnnotationMirror annotationMirror) {
+        LinkedList<String> simpleNames = new LinkedList<String>();
+        for (ClassDeclaration c = classDeclaration; c != null
+            && !c.getQualifiedName().equals(Object.class.getName()); c =
+            c.getSuperclass().getDeclaration()) {
+            AnnotationMirror anno =
+                DeclarationUtil.getAnnotationMirror(
+                    env,
+                    c,
+                    AnnotationConstants.Model);
+            if (anno != null) {
+                simpleNames.addFirst(c.getSimpleName());
+            }
+        }
+        if (simpleNames.size() <= 1) {
+            return null;
+        }
+        simpleNames.removeFirst();
+        String value =
+            AnnotationMirrorUtil.getElementValue(
+                annotationMirror,
+                AnnotationConstants.kind);
+        if (value != null && value.length() > 0) {
+            throw new ValidationException(
+                MessageCode.SILM3GEN1022,
+                env,
+                classDeclaration);
+        }
+        StringBuilder buf = new StringBuilder();
+        for (String simpleName : simpleNames) {
+            buf.append(simpleName);
+            buf.append("/");
+        }
+        return buf.toString();
     }
 
     /**

@@ -15,7 +15,16 @@
  */
 package org.slim3.gen.generator;
 
-import static org.slim3.gen.ClassConstants.*;
+import static org.slim3.gen.ClassConstants.Blob;
+import static org.slim3.gen.ClassConstants.CollectionAttributeMeta;
+import static org.slim3.gen.ClassConstants.CoreAttributeMeta;
+import static org.slim3.gen.ClassConstants.Double;
+import static org.slim3.gen.ClassConstants.Entity;
+import static org.slim3.gen.ClassConstants.Long;
+import static org.slim3.gen.ClassConstants.Object;
+import static org.slim3.gen.ClassConstants.String;
+import static org.slim3.gen.ClassConstants.StringAttributeMeta;
+import static org.slim3.gen.ClassConstants.Text;
 
 import java.util.Date;
 
@@ -138,8 +147,16 @@ public class ModelMetaGenerator implements Generator {
      */
     protected void printConstructor(Printer printer) {
         printer.println("public %s() {", modelMetaDesc.getSimpleName());
-        printer.println("    super(\"%1$s\", %2$s.class);", modelMetaDesc
-            .getKind(), modelMetaDesc.getModelClassName());
+        if (modelMetaDesc.getSimpleClassNamePath() == null) {
+            printer.println("    super(\"%1$s\", %2$s.class);", modelMetaDesc
+                .getKind(), modelMetaDesc.getModelClassName());
+        } else {
+            printer.println(
+                "    super(\"%1$s\", %2$s.class, \"%3$s\");",
+                modelMetaDesc.getKind(),
+                modelMetaDesc.getModelClassName(),
+                modelMetaDesc.getSimpleClassNamePath());
+        }
         printer.println("}");
     }
 
