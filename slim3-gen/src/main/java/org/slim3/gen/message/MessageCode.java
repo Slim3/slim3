@@ -86,7 +86,7 @@ public enum MessageCode {
     /** */
     SILM3GEN1022("The kind element is not supported for a sub model, because the kind of sub model is identical to the super model."),
     /** */
-    SILM3GEN1023("The hierarchy of sub model is just only 1, but the following inheritances are OK: Aaa(model), Bbb(not model) extends Aaa, Ccc(model) extends Bbb.");
+    SILM3GEN1023("The hierarchy of model is just only 1, but the hierarchies of classes are no limit.");
 
     /** the message */
     public final String message;
