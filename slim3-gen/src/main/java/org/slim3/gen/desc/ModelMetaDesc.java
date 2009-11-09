@@ -42,7 +42,7 @@ public class ModelMetaDesc implements ClassDesc {
     /** the kind of entity */
     protected final String kind;
 
-    /** the simple class name path */
+    /** the path of simple class name */
     protected final String simpleClassNamePath;
 
     /** the key attribute meta description */
@@ -70,7 +70,7 @@ public class ModelMetaDesc implements ClassDesc {
      * @param kind
      *            the kind of entity
      * @param simpleClassNamePath
-     *            the simple class name path
+     *            the path of simple class name
      */
     public ModelMetaDesc(String packageName, String simpleName,
             String modelClassName, String kind, String simpleClassNamePath) {
@@ -135,9 +135,9 @@ public class ModelMetaDesc implements ClassDesc {
     }
 
     /**
-     * Returns the simple class name path.
+     * Returns the path of simple class name.
      * 
-     * @return the simple class name path
+     * @return the path of simple class name
      */
     public String getSimpleClassNamePath() {
         return simpleClassNamePath;

@@ -125,13 +125,13 @@ public class ModelMetaDescFactory {
     }
 
     /**
-     * Create the simple class name path.
+     * Create the path of simple class name.
      * 
      * @param classDeclaration
      *            the model declaration.
      * @param annotationMirror
      *            the model annotation mirror.
-     * @return the simple class name path
+     * @return the path of simple class name
      */
     protected String createSimpleClassNamePath(
             ClassDeclaration classDeclaration, AnnotationMirror annotationMirror) {
