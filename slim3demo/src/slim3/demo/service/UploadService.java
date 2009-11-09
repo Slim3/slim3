@@ -79,7 +79,10 @@ public class UploadService {
 
     public void delete(Key key) {
         Transaction tx = Datastore.beginTransaction();
-        Datastore.delete(tx, key);
+        List<Key> keys = new ArrayList<Key>();
+        keys.add(key);
+        keys.addAll(Datastore.query(f, key).asKeyList());
+        Datastore.delete(tx, keys);
         Datastore.commit(tx);
     }
 }

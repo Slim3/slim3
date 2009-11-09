@@ -63,9 +63,11 @@ public class UploadServiceTest extends LocalServiceTestCase {
 
     @Test
     public void delete() throws Exception {
-        UploadedData data = new UploadedData();
-        Datastore.put(data);
+        FileItem formFile =
+            new FileItem("aaa.txt", "text/html", new byte[] { 'a' });
+        UploadedData data = service.upload(formFile);
         service.delete(data.getKey());
         assertThat(tester.count(UploadedData.class), is(0));
+        assertThat(tester.count(UploadedDataFragment.class), is(0));
     }
 }
