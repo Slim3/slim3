@@ -139,7 +139,7 @@ public class ModelMetaGenerator implements Generator {
     protected void printConstructor(Printer printer) {
         printer.println("/** */");
         printer.println("public %s() {", modelMetaDesc.getSimpleName());
-        if (modelMetaDesc.getSimpleClassNamePath() == null) {
+        if (modelMetaDesc.getSimpleClassName() == null) {
             printer.println("    super(\"%1$s\", %2$s.class);", modelMetaDesc
                 .getKind(), modelMetaDesc.getModelClassName());
         } else {
@@ -147,7 +147,7 @@ public class ModelMetaGenerator implements Generator {
                 "    super(\"%1$s\", %2$s.class, \"%3$s\");",
                 modelMetaDesc.getKind(),
                 modelMetaDesc.getModelClassName(),
-                modelMetaDesc.getSimpleClassNamePath());
+                modelMetaDesc.getSimpleClassName());
         }
         printer.println("}");
     }

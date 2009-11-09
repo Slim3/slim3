@@ -84,7 +84,9 @@ public enum MessageCode {
     /** */
     SILM3GEN1021("The element[{0}] and the element[{1}] can not be defined at the same time."),
     /** */
-    SILM3GEN1022("The kind element is not supported for a polymorphic model, because the kind of polymorphic model is identical to the root one.");
+    SILM3GEN1022("The kind element is not supported for a sub model, because the kind of sub model is identical to the super model."),
+    /** */
+    SILM3GEN1023("The hierarchy of sub model is just only 1, but the following inheritances are OK: Aaa(model), Bbb(not model) extends Aaa, Ccc(model) extends Bbb.");
 
     /** the message */
     public final String message;

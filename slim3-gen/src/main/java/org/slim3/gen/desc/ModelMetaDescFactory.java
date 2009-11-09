@@ -15,6 +15,7 @@
  */
 package org.slim3.gen.desc;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -107,14 +108,13 @@ public class ModelMetaDescFactory {
             createModelMetaClassName(modelClassName);
 
         String kind = null;
-        String simpleClassNamePath = null;
+        String simpleClassName = null;
         PolyModelDesc polyModelDesc = createPolyModelDesc(classDeclaration);
         if (polyModelDesc == null) {
             kind = getKind(anno, modelMetaClassName.getKind());
-            simpleClassNamePath = null;
         } else {
             kind = polyModelDesc.getKind();
-            simpleClassNamePath = polyModelDesc.getSimpleClassNamePath();
+            simpleClassName = polyModelDesc.getSimpleClassName();
             validateKind(classDeclaration);
         }
 
@@ -124,7 +124,7 @@ public class ModelMetaDescFactory {
                 modelMetaClassName.getSimpleName(),
                 modelClassName,
                 kind,
-                simpleClassNamePath);
+                simpleClassName);
         handleAttributes(classDeclaration, modelMetaDesc);
         return modelMetaDesc;
     }
@@ -139,7 +139,7 @@ public class ModelMetaDescFactory {
     protected PolyModelDesc createPolyModelDesc(
             ClassDeclaration classDeclaration) {
         String kind = null;
-        LinkedList<String> simpleNames = new LinkedList<String>();
+        List<String> simpleNames = new ArrayList<String>();
         for (ClassDeclaration c = classDeclaration; c != null
             && !c.getQualifiedName().equals(Object.class.getName()); c =
             c.getSuperclass().getDeclaration()) {
@@ -152,19 +152,19 @@ public class ModelMetaDescFactory {
                 ModelMetaClassName modelMetaClassName =
                     createModelMetaClassName(c.getQualifiedName().toString());
                 kind = getKind(anno, modelMetaClassName.getKind());
-                simpleNames.addFirst(c.getSimpleName());
+                simpleNames.add(c.getSimpleName());
             }
         }
         if (simpleNames.size() <= 1) {
             return null;
         }
-        simpleNames.removeFirst();
-        StringBuilder buf = new StringBuilder();
-        for (String simpleName : simpleNames) {
-            buf.append(simpleName);
-            buf.append("/");
+        if (simpleNames.size() >= 3) {
+            throw new ValidationException(
+                MessageCode.SILM3GEN1023,
+                env,
+                classDeclaration);
         }
-        return new PolyModelDesc(kind, buf.toString());
+        return new PolyModelDesc(kind, simpleNames.get(0));
     }
 
     /**
@@ -495,25 +495,25 @@ public class ModelMetaDescFactory {
         /** the kind */
         protected final String kind;
 
-        /** the path of simple class name */
-        protected final String simpleClassNamePath;
+        /** the simple class name */
+        protected final String simpleClassName;
 
         /**
          * @param kind
          *            the kind
-         * @param simpleClassNamePath
-         *            the path of simple class name
+         * @param simpleClassName
+         *            the simple class name
          */
-        public PolyModelDesc(String kind, String simpleClassNamePath) {
+        public PolyModelDesc(String kind, String simpleClassName) {
             if (kind == null) {
                 throw new NullPointerException("The kind parameter is null.");
             }
-            if (simpleClassNamePath == null) {
+            if (simpleClassName == null) {
                 throw new NullPointerException(
-                    "The simpleClassNamePath parameter is null.");
+                    "The simpleClassName parameter is null.");
             }
             this.kind = kind;
-            this.simpleClassNamePath = simpleClassNamePath;
+            this.simpleClassName = simpleClassName;
         }
 
         /**
@@ -526,12 +526,12 @@ public class ModelMetaDescFactory {
         }
 
         /**
-         * Returns the path of simple class name.
+         * Returns the simple class name.
          * 
-         * @return the path of simple class name
+         * @return the simple class name
          */
-        public String getSimpleClassNamePath() {
-            return simpleClassNamePath;
+        public String getSimpleClassName() {
+            return simpleClassName;
         }
 
     }
