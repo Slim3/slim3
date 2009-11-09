@@ -15,16 +15,7 @@
  */
 package org.slim3.gen.generator;
 
-import static org.slim3.gen.ClassConstants.Blob;
-import static org.slim3.gen.ClassConstants.CollectionAttributeMeta;
-import static org.slim3.gen.ClassConstants.CoreAttributeMeta;
-import static org.slim3.gen.ClassConstants.Double;
-import static org.slim3.gen.ClassConstants.Entity;
-import static org.slim3.gen.ClassConstants.Long;
-import static org.slim3.gen.ClassConstants.Object;
-import static org.slim3.gen.ClassConstants.String;
-import static org.slim3.gen.ClassConstants.StringAttributeMeta;
-import static org.slim3.gen.ClassConstants.Text;
+import static org.slim3.gen.ClassConstants.*;
 
 import java.util.Date;
 
@@ -59,7 +50,6 @@ import org.slim3.gen.datastore.TextType;
 import org.slim3.gen.desc.AttributeMetaDesc;
 import org.slim3.gen.desc.ModelMetaDesc;
 import org.slim3.gen.printer.Printer;
-import org.slim3.gen.util.ClassUtil;
 
 /**
  * Generates a model meta java file.
@@ -969,10 +959,7 @@ public class ModelMetaGenerator implements Generator {
                 Entity,
                 modelMetaDesc.getKeyAttributeMetaDesc().getReadMethodName());
             printer.println("} else {");
-            printer.println(
-                "    entity = new %1$s(\"%2$s\");",
-                Entity,
-                ClassUtil.getSimpleName(modelMetaDesc.getModelClassName()));
+            printer.println("    entity = new %1$s(kind);", Entity);
             printer.println("}");
             for (AttributeMetaDesc attr : modelMetaDesc
                 .getAttributeMetaDescList()) {
