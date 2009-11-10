@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+>
+  <modelVersion>4.0.0</modelVersion>
+
+  <!-- The Basics -->
+  <groupId>org.slim3</groupId>
+  <artifactId>slim3</artifactId>
+  <version>EA1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <!-- More Project Information -->
+  <name>Slim3</name>
+  <description>"Slim3" is a full-stack framework optimiazed for Google App Engine/GWT.</description>
+  <url>http://slim3.org/</url>
+  <inceptionYear>2009</inceptionYear>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <organization>
+    <name>The Slim3 project</name>
+    <url>http://slim3.org/</url>
+  </organization>
+  <developers>
+    <developer>
+      <id>higa</id>
+      <name>Yasuo Higa</name>
+      <email>higayasuo_at_gmail.com</email>
+      <organization></organization>
+      <timezone>+9</timezone>
+    </developer>
+  </developers>
+  <contributors>
+  </contributors>
+
+  <!-- Environment Settings -->
+  <issueManagement>
+    <system>Goole Code</system>
+    <url><![CDATA[http://code.google.com/p/slim3/issues/list]]></url>
+  </issueManagement>
+  <mailingLists>
+    <mailingList>
+      <name>slim3-user</name>
+      <subscribe>http://groups.google.com/group/slim3-user/subscribe</subscribe>
+      <unsubscribe>http://groups.google.com/group/slim3-user</unsubscribe>
+      <post>slim3-user@googlegroups.com</post>
+      <archive>http://groups.google.com/group/slim3-user/topics</archive>
+    </mailingList>
+    <mailingList>
+      <name>slim3-user-japan</name>
+      <subscribe>http://groups.google.co.jp/group/slim3-user-japan/subscribe</subscribe>
+      <unsubscribe>http://groups.google.co.jp/group/slim3-user-japan</unsubscribe>
+      <post>slim3-user-japan@googlegroups.com</post>
+      <archive>http://groups.google.co.jp/group/slim3-user-japan/topics</archive>
+    </mailingList>
+  </mailingLists>
+  <scm>
+    <connection>scm:svn:https://slim3.googlecode.com/svn/</connection>
+    <developerConnection>scm:svn:https://slim3.googlecode.com/svn/</developerConnection>
+    <url>http://code.google.com/p/slim3/source/browse#svn/trunk</url>
+  </scm>
+  <repositories>
+    <repository>
+      <id>maven.seasar.org</id>
+      <name>The Seasar Foundation Maven2 Repository</name>
+      <url>http://maven.seasar.org/maven2</url>
+    </repository>
+    <repository>
+      <id>maven.snapshot.seasar.org</id>
+      <name>The Seasar Foundation Maven2 Snapshot Repository</name>
+      <url>http://maven.seasar.org/maven2-snapshot</url>
+    </repository>
+  </repositories>
+  <distributionManagement>
+    <repository>
+      <uniqueVersion>false</uniqueVersion>
+      <id>maven.seasar.org</id>
+      <name>The Seasar Foundation Maven2 Repository</name>
+      <url>dav:https://www.seasar.org/maven/maven2</url>
+    </repository>
+    <snapshotRepository>
+      <uniqueVersion>true</uniqueVersion>
+      <id>maven.seasar.org</id>
+      <name>The Seasar Foundation Maven2 Snapshot Repository</name>
+      <url>dav:https://www.seasar.org/maven/maven2-snapshot</url>
+    </snapshotRepository>
+    <site>
+      <id>maven.seasar.org</id>
+      <url>dav:https://www.slim3.org/site</url>
+    </site>
+  </distributionManagement>
+
+  <!-- Build Settings -->
+  <build>
+    <defaultGoal>validate</defaultGoal>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+            <source>1.5</source>
+            <target>1.5</target>
+            <encoding>UTF-8</encoding>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <configuration>
+            <includes>
+              <include>**/*Test.java</include>
+            </includes>
+          </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <configuration>
+            <updateReleaseInfo>true</updateReleaseInfo>
+          </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-site-plugin</artifactId>
+          <configuration>
+            <locales>en</locales>
+            <inputEncoding>UTF-8</inputEncoding>
+            <outputEncoding>UTF-8</outputEncoding>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>source-jar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <encoding>UTF-8</encoding>
+          <docencoding>UTF-8</docencoding>
+          <charset>UTF-8</charset>
+          <aggregate>true</aggregate>
+          <locale>en</locale>
+          <links>
+            <link>http://java.sun.com/javaee/5/docs/api/</link>
+          	<link>http://java.sun.com/javase/6/docs/api/</link>
+            <link>http://code.google.com/appengine/docs/java/javadoc/</link>
+            <link>http://google-web-toolkit.googlecode.com/svn/javadoc/1.6/</link>
+            <link>http://junit.org/junit/javadoc/4.5/</link>
+          </links>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>site</phase>
+            <goals>
+              <goal>javadoc</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.google.code.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+        <version>1.4.0</version>
+        <configuration>
+          <header>src/header.txt</header>
+          <includes>
+            <include>src/**/*.java</include>
+          </includes>
+          <encoding>UTF-8</encoding>
+          <headerDefinitions>
+            <headerDefinition>src/header-definition.xml</headerDefinition>
+          </headerDefinitions>
+        </configuration>
+      </plugin>
+    </plugins>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-webdav</artifactId>
+      </extension>
+    </extensions>
+  </build>
+
+  <!-- Dependency Settings -->
+  <dependencies>
+    <dependency>
+      <groupId>com.google.appengine</groupId>
+      <artifactId>appengine-api-1.0-sdk</artifactId>
+      <version>1.2.6</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.appengine</groupId>
+      <artifactId>appengine-local-runtime</artifactId>
+      <version>1.2.6</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.appengine</groupId>
+      <artifactId>appengine-api-stubs</artifactId>
+      <version>1.2.6</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-servlet</artifactId>
+      <version>1.7.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet.jsp</groupId>
+      <artifactId>jsp-api</artifactId>
+      <version>2.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.7</version>
+      <type>jar</type>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+</project>

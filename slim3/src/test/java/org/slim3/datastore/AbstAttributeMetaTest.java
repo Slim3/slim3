@@ -37,12 +37,11 @@ public class AbstAttributeMetaTest {
      * @throws Exception
      * 
      */
-    @SuppressWarnings("unchecked")
     @Test
     public void constructor() throws Exception {
         assertThat((HogeMeta) meta.key.modelMeta, is(sameInstance(meta)));
         assertThat(meta.key.name, is("__key__"));
-        assertThat((Class) meta.key.attributeClass, equalTo(Key.class));
+        assertThat(meta.key.attributeClass.getName(), is(Key.class.getName()));
     }
 
     /**

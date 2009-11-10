@@ -40,7 +40,7 @@ public class AbstCriterionTest {
         MyCriterion criterion = new MyCriterion(meta.myInteger);
         assertThat(
             (CoreAttributeMeta) criterion.attributeMeta,
-            is(sameInstance(meta.myInteger)));
+            is(sameInstance((CoreAttributeMeta) meta.myInteger)));
     }
 
     /**

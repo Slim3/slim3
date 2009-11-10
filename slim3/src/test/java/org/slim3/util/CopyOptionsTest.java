@@ -131,7 +131,8 @@ public class CopyOptionsTest {
             options.dateConverter("MM/dd/yyyy").findConverter(
                 java.sql.Date.class);
         assertThat(converter, is(notNullValue()));
-        assertThat((Class) converter.getClass(), equalTo(DateConverter.class));
+        assertThat(converter.getClass().getName(), is(DateConverter.class
+            .getName()));
     }
 
     /**
@@ -143,7 +144,8 @@ public class CopyOptionsTest {
         Converter converter =
             options.numberConverter("#,###").findConverter(Long.class);
         assertThat(converter, is(notNullValue()));
-        assertThat((Class) converter.getClass(), equalTo(NumberConverter.class));
+        assertThat(converter.getClass().getName(), is(NumberConverter.class
+            .getName()));
     }
 
     /**

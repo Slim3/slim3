@@ -29,21 +29,19 @@ public class CallerUtilTest {
     /**
      * @throws Exception
      */
-    @SuppressWarnings("unchecked")
     @Test
     public void getCallerStack() throws Exception {
         Class<?>[] stack = CallerUtil.getCallerStack();
         assertThat(stack, is(notNullValue()));
-        assertThat((Class) stack[2], equalTo(getClass()));
+        assertThat(stack[2].getName(), is(getClass().getName()));
     }
 
     /**
      * @throws Exception
      */
-    @SuppressWarnings("unchecked")
     @Test
     public void getCaller() throws Exception {
-        assertThat((Class) new Hoge().getCaller(), equalTo(getClass()));
+        assertThat(new Hoge().getCaller().getName(), is(getClass().getName()));
     }
 
     /**

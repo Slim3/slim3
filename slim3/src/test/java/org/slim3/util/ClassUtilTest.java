@@ -50,7 +50,6 @@ public class ClassUtilTest {
     /**
      * 
      */
-    @SuppressWarnings("unchecked")
     @Test
     public void forName() {
         Class<?> clazz =
@@ -58,7 +57,7 @@ public class ClassUtilTest {
                 .currentThread()
                 .getContextClassLoader());
         assertThat(clazz, is(notNullValue()));
-        assertThat((Class) clazz, equalTo(String.class));
+        assertThat(clazz.getName(), is(String.class.getName()));
     }
 
     /**

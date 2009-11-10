@@ -33,11 +33,10 @@ public class GWTServiceServletTest {
     /**
      * @throws Exception
      */
-    @SuppressWarnings("unchecked")
     @Test
     public void getServiceClass() throws Exception {
-        assertThat(
-            (Class) servlet.getServiceClass(HogeService.class.getName()),
-            equalTo(HogeServiceImpl.class));
+        assertThat(servlet
+            .getServiceClass(HogeService.class.getName())
+            .getName(), equalTo(HogeServiceImpl.class.getName()));
     }
 }

@@ -72,13 +72,12 @@ public class BeanDescTest {
     /**
      * 
      */
-    @SuppressWarnings("unchecked")
     @Test
     public void propertyDescForBoolean() {
         PropertyDesc pd = beanDesc.getPropertyDesc("ddd");
         assertThat(pd, is(notNullValue()));
         assertThat(pd.getName(), is("ddd"));
-        assertThat((Class) pd.getPropertyClass(), equalTo(boolean.class));
+        assertThat(pd.getPropertyClass().getName(), is(boolean.class.getName()));
         assertThat(pd.getReadMethod(), is(notNullValue()));
         assertThat(pd.getWriteMethod(), is(nullValue()));
     }
@@ -86,13 +85,12 @@ public class BeanDescTest {
     /**
      * 
      */
-    @SuppressWarnings("unchecked")
     @Test
     public void propertyDescForBooleanWrapper() {
         PropertyDesc pd = beanDesc.getPropertyDesc("eee");
         assertThat(pd, is(notNullValue()));
         assertThat(pd.getName(), is("eee"));
-        assertThat((Class) pd.getPropertyClass(), equalTo(Boolean.class));
+        assertThat(pd.getPropertyClass().getName(), is(Boolean.class.getName()));
         assertThat(pd.getReadMethod(), is(notNullValue()));
         assertThat(pd.getWriteMethod(), is(nullValue()));
     }

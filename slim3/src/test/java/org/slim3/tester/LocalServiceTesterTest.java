@@ -73,12 +73,13 @@ public class LocalServiceTesterTest {
     public void getLocalRuntimeJar() throws Exception {
         File libDir = LocalServiceTester.getLibDir();
         File implDir = new File(libDir, LocalServiceTester.IMPL_DIR_NAME);
-        URL url =
-            LocalServiceTester.getLibraryURL(
-                implDir,
-                LocalServiceTester.LOCAL_RUNTIME_LIB_NAME);
-        System.out.println(url);
-        assertThat(url, is(not(nullValue())));
+        if (implDir.exists()) {
+            URL url =
+                LocalServiceTester.getLibraryURL(
+                    implDir,
+                    LocalServiceTester.LOCAL_RUNTIME_LIB_NAME);
+            assertThat(url, is(notNullValue()));
+        }
     }
 
     /**
@@ -89,12 +90,14 @@ public class LocalServiceTesterTest {
     public void getApiStubsJar() throws Exception {
         File libDir = LocalServiceTester.getLibDir();
         File implDir = new File(libDir, LocalServiceTester.IMPL_DIR_NAME);
-        URL url =
-            LocalServiceTester.getLibraryURL(
-                implDir,
-                LocalServiceTester.API_STUBS_LIB_NAME);
-        System.out.println(url);
-        assertThat(url, is(not(nullValue())));
+        if (implDir.exists()) {
+            URL url =
+                LocalServiceTester.getLibraryURL(
+                    implDir,
+                    LocalServiceTester.API_STUBS_LIB_NAME);
+            System.out.println(url);
+            assertThat(url, is(notNullValue()));
+        }
     }
 
     /**
