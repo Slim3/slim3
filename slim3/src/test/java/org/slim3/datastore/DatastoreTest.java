@@ -215,7 +215,7 @@ public class DatastoreTest extends LocalServiceTestCase {
     @Test
     public void getModelUsingClassAndCache() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
-        Map<Key, Object> cache = new HashMap<Key, Object>();
+        Map<Key, Hoge> cache = new HashMap<Key, Hoge>();
         Hoge model = Datastore.get(Hoge.class, key, cache);
         assertThat(model, is(notNullValue()));
         assertThat(model, is(sameInstance(cache.get(key))));
@@ -231,7 +231,7 @@ public class DatastoreTest extends LocalServiceTestCase {
     @Test
     public void getModelUsingCache() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
-        Map<Key, Object> cache = new HashMap<Key, Object>();
+        Map<Key, Hoge> cache = new HashMap<Key, Hoge>();
         Hoge model = Datastore.get(meta, key, cache);
         assertThat(model, is(not(nullValue())));
         assertThat(model, is(sameInstance(cache.get(key))));
@@ -295,7 +295,7 @@ public class DatastoreTest extends LocalServiceTestCase {
     @Test
     public void getModelInTxUsingClassAndCache() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
-        Map<Key, Object> cache = new HashMap<Key, Object>();
+        Map<Key, Hoge> cache = new HashMap<Key, Hoge>();
         Transaction tx = ds.beginTransaction();
         Hoge model = Datastore.get(tx, Hoge.class, key, cache);
         assertThat(model, is(notNullValue()));
@@ -314,7 +314,7 @@ public class DatastoreTest extends LocalServiceTestCase {
     @Test
     public void getModelInTxUsingCache() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
-        Map<Key, Object> cache = new HashMap<Key, Object>();
+        Map<Key, Hoge> cache = new HashMap<Key, Hoge>();
         Transaction tx = ds.beginTransaction();
         Hoge model = Datastore.get(tx, meta, key, cache);
         assertThat(model, is(not(nullValue())));

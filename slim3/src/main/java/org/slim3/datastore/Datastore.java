@@ -775,7 +775,7 @@ public final class Datastore {
      * @throws EntityNotFoundRuntimeException
      *             if no entity specified by the key could be found
      */
-    public static <M> M get(Class<M> modelClass, Key key, Map<Key, Object> cache)
+    public static <M> M get(Class<M> modelClass, Key key, Map<Key, M> cache)
             throws NullPointerException, EntityNotFoundRuntimeException {
         if (modelClass == null) {
             throw new NullPointerException("The modelClass parameter is null.");
@@ -804,14 +804,12 @@ public final class Datastore {
      * @throws EntityNotFoundRuntimeException
      *             if no entity specified by the key could be found
      */
-    @SuppressWarnings("unchecked")
-    public static <M> M get(ModelMeta<M> modelMeta, Key key,
-            Map<Key, Object> cache) throws NullPointerException,
-            EntityNotFoundRuntimeException {
+    public static <M> M get(ModelMeta<M> modelMeta, Key key, Map<Key, M> cache)
+            throws NullPointerException, EntityNotFoundRuntimeException {
         if (cache == null) {
             throw new NullPointerException("The cache parameter is null.");
         }
-        M model = (M) cache.get(key);
+        M model = cache.get(key);
         if (model != null) {
             return model;
         }
@@ -1006,7 +1004,7 @@ public final class Datastore {
      *             if no entity specified by the key could be found
      */
     public static <M> M get(Transaction tx, Class<M> modelClass, Key key,
-            Map<Key, Object> cache) throws NullPointerException,
+            Map<Key, M> cache) throws NullPointerException,
             IllegalStateException, EntityNotFoundRuntimeException {
         if (modelClass == null) {
             throw new NullPointerException("The modelClass parameter is null.");
@@ -1039,14 +1037,13 @@ public final class Datastore {
      * @throws EntityNotFoundRuntimeException
      *             if no entity specified by the key could be found
      */
-    @SuppressWarnings("unchecked")
     public static <M> M get(Transaction tx, ModelMeta<M> modelMeta, Key key,
-            Map<Key, Object> cache) throws NullPointerException,
+            Map<Key, M> cache) throws NullPointerException,
             IllegalStateException, EntityNotFoundRuntimeException {
         if (cache == null) {
             throw new NullPointerException("The cache parameter is null.");
         }
-        M model = (M) cache.get(key);
+        M model = cache.get(key);
         if (model != null) {
             return model;
         }
