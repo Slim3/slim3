@@ -1812,14 +1812,14 @@ public final class Datastore {
     }
 
     /**
-     * Returns a {@link AllKindAncestorQuery}.
+     * Returns a {@link KindlessAncestorQuery}.
      * 
      * @param ancestorKey
      *            the ancestor key
-     * @return a {@link AllKindAncestorQuery}
+     * @return a {@link KindlessAncestorQuery}
      */
-    public static AllKindAncestorQuery query(Key ancestorKey) {
-        return new AllKindAncestorQuery(ancestorKey);
+    public static KindlessAncestorQuery query(Key ancestorKey) {
+        return new KindlessAncestorQuery(ancestorKey);
     }
 
     /**

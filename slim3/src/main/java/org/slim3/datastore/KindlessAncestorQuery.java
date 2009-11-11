@@ -15,6 +15,10 @@
  */
 package org.slim3.datastore;
 
+import java.util.Iterator;
+import java.util.List;
+
+import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 
 /**
@@ -24,7 +28,7 @@ import com.google.appengine.api.datastore.Key;
  * @since 3.0
  * 
  */
-public class AllKindAncestorQuery extends AbstractQuery<AllKindAncestorQuery> {
+public class KindlessAncestorQuery extends AbstractQuery<KindlessAncestorQuery> {
 
     /**
      * Constructor.
@@ -34,7 +38,39 @@ public class AllKindAncestorQuery extends AbstractQuery<AllKindAncestorQuery> {
      * @throws NullPointerException
      *             if the ancestorKey parameter is null
      */
-    public AllKindAncestorQuery(Key ancestorKey) throws NullPointerException {
+    public KindlessAncestorQuery(Key ancestorKey) throws NullPointerException {
         super(ancestorKey);
+    }
+
+    /**
+     * Returns entities as a list.
+     * 
+     * @return entities as a list
+     */
+    public List<Entity> asList() {
+        return super.asEntityList();
+    }
+
+    @Override
+    public Entity asSingleEntity() {
+        return super.asSingleEntity();
+    }
+
+    /**
+     * Returns entities as {@link Iterable}.
+     * 
+     * @return entities as {@link Iterable}
+     */
+    public Iterable<Entity> asIterable() {
+        return super.asIterableEntities();
+    }
+
+    /**
+     * Returns entities as {@link Iterator}.
+     * 
+     * @return entities as {@link Iterator}
+     */
+    public Iterator<Entity> asIterator() {
+        return asIterable().iterator();
     }
 }
