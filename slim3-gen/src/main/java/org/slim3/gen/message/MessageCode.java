@@ -70,7 +70,7 @@ public enum MessageCode {
     /** */
     SILM3GEN1014("Multiple version property are not allowed."),
     /** */
-    SILM3GEN1015("You should define @Attribute(primaryKey = true) to one field."),
+    SILM3GEN1015("You should define @Attribute(primaryKey = true) to a primary key field."),
     /** */
     SILM3GEN1016("The type parameter[{0}] is not supported."),
     /** */
