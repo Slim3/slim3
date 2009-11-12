@@ -35,18 +35,18 @@
 
     <target name="gen-model">
         <input message="Input a model name. (ex.  Foo -> root.model.Foo,  bar.Foo -> root.model.bar.Foo). Child extends Parent." addproperty="modelRelativeClassName"/>
-        <gen-model srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" modelRelativeClassName="${modelRelativeClassName}" modelClassNameProperty="modelClassName"/>
+        <gen-model srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" modelDefinition="${modelDefinition}" modelClassNameProperty="modelClassName"/>
     </target>
 
     <target name="gen-service">
-        <input message="Input a service name. (ex.  FooService -> root.service.FooService,  bar.FooService -> root.service.bar.FooService)" addproperty="serviceRelativeClassName"/>
-        <gen-service srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" serviceRelativeClassName="${serviceRelativeClassName}"/>
+        <input message="Input a service name. (ex.  FooService -> root.service.FooService,  bar.FooService -> root.service.bar.FooService)" addproperty="serviceDefinition"/>
+        <gen-service srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" serviceDefinition="${serviceDefinition}"/>
     </target>
    
 	<target name="gen-gwt-service">
-        <input message="Input a GWT service name. (ex.  FooService -> root.client.service.FooService,  bar.FooService -> root.client.service.bar.FooService)" addproperty="serviceRelativeClassName"/>
-        <gen-gwt-service srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" serviceRelativeClassName="${serviceRelativeClassName}" serviceClassNameProperty="serviceClassName"/>
-        <gen-gwt-service-impl srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" serviceRelativeClassName="${serviceRelativeClassName}" serviceClassName="${serviceClassName}"/>
+        <input message="Input a GWT service name. (ex.  FooService -> root.client.service.FooService,  bar.FooService -> root.client.service.bar.FooService)" addproperty="serviceDefinition"/>
+        <gen-gwt-service srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" serviceDefinition="${serviceDefinition}" serviceClassNameProperty="serviceClassName"/>
+        <gen-gwt-service-impl srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" serviceDefinition="${serviceDefinition}" serviceClassName="${serviceClassName}"/>
     </target>
     
     <target name="copy">
