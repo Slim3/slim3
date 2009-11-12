@@ -616,6 +616,47 @@ public final class Datastore {
     }
 
     /**
+     * Puts the unique value.
+     * 
+     * @param uniqueIndexName
+     *            the unique index name
+     * @param value
+     *            the unique value
+     * @return whether the unique value is put
+     * @throws NullPointerException
+     *             if the uniqueIndexName parameter is null or if the value
+     *             parameter is null
+     */
+    public static boolean putUniqueValue(String uniqueIndexName, String value)
+            throws NullPointerException {
+        if (uniqueIndexName == null) {
+            throw new NullPointerException(
+                "The uniqueIndexName parameter is null.");
+        }
+        if (value == null) {
+            throw new NullPointerException("The value parameter is null.");
+        }
+        Key key = createKey(uniqueIndexName, value);
+        Transaction tx = beginTransaction();
+        try {
+            get(tx, key);
+            return false;
+        } catch (EntityNotFoundRuntimeException e) {
+            Entity entity = new Entity(key);
+            try {
+                put(tx, entity);
+                commit(tx);
+                return true;
+            } catch (ConcurrentModificationException e2) {
+                if (tx.isActive()) {
+                    rollback(tx);
+                }
+                return false;
+            }
+        }
+    }
+
+    /**
      * Returns an entity specified by the key. If there is a current
      * transaction, this operation will execute within that transaction.
      * 
