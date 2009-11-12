@@ -15,6 +15,8 @@
  */
 package org.slim3.datastore;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.slim3.tester.LocalServiceTestCase;
 
@@ -34,9 +36,14 @@ public class SpikeTest extends LocalServiceTestCase {
     @Test
     public void spike() throws Exception {
         Key key = Datastore.put(new Entity("Hoge"));
-        Datastore.put(new Entity("Hoge"));
+        Key key2 =
+            Datastore.put(new Entity(Datastore.createKey(key, "Hoge2", 1)));
         Transaction tx = Datastore.beginTransaction();
-        Datastore.query(key).tx(tx).asEntityList();
-        tx.commit();
+        List<Entity> list = Datastore.get(tx, key, key2);
+        Transaction tx2 = Datastore.beginTransaction();
+        Datastore.put(tx2, list);
+        tx2.commit();
+        // Datastore.put(tx, list);
+        // tx.commit();
     }
 }

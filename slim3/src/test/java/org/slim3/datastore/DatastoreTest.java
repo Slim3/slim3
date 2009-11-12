@@ -21,7 +21,6 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -212,36 +211,6 @@ public class DatastoreTest extends LocalServiceTestCase {
     /**
      * @throws Exception
      */
-    @Test
-    public void getModelUsingClassAndCache() throws Exception {
-        Key key = ds.put(new Entity("Hoge"));
-        Map<Key, Hoge> cache = new HashMap<Key, Hoge>();
-        Hoge model = Datastore.get(Hoge.class, key, cache);
-        assertThat(model, is(notNullValue()));
-        assertThat(model, is(sameInstance(cache.get(key))));
-        ds.delete(key);
-        assertThat(
-            model,
-            is(sameInstance(Datastore.get(Hoge.class, key, cache))));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void getModelUsingCache() throws Exception {
-        Key key = ds.put(new Entity("Hoge"));
-        Map<Key, Hoge> cache = new HashMap<Key, Hoge>();
-        Hoge model = Datastore.get(meta, key, cache);
-        assertThat(model, is(not(nullValue())));
-        assertThat(model, is(sameInstance(cache.get(key))));
-        ds.delete(key);
-        assertThat(model, is(sameInstance(Datastore.get(meta, key, cache))));
-    }
-
-    /**
-     * @throws Exception
-     */
     @Test(expected = ConcurrentModificationException.class)
     public void getModelUsingClassAndCheckVersion() throws Exception {
         Entity entity = new Entity("Hoge");
@@ -287,40 +256,6 @@ public class DatastoreTest extends LocalServiceTestCase {
         Hoge model = Datastore.get(tx, Hoge.class, key);
         tx.rollback();
         assertThat(model, is(notNullValue()));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void getModelInTxUsingClassAndCache() throws Exception {
-        Key key = ds.put(new Entity("Hoge"));
-        Map<Key, Hoge> cache = new HashMap<Key, Hoge>();
-        Transaction tx = ds.beginTransaction();
-        Hoge model = Datastore.get(tx, Hoge.class, key, cache);
-        assertThat(model, is(notNullValue()));
-        assertThat(model, is(sameInstance(cache.get(key))));
-        ds.delete(key);
-        assertThat(model, is(sameInstance(Datastore.get(
-            tx,
-            Hoge.class,
-            key,
-            cache))));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void getModelInTxUsingCache() throws Exception {
-        Key key = ds.put(new Entity("Hoge"));
-        Map<Key, Hoge> cache = new HashMap<Key, Hoge>();
-        Transaction tx = ds.beginTransaction();
-        Hoge model = Datastore.get(tx, meta, key, cache);
-        assertThat(model, is(not(nullValue())));
-        assertThat(model, is(sameInstance(cache.get(key))));
-        ds.delete(key);
-        assertThat(model, is(sameInstance(Datastore.get(tx, meta, key, cache))));
     }
 
     /**
