@@ -162,7 +162,7 @@ public class ModelMetaDescFactory {
             throw new ValidationException(
                 MessageCode.SILM3GEN1023,
                 env,
-                classDeclaration);
+                classDeclaration.getPosition());
         }
         return new PolyModelDesc(kind, simpleNames.get(0));
     }
@@ -197,7 +197,7 @@ public class ModelMetaDescFactory {
             throw new ValidationException(
                 MessageCode.SILM3GEN1019,
                 env,
-                classDeclaration);
+                classDeclaration.getPosition());
         }
     }
 
@@ -212,7 +212,7 @@ public class ModelMetaDescFactory {
             throw new ValidationException(
                 MessageCode.SILM3GEN1017,
                 env,
-                classDeclaration);
+                classDeclaration.getPosition());
         }
     }
 
@@ -226,7 +226,7 @@ public class ModelMetaDescFactory {
             throw new ValidationException(
                 MessageCode.SILM3GEN1020,
                 env,
-                classDeclaration);
+                classDeclaration.getPosition());
         }
     }
 
@@ -248,7 +248,7 @@ public class ModelMetaDescFactory {
         throw new ValidationException(
             MessageCode.SILM3GEN1018,
             env,
-            classDeclaration);
+            classDeclaration.getPosition());
     }
 
     /**
@@ -271,10 +271,8 @@ public class ModelMetaDescFactory {
             AnnotationMirrorUtil
                 .getElementValue(anno, AnnotationConstants.kind);
         if (value != null && value.length() > 0) {
-            throw new ValidationException(
-                MessageCode.SILM3GEN1022,
-                env,
-                classDeclaration);
+            throw new ValidationException(MessageCode.SILM3GEN1022, env, anno
+                .getPosition());
         }
     }
 
@@ -318,14 +316,14 @@ public class ModelMetaDescFactory {
                 throw new ValidationException(
                     MessageCode.SILM3GEN1013,
                     env,
-                    classDeclaration);
+                    classDeclaration.getPosition());
             }
             if (attributeMetaDesc.isVersion()
                 && modelMetaDesc.getVersionAttributeMetaDesc() != null) {
                 throw new ValidationException(
                     MessageCode.SILM3GEN1014,
                     env,
-                    classDeclaration);
+                    classDeclaration.getPosition());
             }
             modelMetaDesc.addAttributeMetaDesc(attributeMetaDesc);
         }
@@ -334,7 +332,7 @@ public class ModelMetaDescFactory {
             throw new ValidationException(
                 MessageCode.SILM3GEN1015,
                 env,
-                classDeclaration);
+                classDeclaration.getPosition());
         }
     }
 

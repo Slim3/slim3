@@ -15,7 +15,34 @@
  */
 package org.slim3.gen.datastore;
 
-import static org.slim3.gen.ClassConstants.*;
+import static org.slim3.gen.ClassConstants.ArrayList;
+import static org.slim3.gen.ClassConstants.Blob;
+import static org.slim3.gen.ClassConstants.Boolean;
+import static org.slim3.gen.ClassConstants.Category;
+import static org.slim3.gen.ClassConstants.Date;
+import static org.slim3.gen.ClassConstants.Double;
+import static org.slim3.gen.ClassConstants.Email;
+import static org.slim3.gen.ClassConstants.Float;
+import static org.slim3.gen.ClassConstants.GeoPt;
+import static org.slim3.gen.ClassConstants.HashSet;
+import static org.slim3.gen.ClassConstants.IMHandle;
+import static org.slim3.gen.ClassConstants.Integer;
+import static org.slim3.gen.ClassConstants.Key;
+import static org.slim3.gen.ClassConstants.Link;
+import static org.slim3.gen.ClassConstants.List;
+import static org.slim3.gen.ClassConstants.Long;
+import static org.slim3.gen.ClassConstants.PhoneNumber;
+import static org.slim3.gen.ClassConstants.PostalAddress;
+import static org.slim3.gen.ClassConstants.Rating;
+import static org.slim3.gen.ClassConstants.Set;
+import static org.slim3.gen.ClassConstants.Short;
+import static org.slim3.gen.ClassConstants.ShortBlob;
+import static org.slim3.gen.ClassConstants.SortedSet;
+import static org.slim3.gen.ClassConstants.String;
+import static org.slim3.gen.ClassConstants.Text;
+import static org.slim3.gen.ClassConstants.TreeSet;
+import static org.slim3.gen.ClassConstants.User;
+import static org.slim3.gen.ClassConstants.primitive_byte;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -232,7 +259,7 @@ public class DataTypeFactory {
             throw new ValidationException(
                 MessageCode.SILM3GEN1002,
                 env,
-                declaration,
+                declaration.getPosition(),
                 kind.name().toLowerCase());
         }
 
@@ -319,7 +346,7 @@ public class DataTypeFactory {
                 throw new ValidationException(
                     MessageCode.SILM3GEN1004,
                     env,
-                    declaration,
+                    declaration.getPosition(),
                     declaredType);
             }
             TypeMirror elementType = typeArgs.iterator().next();
@@ -329,7 +356,7 @@ public class DataTypeFactory {
                 throw new ValidationException(
                     MessageCode.SILM3GEN1016,
                     env,
-                    declaration,
+                    declaration.getPosition(),
                     elementType);
             }
             TypeDeclaration elementDeclaration =
@@ -386,7 +413,7 @@ public class DataTypeFactory {
             throw new ValidationException(
                 MessageCode.SILM3GEN1002,
                 env,
-                declaration,
+                declaration.getPosition(),
                 className);
         }
 

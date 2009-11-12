@@ -158,20 +158,20 @@ public class AttributeMetaDescFactory {
                 throw new ValidationException(
                     MessageCode.SILM3GEN1005,
                     env,
-                    fieldDeclaration);
+                    fieldDeclaration.getPosition());
             }
             if (dataType instanceof CollectionType
                 && CollectionType.class.cast(dataType).getElementType() instanceof OtherReferenceType) {
                 throw new ValidationException(
                     MessageCode.SILM3GEN1005,
                     env,
-                    fieldDeclaration);
+                    fieldDeclaration.getPosition());
             }
             if (dataType instanceof ArrayType) {
                 throw new ValidationException(
                     MessageCode.SILM3GEN1005,
                     env,
-                    fieldDeclaration);
+                    fieldDeclaration.getPosition());
             }
         }
     }
@@ -207,7 +207,7 @@ public class AttributeMetaDescFactory {
             throw new ValidationException(
                 MessageCode.SILM3GEN1021,
                 env,
-                fieldDeclaration,
+                attribute.getPosition(),
                 AnnotationConstants.primaryKey,
                 AnnotationConstants.version);
         }
@@ -217,7 +217,7 @@ public class AttributeMetaDescFactory {
             throw new ValidationException(
                 MessageCode.SILM3GEN1021,
                 env,
-                fieldDeclaration,
+                fieldDeclaration.getPosition(),
                 AnnotationConstants.primaryKey,
                 AnnotationConstants.lob);
         }
@@ -227,7 +227,7 @@ public class AttributeMetaDescFactory {
             throw new ValidationException(
                 MessageCode.SILM3GEN1021,
                 env,
-                fieldDeclaration,
+                fieldDeclaration.getPosition(),
                 AnnotationConstants.primaryKey,
                 AnnotationConstants.unindexed);
         }
@@ -237,7 +237,7 @@ public class AttributeMetaDescFactory {
             throw new ValidationException(
                 MessageCode.SILM3GEN1021,
                 env,
-                fieldDeclaration,
+                fieldDeclaration.getPosition(),
                 AnnotationConstants.primaryKey,
                 AnnotationConstants.persistent + " = false");
         }
@@ -247,7 +247,7 @@ public class AttributeMetaDescFactory {
             throw new ValidationException(
                 MessageCode.SILM3GEN1007,
                 env,
-                fieldDeclaration);
+                fieldDeclaration.getPosition());
         }
         attributeMetaDesc.setPrimaryKey(true);
     }
@@ -270,7 +270,7 @@ public class AttributeMetaDescFactory {
             throw new ValidationException(
                 MessageCode.SILM3GEN1021,
                 env,
-                fieldDeclaration,
+                attribute.getPosition(),
                 AnnotationConstants.version,
                 AnnotationConstants.lob);
         }
@@ -280,7 +280,7 @@ public class AttributeMetaDescFactory {
             throw new ValidationException(
                 MessageCode.SILM3GEN1021,
                 env,
-                fieldDeclaration,
+                fieldDeclaration.getPosition(),
                 AnnotationConstants.version,
                 AnnotationConstants.persistent + " = false");
         }
@@ -290,7 +290,7 @@ public class AttributeMetaDescFactory {
             throw new ValidationException(
                 MessageCode.SILM3GEN1008,
                 env,
-                fieldDeclaration);
+                fieldDeclaration.getPosition());
         }
         attributeMetaDesc.setVersion(true);
     }
@@ -313,7 +313,7 @@ public class AttributeMetaDescFactory {
             throw new ValidationException(
                 MessageCode.SILM3GEN1021,
                 env,
-                fieldDeclaration,
+                attribute.getPosition(),
                 AnnotationConstants.lob,
                 AnnotationConstants.persistent + " = false");
         }
@@ -323,7 +323,7 @@ public class AttributeMetaDescFactory {
             throw new ValidationException(
                 MessageCode.SILM3GEN1021,
                 env,
-                fieldDeclaration,
+                fieldDeclaration.getPosition(),
                 AnnotationConstants.lob,
                 AnnotationConstants.unindexed + " = false");
         }
@@ -333,14 +333,14 @@ public class AttributeMetaDescFactory {
             throw new ValidationException(
                 MessageCode.SILM3GEN1009,
                 env,
-                fieldDeclaration);
+                fieldDeclaration.getPosition());
         }
         if (dataType instanceof CollectionType
             && CollectionType.class.cast(dataType).getElementType() instanceof CoreReferenceType) {
             throw new ValidationException(
                 MessageCode.SILM3GEN1009,
                 env,
-                fieldDeclaration);
+                fieldDeclaration.getPosition());
         }
         attributeMetaDesc.setLob(true);
     }
@@ -363,7 +363,7 @@ public class AttributeMetaDescFactory {
             throw new ValidationException(
                 MessageCode.SILM3GEN1021,
                 env,
-                fieldDeclaration,
+                attribute.getPosition(),
                 AnnotationConstants.unindexed,
                 AnnotationConstants.persistent + " = false");
         }
@@ -416,14 +416,14 @@ public class AttributeMetaDescFactory {
             throw new ValidationException(
                 MessageCode.SILM3GEN1011,
                 env,
-                fieldDeclaration,
+                fieldDeclaration.getPosition(),
                 fieldDeclaration.getSimpleName());
         }
         if (attributeMetaDesc.getWriteMethodName() == null) {
             throw new ValidationException(
                 MessageCode.SILM3GEN1012,
                 env,
-                fieldDeclaration,
+                fieldDeclaration.getPosition(),
                 fieldDeclaration.getSimpleName());
         }
     }

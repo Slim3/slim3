@@ -45,7 +45,11 @@ public class UnknownDeclarationException extends AptException {
      */
     public UnknownDeclarationException(AnnotationProcessorEnvironment env,
             Declaration declaration, TypeMirror typeMirror) {
-        super(MessageCode.SILM3GEN1001, env, declaration, typeMirror);
+        super(
+            MessageCode.SILM3GEN1001,
+            env,
+            declaration.getPosition(),
+            typeMirror);
     }
 
     /**
@@ -60,6 +64,10 @@ public class UnknownDeclarationException extends AptException {
      */
     public UnknownDeclarationException(AnnotationProcessorEnvironment env,
             Declaration declaration, AnnotationMirror annotationMirror) {
-        super(MessageCode.SILM3GEN1001, env, declaration, annotationMirror);
+        super(
+            MessageCode.SILM3GEN1001,
+            env,
+            declaration.getPosition(),
+            annotationMirror);
     }
 }

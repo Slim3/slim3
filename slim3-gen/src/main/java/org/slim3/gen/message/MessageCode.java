@@ -62,9 +62,9 @@ public enum MessageCode {
     /** */
     SILM3GEN1009("The type annotated with @Attribute(lob = true) is not supported."),
     /** */
-    SILM3GEN1011("The getter method is not found."),
+    SILM3GEN1011("The getter method is not found for the property[{0}]."),
     /** */
-    SILM3GEN1012("The setter method is not found."),
+    SILM3GEN1012("The setter method is not found for the property[{0}]."),
     /** */
     SILM3GEN1013("Multiple primary keys are not allowed."),
     /** */

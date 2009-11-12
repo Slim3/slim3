@@ -19,7 +19,7 @@ import org.slim3.gen.message.MessageCode;
 import org.slim3.gen.message.MessageFormatter;
 
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
-import com.sun.mirror.declaration.Declaration;
+import com.sun.mirror.util.SourcePosition;
 
 /**
  * Thrown when annotation processing is failed.
@@ -38,8 +38,8 @@ public class AptException extends RuntimeException {
     /** the message code */
     protected final MessageCode messageCode;
 
-    /** the declaration */
-    protected final Declaration declaration;
+    /** the source position */
+    protected final SourcePosition sourcePosition;
 
     /**
      * Creates a new {@link AptException}.
@@ -48,15 +48,15 @@ public class AptException extends RuntimeException {
      *            the message code
      * @param env
      *            the environment
-     * @param declaration
+     * @param sourcePosition
      *            the send target
      * @param args
      *            arguments
      */
     public AptException(MessageCode messageCode,
-            AnnotationProcessorEnvironment env, Declaration declaration,
+            AnnotationProcessorEnvironment env, SourcePosition sourcePosition,
             Object... args) {
-        this(messageCode, env, declaration, null, args);
+        this(messageCode, env, sourcePosition, null, args);
     }
 
     /**
@@ -66,7 +66,7 @@ public class AptException extends RuntimeException {
      *            the message code
      * @param env
      *            the environment
-     * @param declaration
+     * @param sourcePosition
      *            the send target
      * @param cause
      *            the cause
@@ -74,18 +74,18 @@ public class AptException extends RuntimeException {
      *            arguments
      */
     public AptException(MessageCode messageCode,
-            AnnotationProcessorEnvironment env, Declaration declaration,
+            AnnotationProcessorEnvironment env, SourcePosition sourcePosition,
             Throwable cause, Object... args) {
         super(MessageFormatter.getMessage(messageCode, args), cause);
         this.env = env;
         this.messageCode = messageCode;
-        this.declaration = declaration;
+        this.sourcePosition = sourcePosition;
     }
 
     /**
      * Sends error message.
      */
     public void sendError() {
-        Logger.error(env, declaration, getMessage());
+        Logger.error(env, sourcePosition, getMessage());
     }
 }

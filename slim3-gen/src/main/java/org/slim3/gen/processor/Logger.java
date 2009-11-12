@@ -18,6 +18,7 @@ package org.slim3.gen.processor;
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.apt.Messager;
 import com.sun.mirror.declaration.Declaration;
+import com.sun.mirror.util.SourcePosition;
 
 /**
  * Logs messages.
@@ -62,15 +63,15 @@ public final class Logger {
      * 
      * @param env
      *            the environment.
-     * @param declaration
-     *            the declaration to use as a position hint
+     * @param sourcePosition
+     *            the source position.
      * @param message
      *            the message.
      */
     public static void error(AnnotationProcessorEnvironment env,
-            Declaration declaration, String message) {
+            SourcePosition sourcePosition, String message) {
         Messager messager = env.getMessager();
-        messager.printError(declaration.getPosition(), message);
+        messager.printError(sourcePosition, message);
     }
 
 }

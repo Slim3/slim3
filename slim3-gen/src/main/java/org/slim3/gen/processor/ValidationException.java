@@ -18,7 +18,7 @@ package org.slim3.gen.processor;
 import org.slim3.gen.message.MessageCode;
 
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
-import com.sun.mirror.declaration.Declaration;
+import com.sun.mirror.util.SourcePosition;
 
 /**
  * Thrown when validation in annotation processing is failed.
@@ -38,15 +38,15 @@ public class ValidationException extends AptException {
      *            the message code
      * @param env
      *            the environment
-     * @param declaration
+     * @param sourcePosition
      *            the send target
      * @param args
      *            arguments
      */
     public ValidationException(MessageCode messageCode,
-            AnnotationProcessorEnvironment env, Declaration declaration,
+            AnnotationProcessorEnvironment env, SourcePosition sourcePosition,
             Object... args) {
-        this(messageCode, env, declaration, null, args);
+        this(messageCode, env, sourcePosition, null, args);
     }
 
     /**
@@ -56,7 +56,7 @@ public class ValidationException extends AptException {
      *            the message code
      * @param env
      *            the environment
-     * @param declaration
+     * @param sourcePosition
      *            the send target
      * @param cause
      *            the cause
@@ -64,8 +64,8 @@ public class ValidationException extends AptException {
      *            arguments
      */
     public ValidationException(MessageCode messageCode,
-            AnnotationProcessorEnvironment env, Declaration declaration,
+            AnnotationProcessorEnvironment env, SourcePosition sourcePosition,
             Throwable cause, Object... args) {
-        super(messageCode, env, declaration, cause, args);
+        super(messageCode, env, sourcePosition, cause, args);
     }
 }
