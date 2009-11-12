@@ -34,7 +34,7 @@
     </target>
 
     <target name="gen-model">
-        <input message="Input a model name. (ex.  Foo -> root.model.Foo,  bar.Foo -> root.model.bar.Foo). Child extends Parent." addproperty="modelRelativeClassName"/>
+        <input message="Input a model name. (ex.  Foo -> root.model.Foo,  bar.Foo -> root.model.bar.Foo). Child extends Parent." addproperty="modelDefinition"/>
         <gen-model srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" modelDefinition="${modelDefinition}" modelClassNameProperty="modelClassName"/>
     </target>
 
