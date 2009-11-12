@@ -34,6 +34,7 @@ import org.slim3.gen.util.TypeUtil;
 
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.declaration.AnnotationMirror;
+import com.sun.mirror.declaration.ClassDeclaration;
 import com.sun.mirror.declaration.FieldDeclaration;
 import com.sun.mirror.declaration.MethodDeclaration;
 import com.sun.mirror.type.TypeMirror;
@@ -67,6 +68,8 @@ public class AttributeMetaDescFactory {
     /**
      * Creates a new {@link AttributeMetaDesc}
      * 
+     * @param classDeclaration
+     *            the model class declaration
      * @param fieldDeclaration
      *            the field declaration
      * @param methodDeclarations
@@ -74,6 +77,7 @@ public class AttributeMetaDescFactory {
      * @return an attribute meta description
      */
     public AttributeMetaDesc createAttributeMetaDesc(
+            ClassDeclaration classDeclaration,
             FieldDeclaration fieldDeclaration,
             List<MethodDeclaration> methodDeclarations) {
         if (fieldDeclaration == null) {
@@ -110,8 +114,18 @@ public class AttributeMetaDescFactory {
                 fieldDeclaration.getSimpleName(),
                 dataType,
                 propertyName);
-        handleField(attributeMetaDesc, fieldDeclaration, attribute);
+        handleField(
+            attributeMetaDesc,
+            classDeclaration,
+            fieldDeclaration,
+            attribute);
         handleMethod(attributeMetaDesc, fieldDeclaration, methodDeclarations);
+        if (attributeMetaDesc.isPersistent()) {
+            validateGetterAndSetterMethods(
+                attributeMetaDesc,
+                classDeclaration,
+                fieldDeclaration);
+        }
         return attributeMetaDesc;
     }
 
@@ -120,32 +134,51 @@ public class AttributeMetaDescFactory {
      * 
      * @param attributeMetaDesc
      *            the attribute meta description
+     * @param classDeclaration
+     *            the model class declaration
      * @param fieldDeclaration
      *            the field declaration
      * @param attribute
      *            the Attribute annotation.
      */
     protected void handleField(AttributeMetaDesc attributeMetaDesc,
+            ClassDeclaration classDeclaration,
             FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
         if (AnnotationMirrorUtil.getElementValue(
             attribute,
             AnnotationConstants.primaryKey) == Boolean.TRUE) {
-            handlePrimaryKey(attributeMetaDesc, fieldDeclaration, attribute);
+            handlePrimaryKey(
+                attributeMetaDesc,
+                classDeclaration,
+                fieldDeclaration,
+                attribute);
         }
         if (AnnotationMirrorUtil.getElementValue(
             attribute,
             AnnotationConstants.version) == Boolean.TRUE) {
-            handleVersion(attributeMetaDesc, fieldDeclaration, attribute);
+            handleVersion(
+                attributeMetaDesc,
+                classDeclaration,
+                fieldDeclaration,
+                attribute);
         }
         if (AnnotationMirrorUtil.getElementValue(
             attribute,
             AnnotationConstants.lob) == Boolean.TRUE) {
-            handleLob(attributeMetaDesc, fieldDeclaration, attribute);
+            handleLob(
+                attributeMetaDesc,
+                classDeclaration,
+                fieldDeclaration,
+                attribute);
         }
         if (AnnotationMirrorUtil.getElementValue(
             attribute,
             AnnotationConstants.unindexed) == Boolean.TRUE) {
-            handleUnindexed(attributeMetaDesc, fieldDeclaration, attribute);
+            handleUnindexed(
+                attributeMetaDesc,
+                classDeclaration,
+                fieldDeclaration,
+                attribute);
         }
         if (AnnotationMirrorUtil.getElementValue(
             attribute,
@@ -155,23 +188,23 @@ public class AttributeMetaDescFactory {
         if (attributeMetaDesc.isPersistent() && !attributeMetaDesc.isLob()) {
             DataType dataType = attributeMetaDesc.getDataType();
             if (dataType instanceof OtherReferenceType) {
-                throw new ValidationException(
-                    MessageCode.SILM3GEN1005,
-                    env,
-                    fieldDeclaration.getPosition());
+                throwExceptionForNonCoreType(
+                    classDeclaration,
+                    fieldDeclaration,
+                    attribute);
             }
             if (dataType instanceof CollectionType
                 && CollectionType.class.cast(dataType).getElementType() instanceof OtherReferenceType) {
-                throw new ValidationException(
-                    MessageCode.SILM3GEN1005,
-                    env,
-                    fieldDeclaration.getPosition());
+                throwExceptionForNonCoreType(
+                    classDeclaration,
+                    fieldDeclaration,
+                    attribute);
             }
             if (dataType instanceof ArrayType) {
-                throw new ValidationException(
-                    MessageCode.SILM3GEN1005,
-                    env,
-                    fieldDeclaration.getPosition());
+                throwExceptionForNonCoreType(
+                    classDeclaration,
+                    fieldDeclaration,
+                    attribute);
             }
         }
     }
@@ -194,60 +227,71 @@ public class AttributeMetaDescFactory {
      * 
      * @param attributeMetaDesc
      *            the attribute meta description
+     * @param classDeclaration
+     *            the model class declaration
      * @param fieldDeclaration
      *            the field declaration
      * @param attribute
      *            the Attribute annotation mirror
      */
     protected void handlePrimaryKey(AttributeMetaDesc attributeMetaDesc,
+            ClassDeclaration classDeclaration,
             FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
         if (AnnotationMirrorUtil.getElementValue(
             attribute,
             AnnotationConstants.version) == Boolean.TRUE) {
-            throw new ValidationException(
-                MessageCode.SILM3GEN1021,
-                env,
-                attribute.getPosition(),
+            throwExceptionForConflictedElements(
+                classDeclaration,
+                fieldDeclaration,
+                attribute,
                 AnnotationConstants.primaryKey,
                 AnnotationConstants.version);
         }
         if (AnnotationMirrorUtil.getElementValue(
             attribute,
             AnnotationConstants.lob) == Boolean.TRUE) {
-            throw new ValidationException(
-                MessageCode.SILM3GEN1021,
-                env,
-                fieldDeclaration.getPosition(),
+            throwExceptionForConflictedElements(
+                classDeclaration,
+                fieldDeclaration,
+                attribute,
                 AnnotationConstants.primaryKey,
                 AnnotationConstants.lob);
         }
         if (AnnotationMirrorUtil.getElementValue(
             attribute,
             AnnotationConstants.unindexed) == Boolean.TRUE) {
-            throw new ValidationException(
-                MessageCode.SILM3GEN1021,
-                env,
-                fieldDeclaration.getPosition(),
+            throwExceptionForConflictedElements(
+                classDeclaration,
+                fieldDeclaration,
+                attribute,
                 AnnotationConstants.primaryKey,
                 AnnotationConstants.unindexed);
         }
         if (AnnotationMirrorUtil.getElementValue(
             attribute,
             AnnotationConstants.persistent) == Boolean.FALSE) {
-            throw new ValidationException(
-                MessageCode.SILM3GEN1021,
-                env,
-                fieldDeclaration.getPosition(),
+            throwExceptionForConflictedElements(
+                classDeclaration,
+                fieldDeclaration,
+                attribute,
                 AnnotationConstants.primaryKey,
                 AnnotationConstants.persistent + " = false");
         }
         if (!ClassConstants.Key.equals(attributeMetaDesc
             .getDataType()
             .getClassName())) {
+            if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
+                throw new ValidationException(
+                    MessageCode.SILM3GEN1007,
+                    env,
+                    fieldDeclaration.getPosition());
+            }
             throw new ValidationException(
-                MessageCode.SILM3GEN1007,
+                MessageCode.SILM3GEN1029,
                 env,
-                fieldDeclaration.getPosition());
+                classDeclaration.getPosition(),
+                fieldDeclaration.getSimpleName(),
+                fieldDeclaration.getDeclaringType().getQualifiedName());
         }
         attributeMetaDesc.setPrimaryKey(true);
     }
@@ -257,40 +301,51 @@ public class AttributeMetaDescFactory {
      * 
      * @param attributeMetaDesc
      *            the attribute meta description
+     * @param classDeclaration
+     *            the model class declaration
      * @param fieldDeclaration
      *            the field declaration
      * @param attribute
      *            the attribute annotation mirror
      */
     protected void handleVersion(AttributeMetaDesc attributeMetaDesc,
+            ClassDeclaration classDeclaration,
             FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
         if (AnnotationMirrorUtil.getElementValue(
             attribute,
             AnnotationConstants.lob) == Boolean.TRUE) {
-            throw new ValidationException(
-                MessageCode.SILM3GEN1021,
-                env,
-                attribute.getPosition(),
+            throwExceptionForConflictedElements(
+                classDeclaration,
+                fieldDeclaration,
+                attribute,
                 AnnotationConstants.version,
                 AnnotationConstants.lob);
         }
         if (AnnotationMirrorUtil.getElementValue(
             attribute,
             AnnotationConstants.persistent) == Boolean.FALSE) {
-            throw new ValidationException(
-                MessageCode.SILM3GEN1021,
-                env,
-                fieldDeclaration.getPosition(),
+            throwExceptionForConflictedElements(
+                classDeclaration,
+                fieldDeclaration,
+                attribute,
                 AnnotationConstants.version,
                 AnnotationConstants.persistent + " = false");
         }
         String className = attributeMetaDesc.getDataType().getClassName();
         if (!ClassConstants.Long.equals(className)
             && !ClassConstants.primitive_long.equals(className)) {
+            if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
+                throw new ValidationException(
+                    MessageCode.SILM3GEN1008,
+                    env,
+                    fieldDeclaration.getPosition());
+            }
             throw new ValidationException(
-                MessageCode.SILM3GEN1008,
+                MessageCode.SILM3GEN1030,
                 env,
-                fieldDeclaration.getPosition());
+                classDeclaration.getPosition(),
+                fieldDeclaration.getSimpleName(),
+                fieldDeclaration.getDeclaringType().getQualifiedName());
         }
         attributeMetaDesc.setVersion(true);
     }
@@ -300,47 +355,50 @@ public class AttributeMetaDescFactory {
      * 
      * @param attributeMetaDesc
      *            the attribute meta description
+     * @param classDeclaration
+     *            the model class declaration
      * @param fieldDeclaration
      *            the field declaration
      * @param attribute
      *            the Attribute annotation mirror
      */
     protected void handleLob(AttributeMetaDesc attributeMetaDesc,
+            ClassDeclaration classDeclaration,
             FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
         if (AnnotationMirrorUtil.getElementValue(
             attribute,
             AnnotationConstants.persistent) == Boolean.FALSE) {
-            throw new ValidationException(
-                MessageCode.SILM3GEN1021,
-                env,
-                attribute.getPosition(),
+            throwExceptionForConflictedElements(
+                classDeclaration,
+                fieldDeclaration,
+                attribute,
                 AnnotationConstants.lob,
                 AnnotationConstants.persistent + " = false");
         }
         if (AnnotationMirrorUtil.getElementValue(
             attribute,
             AnnotationConstants.unindexed) == Boolean.FALSE) {
-            throw new ValidationException(
-                MessageCode.SILM3GEN1021,
-                env,
-                fieldDeclaration.getPosition(),
+            throwExceptionForConflictedElements(
+                classDeclaration,
+                fieldDeclaration,
+                attribute,
                 AnnotationConstants.lob,
                 AnnotationConstants.unindexed + " = false");
         }
         DataType dataType = attributeMetaDesc.getDataType();
         if (dataType instanceof CoreReferenceType
             && !ClassConstants.String.equals(dataType.getClassName())) {
-            throw new ValidationException(
-                MessageCode.SILM3GEN1009,
-                env,
-                fieldDeclaration.getPosition());
+            throwExceptionForLobUnsupportedType(
+                classDeclaration,
+                fieldDeclaration,
+                attribute);
         }
         if (dataType instanceof CollectionType
             && CollectionType.class.cast(dataType).getElementType() instanceof CoreReferenceType) {
-            throw new ValidationException(
-                MessageCode.SILM3GEN1009,
-                env,
-                fieldDeclaration.getPosition());
+            throwExceptionForLobUnsupportedType(
+                classDeclaration,
+                fieldDeclaration,
+                attribute);
         }
         attributeMetaDesc.setLob(true);
     }
@@ -350,20 +408,23 @@ public class AttributeMetaDescFactory {
      * 
      * @param attributeMetaDesc
      *            the attribute meta description
+     * @param classDeclaration
+     *            the model class declaration
      * @param fieldDeclaration
      *            the field declaration
      * @param attribute
      *            the annotation mirror for Attribute
      */
     protected void handleUnindexed(AttributeMetaDesc attributeMetaDesc,
+            ClassDeclaration classDeclaration,
             FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
         if (AnnotationMirrorUtil.getElementValue(
             attribute,
             AnnotationConstants.persistent) == Boolean.FALSE) {
-            throw new ValidationException(
-                MessageCode.SILM3GEN1021,
-                env,
-                attribute.getPosition(),
+            throwExceptionForConflictedElements(
+                classDeclaration,
+                fieldDeclaration,
+                attribute,
                 AnnotationConstants.unindexed,
                 AnnotationConstants.persistent + " = false");
         }
@@ -396,9 +457,6 @@ public class AttributeMetaDescFactory {
                 }
             }
         }
-        if (attributeMetaDesc.isPersistent()) {
-            validateGetterAndSetterMethods(attributeMetaDesc, fieldDeclaration);
-        }
     }
 
     /**
@@ -406,25 +464,41 @@ public class AttributeMetaDescFactory {
      * 
      * @param attributeMetaDesc
      *            the attribute mete description
+     * @param classDeclaration
+     *            the model declaration
      * @param fieldDeclaration
      *            the field declaration
      */
     protected void validateGetterAndSetterMethods(
             AttributeMetaDesc attributeMetaDesc,
-            FieldDeclaration fieldDeclaration) {
+            ClassDeclaration classDeclaration, FieldDeclaration fieldDeclaration) {
         if (attributeMetaDesc.getReadMethodName() == null) {
+            if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
+                throw new ValidationException(
+                    MessageCode.SILM3GEN1011,
+                    env,
+                    fieldDeclaration.getPosition());
+            }
             throw new ValidationException(
-                MessageCode.SILM3GEN1011,
+                MessageCode.SILM3GEN1024,
                 env,
-                fieldDeclaration.getPosition(),
-                fieldDeclaration.getSimpleName());
+                classDeclaration.getPosition(),
+                fieldDeclaration.getSimpleName(),
+                fieldDeclaration.getDeclaringType().getQualifiedName());
         }
         if (attributeMetaDesc.getWriteMethodName() == null) {
+            if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
+                throw new ValidationException(
+                    MessageCode.SILM3GEN1012,
+                    env,
+                    fieldDeclaration.getPosition());
+            }
             throw new ValidationException(
-                MessageCode.SILM3GEN1012,
+                MessageCode.SILM3GEN1025,
                 env,
-                fieldDeclaration.getPosition(),
-                fieldDeclaration.getSimpleName());
+                classDeclaration.getPosition(),
+                fieldDeclaration.getSimpleName(),
+                fieldDeclaration.getDeclaringType().getQualifiedName());
         }
     }
 
@@ -501,4 +575,93 @@ public class AttributeMetaDescFactory {
         return new DataTypeFactory(env);
     }
 
+    /**
+     * Throws {@link ValidationException} for non core type.
+     * 
+     * @param classDeclaration
+     *            the model class declaration
+     * @param fieldDeclaration
+     *            the field declaration
+     * @param attribute
+     *            the annotation mirror for Attribute
+     */
+    protected void throwExceptionForNonCoreType(
+            ClassDeclaration classDeclaration,
+            FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
+        if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
+            throw new ValidationException(
+                MessageCode.SILM3GEN1005,
+                env,
+                fieldDeclaration.getPosition());
+        }
+        throw new ValidationException(
+            MessageCode.SILM3GEN1026,
+            env,
+            classDeclaration.getPosition(),
+            fieldDeclaration.getSimpleName(),
+            fieldDeclaration.getDeclaringType().getQualifiedName());
+    }
+
+    /**
+     * Throws {@link ValidationException} for conflicted annotation elements.
+     * 
+     * @param classDeclaration
+     *            the model class declaration
+     * @param fieldDeclaration
+     *            the field declaration
+     * @param attribute
+     *            the annotation mirror for Attribute
+     * @param element1
+     *            conflicted element
+     * @param element2
+     *            conflicted element
+     */
+    protected void throwExceptionForConflictedElements(
+            ClassDeclaration classDeclaration,
+            FieldDeclaration fieldDeclaration, AnnotationMirror attribute,
+            String element1, String element2) {
+        if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
+            throw new ValidationException(
+                MessageCode.SILM3GEN1021,
+                env,
+                attribute.getPosition(),
+                element1,
+                element2);
+        }
+        throw new ValidationException(
+            MessageCode.SILM3GEN1027,
+            env,
+            classDeclaration.getPosition(),
+            element1,
+            element2,
+            fieldDeclaration.getSimpleName(),
+            fieldDeclaration.getDeclaringType().getQualifiedName());
+    }
+
+    /**
+     * Throws {@link ValidationException} for Lob unsupported type.
+     * 
+     * @param classDeclaration
+     *            the model class declaration
+     * @param fieldDeclaration
+     *            the field declaration
+     * @param attribute
+     *            the annotation mirror for Attribute
+     */
+    protected void throwExceptionForLobUnsupportedType(
+            ClassDeclaration classDeclaration,
+            FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
+        if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
+            throw new ValidationException(
+                MessageCode.SILM3GEN1009,
+                env,
+                fieldDeclaration.getPosition());
+        }
+        throw new ValidationException(
+            MessageCode.SILM3GEN1028,
+            env,
+            classDeclaration.getPosition(),
+            fieldDeclaration.getSimpleName(),
+            fieldDeclaration.getDeclaringType().getQualifiedName());
+    }
 }

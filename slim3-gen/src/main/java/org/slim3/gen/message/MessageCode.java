@@ -62,9 +62,9 @@ public enum MessageCode {
     /** */
     SILM3GEN1009("The type annotated with @Attribute(lob = true) is not supported."),
     /** */
-    SILM3GEN1011("The getter method is not found for the property[{0}]."),
+    SILM3GEN1011("The getter method is not found."),
     /** */
-    SILM3GEN1012("The setter method is not found for the property[{0}]."),
+    SILM3GEN1012("The setter method is not found."),
     /** */
     SILM3GEN1013("Multiple primary keys are not allowed."),
     /** */
@@ -86,8 +86,21 @@ public enum MessageCode {
     /** */
     SILM3GEN1022("The kind element is not supported for a sub model, because the kind of sub model is identical to the super model."),
     /** */
-    SILM3GEN1023("The hierarchy of model is just only 1, but the hierarchies of classes are no limit.");
-
+    SILM3GEN1023("The hierarchy of model is just only 1, but the hierarchies of classes are no limit."),
+    /** */
+    SILM3GEN1024("The getter method is not found. (the property[{0}] of the class[{1}])."),
+    /** */
+    SILM3GEN1025("The setter method is not found. (the property[{0}] of the class[{1}])."),
+    /** */
+    SILM3GEN1026("Specify @Attribute(lob = true) or @Attribute(persistent = false). (the property[{0}] of the class[{1}])."),
+    /** */
+    SILM3GEN1027("The element[{0}] and the element[{1}] can not be defined at the same time. (the property[{2}] of the class[{3}])."),
+    /** */
+    SILM3GEN1028("The type annotated with @Attribute(lob = true) is not supported. (the property[{0}] of the class[{1}])."),
+    /** */
+    SILM3GEN1029("The type annotated with @Attribute(primaryKey = true) must be com.google.appengine.api.datastore.Key. (the property[{0}] of the class[{1}])."),
+    /** */
+    SILM3GEN1030("The type annotated with @Attribute(version = true) must be primitive long or java.lang.Long. (the property[{0}] of the class[{1}])."), ;
     /** the message */
     public final String message;
 

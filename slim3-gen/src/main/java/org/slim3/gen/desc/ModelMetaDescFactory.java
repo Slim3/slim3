@@ -303,7 +303,10 @@ public class ModelMetaDescFactory {
             getMethodDeclarations(classDeclaration);
         for (FieldDeclaration fieldDeclaration : getFieldDeclarations(classDeclaration)) {
             AttributeMetaDesc attributeMetaDesc =
-                createAttributeMetaDesc(fieldDeclaration, methodDeclarations);
+                createAttributeMetaDesc(
+                    classDeclaration,
+                    fieldDeclaration,
+                    methodDeclarations);
             if (attributeMetaDesc == null) {
                 modelMetaDesc.setError(true);
                 continue;
@@ -339,15 +342,19 @@ public class ModelMetaDescFactory {
     /**
      * Creates a attribute meta description.
      * 
+     * @param classDeclaration
+     *            the model declaration
      * @param fieldDeclaration
      * @param methodDeclarations
      * @return a attribute meta description or {@code null} if error occured.
      */
     protected AttributeMetaDesc createAttributeMetaDesc(
+            ClassDeclaration classDeclaration,
             FieldDeclaration fieldDeclaration,
             List<MethodDeclaration> methodDeclarations) {
         try {
             return attributeMetaDescFactory.createAttributeMetaDesc(
+                classDeclaration,
                 fieldDeclaration,
                 methodDeclarations);
         } catch (AptException e) {
