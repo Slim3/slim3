@@ -43,8 +43,8 @@ public class GenModelTask extends AbstractGenJavaFileTask {
     /** the superclass name of testcase */
     protected String testCaseSuperclassName = ClassConstants.Object;
 
-    /** the modelRelativeClassName */
-    protected String modelRelativeClassName;
+    /** the modelDefinition */
+    protected String modelDefinition;
 
     /** the property which represents a model class name */
     protected String modelClassNameProperty;
@@ -60,13 +60,23 @@ public class GenModelTask extends AbstractGenJavaFileTask {
     }
 
     /**
-     * Sets the modelRelativeClassName.
+     * Sets the superclass name of testcase.
      * 
-     * @param modelRelativeClassName
-     *            the modelRelativeClassName to set
+     * @param testCaseSuperclassName
+     *            the superclass name of testcase to set
      */
-    public void setModelRelativeClassName(String modelRelativeClassName) {
-        this.modelRelativeClassName = modelRelativeClassName;
+    public void setTestCaseSuperclassName(String testCaseSuperclassName) {
+        this.testCaseSuperclassName = testCaseSuperclassName;
+    }
+
+    /**
+     * Sets the modelDefinition.
+     * 
+     * @param modelDefinition
+     *            the modelDefinition to set
+     */
+    public void setModelDefinition(String modelDefinition) {
+        this.modelDefinition = modelDefinition;
     }
 
     /**
@@ -82,9 +92,9 @@ public class GenModelTask extends AbstractGenJavaFileTask {
     @Override
     public void doExecute() throws Exception {
         super.doExecute();
-        if (modelRelativeClassName == null) {
+        if (modelDefinition == null) {
             throw new IllegalStateException(
-                "The modelRelativeClassName parameter is null.");
+                "The modelDefinition parameter is null.");
         }
         if (modelClassNameProperty == null) {
             throw new IllegalStateException(
@@ -120,21 +130,20 @@ public class GenModelTask extends AbstractGenJavaFileTask {
      */
     private ModelDesc createModelDesc() throws IOException,
             XPathExpressionException {
-        ParsedText parsedText = parse(modelRelativeClassName);
+        ModelDef modelDef = parse(modelDefinition);
 
         ModelDesc modelDesc = new ModelDesc();
         ClassNameBuilder classNameBuilder = new ClassNameBuilder();
         classNameBuilder.append(getModelBasePackageName());
-        classNameBuilder.append(parsedText.modelRelativeClassName);
+        classNameBuilder.append(modelDef.modelRelativeClassName);
         modelDesc.setPackageName(classNameBuilder.getPackageName());
         modelDesc.setSimpleName(classNameBuilder.getSimpleName());
-        if (parsedText.modelRelativeSuperclassName == null) {
+        if (modelDef.modelRelativeSuperclassName == null) {
             modelDesc.setSuperclassName(ClassConstants.Object);
         } else {
             ClassNameBuilder superclassNameBuilder = new ClassNameBuilder();
             superclassNameBuilder.append(getModelBasePackageName());
-            superclassNameBuilder
-                .append(parsedText.modelRelativeSuperclassName);
+            superclassNameBuilder.append(modelDef.modelRelativeSuperclassName);
             modelDesc.setSuperclassName(superclassNameBuilder
                 .getQualifiedName());
         }
@@ -148,16 +157,16 @@ public class GenModelTask extends AbstractGenJavaFileTask {
      *            the input
      * @return the parsed text.
      */
-    protected ParsedText parse(String input) {
+    protected ModelDef parse(String input) {
         StringTokenizer tokenizer = new StringTokenizer(input, " ");
         int count = tokenizer.countTokens();
         if (count == 1) {
-            ParsedText parsedText = new ParsedText();
-            parsedText.modelRelativeClassName = tokenizer.nextToken();
-            return parsedText;
+            ModelDef modelDef = new ModelDef();
+            modelDef.modelRelativeClassName = tokenizer.nextToken();
+            return modelDef;
         }
         if (count == 3) {
-            ParsedText parsedText = new ParsedText();
+            ModelDef parsedText = new ModelDef();
             parsedText.modelRelativeClassName = tokenizer.nextToken();
             String keyword = tokenizer.nextToken();
             if (!"extends".equals(keyword)) {
@@ -227,7 +236,7 @@ public class GenModelTask extends AbstractGenJavaFileTask {
      * @author taedium
      * 
      */
-    protected static class ParsedText {
+    protected static class ModelDef {
 
         /** the modelRelativeClassName */
         protected String modelRelativeClassName;

@@ -39,8 +39,8 @@ public class GenGWTServiceTask extends AbstractGenJavaFileTask {
     /** the packageName */
     protected String packageName;
 
-    /** the serviceRelativeClassName */
-    protected String serviceRelativeClassName;
+    /** the serviceDefinition */
+    protected String serviceDefinition;
 
     /** the remoteServiceRelativePath */
     protected String remoteServiceRelativePath = "service.s3gwt";
@@ -59,13 +59,13 @@ public class GenGWTServiceTask extends AbstractGenJavaFileTask {
     }
 
     /**
-     * Sets the serviceRelativeClassName.
+     * Sets the serviceDefinition.
      * 
-     * @param serviceRelativeClassName
-     *            the serviceRelativeClassName to set
+     * @param serviceDefinition
+     *            the serviceDefinition to set
      */
-    public void setServiceRelativeClassName(String serviceRelativeClassName) {
-        this.serviceRelativeClassName = serviceRelativeClassName;
+    public void setServiceDefinition(String serviceDefinition) {
+        this.serviceDefinition = serviceDefinition;
     }
 
     /**
@@ -91,9 +91,9 @@ public class GenGWTServiceTask extends AbstractGenJavaFileTask {
     @Override
     public void doExecute() throws Exception {
         super.doExecute();
-        if (serviceRelativeClassName == null) {
+        if (serviceDefinition == null) {
             throw new IllegalStateException(
-                "The serviceRelativeClassName parameter is null.");
+                "The serviceDefinition parameter is null.");
         }
         if (serviceClassNameProperty == null) {
             throw new IllegalStateException(
@@ -133,7 +133,7 @@ public class GenGWTServiceTask extends AbstractGenJavaFileTask {
             XPathExpressionException {
         ClassNameBuilder nameBuilder = new ClassNameBuilder();
         nameBuilder.append(getServiceBasePackageName());
-        nameBuilder.append(serviceRelativeClassName);
+        nameBuilder.append(serviceDefinition);
 
         GWTServiceDesc serviceDesc = new GWTServiceDesc();
         serviceDesc.setPackageName(nameBuilder.getPackageName());

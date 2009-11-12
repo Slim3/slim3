@@ -53,14 +53,24 @@ public class ControllerTestCaseGenerator implements Generator {
             p.println("package %s;", controllerDesc.getPackageName());
             p.println();
         }
+        if (!ClassConstants.Object.equals(controllerDesc
+            .getTestCaseSuperclassName())) {
+            p.println("import %s;", controllerDesc.getTestCaseSuperclassName());
+        }
         p.println("import %s;", AnnotationConstants.Test);
         p.println("import static %s.*;", ClassConstants.Assert);
         p.println("import static %s.*;", ClassConstants.CoreMatchers);
-        p.println("import %s;", controllerDesc.getTestCaseSuperclassName());
         p.println();
-        p.println("public class %s%s extends %s {", controllerDesc
-            .getSimpleName(), Constants.TEST_SUFFIX, ClassUtil
-            .getSimpleName(controllerDesc.getTestCaseSuperclassName()));
+        p.print(
+            "public class %s%s",
+            controllerDesc.getSimpleName(),
+            Constants.TEST_SUFFIX);
+        if (!ClassConstants.Object.equals(controllerDesc
+            .getTestCaseSuperclassName())) {
+            p.print(" extends %s", ClassUtil.getSimpleName(controllerDesc
+                .getTestCaseSuperclassName()));
+        }
+        p.println(" {");
         p.println();
         p.println("    @Test");
         p.println("    public void run() throws Exception {");

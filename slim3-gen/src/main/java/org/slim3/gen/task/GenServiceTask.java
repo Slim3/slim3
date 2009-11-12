@@ -44,8 +44,8 @@ public class GenServiceTask extends AbstractGenJavaFileTask {
     protected String testCaseSuperclassName =
         ClassConstants.LocalServiceTestCase;
 
-    /** the serviceRelativeClassName */
-    protected String serviceRelativeClassName;
+    /** the serviceDefinition */
+    protected String serviceDefinition;
 
     /**
      * Sets the packageName.
@@ -58,31 +58,41 @@ public class GenServiceTask extends AbstractGenJavaFileTask {
     }
 
     /**
-     * Sets the superclassName.
+     * Sets the superclass name.
      * 
      * @param superclassName
-     *            the superclassName to set
+     *            the superclass name to set
      */
     public void setSuperclassName(String superclassName) {
         this.superclassName = superclassName;
     }
 
     /**
-     * Sets the serviceRelativeClassName.
+     * Sets the superclass name of testcase.
      * 
-     * @param serviceRelativeClassName
-     *            the serviceRelativeClassName to set
+     * @param testCaseSuperclassName
+     *            the superclass name of testcase to set
      */
-    public void setServiceRelativeClassName(String serviceRelativeClassName) {
-        this.serviceRelativeClassName = serviceRelativeClassName;
+    public void setTestCaseSuperclassName(String testCaseSuperclassName) {
+        this.testCaseSuperclassName = testCaseSuperclassName;
+    }
+
+    /**
+     * Sets the serviceDefinition.
+     * 
+     * @param serviceDefinition
+     *            the serviceDefinition to set
+     */
+    public void setServiceDefinition(String serviceDefinition) {
+        this.serviceDefinition = serviceDefinition;
     }
 
     @Override
     public void doExecute() throws Exception {
         super.doExecute();
-        if (serviceRelativeClassName == null) {
+        if (serviceDefinition == null) {
             throw new IllegalStateException(
-                "The serviceRelativeClassName parameter is null.");
+                "The serviceDefinition parameter is null.");
         }
 
         ServiceDesc serviceDesc = createServiceDesc();
@@ -108,7 +118,7 @@ public class GenServiceTask extends AbstractGenJavaFileTask {
             XPathExpressionException {
         ClassNameBuilder nameBuilder = new ClassNameBuilder();
         nameBuilder.append(getServiceBasePackageName());
-        nameBuilder.append(serviceRelativeClassName);
+        nameBuilder.append(serviceDefinition);
 
         ServiceDesc serviceDesc = new ServiceDesc();
         serviceDesc.setPackageName(nameBuilder.getPackageName());

@@ -20,7 +20,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
-import org.slim3.gen.task.GenModelTask.ParsedText;
+import org.slim3.gen.task.GenModelTask.ModelDef;
 
 /**
  * @author taedium
@@ -35,7 +35,7 @@ public class GenModelTaskTest {
     @Test
     public void testParse() throws Exception {
         GenModelTask task = new GenModelTask();
-        ParsedText parsedText = task.parse("Hoge extends Foo");
+        ModelDef parsedText = task.parse("Hoge extends Foo");
         assertThat(parsedText.modelRelativeClassName, is("Hoge"));
         assertThat(parsedText.modelRelativeSuperclassName, is("Foo"));
     }

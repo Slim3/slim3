@@ -41,14 +41,13 @@ public class GenGWTServiceImplTask extends AbstractGenJavaFileTask {
     protected String superclassName = ClassConstants.Object;
 
     /** the superclass name of testcase */
-    protected String testCaseSuperclassName =
-        ClassConstants.ServletTestCase;
+    protected String testCaseSuperclassName = ClassConstants.ServletTestCase;
 
     /** the serviceClassName */
     protected String serviceClassName;
 
-    /** the serviceRelativeClassName */
-    protected String serviceRelativeClassName;
+    /** the serviceDefinition */
+    protected String serviceDefinition;
 
     /**
      * Sets the packageName.
@@ -71,6 +70,16 @@ public class GenGWTServiceImplTask extends AbstractGenJavaFileTask {
     }
 
     /**
+     * Sets the superclass name of testcase.
+     * 
+     * @param testCaseSuperclassName
+     *            the superclass name of testcase to set
+     */
+    public void setTestCaseSuperclassName(String testCaseSuperclassName) {
+        this.testCaseSuperclassName = testCaseSuperclassName;
+    }
+
+    /**
      * Sets the serviceClassName.
      * 
      * @param serviceClassName
@@ -81,13 +90,13 @@ public class GenGWTServiceImplTask extends AbstractGenJavaFileTask {
     }
 
     /**
-     * Sets the serviceRelativeClassName.
+     * Sets the serviceDefinition.
      * 
-     * @param serviceRelativeClassName
-     *            the serviceRelativeClassName to set
+     * @param serviceDefinition
+     *            the serviceDefinition to set
      */
-    public void setServiceRelativeClassName(String serviceRelativeClassName) {
-        this.serviceRelativeClassName = serviceRelativeClassName;
+    public void setServiceDefinition(String serviceDefinition) {
+        this.serviceDefinition = serviceDefinition;
     }
 
     @Override
@@ -121,7 +130,7 @@ public class GenGWTServiceImplTask extends AbstractGenJavaFileTask {
             XPathExpressionException {
         ClassNameBuilder nameBuilder = new ClassNameBuilder();
         nameBuilder.append(getServiceImplBasePackageName());
-        nameBuilder.append(serviceRelativeClassName);
+        nameBuilder.append(serviceDefinition);
         nameBuilder.appendSuffix(Constants.IMPL_SUFFIX);
 
         GWTServiceImplDesc serviceImplDesc = new GWTServiceImplDesc();

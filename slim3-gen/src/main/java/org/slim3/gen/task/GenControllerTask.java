@@ -69,10 +69,10 @@ public class GenControllerTask extends AbstractGenJavaFileTask {
     }
 
     /**
-     * Sets the testCaseSuperclassName.
+     * Sets the superclass name of testcase.
      * 
      * @param testCaseSuperclassName
-     *            the testCaseSuperclassName to set
+     *            the superclass name of testcase to set
      */
     public void setTestCaseSuperclassName(String testCaseSuperclassName) {
         this.testCaseSuperclassName = testCaseSuperclassName;

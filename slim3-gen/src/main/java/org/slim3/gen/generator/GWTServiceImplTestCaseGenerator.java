@@ -15,11 +15,12 @@
  */
 package org.slim3.gen.generator;
 
+import org.slim3.gen.AnnotationConstants;
+import org.slim3.gen.ClassConstants;
 import org.slim3.gen.Constants;
 import org.slim3.gen.desc.GWTServiceImplDesc;
 import org.slim3.gen.printer.Printer;
 import org.slim3.gen.util.ClassUtil;
-import org.slim3.gen.util.StringUtil;
 
 /**
  * Generates a GWT service implemetation test case java file.
@@ -51,18 +52,33 @@ public class GWTServiceImplTestCaseGenerator implements Generator {
             p.println("package %s;", serviceImplDesc.getPackageName());
             p.println();
         }
-        p.println("import %s;", serviceImplDesc.getTestCaseSuperclassName());
+        if (!ClassConstants.Object.equals(serviceImplDesc
+            .getTestCaseSuperclassName())) {
+            p
+                .println("import %s;", serviceImplDesc
+                    .getTestCaseSuperclassName());
+        }
+        p.println("import %s;", AnnotationConstants.Test);
+        p.println("import static %s.*;", ClassConstants.Assert);
+        p.println("import static %s.*;", ClassConstants.CoreMatchers);
         p.println();
-        p.println("public class %s%s extends %s {", serviceImplDesc
-            .getSimpleName(), Constants.TEST_SUFFIX, ClassUtil
-            .getSimpleName(serviceImplDesc.getTestCaseSuperclassName()));
+        p.print(
+            "public class %s%s",
+            serviceImplDesc.getSimpleName(),
+            Constants.TEST_SUFFIX);
+        if (!ClassConstants.Object.equals(serviceImplDesc
+            .getTestCaseSuperclassName())) {
+            p.print(" extends %s", ClassUtil.getSimpleName(serviceImplDesc
+                .getTestCaseSuperclassName()));
+        }
+        p.println(" {");
         p.println();
+        p.println("    private %1$s service = new %1$s();", serviceImplDesc
+            .getSimpleName());
+        p.println();
+        p.println("    @%s", ClassUtil.getSimpleName(AnnotationConstants.Test));
         p.println("    public void test() throws Exception {");
-        p.println("        %1$s %2$s = new %1$s();", serviceImplDesc
-            .getSimpleName(), StringUtil.decapitalize(serviceImplDesc
-            .getSimpleName()));
-        p.println("        assertNotNull(%s);", StringUtil
-            .decapitalize(serviceImplDesc.getSimpleName()));
+        p.println("        assertThat(service, is(notNullValue()));");
         p.println("    }");
         p.println("}");
     }

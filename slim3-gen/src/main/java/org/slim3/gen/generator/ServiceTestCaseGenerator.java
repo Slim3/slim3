@@ -51,16 +51,24 @@ public class ServiceTestCaseGenerator implements Generator {
             p.println("package %s;", serviceDesc.getPackageName());
             p.println();
         }
-        p.println("import %s;", serviceDesc.getTestCaseSuperclassName());
+        if (!ClassConstants.Object.equals(serviceDesc
+            .getTestCaseSuperclassName())) {
+            p.println("import %s;", serviceDesc.getTestCaseSuperclassName());
+        }
         p.println("import %s;", AnnotationConstants.Test);
         p.println("import static %s.*;", ClassConstants.Assert);
         p.println("import static %s.*;", ClassConstants.CoreMatchers);
         p.println();
-        p.println(
-            "public class %s%s extends %s {",
+        p.print(
+            "public class %s%s",
             serviceDesc.getSimpleName(),
-            Constants.TEST_SUFFIX,
-            ClassUtil.getSimpleName(serviceDesc.getTestCaseSuperclassName()));
+            Constants.TEST_SUFFIX);
+        if (!ClassConstants.Object.equals(serviceDesc
+            .getTestCaseSuperclassName())) {
+            p.print(" extends %s", ClassUtil.getSimpleName(serviceDesc
+                .getTestCaseSuperclassName()));
+        }
+        p.println(" {");
         p.println();
         p.println("    private %1$s service = new %1$s();", serviceDesc
             .getSimpleName());

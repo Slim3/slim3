@@ -51,7 +51,8 @@ public class ModelTestCaseGenerator implements Generator {
             p.println("package %s;", modelDesc.getPackageName());
             p.println();
         }
-        if (!isObject(modelDesc.getTestCaseSuperclassName())) {
+        if (!ClassConstants.Object
+            .equals(modelDesc.getTestCaseSuperclassName())) {
             p.println("import %s;", modelDesc.getTestCaseSuperclassName());
         }
         p.println("import %s;", AnnotationConstants.Test);
@@ -62,7 +63,8 @@ public class ModelTestCaseGenerator implements Generator {
             "public class %s%s",
             modelDesc.getSimpleName(),
             Constants.TEST_SUFFIX);
-        if (!isObject(modelDesc.getTestCaseSuperclassName())) {
+        if (!ClassConstants.Object
+            .equals(modelDesc.getTestCaseSuperclassName())) {
             p.print(" extends %s", ClassUtil.getSimpleName(modelDesc
                 .getTestCaseSuperclassName()));
         }
@@ -78,16 +80,4 @@ public class ModelTestCaseGenerator implements Generator {
         p.println("}");
     }
 
-    /**
-     * Returns {@code true} if the qualified class name represents {@code
-     * Object}.
-     * 
-     * @param qualifiedName
-     *            the qualified class name
-     * @return {@code true} if the qualified class name represents {@code
-     *         Object}
-     */
-    protected boolean isObject(String qualifiedName) {
-        return ClassConstants.Object.equals(qualifiedName);
-    }
 }
