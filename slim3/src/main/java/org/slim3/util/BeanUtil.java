@@ -80,7 +80,10 @@ public final class BeanUtil {
     }
 
     /**
-     * Copies a bean to another one.
+     * Copies property values from the source to the destination for all cases
+     * where the property names are the same. Even if the property type of the
+     * source is different from the one of the destination, the value is
+     * converted appropriately.
      * 
      * @param src
      *            the source
@@ -92,7 +95,10 @@ public final class BeanUtil {
     }
 
     /**
-     * Copies a bean to another one.
+     * Copies property values from the source to the destination for all cases
+     * where the property names are the same. Even if the property type of the
+     * source is different from the one of the destination, the value is
+     * converted appropriately.
      * 
      * @param src
      *            the source
@@ -145,7 +151,10 @@ public final class BeanUtil {
     }
 
     /**
-     * Copies a bean to a map.
+     * Copies property values from the source to the destination for all cases
+     * where the property names are the same. Even if the property type of the
+     * source is different from the one of the destination, the value is
+     * converted appropriately.
      * 
      * @param src
      *            the source
@@ -158,7 +167,10 @@ public final class BeanUtil {
     }
 
     /**
-     * Copies a bean to a map.
+     * Copies property values from the source to the destination for all cases
+     * where the property names are the same. Even if the property type of the
+     * source is different from the one of the destination, the value is
+     * converted appropriately.
      * 
      * @param src
      *            the source
@@ -201,7 +213,10 @@ public final class BeanUtil {
     }
 
     /**
-     * Copies a map to a bean.
+     * Copies property values from the source to the destination for all cases
+     * where the property names are the same. Even if the property type of the
+     * source is different from the one of the destination, the value is
+     * converted appropriately.
      * 
      * @param src
      *            the source
@@ -214,7 +229,10 @@ public final class BeanUtil {
     }
 
     /**
-     * Copies a map to a bean.
+     * Copies property values from the source to the destination for all cases
+     * where the property names are the same. Even if the property type of the
+     * source is different from the one of the destination, the value is
+     * converted appropriately.
      * 
      * @param src
      *            the source
@@ -264,7 +282,10 @@ public final class BeanUtil {
     }
 
     /**
-     * Copies a map to another one.
+     * Copies property values from the source to the destination for all cases
+     * where the property names are the same. Even if the property type of the
+     * source is different from the one of the destination, the value is
+     * converted appropriately.
      * 
      * @param src
      *            the source
@@ -277,7 +298,10 @@ public final class BeanUtil {
     }
 
     /**
-     * Copies a map to another one.
+     * Copies property values from the source to the destination for all cases
+     * where the property names are the same. Even if the property type of the
+     * source is different from the one of the destination, the value is
+     * converted appropriately.
      * 
      * @param src
      *            the source
@@ -316,7 +340,10 @@ public final class BeanUtil {
     }
 
     /**
-     * Copies request attributes to bean properties.
+     * Copies property values from the source to the destination for all cases
+     * where the property names are the same. Even if the property type of the
+     * source is different from the one of the destination, the value is
+     * converted appropriately.
      * 
      * @param src
      *            the source
@@ -328,7 +355,10 @@ public final class BeanUtil {
     }
 
     /**
-     * Copies request attributes to bean properties.
+     * Copies property values from the source to the destination for all cases
+     * where the property names are the same. Even if the property type of the
+     * source is different from the one of the destination, the value is
+     * converted appropriately.
      * 
      * @param src
      *            the source
@@ -348,7 +378,10 @@ public final class BeanUtil {
     }
 
     /**
-     * Copies bean properties to request attributes.
+     * Copies property values from the source to the destination for all cases
+     * where the property names are the same. Even if the property type of the
+     * source is different from the one of the destination, the value is
+     * converted appropriately.
      * 
      * @param src
      *            the source
@@ -360,7 +393,10 @@ public final class BeanUtil {
     }
 
     /**
-     * Copies bean properties to request attributes.
+     * Copies property values from the source to the destination for all cases
+     * where the property names are the same. Even if the property type of the
+     * source is different from the one of the destination, the value is
+     * converted appropriately.
      * 
      * @param src
      *            the source
