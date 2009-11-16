@@ -15,14 +15,11 @@
  */
 package org.slim3.datastore;
 
-import java.util.List;
-
 import org.junit.Test;
 import org.slim3.tester.LocalServiceTestCase;
 
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.datastore.ShortBlob;
 
 /**
  * @author higa
@@ -35,15 +32,8 @@ public class SpikeTest extends LocalServiceTestCase {
      */
     @Test
     public void spike() throws Exception {
-        Key key = Datastore.put(new Entity("Hoge"));
-        Key key2 =
-            Datastore.put(new Entity(Datastore.createKey(key, "Hoge2", 1)));
-        Transaction tx = Datastore.beginTransaction();
-        List<Entity> list = Datastore.get(tx, key, key2);
-        Transaction tx2 = Datastore.beginTransaction();
-        Datastore.put(tx2, list);
-        tx2.commit();
-        // Datastore.put(tx, list);
-        // tx.commit();
+        Entity entity = new Entity("Hoge");
+        entity.setProperty("aaa", new ShortBlob(new byte[500]));
+        Datastore.put(entity);
     }
 }

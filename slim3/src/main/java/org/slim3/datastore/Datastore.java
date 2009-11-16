@@ -1764,7 +1764,10 @@ public final class Datastore {
     private static <M> ModelMeta<M> createModelMeta(Class<M> modelClass) {
         try {
             String metaClassName =
-                modelClass.getName().replace(".model.", ".meta.") + "Meta";
+                modelClass.getName().replace(".model.", ".meta.").replace(
+                    ".shared.",
+                    ".server.")
+                    + "Meta";
             return ClassUtil.newInstance(metaClassName, Thread
                 .currentThread()
                 .getContextClassLoader());

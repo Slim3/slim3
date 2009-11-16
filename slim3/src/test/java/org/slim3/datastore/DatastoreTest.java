@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Hoge;
+import org.slim3.datastore.shared.model.Ccc;
 import org.slim3.tester.LocalServiceTestCase;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -1122,6 +1123,15 @@ public class DatastoreTest extends LocalServiceTestCase {
     @Test(expected = IllegalArgumentException.class)
     public void getModelMetaWhenModelMetaIsNotFound() throws Exception {
         Datastore.getModelMeta(getClass());
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelMetaWhenGWT() throws Exception {
+        ModelMeta<?> modelMeta = Datastore.getModelMeta(Ccc.class);
+        assertThat(modelMeta, is(notNullValue()));
     }
 
     /**
