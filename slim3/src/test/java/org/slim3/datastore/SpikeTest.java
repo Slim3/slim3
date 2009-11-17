@@ -15,11 +15,13 @@
  */
 package org.slim3.datastore;
 
+import java.util.Arrays;
+
 import org.junit.Test;
 import org.slim3.tester.LocalServiceTestCase;
 
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.ShortBlob;
+import com.google.appengine.api.datastore.Query.FilterOperator;
 
 /**
  * @author higa
@@ -33,7 +35,11 @@ public class SpikeTest extends LocalServiceTestCase {
     @Test
     public void spike() throws Exception {
         Entity entity = new Entity("Hoge");
-        entity.setProperty("aaa", new ShortBlob(new byte[500]));
+        entity.setProperty("list", Arrays.asList("aaa", "abb"));
         Datastore.put(entity);
+        System.out.println(Datastore.query("Hoge").filter(
+            "list",
+            FilterOperator.GREATER_THAN_OR_EQUAL,
+            "a").asList());
     }
 }

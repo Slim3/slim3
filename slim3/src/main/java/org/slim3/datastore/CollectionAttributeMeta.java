@@ -56,4 +56,63 @@ public class CollectionAttributeMeta<M, A, E> extends
     public FilterCriterion contains(E value) {
         return new ContainsCriterion(this, convertValueForDatastore(value));
     }
+
+    /**
+     * Returns the "equal" filter criterion.
+     * 
+     * @param value
+     *            the value
+     * @return the "equal" filter criterion
+     */
+    public FilterCriterion equal(E value) {
+        return new EqualCriterion(this, convertValueForDatastore(value));
+    }
+
+    /**
+     * Returns the "less than" filter criterion.
+     * 
+     * @param value
+     *            the value
+     * @return the "less than" filter criterion
+     */
+    public FilterCriterion lessThan(E value) {
+        return new LessThanCriterion(this, convertValueForDatastore(value));
+    }
+
+    /**
+     * Returns the "less than or equal" filter criterion.
+     * 
+     * @param value
+     *            the value
+     * @return the "less than or equal" filter criterion
+     */
+    public FilterCriterion lessThanOrEqual(E value) {
+        return new LessThanOrEqualCriterion(
+            this,
+            convertValueForDatastore(value));
+    }
+
+    /**
+     * Returns the "greater than" filter criterion.
+     * 
+     * @param value
+     *            the value
+     * @return the "greater than" filter criterion
+     */
+    public FilterCriterion greaterThan(E value) {
+        return new GreaterThanCriterion(this, convertValueForDatastore(value));
+    }
+
+    /**
+     * Returns the "greater than or equal" filter criterion.
+     * 
+     * @param value
+     *            the value
+     * @return the "greater than or equal" filter criterion
+     */
+    public FilterCriterion greaterThanOrEqual(E value) {
+        return new GreaterThanOrEqualCriterion(
+            this,
+            convertValueForDatastore(value));
+    }
 }

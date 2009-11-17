@@ -42,8 +42,8 @@ public class GreaterThanOrEqualCriterion extends AbstractCriterion implements
      *            the value
      * @see AbstractCriterion#AbstractCriterion(AbstractAttributeMeta)
      */
-    public GreaterThanOrEqualCriterion(CoreAttributeMeta<?, ?> attributeMeta,
-            Object value) {
+    public GreaterThanOrEqualCriterion(
+            AbstractAttributeMeta<?, ?> attributeMeta, Object value) {
         super(attributeMeta);
         this.value = value;
     }

@@ -42,7 +42,8 @@ public class EqualCriterion extends AbstractCriterion implements
      *            the value
      * @see AbstractCriterion#AbstractCriterion(AbstractAttributeMeta)
      */
-    public EqualCriterion(CoreAttributeMeta<?, ?> attributeMeta, Object value) {
+    public EqualCriterion(AbstractAttributeMeta<?, ?> attributeMeta,
+            Object value) {
         super(attributeMeta);
         this.value = value;
     }

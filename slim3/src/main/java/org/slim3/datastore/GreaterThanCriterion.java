@@ -42,7 +42,7 @@ public class GreaterThanCriterion extends AbstractCriterion implements
      *            the value
      * @see AbstractCriterion#AbstractCriterion(AbstractAttributeMeta)
      */
-    public GreaterThanCriterion(CoreAttributeMeta<?, ?> attributeMeta,
+    public GreaterThanCriterion(AbstractAttributeMeta<?, ?> attributeMeta,
             Object value) {
         super(attributeMeta);
         this.value = value;

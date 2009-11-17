@@ -42,7 +42,8 @@ public class LessThanCriterion extends AbstractCriterion implements
      *            the value
      * @see AbstractCriterion#AbstractCriterion(AbstractAttributeMeta)
      */
-    public LessThanCriterion(CoreAttributeMeta<?, ?> attributeMeta, Object value) {
+    public LessThanCriterion(AbstractAttributeMeta<?, ?> attributeMeta,
+            Object value) {
         super(attributeMeta);
         this.value = value;
     }
