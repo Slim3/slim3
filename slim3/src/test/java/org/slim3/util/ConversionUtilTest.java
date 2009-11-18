@@ -243,6 +243,24 @@ public class ConversionUtilTest {
      * @throws Exception
      */
     @Test
+    public void convertStringToEnum() throws Exception {
+        assertThat(ConversionUtil.convert("TWO", MyEnum.class), is(MyEnum.TWO));
+    }
+
+    /**
+     * 
+     * @throws Exception
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void convertIllegalArgumentToEnum() throws Exception {
+        ConversionUtil.convert(new Date(), MyEnum.class);
+    }
+
+    /**
+     * 
+     * @throws Exception
+     */
+    @Test
     public void convertBooleanToString() throws Exception {
         assertThat(
             ConversionUtil.convert(Boolean.TRUE, String.class),

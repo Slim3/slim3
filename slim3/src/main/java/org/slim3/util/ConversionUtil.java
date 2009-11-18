@@ -148,16 +148,27 @@ public final class ConversionUtil {
             + destinationClass.getName());
     }
 
-    private static Object convertToEnum(Object value, Class<?> destinationClass) {
-        int ordinal = IntegerUtil.toPrimitiveInt(value);
-        return destinationClass.getEnumConstants()[ordinal];
+    @SuppressWarnings("unchecked")
+    private static Object convertToEnum(Object value, Class destinationClass) {
+        if (value.getClass() == String.class) {
+            return Enum.valueOf(destinationClass, (String) value);
+        }
+        if (value instanceof Number) {
+            int ordinal = IntegerUtil.toPrimitiveInt(value);
+            return destinationClass.getEnumConstants()[ordinal];
+        }
+        throw new IllegalArgumentException("The class("
+            + value.getClass().getName()
+            + ") can not be converted to enum("
+            + destinationClass.getName()
+            + ").");
     }
 
     private static Object convertToKey(Object value) {
         if (value instanceof Key) {
             return Key.class.cast(value);
         }
-        if (value instanceof String) {
+        if (value.getClass() == String.class) {
             return KeyFactory.stringToKey(String.class.cast(value));
         }
         throw new IllegalArgumentException("The class("
