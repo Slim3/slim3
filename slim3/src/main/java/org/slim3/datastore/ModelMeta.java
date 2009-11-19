@@ -698,6 +698,51 @@ public abstract class ModelMeta<M> {
     }
 
     /**
+     * Converts the list of {@link Enum}s to a list of strings.
+     * 
+     * @param value
+     *            the list of {@link Enum}
+     * @return a list of strings
+     */
+    @SuppressWarnings("unchecked")
+    protected List<String> enumListToStringList(Object value) {
+        List<Enum<?>> v = (List<Enum<?>>) value;
+        if (v == null) {
+            return null;
+        }
+        List<String> list = new ArrayList<String>(v.size());
+        for (Enum<?> e : v) {
+            list.add(e.name());
+        }
+        return list;
+    }
+
+    /**
+     * Converts the list of strings to a list of {@link Enum}s.
+     * 
+     * @param <T>
+     *            the enum type
+     * @param clazz
+     *            the enum class
+     * @param value
+     *            the list of strings
+     * @return a list of {@link Enum}s
+     */
+    @SuppressWarnings("unchecked")
+    protected <T extends Enum<T>> List<T> stringListToEnumList(Class<T> clazz,
+            Object value) {
+        List<String> v = (List<String>) value;
+        if (v == null) {
+            return null;
+        }
+        List<T> list = new ArrayList<T>();
+        for (String s : v) {
+            list.add(s != null ? Enum.valueOf(clazz, s) : null);
+        }
+        return list;
+    }
+
+    /**
      * Returns the bean descriptor.
      * 
      * @return the bean descriptor

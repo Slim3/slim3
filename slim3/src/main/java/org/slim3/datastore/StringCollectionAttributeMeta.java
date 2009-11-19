@@ -16,15 +16,18 @@
 package org.slim3.datastore;
 
 /**
- * A meta data of string attribute.
+ * A meta data of collection attribute.
  * 
  * @author higa
  * @param <M>
  *            the model type
+ * @param <A>
+ *            the attribute type
  * @since 3.0
  * 
  */
-public class StringAttributeMeta<M> extends CoreAttributeMeta<M, String> {
+public class StringCollectionAttributeMeta<M, A> extends
+        CollectionAttributeMeta<M, A, String> {
 
     /**
      * Constructor.
@@ -33,9 +36,12 @@ public class StringAttributeMeta<M> extends CoreAttributeMeta<M, String> {
      *            the meta data of model
      * @param name
      *            the name
+     * @param attributeClass
+     *            the attribute class
      */
-    public StringAttributeMeta(ModelMeta<M> modelMeta, String name) {
-        super(modelMeta, name, String.class);
+    public StringCollectionAttributeMeta(ModelMeta<M> modelMeta, String name,
+            Class<? super A> attributeClass) {
+        super(modelMeta, name, attributeClass);
     }
 
     /**

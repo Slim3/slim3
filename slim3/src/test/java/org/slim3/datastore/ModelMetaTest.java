@@ -441,6 +441,30 @@ public class ModelMetaTest {
      * @throws Exception
      */
     @Test
+    public void enumListToStringList() throws Exception {
+        List<SortDirection> value = Arrays.asList(SortDirection.ASCENDING);
+        List<String> ret = meta.enumListToStringList(value);
+        assertThat(ret.size(), is(1));
+        assertThat(ret.iterator().next(), is("ASCENDING"));
+        assertThat(meta.enumListToStringList(null), is(nullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void stringListToEnumList() throws Exception {
+        List<String> value = Arrays.asList("ASCENDING");
+        List<SortDirection> ret =
+            meta.stringListToEnumList(SortDirection.class, value);
+        assertThat(ret.size(), is(1));
+        assertThat(ret.iterator().next(), is(SortDirection.ASCENDING));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getBeanDesc() throws Exception {
         BeanDesc beanDesc = meta.getBeanDesc();
         assertThat(beanDesc, is(not(nullValue())));

@@ -114,6 +114,8 @@ public class Hoge {
 
     private List<SortDirection> myEnumList;
 
+    private List<String> myStringList;
+
     @Attribute(version = true)
     private Long version;
 
@@ -670,6 +672,21 @@ public class Hoge {
      */
     public void setMyEnumList(List<SortDirection> myEnumList) {
         this.myEnumList = myEnumList;
+    }
+
+    /**
+     * @return the myStringList
+     */
+    public List<String> getMyStringList() {
+        return myStringList;
+    }
+
+    /**
+     * @param myStringList
+     *            the myStringList to set
+     */
+    public void setMyStringList(List<String> myStringList) {
+        this.myStringList = myStringList;
     }
 
     /**

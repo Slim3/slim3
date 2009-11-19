@@ -24,6 +24,7 @@ import org.slim3.datastore.CollectionAttributeMeta;
 import org.slim3.datastore.CoreAttributeMeta;
 import org.slim3.datastore.ModelMeta;
 import org.slim3.datastore.StringAttributeMeta;
+import org.slim3.datastore.StringCollectionAttributeMeta;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.datastore.model.MySerializable;
 
@@ -277,6 +278,15 @@ public class HogeMeta extends ModelMeta<Hoge> {
     /**
      * 
      */
+    public StringCollectionAttributeMeta<Hoge, List<String>> myStringList =
+        new StringCollectionAttributeMeta<Hoge, List<String>>(
+            this,
+            "myStringList",
+            List.class);
+
+    /**
+     * 
+     */
     public HogeMeta() {
         super("Hoge", Hoge.class);
     }
@@ -351,6 +361,10 @@ public class HogeMeta extends ModelMeta<Hoge> {
             .getProperty("myFloatSet")));
         model.setMyFloatSortedSet(doubleListToFloatSortedSet(entity
             .getProperty("myFloatSortedSet")));
+        model.setMyEnumList(stringListToEnumList(SortDirection.class, entity
+            .getProperty("myEnumList")));
+        model.setMyStringList(toList(String.class, entity
+            .getProperty("myStringList")));
         model.setVersion((Long) entity.getProperty("version"));
         return model;
     }
@@ -406,6 +420,9 @@ public class HogeMeta extends ModelMeta<Hoge> {
         e.setProperty("myFloatList", m.getMyFloatList());
         e.setProperty("myFloatSet", m.getMyFloatSet());
         e.setProperty("myFloatSortedSet", m.getMyFloatSortedSet());
+
+        e.setProperty("myEnumList", enumListToStringList(m.getMyEnumList()));
+        e.setProperty("myStringList", m.getMyStringList());
 
         e.setProperty("version", m.getVersion());
         return e;

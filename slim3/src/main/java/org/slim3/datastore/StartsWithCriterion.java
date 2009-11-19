@@ -47,7 +47,7 @@ public class StartsWithCriterion extends AbstractCriterion implements
      *            the value
      * @see AbstractCriterion#AbstractCriterion(AbstractAttributeMeta)
      */
-    public StartsWithCriterion(CoreAttributeMeta<?, String> attributeMeta,
+    public StartsWithCriterion(AbstractAttributeMeta<?, ?> attributeMeta,
             String value) {
         super(attributeMeta);
         this.value = value;

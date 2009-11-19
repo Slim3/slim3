@@ -15,37 +15,29 @@
  */
 package org.slim3.datastore;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+import org.slim3.datastore.meta.HogeMeta;
+
 /**
- * A meta data of string attribute.
- * 
  * @author higa
- * @param <M>
- *            the model type
- * @since 3.0
  * 
  */
-public class StringAttributeMeta<M> extends CoreAttributeMeta<M, String> {
+public class StringCollectionAttributeMetaTest {
+
+    private HogeMeta meta = new HogeMeta();
 
     /**
-     * Constructor.
+     * @throws Exception
      * 
-     * @param modelMeta
-     *            the meta data of model
-     * @param name
-     *            the name
      */
-    public StringAttributeMeta(ModelMeta<M> modelMeta, String name) {
-        super(modelMeta, name, String.class);
-    }
-
-    /**
-     * Returns the "startsWith" filter criterion.
-     * 
-     * @param value
-     *            the value
-     * @return the "startsWith" filter criterion
-     */
-    public FilterCriterion startsWith(String value) {
-        return new StartsWithCriterion(this, value);
+    @Test
+    public void startsWith() throws Exception {
+        assertThat(
+            meta.myStringList.startsWith("a"),
+            is(StartsWithCriterion.class));
+        assertThat(meta.myStringList.startsWith(null), is(notNullValue()));
     }
 }
