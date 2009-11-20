@@ -66,6 +66,10 @@ public final class ClassConstants {
     public static final String CollectionAttributeMeta =
         "org.slim3.datastore.CollectionAttributeMeta";
 
+    /** {@code org.slim3.datastore.StringCollectionAttributeMeta} */
+    public static final String StringCollectionAttributeMeta =
+        "org.slim3.datastore.StringCollectionAttributeMeta";
+
     /** {@code org.slim3.controller.Controller} */
     public static final String Controller = "org.slim3.controller.Controller";
 

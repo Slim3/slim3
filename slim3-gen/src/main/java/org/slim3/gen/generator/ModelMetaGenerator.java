@@ -460,6 +460,23 @@ public class ModelMetaGenerator implements Generator {
                 new SimpleDataTypeVisitor<Void, Void, RuntimeException>() {
 
                     @Override
+                    public Void visitStringType(StringType type, Void p)
+                            throws RuntimeException {
+                        printer.println("/** */");
+                        printer
+                            .println(
+                                "public %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", %6$s.class);",
+                                StringCollectionAttributeMeta,
+                                modelMetaDesc.getModelClassName(),
+                                collectionType.getTypeName(),
+                                attr.getName(),
+                                attr.getPropertyName(),
+                                collectionType.getClassName());
+                        printer.println();
+                        return null;
+                    }
+
+                    @Override
                     public Void visitCoreReferenceType(
                             CoreReferenceType elementType, Void p)
                             throws RuntimeException {
