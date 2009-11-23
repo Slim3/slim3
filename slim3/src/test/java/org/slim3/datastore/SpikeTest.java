@@ -15,13 +15,13 @@
  */
 package org.slim3.datastore;
 
-import java.util.Arrays;
-
 import org.junit.Test;
-import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.tester.LocalServiceTestCase;
 
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.Transaction;
 
 /**
  * @author higa
@@ -34,11 +34,22 @@ public class SpikeTest extends LocalServiceTestCase {
      */
     @Test
     public void spike() throws Exception {
-        Entity entity = new Entity("Hoge");
-        entity.setProperty("myStringList", Arrays.asList("aa", "ab"));
-        Datastore.put(entity);
-        HogeMeta h = new HogeMeta();
-        System.out.println(Datastore.query(h).filter(
-            h.myStringList.startsWith("a")).count());
+        Transaction tx = Datastore.beginTransaction();
+        System.out.println(DatastoreServiceFactory
+            .getDatastoreService()
+            .getActiveTransactions());
+        Transaction tx2 = Datastore.beginTransaction();
+        System.out.println(DatastoreServiceFactory
+            .getDatastoreService()
+            .getActiveTransactions());
+        Key key = Datastore.put(tx, new Entity("Hoge"));
+        tx.commit();
+        System.out.println(DatastoreServiceFactory
+            .getDatastoreService()
+            .getActiveTransactions());
+        System.out.println(Datastore.query("Hoge").count());
+        System.out.println(Datastore.query("Hoge2").count());
+        tx2.rollback();
+        Datastore.delete(key);
     }
 }

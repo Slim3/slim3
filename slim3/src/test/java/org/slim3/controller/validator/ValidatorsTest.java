@@ -247,4 +247,15 @@ public class ValidatorsTest {
             v.doubleRange(3, 5).validate(parameters, "aaa"),
             is(nullValue()));
     }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void regexp() throws Exception {
+        assertThat(v.regexp("abc"), is(RegexpValidator.class));
+        assertThat(v.regexp("abc", "hoge"), is(RegexpValidator.class));
+        parameters.put("aaa", "abc");
+        assertThat(v.regexp("abc").validate(parameters, "aaa"), is(nullValue()));
+    }
 }

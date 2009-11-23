@@ -430,4 +430,33 @@ public class Validators {
             String message) {
         return new DoubleRangeValidator(minimum, maximum, message);
     }
+
+    /**
+     * Returns {@link RegexpValidator}.
+     * 
+     * @param pattern
+     *            the pattern for regular expression
+     * @return {@link RegexpValidator}
+     * @throws NullPointerException
+     *             if the pattern parameter is null
+     */
+    public RegexpValidator regexp(String pattern) throws NullPointerException {
+        return new RegexpValidator(pattern);
+    }
+
+    /**
+     * Returns {@link RegexpValidator}.
+     * 
+     * @param pattern
+     *            the pattern for regular expression
+     * @param message
+     *            the error message
+     * @return {@link RegexpValidator}
+     * @throws NullPointerException
+     *             if the pattern parameter is null
+     */
+    public RegexpValidator regexp(String pattern, String message)
+            throws NullPointerException {
+        return new RegexpValidator(pattern, message);
+    }
 }
