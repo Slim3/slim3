@@ -62,7 +62,7 @@ public final class BbbMeta extends
     }
 
     @Override
-    protected org.slim3.datastore.model.Bbb entityToModel(
+    public org.slim3.datastore.model.Bbb entityToModel(
             com.google.appengine.api.datastore.Entity entity) {
         org.slim3.datastore.model.Bbb model =
             new org.slim3.datastore.model.Bbb();
@@ -74,7 +74,7 @@ public final class BbbMeta extends
     }
 
     @Override
-    protected com.google.appengine.api.datastore.Entity modelToEntity(
+    public com.google.appengine.api.datastore.Entity modelToEntity(
             java.lang.Object model) {
         org.slim3.datastore.model.Bbb m = (org.slim3.datastore.model.Bbb) model;
         com.google.appengine.api.datastore.Entity entity = null;

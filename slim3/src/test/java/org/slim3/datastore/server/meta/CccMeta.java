@@ -66,7 +66,7 @@ public final class CccMeta extends
     }
 
     @Override
-    protected org.slim3.datastore.shared.model.Ccc entityToModel(
+    public org.slim3.datastore.shared.model.Ccc entityToModel(
             com.google.appengine.api.datastore.Entity entity) {
         org.slim3.datastore.shared.model.Ccc model =
             new org.slim3.datastore.shared.model.Ccc();
@@ -78,7 +78,7 @@ public final class CccMeta extends
     }
 
     @Override
-    protected com.google.appengine.api.datastore.Entity modelToEntity(
+    public com.google.appengine.api.datastore.Entity modelToEntity(
             java.lang.Object model) {
         org.slim3.datastore.shared.model.Ccc m =
             (org.slim3.datastore.shared.model.Ccc) model;

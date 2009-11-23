@@ -292,7 +292,7 @@ public class HogeMeta extends ModelMeta<Hoge> {
     }
 
     @Override
-    protected Hoge entityToModel(Entity entity) {
+    public Hoge entityToModel(Entity entity) {
         Hoge model = new Hoge();
         model.setKey(entity.getKey());
         model.setMyPrimitiveShort(longToPrimitiveShort((Long) entity
@@ -370,7 +370,7 @@ public class HogeMeta extends ModelMeta<Hoge> {
     }
 
     @Override
-    protected Entity modelToEntity(Object model) {
+    public Entity modelToEntity(Object model) {
         Hoge m = (Hoge) model;
         Entity e = null;
         if (m.getKey() != null) {

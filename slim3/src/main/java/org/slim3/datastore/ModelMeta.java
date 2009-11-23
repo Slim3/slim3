@@ -143,7 +143,7 @@ public abstract class ModelMeta<M> {
      *            the entity
      * @return a model
      */
-    protected abstract M entityToModel(Entity entity);
+    public abstract M entityToModel(Entity entity);
 
     /**
      * Converts the model to an entity.
@@ -152,7 +152,7 @@ public abstract class ModelMeta<M> {
      *            the model
      * @return an entity
      */
-    protected abstract Entity modelToEntity(Object model);
+    public abstract Entity modelToEntity(Object model);
 
     /**
      * Returns version property value of the model.

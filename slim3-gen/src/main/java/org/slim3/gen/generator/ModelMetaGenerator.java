@@ -530,7 +530,7 @@ public class ModelMetaGenerator implements Generator {
         public void generate() {
             printer.println("@Override");
             printer.println(
-                "protected %1$s entityToModel(%2$s entity) {",
+                "public %1$s entityToModel(%2$s entity) {",
                 modelMetaDesc.getModelClassName(),
                 Entity);
             printer.indent();
@@ -968,7 +968,7 @@ public class ModelMetaGenerator implements Generator {
         public void generate() {
             printer.println("@Override");
             printer.println(
-                "protected %1$s modelToEntity(%2$s model) {",
+                "public %1$s modelToEntity(%2$s model) {",
                 Entity,
                 Object);
             printer.indent();
