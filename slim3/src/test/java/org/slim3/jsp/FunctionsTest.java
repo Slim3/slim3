@@ -148,14 +148,6 @@ public class FunctionsTest {
      * @throws Exception
      */
     @Test
-    public void hForNbsp() throws Exception {
-        assertThat(Functions.h(" "), is("&nbsp;"));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
     public void hForDate() throws Exception {
         String s = Functions.h(new Date());
         System.out.println(s);
@@ -248,6 +240,31 @@ public class FunctionsTest {
     @Test
     public void brForNull() throws Exception {
         assertThat(Functions.br(null), is(""));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void nbspForBlank() throws Exception {
+        assertThat(Functions.nbsp(" "), is("&nbsp;"));
+        assertThat(Functions.nbsp("  "), is("&nbsp;&nbsp;"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void nbspForNull() throws Exception {
+        assertThat(Functions.nbsp(null), is(""));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void nbspForEmptyString() throws Exception {
+        assertThat(Functions.nbsp(""), is(""));
     }
 
     /**

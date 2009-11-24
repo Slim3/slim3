@@ -49,6 +49,8 @@ public final class Functions {
 
     private static String BR = "<br />";
 
+    private static String NBSP = "&nbsp;";
+
     private static String ARRAY_SUFFIX = "Array";
 
     private static List<String> EMPTY_STRING_LIST = new ArrayList<String>(0);
@@ -126,6 +128,20 @@ public final class Functions {
             sb.append(path).append(input);
         }
         return ResponseLocator.get().encodeURL(sb.toString());
+    }
+
+    /**
+     * Converts blank to entity reference nbsp.
+     * 
+     * @param input
+     *            the input value
+     * @return the converted value
+     */
+    public static String nbsp(String input) {
+        if (StringUtil.isEmpty(input)) {
+            return "";
+        }
+        return input.replaceAll(" ", NBSP);
     }
 
     /**

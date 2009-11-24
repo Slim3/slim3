@@ -32,5 +32,6 @@ public class HtmlUtilTest {
     @Test
     public void escape() throws Exception {
         assertThat(HtmlUtil.escape("<a>"), is("&lt;a&gt;"));
+        assertThat(HtmlUtil.escape(" "), is(" "));
     }
 }

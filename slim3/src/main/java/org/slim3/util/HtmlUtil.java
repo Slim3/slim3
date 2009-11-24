@@ -33,7 +33,6 @@ public final class HtmlUtil {
         specialCharactersRepresentation['&'] = "&amp;".toCharArray();
         specialCharactersRepresentation['<'] = "&lt;".toCharArray();
         specialCharactersRepresentation['>'] = "&gt;".toCharArray();
-        specialCharactersRepresentation[' '] = "&nbsp;".toCharArray();
         specialCharactersRepresentation['"'] = "&#034;".toCharArray();
         specialCharactersRepresentation['\''] = "&#039;".toCharArray();
     }

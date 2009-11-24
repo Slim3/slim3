@@ -34,7 +34,19 @@
       &lt;a href="${f:url(param)}" ...
     </example>
   </function>
-  
+
+  <function>
+    <description>
+      Converts blank to entity reference nbsp.
+    </description>
+    <name>nbsp/name>
+    <function-class>org.slim3.jsp.Functions</function-class>
+    <function-signature>java.lang.String nbsp(java.lang.String)</function-signature>
+    <example>
+      ${f:nbsp(f:h(textarea))}
+    </example>
+  </function>
+    
   <function>
     <description>
       Converts line break to br tag.
@@ -43,7 +55,7 @@
     <function-class>org.slim3.jsp.Functions</function-class>
     <function-signature>java.lang.String br(java.lang.String)</function-signature>
     <example>
-      ${f:br(f:h(textarea))}
+      ${f:br(f:nbsp(f:h(textarea)))}
     </example>
   </function>
   
