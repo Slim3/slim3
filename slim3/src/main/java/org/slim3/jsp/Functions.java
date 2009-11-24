@@ -67,6 +67,9 @@ public final class Functions {
         if (input.getClass() == String.class) {
             return HtmlUtil.escape(input.toString());
         }
+        if (input.getClass() == Key.class) {
+            return KeyFactory.keyToString(Key.class.cast(input));
+        }
         if (input.getClass().isArray()) {
             Class<?> clazz = input.getClass().getComponentType();
             if (clazz.isPrimitive()) {
@@ -273,8 +276,16 @@ public final class Functions {
                 + ") must not end with \"Array\".");
         }
         HttpServletRequest request = RequestLocator.get();
-        Key value = (Key) request.getAttribute(name);
-        return "name = \"" + name + "\" value = \"" + key(value) + "\"";
+        Object value = request.getAttribute(name);
+        String s = "";
+        if (value != null) {
+            if (value instanceof Key) {
+                s = key(Key.class.cast(value));
+            } else {
+                s = value.toString();
+            }
+        }
+        return "name = \"" + name + "\" value = \"" + s + "\"";
     }
 
     /**
