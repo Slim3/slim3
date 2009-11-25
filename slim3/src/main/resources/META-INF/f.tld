@@ -39,7 +39,7 @@
     <description>
       Converts blank to entity reference nbsp.
     </description>
-    <name>nbsp/name>
+    <name>nbsp</name>
     <function-class>org.slim3.jsp.Functions</function-class>
     <function-signature>java.lang.String nbsp(java.lang.String)</function-signature>
     <example>
