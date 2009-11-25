@@ -20,8 +20,11 @@ import java.util.Set;
 import org.slim3.gen.desc.AttributeMetaDescFactory;
 import org.slim3.gen.desc.ModelMetaDesc;
 import org.slim3.gen.desc.ModelMetaDescFactory;
+import org.slim3.gen.desc.ModelRefDesc;
+import org.slim3.gen.desc.ModelRefDescFactory;
 import org.slim3.gen.generator.Generator;
 import org.slim3.gen.generator.ModelMetaGenerator;
+import org.slim3.gen.generator.ModelRefGenerator;
 import org.slim3.gen.message.MessageCode;
 import org.slim3.gen.message.MessageFormatter;
 
@@ -100,11 +103,6 @@ public class ModelProcessor implements AnnotationProcessor {
      *            the declaration represents a JDO model class.
      */
     protected void handleClassDeclaration(ClassDeclaration declaration) {
-        if (Options.isDebugEnabled(env)) {
-            Logger.debug(env, MessageFormatter.getMessage(
-                MessageCode.SILM3GEN0002,
-                declaration));
-        }
         AttributeMetaDescFactory attributeMetaDescFactory =
             createAttributeMetaDescFactory();
         ModelMetaDescFactory modelMetaDescFactory =
@@ -112,13 +110,16 @@ public class ModelProcessor implements AnnotationProcessor {
         ModelMetaDesc modelMetaDesc =
             modelMetaDescFactory.createModelMetaDesc(declaration);
         if (!modelMetaDesc.isError()) {
-            Generator generator = createGenerator(modelMetaDesc);
-            generateSupport.generate(generator, modelMetaDesc);
-            if (Options.isDebugEnabled(env)) {
-                Logger.debug(env, MessageFormatter.getMessage(
-                    MessageCode.SILM3GEN0003,
-                    declaration));
-            }
+            Generator modelMetaGenerator =
+                createModelMetaGenerator(modelMetaDesc);
+            generateSupport.generate(modelMetaGenerator, modelMetaDesc);
+
+            ModelRefDescFactory modelRefDescFactory =
+                createModelRefDescFactory();
+            ModelRefDesc modelRefDesc =
+                modelRefDescFactory.createModelRefDesc(declaration);
+            Generator modelRefGenerator = createModelRefGenerator(modelRefDesc);
+            generateSupport.generate(modelRefGenerator, modelRefDesc);
         }
     }
 
@@ -144,13 +145,35 @@ public class ModelProcessor implements AnnotationProcessor {
     }
 
     /**
-     * Creates a generator object.
+     * Creates a model ref description factory.
+     * 
+     * @return a model ref description factory
+     */
+    protected ModelRefDescFactory createModelRefDescFactory() {
+        return new ModelRefDescFactory(env);
+    }
+
+    /**
+     * Creates a model meta generator object.
      * 
      * @param modelMetaDesc
-     *            the model description.
-     * @return a generator object.
+     *            the model meta description.
+     * @return a model meta generator object.
      */
-    protected Generator createGenerator(ModelMetaDesc modelMetaDesc) {
+    protected ModelMetaGenerator createModelMetaGenerator(
+            ModelMetaDesc modelMetaDesc) {
         return new ModelMetaGenerator(modelMetaDesc);
+    }
+
+    /**
+     * Creates a model ref generator object.
+     * 
+     * @param modelRefDesc
+     *            the model ref description.
+     * @return a model ref generator object.
+     */
+    protected ModelRefGenerator createModelRefGenerator(
+            ModelRefDesc modelRefDesc) {
+        return new ModelRefGenerator(modelRefDesc);
     }
 }

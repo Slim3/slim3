@@ -28,6 +28,9 @@ public final class Constants {
     /** the suffix of meta class */
     public static final String META_SUFFIX = "Meta";
 
+    /** the suffix of meta class */
+    public static final String REF_SUFFIX = "Ref";
+
     /** the suffix of test class */
     public static final String TEST_SUFFIX = "Test";
 

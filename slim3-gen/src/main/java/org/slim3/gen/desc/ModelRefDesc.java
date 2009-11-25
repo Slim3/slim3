@@ -1,0 +1,96 @@
+/*
+ * Copyright 2004-2009 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
+ */
+package org.slim3.gen.desc;
+
+import org.slim3.gen.util.ClassUtil;
+
+/**
+ * Represents a model ref description.
+ * 
+ * @author taedium
+ * @since 3.0
+ * 
+ */
+public class ModelRefDesc implements ClassDesc {
+
+    /** the package name */
+    protected final String packageName;
+
+    /** the simple name */
+    protected final String simpleName;
+
+    /** the modelClassName */
+    protected final String modelClassName;
+
+    /**
+     * Creates a new {@link ModelRefDesc}.
+     * 
+     * @param packageName
+     *            the package name
+     * @param simpleName
+     *            the simple name
+     * @param modelClassName
+     *            the modelClassName
+     */
+    public ModelRefDesc(String packageName, String simpleName,
+            String modelClassName) {
+        if (packageName == null) {
+            throw new NullPointerException("The packageName parameter is null.");
+        }
+        if (simpleName == null) {
+            throw new NullPointerException("The simpleName parameter is null.");
+        }
+        if (modelClassName == null) {
+            throw new NullPointerException(
+                "The modelClassName parameter is null.");
+        }
+        this.packageName = packageName;
+        this.simpleName = simpleName;
+        this.modelClassName = modelClassName;
+    }
+
+    /**
+     * Returns the packageName.
+     * 
+     * @return the packageName
+     */
+    public String getPackageName() {
+        return packageName;
+    }
+
+    /**
+     * Returns the simpleName.
+     * 
+     * @return the simpleName
+     */
+    public String getSimpleName() {
+        return simpleName;
+    }
+
+    public String getQualifiedName() {
+        return ClassUtil.getQualifiedName(packageName, simpleName);
+    }
+
+    /**
+     * Returns the modelClassName.
+     * 
+     * @return the modelClassName
+     */
+    public String getModelClassName() {
+        return modelClassName;
+    }
+
+}

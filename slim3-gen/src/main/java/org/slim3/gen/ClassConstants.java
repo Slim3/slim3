@@ -54,6 +54,9 @@ public final class ClassConstants {
     /** {@code org.slim3.datastore.ModelMeta} */
     public static final String ModelMeta = "org.slim3.datastore.ModelMeta";
 
+    /** {@code org.slim3.datastore.ModelRef} */
+    public static final String ModelRef = "org.slim3.datastore.ModelRef";
+
     /** {@code org.slim3.datastore.CoreAttributeMeta} */
     public static final String CoreAttributeMeta =
         "org.slim3.datastore.CoreAttributeMeta";
