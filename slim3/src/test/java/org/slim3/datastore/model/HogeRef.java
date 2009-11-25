@@ -13,21 +13,22 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.datastore;
+package org.slim3.datastore.model;
 
-import org.junit.Test;
-import org.slim3.tester.LocalServiceTestCase;
+import org.slim3.datastore.ModelRef;
 
 /**
- * @author higa
- * 
+ *
  */
-public class SpikeTest extends LocalServiceTestCase {
+public class HogeRef extends ModelRef<Hoge> {
+
+    private static final long serialVersionUID = 1L;
 
     /**
-     * @throws Exception
+     *
      */
-    @Test
-    public void spike() throws Exception {
+    public HogeRef() {
+        super(Hoge.class);
     }
+
 }

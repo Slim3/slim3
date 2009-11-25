@@ -27,6 +27,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.junit.Test;
+import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.datastore.model.MySerializable;
 import org.slim3.tester.LocalServiceTestCase;
@@ -48,6 +49,10 @@ public class ModelMetaDatastoreTest extends LocalServiceTestCase {
     private HogeMeta meta = new HogeMeta();
 
     private Hoge model = new Hoge();
+
+    private BbbMeta bbbMeta = new BbbMeta();
+
+    private Bbb bbb = new Bbb();
 
     private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
@@ -507,5 +512,22 @@ public class ModelMetaDatastoreTest extends LocalServiceTestCase {
         Entity entity2 = ds.get(key);
         Hoge model2 = meta.entityToModel(entity2);
         assertThat(model2.getMyFloatSortedSet(), is(value));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void modelRef() throws Exception {
+        Entity entity = meta.modelToEntity(model);
+        Key key = ds.put(entity);
+        Entity entity2 = ds.get(key);
+        Hoge model2 = meta.entityToModel(entity2);
+        bbb.getHogeRef().setModel(model2);
+        Entity bbbEntity = bbbMeta.modelToEntity(bbb);
+        Key bbbKey = ds.put(bbbEntity);
+        Entity bbbEntity2 = ds.get(bbbKey);
+        Bbb bbb2 = bbbMeta.entityToModel(bbbEntity2);
+        assertThat(bbb2.getHogeRef().getKey(), is(key));
     }
 }

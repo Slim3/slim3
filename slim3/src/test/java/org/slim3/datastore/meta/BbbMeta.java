@@ -1,5 +1,9 @@
 package org.slim3.datastore.meta;
 
+import org.slim3.datastore.model.HogeRef;
+
+import com.google.appengine.api.datastore.Key;
+
 /**
  * @author higa
  * 
@@ -41,6 +45,21 @@ public final class BbbMeta extends
             "version",
             java.lang.Long.class);
 
+    /**
+     * 
+     */
+    public org.slim3.datastore.ModelRefAttributeMeta<org.slim3.datastore.model.Bbb, HogeRef> hogeRef =
+        new org.slim3.datastore.ModelRefAttributeMeta<org.slim3.datastore.model.Bbb, HogeRef>(
+            this,
+            "hogeRef",
+            HogeRef.class);
+
+    @Override
+    protected Key getKey(Object model) {
+        org.slim3.datastore.model.Bbb m = (org.slim3.datastore.model.Bbb) model;
+        return m.getKey();
+    }
+
     @Override
     protected void setKey(Object model,
             com.google.appengine.api.datastore.Key key) {
@@ -70,6 +89,12 @@ public final class BbbMeta extends
         model.setSchemaVersion(longToInteger((java.lang.Long) entity
             .getProperty("schemaVersion")));
         model.setVersion((java.lang.Long) entity.getProperty("version"));
+        if (model.getHogeRef() == null) {
+            throw new NullPointerException("The property(hogeRef) is null.");
+        }
+        model.getHogeRef().setKey(
+            (com.google.appengine.api.datastore.Key) entity
+                .getProperty("hogeRef"));
         return model;
     }
 
@@ -85,6 +110,10 @@ public final class BbbMeta extends
         }
         entity.setProperty("schemaVersion", m.getSchemaVersion());
         entity.setProperty("version", m.getVersion());
+        if (m.getHogeRef() == null) {
+            throw new NullPointerException("The property(hogeRef) is null.");
+        }
+        entity.setProperty("hogeRef", m.getHogeRef().getKey());
         return entity;
     }
 }

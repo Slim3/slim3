@@ -15,7 +15,6 @@
  */
 package org.slim3.util;
 
-
 /**
  * A utility class for {@link Class}.
  * 
@@ -23,6 +22,26 @@ package org.slim3.util;
  * @since 3.0
  */
 public final class ClassUtil {
+
+    /**
+     * Returns the class object specified by the name.
+     * 
+     * @param <T>
+     *            the type
+     * @param className
+     *            the class name
+     * @return the class object
+     * @throws NullPointerException
+     *             if the className parameter is null
+     * @throws WrapRuntimeException
+     *             if the class specified by the name is not found
+     */
+    public static <T> Class<T> forName(String className)
+            throws NullPointerException, WrapRuntimeException {
+        return forName(className, Thread
+            .currentThread()
+            .getContextClassLoader());
+    }
 
     /**
      * Returns the class object specified by the name.

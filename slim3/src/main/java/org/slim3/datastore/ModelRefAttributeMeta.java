@@ -15,8 +15,10 @@
  */
 package org.slim3.datastore;
 
+import com.google.appengine.api.datastore.Key;
+
 /**
- * A meta data of attribute.
+ * A meta data of attribute for {@link ModelRef}.
  * 
  * @author higa
  * @param <M>
@@ -26,7 +28,7 @@ package org.slim3.datastore;
  * @since 3.0
  * 
  */
-public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
+public class ModelRefAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
 
     /**
      * The "is not null" filter.
@@ -43,7 +45,7 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
      * @param attributeClass
      *            the attribute class
      */
-    public CoreAttributeMeta(ModelMeta<M> modelMeta, String name,
+    public ModelRefAttributeMeta(ModelMeta<M> modelMeta, String name,
             Class<A> attributeClass) {
         super(modelMeta, name, attributeClass);
     }
@@ -55,8 +57,8 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
      *            the value
      * @return the "equal" filter
      */
-    public FilterCriterion equal(A value) {
-        return new EqualCriterion(this, convertValueForDatastore(value));
+    public FilterCriterion equal(Key value) {
+        return new EqualCriterion(this, value);
     }
 
     /**
@@ -66,8 +68,8 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
      *            the value
      * @return the "less than" filter
      */
-    public FilterCriterion lessThan(A value) {
-        return new LessThanCriterion(this, convertValueForDatastore(value));
+    public FilterCriterion lessThan(Key value) {
+        return new LessThanCriterion(this, value);
     }
 
     /**
@@ -77,10 +79,8 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
      *            the value
      * @return the "less than or equal" filter
      */
-    public FilterCriterion lessThanOrEqual(A value) {
-        return new LessThanOrEqualCriterion(
-            this,
-            convertValueForDatastore(value));
+    public FilterCriterion lessThanOrEqual(Key value) {
+        return new LessThanOrEqualCriterion(this, value);
     }
 
     /**
@@ -90,8 +90,8 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
      *            the value
      * @return the "greater than" filter
      */
-    public FilterCriterion greaterThan(A value) {
-        return new GreaterThanCriterion(this, convertValueForDatastore(value));
+    public FilterCriterion greaterThan(Key value) {
+        return new GreaterThanCriterion(this, value);
     }
 
     /**
@@ -101,10 +101,8 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
      *            the value
      * @return the "greater than or equal" filter
      */
-    public FilterCriterion greaterThanOrEqual(A value) {
-        return new GreaterThanOrEqualCriterion(
-            this,
-            convertValueForDatastore(value));
+    public FilterCriterion greaterThanOrEqual(Key value) {
+        return new GreaterThanOrEqualCriterion(this, value);
     }
 
     /**

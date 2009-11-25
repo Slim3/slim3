@@ -1,5 +1,7 @@
 package org.slim3.datastore.server.meta;
 
+import com.google.appengine.api.datastore.Key;
+
 //@javax.annotation.Generated(value = { "slim3-gen", "null" }, date = "2009-11-09 15:30:15")
 /**
  * @author higa
@@ -41,6 +43,13 @@ public final class CccMeta extends
             this,
             "version",
             java.lang.Long.class);
+
+    @Override
+    protected Key getKey(Object model) {
+        org.slim3.datastore.shared.model.Ccc m =
+            (org.slim3.datastore.shared.model.Ccc) model;
+        return m.getKey();
+    }
 
     @Override
     protected void setKey(Object model,

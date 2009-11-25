@@ -22,7 +22,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamClass;
 
-
 /**
  * A utility class for {@link Byte}.
  * 
@@ -105,17 +104,24 @@ public final class ByteUtil {
     /**
      * Converts array of bytes to object.
      * 
+     * @param <T>
+     *            the return type
      * @param bytes
      *            array of bytes
      * @return object
      */
-    public static Object toObject(byte[] bytes) {
-        return toObject(bytes, Thread.currentThread().getContextClassLoader());
+    @SuppressWarnings("unchecked")
+    public static <T> T toObject(byte[] bytes) {
+        return (T) toObject(bytes, Thread
+            .currentThread()
+            .getContextClassLoader());
     }
 
     /**
      * Converts array of bytes to object.
      * 
+     * @param <T>
+     *            the return type
      * @param bytes
      *            array of bytes
      * @param classLoader
@@ -124,7 +130,8 @@ public final class ByteUtil {
      * @throws NullPointerException
      *             if the classLoader parameter is null
      */
-    public static Object toObject(byte[] bytes, final ClassLoader classLoader)
+    @SuppressWarnings("unchecked")
+    public static <T> T toObject(byte[] bytes, final ClassLoader classLoader)
             throws NullPointerException {
         if (bytes == null) {
             return null;
@@ -152,7 +159,7 @@ public final class ByteUtil {
             } finally {
                 ois.close();
             }
-            return o;
+            return (T) o;
         } catch (IOException e) {
             throw new WrapRuntimeException(e);
         } catch (ClassNotFoundException e) {

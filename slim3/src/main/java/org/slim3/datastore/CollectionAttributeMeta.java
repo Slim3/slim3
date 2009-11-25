@@ -47,44 +47,44 @@ public class CollectionAttributeMeta<M, A, E> extends
     }
 
     /**
-     * Returns the "contains" filter criterion.
+     * Returns the "contains" filter.
      * 
      * @param value
      *            the value
-     * @return the "contains" filter criterion
+     * @return the "contains" filter
      */
     public FilterCriterion contains(E value) {
         return new ContainsCriterion(this, convertValueForDatastore(value));
     }
 
     /**
-     * Returns the "equal" filter criterion.
+     * Returns the "equal" filter.
      * 
      * @param value
      *            the value
-     * @return the "equal" filter criterion
+     * @return the "equal" filter
      */
     public FilterCriterion equal(E value) {
         return new EqualCriterion(this, convertValueForDatastore(value));
     }
 
     /**
-     * Returns the "less than" filter criterion.
+     * Returns the "less than" filter.
      * 
      * @param value
      *            the value
-     * @return the "less than" filter criterion
+     * @return the "less than" filter
      */
     public FilterCriterion lessThan(E value) {
         return new LessThanCriterion(this, convertValueForDatastore(value));
     }
 
     /**
-     * Returns the "less than or equal" filter criterion.
+     * Returns the "less than or equal" filter.
      * 
      * @param value
      *            the value
-     * @return the "less than or equal" filter criterion
+     * @return the "less than or equal" filter
      */
     public FilterCriterion lessThanOrEqual(E value) {
         return new LessThanOrEqualCriterion(
@@ -93,22 +93,22 @@ public class CollectionAttributeMeta<M, A, E> extends
     }
 
     /**
-     * Returns the "greater than" filter criterion.
+     * Returns the "greater than" filter.
      * 
      * @param value
      *            the value
-     * @return the "greater than" filter criterion
+     * @return the "greater than" filter
      */
     public FilterCriterion greaterThan(E value) {
         return new GreaterThanCriterion(this, convertValueForDatastore(value));
     }
 
     /**
-     * Returns the "greater than or equal" filter criterion.
+     * Returns the "greater than or equal" filter.
      * 
      * @param value
      *            the value
-     * @return the "greater than or equal" filter criterion
+     * @return the "greater than or equal" filter
      */
     public FilterCriterion greaterThanOrEqual(E value) {
         return new GreaterThanOrEqualCriterion(

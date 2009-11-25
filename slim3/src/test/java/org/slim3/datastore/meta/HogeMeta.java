@@ -429,6 +429,13 @@ public class HogeMeta extends ModelMeta<Hoge> {
     }
 
     @Override
+    protected Key getKey(Object model) {
+        org.slim3.datastore.model.Hoge m =
+            (org.slim3.datastore.model.Hoge) model;
+        return m.getKey();
+    }
+
+    @Override
     protected void setKey(Object model, Key key) {
         Hoge m = (Hoge) model;
         m.setKey(key);

@@ -172,6 +172,15 @@ public abstract class ModelMeta<M> {
     protected abstract void incrementVersion(Object model);
 
     /**
+     * Returns a key of the model.
+     * 
+     * @param model
+     *            the model
+     * @return a key of the model
+     */
+    protected abstract Key getKey(Object model);
+
+    /**
      * Sets the key to the model.
      * 
      * @param model

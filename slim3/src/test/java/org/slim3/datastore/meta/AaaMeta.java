@@ -1,5 +1,7 @@
 package org.slim3.datastore.meta;
 
+import com.google.appengine.api.datastore.Key;
+
 //@javax.annotation.Generated(value = { "slim3-gen", "null" }, date = "2009-11-09 15:30:15")
 /**
  * @author higa
@@ -47,6 +49,12 @@ public final class AaaMeta extends
             com.google.appengine.api.datastore.Key key) {
         org.slim3.datastore.model.Aaa m = (org.slim3.datastore.model.Aaa) model;
         m.setKey(key);
+    }
+
+    @Override
+    protected Key getKey(Object model) {
+        org.slim3.datastore.model.Aaa m = (org.slim3.datastore.model.Aaa) model;
+        return m.getKey();
     }
 
     @Override

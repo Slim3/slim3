@@ -45,11 +45,11 @@ public class StringCollectionAttributeMeta<M, A> extends
     }
 
     /**
-     * Returns the "startsWith" filter criterion.
+     * Returns the "startsWith" filter.
      * 
      * @param value
      *            the value
-     * @return the "startsWith" filter criterion
+     * @return the "startsWith" filter
      */
     public FilterCriterion startsWith(String value) {
         return new StartsWithCriterion(this, value);

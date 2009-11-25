@@ -39,11 +39,11 @@ public class StringAttributeMeta<M> extends CoreAttributeMeta<M, String> {
     }
 
     /**
-     * Returns the "startsWith" filter criterion.
+     * Returns the "startsWith" filter.
      * 
      * @param value
      *            the value
-     * @return the "startsWith" filter criterion
+     * @return the "startsWith" filter
      */
     public FilterCriterion startsWith(String value) {
         return new StartsWithCriterion(this, value);

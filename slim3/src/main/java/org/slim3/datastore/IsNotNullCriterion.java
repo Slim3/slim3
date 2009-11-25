@@ -34,7 +34,7 @@ public class IsNotNullCriterion extends AbstractCriterion implements
      * @param attributeMeta
      *            the meta data of attribute
      */
-    public IsNotNullCriterion(CoreAttributeMeta<?, ?> attributeMeta) {
+    public IsNotNullCriterion(AbstractAttributeMeta<?, ?> attributeMeta) {
         super(attributeMeta);
     }
 
