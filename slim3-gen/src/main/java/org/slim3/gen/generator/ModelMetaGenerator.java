@@ -121,11 +121,12 @@ public class ModelMetaGenerator implements Generator {
         printer.println();
         printer.indent();
         printAttributeMetaFields(printer);
+        printEntityToModelMethod(printer);
+        printModelToEntityMethod(printer);
+        printGetKeyMethod(printer);
         printSetKeyMethod(printer);
         printGetVersion(printer);
         printIncrementVersionMethod(printer);
-        printEntityToModelMethod(printer);
-        printModelToEntityMethod(printer);
         printer.unindent();
         printer.print("}");
     }
@@ -303,10 +304,35 @@ public class ModelMetaGenerator implements Generator {
     }
 
     /**
+     * Generates the {@code getKey} method.
+     * 
+     * @param printer
+     *            the printer
+     */
+    protected void printGetKeyMethod(final Printer printer) {
+        printer.println("@Override");
+        printer
+            .println("protected com.google.appengine.api.datastore.Key getKey(Object model) {");
+        final AttributeMetaDesc attr = modelMetaDesc.getKeyAttributeMetaDesc();
+        if (attr == null) {
+            printer
+                .println(
+                    "    throw new IllegalStateException(\"The key property of the model(%1$s) is not defined.\");",
+                    modelMetaDesc.getModelClassName());
+        } else {
+            printer.println("    %1$s m = (%1$s) model;", modelMetaDesc
+                .getModelClassName());
+            printer.println("    return m.%1$s();", attr.getReadMethodName());
+        }
+        printer.println("}");
+        printer.println();
+    }
+
+    /**
      * Generates the {@code setKey} method.
      * 
      * @param printer
-     *            the prnter
+     *            the printer
      */
     protected void printSetKeyMethod(final Printer printer) {
         printer.println("@Override");
