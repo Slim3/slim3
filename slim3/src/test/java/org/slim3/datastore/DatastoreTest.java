@@ -1047,7 +1047,7 @@ public class DatastoreTest extends LocalServiceTestCase {
      */
     @Test
     public void queryUsingModelClass() throws Exception {
-        assertThat(Datastore.query(Hoge.class), is(notNullValue()));
+        assertThat(Datastore.query(Hoge.class), is(ModelQuery.class));
     }
 
     /**
@@ -1055,7 +1055,7 @@ public class DatastoreTest extends LocalServiceTestCase {
      */
     @Test
     public void queryUsingModelMeta() throws Exception {
-        assertThat(Datastore.query(meta), is(notNullValue()));
+        assertThat(Datastore.query(meta), is(ModelQuery.class));
     }
 
     /**
@@ -1064,7 +1064,7 @@ public class DatastoreTest extends LocalServiceTestCase {
     @Test
     public void queryUsingModelClassAndAncestorKey() throws Exception {
         assertThat(Datastore.query(Hoge.class, KeyFactory
-            .createKey("Parent", 1)), is(notNullValue()));
+            .createKey("Parent", 1)), is(ModelQuery.class));
     }
 
     /**
@@ -1074,7 +1074,27 @@ public class DatastoreTest extends LocalServiceTestCase {
     public void queryUsingModelMetaAndAncestorKey() throws Exception {
         assertThat(
             Datastore.query(meta, KeyFactory.createKey("Parent", 1)),
-            is(notNullValue()));
+            is(ModelQuery.class));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void queryUsingTxAndModelClassAndAncestorKey() throws Exception {
+        assertThat(Datastore.query(
+            ds.beginTransaction(),
+            Hoge.class,
+            KeyFactory.createKey("Parent", 1)), is(ModelQuery.class));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void queryUsingTxAndModelMetaAndAncestorKey() throws Exception {
+        assertThat(Datastore.query(ds.beginTransaction(), meta, KeyFactory
+            .createKey("Parent", 1)), is(ModelQuery.class));
     }
 
     /**
@@ -1082,7 +1102,7 @@ public class DatastoreTest extends LocalServiceTestCase {
      */
     @Test
     public void queryUsingKind() throws Exception {
-        assertThat(Datastore.query("Hoge"), is(not(nullValue())));
+        assertThat(Datastore.query("Hoge"), is(EntityQuery.class));
     }
 
     /**
@@ -1092,7 +1112,16 @@ public class DatastoreTest extends LocalServiceTestCase {
     public void queryUsingKindAndAncestorKey() throws Exception {
         assertThat(
             Datastore.query("Hoge", KeyFactory.createKey("Parent", 1)),
-            is(not(nullValue())));
+            is(EntityQuery.class));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void queryUsingTxAndKindAndAncestorKey() throws Exception {
+        assertThat(Datastore.query(ds.beginTransaction(), "Hoge", KeyFactory
+            .createKey("Parent", 1)), is(EntityQuery.class));
     }
 
     /**
@@ -1102,7 +1131,17 @@ public class DatastoreTest extends LocalServiceTestCase {
     public void queryUsingAncestorKey() throws Exception {
         assertThat(
             Datastore.query(KeyFactory.createKey("Parent", 1)),
-            is(not(nullValue())));
+            is(KindlessAncestorQuery.class));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void queryUsingTxAndAncestorKey() throws Exception {
+        assertThat(Datastore.query(ds.beginTransaction(), KeyFactory.createKey(
+            "Parent",
+            1)), is(KindlessAncestorQuery.class));
     }
 
     /**

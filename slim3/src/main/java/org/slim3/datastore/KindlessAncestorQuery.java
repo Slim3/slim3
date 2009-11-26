@@ -20,6 +20,7 @@ import java.util.List;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.Transaction;
 
 /**
  * An ancestor query for all kind.
@@ -40,6 +41,22 @@ public class KindlessAncestorQuery extends AbstractQuery<KindlessAncestorQuery> 
      */
     public KindlessAncestorQuery(Key ancestorKey) throws NullPointerException {
         super(ancestorKey);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param tx
+     *            the transaction
+     * @param ancestorKey
+     *            the ancestor key
+     * @throws NullPointerException
+     *             if the ancestorKey parameter is null
+     */
+    public KindlessAncestorQuery(Transaction tx, Key ancestorKey)
+            throws NullPointerException {
+        super(ancestorKey);
+        setTx(tx);
     }
 
     /**

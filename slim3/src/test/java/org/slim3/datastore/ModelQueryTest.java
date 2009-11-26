@@ -30,8 +30,11 @@ import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.LocalServiceTestCase;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery.TooManyResultsException;
 
 /**
@@ -39,6 +42,8 @@ import com.google.appengine.api.datastore.PreparedQuery.TooManyResultsException;
  * 
  */
 public class ModelQueryTest extends LocalServiceTestCase {
+
+    private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
     private HogeMeta meta = new HogeMeta();
 
@@ -54,6 +59,32 @@ public class ModelQueryTest extends LocalServiceTestCase {
     public void constructor() throws Exception {
         ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
         assertThat(query.modelMeta, is(sameInstance((ModelMeta) meta)));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void constructorUsingModelMetaAndAncestorKey() throws Exception {
+        Key ancestorKey = KeyFactory.createKey("Ancestor", 1);
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta, ancestorKey);
+        assertThat(query.modelMeta, is(sameInstance((ModelMeta) meta)));
+        assertThat(query.query.getAncestor(), is(ancestorKey));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void constructorUsingTxAndModelMetaAndAncestorKey() throws Exception {
+        Key ancestorKey = KeyFactory.createKey("Ancestor", 1);
+        ModelQuery<Hoge> query =
+            new ModelQuery<Hoge>(ds.beginTransaction(), meta, ancestorKey);
+        assertThat(query.modelMeta, is(sameInstance((ModelMeta) meta)));
+        assertThat(query.query.getAncestor(), is(ancestorKey));
+        assertThat(query.tx, is(notNullValue()));
     }
 
     /**

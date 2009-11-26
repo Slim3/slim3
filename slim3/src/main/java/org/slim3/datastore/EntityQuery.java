@@ -20,6 +20,7 @@ import java.util.List;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
@@ -60,6 +61,26 @@ public class EntityQuery extends AbstractQuery<EntityQuery> {
     public EntityQuery(String kind, Key ancestorKey)
             throws NullPointerException {
         super(kind, ancestorKey);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param tx
+     *            the transaction
+     * @param kind
+     *            the kind
+     * @param ancestorKey
+     *            the ancestor key
+     * @throws NullPointerException
+     *             if the kind parameter is null or if the ancestorKey parameter
+     *             is null
+     * 
+     */
+    public EntityQuery(Transaction tx, String kind, Key ancestorKey)
+            throws NullPointerException {
+        super(kind, ancestorKey);
+        setTx(tx);
     }
 
     /**

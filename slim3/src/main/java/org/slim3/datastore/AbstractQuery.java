@@ -177,19 +177,16 @@ public abstract class AbstractQuery<SUB> {
      * 
      * @param tx
      *            the transaction
-     * @return this instance
      * @throws IllegalStateException
      *             if the transaction is not null and the transaction is not
      *             active
      */
-    @SuppressWarnings("unchecked")
-    public SUB tx(Transaction tx) throws IllegalStateException {
+    protected void setTx(Transaction tx) throws IllegalStateException {
         if (tx != null && !tx.isActive()) {
             throw new IllegalStateException("The transaction must be active.");
         }
         this.tx = tx;
         txSet = true;
-        return (SUB) this;
     }
 
     /**

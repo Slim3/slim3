@@ -26,6 +26,8 @@ import org.slim3.tester.LocalServiceTestCase;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
@@ -36,6 +38,19 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 public class EntityQueryTest extends LocalServiceTestCase {
 
     private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void constructorUsingTxAndKindAndAncestorKey() throws Exception {
+        Key ancestorKey = KeyFactory.createKey("Ancestor", 1);
+        EntityQuery query =
+            new EntityQuery(ds.beginTransaction(), "Hoge", ancestorKey);
+        assertThat(query.query.getKind(), is("Hoge"));
+        assertThat(query.query.getAncestor(), is(ancestorKey));
+        assertThat(query.tx, is(notNullValue()));
+    }
 
     /**
      * @throws Exception

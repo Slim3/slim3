@@ -24,6 +24,7 @@ import org.slim3.util.ConversionUtil;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 
 /**
@@ -89,6 +90,32 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
         if (ancestorKey == null) {
             throw new NullPointerException("The ancestorKey parameter is null.");
         }
+        this.modelMeta = modelMeta;
+        setUpQuery(modelMeta.getKind(), ancestorKey);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param tx
+     *            the transaction
+     * @param modelMeta
+     *            the meta data of model
+     * @param ancestorKey
+     *            the ancestor key
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null or if the ancestorKey
+     *             parameter is null
+     */
+    public ModelQuery(Transaction tx, ModelMeta<M> modelMeta, Key ancestorKey)
+            throws NullPointerException {
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
+        }
+        if (ancestorKey == null) {
+            throw new NullPointerException("The ancestorKey parameter is null.");
+        }
+        setTx(tx);
         this.modelMeta = modelMeta;
         setUpQuery(modelMeta.getKind(), ancestorKey);
     }

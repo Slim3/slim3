@@ -75,9 +75,9 @@ public class AbstQueryTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
-    public void tx() throws Exception {
+    public void setTx() throws Exception {
         MyQuery q = new MyQuery("Hoge");
-        assertEquals(q, q.tx(ds.beginTransaction()));
+        q.setTx(ds.beginTransaction());
         assertNotNull(q.tx);
         assertTrue(q.txSet);
     }
@@ -86,7 +86,7 @@ public class AbstQueryTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
-    public void noTx() throws Exception {
+    public void setTxForNothing() throws Exception {
         MyQuery q = new MyQuery("Hoge");
         assertThat(q.tx, is(nullValue()));
         assertThat(q.txSet, is(false));
@@ -96,9 +96,9 @@ public class AbstQueryTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
-    public void nullTx() throws Exception {
+    public void setTxForNull() throws Exception {
         MyQuery q = new MyQuery("Hoge");
-        q.tx(null);
+        q.setTx(null);
         assertThat(q.tx, is(nullValue()));
         assertThat(q.txSet, is(true));
     }
@@ -107,11 +107,11 @@ public class AbstQueryTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test(expected = IllegalStateException.class)
-    public void illegalTx() throws Exception {
+    public void setIllegalTx() throws Exception {
         MyQuery q = new MyQuery("Hoge");
         Transaction tx = ds.beginTransaction();
         tx.rollback();
-        q.tx(tx);
+        q.setTx(tx);
     }
 
     /**
@@ -290,6 +290,5 @@ public class AbstQueryTest extends LocalServiceTestCase {
         public MyQuery(String kind) throws NullPointerException {
             super(kind);
         }
-
     }
 }

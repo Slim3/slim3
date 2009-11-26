@@ -1691,6 +1691,61 @@ public final class Datastore {
     }
 
     /**
+     * Returns a {@link ModelQuery}.
+     * 
+     * @param <M>
+     *            the model type
+     * @param tx
+     *            the transaction
+     * @param modelClass
+     *            the model class
+     * @param ancestorKey
+     *            the ancestor key
+     * @return a {@link ModelQuery}
+     * @throws NullPointerException
+     *             if the modelClass parameter is null or if the ancestorKey
+     *             parameter is null
+     */
+    public static <M> ModelQuery<M> query(Transaction tx, Class<M> modelClass,
+            Key ancestorKey) throws NullPointerException {
+        if (modelClass == null) {
+            throw new NullPointerException("The modelClass parameter is null.");
+        }
+        if (ancestorKey == null) {
+            throw new NullPointerException("The ancestorKey parameter is null.");
+        }
+        return new ModelQuery<M>(getModelMeta(modelClass), ancestorKey);
+    }
+
+    /**
+     * Returns a {@link ModelQuery}.
+     * 
+     * @param <M>
+     *            the model type
+     * @param tx
+     *            the transaction
+     * @param modelMeta
+     *            the meta data of model
+     * @param ancestorKey
+     *            the ancestor key
+     * @return a {@link ModelQuery}
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null or if the ancestorKey
+     *             parameter is null
+     */
+    public static <M> ModelQuery<M> query(Transaction tx,
+            ModelMeta<M> modelMeta, Key ancestorKey)
+            throws NullPointerException {
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
+        }
+        if (ancestorKey == null) {
+            throw new NullPointerException("The ancestorKey parameter is null.");
+        }
+        return new ModelQuery<M>(tx, modelMeta, ancestorKey);
+    }
+
+    /**
      * Returns a {@link EntityQuery}.
      * 
      * @param kind
@@ -1717,6 +1772,22 @@ public final class Datastore {
     }
 
     /**
+     * Returns a {@link EntityQuery}.
+     * 
+     * @param tx
+     *            the transaction
+     * @param kind
+     *            the kind
+     * @param ancestorKey
+     *            the ancestor key
+     * @return a {@link EntityQuery}
+     * @see EntityQuery#EntityQuery(String, Key)
+     */
+    public static EntityQuery query(Transaction tx, String kind, Key ancestorKey) {
+        return new EntityQuery(tx, kind, ancestorKey);
+    }
+
+    /**
      * Returns a {@link KindlessAncestorQuery}.
      * 
      * @param ancestorKey
@@ -1725,6 +1796,19 @@ public final class Datastore {
      */
     public static KindlessAncestorQuery query(Key ancestorKey) {
         return new KindlessAncestorQuery(ancestorKey);
+    }
+
+    /**
+     * Returns a {@link KindlessAncestorQuery}.
+     * 
+     * @param tx
+     *            the transaction
+     * @param ancestorKey
+     *            the ancestor key
+     * @return a {@link KindlessAncestorQuery}
+     */
+    public static KindlessAncestorQuery query(Transaction tx, Key ancestorKey) {
+        return new KindlessAncestorQuery(tx, ancestorKey);
     }
 
     /**
