@@ -446,6 +446,9 @@ public abstract class ModelMeta<M> {
      */
     @SuppressWarnings("unchecked")
     protected <T> ArrayList<T> toList(Class<T> clazz, Object value) {
+        if (value == null) {
+            return new ArrayList<T>();
+        }
         return (ArrayList<T>) value;
     }
 
@@ -464,9 +467,9 @@ public abstract class ModelMeta<M> {
     protected <T> HashSet<T> toSet(Class<T> clazz, Object value) {
         List<T> v = (List<T>) value;
         if (v == null) {
-            return null;
+            return new HashSet<T>();
         }
-        HashSet<T> set = new HashSet<T>();
+        HashSet<T> set = new HashSet<T>(v.size());
         set.addAll(v);
         return set;
     }
@@ -486,7 +489,7 @@ public abstract class ModelMeta<M> {
     protected <T> TreeSet<T> toSortedSet(Class<T> clazz, Object value) {
         List<T> v = (List<T>) value;
         if (v == null) {
-            return null;
+            return new TreeSet<T>();
         }
         TreeSet<T> set = new TreeSet<T>();
         set.addAll(v);
@@ -521,7 +524,7 @@ public abstract class ModelMeta<M> {
     protected ArrayList<Short> longListToShortList(Object value) {
         List<Long> v = (List<Long>) value;
         if (v == null) {
-            return null;
+            return new ArrayList<Short>();
         }
         ArrayList<Short> collection = new ArrayList<Short>(v.size());
         copyLongListToShortCollection(v, collection);
@@ -539,9 +542,9 @@ public abstract class ModelMeta<M> {
     protected HashSet<Short> longListToShortSet(Object value) {
         List<Long> v = (List<Long>) value;
         if (v == null) {
-            return null;
+            return new HashSet<Short>();
         }
-        HashSet<Short> collection = new HashSet<Short>();
+        HashSet<Short> collection = new HashSet<Short>(v.size());
         copyLongListToShortCollection(v, collection);
         return collection;
     }
@@ -557,7 +560,7 @@ public abstract class ModelMeta<M> {
     protected TreeSet<Short> longListToShortSortedSet(Object value) {
         List<Long> v = (List<Long>) value;
         if (v == null) {
-            return null;
+            return new TreeSet<Short>();
         }
         TreeSet<Short> collection = new TreeSet<Short>();
         copyLongListToShortCollection(v, collection);
@@ -592,7 +595,7 @@ public abstract class ModelMeta<M> {
     protected ArrayList<Integer> longListToIntegerList(Object value) {
         List<Long> v = (List<Long>) value;
         if (v == null) {
-            return null;
+            return new ArrayList<Integer>();
         }
         ArrayList<Integer> collection = new ArrayList<Integer>(v.size());
         copyLongListToIntegerCollection(v, collection);
@@ -610,9 +613,9 @@ public abstract class ModelMeta<M> {
     protected HashSet<Integer> longListToIntegerSet(Object value) {
         List<Long> v = (List<Long>) value;
         if (v == null) {
-            return null;
+            return new HashSet<Integer>();
         }
-        HashSet<Integer> collection = new HashSet<Integer>();
+        HashSet<Integer> collection = new HashSet<Integer>(v.size());
         copyLongListToIntegerCollection(v, collection);
         return collection;
     }
@@ -628,7 +631,7 @@ public abstract class ModelMeta<M> {
     protected TreeSet<Integer> longListToIntegerSortedSet(Object value) {
         List<Long> v = (List<Long>) value;
         if (v == null) {
-            return null;
+            return new TreeSet<Integer>();
         }
         TreeSet<Integer> collection = new TreeSet<Integer>();
         copyLongListToIntegerCollection(v, collection);
@@ -663,7 +666,7 @@ public abstract class ModelMeta<M> {
     protected ArrayList<Float> doubleListToFloatList(Object value) {
         List<Double> v = (List<Double>) value;
         if (v == null) {
-            return null;
+            return new ArrayList<Float>();
         }
         ArrayList<Float> collection = new ArrayList<Float>(v.size());
         copyDoubleListToFloatCollection(v, collection);
@@ -681,9 +684,9 @@ public abstract class ModelMeta<M> {
     protected HashSet<Float> doubleListToFloatSet(Object value) {
         List<Double> v = (List<Double>) value;
         if (v == null) {
-            return null;
+            return new HashSet<Float>();
         }
-        HashSet<Float> collection = new HashSet<Float>();
+        HashSet<Float> collection = new HashSet<Float>(v.size());
         copyDoubleListToFloatCollection(v, collection);
         return collection;
     }
@@ -699,7 +702,7 @@ public abstract class ModelMeta<M> {
     protected TreeSet<Float> doubleListToFloatSortedSet(Object value) {
         List<Double> v = (List<Double>) value;
         if (v == null) {
-            return null;
+            return new TreeSet<Float>();
         }
         TreeSet<Float> collection = new TreeSet<Float>();
         copyDoubleListToFloatCollection(v, collection);
@@ -717,7 +720,7 @@ public abstract class ModelMeta<M> {
     protected List<String> enumListToStringList(Object value) {
         List<Enum<?>> v = (List<Enum<?>>) value;
         if (v == null) {
-            return null;
+            return new ArrayList<String>();
         }
         List<String> list = new ArrayList<String>(v.size());
         for (Enum<?> e : v) {
@@ -742,9 +745,9 @@ public abstract class ModelMeta<M> {
             Object value) {
         List<String> v = (List<String>) value;
         if (v == null) {
-            return null;
+            return new ArrayList<T>();
         }
-        List<T> list = new ArrayList<T>();
+        List<T> list = new ArrayList<T>(v.size());
         for (String s : v) {
             list.add(s != null ? Enum.valueOf(clazz, s) : null);
         }

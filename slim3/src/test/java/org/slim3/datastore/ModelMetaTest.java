@@ -269,6 +269,7 @@ public class ModelMetaTest {
     public void toList() throws Exception {
         List<Long> value = new ArrayList<Long>(Arrays.asList(1L));
         assertThat(meta.toList(Long.class, value), is(sameInstance(value)));
+        assertThat(meta.toList(Long.class, null).size(), is(0));
     }
 
     /**
@@ -280,6 +281,7 @@ public class ModelMetaTest {
         HashSet<Long> ret = meta.toSet(Long.class, value);
         assertThat(ret.size(), is(1));
         assertThat(ret.iterator().next(), is(1L));
+        assertThat(meta.toSet(Long.class, null).size(), is(0));
     }
 
     /**
@@ -291,6 +293,7 @@ public class ModelMetaTest {
         SortedSet<Long> ret = meta.toSortedSet(Long.class, value);
         assertThat(ret.size(), is(1));
         assertThat(ret.iterator().next(), is(1L));
+        assertThat(meta.toSortedSet(Long.class, null).size(), is(0));
     }
 
     /**
@@ -314,7 +317,7 @@ public class ModelMetaTest {
         assertThat(
             meta.longListToShortList(value),
             is(Arrays.asList((short) 1)));
-        assertThat(meta.longListToShortList(null), is(nullValue()));
+        assertThat(meta.longListToShortList(null).size(), is(0));
     }
 
     /**
@@ -326,7 +329,7 @@ public class ModelMetaTest {
         Set<Short> ret = meta.longListToShortSet(value);
         assertThat(ret.size(), is(1));
         assertThat(ret.iterator().next(), is((short) 1));
-        assertThat(meta.longListToShortSet(null), is(nullValue()));
+        assertThat(meta.longListToShortSet(null).size(), is(0));
     }
 
     /**
@@ -338,7 +341,7 @@ public class ModelMetaTest {
         SortedSet<Short> ret = meta.longListToShortSortedSet(value);
         assertThat(ret.size(), is(1));
         assertThat(ret.iterator().next(), is((short) 1));
-        assertThat(meta.longListToShortSortedSet(null), is(nullValue()));
+        assertThat(meta.longListToShortSortedSet(null).size(), is(0));
     }
 
     /**
@@ -362,7 +365,7 @@ public class ModelMetaTest {
         List<Integer> ret = meta.longListToIntegerList(value);
         assertThat(ret.size(), is(1));
         assertThat(ret.get(0), is(1));
-        assertThat(meta.longListToIntegerList(null), is(nullValue()));
+        assertThat(meta.longListToIntegerList(null).size(), is(0));
     }
 
     /**
@@ -374,7 +377,7 @@ public class ModelMetaTest {
         Set<Integer> ret = meta.longListToIntegerSet(value);
         assertThat(ret.size(), is(1));
         assertThat(ret.iterator().next(), is(1));
-        assertThat(meta.longListToIntegerSet(null), is(nullValue()));
+        assertThat(meta.longListToIntegerSet(null).size(), is(0));
     }
 
     /**
@@ -386,7 +389,7 @@ public class ModelMetaTest {
         SortedSet<Integer> ret = meta.longListToIntegerSortedSet(value);
         assertThat(ret.size(), is(1));
         assertThat(ret.iterator().next(), is(1));
-        assertThat(meta.longListToIntegerSortedSet(null), is(nullValue()));
+        assertThat(meta.longListToIntegerSortedSet(null).size(), is(0));
     }
 
     /**
@@ -410,7 +413,7 @@ public class ModelMetaTest {
         List<Float> ret = meta.doubleListToFloatList(value);
         assertThat(ret.size(), is(1));
         assertThat(ret.get(0), is(1f));
-        assertThat(meta.doubleListToFloatList(null), is(nullValue()));
+        assertThat(meta.doubleListToFloatList(null).size(), is(0));
     }
 
     /**
@@ -422,7 +425,7 @@ public class ModelMetaTest {
         Set<Float> ret = meta.doubleListToFloatSet(value);
         assertThat(ret.size(), is(1));
         assertThat(ret.iterator().next(), is(1f));
-        assertThat(meta.doubleListToFloatSet(null), is(nullValue()));
+        assertThat(meta.doubleListToFloatSet(null).size(), is(0));
     }
 
     /**
@@ -434,7 +437,7 @@ public class ModelMetaTest {
         SortedSet<Float> ret = meta.doubleListToFloatSortedSet(value);
         assertThat(ret.size(), is(1));
         assertThat(ret.iterator().next(), is(1f));
-        assertThat(meta.doubleListToFloatSortedSet(null), is(nullValue()));
+        assertThat(meta.doubleListToFloatSortedSet(null).size(), is(0));
     }
 
     /**
@@ -446,7 +449,7 @@ public class ModelMetaTest {
         List<String> ret = meta.enumListToStringList(value);
         assertThat(ret.size(), is(1));
         assertThat(ret.iterator().next(), is("ASCENDING"));
-        assertThat(meta.enumListToStringList(null), is(nullValue()));
+        assertThat(meta.enumListToStringList(null).size(), is(0));
     }
 
     /**
@@ -459,6 +462,9 @@ public class ModelMetaTest {
             meta.stringListToEnumList(SortDirection.class, value);
         assertThat(ret.size(), is(1));
         assertThat(ret.iterator().next(), is(SortDirection.ASCENDING));
+        assertThat(
+            meta.stringListToEnumList(SortDirection.class, null).size(),
+            is(0));
     }
 
     /**

@@ -15,8 +15,13 @@
  */
 package org.slim3.datastore;
 
+import java.util.ArrayList;
+
 import org.junit.Test;
 import org.slim3.tester.LocalServiceTestCase;
+
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
 
 /**
  * @author higa
@@ -27,7 +32,13 @@ public class SpikeTest extends LocalServiceTestCase {
     /**
      * @throws Exception
      */
+    @SuppressWarnings("unchecked")
     @Test
     public void spike() throws Exception {
+        Entity entity = new Entity("Hoge");
+        entity.setProperty("list", new ArrayList());
+        Key key = Datastore.put(entity);
+        Entity ret = Datastore.get(key);
+        System.out.println(ret.getProperty("list"));
     }
 }
