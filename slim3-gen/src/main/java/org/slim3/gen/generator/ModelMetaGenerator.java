@@ -15,7 +15,19 @@
  */
 package org.slim3.gen.generator;
 
-import static org.slim3.gen.ClassConstants.*;
+import static org.slim3.gen.ClassConstants.Blob;
+import static org.slim3.gen.ClassConstants.CollectionAttributeMeta;
+import static org.slim3.gen.ClassConstants.CoreAttributeMeta;
+import static org.slim3.gen.ClassConstants.Double;
+import static org.slim3.gen.ClassConstants.Entity;
+import static org.slim3.gen.ClassConstants.Key;
+import static org.slim3.gen.ClassConstants.Long;
+import static org.slim3.gen.ClassConstants.ModelRefAttributeMeta;
+import static org.slim3.gen.ClassConstants.Object;
+import static org.slim3.gen.ClassConstants.String;
+import static org.slim3.gen.ClassConstants.StringAttributeMeta;
+import static org.slim3.gen.ClassConstants.StringCollectionAttributeMeta;
+import static org.slim3.gen.ClassConstants.Text;
 
 import java.util.Date;
 
@@ -33,6 +45,7 @@ import org.slim3.gen.datastore.IntegerType;
 import org.slim3.gen.datastore.KeyType;
 import org.slim3.gen.datastore.ListType;
 import org.slim3.gen.datastore.LongType;
+import org.slim3.gen.datastore.ModelRefType;
 import org.slim3.gen.datastore.PrimitiveBooleanType;
 import org.slim3.gen.datastore.PrimitiveByteType;
 import org.slim3.gen.datastore.PrimitiveDoubleType;
@@ -425,6 +438,23 @@ public class ModelMetaGenerator implements Generator {
         }
 
         @Override
+        public Void visitModelRefType(ModelRefType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            printer.println("/** */");
+            printer
+                .println(
+                    "public %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", %6$s.class);",
+                    ModelRefAttributeMeta,
+                    modelMetaDesc.getModelClassName(),
+                    type.getTypeName(),
+                    p.getName(),
+                    p.getPropertyName(),
+                    type.getClassName());
+            printer.println();
+            return null;
+        }
+
+        @Override
         public Void visitKeyType(KeyType type, AttributeMetaDesc p)
                 throws RuntimeException {
 
@@ -752,6 +782,24 @@ public class ModelMetaGenerator implements Generator {
         }
 
         @Override
+        public Void visitModelRefType(ModelRefType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            printer.println("if (model.%1$s() == null) {", p
+                .getReadMethodName());
+            printer
+                .println(
+                    "    throw new NullPointerException(\"The property(%1$s) is null.\");",
+                    p.getName());
+            printer.println("}");
+            printer.println(
+                "model.%1$s().setKey((%2$s) entity.getProperty(\"%3$s\"));",
+                p.getReadMethodName(),
+                Key,
+                p.getPropertyName());
+            return null;
+        }
+
+        @Override
         public Void visitArrayType(ArrayType type, final AttributeMetaDesc attr)
                 throws RuntimeException {
             DataType componentType = type.getComponentType();
@@ -1022,6 +1070,7 @@ public class ModelMetaGenerator implements Generator {
             printer.println("return entity;");
             printer.unindent();
             printer.println("}");
+            printer.println();
         }
 
         @Override
@@ -1105,6 +1154,30 @@ public class ModelMetaGenerator implements Generator {
                 "entity.setUnindexedProperty(\"%1$s\", m.%2$s());",
                 p.getPropertyName(),
                 p.getReadMethodName());
+            return null;
+        }
+
+        @Override
+        public Void visitModelRefType(ModelRefType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            printer.println("if (m.%1$s() == null) {", p.getReadMethodName());
+            printer
+                .println(
+                    "    throw new NullPointerException(\"The property(%1$s) is null.\");",
+                    p.getName());
+            printer.println("}");
+            if (p.isUnindexed()) {
+                printer
+                    .println(
+                        "entity.setUnindexedProperty(\"%1$s\", m.%2$s().getKey());",
+                        p.getPropertyName(),
+                        p.getReadMethodName());
+            } else {
+                printer.println(
+                    "entity.setProperty(\"%1$s\", m.%2$s().getKey());",
+                    p.getPropertyName(),
+                    p.getReadMethodName());
+            }
             return null;
         }
 

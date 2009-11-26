@@ -70,6 +70,19 @@ public interface DataTypeVisitor<R, P, TH extends Throwable> {
     R visitCoreReferenceType(CoreReferenceType type, P p) throws TH;
 
     /**
+     * Visits {@link ModelRefType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
+    R visitModelRefType(ModelRefType type, P p) throws TH;
+
+    /**
      * Visits {@link OtherReferenceType}.
      * 
      * @param type

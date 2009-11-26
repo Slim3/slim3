@@ -31,6 +31,7 @@ import static org.slim3.gen.ClassConstants.Key;
 import static org.slim3.gen.ClassConstants.Link;
 import static org.slim3.gen.ClassConstants.List;
 import static org.slim3.gen.ClassConstants.Long;
+import static org.slim3.gen.ClassConstants.ModelRef;
 import static org.slim3.gen.ClassConstants.PhoneNumber;
 import static org.slim3.gen.ClassConstants.PostalAddress;
 import static org.slim3.gen.ClassConstants.Rating;
@@ -241,6 +242,10 @@ public class DataTypeFactory {
             if (dataType != null) {
                 return;
             }
+            dataType = getModelRefType(className, declaredType);
+            if (dataType != null) {
+                return;
+            }
             dataType = getCollectionType(className, declaredType);
             if (dataType != null) {
                 return;
@@ -313,6 +318,23 @@ public class DataTypeFactory {
             Visitor visitor = new Visitor();
             declaredType.accept(visitor);
             return visitor.result;
+        }
+
+        /**
+         * Returns a model ref type.
+         * 
+         * @param className
+         *            the class name
+         * @param declaredType
+         *            the declared type
+         * @return a core reference type
+         */
+        protected ModelRefType getModelRefType(final String className,
+                DeclaredType declaredType) {
+            if (TypeUtil.isSubtype(env, declaredType, ModelRef)) {
+                return new ModelRefType(className, declaredType.toString());
+            }
+            return null;
         }
 
         /**

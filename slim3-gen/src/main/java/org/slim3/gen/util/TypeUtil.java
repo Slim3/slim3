@@ -15,9 +15,14 @@
  */
 package org.slim3.gen.util;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.declaration.TypeDeclaration;
+import com.sun.mirror.type.ClassType;
 import com.sun.mirror.type.DeclaredType;
+import com.sun.mirror.type.InterfaceType;
 import com.sun.mirror.type.PrimitiveType;
 import com.sun.mirror.type.TypeMirror;
 import com.sun.mirror.type.VoidType;
@@ -102,21 +107,22 @@ public final class TypeUtil {
     }
 
     /**
-     * Returns {@code true} if a typeMirror represents {@link DeclaredType}.
+     * Returns {@code true} if a {@code subtype} is subtype of {@code supertype}
+     * .
      * 
      * @param env
      *            the environment
      * @param subtype
      *            the typemirror of subtype
-     * @param superclass
-     *            the superclass
+     * @param supertype
+     *            the supertype
      * @return {@code true} if a {@code subtype} is subtype of {@code
      *         superclass}, otherwise {@code false}.
      */
     public static boolean isSubtype(AnnotationProcessorEnvironment env,
-            TypeMirror subtype, Class<?> superclass) {
+            TypeMirror subtype, Class<?> supertype) {
         TypeDeclaration supertypeDeclaration =
-            env.getTypeDeclaration(superclass.getName());
+            env.getTypeDeclaration(supertype.getName());
         if (supertypeDeclaration == null) {
             return false;
         }
@@ -124,5 +130,63 @@ public final class TypeUtil {
         TypeMirror t2 =
             env.getTypeUtils().getDeclaredType(supertypeDeclaration);
         return env.getTypeUtils().isSubtype(t1, t2);
+    }
+
+    /**
+     * Returns {@code true} if a {@code subtype} is subtype of {@code supertype}
+     * .
+     * 
+     * @param env
+     *            the environment
+     * @param subtype
+     *            the typemirror of subtype
+     * @param supertype
+     *            the supertype
+     * @return {@code true} if a {@code subtype} is subtype of {@code
+     *         superclass}, otherwise {@code false}.
+     */
+    public static boolean isSubtype(AnnotationProcessorEnvironment env,
+            TypeMirror subtype, String supertype) {
+        TypeDeclaration supertypeDeclaration =
+            env.getTypeDeclaration(supertype);
+        if (supertypeDeclaration == null) {
+            return false;
+        }
+        TypeMirror superTypeMirror =
+            env.getTypeUtils().getDeclaredType(supertypeDeclaration);
+
+        class Visitor extends SimpleTypeVisitor {
+
+            Set<DeclaredType> supertypes = new HashSet<DeclaredType>();
+
+            @Override
+            public void visitDeclaredType(DeclaredType declaredType) {
+                supertypes.add(declaredType);
+                for (InterfaceType supertype : declaredType
+                    .getSuperinterfaces()) {
+                    supertypes.add(supertype);
+                }
+            }
+
+            @Override
+            public void visitClassType(ClassType classType) {
+                supertypes.add(classType);
+                ClassType supertype = classType.getSuperclass();
+                if (supertype != null) {
+                    supertype.accept(this);
+                    super.visitClassType(classType);
+                }
+            }
+
+        }
+        Visitor visitor = new Visitor();
+        subtype.accept(visitor);
+        for (DeclaredType type : visitor.supertypes) {
+            TypeMirror subTypeMirror = env.getTypeUtils().getErasure(type);
+            if (subTypeMirror.toString().equals(superTypeMirror.toString())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
