@@ -324,10 +324,34 @@ public class DatastoreTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
+    public void getModelsUsingClass() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        List<Hoge> models = Datastore.get(Hoge.class, Arrays.asList(key, key2));
+        assertThat(models, is(not(nullValue())));
+        assertThat(models.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getModelsForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         List<Hoge> models = Datastore.get(meta, key, key2);
+        assertThat(models, is(not(nullValue())));
+        assertThat(models.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelsUsingClassForVarargs() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        List<Hoge> models = Datastore.get(Hoge.class, key, key2);
         assertThat(models, is(not(nullValue())));
         assertThat(models.size(), is(2));
     }
@@ -351,6 +375,21 @@ public class DatastoreTest extends LocalServiceTestCase {
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = ds.beginTransaction();
         List<Hoge> models = Datastore.get(tx, meta, Arrays.asList(key, key2));
+        tx.rollback();
+        assertThat(models, is(not(nullValue())));
+        assertThat(models.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelsInTxUsingClass() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = ds.beginTransaction();
+        List<Hoge> models =
+            Datastore.get(tx, Hoge.class, Arrays.asList(key, key2));
         tx.rollback();
         assertThat(models, is(not(nullValue())));
         assertThat(models.size(), is(2));
@@ -385,6 +424,20 @@ public class DatastoreTest extends LocalServiceTestCase {
     /**
      * @throws Exception
      */
+    @Test
+    public void getModelsInTxForVarargsUsingClass() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = ds.beginTransaction();
+        List<Hoge> models = Datastore.get(tx, Hoge.class, key, key2);
+        tx.rollback();
+        assertThat(models, is(not(nullValue())));
+        assertThat(models.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test(expected = IllegalStateException.class)
     public void getModelsInIllegalTxForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
@@ -410,10 +463,35 @@ public class DatastoreTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
+    public void getModelsAsMapUsingClass() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        Map<Key, Hoge> map =
+            Datastore.getAsMap(Hoge.class, Arrays.asList(key, key2));
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getModelsAsMapForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         Map<Key, Hoge> map = Datastore.getAsMap(meta, key, key2);
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelsAsMapForVarargsUsingClass() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        Map<Key, Hoge> map = Datastore.getAsMap(Hoge.class, key, key2);
         assertThat(map, is(not(nullValue())));
         assertThat(map.size(), is(2));
     }
@@ -437,11 +515,40 @@ public class DatastoreTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
+    public void getModelsAsMapInTxUsingClass() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = ds.beginTransaction();
+        Map<Key, Hoge> map =
+            Datastore.getAsMap(tx, Hoge.class, Arrays.asList(key, key2));
+        tx.rollback();
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getModelsAsMapInTxForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = ds.beginTransaction();
         Map<Key, Hoge> map = Datastore.getAsMap(tx, meta, key, key2);
+        tx.rollback();
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelsAsMapInTxForVarargsUsingClass() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = ds.beginTransaction();
+        Map<Key, Hoge> map = Datastore.getAsMap(tx, Hoge.class, key, key2);
         tx.rollback();
         assertThat(map, is(not(nullValue())));
         assertThat(map.size(), is(2));

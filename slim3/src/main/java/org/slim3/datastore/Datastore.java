@@ -995,6 +995,27 @@ public final class Datastore {
      * 
      * @param <M>
      *            the model type
+     * @param modelClass
+     *            the model class
+     * @param keys
+     *            the keys
+     * @return models specified by the keys
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     */
+    public static <M> List<M> get(Class<M> modelClass, Iterable<Key> keys)
+            throws NullPointerException, EntityNotFoundRuntimeException {
+        return get(getModelMeta(modelClass), keys);
+    }
+
+    /**
+     * Returns models specified by the keys. If there is a current transaction,
+     * this operation will execute within that transaction.
+     * 
+     * @param <M>
+     *            the model type
      * @param modelMeta
      *            the meta data of model
      * @param keys
@@ -1007,7 +1028,31 @@ public final class Datastore {
      */
     public static <M> List<M> get(ModelMeta<M> modelMeta, Iterable<Key> keys)
             throws NullPointerException, EntityNotFoundRuntimeException {
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
+        }
         return mapToList(modelMeta, keys, getAsMap(keys));
+    }
+
+    /**
+     * Returns models specified by the keys. If there is a current transaction,
+     * this operation will execute within that transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param keys
+     *            the keys
+     * @return models specified by the keys
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     */
+    public static <M> List<M> get(Class<M> modelClass, Key... keys)
+            throws NullPointerException, EntityNotFoundRuntimeException {
+        return get(getModelMeta(modelClass), keys);
     }
 
     /**
@@ -1028,6 +1073,9 @@ public final class Datastore {
      */
     public static <M> List<M> get(ModelMeta<M> modelMeta, Key... keys)
             throws NullPointerException, EntityNotFoundRuntimeException {
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
+        }
         return mapToList(modelMeta, Arrays.asList(keys), getAsMap(keys));
     }
 
@@ -1079,6 +1127,32 @@ public final class Datastore {
      *            the model type
      * @param tx
      *            the transaction
+     * @param modelClass
+     *            the model class
+     * @param keys
+     *            the keys
+     * @return models specified by the keys
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     */
+    public static <M> List<M> get(Transaction tx, Class<M> modelClass,
+            Iterable<Key> keys) throws NullPointerException,
+            IllegalStateException, EntityNotFoundRuntimeException {
+        return get(tx, getModelMeta(modelClass), keys);
+    }
+
+    /**
+     * Returns models specified by the keys within the provided transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param tx
+     *            the transaction
      * @param modelMeta
      *            the meta data of model
      * @param keys
@@ -1099,6 +1173,32 @@ public final class Datastore {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
         return mapToList(modelMeta, keys, getAsMap(tx, keys));
+    }
+
+    /**
+     * Returns models specified by the keys within the provided transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param tx
+     *            the transaction
+     * @param modelClass
+     *            the model class
+     * @param keys
+     *            the keys
+     * @return models specified by the keys
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     */
+    public static <M> List<M> get(Transaction tx, Class<M> modelClass,
+            Key... keys) throws NullPointerException, IllegalStateException,
+            EntityNotFoundRuntimeException {
+        return get(tx, getModelMeta(modelClass), keys);
     }
 
     /**
@@ -1163,6 +1263,25 @@ public final class Datastore {
      * 
      * @param <M>
      *            the model type
+     * @param modelClass
+     *            the model class
+     * @param keys
+     *            the keys
+     * @return models specified by the keys
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     */
+    public static <M> Map<Key, M> getAsMap(Class<M> modelClass,
+            Iterable<Key> keys) throws NullPointerException {
+        return getAsMap(getModelMeta(modelClass), keys);
+    }
+
+    /**
+     * Returns models specified by the keys. If there is a current transaction,
+     * this operation will execute within that transaction.
+     * 
+     * @param <M>
+     *            the model type
      * @param modelMeta
      *            the meta data of model
      * @param keys
@@ -1173,7 +1292,29 @@ public final class Datastore {
      */
     public static <M> Map<Key, M> getAsMap(ModelMeta<M> modelMeta,
             Iterable<Key> keys) throws NullPointerException {
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
+        }
         return mapToMap(modelMeta, getAsMap(keys));
+    }
+
+    /**
+     * Returns models specified by the keys. If there is a current transaction,
+     * this operation will execute within that transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param keys
+     *            the keys
+     * @return models specified by the keys
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     */
+    public static <M> Map<Key, M> getAsMap(Class<M> modelClass, Key... keys)
+            throws NullPointerException {
+        return getAsMap(getModelMeta(modelClass), keys);
     }
 
     /**
@@ -1192,6 +1333,9 @@ public final class Datastore {
      */
     public static <M> Map<Key, M> getAsMap(ModelMeta<M> modelMeta, Key... keys)
             throws NullPointerException {
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
+        }
         return mapToMap(modelMeta, getAsMap(keys));
     }
 
@@ -1238,6 +1382,31 @@ public final class Datastore {
      *            the model type
      * @param tx
      *            the transaction
+     * @param modelClass
+     *            the model class
+     * @param keys
+     *            the keys
+     * @return entities specified by the key
+     * @throws NullPointerException
+     *             if the modelClass parameter is null or if the keys parameter
+     *             is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public static <M> Map<Key, M> getAsMap(Transaction tx, Class<M> modelClass,
+            Iterable<Key> keys) throws NullPointerException,
+            IllegalStateException {
+        return getAsMap(tx, getModelMeta(modelClass), keys);
+    }
+
+    /**
+     * Returns models specified by the keys within the provided transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param tx
+     *            the transaction
      * @param modelMeta
      *            the meta data of model
      * @param keys
@@ -1257,6 +1426,30 @@ public final class Datastore {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
         return mapToMap(modelMeta, getAsMap(tx, keys));
+    }
+
+    /**
+     * Returns models specified by the keys within the provided transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param tx
+     *            the transaction
+     * @param modelClass
+     *            the model class
+     * @param keys
+     *            the keys
+     * @return entities specified by the key
+     * @throws NullPointerException
+     *             if the modelClass parameter is null or if the keys parameter
+     *             is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public static <M> Map<Key, M> getAsMap(Transaction tx, Class<M> modelClass,
+            Key... keys) throws NullPointerException, IllegalStateException {
+        return getAsMap(tx, getModelMeta(modelClass), keys);
     }
 
     /**
