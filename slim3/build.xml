@@ -26,7 +26,10 @@
     </path>
 
 	<target name="create-lib" depends="clean">
-		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/Key.txt" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/Key.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/Key.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/Key.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/org/slim3/datastore/ModelMeta.java" tofile="build/classes/org/slim3/gwt/emul/org/slim3/datastore/ModelMeta.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/org/slim3/datastore/AbstractModelRef.java" tofile="build/classes/org/slim3/gwt/emul/org/slim3/datastore/AbstractModelRef.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/org/slim3/datastore/ModelRef.java" tofile="build/classes/org/slim3/gwt/emul/org/slim3/datastore/ModelRef.java"/>
 	    <jar jarfile="target/slim3-${ver}.jar" basedir="build/classes"/>
 	    <jar jarfile="target/slim3-${ver}-sources.jar" basedir="src/main/java"/>
 	</target>

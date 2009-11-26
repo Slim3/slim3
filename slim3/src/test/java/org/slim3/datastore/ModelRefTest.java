@@ -19,6 +19,8 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.slim3.datastore.model.AaaRef;
+import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.datastore.model.HogeRef;
 import org.slim3.tester.LocalServiceTestCase;
@@ -41,6 +43,17 @@ public class ModelRefTest extends LocalServiceTestCase {
         ref.setModel(hoge);
         assertThat(ref.getKey(), is(hoge.getKey()));
         assertThat(ref.model, is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void setModelForSubModel() throws Exception {
+        AaaRef aaaRef = new AaaRef();
+        Bbb bbb = new Bbb();
+        bbb.setKey(Datastore.allocateId(Bbb.class));
+        aaaRef.setModel(bbb);
     }
 
     /**
@@ -85,8 +98,25 @@ public class ModelRefTest extends LocalServiceTestCase {
     /**
      * @throws Exception
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void validate() throws Exception {
+        ref.validate(Datastore.allocateId("Hoge"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void validateForSubModel() throws Exception {
+        AaaRef aaaRef = new AaaRef();
+        aaaRef.validate(Datastore.allocateId(Bbb.class));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void validateForIllegalKey() throws Exception {
         ref.validate(Datastore.allocateId("Foo"));
     }
 }

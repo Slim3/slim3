@@ -110,6 +110,12 @@ public abstract class ModelMeta<M> {
     }
 
     /**
+     * Constructor.
+     */
+    protected ModelMeta() {
+    }
+
+    /**
      * Returns the kind of entity.
      * 
      * @return the kind of entity
