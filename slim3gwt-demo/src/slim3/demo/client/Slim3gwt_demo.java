@@ -3,7 +3,6 @@ package slim3.demo.client;
 import slim3.demo.client.service.GreetingService;
 import slim3.demo.client.service.GreetingServiceAsync;
 
-import com.google.appengine.api.datastore.Key;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -24,13 +23,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class Slim3gwt_demo implements EntryPoint {
-    /**
-     * The message displayed to the user when the server cannot be reached or
-     * returns an error.
-     */
-    private static final String SERVER_ERROR = "An error occurred while "
-            + "attempting to contact the server. Please check your network "
-            + "connection and try again.";
 
     /**
      * Create a remote service proxy to talk to the server-side Greeting
@@ -114,26 +106,28 @@ public class Slim3gwt_demo implements EntryPoint {
                 String textToServer = nameField.getText();
                 textToServerLabel.setText(textToServer);
                 serverResponseLabel.setText("");
-                greetingService.greetServer(new AsyncCallback<Key>() {
-                    public void onFailure(Throwable caught) {
-                        // Show the RPC error message to the user
-                        dialogBox.setText("Remote Procedure Call - Failure");
-                        serverResponseLabel
-                                .addStyleName("serverResponseLabelError");
-                        serverResponseLabel.setHTML(caught.toString());
-                        dialogBox.center();
-                        closeButton.setFocus(true);
-                    }
+                greetingService.greetServer(textToServer,
+                        new AsyncCallback<String>() {
+                            public void onFailure(Throwable caught) {
+                                // Show the RPC error message to the user
+                                dialogBox
+                                        .setText("Remote Procedure Call - Failure");
+                                serverResponseLabel
+                                        .addStyleName("serverResponseLabelError");
+                                serverResponseLabel.setHTML(caught.toString());
+                                dialogBox.center();
+                                closeButton.setFocus(true);
+                            }
 
-                    public void onSuccess(Key result) {
-                        dialogBox.setText("Remote Procedure Call");
-                        serverResponseLabel
-                                .removeStyleName("serverResponseLabelError");
-                        serverResponseLabel.setHTML(result.toString());
-                        dialogBox.center();
-                        closeButton.setFocus(true);
-                    }
-                });
+                            public void onSuccess(String result) {
+                                dialogBox.setText("Remote Procedure Call");
+                                serverResponseLabel
+                                        .removeStyleName("serverResponseLabelError");
+                                serverResponseLabel.setHTML(result);
+                                dialogBox.center();
+                                closeButton.setFocus(true);
+                            }
+                        });
             }
         }
 
