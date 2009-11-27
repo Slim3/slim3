@@ -152,8 +152,6 @@ public final class TypeUtil {
         if (supertypeDeclaration == null) {
             return false;
         }
-        TypeMirror superTypeMirror =
-            env.getTypeUtils().getDeclaredType(supertypeDeclaration);
 
         class Visitor extends SimpleTypeVisitor {
 
@@ -164,7 +162,7 @@ public final class TypeUtil {
                 supertypes.add(declaredType);
                 for (InterfaceType supertype : declaredType
                     .getSuperinterfaces()) {
-                    supertypes.add(supertype);
+                    supertype.accept(this);
                 }
             }
 
@@ -182,8 +180,8 @@ public final class TypeUtil {
         Visitor visitor = new Visitor();
         subtype.accept(visitor);
         for (DeclaredType type : visitor.supertypes) {
-            TypeMirror subTypeMirror = env.getTypeUtils().getErasure(type);
-            if (subTypeMirror.toString().equals(superTypeMirror.toString())) {
+            TypeDeclaration subtypeDeclaration = type.getDeclaration();
+            if (subtypeDeclaration.equals(supertypeDeclaration)) {
                 return true;
             }
         }
