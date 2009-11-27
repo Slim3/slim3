@@ -20,11 +20,8 @@ import java.util.Set;
 import org.slim3.gen.desc.AttributeMetaDescFactory;
 import org.slim3.gen.desc.ModelMetaDesc;
 import org.slim3.gen.desc.ModelMetaDescFactory;
-import org.slim3.gen.desc.ModelRefDesc;
-import org.slim3.gen.desc.ModelRefDescFactory;
 import org.slim3.gen.generator.Generator;
 import org.slim3.gen.generator.ModelMetaGenerator;
-import org.slim3.gen.generator.ModelRefGenerator;
 import org.slim3.gen.message.MessageCode;
 import org.slim3.gen.message.MessageFormatter;
 
@@ -113,13 +110,6 @@ public class ModelProcessor implements AnnotationProcessor {
             Generator modelMetaGenerator =
                 createModelMetaGenerator(modelMetaDesc);
             generateSupport.generate(modelMetaGenerator, modelMetaDesc);
-
-            ModelRefDescFactory modelRefDescFactory =
-                createModelRefDescFactory();
-            ModelRefDesc modelRefDesc =
-                modelRefDescFactory.createModelRefDesc(declaration);
-            Generator modelRefGenerator = createModelRefGenerator(modelRefDesc);
-            generateSupport.generate(modelRefGenerator, modelRefDesc);
         }
     }
 
@@ -145,15 +135,6 @@ public class ModelProcessor implements AnnotationProcessor {
     }
 
     /**
-     * Creates a model ref description factory.
-     * 
-     * @return a model ref description factory
-     */
-    protected ModelRefDescFactory createModelRefDescFactory() {
-        return new ModelRefDescFactory(env);
-    }
-
-    /**
      * Creates a model meta generator object.
      * 
      * @param modelMetaDesc
@@ -165,15 +146,4 @@ public class ModelProcessor implements AnnotationProcessor {
         return new ModelMetaGenerator(modelMetaDesc);
     }
 
-    /**
-     * Creates a model ref generator object.
-     * 
-     * @param modelRefDesc
-     *            the model ref description.
-     * @return a model ref generator object.
-     */
-    protected ModelRefGenerator createModelRefGenerator(
-            ModelRefDesc modelRefDesc) {
-        return new ModelRefGenerator(modelRefDesc);
-    }
 }
