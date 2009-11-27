@@ -100,7 +100,16 @@ public enum MessageCode {
     /** */
     SILM3GEN1029("The type annotated with @Attribute(primaryKey = true) must be com.google.appengine.api.datastore.Key. (the property[{0}] of the class[{1}])."),
     /** */
-    SILM3GEN1030("The type annotated with @Attribute(version = true) must be primitive long or java.lang.Long. (the property[{0}] of the class[{1}])."), ;
+    SILM3GEN1030("The type annotated with @Attribute(version = true) must be primitive long or java.lang.Long. (the property[{0}] of the class[{1}])."),
+    /** */
+    SILM3GEN1031("The actual type argument of ModelRef must be a model."),
+    /** */
+    SILM3GEN1032("The actual type argument of ModelRef must be a model. (the property[{0}] of the class[{1}])."),
+    /** */
+    SILM3GEN1033("The actual type argument of ModelRef is not specified."),
+    /** */
+    SILM3GEN1034("The actual type argument of ModelRef is not specified. (the property[{0}] of the class[{1}]).");
+
     /** the message */
     public final String message;
 

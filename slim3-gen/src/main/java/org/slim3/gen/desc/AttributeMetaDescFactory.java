@@ -15,6 +15,7 @@
  */
 package org.slim3.gen.desc;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.slim3.gen.AnnotationConstants;
@@ -24,6 +25,7 @@ import org.slim3.gen.datastore.CollectionType;
 import org.slim3.gen.datastore.CoreReferenceType;
 import org.slim3.gen.datastore.DataType;
 import org.slim3.gen.datastore.DataTypeFactory;
+import org.slim3.gen.datastore.ModelRefType;
 import org.slim3.gen.datastore.OtherReferenceType;
 import org.slim3.gen.message.MessageCode;
 import org.slim3.gen.processor.ValidationException;
@@ -37,8 +39,12 @@ import com.sun.mirror.declaration.AnnotationMirror;
 import com.sun.mirror.declaration.ClassDeclaration;
 import com.sun.mirror.declaration.FieldDeclaration;
 import com.sun.mirror.declaration.MethodDeclaration;
+import com.sun.mirror.declaration.TypeDeclaration;
+import com.sun.mirror.type.ClassType;
+import com.sun.mirror.type.DeclaredType;
 import com.sun.mirror.type.TypeMirror;
 import com.sun.mirror.type.PrimitiveType.Kind;
+import com.sun.mirror.util.SimpleTypeVisitor;
 
 /**
  * Represents an attribute meta description factory.
@@ -89,7 +95,7 @@ public class AttributeMetaDescFactory {
                 "The methodDeclarations parameter is null.");
         }
 
-        DataTypeFactory datastoreTypeFactory = creaetDatastoreTypeFactory();
+        DataTypeFactory dataTypeFactory = creaetDataTypeFactory();
         String propertyName = fieldDeclaration.getSimpleName();
         AnnotationMirror attribute =
             DeclarationUtil.getAnnotationMirror(
@@ -106,9 +112,8 @@ public class AttributeMetaDescFactory {
             }
         }
         DataType dataType =
-            datastoreTypeFactory.createDataType(
-                fieldDeclaration,
-                fieldDeclaration.getType());
+            dataTypeFactory.createDataType(fieldDeclaration, fieldDeclaration
+                .getType());
         AttributeMetaDesc attributeMetaDesc =
             new AttributeMetaDesc(
                 fieldDeclaration.getSimpleName(),
@@ -206,6 +211,12 @@ public class AttributeMetaDescFactory {
                     fieldDeclaration,
                     attribute);
             }
+        }
+        if (attributeMetaDesc.getDataType() instanceof ModelRefType) {
+            validateModelRefTypeArgument(
+                attributeMetaDesc,
+                classDeclaration,
+                fieldDeclaration);
         }
     }
 
@@ -393,6 +404,12 @@ public class AttributeMetaDescFactory {
                 fieldDeclaration,
                 attribute);
         }
+        if (dataType instanceof ModelRefType) {
+            throwExceptionForLobUnsupportedType(
+                classDeclaration,
+                fieldDeclaration,
+                attribute);
+        }
         if (dataType instanceof CollectionType
             && CollectionType.class.cast(dataType).getElementType() instanceof CoreReferenceType) {
             throwExceptionForLobUnsupportedType(
@@ -429,6 +446,78 @@ public class AttributeMetaDescFactory {
                 AnnotationConstants.persistent + " = false");
         }
         attributeMetaDesc.setUnindexed(true);
+    }
+
+    /**
+     * Validates ModelRef type argument.
+     * 
+     * @param attributeMetaDesc
+     *            the attribute meta description
+     * @param classDeclaration
+     *            the model class declaration
+     * @param fieldDeclaration
+     *            the field declaration
+     */
+    protected void validateModelRefTypeArgument(AttributeMetaDesc attributeMetaDesc,
+            final ClassDeclaration classDeclaration,
+            final FieldDeclaration fieldDeclaration) {
+        fieldDeclaration.getType().accept(new SimpleTypeVisitor() {
+            @Override
+            public void visitClassType(ClassType classType) {
+                if (ClassConstants.ModelRef.equals(classType
+                    .getDeclaration()
+                    .getQualifiedName())) {
+                    Collection<TypeMirror> typeArgs =
+                        classType.getActualTypeArguments();
+                    if (typeArgs.isEmpty()) {
+                        if (classDeclaration.equals(fieldDeclaration
+                            .getDeclaringType())) {
+                            throw new ValidationException(
+                                MessageCode.SILM3GEN1033,
+                                env,
+                                fieldDeclaration.getPosition());
+                        }
+                        throw new ValidationException(
+                            MessageCode.SILM3GEN1034,
+                            env,
+                            classDeclaration.getPosition(),
+                            fieldDeclaration.getSimpleName(),
+                            fieldDeclaration
+                                .getDeclaringType()
+                                .getQualifiedName());
+                    }
+                    DeclaredType declaredType =
+                        TypeUtil.toDeclaredType(typeArgs.iterator().next());
+                    if (declaredType == null) {
+                        throwExceptionForModelRefTypeArgument(
+                            classDeclaration,
+                            fieldDeclaration);
+                    }
+                    TypeDeclaration typeDeclaration =
+                        declaredType.getDeclaration();
+                    if (typeDeclaration == null) {
+                        throwExceptionForModelRefTypeArgument(
+                            classDeclaration,
+                            fieldDeclaration);
+                    }
+                    AnnotationMirror annotationMirror =
+                        DeclarationUtil.getAnnotationMirror(
+                            env,
+                            typeDeclaration,
+                            AnnotationConstants.Model);
+                    if (annotationMirror == null) {
+                        throwExceptionForModelRefTypeArgument(
+                            classDeclaration,
+                            fieldDeclaration);
+                    }
+                }
+                ClassType superclassType = classType.getSuperclass();
+                if (superclassType != null) {
+                    superclassType.accept(this);
+                }
+            }
+
+        });
     }
 
     /**
@@ -567,11 +656,11 @@ public class AttributeMetaDescFactory {
     }
 
     /**
-     * Creates a datastore type factory.
+     * Creates a data type factory.
      * 
-     * @return a datastore type factory
+     * @return a data type factory
      */
-    protected DataTypeFactory creaetDatastoreTypeFactory() {
+    protected DataTypeFactory creaetDataTypeFactory() {
         return new DataTypeFactory(env);
     }
 
@@ -659,6 +748,30 @@ public class AttributeMetaDescFactory {
         }
         throw new ValidationException(
             MessageCode.SILM3GEN1028,
+            env,
+            classDeclaration.getPosition(),
+            fieldDeclaration.getSimpleName(),
+            fieldDeclaration.getDeclaringType().getQualifiedName());
+    }
+
+    /**
+     * hrows {@link ValidationException} for ModelRef type argument.
+     * 
+     * @param classDeclaration
+     *            the model class declaration
+     * @param fieldDeclaration
+     *            the field declaration
+     */
+    protected void throwExceptionForModelRefTypeArgument(
+            ClassDeclaration classDeclaration, FieldDeclaration fieldDeclaration) {
+        if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
+            throw new ValidationException(
+                MessageCode.SILM3GEN1031,
+                env,
+                fieldDeclaration.getPosition());
+        }
+        throw new ValidationException(
+            MessageCode.SILM3GEN1032,
             env,
             classDeclaration.getPosition(),
             fieldDeclaration.getSimpleName(),
