@@ -46,7 +46,7 @@ public class ModelRefAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
      *            the attribute class
      */
     public ModelRefAttributeMeta(ModelMeta<M> modelMeta, String name,
-            Class<A> attributeClass) {
+            Class<? super A> attributeClass) {
         super(modelMeta, name, attributeClass);
     }
 

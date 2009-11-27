@@ -13,6 +13,11 @@ public class ModelRef<M> extends AbstractModelRef<M> {
 
     protected ModelRef() {
     }
+
+    public ModelRef(Class<M> modelClass) throws NullPointerException {
+        super(modelClass);
+    }
+
     public M getModel() {
         return refresh();
     }
@@ -33,8 +38,10 @@ public class ModelRef<M> extends AbstractModelRef<M> {
         this.key = key;
     }
     public M refresh() {
+        return null;
     }
 
     public M refresh(Transaction tx) {
+        return null;
     }
 }

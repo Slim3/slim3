@@ -1,6 +1,7 @@
 package org.slim3.datastore.meta;
 
-import org.slim3.datastore.model.HogeRef;
+import org.slim3.datastore.ModelRef;
+import org.slim3.datastore.model.Hoge;
 
 import com.google.appengine.api.datastore.Key;
 
@@ -48,11 +49,11 @@ public final class BbbMeta extends
     /**
      * 
      */
-    public org.slim3.datastore.ModelRefAttributeMeta<org.slim3.datastore.model.Bbb, HogeRef> hogeRef =
-        new org.slim3.datastore.ModelRefAttributeMeta<org.slim3.datastore.model.Bbb, HogeRef>(
+    public org.slim3.datastore.ModelRefAttributeMeta<org.slim3.datastore.model.Bbb, ModelRef<Hoge>> hogeRef =
+        new org.slim3.datastore.ModelRefAttributeMeta<org.slim3.datastore.model.Bbb, ModelRef<Hoge>>(
             this,
             "hogeRef",
-            HogeRef.class);
+            ModelRef.class);
 
     @Override
     protected Key getKey(Object model) {

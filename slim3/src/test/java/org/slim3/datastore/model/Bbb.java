@@ -3,6 +3,7 @@ package org.slim3.datastore.model;
 import java.io.Serializable;
 
 import org.slim3.datastore.Model;
+import org.slim3.datastore.ModelRef;
 
 /**
  * @author higa
@@ -13,12 +14,12 @@ public class Bbb extends Aaa implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private HogeRef hogeRef = new HogeRef();
+    private ModelRef<Hoge> hogeRef = new ModelRef<Hoge>(Hoge.class);
 
     /**
      * @return the hogeRef
      */
-    public HogeRef getHogeRef() {
+    public ModelRef<Hoge> getHogeRef() {
         return hogeRef;
     }
 
@@ -26,7 +27,7 @@ public class Bbb extends Aaa implements Serializable {
      * @param hogeRef
      *            the hogeRef to set
      */
-    public void setHogeRef(HogeRef hogeRef) {
+    public void setHogeRef(ModelRef<Hoge> hogeRef) {
         this.hogeRef = hogeRef;
     }
 }

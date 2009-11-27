@@ -19,10 +19,9 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.slim3.datastore.model.AaaRef;
+import org.slim3.datastore.model.Aaa;
 import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Hoge;
-import org.slim3.datastore.model.HogeRef;
 import org.slim3.tester.LocalServiceTestCase;
 
 /**
@@ -31,7 +30,7 @@ import org.slim3.tester.LocalServiceTestCase;
  */
 public class ModelRefTest extends LocalServiceTestCase {
 
-    private HogeRef ref = new HogeRef();
+    private ModelRef<Hoge> ref = new ModelRef<Hoge>(Hoge.class);
 
     /**
      * @throws Exception
@@ -50,7 +49,7 @@ public class ModelRefTest extends LocalServiceTestCase {
      */
     @Test
     public void setModelForSubModel() throws Exception {
-        AaaRef aaaRef = new AaaRef();
+        ModelRef<Aaa> aaaRef = new ModelRef<Aaa>(Aaa.class);
         Bbb bbb = new Bbb();
         bbb.setKey(Datastore.allocateId(Bbb.class));
         aaaRef.setModel(bbb);
@@ -108,7 +107,7 @@ public class ModelRefTest extends LocalServiceTestCase {
      */
     @Test
     public void validateForSubModel() throws Exception {
-        AaaRef aaaRef = new AaaRef();
+        ModelRef<Aaa> aaaRef = new ModelRef<Aaa>(Aaa.class);
         aaaRef.validate(Datastore.allocateId(Bbb.class));
     }
 
