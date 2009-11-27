@@ -1,19 +1,18 @@
 package slim3.demo.server.service;
 
-import org.slim3.util.RequestLocator;
-import org.slim3.util.ServletContextLocator;
+import org.slim3.datastore.Datastore;
 
 import slim3.demo.client.service.GreetingService;
+import slim3.demo.shared.model.Bbb;
+
+import com.google.appengine.api.datastore.Key;
 
 /**
  * The server side implementation of the RPC service.
  */
 public class GreetingServiceImpl implements GreetingService {
 
-    public String greetServer(String input) {
-        String serverInfo = ServletContextLocator.get().getServerInfo();
-        String userAgent = RequestLocator.get().getHeader("User-Agent");
-        return "Hello, " + input + "!<br><br>I am running " + serverInfo
-                + ".<br><br>It looks like you are using:<br>" + userAgent;
+    public Key greetServer() {
+        return Datastore.allocateId(Bbb.class);
     }
 }

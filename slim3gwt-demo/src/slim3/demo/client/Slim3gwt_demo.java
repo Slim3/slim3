@@ -3,6 +3,7 @@ package slim3.demo.client;
 import slim3.demo.client.service.GreetingService;
 import slim3.demo.client.service.GreetingServiceAsync;
 
+import com.google.appengine.api.datastore.Key;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -32,7 +33,8 @@ public class Slim3gwt_demo implements EntryPoint {
             + "connection and try again.";
 
     /**
-     * Create a remote service proxy to talk to the server-side Greeting service.
+     * Create a remote service proxy to talk to the server-side Greeting
+     * service.
      */
     private final GreetingServiceAsync greetingService = GWT
             .create(GreetingService.class);
@@ -104,35 +106,34 @@ public class Slim3gwt_demo implements EntryPoint {
             }
 
             /**
-             * Send the name from the nameField to the server and wait for a response.
+             * Send the name from the nameField to the server and wait for a
+             * response.
              */
             private void sendNameToServer() {
                 sendButton.setEnabled(false);
                 String textToServer = nameField.getText();
                 textToServerLabel.setText(textToServer);
                 serverResponseLabel.setText("");
-                greetingService.greetServer(textToServer,
-                        new AsyncCallback<String>() {
-                            public void onFailure(Throwable caught) {
-                                // Show the RPC error message to the user
-                                dialogBox
-                                        .setText("Remote Procedure Call - Failure");
-                                serverResponseLabel
-                                        .addStyleName("serverResponseLabelError");
-                                serverResponseLabel.setHTML(SERVER_ERROR);
-                                dialogBox.center();
-                                closeButton.setFocus(true);
-                            }
+                greetingService.greetServer(new AsyncCallback<Key>() {
+                    public void onFailure(Throwable caught) {
+                        // Show the RPC error message to the user
+                        dialogBox.setText("Remote Procedure Call - Failure");
+                        serverResponseLabel
+                                .addStyleName("serverResponseLabelError");
+                        serverResponseLabel.setHTML(caught.toString());
+                        dialogBox.center();
+                        closeButton.setFocus(true);
+                    }
 
-                            public void onSuccess(String result) {
-                                dialogBox.setText("Remote Procedure Call");
-                                serverResponseLabel
-                                        .removeStyleName("serverResponseLabelError");
-                                serverResponseLabel.setHTML(result);
-                                dialogBox.center();
-                                closeButton.setFocus(true);
-                            }
-                        });
+                    public void onSuccess(Key result) {
+                        dialogBox.setText("Remote Procedure Call");
+                        serverResponseLabel
+                                .removeStyleName("serverResponseLabelError");
+                        serverResponseLabel.setHTML(result.toString());
+                        dialogBox.center();
+                        closeButton.setFocus(true);
+                    }
+                });
             }
         }
 
