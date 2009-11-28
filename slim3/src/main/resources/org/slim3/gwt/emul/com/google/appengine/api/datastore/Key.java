@@ -15,6 +15,8 @@ public class Key implements Serializable, Comparable {
     private long id;
 
     private String name;
+    
+    private transient AppIdNamespace appIdNamespace;
         
     private Key() {
     }
