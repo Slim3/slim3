@@ -36,4 +36,8 @@ public class Key implements Serializable, Comparable {
     public String getName() {
         return name;
     }
+    
+    public int compareTo(Object o) {
+        return 0;
+    }
 }
