@@ -27,6 +27,7 @@
 
 	<target name="create-lib" depends="clean">
 		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/Key.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/Key.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/AppIdNamespace.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/AppIdNamespace.java"/>
 		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/Transaction.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/Transaction.java"/>
 		<copy file="src/main/resources/org/slim3/gwt/emul/org/slim3/datastore/ModelMeta.java" tofile="build/classes/org/slim3/gwt/emul/org/slim3/datastore/ModelMeta.java"/>
 		<copy file="src/main/resources/org/slim3/gwt/emul/org/slim3/datastore/AbstractModelRef.java" tofile="build/classes/org/slim3/gwt/emul/org/slim3/datastore/AbstractModelRef.java"/>
