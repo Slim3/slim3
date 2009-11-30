@@ -1,15 +1,21 @@
 package com.google.appengine.api.datastore;
 
-import java.io.Serializable;
+public class AppIdNamespace {
 
-public class AppIdNamespace implements Serializable, Comparable {
+    private String appId;
 
-    private static final long serialVersionUID = 1L;
-    
-    private AppIdNamespace() {
+    private String namespace;
+
+    public AppIdNamespace(String appId, String namespace) {
+        this.appId = appId;
+        this.namespace = namespace;
     }
-    
-    public int compareTo(Object o) {
-        return 0;
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public String getNamespace() {
+        return namespace;
     }
 }
