@@ -19,7 +19,7 @@ public class ModelRef<M> extends AbstractModelRef<M> {
     }
 
     public M getModel() {
-        return refresh();
+        return model;
     }
 
     public M getModel(Transaction tx) {
