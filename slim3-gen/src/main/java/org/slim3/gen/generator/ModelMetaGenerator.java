@@ -29,6 +29,7 @@ import static org.slim3.gen.ClassConstants.StringAttributeMeta;
 import static org.slim3.gen.ClassConstants.StringCollectionAttributeMeta;
 import static org.slim3.gen.ClassConstants.Text;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import org.slim3.gen.ClassConstants;
@@ -63,6 +64,7 @@ import org.slim3.gen.datastore.TextType;
 import org.slim3.gen.desc.AttributeMetaDesc;
 import org.slim3.gen.desc.ModelMetaDesc;
 import org.slim3.gen.printer.Printer;
+import org.slim3.gen.util.CollectionUtil;
 
 /**
  * Generates a model meta java file.
@@ -153,15 +155,18 @@ public class ModelMetaGenerator implements Generator {
     protected void printConstructor(Printer printer) {
         printer.println("/** */");
         printer.println("public %s() {", modelMetaDesc.getSimpleName());
-        if (modelMetaDesc.getSimpleClassName() == null) {
+        if (modelMetaDesc.getSimpleClassNameList().isEmpty()) {
             printer.println("    super(\"%1$s\", %2$s.class);", modelMetaDesc
                 .getKind(), modelMetaDesc.getModelClassName());
         } else {
             printer.println(
-                "    super(\"%1$s\", %2$s.class, \"%3$s\");",
+                "    super(\"%1$s\", %2$s.class, %3$s.asList(\"%4$s\"));",
                 modelMetaDesc.getKind(),
                 modelMetaDesc.getModelClassName(),
-                modelMetaDesc.getSimpleClassName());
+                Arrays.class.getName(),
+                CollectionUtil.join(
+                    modelMetaDesc.getSimpleClassNameList(),
+                    ", "));
         }
         printer.println("}");
     }
@@ -1059,6 +1064,10 @@ public class ModelMetaGenerator implements Generator {
             printer.println("} else {");
             printer.println("    entity = new %1$s(kind);", Entity);
             printer.println("}");
+            if (!modelMetaDesc.getSimpleClassNameList().isEmpty()) {
+                printer
+                    .println("entity.setProperty(SIMPLE_CLASS_NAME_LIST_RESERVED_PROPERTY, simpleClassNameList);");
+            }
             for (AttributeMetaDesc attr : modelMetaDesc
                 .getAttributeMetaDescList()) {
                 if (attr.isPrimaryKey()) {

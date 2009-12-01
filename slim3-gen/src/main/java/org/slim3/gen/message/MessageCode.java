@@ -86,8 +86,6 @@ public enum MessageCode {
     /** */
     SILM3GEN1022("The kind element is not supported for a sub model, because the kind of sub model is identical to the super model."),
     /** */
-    SILM3GEN1023("The hierarchy of model is just only 1, but the hierarchies of classes are no limit."),
-    /** */
     SILM3GEN1024("The getter method is not found. (the property[{0}] of the class[{1}])."),
     /** */
     SILM3GEN1025("The setter method is not found. (the property[{0}] of the class[{1}])."),

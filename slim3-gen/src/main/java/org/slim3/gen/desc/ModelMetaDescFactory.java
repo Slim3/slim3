@@ -108,13 +108,13 @@ public class ModelMetaDescFactory {
             createModelMetaClassName(modelClassName);
 
         String kind = null;
-        String simpleClassName = null;
+        List<String> simpleClassNameList = new ArrayList<String>();
         PolyModelDesc polyModelDesc = createPolyModelDesc(classDeclaration);
         if (polyModelDesc == null) {
             kind = getKind(anno, modelMetaClassName.getKind());
         } else {
             kind = polyModelDesc.getKind();
-            simpleClassName = polyModelDesc.getSimpleClassName();
+            simpleClassNameList = polyModelDesc.getSimpleClassNameList();
             validateKind(classDeclaration);
         }
 
@@ -124,7 +124,7 @@ public class ModelMetaDescFactory {
                 modelMetaClassName.getSimpleName(),
                 modelClassName,
                 kind,
-                simpleClassName);
+                simpleClassNameList);
         handleAttributes(classDeclaration, modelMetaDesc);
         return modelMetaDesc;
     }
@@ -139,7 +139,7 @@ public class ModelMetaDescFactory {
     protected PolyModelDesc createPolyModelDesc(
             ClassDeclaration classDeclaration) {
         String kind = null;
-        List<String> simpleNames = new ArrayList<String>();
+        LinkedList<String> simpleNames = new LinkedList<String>();
         for (ClassDeclaration c = classDeclaration; c != null
             && !c.getQualifiedName().equals(Object.class.getName()); c =
             c.getSuperclass().getDeclaration()) {
@@ -152,19 +152,14 @@ public class ModelMetaDescFactory {
                 ModelMetaClassName modelMetaClassName =
                     createModelMetaClassName(c.getQualifiedName().toString());
                 kind = getKind(anno, modelMetaClassName.getKind());
-                simpleNames.add(c.getSimpleName());
+                simpleNames.addFirst(c.getSimpleName());
             }
         }
         if (simpleNames.size() <= 1) {
             return null;
         }
-        if (simpleNames.size() >= 3) {
-            throw new ValidationException(
-                MessageCode.SILM3GEN1023,
-                env,
-                classDeclaration.getPosition());
-        }
-        return new PolyModelDesc(kind, simpleNames.get(0));
+        simpleNames.removeFirst();
+        return new PolyModelDesc(kind, simpleNames);
     }
 
     /**
@@ -500,25 +495,25 @@ public class ModelMetaDescFactory {
         /** the kind */
         protected final String kind;
 
-        /** the simple class name */
-        protected final String simpleClassName;
+        /** the simple class name list */
+        protected final List<String> simpleClassNameList;
 
         /**
          * @param kind
          *            the kind
-         * @param simpleClassName
-         *            the simple class name
+         * @param simpleClassNameList
+         *            the simple class name list
          */
-        public PolyModelDesc(String kind, String simpleClassName) {
+        public PolyModelDesc(String kind, List<String> simpleClassNameList) {
             if (kind == null) {
                 throw new NullPointerException("The kind parameter is null.");
             }
-            if (simpleClassName == null) {
+            if (simpleClassNameList == null) {
                 throw new NullPointerException(
-                    "The simpleClassName parameter is null.");
+                    "The simpleClassNameList parameter is null.");
             }
             this.kind = kind;
-            this.simpleClassName = simpleClassName;
+            this.simpleClassNameList = simpleClassNameList;
         }
 
         /**
@@ -531,12 +526,12 @@ public class ModelMetaDescFactory {
         }
 
         /**
-         * Returns the simple class name.
+         * Returns the simple class name list.
          * 
-         * @return the simple class name
+         * @return the simple class name list
          */
-        public String getSimpleClassName() {
-            return simpleClassName;
+        public List<String> getSimpleClassNameList() {
+            return simpleClassNameList;
         }
 
     }
