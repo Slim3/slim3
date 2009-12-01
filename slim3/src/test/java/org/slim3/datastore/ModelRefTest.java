@@ -116,8 +116,9 @@ public class ModelRefTest extends LocalServiceTestCase {
     /**
      * @throws Exception
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void setKeyWhenKeyIsNotNull() throws Exception {
         ref.setKey(null);
+        assertThat(ref.key, is(nullValue()));
     }
 }

@@ -24,9 +24,11 @@ import java.util.List;
 import org.junit.Test;
 import org.slim3.datastore.meta.AaaMeta;
 import org.slim3.datastore.meta.BbbMeta;
+import org.slim3.datastore.meta.CccMeta;
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Aaa;
 import org.slim3.datastore.model.Bbb;
+import org.slim3.datastore.model.Ccc;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.LocalServiceTestCase;
 
@@ -50,6 +52,8 @@ public class ModelQueryTest extends LocalServiceTestCase {
     private AaaMeta aaaMeta = new AaaMeta();
 
     private BbbMeta bbbMeta = new BbbMeta();
+
+    private CccMeta cccMeta = new CccMeta();
 
     /**
      * @throws Exception
@@ -164,14 +168,19 @@ public class ModelQueryTest extends LocalServiceTestCase {
     public void asListForPolyModel() throws Exception {
         Datastore.put(new Aaa());
         Datastore.put(new Bbb());
+        Datastore.put(new Ccc());
 
         ModelQuery<Aaa> query = new ModelQuery<Aaa>(aaaMeta);
         List<Aaa> list = query.asList();
-        assertThat(list.size(), is(2));
+        assertThat(list.size(), is(3));
 
         ModelQuery<Bbb> query2 = new ModelQuery<Bbb>(bbbMeta);
         List<Bbb> list2 = query2.asList();
-        assertThat(list2.size(), is(1));
+        assertThat(list2.size(), is(2));
+
+        ModelQuery<Ccc> query3 = new ModelQuery<Ccc>(cccMeta);
+        List<Ccc> list3 = query3.asList();
+        assertThat(list3.size(), is(1));
     }
 
     /**
