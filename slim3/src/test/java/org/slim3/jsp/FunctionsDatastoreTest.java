@@ -59,7 +59,7 @@ public class FunctionsDatastoreTest extends ServletTestCase {
         Key key = KeyFactory.createKey("Hoge", 1);
         String encodedKey = KeyFactory.keyToString(key);
         tester.request.setAttribute("aaa", key);
-        assertThat(Functions.hiddenKey("aaa"), is("name = \"aaa\" value = \""
+        assertThat(Functions.hiddenKey("aaa"), is("name=\"aaa\" value=\""
             + encodedKey
             + "\""));
     }
@@ -72,7 +72,7 @@ public class FunctionsDatastoreTest extends ServletTestCase {
         Key key = KeyFactory.createKey("Hoge", 1);
         String encodedKey = KeyFactory.keyToString(key);
         tester.request.setAttribute("aaa", encodedKey);
-        assertThat(Functions.hiddenKey("aaa"), is("name = \"aaa\" value = \""
+        assertThat(Functions.hiddenKey("aaa"), is("name=\"aaa\" value=\""
             + encodedKey
             + "\""));
     }

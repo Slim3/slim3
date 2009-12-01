@@ -246,9 +246,9 @@ public final class Functions {
                 + ") must not end with \"Array\".");
         }
         HttpServletRequest request = RequestLocator.get();
-        return "name = \""
+        return "name=\""
             + name
-            + "\" value = \""
+            + "\" value=\""
             + h(request.getAttribute(name))
             + "\"";
     }
@@ -269,9 +269,9 @@ public final class Functions {
                 + ") must not end with \"Array\".");
         }
         HttpServletRequest request = RequestLocator.get();
-        return "name = \""
+        return "name=\""
             + name
-            + "\" value = \""
+            + "\" value=\""
             + h(request.getAttribute(name))
             + "\"";
     }
@@ -301,7 +301,7 @@ public final class Functions {
                 s = value.toString();
             }
         }
-        return "name = \"" + name + "\" value = \"" + s + "\"";
+        return "name=\"" + name + "\" value=\"" + s + "\"";
     }
 
     /**
@@ -320,11 +320,11 @@ public final class Functions {
                 + ") must not end with \"Array\".");
         }
         HttpServletRequest request = RequestLocator.get();
-        return "name = \""
+        return "name=\""
             + name
             + "\""
             + (BooleanUtil.toPrimitiveBoolean(request.getAttribute(name))
-                ? " checked = \"checked\""
+                ? " checked=\"checked\""
                 : "");
     }
 
@@ -367,12 +367,12 @@ public final class Functions {
         } else {
             list = EMPTY_STRING_LIST;
         }
-        return "name = \""
+        return "name=\""
             + name
-            + "\" value = \""
+            + "\" value=\""
             + h(value)
             + "\""
-            + (list.contains(value) ? " checked = \"checked\"" : "");
+            + (list.contains(value) ? " checked=\"checked\"" : "");
     }
 
     /**
@@ -395,13 +395,13 @@ public final class Functions {
         }
         HttpServletRequest request = RequestLocator.get();
         String s = StringUtil.toString(request.getAttribute(name));
-        return "name = \""
+        return "name=\""
             + name
-            + "\" value = \""
+            + "\" value=\""
             + h(value)
             + "\""
             + (value == null && s == null || value != null && value.equals(s)
-                ? " checked = \"checked\""
+                ? " checked=\"checked\""
                 : "");
     }
 
@@ -425,11 +425,11 @@ public final class Functions {
         }
         HttpServletRequest request = RequestLocator.get();
         String s = StringUtil.toString(request.getAttribute(name));
-        return "value = \""
+        return "value=\""
             + h(value)
             + "\""
             + (value == null && s == null || value != null && value.equals(s)
-                ? " selected = \"selected\""
+                ? " selected=\"selected\""
                 : "");
     }
 
@@ -472,10 +472,10 @@ public final class Functions {
         } else {
             list = EMPTY_STRING_LIST;
         }
-        return "value = \""
+        return "value=\""
             + h(value)
             + "\""
-            + (list.contains(value) ? " selected = \"selected\"" : "");
+            + (list.contains(value) ? " selected=\"selected\"" : "");
     }
 
     private Functions() {

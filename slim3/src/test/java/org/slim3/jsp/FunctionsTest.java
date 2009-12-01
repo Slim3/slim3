@@ -329,7 +329,7 @@ public class FunctionsTest {
     @Test
     public void text() throws Exception {
         request.setAttribute("aaa", "111");
-        assertThat(Functions.text("aaa"), is("name = \"aaa\" value = \"111\""));
+        assertThat(Functions.text("aaa"), is("name=\"aaa\" value=\"111\""));
     }
 
     /**
@@ -346,9 +346,7 @@ public class FunctionsTest {
     @Test
     public void hidden() throws Exception {
         request.setAttribute("aaa", "111");
-        assertThat(
-            Functions.hidden("aaa"),
-            is("name = \"aaa\" value = \"111\""));
+        assertThat(Functions.hidden("aaa"), is("name=\"aaa\" value=\"111\""));
     }
 
     /**
@@ -368,9 +366,9 @@ public class FunctionsTest {
         request.setAttribute("ccc", "false");
         assertThat(
             Functions.checkbox("aaa"),
-            is("name = \"aaa\" checked = \"checked\""));
-        assertThat(Functions.checkbox("bbb"), is("name = \"bbb\""));
-        assertThat(Functions.checkbox("ccc"), is("name = \"ccc\""));
+            is("name=\"aaa\" checked=\"checked\""));
+        assertThat(Functions.checkbox("bbb"), is("name=\"bbb\""));
+        assertThat(Functions.checkbox("ccc"), is("name=\"ccc\""));
     }
 
     /**
@@ -390,10 +388,10 @@ public class FunctionsTest {
         request.setAttribute("aaaArray", aaaArray);
         assertThat(
             Functions.multibox("aaaArray", "111"),
-            is("name = \"aaaArray\" value = \"111\" checked = \"checked\""));
+            is("name=\"aaaArray\" value=\"111\" checked=\"checked\""));
         assertThat(
             Functions.multibox("aaaArray", "222"),
-            is("name = \"aaaArray\" value = \"222\""));
+            is("name=\"aaaArray\" value=\"222\""));
     }
 
     /**
@@ -403,7 +401,7 @@ public class FunctionsTest {
     public void multiboxForNull() throws Exception {
         assertThat(
             Functions.multibox("aaaArray", "111"),
-            is("name = \"aaaArray\" value = \"111\""));
+            is("name=\"aaaArray\" value=\"111\""));
     }
 
     /**
@@ -444,10 +442,10 @@ public class FunctionsTest {
         request.setAttribute("aaa", "111");
         assertThat(
             Functions.radio("aaa", "111"),
-            is("name = \"aaa\" value = \"111\" checked = \"checked\""));
+            is("name=\"aaa\" value=\"111\" checked=\"checked\""));
         assertThat(
             Functions.radio("aaa", "222"),
-            is("name = \"aaa\" value = \"222\""));
+            is("name=\"aaa\" value=\"222\""));
     }
 
     /**
@@ -466,8 +464,8 @@ public class FunctionsTest {
         request.setAttribute("aaa", new Integer(111));
         assertThat(
             Functions.select("aaa", "111"),
-            is("value = \"111\" selected = \"selected\""));
-        assertThat(Functions.select("aaa", "222"), is("value = \"222\""));
+            is("value=\"111\" selected=\"selected\""));
+        assertThat(Functions.select("aaa", "222"), is("value=\"222\""));
     }
 
     /**
@@ -487,10 +485,10 @@ public class FunctionsTest {
         request.setAttribute("aaaArray", aaaArray);
         assertThat(
             Functions.multiselect("aaaArray", "111"),
-            is("value = \"111\" selected = \"selected\""));
+            is("value=\"111\" selected=\"selected\""));
         assertThat(
             Functions.multiselect("aaaArray", "222"),
-            is("value = \"222\""));
+            is("value=\"222\""));
     }
 
     /**
@@ -500,7 +498,7 @@ public class FunctionsTest {
     public void multiselectForNull() throws Exception {
         assertThat(
             Functions.multiselect("aaaArray", "111"),
-            is("value = \"111\""));
+            is("value=\"111\""));
     }
 
     /**
