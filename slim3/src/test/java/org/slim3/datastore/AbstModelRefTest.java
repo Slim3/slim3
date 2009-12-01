@@ -19,16 +19,19 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.slim3.datastore.model.Aaa;
+import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Hoge;
+import org.slim3.tester.LocalServiceTestCase;
 import org.slim3.util.ByteUtil;
 
 /**
  * @author higa
  * 
  */
-public class AbstModelRefTest {
+public class AbstModelRefTest extends LocalServiceTestCase {
 
-    private HogeRef ref = new HogeRef();
+    private ModelRef<Hoge> ref = new ModelRef<Hoge>(Hoge.class);
 
     /**
      * @throws Exception
@@ -37,7 +40,7 @@ public class AbstModelRefTest {
     @Test
     public void serialize() throws Exception {
         byte[] bytes = ByteUtil.toByteArray(ref);
-        HogeRef ref2 = ByteUtil.toObject(bytes);
+        ModelRef<Hoge> ref2 = ByteUtil.toObject(bytes);
         assertThat(ref2.modelClass, is(nullValue()));
         assertThat(ref2.modelClassName, is(Hoge.class.getName()));
         assertThat(ref2.getModelClass().getName(), is(Hoge.class.getName()));
@@ -52,16 +55,48 @@ public class AbstModelRefTest {
         assertThat(ref.getModelMeta(), is(Datastore.getModelMeta(Hoge.class)));
     }
 
-    private static class HogeRef extends AbstractModelRef<Hoge> {
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void validateForKey() throws Exception {
+        ref.validate(Datastore.allocateId("Hoge"));
+    }
 
-        private static final long serialVersionUID = 1L;
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void validateForModel() throws Exception {
+        Hoge hoge = new Hoge();
+        hoge.setKey(Datastore.createKey(Hoge.class, 1));
+        ref.validate(hoge);
+    }
 
-        /**
-         *
-         */
-        public HogeRef() {
-            super(Hoge.class);
-        }
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void validateForModelWhenModelDoesNotHavePrimaryKey()
+            throws Exception {
+        Hoge hoge = new Hoge();
+        ref.validate(hoge);
+    }
 
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void validateForSubModel() throws Exception {
+        ModelRef<Aaa> aaaRef = new ModelRef<Aaa>(Aaa.class);
+        aaaRef.validate(Datastore.allocateId(Bbb.class));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void validateForIllegalKey() throws Exception {
+        ref.validate(Datastore.allocateId("Foo"));
     }
 }

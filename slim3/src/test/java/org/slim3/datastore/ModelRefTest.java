@@ -24,6 +24,8 @@ import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.LocalServiceTestCase;
 
+import com.google.appengine.api.datastore.Key;
+
 /**
  * @author higa
  * 
@@ -59,6 +61,15 @@ public class ModelRefTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
+    public void setModelForNull() throws Exception {
+        ref.setModel(null);
+        assertThat(ref.key, is(nullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getModel() throws Exception {
         assertThat(ref.getModel(), is(nullValue()));
         Hoge hoge = new Hoge();
@@ -86,36 +97,27 @@ public class ModelRefTest extends LocalServiceTestCase {
      */
     @Test
     public void setKey() throws Exception {
+        Key key = Datastore.allocateId(Hoge.class);
+        ref.setKey(key);
+        assertThat(ref.getKey(), is(key));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalStateException.class)
+    public void setKeyWhenModelIsNotNull() throws Exception {
         Hoge hoge = new Hoge();
         hoge.setKey(Datastore.allocateId(Hoge.class));
         ref.setModel(hoge);
         ref.setKey(hoge.getKey());
-        assertThat(ref.getKey(), is(hoge.getKey()));
-        assertThat(ref.model, is(nullValue()));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void validate() throws Exception {
-        ref.validate(Datastore.allocateId("Hoge"));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void validateForSubModel() throws Exception {
-        ModelRef<Aaa> aaaRef = new ModelRef<Aaa>(Aaa.class);
-        aaaRef.validate(Datastore.allocateId(Bbb.class));
     }
 
     /**
      * @throws Exception
      */
     @Test(expected = IllegalArgumentException.class)
-    public void validateForIllegalKey() throws Exception {
-        ref.validate(Datastore.allocateId("Foo"));
+    public void setKeyWhenKeyIsNotNull() throws Exception {
+        ref.setKey(null);
     }
 }

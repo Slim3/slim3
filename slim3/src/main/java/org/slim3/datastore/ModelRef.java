@@ -19,7 +19,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Transaction;
 
 /**
- * A reference for Model.
+ * A reference for model.
  * 
  * @author higa
  * @param <M>
@@ -91,21 +91,17 @@ public class ModelRef<M> extends AbstractModelRef<M> {
      * @param model
      *            the model
      * @throws IllegalArgumentException
-     *             if the model does not have a primary key or if the kind of
-     *             the key is different from the kind of ModelMeta
+     *             if the model is null or if the model does not have a primary
+     *             key or if the kind of the key is different from the kind of
+     *             ModelMeta
      */
     public void setModel(M model) throws IllegalArgumentException {
-        this.model = model;
         if (model == null) {
-            key = null;
+            this.model = null;
+            this.key = null;
         } else {
-            Key k = getModelMeta().getKey(model);
-            if (k == null) {
-                throw new IllegalArgumentException(
-                    "The model must have a primary key.");
-            }
-            validate(k);
-            key = k;
+            this.key = validate(model);
+            this.model = model;
         }
     }
 
@@ -123,16 +119,22 @@ public class ModelRef<M> extends AbstractModelRef<M> {
      * 
      * @param key
      *            the key
+     * @throws IllegalStateException
+     *             if the model is not null
      * @throws IllegalArgumentException
      *             if the kind of the key is different from the kind of
      *             ModelMeta
      */
-    public void setKey(Key key) throws IllegalArgumentException {
+    public void setKey(Key key) throws IllegalStateException,
+            IllegalArgumentException {
+        if (model != null) {
+            throw new IllegalStateException(
+                "You can set the key only when the model is null.");
+        }
         if (key != null) {
             validate(key);
-            this.key = key;
         }
-        model = null;
+        this.key = key;
     }
 
     /**
@@ -161,26 +163,5 @@ public class ModelRef<M> extends AbstractModelRef<M> {
         }
         model = Datastore.get(tx, getModelClass(), key);
         return model;
-    }
-
-    /**
-     * Validates the key.
-     * 
-     * @param key
-     *            the key
-     * @throws IllegalArgumentException
-     *             if the kind of the key is different from the kind of
-     *             {@link ModelMeta}
-     */
-    protected void validate(Key key) throws IllegalArgumentException {
-        if (!key.getKind().equals(getModelMeta().getKind())) {
-            throw new IllegalArgumentException("The kind("
-                + key.getKind()
-                + ") of the key("
-                + key
-                + ") must be "
-                + getModelMeta().getKind()
-                + ".");
-        }
     }
 }

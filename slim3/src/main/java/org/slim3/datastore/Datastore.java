@@ -1697,13 +1697,7 @@ public final class Datastore {
     private static Entity updatePropertiesAndConvertToEntity(
             ModelMeta<?> modelMeta, Object model) throws NullPointerException {
         modelMeta.incrementVersion(model);
-        Entity entity = modelMeta.modelToEntity(model);
-        if (modelMeta.getSimpleClassName() != null) {
-            entity.setProperty(
-                ModelMeta.SIMPLE_CLASS_NAME_RESERVED_PROPERTY,
-                modelMeta.getSimpleClassName());
-        }
-        return entity;
+        return modelMeta.modelToEntity(model);
     }
 
     private static List<Entity> updatePropertiesAndConvertToEntities(

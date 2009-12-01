@@ -17,6 +17,7 @@ package org.slim3.datastore;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.TreeSet;
@@ -43,10 +44,10 @@ import com.google.appengine.api.datastore.Text;
 public abstract class ModelMeta<M> {
 
     /**
-     * The reserved property name for the simple class name.
+     * The reserved property name for the list of simple class names.
      */
-    public static final String SIMPLE_CLASS_NAME_RESERVED_PROPERTY =
-        "slim3.simpleClassName";
+    public static final String SIMPLE_CLASS_NAME_LIST_RESERVED_PROPERTY =
+        "slim3.simpleClassNameList";
 
     /**
      * The kind of entity.
@@ -59,10 +60,11 @@ public abstract class ModelMeta<M> {
     protected Class<M> modelClass;
 
     /**
-     * The simple class name. If you create polymorphic models such as A -> B,
-     * the path of A is null, the path of B is B.
+     * The list of simple class names. If you create polymorphic models such as
+     * A -> B -> C, the list of A is empty, the list of B is [B], the list of c
+     * is[B, C].
      */
-    protected String simpleClassName;
+    protected List<String> simpleClassNameList;
 
     /**
      * The bean descriptor.
@@ -91,13 +93,14 @@ public abstract class ModelMeta<M> {
      *            the kind of entity
      * @param modelClass
      *            the model class
-     * @param simpleClassName
-     *            the simple class name
+     * @param simpleClassNameList
+     *            the list of simple class names
      * @throws NullPointerException
      *             if the modelClass parameter is null
      */
-    public ModelMeta(String kind, Class<M> modelClass, String simpleClassName)
-            throws NullPointerException {
+    @SuppressWarnings("unchecked")
+    public ModelMeta(String kind, Class<M> modelClass,
+            List<String> simpleClassNameList) throws NullPointerException {
         if (kind == null) {
             throw new NullPointerException("The kind parameter is null.");
         }
@@ -106,7 +109,12 @@ public abstract class ModelMeta<M> {
         }
         this.kind = kind;
         this.modelClass = modelClass;
-        this.simpleClassName = simpleClassName;
+        if (simpleClassNameList == null) {
+            this.simpleClassNameList = Collections.EMPTY_LIST;
+        } else {
+            this.simpleClassNameList =
+                Collections.unmodifiableList(simpleClassNameList);
+        }
     }
 
     /**
@@ -134,12 +142,24 @@ public abstract class ModelMeta<M> {
     }
 
     /**
+     * Returns the list of simple class names.
+     * 
+     * @return the list of simple class names
+     */
+    public List<String> getSimpleClassNameList() {
+        return simpleClassNameList;
+    }
+
+    /**
      * Returns the simple class name.
      * 
      * @return the simple class name
      */
     public String getSimpleClassName() {
-        return simpleClassName;
+        if (simpleClassNameList.isEmpty()) {
+            return null;
+        }
+        return simpleClassNameList.get(simpleClassNameList.size() - 1);
     }
 
     /**

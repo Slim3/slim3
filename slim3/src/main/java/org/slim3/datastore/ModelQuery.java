@@ -371,11 +371,11 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
      * Adds a filter for polymorphic model.
      */
     protected void addFilterIfPolyModel() {
-        if (modelMeta.getSimpleClassName() == null) {
+        if (modelMeta.getSimpleClassNameList().isEmpty()) {
             return;
         }
         query.addFilter(
-            ModelMeta.SIMPLE_CLASS_NAME_RESERVED_PROPERTY,
+            ModelMeta.SIMPLE_CLASS_NAME_LIST_RESERVED_PROPERTY,
             FilterOperator.EQUAL,
             modelMeta.getSimpleClassName());
     }

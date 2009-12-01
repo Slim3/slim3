@@ -17,6 +17,7 @@ package org.slim3.datastore;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
+import static org.junit.matchers.JUnitMatchers.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +28,7 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.junit.Test;
+import org.slim3.datastore.meta.BbbMeta;
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.datastore.model.MySerializable;
@@ -52,6 +54,24 @@ public class ModelMetaTest {
     @Test
     public void constructor() throws Exception {
         assertThat(meta.getModelClass(), equalTo(Hoge.class));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSimpleClassNameList() throws Exception {
+        BbbMeta bbbMeta = new BbbMeta();
+        assertThat(bbbMeta.getSimpleClassNameList(), hasItem("Bbb"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSimpleClassName() throws Exception {
+        BbbMeta bbbMeta = new BbbMeta();
+        assertThat(bbbMeta.getSimpleClassName(), is("Bbb"));
     }
 
     /**
