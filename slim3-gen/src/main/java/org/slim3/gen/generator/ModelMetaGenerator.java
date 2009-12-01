@@ -15,19 +15,7 @@
  */
 package org.slim3.gen.generator;
 
-import static org.slim3.gen.ClassConstants.Blob;
-import static org.slim3.gen.ClassConstants.CollectionAttributeMeta;
-import static org.slim3.gen.ClassConstants.CoreAttributeMeta;
-import static org.slim3.gen.ClassConstants.Double;
-import static org.slim3.gen.ClassConstants.Entity;
-import static org.slim3.gen.ClassConstants.Key;
-import static org.slim3.gen.ClassConstants.Long;
-import static org.slim3.gen.ClassConstants.ModelRefAttributeMeta;
-import static org.slim3.gen.ClassConstants.Object;
-import static org.slim3.gen.ClassConstants.String;
-import static org.slim3.gen.ClassConstants.StringAttributeMeta;
-import static org.slim3.gen.ClassConstants.StringCollectionAttributeMeta;
-import static org.slim3.gen.ClassConstants.Text;
+import static org.slim3.gen.ClassConstants.*;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -160,7 +148,7 @@ public class ModelMetaGenerator implements Generator {
                 .getKind(), modelMetaDesc.getModelClassName());
         } else {
             printer.println(
-                "    super(\"%1$s\", %2$s.class, %3$s.asList(\"%4$s\"));",
+                "    super(\"%1$s\", %2$s.class, %3$s.asList(%4$s));",
                 modelMetaDesc.getKind(),
                 modelMetaDesc.getModelClassName(),
                 Arrays.class.getName(),

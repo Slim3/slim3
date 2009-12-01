@@ -15,8 +15,8 @@
  */
 package org.slim3.gen.util;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +35,9 @@ public class CollectionUtilTest {
      */
     @Test
     public void testJoin() throws Exception {
-        List<String> list = Arrays.asList("aaa", "bbb", "ccc");
-        assertThat(CollectionUtil.join(list, ", "), is("aaa, bbb, ccc"));
+        List<String> list = Arrays.asList("Aaa", "Bbb", "Ccc");
+        assertThat(
+            CollectionUtil.join(list, ", "),
+            is("\"Aaa\", \"Bbb\", \"Ccc\""));
     }
 }

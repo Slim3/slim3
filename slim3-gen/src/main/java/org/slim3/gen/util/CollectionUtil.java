@@ -44,7 +44,9 @@ public final class CollectionUtil {
         }
         StringBuilder buf = new StringBuilder();
         for (String s : collection) {
+            buf.append("\"");
             buf.append(s);
+            buf.append("\"");
             buf.append(separator);
         }
         if (buf.length() > 0) {
