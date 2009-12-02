@@ -11,7 +11,7 @@ h1 {
 ul li { list-style: square; }
 a:hover { background-color: white; }
 
-input.err { background-color: orange; }
+.err { background-color: orange; }
 
 #header{
  width:760px;

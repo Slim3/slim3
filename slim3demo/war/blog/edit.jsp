@@ -13,9 +13,9 @@
 <input type="hidden" ${f:hiddenKey("key")}/>
 <input type="hidden" ${f:hidden("version")}/>
 Title<br />
-<input type="text" ${f:text("title")} class="${f:errorClass('title', 'error')}"/>${f:h(errors.title)}<br />
+<input type="text" ${f:text("title")} class="${f:errorClass('title', 'err')}"/>${f:h(errors.title)}<br />
 Content<br />
-<textarea name="content" class="${f:errorClass('content', 'error')}">${f:h(content)}</textarea>${f:h(errors.content)}<br />
+<textarea name="content" class="${f:errorClass('content', 'err')}">${f:h(content)}</textarea>${f:h(errors.content)}<br />
 <input type="submit" value="Update"/>
 </form>
 </body>
