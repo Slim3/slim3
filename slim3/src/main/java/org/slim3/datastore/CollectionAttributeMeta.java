@@ -54,7 +54,7 @@ public class CollectionAttributeMeta<M, A, E> extends
      * @return the "contains" filter
      */
     public FilterCriterion contains(E value) {
-        return new ContainsCriterion(this, convertValueForDatastore(value));
+        return new ContainsCriterion(this, value);
     }
 
     /**
@@ -65,7 +65,7 @@ public class CollectionAttributeMeta<M, A, E> extends
      * @return the "equal" filter
      */
     public FilterCriterion equal(E value) {
-        return new EqualCriterion(this, convertValueForDatastore(value));
+        return new EqualCriterion(this, value);
     }
 
     /**
@@ -76,7 +76,7 @@ public class CollectionAttributeMeta<M, A, E> extends
      * @return the "less than" filter
      */
     public FilterCriterion lessThan(E value) {
-        return new LessThanCriterion(this, convertValueForDatastore(value));
+        return new LessThanCriterion(this, value);
     }
 
     /**
@@ -87,9 +87,7 @@ public class CollectionAttributeMeta<M, A, E> extends
      * @return the "less than or equal" filter
      */
     public FilterCriterion lessThanOrEqual(E value) {
-        return new LessThanOrEqualCriterion(
-            this,
-            convertValueForDatastore(value));
+        return new LessThanOrEqualCriterion(this, value);
     }
 
     /**
@@ -100,7 +98,7 @@ public class CollectionAttributeMeta<M, A, E> extends
      * @return the "greater than" filter
      */
     public FilterCriterion greaterThan(E value) {
-        return new GreaterThanCriterion(this, convertValueForDatastore(value));
+        return new GreaterThanCriterion(this, value);
     }
 
     /**
@@ -111,8 +109,6 @@ public class CollectionAttributeMeta<M, A, E> extends
      * @return the "greater than or equal" filter
      */
     public FilterCriterion greaterThanOrEqual(E value) {
-        return new GreaterThanOrEqualCriterion(
-            this,
-            convertValueForDatastore(value));
+        return new GreaterThanOrEqualCriterion(this, value);
     }
 }

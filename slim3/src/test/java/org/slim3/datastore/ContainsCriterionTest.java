@@ -29,6 +29,7 @@ import org.slim3.tester.LocalServiceTestCase;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Query.SortDirection;
 
 /**
  * @author higa
@@ -61,6 +62,22 @@ public class ContainsCriterionTest extends LocalServiceTestCase {
         assertThat(predicates.get(0).getPropertyName(), is("myIntegerList"));
         assertThat(predicates.get(0).getOperator(), is(FilterOperator.EQUAL));
         assertThat((Integer) predicates.get(0).getValue(), is(1));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void applyForEnum() throws Exception {
+        Query query = new Query();
+        ContainsCriterion c =
+            new ContainsCriterion(meta.myEnumList, SortDirection.ASCENDING);
+        c.apply(query);
+        List<FilterPredicate> predicates = query.getFilterPredicates();
+        assertThat(predicates.get(0).getPropertyName(), is("myEnumList"));
+        assertThat(predicates.get(0).getOperator(), is(FilterOperator.EQUAL));
+        assertThat((Integer) predicates.get(0).getValue(), is(0));
     }
 
     /**

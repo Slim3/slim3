@@ -56,7 +56,7 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
      * @return the "equal" filter
      */
     public FilterCriterion equal(A value) {
-        return new EqualCriterion(this, convertValueForDatastore(value));
+        return new EqualCriterion(this, value);
     }
 
     /**
@@ -67,7 +67,7 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
      * @return the "less than" filter
      */
     public FilterCriterion lessThan(A value) {
-        return new LessThanCriterion(this, convertValueForDatastore(value));
+        return new LessThanCriterion(this, value);
     }
 
     /**
@@ -78,9 +78,7 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
      * @return the "less than or equal" filter
      */
     public FilterCriterion lessThanOrEqual(A value) {
-        return new LessThanOrEqualCriterion(
-            this,
-            convertValueForDatastore(value));
+        return new LessThanOrEqualCriterion(this, value);
     }
 
     /**
@@ -91,7 +89,7 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
      * @return the "greater than" filter
      */
     public FilterCriterion greaterThan(A value) {
-        return new GreaterThanCriterion(this, convertValueForDatastore(value));
+        return new GreaterThanCriterion(this, value);
     }
 
     /**
@@ -102,9 +100,7 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
      * @return the "greater than or equal" filter
      */
     public FilterCriterion greaterThanOrEqual(A value) {
-        return new GreaterThanOrEqualCriterion(
-            this,
-            convertValueForDatastore(value));
+        return new GreaterThanOrEqualCriterion(this, value);
     }
 
     /**

@@ -19,7 +19,7 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 
 /**
- * An implementation class for "less than or equal" filter criterion.
+ * An implementation class for "less than or equal" filter.
  * 
  * @author higa
  * @since 3.0
@@ -52,7 +52,7 @@ public class LessThanOrEqualCriterion extends AbstractCriterion implements
         query.addFilter(
             attributeMeta.getName(),
             FilterOperator.LESS_THAN_OR_EQUAL,
-            value);
+            convertValueForDatastore(value));
     }
 
     public boolean accept(Object model) {

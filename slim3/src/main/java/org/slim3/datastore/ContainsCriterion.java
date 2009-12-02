@@ -21,7 +21,7 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 
 /**
- * An implementation class for "contains" filter criterion.
+ * An implementation class for "contains" filter.
  * 
  * @author higa
  * @since 3.0
@@ -51,7 +51,10 @@ public class ContainsCriterion extends AbstractCriterion implements
     }
 
     public void apply(Query query) {
-        query.addFilter(attributeMeta.getName(), FilterOperator.EQUAL, value);
+        query.addFilter(
+            attributeMeta.getName(),
+            FilterOperator.EQUAL,
+            convertValueForDatastore(value));
     }
 
     public boolean accept(Object model) {

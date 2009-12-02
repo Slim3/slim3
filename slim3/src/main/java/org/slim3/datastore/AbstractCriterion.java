@@ -79,4 +79,18 @@ public abstract class AbstractCriterion {
         }
         return Comparable.class.cast(v1).compareTo(v2);
     }
+
+    /**
+     * Converts the value for datastore.
+     * 
+     * @param value
+     *            the value
+     * @return a converted value for datastore
+     */
+    protected Object convertValueForDatastore(Object value) {
+        if (value instanceof Enum<?>) {
+            return Enum.class.cast(value).ordinal();
+        }
+        return value;
+    }
 }

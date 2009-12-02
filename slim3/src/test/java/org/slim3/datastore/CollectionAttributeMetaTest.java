@@ -21,8 +21,6 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
 
-import com.google.appengine.api.datastore.Query.SortDirection;
-
 /**
  * @author higa
  * 
@@ -38,11 +36,7 @@ public class CollectionAttributeMetaTest {
     @Test
     public void contains() throws Exception {
         assertThat(meta.myIntegerList.contains(1), is(ContainsCriterion.class));
-        assertThat(meta.myIntegerList.contains(null), is(not(nullValue())));
-        ContainsCriterion c =
-            (ContainsCriterion) meta.myEnumList
-                .contains(SortDirection.ASCENDING);
-        assertThat((String) c.value, is("ASCENDING"));
+        assertThat(meta.myIntegerList.contains(null), is(notNullValue()));
     }
 
     /**
@@ -53,9 +47,6 @@ public class CollectionAttributeMetaTest {
     public void equal() throws Exception {
         assertThat(meta.myIntegerList.equal(1), is(EqualCriterion.class));
         assertThat(meta.myIntegerList.equal(null), is(notNullValue()));
-        EqualCriterion c =
-            (EqualCriterion) meta.myEnumList.equal(SortDirection.ASCENDING);
-        assertThat((String) c.value, is("ASCENDING"));
     }
 
     /**
@@ -66,10 +57,6 @@ public class CollectionAttributeMetaTest {
     public void lessThan() throws Exception {
         assertThat(meta.myIntegerList.lessThan(1), is(LessThanCriterion.class));
         assertThat(meta.myIntegerList.lessThan(null), is(notNullValue()));
-        LessThanCriterion c =
-            (LessThanCriterion) meta.myEnumList
-                .lessThan(SortDirection.ASCENDING);
-        assertThat((String) c.value, is("ASCENDING"));
     }
 
     /**
@@ -82,10 +69,6 @@ public class CollectionAttributeMetaTest {
             meta.myIntegerList.lessThanOrEqual(1),
             is(LessThanOrEqualCriterion.class));
         assertThat(meta.myIntegerList.lessThanOrEqual(null), is(notNullValue()));
-        LessThanOrEqualCriterion c =
-            (LessThanOrEqualCriterion) meta.myEnumList
-                .lessThanOrEqual(SortDirection.ASCENDING);
-        assertThat((String) c.value, is("ASCENDING"));
     }
 
     /**
@@ -98,10 +81,6 @@ public class CollectionAttributeMetaTest {
             meta.myIntegerList.greaterThan(1),
             is(GreaterThanCriterion.class));
         assertThat(meta.myIntegerList.greaterThan(null), is(notNullValue()));
-        GreaterThanCriterion c =
-            (GreaterThanCriterion) meta.myEnumList
-                .greaterThan(SortDirection.ASCENDING);
-        assertThat((String) c.value, is("ASCENDING"));
     }
 
     /**
@@ -115,11 +94,6 @@ public class CollectionAttributeMetaTest {
             is(GreaterThanOrEqualCriterion.class));
         assertThat(
             meta.myIntegerList.greaterThanOrEqual(null),
-            is(not(nullValue())));
-        GreaterThanOrEqualCriterion c =
-            (GreaterThanOrEqualCriterion) meta.myEnumList
-                .greaterThanOrEqual(SortDirection.ASCENDING);
-        assertThat((String) c.value, is("ASCENDING"));
+            is(notNullValue()));
     }
-
 }

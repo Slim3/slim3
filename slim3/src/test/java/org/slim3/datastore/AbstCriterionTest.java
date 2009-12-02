@@ -20,7 +20,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
-import org.slim3.datastore.model.Hoge;
+
+import com.google.appengine.api.datastore.Query.SortDirection;
 
 /**
  * @author higa
@@ -58,13 +59,28 @@ public class AbstCriterionTest {
         assertThat(criterion.compareValue(1, null), is(1));
     }
 
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void convertValueForDatastore() throws Exception {
+        MyCriterion criterion = new MyCriterion(meta.myEnum);
+        assertThat((Integer) criterion
+            .convertValueForDatastore(SortDirection.ASCENDING), is(0));
+        assertThat(
+            (String) criterion.convertValueForDatastore("ASCENDING"),
+            is("ASCENDING"));
+        assertThat(criterion.convertValueForDatastore(null), is(nullValue()));
+    }
+
     private static class MyCriterion extends AbstractCriterion {
 
         /**
          * @param attributeMeta
          * @throws NullPointerException
          */
-        public MyCriterion(AbstractAttributeMeta<Hoge, Integer> attributeMeta)
+        public MyCriterion(AbstractAttributeMeta<?, ?> attributeMeta)
                 throws NullPointerException {
             super(attributeMeta);
         }

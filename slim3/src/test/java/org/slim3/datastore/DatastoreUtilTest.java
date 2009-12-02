@@ -36,6 +36,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.KeyRange;
 import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.datastore.Query.SortDirection;
 
 /**
  * @author higa
@@ -339,6 +340,26 @@ public class DatastoreUtilTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
+    public void filterInMemoryForEnum() throws Exception {
+        List<Hoge> list = new ArrayList<Hoge>();
+        Hoge hoge = new Hoge();
+        hoge.setMyEnum(SortDirection.ASCENDING);
+        list.add(hoge);
+        hoge = new Hoge();
+        hoge.setMyEnum(SortDirection.DESCENDING);
+        list.add(hoge);
+
+        List<Hoge> filtered =
+            DatastoreUtil.filterInMemory(list, Arrays.asList(meta.myEnum
+                .equal(SortDirection.ASCENDING)));
+        assertThat(filtered.size(), is(1));
+        assertThat(filtered.get(0).getMyEnum(), is(SortDirection.ASCENDING));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void sortInMemory() throws Exception {
         List<Hoge> list = new ArrayList<Hoge>();
         Hoge hoge = new Hoge();
@@ -358,5 +379,45 @@ public class DatastoreUtilTest extends LocalServiceTestCase {
         assertThat(sorted.get(0).getMyInteger(), is(3));
         assertThat(sorted.get(1).getMyInteger(), is(2));
         assertThat(sorted.get(2).getMyInteger(), is(1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void sortInMemoryForEnumWhenAscending() throws Exception {
+        List<Hoge> list = new ArrayList<Hoge>();
+        Hoge hoge = new Hoge();
+        hoge.setMyEnum(SortDirection.ASCENDING);
+        list.add(hoge);
+        hoge = new Hoge();
+        hoge.setMyEnum(SortDirection.DESCENDING);
+        list.add(hoge);
+
+        List<Hoge> sorted =
+            DatastoreUtil.sortInMemory(list, Arrays.asList(meta.myEnum.asc));
+        assertThat(sorted.size(), is(2));
+        assertThat(sorted.get(0).getMyEnum(), is(SortDirection.ASCENDING));
+        assertThat(sorted.get(1).getMyEnum(), is(SortDirection.DESCENDING));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void sortInMemoryForEnumWhenDescending() throws Exception {
+        List<Hoge> list = new ArrayList<Hoge>();
+        Hoge hoge = new Hoge();
+        hoge.setMyEnum(SortDirection.ASCENDING);
+        list.add(hoge);
+        hoge = new Hoge();
+        hoge.setMyEnum(SortDirection.DESCENDING);
+        list.add(hoge);
+
+        List<Hoge> sorted =
+            DatastoreUtil.sortInMemory(list, Arrays.asList(meta.myEnum.desc));
+        assertThat(sorted.size(), is(2));
+        assertThat(sorted.get(0).getMyEnum(), is(SortDirection.DESCENDING));
+        assertThat(sorted.get(1).getMyEnum(), is(SortDirection.ASCENDING));
     }
 }

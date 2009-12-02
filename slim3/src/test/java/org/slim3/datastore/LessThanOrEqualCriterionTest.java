@@ -28,6 +28,7 @@ import org.slim3.tester.LocalServiceTestCase;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Query.SortDirection;
 
 /**
  * @author higa
@@ -64,6 +65,24 @@ public class LessThanOrEqualCriterionTest extends LocalServiceTestCase {
             predicates.get(0).getOperator(),
             is(FilterOperator.LESS_THAN_OR_EQUAL));
         assertThat((String) predicates.get(0).getValue(), is("aaa"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void applyForEnum() throws Exception {
+        Query query = new Query();
+        LessThanOrEqualCriterion c =
+            new LessThanOrEqualCriterion(meta.myEnum, SortDirection.ASCENDING);
+        c.apply(query);
+        List<FilterPredicate> predicates = query.getFilterPredicates();
+        assertThat(predicates.get(0).getPropertyName(), is("myEnum"));
+        assertThat(
+            predicates.get(0).getOperator(),
+            is(FilterOperator.LESS_THAN_OR_EQUAL));
+        assertThat((Integer) predicates.get(0).getValue(), is(0));
     }
 
     /**
