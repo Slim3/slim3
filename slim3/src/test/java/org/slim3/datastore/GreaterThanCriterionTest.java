@@ -53,6 +53,17 @@ public class GreaterThanCriterionTest extends LocalServiceTestCase {
      * 
      */
     @Test
+    public void constructorForEnum() throws Exception {
+        GreaterThanCriterion c =
+            new GreaterThanCriterion(meta.myEnum, SortDirection.ASCENDING);
+        assertThat((String) c.value, is("ASCENDING"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
     public void apply() throws Exception {
         Query query = new Query();
         GreaterThanCriterion c = new GreaterThanCriterion(meta.myString, "aaa");
@@ -80,7 +91,7 @@ public class GreaterThanCriterionTest extends LocalServiceTestCase {
         assertThat(
             predicates.get(0).getOperator(),
             is(FilterOperator.GREATER_THAN));
-        assertThat((Integer) predicates.get(0).getValue(), is(0));
+        assertThat((String) predicates.get(0).getValue(), is("ASCENDING"));
     }
 
     /**
@@ -95,6 +106,21 @@ public class GreaterThanCriterionTest extends LocalServiceTestCase {
         hoge.setMyString("b");
         assertThat(c.accept(hoge), is(false));
         hoge.setMyString("a");
+        assertThat(c.accept(hoge), is(false));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void acceptForEnum() throws Exception {
+        FilterCriterion c =
+            new GreaterThanCriterion(meta.myEnum, SortDirection.ASCENDING);
+        Hoge hoge = new Hoge();
+        assertThat(c.accept(hoge), is(false));
+        hoge.setMyEnum(SortDirection.DESCENDING);
+        assertThat(c.accept(hoge), is(true));
+        hoge.setMyEnum(SortDirection.ASCENDING);
         assertThat(c.accept(hoge), is(false));
     }
 

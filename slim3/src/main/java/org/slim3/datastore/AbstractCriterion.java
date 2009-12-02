@@ -15,6 +15,10 @@
  */
 package org.slim3.datastore;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * An abstract class for criterion.
  * 
@@ -87,9 +91,22 @@ public abstract class AbstractCriterion {
      *            the value
      * @return a converted value for datastore
      */
+    @SuppressWarnings("unchecked")
     protected Object convertValueForDatastore(Object value) {
         if (value instanceof Enum<?>) {
-            return Enum.class.cast(value).ordinal();
+            return Enum.class.cast(value).name();
+        }
+        if (value instanceof Collection<?>) {
+            Collection<?> c = Collection.class.cast(value);
+            List list = new ArrayList(c.size());
+            for (Object o : c) {
+                if (o instanceof Enum<?>) {
+                    list.add(Enum.class.cast(o).name());
+                } else {
+                    list.add(o);
+                }
+            }
+            return list;
         }
         return value;
     }

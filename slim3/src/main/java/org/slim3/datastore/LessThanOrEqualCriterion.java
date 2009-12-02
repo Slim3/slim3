@@ -45,18 +45,18 @@ public class LessThanOrEqualCriterion extends AbstractCriterion implements
     public LessThanOrEqualCriterion(AbstractAttributeMeta<?, ?> attributeMeta,
             Object value) {
         super(attributeMeta);
-        this.value = value;
+        this.value = convertValueForDatastore(value);
     }
 
     public void apply(Query query) {
         query.addFilter(
             attributeMeta.getName(),
             FilterOperator.LESS_THAN_OR_EQUAL,
-            convertValueForDatastore(value));
+            value);
     }
 
     public boolean accept(Object model) {
-        Object v = attributeMeta.getValue(model);
+        Object v = convertValueForDatastore(attributeMeta.getValue(model));
         return compareValue(v, value) <= 0;
     }
 }

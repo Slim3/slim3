@@ -53,6 +53,17 @@ public class EqualCriterionTest extends LocalServiceTestCase {
      * 
      */
     @Test
+    public void constructorForEnum() throws Exception {
+        EqualCriterion c =
+            new EqualCriterion(meta.myEnum, SortDirection.ASCENDING);
+        assertThat((String) c.value, is("ASCENDING"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
     public void apply() throws Exception {
         Query query = new Query();
         EqualCriterion c = new EqualCriterion(meta.myString, "aaa");
@@ -76,7 +87,7 @@ public class EqualCriterionTest extends LocalServiceTestCase {
         List<FilterPredicate> predicates = query.getFilterPredicates();
         assertThat(predicates.get(0).getPropertyName(), is("myEnum"));
         assertThat(predicates.get(0).getOperator(), is(FilterOperator.EQUAL));
-        assertThat((Integer) predicates.get(0).getValue(), is(0));
+        assertThat((String) predicates.get(0).getValue(), is("ASCENDING"));
     }
 
     /**
@@ -90,6 +101,21 @@ public class EqualCriterionTest extends LocalServiceTestCase {
         assertThat(c.accept(hoge), is(true));
         hoge.setMyString("bbb");
         assertThat(c.accept(hoge), is(false));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void acceptForEnum() throws Exception {
+        FilterCriterion c =
+            new EqualCriterion(meta.myEnum, SortDirection.ASCENDING);
+        Hoge hoge = new Hoge();
+        assertThat(c.accept(hoge), is(false));
+        hoge.setMyEnum(SortDirection.DESCENDING);
+        assertThat(c.accept(hoge), is(false));
+        hoge.setMyEnum(SortDirection.ASCENDING);
+        assertThat(c.accept(hoge), is(true));
     }
 
     /**

@@ -22,7 +22,7 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
 /**
- * An implementation class for "descending" sort criterion.
+ * An implementation class for "descending" sort.
  * 
  * @author higa
  * @since 3.0
@@ -46,11 +46,11 @@ public class DescCriterion extends AbstractCriterion implements SortCriterion {
     }
 
     public int compare(Object model1, Object model2) {
-        Object v1 = attributeMeta.getValue(model1);
+        Object v1 = convertValueForDatastore(attributeMeta.getValue(model1));
         if (v1 instanceof Collection<?>) {
             v1 = getGreatestValue(Collection.class.cast(v1));
         }
-        Object v2 = attributeMeta.getValue(model2);
+        Object v2 = convertValueForDatastore(attributeMeta.getValue(model2));
         if (v2 instanceof Collection<?>) {
             v2 = getGreatestValue(Collection.class.cast(v2));
         }

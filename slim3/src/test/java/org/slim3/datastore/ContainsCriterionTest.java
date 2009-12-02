@@ -19,6 +19,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -54,6 +55,17 @@ public class ContainsCriterionTest extends LocalServiceTestCase {
      * 
      */
     @Test
+    public void constructorForEnum() throws Exception {
+        ContainsCriterion c =
+            new ContainsCriterion(meta.myEnumList, SortDirection.ASCENDING);
+        assertThat((String) c.value, is("ASCENDING"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
     public void apply() throws Exception {
         Query query = new Query();
         ContainsCriterion c = new ContainsCriterion(meta.myIntegerList, 1);
@@ -77,7 +89,7 @@ public class ContainsCriterionTest extends LocalServiceTestCase {
         List<FilterPredicate> predicates = query.getFilterPredicates();
         assertThat(predicates.get(0).getPropertyName(), is("myEnumList"));
         assertThat(predicates.get(0).getOperator(), is(FilterOperator.EQUAL));
-        assertThat((Integer) predicates.get(0).getValue(), is(0));
+        assertThat((String) predicates.get(0).getValue(), is("ASCENDING"));
     }
 
     /**
@@ -93,6 +105,25 @@ public class ContainsCriterionTest extends LocalServiceTestCase {
         hoge.getMyIntegerList().add(2);
         assertThat(c.accept(hoge), is(false));
         hoge.getMyIntegerList().add(1);
+        assertThat(c.accept(hoge), is(true));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void acceptForEnum() throws Exception {
+        Hoge hoge = new Hoge();
+        ContainsCriterion c =
+            new ContainsCriterion(meta.myEnumList, SortDirection.ASCENDING);
+        assertThat(c.accept(hoge), is(false));
+        hoge.setMyEnumList(new ArrayList<SortDirection>());
+        assertThat(c.accept(hoge), is(false));
+        hoge.setMyEnumList(Arrays.asList(SortDirection.DESCENDING));
+        assertThat(c.accept(hoge), is(false));
+        hoge.setMyEnumList(Arrays.asList(
+            SortDirection.DESCENDING,
+            SortDirection.ASCENDING));
         assertThat(c.accept(hoge), is(true));
     }
 

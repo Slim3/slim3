@@ -17,6 +17,10 @@ package org.slim3.datastore;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
+import static org.junit.matchers.JUnitMatchers.*;
+
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
@@ -64,14 +68,35 @@ public class AbstCriterionTest {
      * 
      */
     @Test
-    public void convertValueForDatastore() throws Exception {
-        MyCriterion criterion = new MyCriterion(meta.myEnum);
-        assertThat((Integer) criterion
-            .convertValueForDatastore(SortDirection.ASCENDING), is(0));
+    public void convertValueForDatastoreForNoConvertedValue() throws Exception {
+        MyCriterion criterion = new MyCriterion(meta.myString);
         assertThat(
             (String) criterion.convertValueForDatastore("ASCENDING"),
             is("ASCENDING"));
         assertThat(criterion.convertValueForDatastore(null), is(nullValue()));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void convertValueForDatastoreForEnum() throws Exception {
+        MyCriterion criterion = new MyCriterion(meta.myEnum);
+        assertThat((String) criterion
+            .convertValueForDatastore(SortDirection.ASCENDING), is("ASCENDING"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void convertValueForDatastoreForEnumList() throws Exception {
+        MyCriterion criterion = new MyCriterion(meta.myEnumList);
+        assertThat((List<String>) criterion.convertValueForDatastore(Arrays
+            .asList(SortDirection.ASCENDING)), hasItem("ASCENDING"));
     }
 
     private static class MyCriterion extends AbstractCriterion {

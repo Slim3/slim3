@@ -76,6 +76,23 @@ public class DescCriterionTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
+    public void compareForEnum() throws Exception {
+        DescCriterion c = new DescCriterion(meta.myEnum);
+        assertThat(c.compare(new Hoge(), new Hoge()), is(0));
+        Hoge hoge = new Hoge();
+        hoge.setMyEnum(SortDirection.ASCENDING);
+        assertThat(c.compare(new Hoge(), hoge), is(1));
+        assertThat(c.compare(hoge, new Hoge()), is(-1));
+        Hoge hoge2 = new Hoge();
+        hoge2.setMyEnum(SortDirection.DESCENDING);
+        assertThat(c.compare(hoge, hoge2) > 0, is(true));
+        assertThat(c.compare(hoge2, hoge) < 0, is(true));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getGreatestValue() throws Exception {
         DescCriterion c = new DescCriterion(meta.myIntegerList);
         assertThat(c.getGreatestValue(new ArrayList<Object>()), is(nullValue()));

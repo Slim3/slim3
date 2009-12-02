@@ -45,18 +45,15 @@ public class EqualCriterion extends AbstractCriterion implements
     public EqualCriterion(AbstractAttributeMeta<?, ?> attributeMeta,
             Object value) {
         super(attributeMeta);
-        this.value = value;
+        this.value = convertValueForDatastore(value);
     }
 
     public void apply(Query query) {
-        query.addFilter(
-            attributeMeta.getName(),
-            FilterOperator.EQUAL,
-            convertValueForDatastore(value));
+        query.addFilter(attributeMeta.getName(), FilterOperator.EQUAL, value);
     }
 
     public boolean accept(Object model) {
-        Object v = attributeMeta.getValue(model);
+        Object v = convertValueForDatastore(attributeMeta.getValue(model));
         return compareValue(v, value) == 0;
     }
 }

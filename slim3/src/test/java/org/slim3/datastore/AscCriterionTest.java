@@ -76,6 +76,23 @@ public class AscCriterionTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
+    public void compareForEnum() throws Exception {
+        AscCriterion c = new AscCriterion(meta.myEnum);
+        assertThat(c.compare(new Hoge(), new Hoge()), is(0));
+        Hoge hoge = new Hoge();
+        hoge.setMyEnum(SortDirection.ASCENDING);
+        assertThat(c.compare(new Hoge(), hoge), is(-1));
+        assertThat(c.compare(hoge, new Hoge()), is(1));
+        Hoge hoge2 = new Hoge();
+        hoge2.setMyEnum(SortDirection.DESCENDING);
+        assertThat(c.compare(hoge, hoge2) < 0, is(true));
+        assertThat(c.compare(hoge2, hoge) > 0, is(true));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getSmallestValue() throws Exception {
         AscCriterion c = new AscCriterion(meta.myIntegerList);
         assertThat(c.getSmallestValue(new ArrayList<Object>()), is(nullValue()));

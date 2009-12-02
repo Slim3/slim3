@@ -45,18 +45,18 @@ public class GreaterThanCriterion extends AbstractCriterion implements
     public GreaterThanCriterion(AbstractAttributeMeta<?, ?> attributeMeta,
             Object value) {
         super(attributeMeta);
-        this.value = value;
+        this.value = convertValueForDatastore(value);
     }
 
     public void apply(Query query) {
         query.addFilter(
             attributeMeta.getName(),
             FilterOperator.GREATER_THAN,
-            convertValueForDatastore(value));
+            value);
     }
 
     public boolean accept(Object model) {
-        Object v = attributeMeta.getValue(model);
+        Object v = convertValueForDatastore(attributeMeta.getValue(model));
         return compareValue(v, value) > 0;
     }
 }

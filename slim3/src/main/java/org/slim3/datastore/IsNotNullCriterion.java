@@ -19,7 +19,7 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 
 /**
- * An implementation class for "is not null" filter criterion.
+ * An implementation class for "is not null" filter.
  * 
  * @author higa
  * @since 3.0

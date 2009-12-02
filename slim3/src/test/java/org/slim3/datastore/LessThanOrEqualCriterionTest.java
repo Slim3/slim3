@@ -54,6 +54,17 @@ public class LessThanOrEqualCriterionTest extends LocalServiceTestCase {
      * 
      */
     @Test
+    public void constructorForEnum() throws Exception {
+        LessThanOrEqualCriterion c =
+            new LessThanOrEqualCriterion(meta.myEnum, SortDirection.ASCENDING);
+        assertThat((String) c.value, is("ASCENDING"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
     public void apply() throws Exception {
         Query query = new Query();
         LessThanOrEqualCriterion c =
@@ -82,7 +93,7 @@ public class LessThanOrEqualCriterionTest extends LocalServiceTestCase {
         assertThat(
             predicates.get(0).getOperator(),
             is(FilterOperator.LESS_THAN_OR_EQUAL));
-        assertThat((Integer) predicates.get(0).getValue(), is(0));
+        assertThat((String) predicates.get(0).getValue(), is("ASCENDING"));
     }
 
     /**
@@ -98,6 +109,21 @@ public class LessThanOrEqualCriterionTest extends LocalServiceTestCase {
         assertThat(c.accept(hoge), is(true));
         hoge.setMyString("a");
         assertThat(c.accept(hoge), is(true));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void acceptForEnum() throws Exception {
+        FilterCriterion c =
+            new LessThanOrEqualCriterion(meta.myEnum, SortDirection.ASCENDING);
+        Hoge hoge = new Hoge();
+        assertThat(c.accept(hoge), is(true));
+        hoge.setMyEnum(SortDirection.ASCENDING);
+        assertThat(c.accept(hoge), is(true));
+        hoge.setMyEnum(SortDirection.DESCENDING);
+        assertThat(c.accept(hoge), is(false));
     }
 
     /**
