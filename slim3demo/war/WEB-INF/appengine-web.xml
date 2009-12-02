@@ -3,6 +3,10 @@
 	<application>slim3demo</application>
 	<version>1</version>
 	
+	<static-files>
+        <include path="/css/**.css"/>
+    </static-files>
+    
 	<system-properties>
 	    <property name="java.util.logging.config.file" value="WEB-INF/classes/logging.properties"/>
 	</system-properties>
