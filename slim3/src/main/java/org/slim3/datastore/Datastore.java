@@ -640,6 +640,7 @@ public final class Datastore {
         Transaction tx = beginTransaction();
         try {
             get(tx, key);
+            rollback(tx);
             return false;
         } catch (EntityNotFoundRuntimeException e) {
             Entity entity = new Entity(key);

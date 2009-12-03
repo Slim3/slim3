@@ -196,7 +196,9 @@ public class DatastoreTest extends LocalServiceTestCase {
     @Test
     public void putUniqueValue() throws Exception {
         assertThat(Datastore.putUniqueValue("screenName", "aaa"), is(true));
+        assertThat(ds.getActiveTransactions().size(), is(0));
         assertThat(Datastore.putUniqueValue("screenName", "aaa"), is(false));
+        assertThat(ds.getActiveTransactions().size(), is(0));
         assertThat(Datastore.putUniqueValue("screenName", "bbb"), is(true));
     }
 
