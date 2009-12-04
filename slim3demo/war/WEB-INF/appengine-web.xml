@@ -7,6 +7,8 @@
         <include path="/css/**.css"/>
     </static-files>
     
+    <precompilation-enabled>true</precompilation-enabled> 
+    
 	<system-properties>
 	    <property name="java.util.logging.config.file" value="WEB-INF/classes/logging.properties"/>
 	</system-properties>
