@@ -29,6 +29,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slim3.controller.router.Router;
+import org.slim3.controller.router.RouterFactory;
 import org.slim3.util.Cleaner;
 import org.slim3.util.RequestLocator;
 import org.slim3.util.RequestUtil;
@@ -179,19 +181,19 @@ public class HotReloadingFilter implements Filter {
     protected void doFilter(HttpServletRequest request,
             HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        String path = RequestUtil.getPath(request);
-        String ext = RequestUtil.getExtension(path);
-        if (ControllerUtil.isTargetExtension(ext) && hotReloading) {
-            ClassLoader previousLoader =
-                Thread.currentThread().getContextClassLoader();
-            if (!(previousLoader instanceof HotReloadingClassLoader)) {
-                doHotReloading(request, response, chain, previousLoader);
-            } else {
-                chain.doFilter(request, response);
+        if (hotReloading) {
+            String path = RequestUtil.getPath(request);
+            Router router = RouterFactory.getRouter();
+            if (!router.isStatic(path)) {
+                ClassLoader previousLoader =
+                    Thread.currentThread().getContextClassLoader();
+                if (!(previousLoader instanceof HotReloadingClassLoader)) {
+                    doHotReloading(request, response, chain, previousLoader);
+                    return;
+                }
             }
-        } else {
-            chain.doFilter(request, response);
         }
+        chain.doFilter(request, response);
     }
 
     /**

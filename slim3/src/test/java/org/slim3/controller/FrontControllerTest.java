@@ -297,6 +297,33 @@ public class FrontControllerTest extends ControllerTestCase {
      * 
      */
     @Test
+    public void doForwardForRouter() throws Exception {
+        Controller controller =
+            tester.frontController.getController(
+                tester.request,
+                tester.response,
+                "/");
+        tester.frontController.doForward(
+            tester.request,
+            tester.response,
+            controller,
+            "/_ah/mail/hoge");
+        assertThat(
+            tester.servletContext.getLatestRequestDispatcher().getPath(),
+            is("/mail?address=hoge"));
+        assertThat(
+            tester.servletContext.getLatestRequestDispatcher().getPath(),
+            is("/mail?address=hoge"));
+        assertThat(
+            tester.request.getAttribute(ControllerConstants.ROUTED_KEY),
+            is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
     public void handleNavigationForNoNavigation() throws Exception {
         Controller controller = tester.frontController.createController("/");
         tester.frontController.handleNavigation(
@@ -389,5 +416,24 @@ public class FrontControllerTest extends ControllerTestCase {
         assertThat(
             tester.servletContext.getLatestRequestDispatcher().getPath(),
             is("/index.jsp"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void doFilterForRouter() throws Exception {
+        tester.request.setServletPath("/_ah/mail/hoge");
+        tester.frontController.doFilter(
+            tester.request,
+            tester.response,
+            tester.filterChain);
+        assertThat(
+            tester.servletContext.getLatestRequestDispatcher().getPath(),
+            is("/mail?address=hoge"));
+        assertThat(
+            tester.request.getAttribute(ControllerConstants.ROUTED_KEY),
+            is(notNullValue()));
     }
 }

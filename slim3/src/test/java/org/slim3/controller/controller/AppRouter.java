@@ -13,28 +13,20 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.controller;
+package org.slim3.controller.controller;
+
+import org.slim3.controller.router.RouterImpl;
 
 /**
- * A utility for Controller.
- * 
  * @author higa
- * @since 3.0
  * 
  */
-public final class ControllerUtil {
+public class AppRouter extends RouterImpl {
 
     /**
-     * Determines if the extension is target for controller.
      * 
-     * @param extension
-     *            the extension
-     * @return whether the extension is target for controller
      */
-    public static boolean isTargetExtension(String extension) {
-        return extension == null || extension.startsWith("s3");
-    }
-
-    private ControllerUtil() {
+    public AppRouter() {
+        addRouting("/_ah/mail/{address}", "/mail?address=${address}");
     }
 }

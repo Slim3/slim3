@@ -13,27 +13,39 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.controller;
+package org.slim3.controller.router;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.slim3.controller.ControllerConstants;
+import org.slim3.controller.controller.AppRouter;
+import org.slim3.tester.ControllerTestCase;
 
 /**
  * @author higa
  * 
  */
-public class ControllerUtilTest {
+public class RouterFactoryTest extends ControllerTestCase {
+
+    private static final String ROOT_PACKAGE = "org.slim3.controller";
+
+    @Override
+    public void setUp() throws Exception {
+        tester.servletContext.setInitParameter(
+            ControllerConstants.ROOT_PACKAGE_KEY,
+            ROOT_PACKAGE);
+        super.setUp();
+    }
 
     /**
      * @throws Exception
-     * 
      */
     @Test
-    public void isTargetExtension() throws Exception {
-        assertThat(ControllerUtil.isTargetExtension(null), is(true));
-        assertThat(ControllerUtil.isTargetExtension("s3get"), is(true));
-        assertThat(ControllerUtil.isTargetExtension("css"), is(false));
+    public void getRouter() throws Exception {
+        Router router = RouterFactory.getRouter();
+        assertThat(router, is(AppRouter.class));
+        assertThat(RouterFactory.getRouter(), is(sameInstance(router)));
     }
 }

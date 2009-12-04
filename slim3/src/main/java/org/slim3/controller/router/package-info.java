@@ -13,22 +13,7 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.datastore;
-
-import org.junit.Test;
-import org.slim3.tester.LocalServiceTestCase;
-
 /**
- * @author higa
- * 
+ * This package provides URL mapping.
  */
-public class SpikeTest extends LocalServiceTestCase {
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void spike() throws Exception {
-        System.out.println("".toCharArray().length);
-    }
-}
+package org.slim3.controller.router;

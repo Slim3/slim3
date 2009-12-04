@@ -15,7 +15,6 @@
  */
 package org.slim3.util;
 
-
 /**
  * A utility class for {@link RuntimeException}.
  * 
@@ -23,6 +22,31 @@ package org.slim3.util;
  * @version 3.0
  */
 public final class ThrowableUtil {
+
+    /**
+     * Wraps the exception.
+     * 
+     * @param throwable
+     *            the exception
+     * @return a wrapped exception
+     * @throws NullPointerException
+     *             if the throwable parameter is null
+     * @throws Error
+     *             if the exception is {@link Error}
+     */
+    public static RuntimeException wrap(Throwable throwable)
+            throws NullPointerException, Error {
+        if (throwable == null) {
+            throw new NullPointerException("The throwable parameter is null.");
+        }
+        if (throwable instanceof Error) {
+            throw (Error) throwable;
+        }
+        if (throwable instanceof RuntimeException) {
+            return (RuntimeException) throwable;
+        }
+        return new WrapRuntimeException(throwable);
+    }
 
     /**
      * Wraps and throws the exception.
@@ -42,16 +66,7 @@ public final class ThrowableUtil {
     public static void wrapAndThrow(Throwable throwable)
             throws NullPointerException, RuntimeException, Error,
             WrapRuntimeException {
-        if (throwable == null) {
-            throw new NullPointerException("The throwable parameter is null.");
-        }
-        if (throwable instanceof RuntimeException) {
-            throw (RuntimeException) throwable;
-        }
-        if (throwable instanceof Error) {
-            throw (Error) throwable;
-        }
-        throw new WrapRuntimeException(throwable);
+        throw wrap(throwable);
     }
 
     private ThrowableUtil() {

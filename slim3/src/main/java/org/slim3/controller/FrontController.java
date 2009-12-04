@@ -36,6 +36,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.slim3.controller.router.Router;
+import org.slim3.controller.router.RouterFactory;
 import org.slim3.controller.upload.FileUpload;
 import org.slim3.controller.validator.Errors;
 import org.slim3.util.ApplicationMessage;
@@ -256,38 +258,31 @@ public class FrontController implements Filter {
     protected void doFilter(HttpServletRequest request,
             HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
+        if (request.getCharacterEncoding() == null) {
+            request.setCharacterEncoding(charset);
+        }
         String path = RequestUtil.getPath(request);
-        String ext = RequestUtil.getExtension(path);
-        if (ControllerUtil.isTargetExtension(ext)) {
-            HttpServletRequest previousRequest = RequestLocator.get();
-            RequestLocator.set(request);
-            HttpServletResponse previousResponse = ResponseLocator.get();
-            ResponseLocator.set(response);
-            Locale previousLocale = LocaleLocator.get();
-            LocaleLocator.set(processLocale(request));
-            TimeZone previousTimeZone = TimeZoneLocator.get();
-            TimeZoneLocator.set(processTimeZone(request));
-            ApplicationMessage.setBundle(bundleName, LocaleLocator.get());
-            try {
-                if (ext == null) {
-                    doFilterInternal(request, response, chain);
-                } else {
-                    chain.doFilter(request, response);
-                }
-            } finally {
-                ApplicationMessage.clearBundle();
-                TimeZoneLocator.set(previousTimeZone);
-                LocaleLocator.set(previousLocale);
-                ResponseLocator.set(previousResponse);
-                RequestLocator.set(previousRequest);
-            }
+        Router router = RouterFactory.getRouter();
+        if (request.getAttribute(ControllerConstants.ROUTED_KEY) == Boolean.TRUE) {
+            request.removeAttribute(ControllerConstants.ROUTED_KEY);
+            doFilter(request, response, chain, path);
         } else {
-            chain.doFilter(request, response);
+            if (!router.isStatic(path)) {
+                String routingPath = router.route(request, path);
+                if (routingPath != null) {
+                    request.setAttribute(ControllerConstants.ROUTED_KEY, true);
+                    doForward(request, response, routingPath);
+                } else {
+                    doFilter(request, response, chain, path);
+                }
+            } else {
+                chain.doFilter(request, response);
+            }
         }
     }
 
     /**
-     * Executes internal filtering process.
+     * Executes filtering process.
      * 
      * @param request
      *            the request
@@ -295,29 +290,44 @@ public class FrontController implements Filter {
      *            the response
      * @param chain
      *            the filter chain
+     * @param path
+     *            the path
      * @throws IOException
      *             if {@link IOException} is encountered
      * @throws ServletException
      *             if {@link ServletException} is encountered
      */
-    protected void doFilterInternal(HttpServletRequest request,
-            HttpServletResponse response, FilterChain chain)
+    protected void doFilter(HttpServletRequest request,
+            HttpServletResponse response, FilterChain chain, String path)
             throws IOException, ServletException {
-        if (request.getCharacterEncoding() == null) {
-            request.setCharacterEncoding(charset);
-        }
-        String path = RequestUtil.getPath(request);
-        Controller controller = getController(request, response, path);
-        if (controller == null) {
-            if (request instanceof HotHttpServletRequestWrapper) {
-                request =
-                    HotHttpServletRequestWrapper.class
-                        .cast(request)
-                        .getOriginalRequest();
+        HttpServletRequest previousRequest = RequestLocator.get();
+        RequestLocator.set(request);
+        HttpServletResponse previousResponse = ResponseLocator.get();
+        ResponseLocator.set(response);
+        Locale previousLocale = LocaleLocator.get();
+        LocaleLocator.set(processLocale(request));
+        TimeZone previousTimeZone = TimeZoneLocator.get();
+        TimeZoneLocator.set(processTimeZone(request));
+        ApplicationMessage.setBundle(bundleName, LocaleLocator.get());
+        try {
+            Controller controller = getController(request, response, path);
+            if (controller != null) {
+                processController(request, response, controller);
+            } else {
+                if (request instanceof HotHttpServletRequestWrapper) {
+                    request =
+                        HotHttpServletRequestWrapper.class
+                            .cast(request)
+                            .getOriginalRequest();
+                }
+                chain.doFilter(request, response);
             }
-            chain.doFilter(request, response);
-        } else {
-            processController(request, response, controller);
+        } finally {
+            ApplicationMessage.clearBundle();
+            TimeZoneLocator.set(previousTimeZone);
+            LocaleLocator.set(previousLocale);
+            ResponseLocator.set(previousResponse);
+            RequestLocator.set(previousRequest);
         }
     }
 
@@ -577,6 +587,26 @@ public class FrontController implements Filter {
     protected void doRedirect(HttpServletRequest request,
             HttpServletResponse response, Controller controller, String path)
             throws IOException, ServletException {
+        doRedirect(request, response, path);
+    }
+
+    /**
+     * Do a redirect to the path.
+     * 
+     * @param request
+     *            the request
+     * @param response
+     *            the response
+     * @param path
+     *            the path
+     * @throws IOException
+     *             if {@link IOException} has occurred
+     * @throws ServletException
+     *             if {@link ServletException} has occurred
+     */
+    protected void doRedirect(HttpServletRequest request,
+            HttpServletResponse response, String path) throws IOException,
+            ServletException {
         if (path.startsWith("/")) {
             path = request.getContextPath() + path;
         }
@@ -605,6 +635,35 @@ public class FrontController implements Filter {
         if (!path.startsWith("/")) {
             path = controller.basePath + path;
         }
+        Router router = RouterFactory.getRouter();
+        if (!router.isStatic(path)) {
+            String routedPath = router.route(request, path);
+            if (routedPath != null) {
+                request.setAttribute(ControllerConstants.ROUTED_KEY, true);
+                doForward(request, response, routedPath);
+                return;
+            }
+        }
+        doForward(request, response, path);
+    }
+
+    /**
+     * Do a forward to the path.
+     * 
+     * @param request
+     *            the request
+     * @param response
+     *            the response
+     * @param path
+     *            the path
+     * @throws IOException
+     *             if {@link IOException} has occurred
+     * @throws ServletException
+     *             if {@link ServletException} has occurred
+     */
+    protected void doForward(HttpServletRequest request,
+            HttpServletResponse response, String path) throws IOException,
+            ServletException {
         RequestDispatcher rd = servletContext.getRequestDispatcher(path);
         if (rd == null) {
             response.sendError(

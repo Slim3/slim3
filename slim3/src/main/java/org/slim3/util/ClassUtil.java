@@ -109,12 +109,34 @@ public final class ClassUtil {
      *            the target type
      * @param className
      *            the class name
+     * @return a new instance
+     * @throws WrapRuntimeException
+     *             if an error occurred while creating a new instance.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T newInstance(String className)
+            throws WrapRuntimeException {
+        return (T) newInstance(className, Thread
+            .currentThread()
+            .getContextClassLoader());
+    }
+
+    /**
+     * Creates a new instance.
+     * 
+     * @param <T>
+     *            the target type
+     * @param className
+     *            the class name
      * @param loader
      *            the class loader
      * @return a new instance
+     * @throws WrapRuntimeException
+     *             if an error occurred while creating a new instance.
      */
     @SuppressWarnings("unchecked")
-    public static <T> T newInstance(String className, ClassLoader loader) {
+    public static <T> T newInstance(String className, ClassLoader loader)
+            throws WrapRuntimeException {
         Class<?> clazz = forName(className, loader);
         return (T) newInstance(clazz);
     }

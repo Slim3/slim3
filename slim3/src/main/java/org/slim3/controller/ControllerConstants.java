@@ -114,4 +114,9 @@ public interface ControllerConstants {
      * The server controller package name.
      */
     String SERVER_CONTROLLER_PACKAGE = "server.controller";
+
+    /**
+     * The key whether the path is routed.
+     */
+    String ROUTED_KEY = "slim3.routed";
 }
