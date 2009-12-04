@@ -640,7 +640,6 @@ public final class Datastore {
         Transaction tx = beginTransaction();
         try {
             get(tx, key);
-            rollback(tx);
             return false;
         } catch (EntityNotFoundRuntimeException e) {
             Entity entity = new Entity(key);
@@ -648,12 +647,12 @@ public final class Datastore {
                 put(tx, entity);
                 commit(tx);
                 return true;
-            } catch (ConcurrentModificationException e2) {
-                if (tx.isActive()) {
-                    rollback(tx);
-                }
+            } catch (ConcurrentModificationException ignore) {
                 return false;
             }
+        } finally {
+            rollback(tx);
+
         }
     }
 
