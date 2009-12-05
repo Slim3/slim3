@@ -97,7 +97,13 @@ public class Routing {
         int index = -1;
         for (int i = 0; i < length; i++) {
             if (chars[i] == '{') {
-                index = i;
+                if (index < 0) {
+                    index = i;
+                } else {
+                    throw new IllegalArgumentException("The from("
+                        + from
+                        + ") is invalid, because \"}\" is missing.");
+                }
             } else if (chars[i] == '}') {
                 if (index >= 0) {
                     sb.append("([^/]+)");
@@ -136,26 +142,15 @@ public class Routing {
         int length = chars.length;
         int index = -1;
         for (int i = 0; i < length; i++) {
-            if (chars[i] == '$') {
-                if (index != -1) {
-                    throw new IllegalArgumentException("The to("
-                        + to
-                        + ") is invalid, because \"}\" is missing.");
-                }
-                index = 0;
-            } else if (chars[i] == '{') {
-                if (index == 0) {
+            if (chars[i] == '{') {
+                if (index < 0) {
                     toFragmentList.add(new StringFragment(sb.toString()));
                     sb.setLength(0);
                     index = i;
-                } else if (index > 0) {
-                    throw new IllegalArgumentException("The to("
-                        + to
-                        + ") is invalid, because \"}\" is missing.");
                 } else {
                     throw new IllegalArgumentException("The to("
                         + to
-                        + ") is invalid, because \"{\" must be \"${\".");
+                        + ") is invalid, because \"}\" is missing.");
                 }
             } else if (chars[i] == '}') {
                 if (index >= 0) {
@@ -170,10 +165,6 @@ public class Routing {
                 }
             } else if (index < 0) {
                 sb.append(chars[i]);
-            } else if (index == 0) {
-                throw new IllegalArgumentException("The to("
-                    + to
-                    + ") is invalid, because \"$\" must be \"${\".");
             }
         }
         if (index >= 0) {

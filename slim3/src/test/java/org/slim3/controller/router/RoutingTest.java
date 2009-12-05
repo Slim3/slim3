@@ -62,6 +62,14 @@ public class RoutingTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void setFromWhenEndCurlyBracketIsMissing() throws Exception {
+        new Routing("/abc/{xxx/{yyy}", "/abc?xxx=${xxx}&yyy=${yyy}");
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void setFromWhenLastEndCurlyBracketIsMissing() throws Exception {
         new Routing("/abc/{xxx}/{yyy", "/abc?xxx=${xxx}&yyy=${yyy}");
     }
 
@@ -71,8 +79,8 @@ public class RoutingTest {
     @Test
     public void setTo() throws Exception {
         Routing routing =
-            new Routing("/abc/{xxx}/{yyy}", "/abc?xxx=${xxx}&yyy=${yyy}");
-        assertThat(routing.to, is("/abc?xxx=${xxx}&yyy=${yyy}"));
+            new Routing("/abc/{xxx}/{yyy}", "/abc?xxx={xxx}&yyy={yyy}");
+        assertThat(routing.to, is("/abc?xxx={xxx}&yyy={yyy}"));
         assertThat(routing.toFragmentList.size(), is(4));
         assertThat(
             StringFragment.class.cast(routing.toFragmentList.get(0)).value,
@@ -90,16 +98,8 @@ public class RoutingTest {
      * @throws Exception
      */
     @Test(expected = IllegalArgumentException.class)
-    public void setToWhenDollarIsMissing() throws Exception {
-        new Routing("/abc/{xxx}/{yyy}", "/abc?xxx={xxx}&yyy=${yyy}");
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test(expected = IllegalArgumentException.class)
     public void setToWhenStartCurlyBracketIsMissing() throws Exception {
-        new Routing("/abc/{xxx}/{yyy}", "/abc?xxx=$xxx}&yyy=${yyy}");
+        new Routing("/abc/{xxx}/{yyy}", "/abc?xxx=xxx}&yyy={yyy}");
     }
 
     /**
@@ -107,15 +107,15 @@ public class RoutingTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void setToWhenEndCurlyBracketIsMissing() throws Exception {
-        new Routing("/abc/{xxx}/{yyy}", "/abc?xxx=${xxx&yyy=${yyy}");
+        new Routing("/abc/{xxx}/{yyy}", "/abc?xxx={xxx&yyy={yyy}");
     }
 
     /**
      * @throws Exception
      */
     @Test(expected = IllegalArgumentException.class)
-    public void setToWhenEndCurlyBracketAndDollarIsMissing() throws Exception {
-        new Routing("/abc/{xxx}/{yyy}", "/abc?xxx=${xxx&yyy={yyy}");
+    public void setToWhenLastEndCurlyBracketIsMissing() throws Exception {
+        new Routing("/abc/{xxx}/{yyy}", "/abc?xxx={xxx}&yyy={yyy");
     }
 
     /**
@@ -124,7 +124,7 @@ public class RoutingTest {
     @Test
     public void route() throws Exception {
         Routing routing =
-            new Routing("/abc/{xxx}/{yyy}", "/abc?xxx=${xxx}&yyy=${yyy}");
+            new Routing("/abc/{xxx}/{yyy}", "/abc?xxx={xxx}&yyy={yyy}");
         assertThat(
             routing.route(request, "/abc/111/222"),
             is("/abc?xxx=111&yyy=222"));
@@ -138,7 +138,7 @@ public class RoutingTest {
         Routing routing =
             new Routing(
                 "/_ah/mail/{address}",
-                "/mail/receive?address=${address}");
+                "/mail/receive?address={address}");
         assertThat(
             routing.route(request, "/_ah/mail/admin@appspotmail.com"),
             is("/mail/receive?address=admin%40appspotmail.com"));
@@ -150,7 +150,7 @@ public class RoutingTest {
     @Test
     public void routeForNoMatchPath() throws Exception {
         Routing routing =
-            new Routing("/abc/{xxx}/{yyy}", "/abc?xxx=${xxx}&yyy=${yyy}");
+            new Routing("/abc/{xxx}/{yyy}", "/abc?xxx={xxx}&yyy={yyy}");
         assertThat(routing.route(request, "/abc/111/"), is(nullValue()));
     }
 

@@ -67,8 +67,8 @@ public class RouterImplTest {
          * 
          */
         public MyRouter() {
-            addRouting("/_ah/mail/{address}", "/mail?address=${address}");
-            addRouting("/{app}/edit/{id}", "/${app}/edit?id=${id}");
+            addRouting("/_ah/mail/{address}", "/mail?address={address}");
+            addRouting("/{app}/edit/{id}", "/{app}/edit?id={id}");
         }
     }
 }

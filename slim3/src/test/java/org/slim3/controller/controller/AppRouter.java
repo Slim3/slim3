@@ -27,6 +27,6 @@ public class AppRouter extends RouterImpl {
      * 
      */
     public AppRouter() {
-        addRouting("/_ah/mail/{address}", "/mail?address=${address}");
+        addRouting("/_ah/mail/{address}", "/mail?address={address}");
     }
 }
