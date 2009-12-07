@@ -100,7 +100,7 @@ public class Routing {
                 if (index < 0) {
                     index = i;
                 } else {
-                    throw new IllegalArgumentException("The from("
+                    throw new IllegalArgumentException("The from path("
                         + from
                         + ") is invalid, because \"}\" is missing.");
                 }
@@ -110,7 +110,7 @@ public class Routing {
                     placeHolderList.add(from.substring(index + 1, i));
                     index = -1;
                 } else {
-                    throw new IllegalArgumentException("The from("
+                    throw new IllegalArgumentException("The from path("
                         + from
                         + ") is invalid, because \"{\" is missing.");
                 }
@@ -119,7 +119,7 @@ public class Routing {
             }
         }
         if (index >= 0) {
-            throw new IllegalArgumentException("The from("
+            throw new IllegalArgumentException("The from path("
                 + from
                 + ") is invalid, because \"}\" is missing.");
         }
@@ -144,22 +144,31 @@ public class Routing {
         for (int i = 0; i < length; i++) {
             if (chars[i] == '{') {
                 if (index < 0) {
-                    toFragmentList.add(new StringFragment(sb.toString()));
+                    String name = sb.toString();
+                    toFragmentList.add(new StringFragment(name));
                     sb.setLength(0);
                     index = i;
                 } else {
-                    throw new IllegalArgumentException("The to("
+                    throw new IllegalArgumentException("The to path("
                         + to
                         + ") is invalid, because \"}\" is missing.");
                 }
             } else if (chars[i] == '}') {
                 if (index >= 0) {
-                    toFragmentList.add(new PlaceHolderFragment(to.substring(
-                        index + 1,
-                        i)));
+                    String name = to.substring(index + 1, i);
+                    if (placeHolderList.indexOf(name) < 0) {
+                        throw new IllegalArgumentException("The to path("
+                            + to
+                            + ") is invalid, because the name("
+                            + name
+                            + ") is not found in from path("
+                            + from
+                            + ").");
+                    }
+                    toFragmentList.add(new PlaceHolderFragment(name));
                     index = -1;
                 } else {
-                    throw new IllegalArgumentException("The to("
+                    throw new IllegalArgumentException("The to path("
                         + to
                         + ") is invalid, because \"{\" is missing.");
                 }
@@ -168,7 +177,7 @@ public class Routing {
             }
         }
         if (index >= 0) {
-            throw new IllegalArgumentException("The to("
+            throw new IllegalArgumentException("The to path("
                 + to
                 + ") is invalid, because \"}\" is missing.");
         }

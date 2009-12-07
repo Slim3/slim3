@@ -97,6 +97,15 @@ public class RoutingTest {
     /**
      * @throws Exception
      */
+    @Test
+    // (expected = IllegalArgumentException.class)
+    public void setToWhenNameIsNotFound() throws Exception {
+        new Routing("/abc/{xxx}/{yyy}", "/abc?zzz={zzz}");
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test(expected = IllegalArgumentException.class)
     public void setToWhenStartCurlyBracketIsMissing() throws Exception {
         new Routing("/abc/{xxx}/{yyy}", "/abc?xxx=xxx}&yyy={yyy}");
