@@ -97,8 +97,7 @@ public class RoutingTest {
     /**
      * @throws Exception
      */
-    @Test
-    // (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void setToWhenNameIsNotFound() throws Exception {
         new Routing("/abc/{xxx}/{yyy}", "/abc?zzz={zzz}");
     }
