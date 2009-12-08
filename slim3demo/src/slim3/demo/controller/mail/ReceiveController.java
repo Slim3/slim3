@@ -2,6 +2,8 @@ package slim3.demo.controller.mail;
 
 import java.util.Properties;
 
+import javax.mail.Multipart;
+import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 
@@ -27,6 +29,14 @@ public class ReceiveController extends Controller {
                         "UTF-8"));
             } else {
                 System.out.println("subject:" + message.getSubject());
+            }
+            Object content = message.getContent();
+            if (content instanceof Multipart) {
+                Multipart multipart = (Multipart) content;
+                Part part = multipart.getBodyPart(0);
+                System.out.println("content:" + part.getContent());
+            } else {
+                System.out.println("content:" + content);
             }
         } catch (Throwable t) {
             throw ThrowableUtil.wrap(t);
