@@ -108,13 +108,13 @@ public class ModelMetaDescFactory {
             createModelMetaClassName(modelClassName);
 
         String kind = null;
-        List<String> simpleClassNameList = new ArrayList<String>();
+        List<String> classHierarchyList = new ArrayList<String>();
         PolyModelDesc polyModelDesc = createPolyModelDesc(classDeclaration);
         if (polyModelDesc == null) {
             kind = getKind(anno, modelMetaClassName.getKind());
         } else {
             kind = polyModelDesc.getKind();
-            simpleClassNameList = polyModelDesc.getSimpleClassNameList();
+            classHierarchyList = polyModelDesc.getClassHierarchyList();
             validateKind(classDeclaration);
         }
 
@@ -124,7 +124,7 @@ public class ModelMetaDescFactory {
                 modelMetaClassName.getSimpleName(),
                 modelClassName,
                 kind,
-                simpleClassNameList);
+                classHierarchyList);
         handleAttributes(classDeclaration, modelMetaDesc);
         return modelMetaDesc;
     }
@@ -139,7 +139,7 @@ public class ModelMetaDescFactory {
     protected PolyModelDesc createPolyModelDesc(
             ClassDeclaration classDeclaration) {
         String kind = null;
-        LinkedList<String> simpleNames = new LinkedList<String>();
+        LinkedList<String> classHierarchyList = new LinkedList<String>();
         for (ClassDeclaration c = classDeclaration; c != null
             && !c.getQualifiedName().equals(Object.class.getName()); c =
             c.getSuperclass().getDeclaration()) {
@@ -152,14 +152,14 @@ public class ModelMetaDescFactory {
                 ModelMetaClassName modelMetaClassName =
                     createModelMetaClassName(c.getQualifiedName().toString());
                 kind = getKind(anno, modelMetaClassName.getKind());
-                simpleNames.addFirst(c.getSimpleName());
+                classHierarchyList.addFirst(c.getQualifiedName());
             }
         }
-        if (simpleNames.size() <= 1) {
+        if (classHierarchyList.size() <= 1) {
             return null;
         }
-        simpleNames.removeFirst();
-        return new PolyModelDesc(kind, simpleNames);
+        classHierarchyList.removeFirst();
+        return new PolyModelDesc(kind, classHierarchyList);
     }
 
     /**
@@ -495,25 +495,25 @@ public class ModelMetaDescFactory {
         /** the kind */
         protected final String kind;
 
-        /** the simple class name list */
-        protected final List<String> simpleClassNameList;
+        /** the class hierarchy list */
+        protected final List<String> classHierarchyList;
 
         /**
          * @param kind
          *            the kind
-         * @param simpleClassNameList
-         *            the simple class name list
+         * @param classHierarchyList
+         *            the class hierarchy list
          */
-        public PolyModelDesc(String kind, List<String> simpleClassNameList) {
+        public PolyModelDesc(String kind, List<String> classHierarchyList) {
             if (kind == null) {
                 throw new NullPointerException("The kind parameter is null.");
             }
-            if (simpleClassNameList == null) {
+            if (classHierarchyList == null) {
                 throw new NullPointerException(
-                    "The simpleClassNameList parameter is null.");
+                    "The classHierarchyList parameter is null.");
             }
             this.kind = kind;
-            this.simpleClassNameList = simpleClassNameList;
+            this.classHierarchyList = classHierarchyList;
         }
 
         /**
@@ -526,12 +526,12 @@ public class ModelMetaDescFactory {
         }
 
         /**
-         * Returns the simple class name list.
+         * Returns the class hierarchy list.
          * 
-         * @return the simple class name list
+         * @return the class hierarchy list
          */
-        public List<String> getSimpleClassNameList() {
-            return simpleClassNameList;
+        public List<String> getClassHierarchyList() {
+            return classHierarchyList;
         }
 
     }

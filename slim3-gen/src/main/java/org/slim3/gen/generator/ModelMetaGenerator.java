@@ -143,7 +143,7 @@ public class ModelMetaGenerator implements Generator {
     protected void printConstructor(Printer printer) {
         printer.println("/** */");
         printer.println("public %s() {", modelMetaDesc.getSimpleName());
-        if (modelMetaDesc.getSimpleClassNameList().isEmpty()) {
+        if (modelMetaDesc.getClassHierarchyList().isEmpty()) {
             printer.println("    super(\"%1$s\", %2$s.class);", modelMetaDesc
                 .getKind(), modelMetaDesc.getModelClassName());
         } else {
@@ -152,9 +152,8 @@ public class ModelMetaGenerator implements Generator {
                 modelMetaDesc.getKind(),
                 modelMetaDesc.getModelClassName(),
                 Arrays.class.getName(),
-                CollectionUtil.join(
-                    modelMetaDesc.getSimpleClassNameList(),
-                    ", "));
+                CollectionUtil
+                    .join(modelMetaDesc.getClassHierarchyList(), ", "));
         }
         printer.println("}");
     }
@@ -1052,9 +1051,9 @@ public class ModelMetaGenerator implements Generator {
             printer.println("} else {");
             printer.println("    entity = new %1$s(kind);", Entity);
             printer.println("}");
-            if (!modelMetaDesc.getSimpleClassNameList().isEmpty()) {
+            if (!modelMetaDesc.getClassHierarchyList().isEmpty()) {
                 printer
-                    .println("entity.setProperty(SIMPLE_CLASS_NAME_LIST_RESERVED_PROPERTY, simpleClassNameList);");
+                    .println("entity.setProperty(CLASS_HIERARCHY_LIST_RESERVED_PROPERTY, classHierarchyList);");
             }
             for (AttributeMetaDesc attr : modelMetaDesc
                 .getAttributeMetaDescList()) {
