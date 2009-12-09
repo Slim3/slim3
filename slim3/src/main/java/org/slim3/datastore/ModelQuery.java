@@ -194,8 +194,7 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
         List<Entity> entityList = asEntityList();
         List<M> ret = new ArrayList<M>(entityList.size());
         for (Entity e : entityList) {
-            ModelMeta<M> mm =
-                DatastoreUtil.getModelMeta(modelMeta.getModelClass(), e);
+            ModelMeta<M> mm = DatastoreUtil.getModelMeta(modelMeta, e);
             ret.add(mm.entityToModel(e));
         }
         ret = DatastoreUtil.filterInMemory(ret, inMemoryFilterCriteria);

@@ -208,7 +208,7 @@ public class DatastoreTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
-    public void getModel() throws Exception {
+    public void getModelUsingModelMeta() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Hoge model = Datastore.get(meta, key);
         assertThat(model, is(notNullValue()));

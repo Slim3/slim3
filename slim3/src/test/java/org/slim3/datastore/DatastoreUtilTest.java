@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+import org.slim3.datastore.meta.AaaMeta;
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Aaa;
 import org.slim3.datastore.model.Bbb;
@@ -446,7 +447,7 @@ public class DatastoreUtilTest extends LocalServiceTestCase {
             ModelMeta.CLASS_HIERARCHY_LIST_RESERVED_PROPERTY,
             Arrays.asList(Bbb.class.getName()));
         ModelMeta<Aaa> modelMeta =
-            DatastoreUtil.getModelMeta(Aaa.class, entity);
+            DatastoreUtil.getModelMeta(new AaaMeta(), entity);
         assertThat(modelMeta, is(notNullValue()));
         assertThat(modelMeta.getModelClass().getName(), is(Bbb.class.getName()));
     }
@@ -460,7 +461,7 @@ public class DatastoreUtilTest extends LocalServiceTestCase {
         entity.setProperty(
             ModelMeta.CLASS_HIERARCHY_LIST_RESERVED_PROPERTY,
             Arrays.asList(Bbb.class.getName()));
-        DatastoreUtil.getModelMeta(Hoge.class, entity);
+        DatastoreUtil.getModelMeta(meta, entity);
     }
 
     /**

@@ -740,23 +740,23 @@ public final class DatastoreUtil {
      * 
      * @param <M>
      *            the model type
-     * @param modelClass
-     *            the model class
+     * @param modelMeta
+     *            the meta data of model
      * @param entity
      *            the entity
      * @return a meta data of the model
      * @throws NullPointerException
-     *             if the modelClass parameter is null or if the entity
-     *             parameter is null
+     *             if the modelMeta parameter is null or if the entity parameter
+     *             is null
      * @throws IllegalArgumentException
      *             if the model class is not assignable from entity class
      */
     @SuppressWarnings("unchecked")
-    public static <M> ModelMeta<M> getModelMeta(Class<M> modelClass,
+    public static <M> ModelMeta<M> getModelMeta(ModelMeta<M> modelMeta,
             Entity entity) throws NullPointerException,
             IllegalArgumentException {
-        if (modelClass == null) {
-            throw new NullPointerException("The modelClass parameter is null.");
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
         }
         if (entity == null) {
             throw new NullPointerException("The entity parameter is null.");
@@ -765,14 +765,14 @@ public final class DatastoreUtil {
             (List<String>) entity
                 .getProperty(ModelMeta.CLASS_HIERARCHY_LIST_RESERVED_PROPERTY);
         if (classHierarchyList == null) {
-            return getModelMeta(modelClass);
+            return modelMeta;
         }
         Class<M> subModelClass =
             ClassUtil.forName(classHierarchyList
                 .get(classHierarchyList.size() - 1));
-        if (!modelClass.isAssignableFrom(subModelClass)) {
+        if (!modelMeta.getModelClass().isAssignableFrom(subModelClass)) {
             throw new IllegalArgumentException("The model class("
-                + modelClass.getName()
+                + modelMeta.getModelClass().getName()
                 + ") is not assignable from entity class("
                 + subModelClass.getName()
                 + ").");
