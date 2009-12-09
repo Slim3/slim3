@@ -2,6 +2,9 @@ package org.slim3.datastore.meta;
 
 import java.util.Arrays;
 
+import org.slim3.datastore.model.Bbb;
+import org.slim3.datastore.model.Ccc;
+
 import com.google.appengine.api.datastore.Key;
 
 /**
@@ -16,8 +19,8 @@ public final class CccMeta extends
      */
     public CccMeta() {
         super("Aaa", org.slim3.datastore.model.Ccc.class, Arrays.asList(
-            "Bbb",
-            "Ccc"));
+            Bbb.class.getName(),
+            Ccc.class.getName()));
     }
 
     /**
@@ -98,8 +101,8 @@ public final class CccMeta extends
         entity.setProperty("schemaVersion", m.getSchemaVersion());
         entity.setProperty("version", m.getVersion());
         entity.setProperty(
-            SIMPLE_CLASS_NAME_LIST_RESERVED_PROPERTY,
-            simpleClassNameList);
+            CLASS_HIERARCHY_LIST_RESERVED_PROPERTY,
+            classHierarchyList);
         return entity;
     }
 }

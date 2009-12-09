@@ -21,11 +21,6 @@ import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.slim3.util.ClassUtil;
-import org.slim3.util.Cleanable;
-import org.slim3.util.Cleaner;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
@@ -41,25 +36,6 @@ import com.google.appengine.api.datastore.Transaction;
  * 
  */
 public final class Datastore {
-
-    private static ConcurrentHashMap<String, ModelMeta<?>> modelMetaCache =
-        new ConcurrentHashMap<String, ModelMeta<?>>(87);
-
-    private static volatile boolean initialized = false;
-
-    static {
-        initialize();
-    }
-
-    private static void initialize() {
-        Cleaner.add(new Cleanable() {
-            public void clean() {
-                modelMetaCache.clear();
-                initialized = false;
-            }
-        });
-        initialized = true;
-    }
 
     /**
      * Begins a transaction.
@@ -688,14 +664,20 @@ public final class Datastore {
      *             if the modelClass parameter is null
      * @throws EntityNotFoundRuntimeException
      *             if no entity specified by the key could be found
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
      */
     public static <M> M get(Class<M> modelClass, Key key)
-            throws NullPointerException, EntityNotFoundRuntimeException {
+            throws NullPointerException, EntityNotFoundRuntimeException,
+            IllegalArgumentException {
         if (modelClass == null) {
             throw new NullPointerException("The modelClass parameter is null.");
         }
         Entity entity = get(key);
-        ModelMeta<M> modelMeta = getModelMeta(modelClass);
+        ModelMeta<M> modelMeta = getModelMeta(modelClass, entity);
+        modelMeta.validateKey(key);
         return modelMeta.entityToModel(entity);
     }
 
@@ -720,8 +702,7 @@ public final class Datastore {
         if (modelMeta == null) {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
-        Entity entity = get(key);
-        return modelMeta.entityToModel(entity);
+        return get(modelMeta.getModelClass(), key);
     }
 
     /**
@@ -739,21 +720,39 @@ public final class Datastore {
      *            the version
      * @return a model specified by the key
      * @throws NullPointerException
-     *             if the modelClass parameter is null or if the version
-     *             parameter is null
+     *             if the modelClass parameter is null or if the key parameter
+     *             is null or if the version parameter is null
      * @throws EntityNotFoundRuntimeException
      *             if no entity specified by the key could be found
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
      * @throws ConcurrentModificationException
      *             if the version of the model is updated
      */
     public static <M> M get(Class<M> modelClass, Key key, Long version)
             throws NullPointerException, EntityNotFoundRuntimeException,
-            ConcurrentModificationException {
+            IllegalArgumentException, ConcurrentModificationException {
         if (modelClass == null) {
             throw new NullPointerException("The modelClass parameter is null.");
         }
-        ModelMeta<M> modelMeta = getModelMeta(modelClass);
-        return get(modelMeta, key, version);
+        if (version == null) {
+            throw new NullPointerException("The version parameter is null.");
+        }
+        Entity entity = get(key);
+        ModelMeta<M> modelMeta = getModelMeta(modelClass, entity);
+        modelMeta.validateKey(key);
+        M model = modelMeta.entityToModel(entity);
+        if (version != modelMeta.getVersion(model)) {
+            throw new ConcurrentModificationException(
+                "Failed optimistic lock by key("
+                    + key
+                    + ") and version("
+                    + version
+                    + ").");
+        }
+        return model;
     }
 
     /**
@@ -771,29 +770,24 @@ public final class Datastore {
      *            the version
      * @return a model specified by the key
      * @throws NullPointerException
-     *             if the modelMeta parameter is null or if the version
-     *             parameter is null
+     *             if the modelMeta parameter is null or if the key parameter is
+     *             null or if the version parameter is null
      * @throws EntityNotFoundRuntimeException
      *             if no entity specified by the key could be found
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
      * @throws ConcurrentModificationException
      *             if the version of the model is updated
      */
     public static <M> M get(ModelMeta<M> modelMeta, Key key, Long version)
             throws NullPointerException, EntityNotFoundRuntimeException,
-            ConcurrentModificationException {
-        if (version == null) {
-            throw new NullPointerException("The version parameter is null.");
+            IllegalArgumentException, ConcurrentModificationException {
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
         }
-        M model = get(modelMeta, key);
-        if (version != modelMeta.getVersion(model)) {
-            throw new ConcurrentModificationException(
-                "Failed optimistic lock by key("
-                    + key
-                    + ") and version("
-                    + version
-                    + ").");
-        }
-        return model;
+        return get(modelMeta.getModelClass(), key, version);
     }
 
     /**
@@ -838,15 +832,18 @@ public final class Datastore {
      *             active
      * @throws EntityNotFoundRuntimeException
      *             if no entity specified by the key could be found
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
      */
     public static <M> M get(Transaction tx, Class<M> modelClass, Key key)
             throws NullPointerException, IllegalStateException,
-            EntityNotFoundRuntimeException {
-        if (modelClass == null) {
-            throw new NullPointerException("The modelClass parameter is null.");
-        }
-        ModelMeta<M> modelMeta = getModelMeta(modelClass);
-        return get(tx, modelMeta, key);
+            EntityNotFoundRuntimeException, IllegalArgumentException {
+        Entity entity = get(tx, key);
+        ModelMeta<M> modelMeta = getModelMeta(modelClass, entity);
+        modelMeta.validateKey(key);
+        return modelMeta.entityToModel(entity);
     }
 
     /**
@@ -868,15 +865,18 @@ public final class Datastore {
      *             active
      * @throws EntityNotFoundRuntimeException
      *             if no entity specified by the key could be found
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
      */
     public static <M> M get(Transaction tx, ModelMeta<M> modelMeta, Key key)
             throws NullPointerException, IllegalStateException,
-            EntityNotFoundRuntimeException {
+            EntityNotFoundRuntimeException, IllegalArgumentException {
         if (modelMeta == null) {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
-        Entity entity = get(tx, key);
-        return modelMeta.entityToModel(entity);
+        return get(tx, modelMeta.getModelClass(), key);
     }
 
     /**
@@ -901,17 +901,33 @@ public final class Datastore {
      *             active
      * @throws EntityNotFoundRuntimeException
      *             if no entity specified by the key could be found
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
      * @throws ConcurrentModificationException
      *             if the version of the model is updated
      */
     public static <M> M get(Transaction tx, Class<M> modelClass, Key key,
             Long version) throws NullPointerException, IllegalStateException,
-            EntityNotFoundRuntimeException, ConcurrentModificationException {
-        if (modelClass == null) {
-            throw new NullPointerException("The modelClass parameter is null.");
+            EntityNotFoundRuntimeException, IllegalArgumentException,
+            ConcurrentModificationException {
+        if (version == null) {
+            throw new NullPointerException("The version parameter is null.");
         }
-        ModelMeta<M> modelMeta = getModelMeta(modelClass);
-        return get(tx, modelMeta, key, version);
+        Entity entity = get(tx, key);
+        ModelMeta<M> modelMeta = getModelMeta(modelClass, entity);
+        modelMeta.validateKey(key);
+        M model = modelMeta.entityToModel(entity);
+        if (version != modelMeta.getVersion(model)) {
+            throw new ConcurrentModificationException(
+                "Failed optimistic lock by key("
+                    + key
+                    + ") and version("
+                    + version
+                    + ").");
+        }
+        return model;
     }
 
     /**
@@ -936,25 +952,21 @@ public final class Datastore {
      *             active
      * @throws EntityNotFoundRuntimeException
      *             if no entity specified by the key could be found
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
      * @throws ConcurrentModificationException
      *             if the version of the model is updated
      */
     public static <M> M get(Transaction tx, ModelMeta<M> modelMeta, Key key,
             Long version) throws NullPointerException, IllegalStateException,
-            EntityNotFoundRuntimeException, ConcurrentModificationException {
-        if (version == null) {
-            throw new NullPointerException("The version parameter is null.");
+            EntityNotFoundRuntimeException, IllegalArgumentException,
+            ConcurrentModificationException {
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
         }
-        M model = get(tx, modelMeta, key);
-        if (version != modelMeta.getVersion(model)) {
-            throw new ConcurrentModificationException(
-                "Failed optimistic lock by key("
-                    + key
-                    + ") and version("
-                    + version
-                    + ").");
-        }
-        return model;
+        return get(tx, modelMeta.getModelClass(), key, version);
     }
 
     /**
@@ -1001,13 +1013,19 @@ public final class Datastore {
      *            the keys
      * @return models specified by the keys
      * @throws NullPointerException
-     *             if the modelClass parameter is null
+     *             if the modelClass parameter is null of if the keys parameter
+     *             is null
      * @throws EntityNotFoundRuntimeException
      *             if no entity specified by the key could be found
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
      */
     public static <M> List<M> get(Class<M> modelClass, Iterable<Key> keys)
-            throws NullPointerException, EntityNotFoundRuntimeException {
-        return get(getModelMeta(modelClass), keys);
+            throws NullPointerException, EntityNotFoundRuntimeException,
+            IllegalArgumentException {
+        return mapToList(modelClass, keys, getAsMap(keys));
     }
 
     /**
@@ -1022,16 +1040,22 @@ public final class Datastore {
      *            the keys
      * @return models specified by the keys
      * @throws NullPointerException
-     *             if the modelMeta parameter is null
+     *             if the modelMeta parameter is null of if the keys parameter
+     *             is null
      * @throws EntityNotFoundRuntimeException
      *             if no entity specified by the key could be found
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
      */
     public static <M> List<M> get(ModelMeta<M> modelMeta, Iterable<Key> keys)
-            throws NullPointerException, EntityNotFoundRuntimeException {
+            throws NullPointerException, EntityNotFoundRuntimeException,
+            IllegalArgumentException {
         if (modelMeta == null) {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
-        return mapToList(modelMeta, keys, getAsMap(keys));
+        return get(modelMeta.getModelClass(), keys);
     }
 
     /**
@@ -1049,10 +1073,15 @@ public final class Datastore {
      *             if the modelClass parameter is null
      * @throws EntityNotFoundRuntimeException
      *             if no entity specified by the key could be found
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
      */
     public static <M> List<M> get(Class<M> modelClass, Key... keys)
-            throws NullPointerException, EntityNotFoundRuntimeException {
-        return get(getModelMeta(modelClass), keys);
+            throws NullPointerException, EntityNotFoundRuntimeException,
+            IllegalArgumentException {
+        return get(modelClass, Arrays.asList(keys));
     }
 
     /**
@@ -1067,16 +1096,22 @@ public final class Datastore {
      *            the keys
      * @return models specified by the keys
      * @throws NullPointerException
-     *             if the modelMeta parameter is null
+     *             if the modelMeta parameter is null or if the keys parameter
+     *             is null
      * @throws EntityNotFoundRuntimeException
      *             if no entity specified by the key could be found
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
      */
     public static <M> List<M> get(ModelMeta<M> modelMeta, Key... keys)
-            throws NullPointerException, EntityNotFoundRuntimeException {
+            throws NullPointerException, EntityNotFoundRuntimeException,
+            IllegalArgumentException {
         if (modelMeta == null) {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
-        return mapToList(modelMeta, Arrays.asList(keys), getAsMap(keys));
+        return get(modelMeta.getModelClass(), Arrays.asList(keys));
     }
 
     /**
@@ -1139,11 +1174,16 @@ public final class Datastore {
      *             active
      * @throws EntityNotFoundRuntimeException
      *             if no entity specified by the key could be found
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
      */
     public static <M> List<M> get(Transaction tx, Class<M> modelClass,
             Iterable<Key> keys) throws NullPointerException,
-            IllegalStateException, EntityNotFoundRuntimeException {
-        return get(tx, getModelMeta(modelClass), keys);
+            IllegalStateException, EntityNotFoundRuntimeException,
+            IllegalArgumentException {
+        return mapToList(modelClass, keys, getAsMap(tx, keys));
     }
 
     /**
@@ -1165,14 +1205,19 @@ public final class Datastore {
      *             active
      * @throws EntityNotFoundRuntimeException
      *             if no entity specified by the key could be found
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
      */
     public static <M> List<M> get(Transaction tx, ModelMeta<M> modelMeta,
             Iterable<Key> keys) throws NullPointerException,
-            IllegalStateException, EntityNotFoundRuntimeException {
+            IllegalStateException, EntityNotFoundRuntimeException,
+            IllegalArgumentException {
         if (modelMeta == null) {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
-        return mapToList(modelMeta, keys, getAsMap(tx, keys));
+        return get(tx, modelMeta.getModelClass(), keys);
     }
 
     /**
@@ -1194,11 +1239,15 @@ public final class Datastore {
      *             active
      * @throws EntityNotFoundRuntimeException
      *             if no entity specified by the key could be found
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
      */
     public static <M> List<M> get(Transaction tx, Class<M> modelClass,
             Key... keys) throws NullPointerException, IllegalStateException,
-            EntityNotFoundRuntimeException {
-        return get(tx, getModelMeta(modelClass), keys);
+            EntityNotFoundRuntimeException, IllegalArgumentException {
+        return get(tx, modelClass, Arrays.asList(keys));
     }
 
     /**
@@ -1220,14 +1269,18 @@ public final class Datastore {
      *             active
      * @throws EntityNotFoundRuntimeException
      *             if no entity specified by the key could be found
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
      */
     public static <M> List<M> get(Transaction tx, ModelMeta<M> modelMeta,
             Key... keys) throws NullPointerException, IllegalStateException,
-            EntityNotFoundRuntimeException {
+            EntityNotFoundRuntimeException, IllegalArgumentException {
         if (modelMeta == null) {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
-        return mapToList(modelMeta, Arrays.asList(keys), getAsMap(tx, keys));
+        return get(tx, modelMeta.getModelClass(), Arrays.asList(keys));
     }
 
     /**
@@ -1269,11 +1322,20 @@ public final class Datastore {
      *            the keys
      * @return models specified by the keys
      * @throws NullPointerException
-     *             if the modelClass parameter is null
+     *             if the modelClass parameter is null or if the keys parameter
+     *             is null
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
      */
     public static <M> Map<Key, M> getAsMap(Class<M> modelClass,
-            Iterable<Key> keys) throws NullPointerException {
-        return getAsMap(getModelMeta(modelClass), keys);
+            Iterable<Key> keys) throws NullPointerException,
+            IllegalArgumentException {
+        if (modelClass == null) {
+            throw new NullPointerException("The modelClass parameter is null.");
+        }
+        return mapToMap(modelClass, getAsMap(keys));
     }
 
     /**
@@ -1288,14 +1350,20 @@ public final class Datastore {
      *            the keys
      * @return models specified by the keys
      * @throws NullPointerException
-     *             if the modelMeta parameter is null
+     *             if the modelMeta parameter is null or if the keys parameter
+     *             is null
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
      */
     public static <M> Map<Key, M> getAsMap(ModelMeta<M> modelMeta,
-            Iterable<Key> keys) throws NullPointerException {
+            Iterable<Key> keys) throws NullPointerException,
+            IllegalArgumentException {
         if (modelMeta == null) {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
-        return mapToMap(modelMeta, getAsMap(keys));
+        return getAsMap(modelMeta.getModelClass(), keys);
     }
 
     /**
@@ -1311,10 +1379,14 @@ public final class Datastore {
      * @return models specified by the keys
      * @throws NullPointerException
      *             if the modelClass parameter is null
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
      */
     public static <M> Map<Key, M> getAsMap(Class<M> modelClass, Key... keys)
-            throws NullPointerException {
-        return getAsMap(getModelMeta(modelClass), keys);
+            throws NullPointerException, IllegalArgumentException {
+        return getAsMap(modelClass, Arrays.asList(keys));
     }
 
     /**
@@ -1330,13 +1402,17 @@ public final class Datastore {
      * @return models specified by the keys
      * @throws NullPointerException
      *             if the modelMeta parameter is null
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
      */
     public static <M> Map<Key, M> getAsMap(ModelMeta<M> modelMeta, Key... keys)
-            throws NullPointerException {
+            throws NullPointerException, IllegalArgumentException {
         if (modelMeta == null) {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
-        return mapToMap(modelMeta, getAsMap(keys));
+        return getAsMap(modelMeta.getModelClass(), Arrays.asList(keys));
     }
 
     /**
@@ -1393,11 +1469,18 @@ public final class Datastore {
      * @throws IllegalStateException
      *             if the transaction is not null and the transaction is not
      *             active
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
      */
     public static <M> Map<Key, M> getAsMap(Transaction tx, Class<M> modelClass,
             Iterable<Key> keys) throws NullPointerException,
-            IllegalStateException {
-        return getAsMap(tx, getModelMeta(modelClass), keys);
+            IllegalStateException, IllegalArgumentException {
+        if (modelClass == null) {
+            throw new NullPointerException("The modelClass parameter is null.");
+        }
+        return mapToMap(modelClass, getAsMap(tx, keys));
     }
 
     /**
@@ -1418,14 +1501,19 @@ public final class Datastore {
      * @throws IllegalStateException
      *             if the transaction is not null and the transaction is not
      *             active
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
      */
     public static <M> Map<Key, M> getAsMap(Transaction tx,
             ModelMeta<M> modelMeta, Iterable<Key> keys)
-            throws NullPointerException, IllegalStateException {
+            throws NullPointerException, IllegalStateException,
+            IllegalArgumentException {
         if (modelMeta == null) {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
-        return mapToMap(modelMeta, getAsMap(tx, keys));
+        return getAsMap(tx, modelMeta.getModelClass(), keys);
     }
 
     /**
@@ -1446,10 +1534,15 @@ public final class Datastore {
      * @throws IllegalStateException
      *             if the transaction is not null and the transaction is not
      *             active
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
      */
     public static <M> Map<Key, M> getAsMap(Transaction tx, Class<M> modelClass,
-            Key... keys) throws NullPointerException, IllegalStateException {
-        return getAsMap(tx, getModelMeta(modelClass), keys);
+            Key... keys) throws NullPointerException, IllegalStateException,
+            IllegalArgumentException {
+        return getAsMap(tx, modelClass, Arrays.asList(keys));
     }
 
     /**
@@ -1470,35 +1563,58 @@ public final class Datastore {
      * @throws IllegalStateException
      *             if the transaction is not null and the transaction is not
      *             active
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
      */
     public static <M> Map<Key, M> getAsMap(Transaction tx,
             ModelMeta<M> modelMeta, Key... keys) throws NullPointerException,
-            IllegalStateException {
+            IllegalStateException, IllegalArgumentException {
         if (modelMeta == null) {
             throw new NullPointerException("The modelMeta parameter is null.");
         }
-        return mapToMap(modelMeta, getAsMap(tx, keys));
+        return getAsMap(tx, modelMeta.getModelClass(), Arrays.asList(keys));
     }
 
-    private static <M> List<M> mapToList(ModelMeta<M> modelMeta,
+    private static <M> List<M> mapToList(Class<M> modelClass,
             Iterable<Key> keys, Map<Key, Entity> map)
             throws EntityNotFoundRuntimeException {
+        if (modelClass == null) {
+            throw new NullPointerException("The modelClass parameter is null.");
+        }
+        if (keys == null) {
+            throw new NullPointerException("The keys parameter is null.");
+        }
+        if (map == null) {
+            throw new NullPointerException("The map parameter is null.");
+        }
         List<M> list = new ArrayList<M>(map.size());
         for (Key key : keys) {
             Entity entity = map.get(key);
             if (entity == null) {
                 throw new EntityNotFoundRuntimeException(key);
             }
+            ModelMeta<M> modelMeta = getModelMeta(modelClass, entity);
+            modelMeta.validateKey(key);
             list.add(modelMeta.entityToModel(entity));
         }
         return list;
     }
 
-    private static <M> Map<Key, M> mapToMap(ModelMeta<M> modelMeta,
+    private static <M> Map<Key, M> mapToMap(Class<M> modelClass,
             Map<Key, Entity> map) {
+        if (modelClass == null) {
+            throw new NullPointerException("The modelClass parameter is null.");
+        }
+        if (map == null) {
+            throw new NullPointerException("The map parameter is null.");
+        }
         Map<Key, M> modelMap = new HashMap<Key, M>(map.size());
         for (Key key : map.keySet()) {
             Entity entity = map.get(key);
+            ModelMeta<M> modelMeta = getModelMeta(modelClass, entity);
+            modelMeta.validateKey(key);
             modelMap.put(key, modelMeta.entityToModel(entity));
         }
         return modelMap;
@@ -2006,47 +2122,34 @@ public final class Datastore {
      * @param modelClass
      *            the model class
      * @return a meta data of the model
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
      */
-    @SuppressWarnings("unchecked")
-    public static <M> ModelMeta<M> getModelMeta(Class<M> modelClass) {
-        if (!initialized) {
-            initialize();
-        }
-        ModelMeta<M> modelMeta =
-            (ModelMeta<M>) modelMetaCache.get(modelClass.getName());
-        if (modelMeta != null) {
-            return modelMeta;
-        }
-        modelMeta = createModelMeta(modelClass);
-        ModelMeta<?> old =
-            modelMetaCache.putIfAbsent(modelClass.getName(), modelMeta);
-        return old != null ? (ModelMeta<M>) old : modelMeta;
+    public static <M> ModelMeta<M> getModelMeta(Class<M> modelClass)
+            throws NullPointerException {
+        return DatastoreUtil.getModelMeta(modelClass);
     }
 
     /**
-     * Creates a meta data of the model
+     * Returns a meta data of the model
      * 
      * @param <M>
      *            the model type
      * @param modelClass
      *            the model class
+     * @param entity
+     *            the entity
      * @return a meta data of the model
+     * @throws NullPointerException
+     *             if the modelClass parameter is null or if the entity
+     *             parameter is null
+     * @throws IllegalArgumentException
+     *             if the model class is not assignable from entity class
      */
-    private static <M> ModelMeta<M> createModelMeta(Class<M> modelClass) {
-        try {
-            String metaClassName =
-                modelClass.getName().replace(".model.", ".meta.").replace(
-                    ".shared.",
-                    ".server.")
-                    + "Meta";
-            return ClassUtil.newInstance(metaClassName, Thread
-                .currentThread()
-                .getContextClassLoader());
-        } catch (Throwable cause) {
-            throw new IllegalArgumentException("The meta data of the model("
-                + modelClass.getName()
-                + ") is not found.");
-        }
+    protected static <M> ModelMeta<M> getModelMeta(Class<M> modelClass,
+            Entity entity) throws NullPointerException,
+            IllegalArgumentException {
+        return DatastoreUtil.getModelMeta(modelClass, entity);
     }
 
     /**

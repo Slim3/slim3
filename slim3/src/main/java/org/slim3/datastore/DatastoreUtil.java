@@ -19,8 +19,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.slim3.util.ClassUtil;
+import org.slim3.util.Cleanable;
+import org.slim3.util.Cleaner;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -44,6 +49,25 @@ public final class DatastoreUtil {
 
     private static Logger logger =
         Logger.getLogger(DatastoreUtil.class.getName());
+
+    private static ConcurrentHashMap<String, ModelMeta<?>> modelMetaCache =
+        new ConcurrentHashMap<String, ModelMeta<?>>(87);
+
+    private static volatile boolean initialized = false;
+
+    static {
+        initialize();
+    }
+
+    private static void initialize() {
+        Cleaner.add(new Cleanable() {
+            public void clean() {
+                modelMetaCache.clear();
+                initialized = false;
+            }
+        });
+        initialized = true;
+    }
 
     /**
      * Begins a transaction.
@@ -678,6 +702,108 @@ public final class DatastoreUtil {
         }
         Collections.sort(list, new AttributeComparator(criteria));
         return list;
+    }
+
+    /**
+     * Returns a meta data of the model
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @return a meta data of the model
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     */
+    @SuppressWarnings("unchecked")
+    public static <M> ModelMeta<M> getModelMeta(Class<M> modelClass)
+            throws NullPointerException {
+        if (modelClass == null) {
+            throw new NullPointerException("The modelClass parameter is null.");
+        }
+        if (!initialized) {
+            initialize();
+        }
+        ModelMeta<M> modelMeta =
+            (ModelMeta<M>) modelMetaCache.get(modelClass.getName());
+        if (modelMeta != null) {
+            return modelMeta;
+        }
+        modelMeta = createModelMeta(modelClass);
+        ModelMeta<?> old =
+            modelMetaCache.putIfAbsent(modelClass.getName(), modelMeta);
+        return old != null ? (ModelMeta<M>) old : modelMeta;
+    }
+
+    /**
+     * Returns a meta data of the model
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param entity
+     *            the entity
+     * @return a meta data of the model
+     * @throws NullPointerException
+     *             if the modelClass parameter is null or if the entity
+     *             parameter is null
+     * @throws IllegalArgumentException
+     *             if the model class is not assignable from entity class
+     */
+    @SuppressWarnings("unchecked")
+    public static <M> ModelMeta<M> getModelMeta(Class<M> modelClass,
+            Entity entity) throws NullPointerException,
+            IllegalArgumentException {
+        if (modelClass == null) {
+            throw new NullPointerException("The modelClass parameter is null.");
+        }
+        if (entity == null) {
+            throw new NullPointerException("The entity parameter is null.");
+        }
+        List<String> classHierarchyList =
+            (List<String>) entity
+                .getProperty(ModelMeta.CLASS_HIERARCHY_LIST_RESERVED_PROPERTY);
+        if (classHierarchyList == null) {
+            return getModelMeta(modelClass);
+        }
+        Class<M> subModelClass =
+            ClassUtil.forName(classHierarchyList
+                .get(classHierarchyList.size() - 1));
+        if (!modelClass.isAssignableFrom(subModelClass)) {
+            throw new IllegalArgumentException("The model class("
+                + modelClass.getName()
+                + ") is not assignable from entity class("
+                + subModelClass.getName()
+                + ").");
+        }
+        return getModelMeta(subModelClass);
+    }
+
+    /**
+     * Creates a meta data of the model
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @return a meta data of the model
+     */
+    public static <M> ModelMeta<M> createModelMeta(Class<M> modelClass) {
+        try {
+            String metaClassName =
+                modelClass.getName().replace(".model.", ".meta.").replace(
+                    ".shared.",
+                    ".server.")
+                    + "Meta";
+            return ClassUtil.newInstance(metaClassName, Thread
+                .currentThread()
+                .getContextClassLoader());
+        } catch (Throwable cause) {
+            throw new IllegalArgumentException("The meta data of the model("
+                + modelClass.getName()
+                + ") is not found.");
+        }
     }
 
     private DatastoreUtil() {

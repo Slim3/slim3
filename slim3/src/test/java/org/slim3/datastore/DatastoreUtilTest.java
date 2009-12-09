@@ -25,7 +25,10 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
+import org.slim3.datastore.model.Aaa;
+import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Hoge;
+import org.slim3.datastore.shared.model.Ccc;
 import org.slim3.tester.LocalServiceTestCase;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -419,5 +422,61 @@ public class DatastoreUtilTest extends LocalServiceTestCase {
         assertThat(sorted.size(), is(2));
         assertThat(sorted.get(0).getMyEnum(), is(SortDirection.DESCENDING));
         assertThat(sorted.get(1).getMyEnum(), is(SortDirection.ASCENDING));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void getModelMeta() throws Exception {
+        ModelMeta<Hoge> modelMeta = DatastoreUtil.getModelMeta(Hoge.class);
+        assertThat(modelMeta, is(notNullValue()));
+        assertThat(modelMeta, is(sameInstance((ModelMeta) Datastore
+            .getModelMeta(Hoge.class))));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelMetaWithEntity() throws Exception {
+        Entity entity = new Entity("Aaa");
+        entity.setProperty(
+            ModelMeta.CLASS_HIERARCHY_LIST_RESERVED_PROPERTY,
+            Arrays.asList(Bbb.class.getName()));
+        ModelMeta<Aaa> modelMeta =
+            DatastoreUtil.getModelMeta(Aaa.class, entity);
+        assertThat(modelMeta, is(notNullValue()));
+        assertThat(modelMeta.getModelClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void getModelMetaWithEntityForIllegalClass() throws Exception {
+        Entity entity = new Entity("Aaa");
+        entity.setProperty(
+            ModelMeta.CLASS_HIERARCHY_LIST_RESERVED_PROPERTY,
+            Arrays.asList(Bbb.class.getName()));
+        DatastoreUtil.getModelMeta(Hoge.class, entity);
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void getModelMetaWhenModelMetaIsNotFound() throws Exception {
+        DatastoreUtil.getModelMeta(getClass());
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void createModelMetaWhenGWT() throws Exception {
+        ModelMeta<?> modelMeta = DatastoreUtil.getModelMeta(Ccc.class);
+        assertThat(modelMeta, is(notNullValue()));
     }
 }

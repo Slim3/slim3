@@ -26,10 +26,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+import org.slim3.datastore.meta.AaaMeta;
+import org.slim3.datastore.meta.BbbMeta;
 import org.slim3.datastore.meta.HogeMeta;
+import org.slim3.datastore.model.Aaa;
 import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Hoge;
-import org.slim3.datastore.shared.model.Ccc;
 import org.slim3.tester.LocalServiceTestCase;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -225,8 +227,49 @@ public class DatastoreTest extends LocalServiceTestCase {
     /**
      * @throws Exception
      */
-    @Test(expected = ConcurrentModificationException.class)
+    @Test
+    public void getSubModelUsingClass() throws Exception {
+        Key key = Datastore.put(new Bbb());
+        Aaa model = Datastore.get(Aaa.class, key);
+        assertThat(model.getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelUsingModelMeta() throws Exception {
+        Key key = Datastore.put(new Bbb());
+        Aaa model = Datastore.get(new BbbMeta(), key);
+        assertThat(model.getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void getModelUsingClassAndValidateKey() throws Exception {
+        Key key = ds.put(new Entity("Aaa"));
+        Datastore.get(Hoge.class, key);
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getModelUsingClassAndCheckVersion() throws Exception {
+        Entity entity = new Entity("Hoge");
+        entity.setProperty("version", 1);
+        Key key = ds.put(entity);
+        Hoge model = Datastore.get(Hoge.class, key, 1L);
+        assertThat(model, is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = ConcurrentModificationException.class)
+    public void getModelUsingClassAndCheckVersionWhenError() throws Exception {
         Entity entity = new Entity("Hoge");
         entity.setProperty("version", 1);
         Key key = ds.put(entity);
@@ -246,6 +289,38 @@ public class DatastoreTest extends LocalServiceTestCase {
         Hoge model = Datastore.get(meta, key, 1L);
         assertThat(model, is(notNullValue()));
         Datastore.get(meta, key, 0L);
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelUsingClassAndCheckVersion() throws Exception {
+        Key key = Datastore.put(new Bbb());
+        Aaa model = Datastore.get(Aaa.class, key, 1L);
+        assertThat(model, is(notNullValue()));
+        assertThat(model.getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelUsingModelMetaAndCheckVersion() throws Exception {
+        Key key = Datastore.put(new Bbb());
+        Aaa model = Datastore.get(new AaaMeta(), key, 1L);
+        assertThat(model, is(notNullValue()));
+        assertThat(model.getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void getModelUsingClassAndCheckVersionForValidatingKey()
+            throws Exception {
+        Key key = Datastore.put(new Bbb());
+        Datastore.get(Hoge.class, key, 1L);
     }
 
     /**
@@ -275,6 +350,41 @@ public class DatastoreTest extends LocalServiceTestCase {
     /**
      * @throws Exception
      */
+    @Test(expected = IllegalArgumentException.class)
+    public void getModelInTxUsingClassAndValidateKey() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Datastore.get(null, Aaa.class, key);
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelInTxUsingClass() throws Exception {
+        Key key = Datastore.put(new Bbb());
+        Transaction tx = ds.beginTransaction();
+        Aaa model = Datastore.get(tx, Aaa.class, key);
+        tx.rollback();
+        assertThat(model, is(notNullValue()));
+        assertThat(model.getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelInTxUsingModelMeta() throws Exception {
+        Key key = Datastore.put(new Bbb());
+        Transaction tx = ds.beginTransaction();
+        Aaa model = Datastore.get(tx, new AaaMeta(), key);
+        tx.rollback();
+        assertThat(model, is(notNullValue()));
+        assertThat(model.getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test(expected = ConcurrentModificationException.class)
     public void getModelInTxUsingClassAndCheckVersion() throws Exception {
         Entity entity = new Entity("Hoge");
@@ -289,8 +399,43 @@ public class DatastoreTest extends LocalServiceTestCase {
     /**
      * @throws Exception
      */
+    @Test
+    public void getSubModelInTxUsingClassAndVersion() throws Exception {
+        Key key = Datastore.put(new Bbb());
+        Transaction tx = Datastore.beginTransaction();
+        Aaa model = Datastore.get(tx, Aaa.class, key, 1L);
+        assertThat(model, is(notNullValue()));
+        assertThat(model.getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelInTxUsingModelMetaAndVersion() throws Exception {
+        Key key = Datastore.put(new Bbb());
+        Transaction tx = Datastore.beginTransaction();
+        Aaa model = Datastore.get(tx, new AaaMeta(), key, 1L);
+        assertThat(model, is(notNullValue()));
+        assertThat(model.getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void getModelInTxUsingClassAndVersionAndValidateKey()
+            throws Exception {
+        Key key = Datastore.put(new Bbb());
+        Transaction tx = Datastore.beginTransaction();
+        Datastore.get(tx, Hoge.class, key, 1L);
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test(expected = ConcurrentModificationException.class)
-    public void getModelInTxAndCheckVersion() throws Exception {
+    public void getModelInTxUsingModelMetaAndCheckVersion() throws Exception {
         Entity entity = new Entity("Hoge");
         entity.setProperty("version", 1);
         Key key = ds.put(entity);
@@ -315,7 +460,7 @@ public class DatastoreTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
-    public void getModels() throws Exception {
+    public void getModelsUsingModelMeta() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         List<Hoge> models = Datastore.get(meta, Arrays.asList(key, key2));
@@ -331,8 +476,32 @@ public class DatastoreTest extends LocalServiceTestCase {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         List<Hoge> models = Datastore.get(Hoge.class, Arrays.asList(key, key2));
-        assertThat(models, is(not(nullValue())));
+        assertThat(models, is(notNullValue()));
         assertThat(models.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelsUsingClass() throws Exception {
+        Key key = Datastore.put(new Bbb());
+        List<Aaa> models = Datastore.get(Aaa.class, Arrays.asList(key));
+        assertThat(models, is(notNullValue()));
+        assertThat(models.size(), is(1));
+        assertThat(models.get(0).getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelsUsingModelMeta() throws Exception {
+        Key key = Datastore.put(new Bbb());
+        List<Aaa> models = Datastore.get(new AaaMeta(), Arrays.asList(key));
+        assertThat(models, is(notNullValue()));
+        assertThat(models.size(), is(1));
+        assertThat(models.get(0).getClass().getName(), is(Bbb.class.getName()));
     }
 
     /**
@@ -345,6 +514,34 @@ public class DatastoreTest extends LocalServiceTestCase {
         List<Hoge> models = Datastore.get(meta, key, key2);
         assertThat(models, is(not(nullValue())));
         assertThat(models.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelsUsingClassForVarargs() throws Exception {
+        Key key = Datastore.put(new Bbb());
+        Key key2 = Datastore.put(new Bbb());
+        List<Aaa> models = Datastore.get(Aaa.class, key, key2);
+        assertThat(models, is(notNullValue()));
+        assertThat(models.size(), is(2));
+        assertThat(models.get(0).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(models.get(1).getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelsUsingModelMetaForVarargs() throws Exception {
+        Key key = Datastore.put(new Bbb());
+        Key key2 = Datastore.put(new Bbb());
+        List<Aaa> models = Datastore.get(new AaaMeta(), key, key2);
+        assertThat(models, is(notNullValue()));
+        assertThat(models.size(), is(2));
+        assertThat(models.get(0).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(models.get(1).getClass().getName(), is(Bbb.class.getName()));
     }
 
     /**
@@ -373,7 +570,7 @@ public class DatastoreTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
-    public void getModelsInTx() throws Exception {
+    public void getModelsInTxUsingModelMeta() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = ds.beginTransaction();
@@ -394,8 +591,38 @@ public class DatastoreTest extends LocalServiceTestCase {
         List<Hoge> models =
             Datastore.get(tx, Hoge.class, Arrays.asList(key, key2));
         tx.rollback();
-        assertThat(models, is(not(nullValue())));
+        assertThat(models, is(notNullValue()));
         assertThat(models.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelsInTxUsingClass() throws Exception {
+        Key key = Datastore.put(new Bbb());
+        Key key2 = Datastore.put(new Bbb());
+        List<Aaa> models =
+            Datastore.get(null, Aaa.class, Arrays.asList(key, key2));
+        assertThat(models, is(notNullValue()));
+        assertThat(models.size(), is(2));
+        assertThat(models.get(0).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(models.get(1).getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelsInTxUsingModelMeta() throws Exception {
+        Key key = Datastore.put(new Bbb());
+        Key key2 = Datastore.put(new Bbb());
+        List<Aaa> models =
+            Datastore.get(null, new AaaMeta(), Arrays.asList(key, key2));
+        assertThat(models, is(notNullValue()));
+        assertThat(models.size(), is(2));
+        assertThat(models.get(0).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(models.get(1).getClass().getName(), is(Bbb.class.getName()));
     }
 
     /**
@@ -441,6 +668,34 @@ public class DatastoreTest extends LocalServiceTestCase {
     /**
      * @throws Exception
      */
+    @Test
+    public void getSubModelsInTxForVarargsUsingClass() throws Exception {
+        Key key = Datastore.put(new Bbb());
+        Key key2 = Datastore.put(new Bbb());
+        List<Aaa> models = Datastore.get(null, Aaa.class, key, key2);
+        assertThat(models, is(notNullValue()));
+        assertThat(models.size(), is(2));
+        assertThat(models.get(0).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(models.get(1).getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelsInTxForVarargsUsingModelMeta() throws Exception {
+        Key key = Datastore.put(new Bbb());
+        Key key2 = Datastore.put(new Bbb());
+        List<Aaa> models = Datastore.get(null, new AaaMeta(), key, key2);
+        assertThat(models, is(notNullValue()));
+        assertThat(models.size(), is(2));
+        assertThat(models.get(0).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(models.get(1).getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test(expected = IllegalStateException.class)
     public void getModelsInIllegalTxForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
@@ -454,7 +709,7 @@ public class DatastoreTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
-    public void getModelsAsMap() throws Exception {
+    public void getModelsAsMapUsnigModelMeta() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         Map<Key, Hoge> map = Datastore.getAsMap(meta, Arrays.asList(key, key2));
@@ -473,6 +728,36 @@ public class DatastoreTest extends LocalServiceTestCase {
             Datastore.getAsMap(Hoge.class, Arrays.asList(key, key2));
         assertThat(map, is(not(nullValue())));
         assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelsAsMapUsingModelMeta() throws Exception {
+        Key key = Datastore.put(new Bbb());
+        Key key2 = Datastore.put(new Bbb());
+        Map<Key, Aaa> map =
+            Datastore.getAsMap(new AaaMeta(), Arrays.asList(key, key2));
+        assertThat(map, is(notNullValue()));
+        assertThat(map.size(), is(2));
+        assertThat(map.get(key).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(map.get(key2).getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelsAsMapUsingClass() throws Exception {
+        Key key = Datastore.put(new Bbb());
+        Key key2 = Datastore.put(new Bbb());
+        Map<Key, Aaa> map =
+            Datastore.getAsMap(Aaa.class, Arrays.asList(key, key2));
+        assertThat(map, is(notNullValue()));
+        assertThat(map.size(), is(2));
+        assertThat(map.get(key).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(map.get(key2).getClass().getName(), is(Bbb.class.getName()));
     }
 
     /**
@@ -503,7 +788,35 @@ public class DatastoreTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
-    public void getModelsAsMapInTx() throws Exception {
+    public void getSubModelsAsMapForVarargsUsingModelMeta() throws Exception {
+        Key key = Datastore.put(new Bbb());
+        Key key2 = Datastore.put(new Bbb());
+        Map<Key, Aaa> map = Datastore.getAsMap(new AaaMeta(), key, key2);
+        assertThat(map, is(notNullValue()));
+        assertThat(map.size(), is(2));
+        assertThat(map.get(key).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(map.get(key2).getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelsAsMapForVarargsUsingClass() throws Exception {
+        Key key = Datastore.put(new Bbb());
+        Key key2 = Datastore.put(new Bbb());
+        Map<Key, Aaa> map = Datastore.getAsMap(Aaa.class, key, key2);
+        assertThat(map, is(notNullValue()));
+        assertThat(map.size(), is(2));
+        assertThat(map.get(key).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(map.get(key2).getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelsAsMapInTxUsingModelMeta() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = ds.beginTransaction();
@@ -533,6 +846,36 @@ public class DatastoreTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
+    public void getSubModelsAsMapInTxUsingModelMeta() throws Exception {
+        Key key = Datastore.put(new Bbb());
+        Key key2 = Datastore.put(new Bbb());
+        Map<Key, Aaa> map =
+            Datastore.getAsMap(null, new AaaMeta(), Arrays.asList(key, key2));
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
+        assertThat(map.get(key).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(map.get(key2).getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelsAsMapInTxUsingClass() throws Exception {
+        Key key = Datastore.put(new Bbb());
+        Key key2 = Datastore.put(new Bbb());
+        Map<Key, Aaa> map =
+            Datastore.getAsMap(null, Aaa.class, Arrays.asList(key, key2));
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
+        assertThat(map.get(key).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(map.get(key2).getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getModelsAsMapInTxForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
@@ -555,6 +898,35 @@ public class DatastoreTest extends LocalServiceTestCase {
         tx.rollback();
         assertThat(map, is(not(nullValue())));
         assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelsAsMapInTxForVarargsUsingModelMeta()
+            throws Exception {
+        Key key = Datastore.put(new Bbb());
+        Key key2 = Datastore.put(new Bbb());
+        Map<Key, Aaa> map = Datastore.getAsMap(null, new AaaMeta(), key, key2);
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
+        assertThat(map.get(key).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(map.get(key2).getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelsAsMapInTxForVarargsUsingClass() throws Exception {
+        Key key = Datastore.put(new Bbb());
+        Key key2 = Datastore.put(new Bbb());
+        Map<Key, Aaa> map = Datastore.getAsMap(null, Aaa.class, key, key2);
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
+        assertThat(map.get(key).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(map.get(key2).getClass().getName(), is(Bbb.class.getName()));
     }
 
     /**
@@ -749,8 +1121,8 @@ public class DatastoreTest extends LocalServiceTestCase {
         Entity entity = Datastore.get(bbb.getKey());
         assertThat(
             (List<String>) entity
-                .getProperty(ModelMeta.SIMPLE_CLASS_NAME_LIST_RESERVED_PROPERTY),
-            hasItem("Bbb"));
+                .getProperty(ModelMeta.CLASS_HIERARCHY_LIST_RESERVED_PROPERTY),
+            hasItem(Bbb.class.getName()));
     }
 
     /**
@@ -1200,35 +1572,6 @@ public class DatastoreTest extends LocalServiceTestCase {
         assertThat(Datastore.query(ds.beginTransaction(), KeyFactory.createKey(
             "Parent",
             1)), is(KindlessAncestorQuery.class));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @SuppressWarnings("unchecked")
-    @Test
-    public void getModelMeta() throws Exception {
-        ModelMeta<?> modelMeta = Datastore.getModelMeta(Hoge.class);
-        assertThat(modelMeta, is(notNullValue()));
-        assertThat(modelMeta, is(sameInstance((ModelMeta) Datastore
-            .getModelMeta(Hoge.class))));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test(expected = IllegalArgumentException.class)
-    public void getModelMetaWhenModelMetaIsNotFound() throws Exception {
-        Datastore.getModelMeta(getClass());
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void getModelMetaWhenGWT() throws Exception {
-        ModelMeta<?> modelMeta = Datastore.getModelMeta(Ccc.class);
-        assertThat(modelMeta, is(notNullValue()));
     }
 
     /**

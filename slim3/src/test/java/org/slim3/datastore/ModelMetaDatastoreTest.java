@@ -16,18 +16,24 @@
 package org.slim3.datastore;
 
 import org.junit.Test;
+import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.tester.LocalServiceTestCase;
+
+import com.google.appengine.api.datastore.KeyFactory;
 
 /**
  * @author higa
  * 
  */
-public class SpikeTest extends LocalServiceTestCase {
+public class ModelMetaDatastoreTest extends LocalServiceTestCase {
+
+    private HogeMeta meta = new HogeMeta();
 
     /**
      * @throws Exception
      */
-    @Test
-    public void spike() throws Exception {
+    @Test(expected = IllegalArgumentException.class)
+    public void validateKey() throws Exception {
+        meta.validateKey(KeyFactory.createKey("Aaa", 1));
     }
 }

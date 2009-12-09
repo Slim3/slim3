@@ -194,7 +194,9 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
         List<Entity> entityList = asEntityList();
         List<M> ret = new ArrayList<M>(entityList.size());
         for (Entity e : entityList) {
-            ret.add(modelMeta.entityToModel(e));
+            ModelMeta<M> mm =
+                DatastoreUtil.getModelMeta(modelMeta.getModelClass(), e);
+            ret.add(mm.entityToModel(e));
         }
         ret = DatastoreUtil.filterInMemory(ret, inMemoryFilterCriteria);
         return DatastoreUtil.sortInMemory(ret, inMemorySortCriteria);
@@ -371,12 +373,12 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
      * Adds a filter for polymorphic model.
      */
     protected void addFilterIfPolyModel() {
-        if (modelMeta.getSimpleClassNameList().isEmpty()) {
+        if (modelMeta.getClassHierarchyList().isEmpty()) {
             return;
         }
         query.addFilter(
-            ModelMeta.SIMPLE_CLASS_NAME_LIST_RESERVED_PROPERTY,
+            ModelMeta.CLASS_HIERARCHY_LIST_RESERVED_PROPERTY,
             FilterOperator.EQUAL,
-            modelMeta.getSimpleClassName());
+            modelMeta.getModelClass().getName());
     }
 }

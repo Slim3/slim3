@@ -173,14 +173,20 @@ public class ModelQueryTest extends LocalServiceTestCase {
         ModelQuery<Aaa> query = new ModelQuery<Aaa>(aaaMeta);
         List<Aaa> list = query.asList();
         assertThat(list.size(), is(3));
+        assertThat(list.get(0).getClass().getName(), is(Aaa.class.getName()));
+        assertThat(list.get(1).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(list.get(2).getClass().getName(), is(Ccc.class.getName()));
 
         ModelQuery<Bbb> query2 = new ModelQuery<Bbb>(bbbMeta);
         List<Bbb> list2 = query2.asList();
         assertThat(list2.size(), is(2));
+        assertThat(list2.get(0).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(list2.get(1).getClass().getName(), is(Ccc.class.getName()));
 
         ModelQuery<Ccc> query3 = new ModelQuery<Ccc>(cccMeta);
         List<Ccc> list3 = query3.asList();
         assertThat(list3.size(), is(1));
+        assertThat(list3.get(0).getClass().getName(), is(Ccc.class.getName()));
     }
 
     /**

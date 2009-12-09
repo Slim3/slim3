@@ -3,6 +3,7 @@ package org.slim3.datastore.meta;
 import java.util.Arrays;
 
 import org.slim3.datastore.ModelRef;
+import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Hoge;
 
 import com.google.appengine.api.datastore.Key;
@@ -18,7 +19,8 @@ public final class BbbMeta extends
      * 
      */
     public BbbMeta() {
-        super("Aaa", org.slim3.datastore.model.Bbb.class, Arrays.asList("Bbb"));
+        super("Aaa", org.slim3.datastore.model.Bbb.class, Arrays
+            .asList(Bbb.class.getName()));
     }
 
     /**
@@ -114,8 +116,8 @@ public final class BbbMeta extends
         entity.setProperty("schemaVersion", m.getSchemaVersion());
         entity.setProperty("version", m.getVersion());
         entity.setProperty(
-            SIMPLE_CLASS_NAME_LIST_RESERVED_PROPERTY,
-            simpleClassNameList);
+            CLASS_HIERARCHY_LIST_RESERVED_PROPERTY,
+            classHierarchyList);
         if (m.getHogeRef() == null) {
             throw new NullPointerException("The property(hogeRef) is null.");
         }

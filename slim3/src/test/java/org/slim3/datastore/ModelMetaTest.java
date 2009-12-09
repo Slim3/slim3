@@ -30,6 +30,7 @@ import java.util.SortedSet;
 import org.junit.Test;
 import org.slim3.datastore.meta.BbbMeta;
 import org.slim3.datastore.meta.HogeMeta;
+import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.datastore.model.MySerializable;
 import org.slim3.util.BeanDesc;
@@ -60,18 +61,20 @@ public class ModelMetaTest {
      * @throws Exception
      */
     @Test
-    public void getSimpleClassNameList() throws Exception {
+    public void getClassHierarchyList() throws Exception {
         BbbMeta bbbMeta = new BbbMeta();
-        assertThat(bbbMeta.getSimpleClassNameList(), hasItem("Bbb"));
+        assertThat(
+            bbbMeta.getClassHierarchyList(),
+            hasItem(Bbb.class.getName()));
     }
 
     /**
      * @throws Exception
      */
-    @Test
-    public void getSimpleClassName() throws Exception {
+    @Test(expected = UnsupportedOperationException.class)
+    public void whetherClassHierarchyListIsUnmodified() throws Exception {
         BbbMeta bbbMeta = new BbbMeta();
-        assertThat(bbbMeta.getSimpleClassName(), is("Bbb"));
+        bbbMeta.getClassHierarchyList().add("hoge");
     }
 
     /**

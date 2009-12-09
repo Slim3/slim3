@@ -44,10 +44,10 @@ import com.google.appengine.api.datastore.Text;
 public abstract class ModelMeta<M> {
 
     /**
-     * The reserved property name for the list of simple class names.
+     * The reserved property name for the list of class hierarchies.
      */
-    public static final String SIMPLE_CLASS_NAME_LIST_RESERVED_PROPERTY =
-        "slim3.simpleClassNameList";
+    public static final String CLASS_HIERARCHY_LIST_RESERVED_PROPERTY =
+        "slim3.classHierarchyList";
 
     /**
      * The kind of entity.
@@ -60,11 +60,11 @@ public abstract class ModelMeta<M> {
     protected Class<M> modelClass;
 
     /**
-     * The list of simple class names. If you create polymorphic models such as
-     * A -> B -> C, the list of A is empty, the list of B is [B], the list of c
+     * The list of class hierarchies. If you create polymorphic models such as A
+     * -> B -> C, the list of A is empty, the list of B is [B], the list of c
      * is[B, C].
      */
-    protected List<String> simpleClassNameList;
+    protected List<String> classHierarchyList;
 
     /**
      * The bean descriptor.
@@ -93,14 +93,14 @@ public abstract class ModelMeta<M> {
      *            the kind of entity
      * @param modelClass
      *            the model class
-     * @param simpleClassNameList
-     *            the list of simple class names
+     * @param classHierarchyList
+     *            the list of class hierarchies
      * @throws NullPointerException
      *             if the modelClass parameter is null
      */
     @SuppressWarnings("unchecked")
     public ModelMeta(String kind, Class<M> modelClass,
-            List<String> simpleClassNameList) throws NullPointerException {
+            List<String> classHierarchyList) throws NullPointerException {
         if (kind == null) {
             throw new NullPointerException("The kind parameter is null.");
         }
@@ -109,11 +109,11 @@ public abstract class ModelMeta<M> {
         }
         this.kind = kind;
         this.modelClass = modelClass;
-        if (simpleClassNameList == null) {
-            this.simpleClassNameList = Collections.EMPTY_LIST;
+        if (classHierarchyList == null) {
+            this.classHierarchyList = Collections.EMPTY_LIST;
         } else {
-            this.simpleClassNameList =
-                Collections.unmodifiableList(simpleClassNameList);
+            this.classHierarchyList =
+                Collections.unmodifiableList(classHierarchyList);
         }
     }
 
@@ -142,24 +142,12 @@ public abstract class ModelMeta<M> {
     }
 
     /**
-     * Returns the list of simple class names.
+     * Returns the list of class hierarchies.
      * 
-     * @return the list of simple class names
+     * @return the list of class hierarchies
      */
-    public List<String> getSimpleClassNameList() {
-        return simpleClassNameList;
-    }
-
-    /**
-     * Returns the simple class name.
-     * 
-     * @return the simple class name
-     */
-    public String getSimpleClassName() {
-        if (simpleClassNameList.isEmpty()) {
-            return null;
-        }
-        return simpleClassNameList.get(simpleClassNameList.size() - 1);
+    public List<String> getClassHierarchyList() {
+        return classHierarchyList;
     }
 
     /**
@@ -215,6 +203,30 @@ public abstract class ModelMeta<M> {
      *            the key
      */
     protected abstract void setKey(Object model, Key key);
+
+    /**
+     * Validates the kind of the key.
+     * 
+     * @param key
+     *            the key
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of this
+     *             model
+     */
+    protected void validateKey(Key key) throws IllegalArgumentException {
+        if (key == null) {
+            throw new NullPointerException("The key parameter is null.");
+        }
+        if (!key.getKind().equals(kind)) {
+            throw new IllegalArgumentException("The kind("
+                + key.getKind()
+                + ") of the key("
+                + key
+                + ") must be "
+                + kind
+                + ".");
+        }
+    }
 
     /**
      * Converts the long to a primitive short.
