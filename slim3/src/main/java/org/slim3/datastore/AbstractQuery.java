@@ -17,12 +17,9 @@ package org.slim3.datastore;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.DatastoreTimeoutException;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
@@ -42,11 +39,6 @@ import com.google.appengine.api.datastore.Query.SortDirection;
  * 
  */
 public abstract class AbstractQuery<SUB> {
-
-    static final int MAX_RETRY = 10;
-
-    private static Logger logger =
-        Logger.getLogger(AbstractQuery.class.getName());
 
     /**
      * The datastore query.
@@ -248,8 +240,10 @@ public abstract class AbstractQuery<SUB> {
      */
     protected List<Entity> asEntityList() {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        PreparedQuery pq = prepareInternal(ds);
-        return asListInternal(pq);
+        PreparedQuery pq =
+            txSet ? DatastoreUtil.prepare(ds, tx, query) : DatastoreUtil
+                .prepare(ds, query);
+        return DatastoreUtil.asList(pq, fetchOptions);
     }
 
     /**
@@ -259,8 +253,10 @@ public abstract class AbstractQuery<SUB> {
      */
     protected Entity asSingleEntity() {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        PreparedQuery pq = prepareInternal(ds);
-        return asSingleEntityInternal(pq);
+        PreparedQuery pq =
+            txSet ? DatastoreUtil.prepare(ds, tx, query) : DatastoreUtil
+                .prepare(ds, query);
+        return DatastoreUtil.asSingleEntity(pq);
     }
 
     /**
@@ -297,8 +293,10 @@ public abstract class AbstractQuery<SUB> {
      */
     public int countQuickly() {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        PreparedQuery pq = prepareInternal(ds);
-        return countEntitiesInternal(pq);
+        PreparedQuery pq =
+            txSet ? DatastoreUtil.prepare(ds, tx, query) : DatastoreUtil
+                .prepare(ds, query);
+        return DatastoreUtil.countEntities(pq);
     }
 
     /**
@@ -361,147 +359,9 @@ public abstract class AbstractQuery<SUB> {
      */
     protected Iterable<Entity> asIterableEntities() {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        PreparedQuery pq = prepareInternal(ds);
-        return asIterableInternal(pq);
-    }
-
-    /**
-     * Prepares the query internally.
-     * 
-     * @param ds
-     *            the datastore
-     * @return a prepared query.
-     */
-    protected PreparedQuery prepareInternal(DatastoreService ds) {
-        try {
-            if (txSet) {
-                return ds.prepare(tx, query);
-            }
-            return ds.prepare(query);
-        } catch (DatastoreTimeoutException e) {
-            logger.log(Level.WARNING, e.getMessage(), e);
-            for (int i = 0; i < MAX_RETRY; i++) {
-                try {
-                    if (txSet) {
-                        return ds.prepare(tx, query);
-                    }
-                    return ds.prepare(query);
-                } catch (DatastoreTimeoutException e2) {
-                    logger.log(Level.WARNING, "Retry("
-                        + i
-                        + "): "
-                        + e2.getMessage(), e2);
-                }
-            }
-            throw e;
-        }
-    }
-
-    /**
-     * Returns a list of entities internally.
-     * 
-     * @param preparedQuery
-     *            the prepared query
-     * 
-     * @return a list of entities
-     */
-    protected List<Entity> asListInternal(PreparedQuery preparedQuery) {
-        try {
-            return preparedQuery.asList(fetchOptions);
-        } catch (DatastoreTimeoutException e) {
-            logger.log(Level.WARNING, e.getMessage(), e);
-            for (int i = 0; i < MAX_RETRY; i++) {
-                try {
-                    return preparedQuery.asList(fetchOptions);
-                } catch (DatastoreTimeoutException e2) {
-                    logger.log(Level.WARNING, "Retry("
-                        + i
-                        + "): "
-                        + e2.getMessage(), e2);
-                }
-            }
-            throw e;
-        }
-    }
-
-    /**
-     * Returns a single entity internally.
-     * 
-     * @param preparedQuery
-     *            the query
-     * 
-     * @return a single entity
-     */
-    protected Entity asSingleEntityInternal(PreparedQuery preparedQuery) {
-        try {
-            return preparedQuery.asSingleEntity();
-        } catch (DatastoreTimeoutException e) {
-            logger.log(Level.WARNING, e.getMessage(), e);
-            for (int i = 0; i < MAX_RETRY; i++) {
-                try {
-                    return preparedQuery.asSingleEntity();
-                } catch (DatastoreTimeoutException e2) {
-                    logger.log(Level.WARNING, "Retry("
-                        + i
-                        + "): "
-                        + e2.getMessage(), e2);
-                }
-            }
-            throw e;
-        }
-    }
-
-    /**
-     * Returns a single entity internally.
-     * 
-     * @param preparedQuery
-     *            the query
-     * 
-     * @return a single entity
-     */
-    protected Iterable<Entity> asIterableInternal(PreparedQuery preparedQuery) {
-        try {
-            return preparedQuery.asIterable(fetchOptions);
-        } catch (DatastoreTimeoutException e) {
-            logger.log(Level.WARNING, e.getMessage(), e);
-            for (int i = 0; i < MAX_RETRY; i++) {
-                try {
-                    return preparedQuery.asIterable(fetchOptions);
-                } catch (DatastoreTimeoutException e2) {
-                    logger.log(Level.WARNING, "Retry("
-                        + i
-                        + "): "
-                        + e2.getMessage(), e2);
-                }
-            }
-            throw e;
-        }
-    }
-
-    /**
-     * Returns a number of entities internally.
-     * 
-     * @param preparedQuery
-     *            the prepared query
-     * 
-     * @return a number of entities
-     */
-    protected int countEntitiesInternal(PreparedQuery preparedQuery) {
-        try {
-            return preparedQuery.countEntities();
-        } catch (DatastoreTimeoutException e) {
-            logger.log(Level.WARNING, e.getMessage(), e);
-            for (int i = 0; i < MAX_RETRY; i++) {
-                try {
-                    return preparedQuery.countEntities();
-                } catch (DatastoreTimeoutException e2) {
-                    logger.log(Level.WARNING, "Retry("
-                        + i
-                        + "): "
-                        + e2.getMessage(), e2);
-                }
-            }
-            throw e;
-        }
+        PreparedQuery pq =
+            txSet ? DatastoreUtil.prepare(ds, tx, query) : DatastoreUtil
+                .prepare(ds, query);
+        return DatastoreUtil.asIterable(pq, fetchOptions);
     }
 }

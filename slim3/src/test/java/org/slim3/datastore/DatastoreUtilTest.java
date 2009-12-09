@@ -36,9 +36,12 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.KeyRange;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
@@ -315,6 +318,68 @@ public class DatastoreUtilTest extends LocalServiceTestCase {
         Transaction tx = ds.beginTransaction();
         tx.rollback();
         DatastoreUtil.delete(tx, Arrays.asList(key));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void prepare() throws Exception {
+        Query query = new Query("Hoge");
+        assertThat(DatastoreUtil.prepare(ds, query), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void prepareInTx() throws Exception {
+        Query query = new Query("Hoge");
+        assertThat(DatastoreUtil.prepare(ds, null, query), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asList() throws Exception {
+        Query query = new Query("Hoge");
+        PreparedQuery pq = DatastoreUtil.prepare(ds, query);
+        assertThat(
+            DatastoreUtil.asList(pq, FetchOptions.Builder.withOffset(0)),
+            is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asSingleEntity() throws Exception {
+        ds.put(new Entity("Hoge"));
+        Query query = new Query("Hoge");
+        PreparedQuery pq = DatastoreUtil.prepare(ds, query);
+        assertThat(DatastoreUtil.asSingleEntity(pq), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asIterable() throws Exception {
+        Query query = new Query("Hoge");
+        PreparedQuery pq = DatastoreUtil.prepare(ds, query);
+        assertThat(DatastoreUtil.asIterable(pq, FetchOptions.Builder
+            .withOffset(0)), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void countEntities() throws Exception {
+        Query query = new Query("Hoge");
+        PreparedQuery pq = DatastoreUtil.prepare(ds, query);
+        assertThat(DatastoreUtil.countEntities(pq), is(0));
     }
 
     /**

@@ -32,8 +32,11 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.DatastoreTimeoutException;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyRange;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Transaction;
 
 /**
@@ -615,6 +618,229 @@ public final class DatastoreUtil {
                 try {
                     ds.delete(tx, keys);
                     return;
+                } catch (DatastoreTimeoutException e2) {
+                    logger.log(Level.WARNING, "Retry("
+                        + i
+                        + "): "
+                        + e2.getMessage(), e2);
+                }
+            }
+            throw e;
+        }
+    }
+
+    /**
+     * Prepares the query.
+     * 
+     * @param ds
+     *            the datastore
+     * @param query
+     *            the query
+     * @return a prepared query.
+     * @throws NullPointerException
+     *             if the ds parameter is null or if the query parameter is null
+     */
+    public static PreparedQuery prepare(DatastoreService ds, Query query)
+            throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter is null.");
+        }
+        if (query == null) {
+            throw new NullPointerException("The query parameter is null.");
+        }
+        try {
+            return ds.prepare(query);
+        } catch (DatastoreTimeoutException e) {
+            logger.log(Level.WARNING, e.getMessage(), e);
+            for (int i = 0; i < MAX_RETRY; i++) {
+                try {
+                    return ds.prepare(query);
+                } catch (DatastoreTimeoutException e2) {
+                    logger.log(Level.WARNING, "Retry("
+                        + i
+                        + "): "
+                        + e2.getMessage(), e2);
+                }
+            }
+            throw e;
+        }
+    }
+
+    /**
+     * Prepares the query.
+     * 
+     * @param ds
+     *            the datastore
+     * @param tx
+     *            the transaction
+     * @param query
+     *            the query
+     * @return a prepared query.
+     * @throws NullPointerException
+     *             if the ds parameter is null or if tx parameter is null or if
+     *             the query parameter is null
+     */
+    public static PreparedQuery prepare(DatastoreService ds, Transaction tx,
+            Query query) throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter is null.");
+        }
+        if (query == null) {
+            throw new NullPointerException("The query parameter is null.");
+        }
+        try {
+            return ds.prepare(tx, query);
+        } catch (DatastoreTimeoutException e) {
+            logger.log(Level.WARNING, e.getMessage(), e);
+            for (int i = 0; i < MAX_RETRY; i++) {
+                try {
+                    return ds.prepare(tx, query);
+                } catch (DatastoreTimeoutException e2) {
+                    logger.log(Level.WARNING, "Retry("
+                        + i
+                        + "): "
+                        + e2.getMessage(), e2);
+                }
+            }
+            throw e;
+        }
+    }
+
+    /**
+     * Returns a list of entities.
+     * 
+     * @param preparedQuery
+     *            the prepared query
+     * @param fetchOptions
+     *            the fetch options
+     * @return a list of entities
+     * @throws NullPointerException
+     *             if the preparedQuery parameter is null or if the fetchOptions
+     *             parameter is null
+     */
+    public static List<Entity> asList(PreparedQuery preparedQuery,
+            FetchOptions fetchOptions) throws NullPointerException {
+        if (preparedQuery == null) {
+            throw new NullPointerException(
+                "The preparedQuery parameter is null.");
+        }
+        if (fetchOptions == null) {
+            throw new NullPointerException(
+                "The fetchOptions parameter is null.");
+        }
+        try {
+            return preparedQuery.asList(fetchOptions);
+        } catch (DatastoreTimeoutException e) {
+            logger.log(Level.WARNING, e.getMessage(), e);
+            for (int i = 0; i < MAX_RETRY; i++) {
+                try {
+                    return preparedQuery.asList(fetchOptions);
+                } catch (DatastoreTimeoutException e2) {
+                    logger.log(Level.WARNING, "Retry("
+                        + i
+                        + "): "
+                        + e2.getMessage(), e2);
+                }
+            }
+            throw e;
+        }
+    }
+
+    /**
+     * Returns a single entity.
+     * 
+     * @param preparedQuery
+     *            the query
+     * @return a single entity
+     * @throws NullPointerException
+     *             if the preparedQuery parameter is null
+     */
+    public static Entity asSingleEntity(PreparedQuery preparedQuery)
+            throws NullPointerException {
+        if (preparedQuery == null) {
+            throw new NullPointerException(
+                "The preparedQuery parameter is null.");
+        }
+        try {
+            return preparedQuery.asSingleEntity();
+        } catch (DatastoreTimeoutException e) {
+            logger.log(Level.WARNING, e.getMessage(), e);
+            for (int i = 0; i < MAX_RETRY; i++) {
+                try {
+                    return preparedQuery.asSingleEntity();
+                } catch (DatastoreTimeoutException e2) {
+                    logger.log(Level.WARNING, "Retry("
+                        + i
+                        + "): "
+                        + e2.getMessage(), e2);
+                }
+            }
+            throw e;
+        }
+    }
+
+    /**
+     * Returns a single entity.
+     * 
+     * @param preparedQuery
+     *            the query
+     * @param fetchOptions
+     *            the fetch options
+     * @return a single entity
+     * @throws NullPointerException
+     *             if the preparedQuery parameter is null or if the fetchOptions
+     *             parameter is null
+     */
+    public static Iterable<Entity> asIterable(PreparedQuery preparedQuery,
+            FetchOptions fetchOptions) throws NullPointerException {
+        if (preparedQuery == null) {
+            throw new NullPointerException(
+                "The preparedQuery parameter is null.");
+        }
+        if (fetchOptions == null) {
+            throw new NullPointerException(
+                "The fetchOptions parameter is null.");
+        }
+        try {
+            return preparedQuery.asIterable(fetchOptions);
+        } catch (DatastoreTimeoutException e) {
+            logger.log(Level.WARNING, e.getMessage(), e);
+            for (int i = 0; i < MAX_RETRY; i++) {
+                try {
+                    return preparedQuery.asIterable(fetchOptions);
+                } catch (DatastoreTimeoutException e2) {
+                    logger.log(Level.WARNING, "Retry("
+                        + i
+                        + "): "
+                        + e2.getMessage(), e2);
+                }
+            }
+            throw e;
+        }
+    }
+
+    /**
+     * Returns a number of entities.
+     * 
+     * @param preparedQuery
+     *            the prepared query
+     * @return a number of entities
+     * @throws NullPointerException
+     *             if the preparedQuery parameter is null
+     */
+    public static int countEntities(PreparedQuery preparedQuery)
+            throws NullPointerException {
+        if (preparedQuery == null) {
+            throw new NullPointerException(
+                "The preparedQuery parameter is null.");
+        }
+        try {
+            return preparedQuery.countEntities();
+        } catch (DatastoreTimeoutException e) {
+            logger.log(Level.WARNING, e.getMessage(), e);
+            for (int i = 0; i < MAX_RETRY; i++) {
+                try {
+                    return preparedQuery.countEntities();
                 } catch (DatastoreTimeoutException e2) {
                     logger.log(Level.WARNING, "Retry("
                         + i
