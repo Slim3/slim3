@@ -36,6 +36,9 @@ public class ModelMetaDesc implements ClassDesc {
     /** the simple name */
     protected final String simpleName;
 
+    /** {@code true} if model is abstract */
+    protected final boolean abstrct;
+
     /** the modelClassName */
     protected final String modelClassName;
 
@@ -65,6 +68,8 @@ public class ModelMetaDesc implements ClassDesc {
      *            the package name
      * @param simpleName
      *            the simple name
+     * @param abstrct
+     *            {@code true} if model is abstract
      * @param modelClassName
      *            the modelClassName
      * @param kind
@@ -73,7 +78,8 @@ public class ModelMetaDesc implements ClassDesc {
      *            the class hierarchy list
      */
     public ModelMetaDesc(String packageName, String simpleName,
-            String modelClassName, String kind, List<String> classHierarchyList) {
+            boolean abstrct, String modelClassName, String kind,
+            List<String> classHierarchyList) {
         if (packageName == null) {
             throw new NullPointerException("The packageName parameter is null.");
         }
@@ -89,6 +95,7 @@ public class ModelMetaDesc implements ClassDesc {
         }
         this.packageName = packageName;
         this.simpleName = simpleName;
+        this.abstrct = abstrct;
         this.modelClassName = modelClassName;
         this.kind = kind;
         this.classHierarchyList = classHierarchyList;
@@ -114,6 +121,15 @@ public class ModelMetaDesc implements ClassDesc {
 
     public String getQualifiedName() {
         return ClassUtil.getQualifiedName(packageName, simpleName);
+    }
+
+    /**
+     * Returns {@code true} if model is abstract.
+     * 
+     * @return {@code true} if model is abstract
+     */
+    public boolean isAbstrct() {
+        return abstrct;
     }
 
     /**

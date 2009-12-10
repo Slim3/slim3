@@ -15,7 +15,19 @@
  */
 package org.slim3.gen.generator;
 
-import static org.slim3.gen.ClassConstants.*;
+import static org.slim3.gen.ClassConstants.Blob;
+import static org.slim3.gen.ClassConstants.CollectionAttributeMeta;
+import static org.slim3.gen.ClassConstants.CoreAttributeMeta;
+import static org.slim3.gen.ClassConstants.Double;
+import static org.slim3.gen.ClassConstants.Entity;
+import static org.slim3.gen.ClassConstants.Key;
+import static org.slim3.gen.ClassConstants.Long;
+import static org.slim3.gen.ClassConstants.ModelRefAttributeMeta;
+import static org.slim3.gen.ClassConstants.Object;
+import static org.slim3.gen.ClassConstants.String;
+import static org.slim3.gen.ClassConstants.StringAttributeMeta;
+import static org.slim3.gen.ClassConstants.StringCollectionAttributeMeta;
+import static org.slim3.gen.ClassConstants.Text;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -582,14 +594,21 @@ public class ModelMetaGenerator implements Generator {
                 modelMetaDesc.getModelClassName(),
                 Entity);
             printer.indent();
-            printer.println("%1$s model = new %1$s();", modelMetaDesc
-                .getModelClassName());
-            for (AttributeMetaDesc attr : modelMetaDesc
-                .getAttributeMetaDescList()) {
-                DataType dataType = attr.getDataType();
-                dataType.accept(this, attr);
+            if (modelMetaDesc.isAbstrct()) {
+                printer.println(
+                    "throw new %1$s(\"The class(%2$s) is abstract.\");",
+                    UnsupportedOperationException.class.getName(),
+                    modelMetaDesc.getModelClassName());
+            } else {
+                printer.println("%1$s model = new %1$s();", modelMetaDesc
+                    .getModelClassName());
+                for (AttributeMetaDesc attr : modelMetaDesc
+                    .getAttributeMetaDescList()) {
+                    DataType dataType = attr.getDataType();
+                    dataType.accept(this, attr);
+                }
+                printer.println("return model;");
             }
-            printer.println("return model;");
             printer.unindent();
             printer.println("}");
             printer.println();
@@ -1038,32 +1057,42 @@ public class ModelMetaGenerator implements Generator {
                 Entity,
                 Object);
             printer.indent();
-            printer.println("%1$s m = (%1$s) model;", modelMetaDesc
-                .getModelClassName());
-            printer.println("%1$s entity = null;", Entity);
-            printer.println("if (m.%1$s() != null) {", modelMetaDesc
-                .getKeyAttributeMetaDesc()
-                .getReadMethodName());
-            printer.println(
-                "    entity = new %1$s(m.%2$s());",
-                Entity,
-                modelMetaDesc.getKeyAttributeMetaDesc().getReadMethodName());
-            printer.println("} else {");
-            printer.println("    entity = new %1$s(kind);", Entity);
-            printer.println("}");
-            if (!modelMetaDesc.getClassHierarchyList().isEmpty()) {
+            if (modelMetaDesc.isAbstrct()) {
+                printer.println(
+                    "throw new %1$s(\"The class(%2$s) is abstract.\");",
+                    UnsupportedOperationException.class.getName(),
+                    modelMetaDesc.getModelClassName());
+            } else {
+                printer.println("%1$s m = (%1$s) model;", modelMetaDesc
+                    .getModelClassName());
+                printer.println("%1$s entity = null;", Entity);
+                printer.println("if (m.%1$s() != null) {", modelMetaDesc
+                    .getKeyAttributeMetaDesc()
+                    .getReadMethodName());
                 printer
-                    .println("entity.setProperty(CLASS_HIERARCHY_LIST_RESERVED_PROPERTY, classHierarchyList);");
-            }
-            for (AttributeMetaDesc attr : modelMetaDesc
-                .getAttributeMetaDescList()) {
-                if (attr.isPrimaryKey()) {
-                    continue;
+                    .println(
+                        "    entity = new %1$s(m.%2$s());",
+                        Entity,
+                        modelMetaDesc
+                            .getKeyAttributeMetaDesc()
+                            .getReadMethodName());
+                printer.println("} else {");
+                printer.println("    entity = new %1$s(kind);", Entity);
+                printer.println("}");
+                if (!modelMetaDesc.getClassHierarchyList().isEmpty()) {
+                    printer
+                        .println("entity.setProperty(CLASS_HIERARCHY_LIST_RESERVED_PROPERTY, classHierarchyList);");
                 }
-                DataType dataType = attr.getDataType();
-                dataType.accept(this, attr);
+                for (AttributeMetaDesc attr : modelMetaDesc
+                    .getAttributeMetaDescList()) {
+                    if (attr.isPrimaryKey()) {
+                        continue;
+                    }
+                    DataType dataType = attr.getDataType();
+                    dataType.accept(this, attr);
+                }
+                printer.println("return entity;");
             }
-            printer.println("return entity;");
             printer.unindent();
             printer.println("}");
             printer.println();

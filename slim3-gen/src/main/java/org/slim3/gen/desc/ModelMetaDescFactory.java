@@ -122,6 +122,7 @@ public class ModelMetaDescFactory {
             new ModelMetaDesc(
                 modelMetaClassName.getPackageName(),
                 modelMetaClassName.getSimpleName(),
+                classDeclaration.getModifiers().contains(Modifier.ABSTRACT),
                 modelClassName,
                 kind,
                 classHierarchyList);
