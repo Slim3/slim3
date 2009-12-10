@@ -32,11 +32,13 @@ import org.slim3.util.StringUtil;
 import com.google.gwt.user.client.rpc.IncompatibleRemoteServiceException;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.SerializationException;
+import com.google.gwt.user.client.rpc.impl.AbstractSerializationStream;
 import com.google.gwt.user.server.rpc.RPC;
 import com.google.gwt.user.server.rpc.RPCRequest;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.gwt.user.server.rpc.SerializationPolicy;
 import com.google.gwt.user.server.rpc.impl.ServerSerializationStreamReader;
+import com.google.gwt.user.server.rpc.impl.TypeNameObfuscator;
 
 /**
  * The remote service servlet for Slim3.
@@ -167,11 +169,11 @@ public class GWTServiceServlet extends RemoteServiceServlet {
     protected S3RPCRequest decodeRequest(String encodedRequest) {
         if (encodedRequest == null) {
             throw new NullPointerException(
-                "The encodedRequest parameter is null.");
+                "The encodedRequest parameter cannot be null.");
         }
         if (encodedRequest.length() == 0) {
             throw new IllegalArgumentException(
-                "The encodedRequest parameter is empty.");
+                "The encodedRequest parameter cannot be empty.");
         }
         ClassLoader classLoader =
             Thread.currentThread().getContextClassLoader();
@@ -179,7 +181,7 @@ public class GWTServiceServlet extends RemoteServiceServlet {
             ServerSerializationStreamReader streamReader =
                 new ServerSerializationStreamReader(classLoader, this);
             streamReader.prepareToRead(encodedRequest);
-            String interfaceName = streamReader.readString();
+            String interfaceName = readClassName(streamReader);
             Class<?> serviceClass = getServiceClass(interfaceName);
             Object service = getService(serviceClass);
             SerializationPolicy serializationPolicy =
@@ -188,10 +190,9 @@ public class GWTServiceServlet extends RemoteServiceServlet {
             int paramCount = streamReader.readInt();
             Class<?>[] parameterTypes = new Class[paramCount];
             for (int i = 0; i < parameterTypes.length; i++) {
-                String paramClassName = streamReader.readString();
+                String paramClassName = readClassName(streamReader);
                 parameterTypes[i] = getClass(paramClassName);
             }
-
             try {
                 Method method =
                     serviceClass.getMethod(methodName, parameterTypes);
@@ -212,6 +213,41 @@ public class GWTServiceServlet extends RemoteServiceServlet {
         } catch (SerializationException ex) {
             throw new IncompatibleRemoteServiceException(ex.getMessage(), ex);
         }
+    }
+
+    /**
+     * Returns class name.
+     * 
+     * @param streamReader
+     *            the stream reader
+     * @return class name
+     * @throws SerializationException
+     *             if {@link SerializationException} occurred
+     */
+    protected String readClassName(ServerSerializationStreamReader streamReader)
+            throws SerializationException {
+        String name = streamReader.readString();
+        int index;
+        if (streamReader
+            .hasFlags(AbstractSerializationStream.FLAG_ELIDE_TYPE_NAMES)) {
+            SerializationPolicy serializationPolicy =
+                streamReader.getSerializationPolicy();
+            if (!(serializationPolicy instanceof TypeNameObfuscator)) {
+                throw new IncompatibleRemoteServiceException(
+                    "RPC request was encoded with obfuscated type names, "
+                        + "but the SerializationPolicy in use does not implement "
+                        + TypeNameObfuscator.class.getName());
+            }
+            String maybe =
+                ((TypeNameObfuscator) serializationPolicy)
+                    .getClassNameForTypeId(name);
+            if (maybe != null) {
+                return maybe;
+            }
+        } else if ((index = name.indexOf('/')) != -1) {
+            return name.substring(0, index);
+        }
+        return name;
     }
 
     /**
