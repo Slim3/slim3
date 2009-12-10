@@ -203,7 +203,8 @@ public class GWTServiceServlet extends RemoteServiceServlet {
                 return new S3RPCRequest(service, new RPCRequest(
                     method,
                     parameterValues,
-                    serializationPolicy));
+                    serializationPolicy,
+                    streamReader.getFlags()));
 
             } catch (NoSuchMethodException e) {
                 throw new IncompatibleRemoteServiceException(e.getMessage(), e);
