@@ -264,9 +264,10 @@ public class FrontController implements Filter {
         synchronized (this) {
             if (servletContext.getAttribute(ControllerConstants.UUID_KEY) == null) {
                 servletContext.setAttribute(ControllerConstants.UUID_KEY, uuid);
-                if ("get".equalsIgnoreCase(request.getMethod())
-                    && servletContext.getServerInfo().startsWith(
-                        "Google App Engine/")) {
+                if (servletContext.getServerInfo().startsWith(
+                    "Google App Engine/")
+                    && ("get".equalsIgnoreCase(request.getMethod()) || request
+                        .getHeader("X-AppEngine-QueueName") != null)) {
                     doRedirect(request, response, path);
                     return;
                 }
