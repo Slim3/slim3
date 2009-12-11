@@ -165,7 +165,6 @@ public class FrontController implements Filter {
         } else {
             servletContext = ServletContextLocator.get();
         }
-        servletContext.setAttribute(ControllerConstants.UUID_KEY, uuid);
     }
 
     /**
@@ -262,6 +261,17 @@ public class FrontController implements Filter {
             request.setCharacterEncoding(charset);
         }
         String path = RequestUtil.getPath(request);
+        synchronized (this) {
+            if (servletContext.getAttribute(ControllerConstants.UUID_KEY) == null) {
+                servletContext.setAttribute(ControllerConstants.UUID_KEY, uuid);
+                if ("get".equalsIgnoreCase(request.getMethod())
+                    && servletContext.getServerInfo().startsWith(
+                        "Google App Engine/")) {
+                    doRedirect(request, response, path);
+                    return;
+                }
+            }
+        }
         Router router = RouterFactory.getRouter();
         if (request.getAttribute(ControllerConstants.ROUTED_KEY) == Boolean.TRUE) {
             request.removeAttribute(ControllerConstants.ROUTED_KEY);
