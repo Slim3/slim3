@@ -16,10 +16,9 @@
 package org.slim3.datastore;
 
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.Transaction;
 
 /**
- * A reference for model.
+ * A reference for model like ReferenceProperty of Python.
  * 
  * @author higa
  * @param <M>
@@ -72,20 +71,6 @@ public class ModelRef<M> extends AbstractModelRef<M> {
     }
 
     /**
-     * Returns the model within the transaction.
-     * 
-     * @param tx
-     *            the transaction
-     * @return the model
-     */
-    public M getModel(Transaction tx) {
-        if (model != null) {
-            return model;
-        }
-        return refresh(tx);
-    }
-
-    /**
      * Sets the model.
      * 
      * @param model
@@ -100,7 +85,6 @@ public class ModelRef<M> extends AbstractModelRef<M> {
             this.model = null;
             this.key = null;
         } else {
-            this.key = validate(model);
             this.model = model;
         }
     }
@@ -111,6 +95,13 @@ public class ModelRef<M> extends AbstractModelRef<M> {
      * @return the key
      */
     public Key getKey() {
+        if (key != null) {
+            return key;
+        }
+        if (model == null) {
+            return null;
+        }
+        key = getModelMeta().getKey(model);
         return key;
     }
 
@@ -120,7 +111,7 @@ public class ModelRef<M> extends AbstractModelRef<M> {
      * @param key
      *            the key
      * @throws IllegalStateException
-     *             if the model is not null
+     *             if the model is set
      * @throws IllegalArgumentException
      *             if the kind of the key is different from the kind of
      *             ModelMeta
@@ -129,10 +120,10 @@ public class ModelRef<M> extends AbstractModelRef<M> {
             IllegalArgumentException {
         if (model != null) {
             throw new IllegalStateException(
-                "You can set the key only when the model is null.");
+                "You can not set the key when the model is set.");
         }
         if (key != null) {
-            validate(key);
+            getModelMeta().validateKey(key);
         }
         this.key = key;
     }
@@ -151,17 +142,10 @@ public class ModelRef<M> extends AbstractModelRef<M> {
     }
 
     /**
-     * Refreshes the model within the transaction.
-     * 
-     * @param tx
-     *            the transaction
-     * @return a refreshed model
+     * Clears the state of this {@link ModelRef}.
      */
-    public M refresh(Transaction tx) {
-        if (key == null) {
-            return null;
-        }
-        model = Datastore.get(tx, getModelClass(), key);
-        return model;
+    public void clear() {
+        model = null;
+        key = null;
     }
 }

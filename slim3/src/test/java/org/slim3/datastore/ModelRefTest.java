@@ -19,8 +19,6 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.slim3.datastore.model.Aaa;
-import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.LocalServiceTestCase;
 
@@ -33,38 +31,6 @@ import com.google.appengine.api.datastore.Key;
 public class ModelRefTest extends LocalServiceTestCase {
 
     private ModelRef<Hoge> ref = new ModelRef<Hoge>(Hoge.class);
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void setModel() throws Exception {
-        Hoge hoge = new Hoge();
-        hoge.setKey(Datastore.allocateId(Hoge.class));
-        ref.setModel(hoge);
-        assertThat(ref.getKey(), is(hoge.getKey()));
-        assertThat(ref.model, is(notNullValue()));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void setModelForSubModel() throws Exception {
-        ModelRef<Aaa> aaaRef = new ModelRef<Aaa>(Aaa.class);
-        Bbb bbb = new Bbb();
-        bbb.setKey(Datastore.allocateId(Bbb.class));
-        aaaRef.setModel(bbb);
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void setModelForNull() throws Exception {
-        ref.setModel(null);
-        assertThat(ref.key, is(nullValue()));
-    }
 
     /**
      * @throws Exception
@@ -96,6 +62,40 @@ public class ModelRefTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
+    public void setModel() throws Exception {
+        Hoge hoge = new Hoge();
+        ref.setModel(hoge);
+        assertThat(ref.model, is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void setModelForNull() throws Exception {
+        ref.setKey(Datastore.createKey(Hoge.class, 1));
+        ref.setModel(null);
+        assertThat(ref.model, is(nullValue()));
+        assertThat(ref.key, is(nullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getKey() throws Exception {
+        assertThat(ref.getKey(), is(nullValue()));
+        Hoge hoge = new Hoge();
+        ref.setModel(hoge);
+        assertThat(ref.getKey(), is(nullValue()));
+        hoge.setKey(Datastore.createKey(Hoge.class, 1));
+        assertThat(ref.getKey(), is(hoge.getKey()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void setKey() throws Exception {
         Key key = Datastore.allocateId(Hoge.class);
         ref.setKey(key);
@@ -118,6 +118,7 @@ public class ModelRefTest extends LocalServiceTestCase {
      */
     @Test
     public void setKeyWhenKeyIsNotNull() throws Exception {
+        ref.setKey(Datastore.createKey(Hoge.class, 1));
         ref.setKey(null);
         assertThat(ref.key, is(nullValue()));
     }

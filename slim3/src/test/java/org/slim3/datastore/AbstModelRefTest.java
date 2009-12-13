@@ -19,8 +19,6 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.slim3.datastore.model.Aaa;
-import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.LocalServiceTestCase;
 import org.slim3.util.ByteUtil;
@@ -53,50 +51,5 @@ public class AbstModelRefTest extends LocalServiceTestCase {
     @Test
     public void getModelMeta() throws Exception {
         assertThat(ref.getModelMeta(), is(Datastore.getModelMeta(Hoge.class)));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void validateForKey() throws Exception {
-        ref.validate(Datastore.allocateId("Hoge"));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void validateForModel() throws Exception {
-        Hoge hoge = new Hoge();
-        hoge.setKey(Datastore.createKey(Hoge.class, 1));
-        ref.validate(hoge);
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test(expected = IllegalArgumentException.class)
-    public void validateForModelWhenModelDoesNotHavePrimaryKey()
-            throws Exception {
-        Hoge hoge = new Hoge();
-        ref.validate(hoge);
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void validateForSubModel() throws Exception {
-        ModelRef<Aaa> aaaRef = new ModelRef<Aaa>(Aaa.class);
-        aaaRef.validate(Datastore.allocateId(Bbb.class));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test(expected = IllegalArgumentException.class)
-    public void validateForIllegalKey() throws Exception {
-        ref.validate(Datastore.allocateId("Foo"));
     }
 }

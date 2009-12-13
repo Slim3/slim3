@@ -19,8 +19,6 @@ import java.io.Serializable;
 
 import org.slim3.util.ClassUtil;
 
-import com.google.appengine.api.datastore.Key;
-
 /**
  * A base reference for Model.
  * 
@@ -93,59 +91,6 @@ public class AbstractModelRef<M> implements Serializable {
         }
         modelMeta = Datastore.getModelMeta(modelClass);
         return modelMeta;
-    }
-
-    /**
-     * Validates the key.
-     * 
-     * @param key
-     *            the key
-     * @throws NullPointerException
-     *             if the key parameter is null
-     * @throws IllegalArgumentException
-     *             if the kind of the key is different from the kind of
-     *             {@link ModelMeta}
-     */
-    protected void validate(Key key) throws NullPointerException,
-            IllegalArgumentException {
-        if (key == null) {
-            throw new NullPointerException("The key parameter is null.");
-        }
-        if (!key.getKind().equals(getModelMeta().getKind())) {
-            throw new IllegalArgumentException("The kind("
-                + key.getKind()
-                + ") of the key("
-                + key
-                + ") must be "
-                + getModelMeta().getKind()
-                + ".");
-        }
-    }
-
-    /**
-     * Validates the model.
-     * 
-     * @param model
-     *            the model
-     * @return a validated key
-     * @throws NullPointerException
-     *             if the model parameter is null
-     * @throws IllegalArgumentException
-     *             if the model does not have a primary key or if the kind of
-     *             the key is different from the kind of {@link ModelMeta}
-     */
-    protected Key validate(M model) throws NullPointerException,
-            IllegalArgumentException {
-        if (model == null) {
-            throw new NullPointerException("The model parameter is null.");
-        }
-        Key k = getModelMeta().getKey(model);
-        if (k == null) {
-            throw new IllegalArgumentException(
-                "The model must have a primary key.");
-        }
-        validate(k);
-        return k;
     }
 
     private void writeObject(java.io.ObjectOutputStream s)
