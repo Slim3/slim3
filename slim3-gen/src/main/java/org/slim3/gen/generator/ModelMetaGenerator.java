@@ -1177,7 +1177,16 @@ public class ModelMetaGenerator implements Generator {
             printer.println("if (m.%1$s() == null) {", p.getReadMethodName());
             printer
                 .println(
-                    "    throw new NullPointerException(\"The property(%1$s) is null.\");",
+                    "    throw new NullPointerException(\"The property(%1$s) must not be null.\");",
+                    p.getName());
+            printer.println("}");
+            printer
+                .println(
+                    "if (m.%1$s().getModel() != null && m.%1$s().getKey() == null) {",
+                    p.getReadMethodName());
+            printer
+                .println(
+                    "    throw new NullPointerException(\"The key of the property(%1$s) must not be null. Set a key to the model or put the model to datastore.\");",
                     p.getName());
             printer.println("}");
             if (p.isUnindexed()) {
