@@ -115,6 +115,17 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
     }
 
     /**
+     * Returns the "in" filter.
+     * 
+     * @param value
+     *            the value
+     * @return the "in" filter
+     */
+    public FilterCriterion in(Iterable<A> value) {
+        return new InCriterion(this, value);
+    }
+
+    /**
      * Returns the "is not null" filter.
      * 
      * @return the "is not null" filter

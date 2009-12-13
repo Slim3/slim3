@@ -18,6 +18,8 @@ package org.slim3.datastore;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+import java.util.Arrays;
+
 import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
 
@@ -93,6 +95,16 @@ public class CoreAttributeMetaTest {
             meta.myString.greaterThanOrEqual("a"),
             is(GreaterThanOrEqualCriterion.class));
         assertThat(meta.myString.greaterThanOrEqual(null), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void in() throws Exception {
+        assertThat(meta.myString.in(Arrays.asList("a")), is(InCriterion.class));
+        assertThat(meta.myString.in(null), is(notNullValue()));
     }
 
     /**

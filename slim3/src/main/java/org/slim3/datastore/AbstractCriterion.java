@@ -16,7 +16,6 @@
 package org.slim3.datastore;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -96,10 +95,9 @@ public abstract class AbstractCriterion {
         if (value instanceof Enum<?>) {
             return Enum.class.cast(value).name();
         }
-        if (value instanceof Collection<?>) {
-            Collection<?> c = Collection.class.cast(value);
-            List list = new ArrayList(c.size());
-            for (Object o : c) {
+        if (value instanceof Iterable<?>) {
+            List list = new ArrayList();
+            for (Object o : Iterable.class.cast(value)) {
                 if (o instanceof Enum<?>) {
                     list.add(Enum.class.cast(o).name());
                 } else {
