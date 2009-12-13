@@ -122,4 +122,17 @@ public class ModelRefTest extends LocalServiceTestCase {
         ref.setKey(null);
         assertThat(ref.key, is(nullValue()));
     }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void clear() throws Exception {
+        Hoge hoge = new Hoge();
+        hoge.setKey(Datastore.allocateId(Hoge.class));
+        ref.setModel(hoge);
+        ref.clear();
+        assertThat(ref.model, is(nullValue()));
+        assertThat(ref.key, is(nullValue()));
+    }
 }
