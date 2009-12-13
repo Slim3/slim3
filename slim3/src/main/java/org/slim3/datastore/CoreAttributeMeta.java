@@ -60,6 +60,17 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
     }
 
     /**
+     * Returns the "not equal" filter.
+     * 
+     * @param value
+     *            the value
+     * @return the "not equal" filter
+     */
+    public FilterCriterion notEqual(A value) {
+        return new NotEqualCriterion(this, value);
+    }
+
+    /**
      * Returns the "less than" filter.
      * 
      * @param value

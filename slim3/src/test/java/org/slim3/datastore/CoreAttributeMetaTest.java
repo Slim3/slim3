@@ -36,7 +36,17 @@ public class CoreAttributeMetaTest {
     @Test
     public void equal() throws Exception {
         assertThat(meta.myString.equal("a"), is(EqualCriterion.class));
-        assertThat(meta.myString.equal(null), is(not(nullValue())));
+        assertThat(meta.myString.equal(null), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void notEqual() throws Exception {
+        assertThat(meta.myString.notEqual("a"), is(NotEqualCriterion.class));
+        assertThat(meta.myString.notEqual(null), is(notNullValue()));
     }
 
     /**
@@ -46,7 +56,7 @@ public class CoreAttributeMetaTest {
     @Test
     public void lessThan() throws Exception {
         assertThat(meta.myString.lessThan("a"), is(LessThanCriterion.class));
-        assertThat(meta.myString.lessThan(null), is(not(nullValue())));
+        assertThat(meta.myString.lessThan(null), is(notNullValue()));
     }
 
     /**
