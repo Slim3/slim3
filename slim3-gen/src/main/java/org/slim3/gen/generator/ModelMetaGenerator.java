@@ -15,7 +15,19 @@
  */
 package org.slim3.gen.generator;
 
-import static org.slim3.gen.ClassConstants.*;
+import static org.slim3.gen.ClassConstants.Blob;
+import static org.slim3.gen.ClassConstants.CollectionAttributeMeta;
+import static org.slim3.gen.ClassConstants.CoreAttributeMeta;
+import static org.slim3.gen.ClassConstants.Double;
+import static org.slim3.gen.ClassConstants.Entity;
+import static org.slim3.gen.ClassConstants.Key;
+import static org.slim3.gen.ClassConstants.Long;
+import static org.slim3.gen.ClassConstants.ModelRefAttributeMeta;
+import static org.slim3.gen.ClassConstants.Object;
+import static org.slim3.gen.ClassConstants.String;
+import static org.slim3.gen.ClassConstants.StringAttributeMeta;
+import static org.slim3.gen.ClassConstants.StringCollectionAttributeMeta;
+import static org.slim3.gen.ClassConstants.Text;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -119,19 +131,47 @@ public class ModelMetaGenerator implements Generator {
             .getModelClassName());
         printer.println();
         printer.indent();
+        printAttributeMetaFields(printer);
+        printSingletonField(printer);
         printConstructor(printer);
         printer.unindent();
         printer.println();
         printer.indent();
-        printAttributeMetaFields(printer);
         printEntityToModelMethod(printer);
         printModelToEntityMethod(printer);
         printGetKeyMethod(printer);
         printSetKeyMethod(printer);
         printGetVersion(printer);
         printIncrementVersionMethod(printer);
+        printGetMethod(printer);
         printer.unindent();
         printer.print("}");
+    }
+
+    /**
+     * Prints the singleton field.
+     * 
+     * @param printer
+     *            the printer
+     */
+    protected void printSingletonField(Printer printer) {
+        printer.println("/** */");
+        printer.println(
+            "private static final %1$s singleton = new %1$s();",
+            modelMetaDesc.getSimpleName());
+        printer.println();
+    }
+
+    /**
+     * Generates attribute meta fields.
+     * 
+     * @param printer
+     *            the printer
+     */
+    protected void printAttributeMetaFields(Printer printer) {
+        AttributeMetaFieldsGenerator generator =
+            new AttributeMetaFieldsGenerator(printer);
+        generator.generate();
     }
 
     /**
@@ -159,15 +199,20 @@ public class ModelMetaGenerator implements Generator {
     }
 
     /**
-     * Generates attribute meta fields.
+     * Generates the {@code get} method.
      * 
      * @param printer
-     *            the printer
+     *            the prnter
      */
-    protected void printAttributeMetaFields(Printer printer) {
-        AttributeMetaFieldsGenerator generator =
-            new AttributeMetaFieldsGenerator(printer);
-        generator.generate();
+    protected void printGetMethod(Printer printer) {
+        printer.println("/**");
+        printer.println(" * @return the singleton");
+        printer.println(" */");
+        printer.println("public static %1$s get() {", modelMetaDesc
+            .getSimpleName());
+        printer.println("   return singleton;");
+        printer.println("}");
+        printer.println();
     }
 
     /**
