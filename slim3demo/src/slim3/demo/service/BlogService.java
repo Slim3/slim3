@@ -14,7 +14,7 @@ import com.google.appengine.api.datastore.Transaction;
 
 public class BlogService {
 
-    private BlogMeta b = new BlogMeta();
+    private BlogMeta b = BlogMeta.get();
 
     public Blog get(Key key, Long version) {
         return Datastore.get(b, key, version);

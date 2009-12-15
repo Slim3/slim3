@@ -20,9 +20,9 @@ public class UploadService {
 
     private static final int FRAGMENT_SIZE = 900000;
 
-    private UploadedDataMeta d = new UploadedDataMeta();
+    private UploadedDataMeta d = UploadedDataMeta.get();
 
-    private UploadedDataFragmentMeta f = new UploadedDataFragmentMeta();
+    private UploadedDataFragmentMeta f = UploadedDataFragmentMeta.get();
 
     public List<UploadedData> getDataList() {
         return Datastore.query(d).asList();

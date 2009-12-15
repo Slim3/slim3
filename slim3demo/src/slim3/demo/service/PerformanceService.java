@@ -8,7 +8,6 @@ import org.slim3.datastore.Datastore;
 
 import slim3.demo.cool.jdo.PMF;
 import slim3.demo.cool.model.BarJDO;
-import slim3.demo.meta.BarMeta;
 import slim3.demo.model.Bar;
 
 import com.google.appengine.api.datastore.DatastoreService;
@@ -28,8 +27,7 @@ public class PerformanceService {
     }
 
     public List<Bar> getBarListUsingSlim3() {
-        BarMeta b = new BarMeta();
-        return Datastore.query(b).asList();
+        return Datastore.query(Bar.class).asList();
     }
 
     @SuppressWarnings("unchecked")
