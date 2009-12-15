@@ -40,10 +40,10 @@ public class SpikeTest extends LocalServiceTestCase {
     public void spike() throws Exception {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         Entity entity = new Entity("Hoge");
-        entity.setProperty("aaa", "222");
+        entity.setProperty("aaa", "111");
         ds.put(entity);
         entity = new Entity("Hoge");
-        entity.setProperty("aaa", "111");
+        entity.setProperty("aaa", "222");
         ds.put(entity);
         PreparedQuery pq = ds.prepare(new Query("Hoge").addSort("aaa"));
         QueryResultList<Entity> list =
