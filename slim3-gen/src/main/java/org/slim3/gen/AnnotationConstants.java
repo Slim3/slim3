@@ -23,39 +23,39 @@ package org.slim3.gen;
  * @since 3.0
  * 
  */
-public interface AnnotationConstants {
+public final class AnnotationConstants {
 
     /** {@code com.google.gwt.user.client.rpc.RemoteServiceRelativePath} */
-    String RemoteServiceRelativePath =
+    public static final String RemoteServiceRelativePath =
         "com.google.gwt.user.client.rpc.RemoteServiceRelativePath";
 
     /** {@code org.slim3.datastore.Model} */
-    String Model = "org.slim3.datastore.Model";
+    public static final String Model = "org.slim3.datastore.Model";
 
     /** {@code org.slim3.datastore.Attribute} */
-    String Attribute = "org.slim3.datastore.Attribute";
+    public static final String Attribute = "org.slim3.datastore.Attribute";
 
     /** the name of kind element */
-    String kind = "kind";
+    public static final String kind = "kind";
 
     /** the name of name element */
-    String name = "name";
+    public static final String name = "name";
 
     /** the name of primaryKey element */
-    String primaryKey = "primaryKey";
+    public static final String primaryKey = "primaryKey";
 
     /** the name of version element */
-    String version = "version";
+    public static final String version = "version";
 
     /** the name of lob element */
-    String lob = "lob";
+    public static final String lob = "lob";
 
     /** the name of unindexed element */
-    String unindexed = "unindexed";
+    public static final String unindexed = "unindexed";
 
     /** the name of persistent element */
-    String persistent = "persistent";
+    public static final String persistent = "persistent";
 
     /** {@code org.junit.Test} */
-    String Test = "org.junit.Test";
+    public static final String Test = "org.junit.Test";
 }

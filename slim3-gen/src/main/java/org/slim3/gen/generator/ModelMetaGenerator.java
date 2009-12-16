@@ -447,7 +447,7 @@ public class ModelMetaGenerator implements Generator {
             printer.println("/** */");
             printer
                 .println(
-                    "public %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", %6$s.class);",
+                    "public final %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", %6$s.class);",
                     CoreAttributeMeta,
                     modelMetaDesc.getModelClassName(),
                     type.getWrapperClassName(),
@@ -464,7 +464,7 @@ public class ModelMetaGenerator implements Generator {
             printer.println("/** */");
             printer
                 .println(
-                    "public %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", %6$s.class);",
+                    "public final %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", %6$s.class);",
                     CoreAttributeMeta,
                     modelMetaDesc.getModelClassName(),
                     type.getTypeName(),
@@ -481,7 +481,7 @@ public class ModelMetaGenerator implements Generator {
             printer.println("/** */");
             printer
                 .println(
-                    "public %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", %6$s.class);",
+                    "public final %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", %6$s.class);",
                     ModelRefAttributeMeta,
                     modelMetaDesc.getModelClassName(),
                     type.getTypeName(),
@@ -503,7 +503,7 @@ public class ModelMetaGenerator implements Generator {
             printer.println("/** */");
             printer
                 .println(
-                    "public %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", %6$s.class);",
+                    "public final %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", %6$s.class);",
                     CoreAttributeMeta,
                     modelMetaDesc.getModelClassName(),
                     type.getTypeName(),
@@ -518,12 +518,13 @@ public class ModelMetaGenerator implements Generator {
         public Void visitStringType(StringType type, AttributeMetaDesc p)
                 throws RuntimeException {
             printer.println("/** */");
-            printer.println(
-                "public %1$s<%2$s> %3$s = new %1$s<%2$s>(this, \"%4$s\");",
-                StringAttributeMeta,
-                modelMetaDesc.getModelClassName(),
-                p.getName(),
-                p.getPropertyName());
+            printer
+                .println(
+                    "public final %1$s<%2$s> %3$s = new %1$s<%2$s>(this, \"%4$s\");",
+                    StringAttributeMeta,
+                    modelMetaDesc.getModelClassName(),
+                    p.getName(),
+                    p.getPropertyName());
             printer.println();
             return null;
         }
@@ -559,7 +560,7 @@ public class ModelMetaGenerator implements Generator {
                         printer.println("/** */");
                         printer
                             .println(
-                                "public %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", %6$s.class);",
+                                "public final %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", %6$s.class);",
                                 StringCollectionAttributeMeta,
                                 modelMetaDesc.getModelClassName(),
                                 collectionType.getTypeName(),
@@ -577,7 +578,7 @@ public class ModelMetaGenerator implements Generator {
                         printer.println("/** */");
                         printer
                             .println(
-                                "public %1$s<%2$s, %3$s, %4$s> %5$s = new %1$s<%2$s, %3$s, %4$s>(this, \"%6$s\", %7$s.class);",
+                                "public final %1$s<%2$s, %3$s, %4$s> %5$s = new %1$s<%2$s, %3$s, %4$s>(this, \"%6$s\", %7$s.class);",
                                 CollectionAttributeMeta,
                                 modelMetaDesc.getModelClassName(),
                                 collectionType.getTypeName(),
