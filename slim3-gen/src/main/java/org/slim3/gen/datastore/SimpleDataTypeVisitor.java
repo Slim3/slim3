@@ -66,6 +66,10 @@ public class SimpleDataTypeVisitor<R, P, TH extends Throwable> implements
         return visitReferenceType(type, p);
     }
 
+    public R visitInverseModelRefType(InverseModelRefType type, P p) throws TH {
+        return visitReferenceType(type, p);
+    }
+
     public R visitOtherReferenceType(OtherReferenceType type, P p) throws TH {
         return visitReferenceType(type, p);
     }

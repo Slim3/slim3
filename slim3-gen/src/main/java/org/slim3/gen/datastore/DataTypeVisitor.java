@@ -83,6 +83,19 @@ public interface DataTypeVisitor<R, P, TH extends Throwable> {
     R visitModelRefType(ModelRefType type, P p) throws TH;
 
     /**
+     * Visits {@link InverseModelRefType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
+    R visitInverseModelRefType(InverseModelRefType type, P p) throws TH;
+    
+    /**
      * Visits {@link OtherReferenceType}.
      * 
      * @param type

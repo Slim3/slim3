@@ -25,6 +25,7 @@ import org.slim3.gen.datastore.CollectionType;
 import org.slim3.gen.datastore.CoreReferenceType;
 import org.slim3.gen.datastore.DataType;
 import org.slim3.gen.datastore.DataTypeFactory;
+import org.slim3.gen.datastore.InverseModelRefType;
 import org.slim3.gen.datastore.ModelRefType;
 import org.slim3.gen.datastore.OtherReferenceType;
 import org.slim3.gen.message.MessageCode;
@@ -190,26 +191,43 @@ public class AttributeMetaDescFactory {
             AnnotationConstants.persistent) == Boolean.FALSE) {
             handleNotPersistent(attributeMetaDesc, fieldDeclaration);
         }
-        if (attributeMetaDesc.isPersistent() && !attributeMetaDesc.isLob()) {
+        if (attributeMetaDesc.isPersistent()) {
             DataType dataType = attributeMetaDesc.getDataType();
-            if (dataType instanceof OtherReferenceType) {
-                throwExceptionForNonCoreType(
-                    classDeclaration,
-                    fieldDeclaration,
-                    attribute);
+            if (dataType instanceof InverseModelRefType) {
+                if (classDeclaration
+                    .equals(fieldDeclaration.getDeclaringType())) {
+                    throw new ValidationException(
+                        MessageCode.SILM3GEN1035,
+                        env,
+                        fieldDeclaration.getPosition());
+                }
+                throw new ValidationException(
+                    MessageCode.SILM3GEN1036,
+                    env,
+                    classDeclaration.getPosition(),
+                    fieldDeclaration.getSimpleName(),
+                    fieldDeclaration.getDeclaringType().getQualifiedName());
             }
-            if (dataType instanceof CollectionType
-                && CollectionType.class.cast(dataType).getElementType() instanceof OtherReferenceType) {
-                throwExceptionForNonCoreType(
-                    classDeclaration,
-                    fieldDeclaration,
-                    attribute);
-            }
-            if (dataType instanceof ArrayType) {
-                throwExceptionForNonCoreType(
-                    classDeclaration,
-                    fieldDeclaration,
-                    attribute);
+            if (!attributeMetaDesc.isLob()) {
+                if (dataType instanceof OtherReferenceType) {
+                    throwExceptionForNonCoreType(
+                        classDeclaration,
+                        fieldDeclaration,
+                        attribute);
+                }
+                if (dataType instanceof CollectionType
+                    && CollectionType.class.cast(dataType).getElementType() instanceof OtherReferenceType) {
+                    throwExceptionForNonCoreType(
+                        classDeclaration,
+                        fieldDeclaration,
+                        attribute);
+                }
+                if (dataType instanceof ArrayType) {
+                    throwExceptionForNonCoreType(
+                        classDeclaration,
+                        fieldDeclaration,
+                        attribute);
+                }
             }
         }
         if (attributeMetaDesc.getDataType() instanceof ModelRefType) {
@@ -458,7 +476,8 @@ public class AttributeMetaDescFactory {
      * @param fieldDeclaration
      *            the field declaration
      */
-    protected void validateModelRefTypeArgument(AttributeMetaDesc attributeMetaDesc,
+    protected void validateModelRefTypeArgument(
+            AttributeMetaDesc attributeMetaDesc,
             final ClassDeclaration classDeclaration,
             final FieldDeclaration fieldDeclaration) {
         fieldDeclaration.getType().accept(new SimpleTypeVisitor() {

@@ -26,10 +26,6 @@ public enum MessageCode {
     /** */
     SILM3GEN0001("Failed to process annotation[{0}]. Check a detail message displayed in the Error Log view(for Eclipse) or the console(for javac)."),
     /** */
-    SILM3GEN0002("[{0}] is handling."),
-    /** */
-    SILM3GEN0003("[{0}] is handled."),
-    /** */
     SILM3GEN0004("Already exists. Generation Skipped. ({0}.java:0)"),
     /** */
     SILM3GEN0005("Generated. ({0}.java:0)"),
@@ -106,7 +102,11 @@ public enum MessageCode {
     /** */
     SILM3GEN1033("The actual type argument of ModelRef is not specified."),
     /** */
-    SILM3GEN1034("The actual type argument of ModelRef is not specified. (the property[{0}] of the class[{1}]).");
+    SILM3GEN1034("The actual type argument of ModelRef is not specified. (the property[{0}] of the class[{1}])."),
+    /** */
+    SILM3GEN1035("Specify @Attribute(persistent = false) for the org.slim3.datastore.InverseModelRef property."),
+    /** */
+    SILM3GEN1036("Specify @Attribute(persistent = false) for the org.slim3.datastore.InverseModelRef property. (the property[{0}] of the class[{1}])");
 
     /** the message */
     public final String message;

@@ -218,6 +218,10 @@ public class DataTypeFactory {
             if (dataType != null) {
                 return;
             }
+            dataType = getInverseModelRefType(className, declaredType);
+            if (dataType != null) {
+                return;
+            }
             dataType = getCollectionType(className, declaredType);
             if (dataType != null) {
                 return;
@@ -299,12 +303,29 @@ public class DataTypeFactory {
          *            the class name
          * @param declaredType
          *            the declared type
-         * @return a core reference type
+         * @return a model ref type
          */
         protected ModelRefType getModelRefType(final String className,
                 DeclaredType declaredType) {
             if (TypeUtil.isSubtype(env, declaredType, ModelRef)) {
                 return new ModelRefType(className, declaredType.toString());
+            }
+            return null;
+        }
+        
+        /**
+         * Returns an inverse model ref type.
+         * 
+         * @param className
+         *            the class name
+         * @param declaredType
+         *            the declared type
+         * @return an inverse model ref type
+         */
+        protected InverseModelRefType getInverseModelRefType(final String className,
+                DeclaredType declaredType) {
+            if (TypeUtil.isSubtype(env, declaredType, InverseModelRef)) {
+                return new InverseModelRefType(className, declaredType.toString());
             }
             return null;
         }
