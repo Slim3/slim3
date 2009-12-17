@@ -597,7 +597,7 @@ public class AttributeMetaDescFactory {
         }
         DataType dataType = attributeMetaDesc.getDataType();
         if (dataType instanceof InverseModelRefType) {
-            validateOnlyReadMethod(
+            validateReadMethodOnly(
                 attributeMetaDesc,
                 (InverseModelRefType) dataType,
                 classDeclaration,
@@ -674,7 +674,7 @@ public class AttributeMetaDescFactory {
      * @param writeMethodDeclaration
      *            the write method declaration
      */
-    protected void validateOnlyReadMethod(AttributeMetaDesc attributeMetaDesc,
+    protected void validateReadMethodOnly(AttributeMetaDesc attributeMetaDesc,
             InverseModelRefType inverseModelRefType,
             ClassDeclaration classDeclaration,
             FieldDeclaration fieldDeclaration,
