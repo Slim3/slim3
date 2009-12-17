@@ -16,21 +16,15 @@
 package org.slim3.gen.datastore;
 
 /**
- * Represents {@code ModelRef} type.
+ * Represents {@code InverseModelListRef} type.
  * 
  * @author taedium
  * 
  */
-public class ModelRefType extends ReferenceType {
-
-    /** the reference model class name */
-    protected final String referenceModelClassName;
-
-    /** the reference model type name */
-    protected final String referenceModelTypeName;
+public class InverseModelListRefType extends InverseModelRefType {
 
     /**
-     * Creates a new {@code ModelRef}.
+     * Creates a new {@code InverseModelRef}.
      * 
      * @param className
      *            the class name
@@ -41,35 +35,18 @@ public class ModelRefType extends ReferenceType {
      * @param referenceModelTypeName
      *            the reference model type name
      */
-    public ModelRefType(String className, String typeName,
+    public InverseModelListRefType(String className, String typeName,
             String referenceModelClassName, String referenceModelTypeName) {
-        super(className, typeName);
-        this.referenceModelClassName = referenceModelClassName;
-        this.referenceModelTypeName = referenceModelTypeName;
+        super(
+            className,
+            typeName,
+            referenceModelClassName,
+            referenceModelTypeName);
     }
 
     @Override
     public <R, P, TH extends Throwable> R accept(
             DataTypeVisitor<R, P, TH> visitor, P p) throws TH {
-        return visitor.visitModelRefType(this, p);
+        return visitor.visitInverseModelListRefType(this, p);
     }
-
-    /**
-     * Returns the referenceModelClassName.
-     * 
-     * @return the referenceModelClassName
-     */
-    public String getReferenceModelClassName() {
-        return referenceModelClassName;
-    }
-
-    /**
-     * Returns the referenceModelTypeName.
-     * 
-     * @return the referenceModelTypeName
-     */
-    public String getReferenceModelTypeName() {
-        return referenceModelTypeName;
-    }
-
 }

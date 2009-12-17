@@ -481,13 +481,15 @@ public class ModelMetaGenerator implements Generator {
             printer.println("/** */");
             printer
                 .println(
-                    "public final %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", %6$s.class);",
+                    "public final %1$s<%2$s, %3$s, %4$s> %5$s = new %1$s<%2$s, %3$s, %4$s>(this, \"%6$s\", %7$s.class, %8$s.class);",
                     ModelRefAttributeMeta,
                     modelMetaDesc.getModelClassName(),
                     type.getTypeName(),
+                    type.getReferenceModelTypeName(),
                     p.getName(),
                     p.getPropertyName(),
-                    type.getClassName());
+                    type.getClassName(),
+                    type.getReferenceModelTypeName());
             printer.println();
             return null;
         }

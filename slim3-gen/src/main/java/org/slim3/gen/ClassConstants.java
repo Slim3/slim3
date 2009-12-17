@@ -58,8 +58,13 @@ public final class ClassConstants {
     public static final String ModelRef = "org.slim3.datastore.ModelRef";
 
     /** {@code org.slim3.datastore.InverseModelRef} */
-    public static final String InverseModelRef = "org.slim3.datastore.InverseModelRef";
-    
+    public static final String InverseModelRef =
+        "org.slim3.datastore.InverseModelRef";
+
+    /** {@code org.slim3.datastore.InverseModelListRef} */
+    public static final String InverseModelListRef =
+        "org.slim3.datastore.InverseModelListRef";
+
     /** {@code org.slim3.datastore.CoreAttributeMeta} */
     public static final String CoreAttributeMeta =
         "org.slim3.datastore.CoreAttributeMeta";

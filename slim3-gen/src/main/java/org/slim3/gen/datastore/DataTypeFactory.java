@@ -15,7 +15,37 @@
  */
 package org.slim3.gen.datastore;
 
-import static org.slim3.gen.ClassConstants.*;
+import static org.slim3.gen.ClassConstants.ArrayList;
+import static org.slim3.gen.ClassConstants.Blob;
+import static org.slim3.gen.ClassConstants.Boolean;
+import static org.slim3.gen.ClassConstants.Category;
+import static org.slim3.gen.ClassConstants.Date;
+import static org.slim3.gen.ClassConstants.Double;
+import static org.slim3.gen.ClassConstants.Email;
+import static org.slim3.gen.ClassConstants.Float;
+import static org.slim3.gen.ClassConstants.GeoPt;
+import static org.slim3.gen.ClassConstants.HashSet;
+import static org.slim3.gen.ClassConstants.IMHandle;
+import static org.slim3.gen.ClassConstants.Integer;
+import static org.slim3.gen.ClassConstants.InverseModelListRef;
+import static org.slim3.gen.ClassConstants.InverseModelRef;
+import static org.slim3.gen.ClassConstants.Key;
+import static org.slim3.gen.ClassConstants.Link;
+import static org.slim3.gen.ClassConstants.List;
+import static org.slim3.gen.ClassConstants.Long;
+import static org.slim3.gen.ClassConstants.ModelRef;
+import static org.slim3.gen.ClassConstants.PhoneNumber;
+import static org.slim3.gen.ClassConstants.PostalAddress;
+import static org.slim3.gen.ClassConstants.Rating;
+import static org.slim3.gen.ClassConstants.Set;
+import static org.slim3.gen.ClassConstants.Short;
+import static org.slim3.gen.ClassConstants.ShortBlob;
+import static org.slim3.gen.ClassConstants.SortedSet;
+import static org.slim3.gen.ClassConstants.String;
+import static org.slim3.gen.ClassConstants.Text;
+import static org.slim3.gen.ClassConstants.TreeSet;
+import static org.slim3.gen.ClassConstants.User;
+import static org.slim3.gen.ClassConstants.primitive_byte;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -222,6 +252,10 @@ public class DataTypeFactory {
             if (dataType != null) {
                 return;
             }
+            dataType = getInverseModelListRefType(className, declaredType);
+            if (dataType != null) {
+                return;
+            }
             dataType = getCollectionType(className, declaredType);
             if (dataType != null) {
                 return;
@@ -305,14 +339,22 @@ public class DataTypeFactory {
          *            the declared type
          * @return a model ref type
          */
-        protected ModelRefType getModelRefType(final String className,
+        protected ModelRefType getModelRefType(String className,
                 DeclaredType declaredType) {
-            if (TypeUtil.isSubtype(env, declaredType, ModelRef)) {
-                return new ModelRefType(className, declaredType.toString());
+            DeclaredType referenceModelType =
+                getReferenceModelType(className, declaredType, ModelRef);
+            if (referenceModelType == null) {
+                return null;
             }
-            return null;
+            TypeDeclaration referenceModelDeclaration =
+                toTypeDeclaration(referenceModelType);
+            return new ModelRefType(
+                className,
+                declaredType.toString(),
+                referenceModelDeclaration.getQualifiedName(),
+                referenceModelType.toString());
         }
-        
+
         /**
          * Returns an inverse model ref type.
          * 
@@ -322,12 +364,74 @@ public class DataTypeFactory {
          *            the declared type
          * @return an inverse model ref type
          */
-        protected InverseModelRefType getInverseModelRefType(final String className,
+        protected InverseModelRefType getInverseModelRefType(String className,
                 DeclaredType declaredType) {
-            if (TypeUtil.isSubtype(env, declaredType, InverseModelRef)) {
-                return new InverseModelRefType(className, declaredType.toString());
+            DeclaredType referenceModelType =
+                getReferenceModelType(className, declaredType, InverseModelRef);
+            if (referenceModelType == null) {
+                return null;
             }
-            return null;
+            TypeDeclaration referenceModelDeclaration =
+                toTypeDeclaration(referenceModelType);
+            return new InverseModelRefType(
+                className,
+                declaredType.toString(),
+                referenceModelDeclaration.getQualifiedName(),
+                referenceModelType.toString());
+        }
+
+        /**
+         * Returns an inverse model list ref type.
+         * 
+         * @param className
+         *            the class name
+         * @param declaredType
+         *            the declared type
+         * @return an inverse model list ref type
+         */
+        protected InverseModelListRefType getInverseModelListRefType(
+                String className, DeclaredType declaredType) {
+            DeclaredType referenceModelType =
+                getReferenceModelType(
+                    className,
+                    declaredType,
+                    InverseModelListRef);
+            if (referenceModelType == null) {
+                return null;
+            }
+            TypeDeclaration referenceModelDeclaration =
+                toTypeDeclaration(referenceModelType);
+            return new InverseModelListRefType(
+                className,
+                declaredType.toString(),
+                referenceModelDeclaration.getQualifiedName(),
+                referenceModelType.toString());
+        }
+
+        /**
+         * Returns reference model type.
+         * 
+         * @param className
+         *            the class name
+         * @param declaredType
+         *            the declared type
+         * @param superclassName
+         *            the superclass name
+         * @return a reference model type
+         */
+        protected DeclaredType getReferenceModelType(String className,
+                DeclaredType declaredType, String superclassName) {
+            DeclaredType supertype =
+                TypeUtil
+                    .getSuperDeclaredType(env, declaredType, superclassName);
+            if (supertype == null
+                || supertype.getActualTypeArguments().isEmpty()) {
+                return null;
+            }
+            return TypeUtil.toDeclaredType(supertype
+                .getActualTypeArguments()
+                .iterator()
+                .next());
         }
 
         /**

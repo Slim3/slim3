@@ -106,7 +106,15 @@ public enum MessageCode {
     /** */
     SILM3GEN1035("Specify @Attribute(persistent = false) for the org.slim3.datastore.InverseModelRef property."),
     /** */
-    SILM3GEN1036("Specify @Attribute(persistent = false) for the org.slim3.datastore.InverseModelRef property. (the property[{0}] of the class[{1}])");
+    SILM3GEN1036("Specify @Attribute(persistent = false) for the org.slim3.datastore.InverseModelRef property. (the property[{0}] of the class[{1}])"),
+    /** */
+    SILM3GEN1037("Specify @Attribute(persistent = false) for the org.slim3.datastore.InverseModelListRef property."),
+    /** */
+    SILM3GEN1038("Specify @Attribute(persistent = false) for the org.slim3.datastore.InverseModelListRef property. (the property[{0}] of the class[{1}])"),
+    /** */
+    SILM3GEN1039("The setter method for the property[{0}] is not allowed. Instead define the property field as follows.\n{1}\nThe ''xxx'' expresses the mapped property name."),
+    /** */
+    SILM3GEN1040("The setter method for the property[{0}] of the class[{1}] is not allowed. Instead define the property as follows.\n{2}\nThe ''xxx'' expresses the mapped property name.");
 
     /** the message */
     public final String message;

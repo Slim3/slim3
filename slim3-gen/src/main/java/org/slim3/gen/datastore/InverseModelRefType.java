@@ -23,6 +23,12 @@ package org.slim3.gen.datastore;
  */
 public class InverseModelRefType extends ReferenceType {
 
+    /** the reference model class name */
+    protected final String referenceModelClassName;
+
+    /** the reference model type name */
+    protected final String referenceModelTypeName;
+
     /**
      * Creates a new {@code InverseModelRef}.
      * 
@@ -30,14 +36,39 @@ public class InverseModelRefType extends ReferenceType {
      *            the class name
      * @param typeName
      *            the type name
+     * @param referenceModelClassName
+     *            the reference model class name
+     * @param referenceModelTypeName
+     *            the reference model type name
      */
-    public InverseModelRefType(String className, String typeName) {
+    public InverseModelRefType(String className, String typeName,
+            String referenceModelClassName, String referenceModelTypeName) {
         super(className, typeName);
+        this.referenceModelClassName = referenceModelClassName;
+        this.referenceModelTypeName = referenceModelTypeName;
     }
 
     @Override
     public <R, P, TH extends Throwable> R accept(
             DataTypeVisitor<R, P, TH> visitor, P p) throws TH {
         return visitor.visitInverseModelRefType(this, p);
+    }
+
+    /**
+     * Returns the referenceModelClassName.
+     * 
+     * @return the referenceModelClassName
+     */
+    public String getReferenceModelClassName() {
+        return referenceModelClassName;
+    }
+
+    /**
+     * Returns the referenceModelTypeName.
+     * 
+     * @return the referenceModelTypeName
+     */
+    public String getReferenceModelTypeName() {
+        return referenceModelTypeName;
     }
 }

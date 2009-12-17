@@ -147,10 +147,27 @@ public final class TypeUtil {
      */
     public static boolean isSubtype(AnnotationProcessorEnvironment env,
             TypeMirror subtype, String supertype) {
+        return getSuperDeclaredType(env, subtype, supertype) != null;
+    }
+
+    /**
+     * Returns super {@link DeclaredType} of {@code subtype}.
+     * 
+     * @param env
+     *            the environment
+     * @param subtype
+     *            the typemirror of subtype
+     * @param supertype
+     *            the supertype
+     * @return super {@link DeclaredType} of {@code subtype}
+     */
+    public static DeclaredType getSuperDeclaredType(
+            AnnotationProcessorEnvironment env, TypeMirror subtype,
+            String supertype) {
         TypeDeclaration supertypeDeclaration =
             env.getTypeDeclaration(supertype);
         if (supertypeDeclaration == null) {
-            return false;
+            return null;
         }
 
         class Visitor extends SimpleTypeVisitor {
@@ -182,9 +199,9 @@ public final class TypeUtil {
         for (DeclaredType type : visitor.supertypes) {
             TypeDeclaration subtypeDeclaration = type.getDeclaration();
             if (subtypeDeclaration.equals(supertypeDeclaration)) {
-                return true;
+                return type;
             }
         }
-        return false;
+        return null;
     }
 }
