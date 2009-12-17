@@ -22,10 +22,6 @@ public class ModelRef<M> extends AbstractModelRef<M> {
         return model;
     }
 
-    public M getModel(Transaction tx) {
-        return model;
-    }
-
     public void setModel(M model) throws IllegalArgumentException {
         this.model = model;
     }
@@ -37,11 +33,13 @@ public class ModelRef<M> extends AbstractModelRef<M> {
     public void setKey(Key key) throws IllegalArgumentException {
         this.key = key;
     }
+    
     public M refresh() {
         return null;
     }
 
-    public M refresh(Transaction tx) {
-        return null;
+    public void clear() {
+        model = null;
+        key = null;
     }
 }

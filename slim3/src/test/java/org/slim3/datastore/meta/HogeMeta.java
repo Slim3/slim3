@@ -41,6 +41,15 @@ import com.google.appengine.api.datastore.Query.SortDirection;
  */
 public class HogeMeta extends ModelMeta<Hoge> {
 
+    private static final HogeMeta INSTANCE = new HogeMeta();
+
+    /**
+     * @return {@link HogeMeta}
+     */
+    public static HogeMeta get() {
+        return INSTANCE;
+    }
+
     /**
      * 
      */

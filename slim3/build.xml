@@ -34,6 +34,7 @@
 		<copy file="src/main/resources/org/slim3/gwt/emul/org/slim3/datastore/ModelMeta.java" tofile="build/classes/org/slim3/gwt/emul/org/slim3/datastore/ModelMeta.java"/>
 		<copy file="src/main/resources/org/slim3/gwt/emul/org/slim3/datastore/AbstractModelRef.java" tofile="build/classes/org/slim3/gwt/emul/org/slim3/datastore/AbstractModelRef.java"/>
 		<copy file="src/main/resources/org/slim3/gwt/emul/org/slim3/datastore/ModelRef.java" tofile="build/classes/org/slim3/gwt/emul/org/slim3/datastore/ModelRef.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/org/slim3/datastore/InverseModelRef.java" tofile="build/classes/org/slim3/gwt/emul/org/slim3/datastore/InverseModelRef.java"/>
 	    <jar jarfile="target/slim3-${ver}.jar" basedir="build/classes"/>
 	    <jar jarfile="target/slim3-${ver}-sources.jar" basedir="src/main/java"/>
 	</target>

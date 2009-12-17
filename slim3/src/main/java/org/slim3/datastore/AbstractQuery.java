@@ -121,7 +121,8 @@ public abstract class AbstractQuery<SUB> {
      */
     protected void setUpQuery(String kind) throws NullPointerException {
         if (kind == null) {
-            throw new NullPointerException("The kind parameter is null.");
+            throw new NullPointerException(
+                "The kind parameter must not be null.");
         }
         query = new Query(kind);
     }
@@ -141,10 +142,12 @@ public abstract class AbstractQuery<SUB> {
     protected void setUpQuery(String kind, Key ancestorKey)
             throws NullPointerException {
         if (kind == null) {
-            throw new NullPointerException("The kind parameter is null.");
+            throw new NullPointerException(
+                "The kind parameter must not be null.");
         }
         if (ancestorKey == null) {
-            throw new NullPointerException("The ancestorKey parameter is null.");
+            throw new NullPointerException(
+                "The ancestorKey parameter must not be null.");
         }
         query = new Query(kind, ancestorKey);
     }
@@ -159,7 +162,8 @@ public abstract class AbstractQuery<SUB> {
      */
     protected void setUpQuery(Key ancestorKey) throws NullPointerException {
         if (ancestorKey == null) {
-            throw new NullPointerException("The ancestorKey parameter is null.");
+            throw new NullPointerException(
+                "The ancestorKey parameter must not be null.");
         }
         query = new Query(ancestorKey);
     }
@@ -314,7 +318,7 @@ public abstract class AbstractQuery<SUB> {
     protected <T> T min(String propertyName) throws NullPointerException {
         if (propertyName == null) {
             throw new NullPointerException(
-                "The propertyName parameter is null.");
+                "The propertyName parameter must not be null.");
         }
         query.addFilter(propertyName, FilterOperator.GREATER_THAN, null);
         query.addSort(propertyName, SortDirection.ASCENDING);
@@ -341,7 +345,7 @@ public abstract class AbstractQuery<SUB> {
     protected <T> T max(String propertyName) throws NullPointerException {
         if (propertyName == null) {
             throw new NullPointerException(
-                "The propertyName parameter is null.");
+                "The propertyName parameter must not be null.");
         }
         query.addSort(propertyName, SortDirection.DESCENDING);
         fetchOptions.offset(0).limit(1);

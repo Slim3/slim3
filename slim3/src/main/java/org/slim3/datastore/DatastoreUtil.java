@@ -110,7 +110,7 @@ public final class DatastoreUtil {
     public static void commit(Transaction tx) throws NullPointerException,
             IllegalStateException {
         if (tx == null) {
-            throw new NullPointerException("The tx parameter is null.");
+            throw new NullPointerException("The tx parameter must not be null.");
         }
         if (!tx.isActive()) {
             throw new IllegalStateException("The transaction must be active.");

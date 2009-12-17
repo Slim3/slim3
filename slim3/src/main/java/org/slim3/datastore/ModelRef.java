@@ -49,13 +49,13 @@ public class ModelRef<M> extends AbstractModelRef<M> {
     /**
      * Constructor.
      * 
-     * @param modelClass
-     *            the model class
+     * @param modelMeta
+     *            the meta data of model
      * @throws NullPointerException
-     *             if the modelClass parameter is null
+     *             if the modelMeta parameter is null
      */
-    public ModelRef(Class<M> modelClass) throws NullPointerException {
-        super(modelClass);
+    public ModelRef(ModelMeta<M> modelMeta) throws NullPointerException {
+        super(modelMeta);
     }
 
     /**
@@ -137,7 +137,7 @@ public class ModelRef<M> extends AbstractModelRef<M> {
         if (key == null) {
             return null;
         }
-        model = Datastore.get(getModelClass(), key);
+        model = Datastore.get(getModelMeta(), key);
         return model;
     }
 

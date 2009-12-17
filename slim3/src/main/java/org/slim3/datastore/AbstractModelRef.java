@@ -33,6 +33,11 @@ public class AbstractModelRef<M> implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * The meta data of model.
+     */
+    protected transient ModelMeta<M> modelMeta;
+
+    /**
      * The model class.
      */
     protected transient Class<M> modelClass;
@@ -43,11 +48,6 @@ public class AbstractModelRef<M> implements Serializable {
     protected transient String modelClassName;
 
     /**
-     * The meta data of model.
-     */
-    protected transient ModelMeta<M> modelMeta;
-
-    /**
      * Constructor.
      */
     protected AbstractModelRef() {
@@ -56,16 +56,13 @@ public class AbstractModelRef<M> implements Serializable {
     /**
      * Constructor.
      * 
-     * @param modelClass
-     *            the model class
+     * @param modelMeta
+     *            the meta data of model
      * @throws NullPointerException
-     *             if the modelClass parameter is null
+     *             if the modelMeta parameter is null
      */
-    public AbstractModelRef(Class<M> modelClass) throws NullPointerException {
-        if (modelClass == null) {
-            throw new NullPointerException("The modelClass parameter is null.");
-        }
-        this.modelClass = modelClass;
+    public AbstractModelRef(ModelMeta<M> modelMeta) throws NullPointerException {
+        setModelMeta(modelMeta);
     }
 
     /**
@@ -89,8 +86,26 @@ public class AbstractModelRef<M> implements Serializable {
         if (modelMeta != null) {
             return modelMeta;
         }
-        modelMeta = Datastore.getModelMeta(modelClass);
+        modelMeta = Datastore.getModelMeta(getModelClass());
         return modelMeta;
+    }
+
+    /**
+     * Sets the meta data of model.
+     * 
+     * @param modelMeta
+     *            the meta data of model
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null
+     */
+    protected void setModelMeta(ModelMeta<M> modelMeta)
+            throws NullPointerException {
+        if (modelMeta == null) {
+            throw new NullPointerException(
+                "The modelMeta parameter must not be null.");
+        }
+        this.modelMeta = modelMeta;
+        this.modelClass = modelMeta.modelClass;
     }
 
     private void writeObject(java.io.ObjectOutputStream s)

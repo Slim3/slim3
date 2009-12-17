@@ -14,6 +14,15 @@ import com.google.appengine.api.datastore.Key;
 public final class CccMeta extends
         org.slim3.datastore.ModelMeta<org.slim3.datastore.model.Ccc> {
 
+    private static final CccMeta INSTANCE = new CccMeta();
+
+    /**
+     * @return {@link CccMeta}
+     */
+    public static CccMeta get() {
+        return INSTANCE;
+    }
+
     /**
      * 
      */

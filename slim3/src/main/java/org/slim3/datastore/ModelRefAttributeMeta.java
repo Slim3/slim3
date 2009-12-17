@@ -25,15 +25,23 @@ import com.google.appengine.api.datastore.Key;
  *            the model type
  * @param <A>
  *            the attribute type
+ * @param <RM>
+ *            the reference model type
  * @since 3.0
  * 
  */
-public class ModelRefAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
+public class ModelRefAttributeMeta<M, A, RM> extends
+        AbstractAttributeMeta<M, A> {
 
     /**
      * The "is not null" filter.
      */
     protected IsNotNullCriterion isNotNull = new IsNotNullCriterion(this);
+
+    /**
+     * The reference model class.
+     */
+    protected Class<RM> referenceModelClass;
 
     /**
      * Constructor.
@@ -44,10 +52,20 @@ public class ModelRefAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
      *            the name
      * @param attributeClass
      *            the attribute class
+     * @param referenceModelClass
+     *            the reference model class
+     * @throws NullPointerException
+     *             if the referenceModelClass parameter is null
      */
     public ModelRefAttributeMeta(ModelMeta<M> modelMeta, String name,
-            Class<? super A> attributeClass) {
+            Class<? super A> attributeClass, Class<RM> referenceModelClass)
+            throws NullPointerException {
         super(modelMeta, name, attributeClass);
+        if (referenceModelClass == null) {
+            throw new NullPointerException(
+                "The referenceModelClass parameter must not be null.");
+        }
+        this.referenceModelClass = referenceModelClass;
     }
 
     /**

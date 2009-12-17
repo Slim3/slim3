@@ -10,6 +10,15 @@ import com.google.appengine.api.datastore.Key;
 public final class AaaMeta extends
         org.slim3.datastore.ModelMeta<org.slim3.datastore.model.Aaa> {
 
+    private static final AaaMeta INSTANCE = new AaaMeta();
+
+    /**
+     * @return {@link AaaMeta}
+     */
+    public static AaaMeta get() {
+        return INSTANCE;
+    }
+
     /**
      * 
      */

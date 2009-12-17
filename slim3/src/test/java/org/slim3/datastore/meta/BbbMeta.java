@@ -15,6 +15,15 @@ import com.google.appengine.api.datastore.Key;
 public final class BbbMeta extends
         org.slim3.datastore.ModelMeta<org.slim3.datastore.model.Bbb> {
 
+    private static final BbbMeta INSTANCE = new BbbMeta();
+
+    /**
+     * @return {@link BbbMeta}
+     */
+    public static BbbMeta get() {
+        return INSTANCE;
+    }
+
     /**
      * 
      */
@@ -53,11 +62,22 @@ public final class BbbMeta extends
     /**
      * 
      */
-    public org.slim3.datastore.ModelRefAttributeMeta<org.slim3.datastore.model.Bbb, ModelRef<Hoge>> hogeRef =
-        new org.slim3.datastore.ModelRefAttributeMeta<org.slim3.datastore.model.Bbb, ModelRef<Hoge>>(
+    public org.slim3.datastore.ModelRefAttributeMeta<org.slim3.datastore.model.Bbb, ModelRef<Hoge>, Hoge> hogeRef =
+        new org.slim3.datastore.ModelRefAttributeMeta<org.slim3.datastore.model.Bbb, ModelRef<Hoge>, Hoge>(
             this,
             "hogeRef",
-            ModelRef.class);
+            ModelRef.class,
+            Hoge.class);
+
+    /**
+     * 
+     */
+    public org.slim3.datastore.ModelRefAttributeMeta<org.slim3.datastore.model.Bbb, ModelRef<Hoge>, Hoge> hoge2Ref =
+        new org.slim3.datastore.ModelRefAttributeMeta<org.slim3.datastore.model.Bbb, ModelRef<Hoge>, Hoge>(
+            this,
+            "hoge2Ref",
+            ModelRef.class,
+            Hoge.class);
 
     @Override
     protected Key getKey(Object model) {
@@ -100,6 +120,12 @@ public final class BbbMeta extends
         model.getHogeRef().setKey(
             (com.google.appengine.api.datastore.Key) entity
                 .getProperty("hogeRef"));
+        if (model.getHoge2Ref() == null) {
+            throw new NullPointerException("The property(hoge2Ref) is null.");
+        }
+        model.getHoge2Ref().setKey(
+            (com.google.appengine.api.datastore.Key) entity
+                .getProperty("hoge2Ref"));
         return model;
     }
 
@@ -122,6 +148,10 @@ public final class BbbMeta extends
             throw new NullPointerException("The property(hogeRef) is null.");
         }
         entity.setProperty("hogeRef", m.getHogeRef().getKey());
+        if (m.getHoge2Ref() == null) {
+            throw new NullPointerException("The property(hoge2Ref) is null.");
+        }
+        entity.setProperty("hoge2Ref", m.getHoge2Ref().getKey());
         return entity;
     }
 }

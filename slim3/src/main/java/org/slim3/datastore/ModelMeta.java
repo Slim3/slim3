@@ -214,10 +214,7 @@ public abstract class ModelMeta<M> {
      *             model
      */
     protected void validateKey(Key key) throws IllegalArgumentException {
-        if (key == null) {
-            throw new NullPointerException("The key parameter is null.");
-        }
-        if (!key.getKind().equals(kind)) {
+        if (key != null && !key.getKind().equals(kind)) {
             throw new IllegalArgumentException("The kind("
                 + key.getKind()
                 + ") of the key("
@@ -507,7 +504,7 @@ public abstract class ModelMeta<M> {
         if (v == null) {
             return new HashSet<T>();
         }
-        HashSet<T> set = new HashSet<T>(v.size());
+        HashSet<T> set = new HashSet<T>(v.size(), 1.0f);
         set.addAll(v);
         return set;
     }
@@ -582,7 +579,7 @@ public abstract class ModelMeta<M> {
         if (v == null) {
             return new HashSet<Short>();
         }
-        HashSet<Short> collection = new HashSet<Short>(v.size());
+        HashSet<Short> collection = new HashSet<Short>(v.size(), 1.0f);
         copyLongListToShortCollection(v, collection);
         return collection;
     }
@@ -653,7 +650,7 @@ public abstract class ModelMeta<M> {
         if (v == null) {
             return new HashSet<Integer>();
         }
-        HashSet<Integer> collection = new HashSet<Integer>(v.size());
+        HashSet<Integer> collection = new HashSet<Integer>(v.size(), 1.0f);
         copyLongListToIntegerCollection(v, collection);
         return collection;
     }
@@ -724,7 +721,7 @@ public abstract class ModelMeta<M> {
         if (v == null) {
             return new HashSet<Float>();
         }
-        HashSet<Float> collection = new HashSet<Float>(v.size());
+        HashSet<Float> collection = new HashSet<Float>(v.size(), 1.0f);
         copyDoubleListToFloatCollection(v, collection);
         return collection;
     }

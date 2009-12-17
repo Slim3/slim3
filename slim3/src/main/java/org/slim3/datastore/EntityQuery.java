@@ -94,9 +94,20 @@ public class EntityQuery extends AbstractQuery<EntityQuery> {
      *            the value
      * 
      * @return this instance
+     * @throws NullPointerException
+     *             if the propertyName parameter is null of if the operator
+     *             parameter is null
      */
     public EntityQuery filter(String propertyName, FilterOperator operator,
-            Object value) {
+            Object value) throws NullPointerException {
+        if (propertyName == null) {
+            throw new NullPointerException(
+                "The propertyName parameter must not be null.");
+        }
+        if (operator == null) {
+            throw new NullPointerException(
+                "The operator parameter must not be null.");
+        }
         query.addFilter(propertyName, operator, value);
         return this;
     }
@@ -108,8 +119,14 @@ public class EntityQuery extends AbstractQuery<EntityQuery> {
      *            the property name
      * 
      * @return this instance
+     * @throws NullPointerException
+     *             if the propertyName parameter is null
      */
-    public EntityQuery sort(String propertyName) {
+    public EntityQuery sort(String propertyName) throws NullPointerException {
+        if (propertyName == null) {
+            throw new NullPointerException(
+                "The propertyName parameter must not be null.");
+        }
         return sort(propertyName, SortDirection.ASCENDING);
     }
 
@@ -122,8 +139,20 @@ public class EntityQuery extends AbstractQuery<EntityQuery> {
      *            the sort direction
      * 
      * @return this instance
+     * @throws NullPointerException
+     *             if the propertyName parameter is null of if the direction
+     *             parameter is null
      */
-    public EntityQuery sort(String propertyName, SortDirection direction) {
+    public EntityQuery sort(String propertyName, SortDirection direction)
+            throws NullPointerException {
+        if (propertyName == null) {
+            throw new NullPointerException(
+                "The propertyName parameter must not be null.");
+        }
+        if (direction == null) {
+            throw new NullPointerException(
+                "The direction parameter must not be null.");
+        }
         query.addSort(propertyName, direction);
         return this;
     }

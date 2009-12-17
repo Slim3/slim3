@@ -1,12 +1,16 @@
 package org.slim3.datastore;
 
+import java.util.List;
+
+import com.google.appengine.api.datastore.Entity;
+
 public abstract class ModelMeta<M> {
 
     protected String kind;
 
     protected Class<M> modelClass;
 
-    protected String simpleClassName;
+    protected List<String> classHierarchyList;
 
     protected ModelMeta() {
     }
@@ -19,7 +23,15 @@ public abstract class ModelMeta<M> {
         return modelClass;
     }
 
-    public String getSimpleClassName() {
-        return simpleClassName;
+    public List<String> getClassHierarchyList() {
+        return classHierarchyList;
+    }
+    
+    public M entityToModel(Entity entity) {
+        return null;
+    }
+
+    public Entity modelToEntity(Object model) {
+        return null;
     }
 }
