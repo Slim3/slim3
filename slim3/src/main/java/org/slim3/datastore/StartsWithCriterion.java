@@ -15,8 +15,8 @@
  */
 package org.slim3.datastore;
 
-import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 /**
  * An implementation class for "startsWith" filter.
@@ -25,8 +25,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
  * @since 3.0
  * 
  */
-public class StartsWithCriterion extends AbstractCriterion implements
-        FilterCriterion {
+public class StartsWithCriterion extends AbstractFilterCriterion {
 
     /**
      * The value;
@@ -45,29 +44,50 @@ public class StartsWithCriterion extends AbstractCriterion implements
      *            the meta data of attribute
      * @param value
      *            the value
-     * @see AbstractCriterion#AbstractCriterion(AbstractAttributeMeta)
+     * @throws NullPointerException
+     *             if the attributeMeta parameter is null
      */
     public StartsWithCriterion(AbstractAttributeMeta<?, ?> attributeMeta,
-            String value) {
+            String value) throws NullPointerException {
         super(attributeMeta);
         this.value = value;
         if (value != null) {
             highValue = value + highValue;
         }
-    }
-
-    public void apply(Query query) {
-        query.addFilter(
-            attributeMeta.getName(),
-            FilterOperator.GREATER_THAN_OR_EQUAL,
-            value).addFilter(
-            attributeMeta.getName(),
-            FilterOperator.LESS_THAN,
-            highValue);
+        filterPredicates =
+            new FilterPredicate[] {
+                new FilterPredicate(
+                    attributeMeta.getName(),
+                    FilterOperator.GREATER_THAN_OR_EQUAL,
+                    this.value),
+                new FilterPredicate(
+                    attributeMeta.getName(),
+                    FilterOperator.LESS_THAN,
+                    highValue) };
     }
 
     public boolean accept(Object model) {
         Object v = attributeMeta.getValue(model);
+        if (v instanceof Iterable<?>) {
+            for (Object o : (Iterable<?>) v) {
+                if (compareValue(o, value) >= 0
+                    && compareValue(o, highValue) < 0) {
+                    return true;
+                }
+            }
+            return false;
+        }
         return compareValue(v, value) >= 0 && compareValue(v, highValue) < 0;
+    }
+
+    @Override
+    public String toString() {
+        return attributeMeta.getName()
+            + " >= "
+            + value
+            + " && "
+            + attributeMeta.getName()
+            + " < "
+            + highValue;
     }
 }

@@ -120,4 +120,25 @@ public class AscCriterionTest extends LocalServiceTestCase {
         assertThat(c.compare(hoge, hoge2), is(-1));
         assertThat(c.compare(hoge2, hoge), is(1));
     }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSortPredicate() throws Exception {
+        AscCriterion c = new AscCriterion(meta.myString);
+        SortPredicate sp = c.getSortPredicate();
+        assertThat(sp, is(notNullValue()));
+        assertThat(sp.getPropertyName(), is("myString"));
+        assertThat(sp.getDirection(), is(SortDirection.ASCENDING));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void testToString() throws Exception {
+        AscCriterion c = new AscCriterion(meta.myString);
+        assertThat(c.toString(), is("myString asc"));
+    }
 }

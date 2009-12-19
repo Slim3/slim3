@@ -15,7 +15,7 @@
  */
 package org.slim3.datastore;
 
-import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 /**
  * A criterion interface for filter.
@@ -27,12 +27,11 @@ import com.google.appengine.api.datastore.Query;
 public interface FilterCriterion {
 
     /**
-     * Applies this filter to the query.
+     * Returns array of {@link FilterPredicate}s.
      * 
-     * @param query
-     *            the query
+     * @return array of {@link FilterPredicate}s
      */
-    void apply(Query query);
+    FilterPredicate[] getFilterPredicates();
 
     /**
      * Determines if the model is accepted.

@@ -21,10 +21,8 @@ import org.slim3.tester.LocalServiceTestCase;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.QueryResultList;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.users.User;
 
 /**
  * @author higa
@@ -39,15 +37,14 @@ public class SpikeTest extends LocalServiceTestCase {
     public void spike() throws Exception {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         Entity entity = new Entity("Hoge");
-        entity.setProperty("aaa", "111");
+        entity.setProperty("user", new User(
+            "higayasuo@gmail.com",
+            "gmail.com",
+            "higayasuo"));
         ds.put(entity);
-        Entity entity2 = new Entity("Hoge");
-        entity2.setProperty("aaa", "222");
-        ds.put(entity2);
-        PreparedQuery pq = ds.prepare(new Query("Hoge").addSort("aaa"));
-        QueryResultList<Entity> list =
-            pq.asQueryResultList(FetchOptions.Builder.withLimit(1));
-        System.out.println(list.getCursor());
-        ds.delete(entity.getKey(), entity2.getKey());
+        System.out.println(Datastore.query("Hoge").filter(
+            "user",
+            FilterOperator.EQUAL,
+            new User("higayasuo@gmail.com", "xxx", "higayasuo")).count());
     }
 }

@@ -120,8 +120,13 @@ public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
      * @param value
      *            the value
      * @return the "in" filter
+     * @throws NullPointerException
+     *             if the value parameter is null
+     * @throws IllegalArgumentException
+     *             if the value parameter is empty
      */
-    public FilterCriterion in(Iterable<A> value) {
+    public FilterCriterion in(Iterable<A> value) throws NullPointerException,
+            IllegalArgumentException {
         return new InCriterion(this, value);
     }
 

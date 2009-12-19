@@ -15,8 +15,8 @@
  */
 package org.slim3.datastore;
 
-import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 /**
  * An implementation class for "greater than or equal" filter.
@@ -25,8 +25,7 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
  * @since 3.0
  * 
  */
-public class GreaterThanOrEqualCriterion extends AbstractCriterion implements
-        FilterCriterion {
+public class GreaterThanOrEqualCriterion extends AbstractFilterCriterion {
 
     /**
      * The value;
@@ -40,23 +39,36 @@ public class GreaterThanOrEqualCriterion extends AbstractCriterion implements
      *            the meta data of attribute
      * @param value
      *            the value
-     * @see AbstractCriterion#AbstractCriterion(AbstractAttributeMeta)
+     * @throws NullPointerException
+     *             if the attributeMeta parameter is null
      */
     public GreaterThanOrEqualCriterion(
-            AbstractAttributeMeta<?, ?> attributeMeta, Object value) {
+            AbstractAttributeMeta<?, ?> attributeMeta, Object value)
+            throws NullPointerException {
         super(attributeMeta);
         this.value = convertValueForDatastore(value);
-    }
-
-    public void apply(Query query) {
-        query.addFilter(
-            attributeMeta.getName(),
-            FilterOperator.GREATER_THAN_OR_EQUAL,
-            value);
+        filterPredicates =
+            new FilterPredicate[] { new FilterPredicate(
+                attributeMeta.getName(),
+                FilterOperator.GREATER_THAN_OR_EQUAL,
+                this.value) };
     }
 
     public boolean accept(Object model) {
         Object v = convertValueForDatastore(attributeMeta.getValue(model));
+        if (v instanceof Iterable<?>) {
+            for (Object o : (Iterable<?>) v) {
+                if (compareValue(o, value) >= 0) {
+                    return true;
+                }
+            }
+            return false;
+        }
         return compareValue(v, value) >= 0;
+    }
+
+    @Override
+    public String toString() {
+        return attributeMeta.getName() + " >= " + value;
     }
 }

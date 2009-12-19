@@ -15,50 +15,35 @@
  */
 package org.slim3.datastore;
 
-import java.util.Collection;
-
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 /**
- * An implementation class for "contains" filter.
+ * An abstract class for filter.
  * 
  * @author higa
  * @since 3.0
  * 
  */
-public class ContainsCriterion extends AbstractCriterion implements
-        FilterCriterion {
+public abstract class AbstractFilterCriterion extends AbstractCriterion
+        implements FilterCriterion {
 
     /**
-     * The value.
+     * The array of {@link FilterPredicate}s.
      */
-    protected Object value;
+    protected FilterPredicate[] filterPredicates;
 
     /**
      * Constructor.
      * 
      * @param attributeMeta
      *            the meta data of attribute
-     * @param value
-     *            the value
      * @see AbstractCriterion#AbstractCriterion(AbstractAttributeMeta)
      */
-    public ContainsCriterion(CollectionAttributeMeta<?, ?, ?> attributeMeta,
-            Object value) {
+    public AbstractFilterCriterion(AbstractAttributeMeta<?, ?> attributeMeta) {
         super(attributeMeta);
-        this.value = convertValueForDatastore(value);
     }
 
-    public void apply(Query query) {
-        query.addFilter(attributeMeta.getName(), FilterOperator.EQUAL, value);
-    }
-
-    public boolean accept(Object model) {
-        Object v = convertValueForDatastore(attributeMeta.getValue(model));
-        if (v == null) {
-            return false;
-        }
-        return Collection.class.cast(v).contains(value);
+    public FilterPredicate[] getFilterPredicates() {
+        return filterPredicates;
     }
 }

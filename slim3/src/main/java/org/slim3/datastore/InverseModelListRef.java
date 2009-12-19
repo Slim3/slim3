@@ -85,6 +85,18 @@ public class InverseModelListRef<M> extends AbstractModelRef<M> {
     /**
      * Returns the models.
      * 
+     * @return the models
+     */
+    public List<M> getModelList() {
+        if (modelList != null) {
+            return modelList;
+        }
+        return refresh();
+    }
+
+    /**
+     * Returns the models.
+     * 
      * @param criteria
      *            the sort criteria
      * 

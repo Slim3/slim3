@@ -19,6 +19,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import static org.junit.matchers.JUnitMatchers.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -97,6 +98,30 @@ public class AbstCriterionTest {
         MyCriterion criterion = new MyCriterion(meta.myEnumList);
         assertThat((List<String>) criterion.convertValueForDatastore(Arrays
             .asList(SortDirection.ASCENDING)), hasItem("ASCENDING"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void convertValueForDatastoreForNullIterable() throws Exception {
+        MyCriterion criterion = new MyCriterion(meta.myString);
+        assertThat(
+            criterion.convertValueForDatastore((Iterable<?>) null),
+            is(nullValue()));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void convertValueForDatastoreForEmptyIterable() throws Exception {
+        MyCriterion criterion = new MyCriterion(meta.myString);
+        assertThat(criterion
+            .convertValueForDatastore(new ArrayList<String>())
+            .size(), is(0));
     }
 
     private static class MyCriterion extends AbstractCriterion {

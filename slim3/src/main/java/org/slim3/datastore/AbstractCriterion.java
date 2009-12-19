@@ -90,22 +90,32 @@ public abstract class AbstractCriterion {
      *            the value
      * @return a converted value for datastore
      */
-    @SuppressWarnings("unchecked")
     protected Object convertValueForDatastore(Object value) {
         if (value instanceof Enum<?>) {
-            return Enum.class.cast(value).name();
+            return ((Enum<?>) value).name();
         }
         if (value instanceof Iterable<?>) {
-            List list = new ArrayList();
-            for (Object o : Iterable.class.cast(value)) {
-                if (o instanceof Enum<?>) {
-                    list.add(Enum.class.cast(o).name());
-                } else {
-                    list.add(o);
-                }
-            }
-            return list;
+            return convertValueForDatastore((Iterable<?>) value);
         }
         return value;
+    }
+
+    /**
+     * Converts the value for datastore.
+     * 
+     * @param value
+     *            the value
+     * @return a converted value for datastore
+     */
+    @SuppressWarnings("unchecked")
+    protected List<?> convertValueForDatastore(Iterable<?> value) {
+        if (value == null) {
+            return null;
+        }
+        List list = new ArrayList();
+        for (Object o : value) {
+            list.add(convertValueForDatastore(o));
+        }
+        return list;
     }
 }

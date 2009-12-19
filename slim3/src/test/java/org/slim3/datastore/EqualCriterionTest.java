@@ -18,14 +18,13 @@ package org.slim3.datastore;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
-import java.util.List;
+import java.util.Arrays;
 
 import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.LocalServiceTestCase;
 
-import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
@@ -64,14 +63,13 @@ public class EqualCriterionTest extends LocalServiceTestCase {
      * 
      */
     @Test
-    public void apply() throws Exception {
-        Query query = new Query();
+    public void getFilterPredicates() throws Exception {
         EqualCriterion c = new EqualCriterion(meta.myString, "aaa");
-        c.apply(query);
-        List<FilterPredicate> predicates = query.getFilterPredicates();
-        assertThat(predicates.get(0).getPropertyName(), is("myString"));
-        assertThat(predicates.get(0).getOperator(), is(FilterOperator.EQUAL));
-        assertThat((String) predicates.get(0).getValue(), is("aaa"));
+        FilterPredicate[] predicates = c.getFilterPredicates();
+        assertThat(predicates.length, is(1));
+        assertThat(predicates[0].getPropertyName(), is("myString"));
+        assertThat(predicates[0].getOperator(), is(FilterOperator.EQUAL));
+        assertThat((String) predicates[0].getValue(), is("aaa"));
     }
 
     /**
@@ -79,15 +77,28 @@ public class EqualCriterionTest extends LocalServiceTestCase {
      * 
      */
     @Test
-    public void applyForEnum() throws Exception {
-        Query query = new Query();
+    public void getFilterPredicatesForEnum() throws Exception {
         EqualCriterion c =
             new EqualCriterion(meta.myEnum, SortDirection.ASCENDING);
-        c.apply(query);
-        List<FilterPredicate> predicates = query.getFilterPredicates();
-        assertThat(predicates.get(0).getPropertyName(), is("myEnum"));
-        assertThat(predicates.get(0).getOperator(), is(FilterOperator.EQUAL));
-        assertThat((String) predicates.get(0).getValue(), is("ASCENDING"));
+        FilterPredicate[] predicates = c.getFilterPredicates();
+        assertThat(predicates.length, is(1));
+        assertThat(predicates[0].getPropertyName(), is("myEnum"));
+        assertThat(predicates[0].getOperator(), is(FilterOperator.EQUAL));
+        assertThat((String) predicates[0].getValue(), is("ASCENDING"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void getFilterPredicatesForNull() throws Exception {
+        EqualCriterion c = new EqualCriterion(meta.myString, null);
+        FilterPredicate[] predicates = c.getFilterPredicates();
+        assertThat(predicates.length, is(1));
+        assertThat(predicates[0].getPropertyName(), is("myString"));
+        assertThat(predicates[0].getOperator(), is(FilterOperator.EQUAL));
+        assertThat(predicates[0].getValue(), is(nullValue()));
     }
 
     /**
@@ -129,5 +140,27 @@ public class EqualCriterionTest extends LocalServiceTestCase {
         assertThat(c.accept(hoge), is(false));
         hoge.setMyString(null);
         assertThat(c.accept(hoge), is(true));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void acceptForCollection() throws Exception {
+        Hoge hoge = new Hoge();
+        hoge.setMyIntegerList(Arrays.asList(1));
+        FilterCriterion c = new EqualCriterion(meta.myIntegerList, 1);
+        assertThat(c.accept(hoge), is(true));
+        hoge.setMyIntegerList(Arrays.asList(2));
+        assertThat(c.accept(hoge), is(false));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void testToString() throws Exception {
+        EqualCriterion c = new EqualCriterion(meta.myString, "aaa");
+        assertThat(c.toString(), is("myString == aaa"));
     }
 }

@@ -19,6 +19,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import static org.junit.matchers.JUnitMatchers.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,7 +28,6 @@ import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.LocalServiceTestCase;
 
-import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
@@ -49,6 +49,7 @@ public class InCriterionTest extends LocalServiceTestCase {
     public void constructor() throws Exception {
         InCriterion c = new InCriterion(meta.myString, Arrays.asList("aaa"));
         assertThat((List<String>) c.value, hasItem("aaa"));
+        assertThat(c.filterPredicates, is(notNullValue()));
     }
 
     /**
@@ -67,18 +68,36 @@ public class InCriterionTest extends LocalServiceTestCase {
      * @throws Exception
      * 
      */
+    @Test(expected = NullPointerException.class)
+    public void constructorForNull() throws Exception {
+        new InCriterion(meta.myString, null);
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void constructorForEmptyParameter() throws Exception {
+        new InCriterion(meta.myString, new ArrayList<String>());
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
     @SuppressWarnings("unchecked")
     @Test
-    public void apply() throws Exception {
-        Query query = new Query();
+    public void getFilterPredicates() throws Exception {
         InCriterion c =
             new InCriterion(meta.myString, Arrays.asList("aaa", "bbb"));
-        c.apply(query);
-        List<FilterPredicate> predicates = query.getFilterPredicates();
-        assertThat(predicates.size(), is(1));
-        assertThat(predicates.get(0).getPropertyName(), is("myString"));
-        assertThat(predicates.get(0).getOperator(), is(FilterOperator.IN));
-        assertThat((List<String>) predicates.get(0).getValue(), hasItem("aaa"));
+        FilterPredicate[] predicates = c.getFilterPredicates();
+        assertThat(predicates.length, is(1));
+        assertThat(predicates[0].getPropertyName(), is("myString"));
+        assertThat(predicates[0].getOperator(), is(FilterOperator.IN));
+        assertThat((List<String>) predicates[0].getValue(), hasItems(
+            "aaa",
+            "bbb"));
     }
 
     /**
@@ -86,15 +105,14 @@ public class InCriterionTest extends LocalServiceTestCase {
      * 
      */
     @Test
-    public void applyForEnum() throws Exception {
-        Query query = new Query();
+    public void getFilterPredicatesForEnum() throws Exception {
         InCriterion c =
             new InCriterion(meta.myEnum, Arrays.asList(SortDirection.ASCENDING));
-        c.apply(query);
-        List<FilterPredicate> predicates = query.getFilterPredicates();
-        assertThat(predicates.get(0).getPropertyName(), is("myEnum"));
-        assertThat(predicates.get(0).getOperator(), is(FilterOperator.EQUAL));
-        assertThat((String) predicates.get(0).getValue(), is("ASCENDING"));
+        FilterPredicate[] predicates = c.getFilterPredicates();
+        assertThat(predicates.length, is(1));
+        assertThat(predicates[0].getPropertyName(), is("myEnum"));
+        assertThat(predicates[0].getOperator(), is(FilterOperator.EQUAL));
+        assertThat((String) predicates[0].getValue(), is("ASCENDING"));
     }
 
     /**
@@ -128,10 +146,25 @@ public class InCriterionTest extends LocalServiceTestCase {
     /**
      * @throws Exception
      */
-    @Test
+    @Test(expected = NullPointerException.class)
     public void acceptForNull() throws Exception {
-        Hoge hoge = new Hoge();
-        FilterCriterion c = new InCriterion(meta.myString, null);
-        assertThat(c.accept(hoge), is(false));
+        new InCriterion(meta.myString, null);
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void acceptForEmptry() throws Exception {
+        new InCriterion(meta.myString, new ArrayList<String>());
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void testToString() throws Exception {
+        InCriterion c = new InCriterion(meta.myString, Arrays.asList("aaa"));
+        assertThat(c.toString(), is("myString in([aaa])"));
     }
 }

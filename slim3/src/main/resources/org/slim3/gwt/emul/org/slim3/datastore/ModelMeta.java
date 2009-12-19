@@ -1,11 +1,14 @@
 package org.slim3.datastore;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.google.appengine.api.datastore.Entity;
 
-public abstract class ModelMeta<M> {
+public abstract class ModelMeta<M> implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+    
     protected String kind;
 
     protected Class<M> modelClass;

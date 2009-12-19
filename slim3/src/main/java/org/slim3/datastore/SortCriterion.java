@@ -16,6 +16,7 @@
 package org.slim3.datastore;
 
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortPredicate;
 
 /**
  * A criterion interface for sort.
@@ -49,4 +50,11 @@ public interface SortCriterion {
      *             comparable
      */
     int compare(Object model1, Object model2) throws IllegalStateException;
+
+    /**
+     * Returns {@link SortPredicate}.
+     * 
+     * @return {@link SortPredicate}
+     */
+    SortPredicate getSortPredicate();
 }

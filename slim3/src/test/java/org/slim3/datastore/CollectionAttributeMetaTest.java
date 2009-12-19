@@ -34,16 +34,6 @@ public class CollectionAttributeMetaTest {
      * 
      */
     @Test
-    public void contains() throws Exception {
-        assertThat(meta.myIntegerList.contains(1), is(ContainsCriterion.class));
-        assertThat(meta.myIntegerList.contains(null), is(notNullValue()));
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    @Test
     public void equal() throws Exception {
         assertThat(meta.myIntegerList.equal(1), is(EqualCriterion.class));
         assertThat(meta.myIntegerList.equal(null), is(notNullValue()));

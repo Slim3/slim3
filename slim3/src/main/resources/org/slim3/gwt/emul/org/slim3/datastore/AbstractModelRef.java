@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 public class AbstractModelRef<M> implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+    
     protected AbstractModelRef() {
     }
     

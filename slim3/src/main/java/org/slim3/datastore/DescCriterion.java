@@ -20,6 +20,7 @@ import java.util.Collection;
 
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.datastore.Query.SortPredicate;
 
 /**
  * An implementation class for "descending" sort.
@@ -31,6 +32,11 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 public class DescCriterion extends AbstractCriterion implements SortCriterion {
 
     /**
+     * The {@link SortPredicate}.
+     */
+    protected SortPredicate sortPredicate;
+
+    /**
      * Constructor.
      * 
      * @param attributeMeta
@@ -38,6 +44,8 @@ public class DescCriterion extends AbstractCriterion implements SortCriterion {
      */
     public DescCriterion(AbstractAttributeMeta<?, ?> attributeMeta) {
         super(attributeMeta);
+        sortPredicate =
+            new SortPredicate(attributeMeta.getName(), SortDirection.DESCENDING);
     }
 
     public void apply(Query query) {
@@ -55,6 +63,15 @@ public class DescCriterion extends AbstractCriterion implements SortCriterion {
             v2 = getGreatestValue(Collection.class.cast(v2));
         }
         return -1 * compareValue(v1, v2);
+    }
+
+    public SortPredicate getSortPredicate() {
+        return sortPredicate;
+    }
+
+    @Override
+    public String toString() {
+        return attributeMeta.getName() + " desc";
     }
 
     /**

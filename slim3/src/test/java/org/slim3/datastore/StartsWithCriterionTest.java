@@ -18,14 +18,13 @@ package org.slim3.datastore;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
-import java.util.List;
+import java.util.Arrays;
 
 import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.LocalServiceTestCase;
 
-import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 
@@ -52,22 +51,18 @@ public class StartsWithCriterionTest extends LocalServiceTestCase {
      * 
      */
     @Test
-    public void apply() throws Exception {
-        Query query = new Query();
+    public void getFilterPredicates() throws Exception {
         StartsWithCriterion c = new StartsWithCriterion(meta.myString, "aaa");
-        c.apply(query);
-        List<FilterPredicate> predicates = query.getFilterPredicates();
-        assertThat(predicates.size(), is(2));
-        assertThat(predicates.get(0).getPropertyName(), is("myString"));
+        FilterPredicate[] predicates = c.getFilterPredicates();
+        assertThat(predicates.length, is(2));
+        assertThat(predicates[0].getPropertyName(), is("myString"));
         assertThat(
-            predicates.get(0).getOperator(),
+            predicates[0].getOperator(),
             is(FilterOperator.GREATER_THAN_OR_EQUAL));
-        assertThat((String) predicates.get(0).getValue(), is("aaa"));
-        assertThat(predicates.get(1).getPropertyName(), is("myString"));
-        assertThat(
-            predicates.get(1).getOperator(),
-            is(FilterOperator.LESS_THAN));
-        assertThat((String) predicates.get(1).getValue(), is("aaa" + "\ufffd"));
+        assertThat((String) predicates[0].getValue(), is("aaa"));
+        assertThat(predicates[1].getPropertyName(), is("myString"));
+        assertThat(predicates[1].getOperator(), is(FilterOperator.LESS_THAN));
+        assertThat((String) predicates[1].getValue(), is("aaa" + "\ufffd"));
     }
 
     /**
@@ -94,5 +89,18 @@ public class StartsWithCriterionTest extends LocalServiceTestCase {
         assertThat(c.accept(hoge), is(true));
         hoge.setMyString(null);
         assertThat(c.accept(hoge), is(true));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void acceptForCollection() throws Exception {
+        Hoge hoge = new Hoge();
+        hoge.setMyStringList(Arrays.asList("aaa"));
+        FilterCriterion c = new StartsWithCriterion(meta.myStringList, "aaa");
+        assertThat(c.accept(hoge), is(true));
+        hoge.setMyStringList(Arrays.asList("bbb"));
+        assertThat(c.accept(hoge), is(false));
     }
 }

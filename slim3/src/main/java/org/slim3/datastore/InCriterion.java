@@ -15,8 +15,8 @@
  */
 package org.slim3.datastore;
 
-import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 /**
  * An implementation class for "in" filter.
@@ -25,12 +25,12 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
  * @since 3.0
  * 
  */
-public class InCriterion extends AbstractCriterion implements FilterCriterion {
+public class InCriterion extends AbstractFilterCriterion {
 
     /**
      * The value;
      */
-    protected Object value;
+    protected Iterable<?> value;
 
     /**
      * Constructor.
@@ -39,27 +39,38 @@ public class InCriterion extends AbstractCriterion implements FilterCriterion {
      *            the meta data of attribute
      * @param value
      *            the value
-     * @see AbstractCriterion#AbstractCriterion(AbstractAttributeMeta)
+     * @throws NullPointerException
+     *             if the attributeMeta parameter is null or if the value
+     *             parameter is null
+     * @throws IllegalArgumentException
+     *             if the IN(value) parameter is empty
      */
-    public InCriterion(AbstractAttributeMeta<?, ?> attributeMeta, Object value) {
+    public InCriterion(AbstractAttributeMeta<?, ?> attributeMeta,
+            Iterable<?> value) throws NullPointerException {
         super(attributeMeta);
+        if (value == null) {
+            throw new NullPointerException("The IN parameter must not be null.");
+        }
         this.value = convertValueForDatastore(value);
-    }
-
-    public void apply(Query query) {
-        query.addFilter(attributeMeta.getName(), FilterOperator.IN, value);
+        filterPredicates =
+            new FilterPredicate[] { new FilterPredicate(
+                attributeMeta.getName(),
+                FilterOperator.IN,
+                this.value) };
     }
 
     public boolean accept(Object model) {
-        if (value == null) {
-            return false;
-        }
         Object v = convertValueForDatastore(attributeMeta.getValue(model));
-        for (Object o : Iterable.class.cast(value)) {
+        for (Object o : value) {
             if (compareValue(v, o) == 0) {
                 return true;
             }
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return attributeMeta.getName() + " in(" + value + ")";
     }
 }

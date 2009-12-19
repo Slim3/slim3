@@ -33,12 +33,12 @@ public abstract class AbstractAttributeMeta<M, A> {
     /**
      * The "ascending" sort criterion
      */
-    public SortCriterion asc = new AscCriterion(this);
+    public final SortCriterion asc;
 
     /**
      * The "descending" sort criterion
      */
-    public SortCriterion desc = new DescCriterion(this);
+    public final SortCriterion desc;
 
     /**
      * The meta data of model.
@@ -88,6 +88,8 @@ public abstract class AbstractAttributeMeta<M, A> {
         this.modelMeta = modelMeta;
         this.name = name;
         this.attributeClass = attributeClass;
+        asc = new AscCriterion(this);
+        desc = new DescCriterion(this);
     }
 
     /**

@@ -15,8 +15,8 @@
  */
 package org.slim3.datastore;
 
-import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 /**
  * An implementation class for "is not null" filter.
@@ -25,27 +25,41 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
  * @since 3.0
  * 
  */
-public class IsNotNullCriterion extends AbstractCriterion implements
-        FilterCriterion {
+public class IsNotNullCriterion extends AbstractFilterCriterion {
 
     /**
      * Constructor.
      * 
      * @param attributeMeta
      *            the meta data of attribute
+     * @throws NullPointerException
+     *             if the attributeMeta parameter is null
      */
-    public IsNotNullCriterion(AbstractAttributeMeta<?, ?> attributeMeta) {
+    public IsNotNullCriterion(AbstractAttributeMeta<?, ?> attributeMeta)
+            throws NullPointerException {
         super(attributeMeta);
-    }
-
-    public void apply(Query query) {
-        query.addFilter(
-            attributeMeta.getName(),
-            FilterOperator.GREATER_THAN,
-            null);
+        filterPredicates =
+            new FilterPredicate[] { new FilterPredicate(
+                attributeMeta.getName(),
+                FilterOperator.GREATER_THAN,
+                null) };
     }
 
     public boolean accept(Object model) {
-        return attributeMeta.getValue(model) != null;
+        Object v = convertValueForDatastore(attributeMeta.getValue(model));
+        if (v instanceof Iterable<?>) {
+            for (Object o : (Iterable<?>) v) {
+                if (o != null) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return v != null;
+    }
+
+    @Override
+    public String toString() {
+        return attributeMeta.getName() + " != null";
     }
 }

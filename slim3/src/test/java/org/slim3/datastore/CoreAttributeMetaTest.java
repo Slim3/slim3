@@ -104,6 +104,14 @@ public class CoreAttributeMetaTest {
     @Test
     public void in() throws Exception {
         assertThat(meta.myString.in(Arrays.asList("a")), is(InCriterion.class));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test(expected = NullPointerException.class)
+    public void inForNull() throws Exception {
         assertThat(meta.myString.in(null), is(notNullValue()));
     }
 

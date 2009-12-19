@@ -47,17 +47,6 @@ public class CollectionAttributeMeta<M, A, E> extends
     }
 
     /**
-     * Returns the "contains" filter.
-     * 
-     * @param value
-     *            the value
-     * @return the "contains" filter
-     */
-    public FilterCriterion contains(E value) {
-        return new ContainsCriterion(this, value);
-    }
-
-    /**
      * Returns the "equal" filter.
      * 
      * @param value

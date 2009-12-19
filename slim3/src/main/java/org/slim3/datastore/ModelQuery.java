@@ -139,7 +139,10 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
                 throw new NullPointerException(
                     "The element of the criteria parameter must not be null.");
             }
-            c.apply(query);
+            for (FilterPredicate p : c.getFilterPredicates()) {
+                query.addFilter(p.getPropertyName(), p.getOperator(), p
+                    .getValue());
+            }
         }
         return this;
     }
