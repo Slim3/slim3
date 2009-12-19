@@ -20,14 +20,12 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.LocalServiceTestCase;
 
-import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.Query.SortPredicate;
 
@@ -38,22 +36,6 @@ import com.google.appengine.api.datastore.Query.SortPredicate;
 public class DescCriterionTest extends LocalServiceTestCase {
 
     private HogeMeta meta = new HogeMeta();
-
-    /**
-     * @throws Exception
-     * 
-     */
-    @Test
-    public void apply() throws Exception {
-        Query query = new Query();
-        DescCriterion c = new DescCriterion(meta.myString);
-        c.apply(query);
-        List<SortPredicate> predicates = query.getSortPredicates();
-        assertThat(predicates.get(0).getPropertyName(), is("myString"));
-        assertThat(
-            predicates.get(0).getDirection(),
-            is(SortDirection.DESCENDING));
-    }
 
     /**
      * @throws Exception

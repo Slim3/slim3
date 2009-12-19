@@ -18,35 +18,34 @@ package org.slim3.datastore;
 import com.google.appengine.api.datastore.Query.SortPredicate;
 
 /**
- * A criterion interface for sort.
+ * An abstract class for filter.
  * 
  * @author higa
  * @since 3.0
  * 
  */
-public interface SortCriterion {
+public abstract class AbstractSortCriterion extends AbstractCriterion implements
+        SortCriterion {
 
     /**
-     * Returns {@link SortPredicate}.
-     * 
-     * @return {@link SortPredicate}
+     * The {@link SortPredicate}.
      */
-    SortPredicate getSortPredicate();
+    protected SortPredicate sortPredicate;
 
     /**
-     * Compares its two arguments for order. Returns a negative integer, zero,
-     * or a positive integer as the first argument is less than, equal to, or
-     * greater than the second.
+     * Constructor.
      * 
-     * @param model1
-     *            the first model
-     * @param model2
-     *            the second model
-     * @return the compared result
-     * @throws IllegalStateException
-     *             if the model is embedded or if the attribute is not
-     *             comparable
+     * @param attributeMeta
+     *            the meta data of attribute
+     * @throws NullPointerException
+     *             if the attributeMeta parameter is null
      */
-    int compare(Object model1, Object model2) throws IllegalStateException;
+    public AbstractSortCriterion(AbstractAttributeMeta<?, ?> attributeMeta)
+            throws NullPointerException {
+        super(attributeMeta);
+    }
 
+    public SortPredicate getSortPredicate() {
+        return sortPredicate;
+    }
 }

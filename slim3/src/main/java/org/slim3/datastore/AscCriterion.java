@@ -18,7 +18,6 @@ package org.slim3.datastore;
 import java.util.Arrays;
 import java.util.Collection;
 
-import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.Query.SortPredicate;
 
@@ -29,28 +28,21 @@ import com.google.appengine.api.datastore.Query.SortPredicate;
  * @since 3.0
  * 
  */
-public class AscCriterion extends AbstractCriterion implements SortCriterion {
-
-    /**
-     * The {@link SortPredicate}.
-     */
-    protected SortPredicate sortPredicate;
+public class AscCriterion extends AbstractSortCriterion {
 
     /**
      * Constructor.
      * 
      * @param attributeMeta
      *            the meta data of attribute
+     * @throws NullPointerException
+     *             if the attributeMeta parameter is null
      */
-    public AscCriterion(AbstractAttributeMeta<?, ?> attributeMeta) {
+    public AscCriterion(AbstractAttributeMeta<?, ?> attributeMeta)
+            throws NullPointerException {
         super(attributeMeta);
         sortPredicate =
             new SortPredicate(attributeMeta.getName(), SortDirection.ASCENDING);
-    }
-
-    public void apply(Query query) {
-        query.addSort(attributeMeta.getName(), SortDirection.ASCENDING);
-
     }
 
     public int compare(Object model1, Object model2) {
@@ -63,10 +55,6 @@ public class AscCriterion extends AbstractCriterion implements SortCriterion {
             v2 = getSmallestValue(Collection.class.cast(v2));
         }
         return compareValue(v1, v2);
-    }
-
-    public SortPredicate getSortPredicate() {
-        return sortPredicate;
     }
 
     @Override
