@@ -48,4 +48,15 @@ public class StringAttributeMeta<M> extends CoreAttributeMeta<M, String> {
     public FilterCriterion startsWith(String value) {
         return new StartsWithCriterion(this, value);
     }
+
+    /**
+     * Returns the "endsWith" filter.
+     * 
+     * @param value
+     *            the value
+     * @return the "endsWith" filter
+     */
+    public InMemoryFilterCriterion endsWith(String value) {
+        return new EndsWithCriterion(this, value);
+    }
 }

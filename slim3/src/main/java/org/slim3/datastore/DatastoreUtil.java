@@ -867,7 +867,8 @@ public final class DatastoreUtil {
      *             null or if the model of the list is null
      */
     public static <M> List<M> filterInMemory(List<M> list,
-            List<FilterCriterion> criteria) throws NullPointerException {
+            List<? extends InMemoryFilterCriterion> criteria)
+            throws NullPointerException {
         if (list == null) {
             throw new NullPointerException("The list parameter is null.");
         }
@@ -889,8 +890,9 @@ public final class DatastoreUtil {
         return newList;
     }
 
-    private static boolean accept(Object model, List<FilterCriterion> criteria) {
-        for (FilterCriterion c : criteria) {
+    private static boolean accept(Object model,
+            List<? extends InMemoryFilterCriterion> criteria) {
+        for (InMemoryFilterCriterion c : criteria) {
             if (c == null) {
                 continue;
             }

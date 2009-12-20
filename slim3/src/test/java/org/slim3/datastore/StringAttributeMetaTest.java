@@ -37,4 +37,15 @@ public class StringAttributeMetaTest {
         assertThat(meta.myString.startsWith("a"), is(StartsWithCriterion.class));
         assertThat(meta.myString.startsWith(null), is(not(nullValue())));
     }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void endsWith() throws Exception {
+        HogeMeta meta = new HogeMeta();
+        assertThat(meta.myString.endsWith("a"), is(EndsWithCriterion.class));
+        assertThat(meta.myString.endsWith(null), is(not(nullValue())));
+    }
 }

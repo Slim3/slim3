@@ -49,8 +49,8 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
     /**
      * The in-memory filter criteria.
      */
-    protected List<FilterCriterion> inMemoryFilterCriteria =
-        new ArrayList<FilterCriterion>();
+    protected List<InMemoryFilterCriterion> inMemoryFilterCriteria =
+        new ArrayList<InMemoryFilterCriterion>();
 
     /**
      * The in-memory sort criteria.
@@ -206,9 +206,9 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
      * @throws NullPointerException
      *             if the element of the criteria parameter is null
      */
-    public ModelQuery<M> filterInMemory(FilterCriterion... criteria)
+    public ModelQuery<M> filterInMemory(InMemoryFilterCriterion... criteria)
             throws NullPointerException {
-        for (FilterCriterion c : criteria) {
+        for (InMemoryFilterCriterion c : criteria) {
             if (c == null) {
                 throw new NullPointerException(
                     "The element of the criteria parameter must not be null.");

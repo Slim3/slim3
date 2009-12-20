@@ -40,4 +40,14 @@ public class StringCollectionAttributeMetaTest {
             is(StartsWithCriterion.class));
         assertThat(meta.myStringList.startsWith(null), is(notNullValue()));
     }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void endsWith() throws Exception {
+        assertThat(meta.myStringList.endsWith("a"), is(EndsWithCriterion.class));
+        assertThat(meta.myStringList.endsWith(null), is(notNullValue()));
+    }
 }

@@ -2110,7 +2110,7 @@ public final class Datastore {
      *             null
      */
     public static <M> List<M> filterInMemory(List<M> list,
-            FilterCriterion... criteria) throws NullPointerException {
+            InMemoryFilterCriterion... criteria) throws NullPointerException {
         return DatastoreUtil.filterInMemory(list, Arrays.asList(criteria));
     }
 

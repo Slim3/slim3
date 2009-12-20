@@ -15,21 +15,22 @@
  */
 package org.slim3.datastore;
 
-import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 /**
- * A criterion interface for filter.
+ * A criterion interface for in-memory filter.
  * 
  * @author higa
  * @since 3.0
  * 
  */
-public interface FilterCriterion extends InMemoryFilterCriterion {
+public interface InMemoryFilterCriterion {
 
     /**
-     * Returns array of {@link FilterPredicate}s.
+     * Determines if the model is accepted.
      * 
-     * @return array of {@link FilterPredicate}s
+     * @param model
+     *            the model
+     * @return whether the model is accepted
      */
-    FilterPredicate[] getFilterPredicates();
+    boolean accept(Object model);
 }

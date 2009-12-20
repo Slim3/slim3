@@ -54,4 +54,15 @@ public class StringCollectionAttributeMeta<M, A> extends
     public FilterCriterion startsWith(String value) {
         return new StartsWithCriterion(this, value);
     }
+
+    /**
+     * Returns the "endsWith" filter.
+     * 
+     * @param value
+     *            the value
+     * @return the "endsWith" filter
+     */
+    public InMemoryFilterCriterion endsWith(String value) {
+        return new EndsWithCriterion(this, value);
+    }
 }

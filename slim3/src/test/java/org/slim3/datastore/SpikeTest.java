@@ -16,13 +16,9 @@
 package org.slim3.datastore;
 
 import org.junit.Test;
+import org.slim3.datastore.meta.HogeMeta;
+import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.LocalServiceTestCase;
-
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.users.User;
 
 /**
  * @author higa
@@ -35,16 +31,12 @@ public class SpikeTest extends LocalServiceTestCase {
      */
     @Test
     public void spike() throws Exception {
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        Entity entity = new Entity("Hoge");
-        entity.setProperty("user", new User(
-            "higayasuo@gmail.com",
-            "gmail.com",
-            "higayasuo"));
-        ds.put(entity);
-        System.out.println(Datastore.query("Hoge").filter(
-            "user",
-            FilterOperator.EQUAL,
-            new User("higayasuo@gmail.com", "xxx", "higayasuo")).count());
+        Hoge hoge = new Hoge();
+        hoge.setMyString("abc");
+        Datastore.put(hoge);
+        System.out.println(Datastore.query(Hoge.class).filter(
+            HogeMeta.get().myString.startsWith(null)).count());
+        System.out.println(Datastore.query(Hoge.class).filterInMemory(
+            HogeMeta.get().myString.startsWith(null)).asList().size());
     }
 }
