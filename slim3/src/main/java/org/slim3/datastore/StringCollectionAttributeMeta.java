@@ -65,4 +65,15 @@ public class StringCollectionAttributeMeta<M, A> extends
     public InMemoryFilterCriterion endsWith(String value) {
         return new EndsWithCriterion(this, value);
     }
+
+    /**
+     * Returns the "contains" filter.
+     * 
+     * @param value
+     *            the value
+     * @return the "contains" filter
+     */
+    public InMemoryFilterCriterion contains(String value) {
+        return new ContainsCriterion(this, value);
+    }
 }

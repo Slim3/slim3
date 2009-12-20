@@ -50,4 +50,14 @@ public class StringCollectionAttributeMetaTest {
         assertThat(meta.myStringList.endsWith("a"), is(EndsWithCriterion.class));
         assertThat(meta.myStringList.endsWith(null), is(notNullValue()));
     }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void contains() throws Exception {
+        assertThat(meta.myStringList.contains("a"), is(ContainsCriterion.class));
+        assertThat(meta.myStringList.contains(null), is(notNullValue()));
+    }
 }
