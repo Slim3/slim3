@@ -34,8 +34,8 @@ Source:
 <c:forEach var="e" items="${blogList}">
 <tr>
 <td>${f:h(e.title)}</td><td>${f:h(e.content)}</td>
-<c:set var="editUrl" value="edit?key=${f:key(e.key)}&version=${e.version}"/>
-<c:set var="deleteUrl" value="delete?key=${f:key(e.key)}&version=${e.version}"/>
+<c:set var="editUrl" value="edit/${f:key(e.key)}/${e.version}"/>
+<c:set var="deleteUrl" value="delete/${f:key(e.key)}/${e.version}"/>
 <td><a href="${f:url(editUrl)}">Edit</a></td>
 <td><a href="${f:url(deleteUrl)}" onclick="return confirm('delete OK?')">Delete</a></td>
 </tr>
