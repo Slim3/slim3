@@ -375,7 +375,7 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
         if (inMemorySortCriteria.size() > 0 && inMemorySortCriteria.size() == 1) {
             SortCriterion c = inMemorySortCriteria.get(0);
             if (c instanceof AbstractCriterion) {
-                if (AbstractCriterion.class.cast(c).attributeMeta.name
+                if (((AbstractCriterion) c).attributeMeta.name
                     .equals(Entity.KEY_RESERVED_PROPERTY)) {
                     if (c instanceof AscCriterion) {
                         Collections.sort(keys);

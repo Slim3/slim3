@@ -50,7 +50,7 @@ public final class IntegerUtil {
             return ((Boolean) o).booleanValue() ? Integer.valueOf(1) : Integer
                 .valueOf(0);
         } else if (o instanceof Enum<?>) {
-            return Enum.class.cast(o).ordinal();
+            return ((Enum<?>) o).ordinal();
         } else {
             return Integer.valueOf(o.toString());
         }

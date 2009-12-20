@@ -119,7 +119,7 @@ public final class ConversionUtil {
             + destinationClass.getName());
     }
 
-    private static Object convertToNumber(Object value,
+    private static Number convertToNumber(Object value,
             Class<?> destinationClass) {
         if (destinationClass == Integer.class) {
             return IntegerUtil.toInteger(value);
@@ -140,7 +140,7 @@ public final class ConversionUtil {
             + destinationClass.getName());
     }
 
-    private static Object convertToDate(Object value, Class<?> destinationClass) {
+    private static Date convertToDate(Object value, Class<?> destinationClass) {
         if (destinationClass == Date.class) {
             return DateUtil.toDate(value);
         }
@@ -149,13 +149,13 @@ public final class ConversionUtil {
     }
 
     @SuppressWarnings("unchecked")
-    private static Object convertToEnum(Object value, Class destinationClass) {
+    private static Enum<?> convertToEnum(Object value, Class destinationClass) {
         if (value.getClass() == String.class) {
             return Enum.valueOf(destinationClass, (String) value);
         }
         if (value instanceof Number) {
             int ordinal = IntegerUtil.toPrimitiveInt(value);
-            return destinationClass.getEnumConstants()[ordinal];
+            return (Enum<?>) destinationClass.getEnumConstants()[ordinal];
         }
         throw new IllegalArgumentException("The class("
             + value.getClass().getName()
@@ -164,12 +164,12 @@ public final class ConversionUtil {
             + ").");
     }
 
-    private static Object convertToKey(Object value) {
+    private static Key convertToKey(Object value) {
         if (value instanceof Key) {
-            return Key.class.cast(value);
+            return (Key) value;
         }
         if (value.getClass() == String.class) {
-            return KeyFactory.stringToKey(String.class.cast(value));
+            return KeyFactory.stringToKey((String) value);
         }
         throw new IllegalArgumentException("The class("
             + value.getClass().getName()

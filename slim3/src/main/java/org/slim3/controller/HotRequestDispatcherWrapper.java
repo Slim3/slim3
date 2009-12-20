@@ -82,8 +82,7 @@ public class HotRequestDispatcherWrapper implements RequestDispatcher {
      */
     protected ServletRequest getOriginalRequest(ServletRequest request) {
         if (request instanceof HotHttpServletRequestWrapper) {
-            return HotHttpServletRequestWrapper.class
-                .cast(request)
+            return ((HotHttpServletRequestWrapper) request)
                 .getOriginalRequest();
         }
         return request;

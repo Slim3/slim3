@@ -70,7 +70,7 @@ public final class Functions {
             return HtmlUtil.escape(input.toString());
         }
         if (input.getClass() == Key.class) {
-            return KeyFactory.keyToString(Key.class.cast(input));
+            return KeyFactory.keyToString((Key) input);
         }
         if (input.getClass().isArray()) {
             Class<?> clazz = input.getClass().getComponentType();
@@ -296,7 +296,7 @@ public final class Functions {
         String s = "";
         if (value != null) {
             if (value instanceof Key) {
-                s = key(Key.class.cast(value));
+                s = key((Key) value);
             } else {
                 s = value.toString();
             }

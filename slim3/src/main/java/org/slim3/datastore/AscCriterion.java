@@ -48,11 +48,11 @@ public class AscCriterion extends AbstractSortCriterion {
     public int compare(Object model1, Object model2) {
         Object v1 = convertValueForDatastore(attributeMeta.getValue(model1));
         if (v1 instanceof Collection<?>) {
-            v1 = getSmallestValue(Collection.class.cast(v1));
+            v1 = getSmallestValue((Collection<?>) v1);
         }
         Object v2 = convertValueForDatastore(attributeMeta.getValue(model2));
         if (v2 instanceof Collection<?>) {
-            v2 = getSmallestValue(Collection.class.cast(v2));
+            v2 = getSmallestValue((Collection<?>) v2);
         }
         return compareValue(v1, v2);
     }

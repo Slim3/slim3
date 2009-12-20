@@ -1789,7 +1789,7 @@ public final class Datastore {
         for (Object model : models) {
             ModelMeta<?> modelMeta = modelMetaList.get(i);
             if (modelMeta == null) {
-                entities.add(Entity.class.cast(model));
+                entities.add((Entity) model);
             } else {
                 Entity entity =
                     updatePropertiesAndConvertToEntity(modelMeta, model);

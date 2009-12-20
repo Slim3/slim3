@@ -327,8 +327,7 @@ public class FrontController implements Filter {
             } else {
                 if (request instanceof HotHttpServletRequestWrapper) {
                     request =
-                        HotHttpServletRequestWrapper.class
-                            .cast(request)
+                        ((HotHttpServletRequestWrapper) request)
                             .getOriginalRequest();
                 }
                 chain.doFilter(request, response);

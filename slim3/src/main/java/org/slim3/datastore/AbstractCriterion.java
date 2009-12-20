@@ -80,7 +80,7 @@ public abstract class AbstractCriterion {
                 + attributeMeta.modelMeta.getModelClass().getName()
                 + ") is not comparable.");
         }
-        return Comparable.class.cast(v1).compareTo(v2);
+        return ((Comparable) v1).compareTo(v2);
     }
 
     /**

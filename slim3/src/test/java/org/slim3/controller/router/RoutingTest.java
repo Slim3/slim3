@@ -83,15 +83,17 @@ public class RoutingTest {
         assertThat(routing.to, is("/abc?xxx={xxx}&yyy={yyy}"));
         assertThat(routing.toFragmentList.size(), is(4));
         assertThat(
-            StringFragment.class.cast(routing.toFragmentList.get(0)).value,
+            ((StringFragment) routing.toFragmentList.get(0)).value,
             is("/abc?xxx="));
-        assertThat(PlaceHolderFragment.class
-            .cast(routing.toFragmentList.get(1)).name, is("xxx"));
         assertThat(
-            StringFragment.class.cast(routing.toFragmentList.get(2)).value,
+            ((PlaceHolderFragment) routing.toFragmentList.get(1)).name,
+            is("xxx"));
+        assertThat(
+            ((StringFragment) routing.toFragmentList.get(2)).value,
             is("&yyy="));
-        assertThat(PlaceHolderFragment.class
-            .cast(routing.toFragmentList.get(3)).name, is("yyy"));
+        assertThat(
+            ((PlaceHolderFragment) routing.toFragmentList.get(3)).name,
+            is("yyy"));
     }
 
     /**
