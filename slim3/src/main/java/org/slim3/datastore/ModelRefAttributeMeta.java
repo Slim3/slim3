@@ -50,17 +50,22 @@ public class ModelRefAttributeMeta<M, A, RM> extends
      *            the meta data of model
      * @param name
      *            the name
+     * @param fieldName
+     *            the field name
      * @param attributeClass
      *            the attribute class
      * @param referenceModelClass
      *            the reference model class
      * @throws NullPointerException
-     *             if the referenceModelClass parameter is null
+     *             if the modelMeta parameter is null or if the name parameter
+     *             is null or if the attributeClass parameter is null or if the
+     *             fieldName parameter is null or if the referenceModelClass
+     *             parameter is null
      */
     public ModelRefAttributeMeta(ModelMeta<M> modelMeta, String name,
-            Class<? super A> attributeClass, Class<RM> referenceModelClass)
-            throws NullPointerException {
-        super(modelMeta, name, attributeClass);
+            String fieldName, Class<? super A> attributeClass,
+            Class<RM> referenceModelClass) throws NullPointerException {
+        super(modelMeta, name, fieldName, attributeClass);
         if (referenceModelClass == null) {
             throw new NullPointerException(
                 "The referenceModelClass parameter must not be null.");

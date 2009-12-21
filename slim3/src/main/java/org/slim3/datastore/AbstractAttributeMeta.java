@@ -51,6 +51,11 @@ public abstract class AbstractAttributeMeta<M, A> {
     protected String name;
 
     /**
+     * The field name.
+     */
+    protected String fieldName;
+
+    /**
      * The attribute class.
      */
     protected Class<? super A> attributeClass;
@@ -67,26 +72,37 @@ public abstract class AbstractAttributeMeta<M, A> {
      *            the meta data of model
      * @param name
      *            the name
+     * @param fieldName
+     *            the field name
      * @param attributeClass
      *            the attribute class
+     * 
      * @throws NullPointerException
      *             if the modelMeta parameter is null or if the name parameter
-     *             is null or if the attributeClass parameter is null
+     *             is null or if the attributeClass parameter is null or if the
+     *             fieldName parameter is null
      */
     public AbstractAttributeMeta(ModelMeta<M> modelMeta, String name,
-            Class<? super A> attributeClass) {
+            String fieldName, Class<? super A> attributeClass) {
         if (modelMeta == null) {
-            throw new NullPointerException("The modelMeta parameter is null.");
+            throw new NullPointerException(
+                "The modelMeta parameter must not be null.");
         }
         if (name == null) {
-            throw new NullPointerException("The name parameter is null.");
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        if (fieldName == null) {
+            throw new NullPointerException(
+                "The fieldName parameter must not be null.");
         }
         if (attributeClass == null) {
             throw new NullPointerException(
-                "The attributeClass parameter is null.");
+                "The attributeClass parameter must not be null.");
         }
         this.modelMeta = modelMeta;
         this.name = name;
+        this.fieldName = fieldName;
         this.attributeClass = attributeClass;
         asc = new AscCriterion(this);
         desc = new DescCriterion(this);
@@ -111,6 +127,15 @@ public abstract class AbstractAttributeMeta<M, A> {
     }
 
     /**
+     * Returns the field name.
+     * 
+     * @return the field name
+     */
+    public String getFieldName() {
+        return fieldName;
+    }
+
+    /**
      * Returns the property value.
      * 
      * @param model
@@ -121,7 +146,7 @@ public abstract class AbstractAttributeMeta<M, A> {
      */
     protected Object getValue(Object model) throws IllegalArgumentException {
         if (propertyDesc == null) {
-            propertyDesc = modelMeta.getBeanDesc().getPropertyDesc(name);
+            propertyDesc = modelMeta.getBeanDesc().getPropertyDesc(fieldName);
         }
         if (propertyDesc == null) {
             throw new IllegalArgumentException("The property("

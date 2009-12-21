@@ -24,6 +24,7 @@ public final class CccMeta extends
         new org.slim3.datastore.CoreAttributeMeta<org.slim3.datastore.shared.model.Ccc, com.google.appengine.api.datastore.Key>(
             this,
             "__key__",
+            "key",
             com.google.appengine.api.datastore.Key.class);
 
     /**
@@ -33,6 +34,7 @@ public final class CccMeta extends
         new org.slim3.datastore.CoreAttributeMeta<org.slim3.datastore.shared.model.Ccc, java.lang.Integer>(
             this,
             "schemaVersion",
+            "schemaVersion",
             java.lang.Integer.class);
 
     /**
@@ -41,6 +43,7 @@ public final class CccMeta extends
     public org.slim3.datastore.CoreAttributeMeta<org.slim3.datastore.shared.model.Ccc, java.lang.Long> version =
         new org.slim3.datastore.CoreAttributeMeta<org.slim3.datastore.shared.model.Ccc, java.lang.Long>(
             this,
+            "version",
             "version",
             java.lang.Long.class);
 

@@ -36,12 +36,18 @@ public class StringCollectionAttributeMeta<M, A> extends
      *            the meta data of model
      * @param name
      *            the name
+     * @param fieldName
+     *            the field name
      * @param attributeClass
      *            the attribute class
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null or if the name parameter
+     *             is null or if the attributeClass parameter is null or if the
+     *             fieldName parameter is null
      */
     public StringCollectionAttributeMeta(ModelMeta<M> modelMeta, String name,
-            Class<? super A> attributeClass) {
-        super(modelMeta, name, attributeClass);
+            String fieldName, Class<? super A> attributeClass) {
+        super(modelMeta, name, fieldName, attributeClass);
     }
 
     /**

@@ -54,7 +54,7 @@ public class HogeMeta extends ModelMeta<Hoge> {
      * 
      */
     public CoreAttributeMeta<Hoge, Key> key =
-        new CoreAttributeMeta<Hoge, Key>(this, "__key__", Key.class);
+        new CoreAttributeMeta<Hoge, Key>(this, "__key__", "key", Key.class);
 
     /**
      * 
@@ -63,37 +63,54 @@ public class HogeMeta extends ModelMeta<Hoge> {
         new CoreAttributeMeta<Hoge, Short>(
             this,
             "myPrimitiveShort",
+            "myPrimitiveShort",
             Short.class);
 
     /**
      * 
      */
     public CoreAttributeMeta<Hoge, Short> myShort =
-        new CoreAttributeMeta<Hoge, Short>(this, "myShort", Short.class);
+        new CoreAttributeMeta<Hoge, Short>(
+            this,
+            "myShort",
+            "myShort",
+            Short.class);
 
     /**
      * 
      */
     public CoreAttributeMeta<Hoge, Integer> myPrimitiveInt =
-        new CoreAttributeMeta<Hoge, Integer>(this, "myPrimitiveInt", int.class);
+        new CoreAttributeMeta<Hoge, Integer>(
+            this,
+            "myPrimitiveInt",
+            "myPrimitiveInt",
+            int.class);
 
     /**
      * 
      */
     public CoreAttributeMeta<Hoge, Integer> myInteger =
-        new CoreAttributeMeta<Hoge, Integer>(this, "myInteger", Integer.class);
+        new CoreAttributeMeta<Hoge, Integer>(
+            this,
+            "myInteger",
+            "myInteger",
+            Integer.class);
 
     /**
      * 
      */
     public CoreAttributeMeta<Hoge, Long> myPrimitiveLong =
-        new CoreAttributeMeta<Hoge, Long>(this, "myPrimitiveLong", long.class);
+        new CoreAttributeMeta<Hoge, Long>(
+            this,
+            "myPrimitiveLong",
+            "myPrimitiveLong",
+            long.class);
 
     /**
      * 
      */
     public CoreAttributeMeta<Hoge, Long> myLong =
-        new CoreAttributeMeta<Hoge, Long>(this, "myLong", Long.class);
+        new CoreAttributeMeta<Hoge, Long>(this, "myLong", "myLong", Long.class);
 
     /**
      * 
@@ -102,13 +119,18 @@ public class HogeMeta extends ModelMeta<Hoge> {
         new CoreAttributeMeta<Hoge, Float>(
             this,
             "myPrimitiveFloat",
+            "myPrimitiveFloat",
             float.class);
 
     /**
      * 
      */
     public CoreAttributeMeta<Hoge, Float> myFloat =
-        new CoreAttributeMeta<Hoge, Float>(this, "myFloat", Float.class);
+        new CoreAttributeMeta<Hoge, Float>(
+            this,
+            "myFloat",
+            "myFloat",
+            Float.class);
 
     /**
      * 
@@ -117,19 +139,24 @@ public class HogeMeta extends ModelMeta<Hoge> {
         new CoreAttributeMeta<Hoge, Double>(
             this,
             "myPrimitiveDouble",
+            "myPrimitiveDouble",
             double.class);
 
     /**
      * 
      */
     public CoreAttributeMeta<Hoge, Double> myDouble =
-        new CoreAttributeMeta<Hoge, Double>(this, "myDouble", Double.class);
+        new CoreAttributeMeta<Hoge, Double>(
+            this,
+            "myDouble",
+            "myDouble",
+            Double.class);
 
     /**
      * 
      */
     public StringAttributeMeta<Hoge> myString =
-        new StringAttributeMeta<Hoge>(this, "myString");
+        new StringAttributeMeta<Hoge>(this, "myString", "myString");
 
     /**
      * 
@@ -138,19 +165,24 @@ public class HogeMeta extends ModelMeta<Hoge> {
         new CoreAttributeMeta<Hoge, Boolean>(
             this,
             "myPrimitiveBoolean",
+            "myPrimitiveBoolean",
             boolean.class);
 
     /**
      * 
      */
     public CoreAttributeMeta<Hoge, Boolean> myBoolean =
-        new CoreAttributeMeta<Hoge, Boolean>(this, "myBoolean", Boolean.class);
+        new CoreAttributeMeta<Hoge, Boolean>(
+            this,
+            "myBoolean",
+            "myBoolean",
+            Boolean.class);
 
     /**
      * 
      */
     public CoreAttributeMeta<Hoge, Date> myDate =
-        new CoreAttributeMeta<Hoge, Date>(this, "myDate", Date.class);
+        new CoreAttributeMeta<Hoge, Date>(this, "myDate", "myDate", Date.class);
 
     /**
      * 
@@ -158,6 +190,7 @@ public class HogeMeta extends ModelMeta<Hoge> {
     public CoreAttributeMeta<Hoge, SortDirection> myEnum =
         new CoreAttributeMeta<Hoge, SortDirection>(
             this,
+            "myEnum",
             "myEnum",
             SortDirection.class);
 
@@ -168,6 +201,7 @@ public class HogeMeta extends ModelMeta<Hoge> {
         new CollectionAttributeMeta<Hoge, List<Short>, Short>(
             this,
             "myShortList",
+            "myShortList",
             List.class);
 
     /**
@@ -176,6 +210,7 @@ public class HogeMeta extends ModelMeta<Hoge> {
     public CollectionAttributeMeta<Hoge, Set<Short>, Short> myShortSet =
         new CollectionAttributeMeta<Hoge, Set<Short>, Short>(
             this,
+            "myShortSet",
             "myShortSet",
             Set.class);
 
@@ -186,6 +221,7 @@ public class HogeMeta extends ModelMeta<Hoge> {
         new CollectionAttributeMeta<Hoge, SortedSet<Short>, Short>(
             this,
             "myShortSortedSet",
+            "myShortSortedSet",
             SortedSet.class);
 
     /**
@@ -194,6 +230,7 @@ public class HogeMeta extends ModelMeta<Hoge> {
     public CollectionAttributeMeta<Hoge, List<Integer>, Integer> myIntegerList =
         new CollectionAttributeMeta<Hoge, List<Integer>, Integer>(
             this,
+            "myIntegerList",
             "myIntegerList",
             List.class);
 
@@ -204,6 +241,7 @@ public class HogeMeta extends ModelMeta<Hoge> {
         new CollectionAttributeMeta<Hoge, Set<Integer>, Integer>(
             this,
             "myIntegerSet",
+            "myIntegerSet",
             Set.class);
 
     /**
@@ -212,6 +250,7 @@ public class HogeMeta extends ModelMeta<Hoge> {
     public CollectionAttributeMeta<Hoge, SortedSet<Integer>, Integer> myIntegerSortedSet =
         new CollectionAttributeMeta<Hoge, SortedSet<Integer>, Integer>(
             this,
+            "myIntegerSortedSet",
             "myIntegerSortedSet",
             SortedSet.class);
 
@@ -222,6 +261,7 @@ public class HogeMeta extends ModelMeta<Hoge> {
         new CollectionAttributeMeta<Hoge, List<Long>, Long>(
             this,
             "myLongList",
+            "myLongList",
             List.class);
 
     /**
@@ -230,6 +270,7 @@ public class HogeMeta extends ModelMeta<Hoge> {
     public CollectionAttributeMeta<Hoge, Set<Long>, Long> myLongSet =
         new CollectionAttributeMeta<Hoge, Set<Long>, Long>(
             this,
+            "myLongSet",
             "myLongSet",
             Set.class);
 
@@ -240,6 +281,7 @@ public class HogeMeta extends ModelMeta<Hoge> {
         new CollectionAttributeMeta<Hoge, SortedSet<Long>, Long>(
             this,
             "myLongSortedSet",
+            "myLongSortedSet",
             SortedSet.class);
 
     /**
@@ -248,6 +290,7 @@ public class HogeMeta extends ModelMeta<Hoge> {
     public CollectionAttributeMeta<Hoge, List<Float>, Float> myFloatList =
         new CollectionAttributeMeta<Hoge, List<Float>, Float>(
             this,
+            "myFloatList",
             "myFloatList",
             List.class);
 
@@ -258,6 +301,7 @@ public class HogeMeta extends ModelMeta<Hoge> {
         new CollectionAttributeMeta<Hoge, Set<Float>, Float>(
             this,
             "myFloatSet",
+            "myFloatSet",
             Set.class);
 
     /**
@@ -267,13 +311,18 @@ public class HogeMeta extends ModelMeta<Hoge> {
         new CollectionAttributeMeta<Hoge, SortedSet<Float>, Float>(
             this,
             "myFloatSortedSet",
+            "myFloatSortedSet",
             SortedSet.class);
 
     /**
      * 
      */
     public CoreAttributeMeta<Hoge, Long> version =
-        new CoreAttributeMeta<Hoge, Long>(this, "version", Long.class);
+        new CoreAttributeMeta<Hoge, Long>(
+            this,
+            "version",
+            "version",
+            Long.class);
 
     /**
      * 
@@ -281,6 +330,7 @@ public class HogeMeta extends ModelMeta<Hoge> {
     public CollectionAttributeMeta<Hoge, List<SortDirection>, SortDirection> myEnumList =
         new CollectionAttributeMeta<Hoge, List<SortDirection>, SortDirection>(
             this,
+            "myEnumList",
             "myEnumList",
             List.class);
 
@@ -290,6 +340,7 @@ public class HogeMeta extends ModelMeta<Hoge> {
     public StringCollectionAttributeMeta<Hoge, List<String>> myStringList =
         new StringCollectionAttributeMeta<Hoge, List<String>>(
             this,
+            "myStringList",
             "myStringList",
             List.class);
 

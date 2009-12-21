@@ -39,6 +39,7 @@ public final class BbbMeta extends
         new org.slim3.datastore.CoreAttributeMeta<org.slim3.datastore.model.Bbb, com.google.appengine.api.datastore.Key>(
             this,
             "__key__",
+            "key",
             com.google.appengine.api.datastore.Key.class);
 
     /**
@@ -47,6 +48,7 @@ public final class BbbMeta extends
     public org.slim3.datastore.CoreAttributeMeta<org.slim3.datastore.model.Bbb, java.lang.Integer> schemaVersion =
         new org.slim3.datastore.CoreAttributeMeta<org.slim3.datastore.model.Bbb, java.lang.Integer>(
             this,
+            "schemaVersion",
             "schemaVersion",
             java.lang.Integer.class);
 
@@ -57,6 +59,7 @@ public final class BbbMeta extends
         new org.slim3.datastore.CoreAttributeMeta<org.slim3.datastore.model.Bbb, java.lang.Long>(
             this,
             "version",
+            "version",
             java.lang.Long.class);
 
     /**
@@ -65,6 +68,7 @@ public final class BbbMeta extends
     public org.slim3.datastore.ModelRefAttributeMeta<org.slim3.datastore.model.Bbb, ModelRef<Hoge>, Hoge> hogeRef =
         new org.slim3.datastore.ModelRefAttributeMeta<org.slim3.datastore.model.Bbb, ModelRef<Hoge>, Hoge>(
             this,
+            "hogeRef",
             "hogeRef",
             ModelRef.class,
             Hoge.class);
@@ -75,6 +79,7 @@ public final class BbbMeta extends
     public org.slim3.datastore.ModelRefAttributeMeta<org.slim3.datastore.model.Bbb, ModelRef<Hoge>, Hoge> hoge2Ref =
         new org.slim3.datastore.ModelRefAttributeMeta<org.slim3.datastore.model.Bbb, ModelRef<Hoge>, Hoge>(
             this,
+            "hoge2Ref",
             "hoge2Ref",
             ModelRef.class,
             Hoge.class);

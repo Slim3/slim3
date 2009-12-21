@@ -21,6 +21,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
+import org.slim3.tester.LocalServiceTestCase;
 
 import com.google.appengine.api.datastore.Key;
 
@@ -28,7 +29,7 @@ import com.google.appengine.api.datastore.Key;
  * @author higa
  * 
  */
-public class AbstAttributeMetaTest {
+public class AbstAttributeMetaTest extends LocalServiceTestCase {
 
     private HogeMeta meta = new HogeMeta();
 
@@ -68,7 +69,9 @@ public class AbstAttributeMetaTest {
     @Test
     public void getValue() throws Exception {
         Hoge hoge = new Hoge();
+        hoge.setKey(Datastore.createKey(Hoge.class, 1));
         hoge.setMyString("aaa");
         assertThat((String) meta.myString.getValue(hoge), is("aaa"));
+        assertThat((Key) meta.key.getValue(hoge), is(hoge.getKey()));
     }
 }

@@ -33,9 +33,15 @@ public class StringAttributeMeta<M> extends CoreAttributeMeta<M, String> {
      *            the meta data of model
      * @param name
      *            the name
+     * @param fieldName
+     *            the field name
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null or if the name parameter
+     *             is null or if the fieldName parameter is null
      */
-    public StringAttributeMeta(ModelMeta<M> modelMeta, String name) {
-        super(modelMeta, name, String.class);
+    public StringAttributeMeta(ModelMeta<M> modelMeta, String name,
+            String fieldName) {
+        super(modelMeta, name, fieldName, String.class);
     }
 
     /**
