@@ -65,7 +65,7 @@ public class ControllerGenerator implements Generator {
             p.println("        return forward(\"%s\");", controllerDesc
                 .getSimpleViewName());
         } else {
-            p.println("        return redirect(basePath);");
+            p.println("        return null;");
         }
         p.println("    }");
         p.println("}");

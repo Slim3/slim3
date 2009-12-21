@@ -85,10 +85,9 @@ public class ControllerTestCaseGenerator implements Generator {
                 "        assertThat(tester.getDestinationPath(), is(\"%s\"));",
                 controllerDesc.getViewName());
         } else {
-            p.println("        assertThat(tester.isRedirect(), is(true));");
-            p.println(
-                "        assertThat(tester.getDestinationPath(), is(\"%s\"));",
-                controllerDesc.getBasePath());
+            p.println("        assertThat(tester.isRedirect(), is(false));");
+            p
+                .println("        assertThat(tester.getDestinationPath(), is(nullValue()));");
         }
         p.println("    }");
         p.println("}");
