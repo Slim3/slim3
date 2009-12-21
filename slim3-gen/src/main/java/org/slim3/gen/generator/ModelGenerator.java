@@ -141,6 +141,38 @@ public class ModelGenerator implements Generator {
                 .println("    public void setSchemaVersion(Integer schemaVersion) {");
             p.println("        this.schemaVersion = schemaVersion;");
             p.println("    }");
+            p.println();
+            p.println("    @Override");
+            p.println("    public int hashCode() {");
+            p.println("        final int prime = 31;");
+            p.println("        int result = 1;");
+            p
+                .println("        result = prime * result + ((key == null) ? 0 : key.hashCode());");
+            p.println("        return result;");
+            p.println("    }");
+            p.println();
+            p.println("    @Override");
+            p.println("    public boolean equals(Object obj) {");
+            p.println("        if (this == obj) {");
+            p.println("            return true;");
+            p.println("        }");
+            p.println("        if (obj == null) {");
+            p.println("            return false;");
+            p.println("        }");
+            p.println("        if (getClass() != obj.getClass()) {");
+            p.println("            return false;");
+            p.println("        }");
+            p.println("        %1$s other = (%1$s) obj;", modelDesc
+                .getSimpleName());
+            p.println("        if (key == null) {");
+            p.println("            if (other.key != null) {");
+            p.println("                return false;");
+            p.println("            }");
+            p.println("        } else if (!key.equals(other.key)) {");
+            p.println("            return false;");
+            p.println("        }");
+            p.println("        return true;");
+            p.println("    }");
         }
         p.println("}");
     }
