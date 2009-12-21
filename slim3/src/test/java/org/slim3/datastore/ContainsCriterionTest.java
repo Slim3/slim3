@@ -47,6 +47,26 @@ public class ContainsCriterionTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
+    public void acceptInternal() throws Exception {
+        ContainsCriterion c = new ContainsCriterion(meta.myString, "bc");
+        assertThat(c.acceptInternal("abc"), is(true));
+        assertThat(c.acceptInternal(null), is(false));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void acceptInternalForNull() throws Exception {
+        ContainsCriterion c = new ContainsCriterion(meta.myString, null);
+        assertThat(c.acceptInternal("abc"), is(false));
+        assertThat(c.acceptInternal(null), is(true));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void accept() throws Exception {
         Hoge hoge = new Hoge();
         hoge.setMyString("abc");
@@ -68,7 +88,7 @@ public class ContainsCriterionTest extends LocalServiceTestCase {
         InMemoryFilterCriterion c = new ContainsCriterion(meta.myString, null);
         assertThat(c.accept(hoge), is(false));
         hoge.setMyString(null);
-        assertThat(c.accept(hoge), is(false));
+        assertThat(c.accept(hoge), is(true));
     }
 
     /**

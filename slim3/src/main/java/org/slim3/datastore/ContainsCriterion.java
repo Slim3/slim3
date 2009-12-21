@@ -47,19 +47,32 @@ public class ContainsCriterion extends AbstractCriterion implements
     }
 
     public boolean accept(Object model) {
-        if (value == null) {
-            return false;
-        }
         Object v = attributeMeta.getValue(model);
         if (v instanceof Iterable<?>) {
             for (Object o : (Iterable<?>) v) {
-                if (o != null && ((String) o).contains(value)) {
+                if (acceptInternal(o)) {
                     return true;
                 }
             }
             return false;
         }
-        if (v != null && ((String) v).contains(value)) {
+        return acceptInternal(v);
+    }
+
+    /**
+     * Determines if the model is accepted internally.
+     * 
+     * @param propertyValue
+     *            the property value
+     * @return whether the model is accepted
+     */
+    protected boolean acceptInternal(Object propertyValue) {
+        if (propertyValue == null && value == null) {
+            return true;
+        }
+        if (propertyValue != null
+            && value != null
+            && ((String) propertyValue).contains(value)) {
             return true;
         }
         return false;
