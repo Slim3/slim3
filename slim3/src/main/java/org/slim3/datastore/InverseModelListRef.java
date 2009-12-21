@@ -15,10 +15,12 @@
  */
 package org.slim3.datastore;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.SortPredicate;
 
 /**
  * An inverse reference for models.
@@ -44,6 +46,11 @@ public class InverseModelListRef<M> extends AbstractModelRef<M> {
     protected Object owner;
 
     /**
+     * The default {@link SortPredicate}s.
+     */
+    protected SortPredicate[] defaultSortPredicates;
+
+    /**
      * The model.
      */
     protected List<M> modelList;
@@ -62,14 +69,17 @@ public class InverseModelListRef<M> extends AbstractModelRef<M> {
      * @param mappedAttributeMeta
      *            the mapped {@link AbstractAttributeMeta}
      * @param owner
-     *            the owner that has this {@link InverseModelListRef}
+     *            the owner that has this {@link InverseModelListRef}the sort
+     *            criteria
+     * @param criteria
+     *            the sort criteria
      * @throws NullPointerException
      *             if the attributeMeta parameter is null or if the owner
-     *             parameter is null
+     *             parameter is null or if the element of criteria is null
      */
     public <O> InverseModelListRef(
             ModelRefAttributeMeta<M, ModelRef<O>, O> mappedAttributeMeta,
-            O owner) throws NullPointerException {
+            O owner, SortCriterion... criteria) throws NullPointerException {
         if (mappedAttributeMeta == null) {
             throw new NullPointerException(
                 "The mappedAttributeMeta must not be null.");
@@ -80,6 +90,15 @@ public class InverseModelListRef<M> extends AbstractModelRef<M> {
         mappedPropertyName = mappedAttributeMeta.getName();
         setModelMeta(mappedAttributeMeta.modelMeta);
         this.owner = owner;
+        defaultSortPredicates = new SortPredicate[criteria.length];
+        for (int i = 0; i < criteria.length; i++) {
+            SortCriterion c = criteria[i];
+            if (c == null) {
+                throw new NullPointerException(
+                    "The element of criteria must not be null.");
+            }
+            defaultSortPredicates[i] = c.getSortPredicate();
+        }
     }
 
     /**
@@ -91,43 +110,16 @@ public class InverseModelListRef<M> extends AbstractModelRef<M> {
         if (modelList != null) {
             return modelList;
         }
-        return refresh();
+        return query().getModelList();
     }
 
     /**
-     * Returns the models.
+     * Returns {@link ModelListQuery}.
      * 
-     * @param criteria
-     *            the sort criteria
-     * 
-     * @return the models
+     * @return {@link ModelListQuery}
      */
-    public List<M> getModelList(SortCriterion... criteria) {
-        if (modelList != null) {
-            return modelList;
-        }
-        return refresh(criteria);
-    }
-
-    /**
-     * Refreshes models.
-     * 
-     * @param criteria
-     *            the sort criteria
-     * @return refreshed models
-     */
-    public List<M> refresh(SortCriterion... criteria) {
-        ModelMeta<?> ownerModelMeta = Datastore.getModelMeta(owner.getClass());
-        Key key = ownerModelMeta.getKey(owner);
-        if (key == null) {
-            return null;
-        }
-        modelList =
-            Datastore.query(getModelMeta()).filter(
-                mappedPropertyName,
-                FilterOperator.EQUAL,
-                key).sort(criteria).asList();
-        return modelList;
+    public ModelListQuery query() {
+        return new ModelListQuery();
     }
 
     /**
@@ -135,5 +127,101 @@ public class InverseModelListRef<M> extends AbstractModelRef<M> {
      */
     public void clear() {
         modelList = null;
+    }
+
+    /**
+     * An internal query for {@link InverseModelListRef}.
+     * 
+     */
+    public class ModelListQuery {
+
+        /**
+         * The {@link ModelQuery}.
+         */
+        protected ModelQuery<M> query;
+
+        /**
+         * Whether {@link SortCriterion}s are set. If this flag is false,
+         * defaultSortPredicates is used.
+         */
+        protected boolean sortsSet = false;
+
+        /**
+         * Constructor.
+         */
+        protected ModelListQuery() {
+            query = Datastore.query(getModelMeta());
+        }
+
+        /**
+         * Adds the filter criteria.
+         * 
+         * @param criteria
+         *            the filter criteria
+         * @return this instance
+         */
+        public ModelListQuery filter(FilterCriterion... criteria) {
+            query.filter(criteria);
+            return this;
+        }
+
+        /**
+         * Adds the in-memory filter criteria.
+         * 
+         * @param criteria
+         *            the in-memory filter criteria
+         * @return this instance
+         */
+        public ModelListQuery filterInMemory(
+                InMemoryFilterCriterion... criteria) {
+            query.filterInMemory(criteria);
+            return this;
+        }
+
+        /**
+         * Adds the sort criteria.
+         * 
+         * @param criteria
+         *            the sort criteria
+         * @return this instance
+         */
+        public ModelListQuery sort(SortCriterion... criteria) {
+            sortsSet = true;
+            query.sort(criteria);
+            return this;
+        }
+
+        /**
+         * Adds the in-memory sort criteria.
+         * 
+         * @param criteria
+         *            the in-memory sort criteria
+         * @return this instance
+         */
+        public ModelListQuery sortInMemory(SortCriterion... criteria) {
+            query.sortInMemory(criteria);
+            return this;
+        }
+
+        /**
+         * Returns models.
+         * 
+         * @return models
+         */
+        public List<M> getModelList() {
+            ModelMeta<?> ownerModelMeta =
+                Datastore.getModelMeta(owner.getClass());
+            Key key = ownerModelMeta.getKey(owner);
+            if (key == null) {
+                modelList = new ArrayList<M>();
+            } else {
+                query.filter(mappedPropertyName, FilterOperator.EQUAL, key);
+                if (!sortsSet) {
+                    query.sort(defaultSortPredicates);
+                }
+                modelList = query.asList();
+            }
+            return modelList;
+        }
     }
 }
