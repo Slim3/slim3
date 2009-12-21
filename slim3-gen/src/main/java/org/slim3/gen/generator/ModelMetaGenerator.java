@@ -15,19 +15,7 @@
  */
 package org.slim3.gen.generator;
 
-import static org.slim3.gen.ClassConstants.Blob;
-import static org.slim3.gen.ClassConstants.CollectionAttributeMeta;
-import static org.slim3.gen.ClassConstants.CoreAttributeMeta;
-import static org.slim3.gen.ClassConstants.Double;
-import static org.slim3.gen.ClassConstants.Entity;
-import static org.slim3.gen.ClassConstants.Key;
-import static org.slim3.gen.ClassConstants.Long;
-import static org.slim3.gen.ClassConstants.ModelRefAttributeMeta;
-import static org.slim3.gen.ClassConstants.Object;
-import static org.slim3.gen.ClassConstants.String;
-import static org.slim3.gen.ClassConstants.StringAttributeMeta;
-import static org.slim3.gen.ClassConstants.StringCollectionAttributeMeta;
-import static org.slim3.gen.ClassConstants.Text;
+import static org.slim3.gen.ClassConstants.*;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -447,7 +435,7 @@ public class ModelMetaGenerator implements Generator {
             printer.println("/** */");
             printer
                 .println(
-                    "public final %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", %6$s.class);",
+                    "public final %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", \"%4$s\", %6$s.class);",
                     CoreAttributeMeta,
                     modelMetaDesc.getModelClassName(),
                     type.getWrapperClassName(),
@@ -464,7 +452,7 @@ public class ModelMetaGenerator implements Generator {
             printer.println("/** */");
             printer
                 .println(
-                    "public final %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", %6$s.class);",
+                    "public final %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", \"%4$s\", %6$s.class);",
                     CoreAttributeMeta,
                     modelMetaDesc.getModelClassName(),
                     type.getTypeName(),
@@ -481,7 +469,7 @@ public class ModelMetaGenerator implements Generator {
             printer.println("/** */");
             printer
                 .println(
-                    "public final %1$s<%2$s, %3$s, %4$s> %5$s = new %1$s<%2$s, %3$s, %4$s>(this, \"%6$s\", %7$s.class, %8$s.class);",
+                    "public final %1$s<%2$s, %3$s, %4$s> %5$s = new %1$s<%2$s, %3$s, %4$s>(this, \"%6$s\", \"%5$s\", %7$s.class, %8$s.class);",
                     ModelRefAttributeMeta,
                     modelMetaDesc.getModelClassName(),
                     type.getTypeName(),
@@ -505,7 +493,7 @@ public class ModelMetaGenerator implements Generator {
             printer.println("/** */");
             printer
                 .println(
-                    "public final %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", %6$s.class);",
+                    "public final %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", \"%4$s\", %6$s.class);",
                     CoreAttributeMeta,
                     modelMetaDesc.getModelClassName(),
                     type.getTypeName(),
@@ -522,7 +510,7 @@ public class ModelMetaGenerator implements Generator {
             printer.println("/** */");
             printer
                 .println(
-                    "public final %1$s<%2$s> %3$s = new %1$s<%2$s>(this, \"%4$s\");",
+                    "public final %1$s<%2$s> %3$s = new %1$s<%2$s>(this, \"%4$s\", \"%3$s\");",
                     StringAttributeMeta,
                     modelMetaDesc.getModelClassName(),
                     p.getName(),
@@ -562,7 +550,7 @@ public class ModelMetaGenerator implements Generator {
                         printer.println("/** */");
                         printer
                             .println(
-                                "public final %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", %6$s.class);",
+                                "public final %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", \"%4$s\", %6$s.class);",
                                 StringCollectionAttributeMeta,
                                 modelMetaDesc.getModelClassName(),
                                 collectionType.getTypeName(),
@@ -580,7 +568,7 @@ public class ModelMetaGenerator implements Generator {
                         printer.println("/** */");
                         printer
                             .println(
-                                "public final %1$s<%2$s, %3$s, %4$s> %5$s = new %1$s<%2$s, %3$s, %4$s>(this, \"%6$s\", %7$s.class);",
+                                "public final %1$s<%2$s, %3$s, %4$s> %5$s = new %1$s<%2$s, %3$s, %4$s>(this, \"%6$s\", \"%5$s\", %7$s.class);",
                                 CollectionAttributeMeta,
                                 modelMetaDesc.getModelClassName(),
                                 collectionType.getTypeName(),
