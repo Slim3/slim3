@@ -1581,22 +1581,12 @@ public class DatastoreTest extends LocalServiceTestCase {
     public void filterInMemory() throws Exception {
         List<Hoge> list = new ArrayList<Hoge>();
         Hoge hoge = new Hoge();
-        hoge.setMyInteger(1);
+        hoge.setMyStringList(Arrays.asList("aaa"));
         list.add(hoge);
-        hoge = new Hoge();
-        hoge.setMyInteger(3);
-        list.add(hoge);
-        hoge = new Hoge();
-        hoge.setMyInteger(2);
-        list.add(hoge);
-
         List<Hoge> filtered =
-            Datastore.filterInMemory(
-                list,
-                meta.myInteger.greaterThanOrEqual(2),
-                meta.myInteger.lessThan(3));
+            Datastore.filterInMemory(list, HogeMeta.get().myStringList
+                .startsWith("aaa"));
         assertThat(filtered.size(), is(1));
-        assertThat(filtered.get(0).getMyInteger(), is(2));
     }
 
     /**
