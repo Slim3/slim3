@@ -47,19 +47,32 @@ public class EndsWithCriterion extends AbstractCriterion implements
     }
 
     public boolean accept(Object model) {
-        if (value == null) {
-            return true;
-        }
         Object v = attributeMeta.getValue(model);
         if (v instanceof Iterable<?>) {
             for (Object o : (Iterable<?>) v) {
-                if (o != null && ((String) o).endsWith(value)) {
+                if (acceptInternal(o)) {
                     return true;
                 }
             }
             return false;
         }
-        if (v != null && ((String) v).endsWith(value)) {
+        return acceptInternal(v);
+    }
+
+    /**
+     * Determines if the model is accepted internally.
+     * 
+     * @param propertyValue
+     *            the property value
+     * @return whether the model is accepted
+     */
+    protected boolean acceptInternal(Object propertyValue) {
+        if (propertyValue == null && value == null) {
+            return true;
+        }
+        if (propertyValue != null
+            && value != null
+            && ((String) propertyValue).endsWith(value)) {
             return true;
         }
         return false;
