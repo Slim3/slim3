@@ -22,101 +22,102 @@ package org.slim3.controller;
  * @since 3.0
  * 
  */
-public interface ControllerConstants {
+public final class ControllerConstants {
 
     /**
      * The key of this application's UUID.
      */
-    String UUID_KEY = "slim3.uuid";
+    public static String UUID_KEY = "slim3.uuid";
 
     /**
      * The key of hot reloading.
      */
-    String HOT_RELOADING_KEY = "slim3.hotReloading";
+    public static String HOT_RELOADING_KEY = "slim3.hotReloading";
 
     /**
      * The key of configuration setting for request character set.
      */
-    String REQUEST_CHARSET_KEY = "javax.servlet.jsp.jstl.fmt.request.charset";
+    public static String REQUEST_CHARSET_KEY =
+        "javax.servlet.jsp.jstl.fmt.request.charset";
 
     /**
      * The default request character set.
      */
-    String DEFAULT_REQUEST_CHARSET = "UTF-8";
+    public static String DEFAULT_REQUEST_CHARSET = "UTF-8";
 
     /**
      * The key of configuration setting for i18n localization context.
      */
-    String LOCALIZATION_CONTEXT_KEY =
+    public static String LOCALIZATION_CONTEXT_KEY =
         "javax.servlet.jsp.jstl.fmt.localizationContext";
 
     /**
      * The default value of configuration setting for i18n localization context.
      */
-    String DEFAULT_LOCALIZATION_CONTEXT = "application";
+    public static String DEFAULT_LOCALIZATION_CONTEXT = "application";
 
     /**
      * The key of configuration setting for application based preferred locale.
      */
-    String LOCALE_KEY = "javax.servlet.jsp.jstl.fmt.locale";
+    public static String LOCALE_KEY = "javax.servlet.jsp.jstl.fmt.locale";
 
     /**
      * The key of localization setting for time zone.
      */
-    String TIME_ZONE_KEY = "javax.servlet.jsp.jstl.fmt.timeZone";
+    public static String TIME_ZONE_KEY = "javax.servlet.jsp.jstl.fmt.timeZone";
 
     /**
      * The key of controller package.
      */
-    String CONTROLLER_PACKAGE_KEY = "slim3.controllerPackage";
+    public static String CONTROLLER_PACKAGE_KEY = "slim3.controllerPackage";
 
     /**
      * The key of root package.
      */
-    String ROOT_PACKAGE_KEY = "slim3.rootPackage";
+    public static String ROOT_PACKAGE_KEY = "slim3.rootPackage";
 
     /**
      * The key of cool package.
      */
-    String COOL_PACKAGE_KEY = "slim3.coolPackage";
+    public static String COOL_PACKAGE_KEY = "slim3.coolPackage";
 
     /**
      * The default cool package.
      */
-    String DEFAULT_COOL_PACKAGE = "cool";
+    public static String DEFAULT_COOL_PACKAGE = "cool";
 
     /**
      * The key of controller.
      */
-    String CONTROLLER_KEY = "slim3.controller";
+    public static String CONTROLLER_KEY = "slim3.controller";
 
     /**
      * The key of errors.
      */
-    String ERRORS_KEY = "errors";
+    public static String ERRORS_KEY = "errors";
 
     /**
      * The suffix of controller.
      */
-    String CONTROLLER_SUFFIX = "Controller";
+    public static String CONTROLLER_SUFFIX = "Controller";
 
     /**
      * The index controller.
      */
-    String INDEX_CONTROLLER = "Index" + CONTROLLER_SUFFIX;
+    public static String INDEX_CONTROLLER = "Index" + CONTROLLER_SUFFIX;
 
     /**
      * The default controller package name.
      */
-    String DEFAULT_CONTROLLER_PACKAGE = "controller";
+    public static String DEFAULT_CONTROLLER_PACKAGE = "controller";
 
     /**
      * The server controller package name.
      */
-    String SERVER_CONTROLLER_PACKAGE = "server.controller";
+    public static String SERVER_CONTROLLER_PACKAGE = "server.controller";
 
     /**
      * The key whether the path is routed.
      */
-    String ROUTED_KEY = "slim3.routed";
+    public static String ROUTED_KEY = "slim3.routed";
 }
