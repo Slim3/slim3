@@ -100,18 +100,16 @@ public class HotReloadingFilter implements Filter {
      * Initializes the HOT reloading setting.
      */
     protected void initHotReloading() {
-        String hotReloadingStr =
-            System.getProperty(ControllerConstants.HOT_RELOADING_KEY);
-        if (!StringUtil.isEmpty(hotReloadingStr)) {
-            hotReloading = "true".equalsIgnoreCase(hotReloadingStr);
-        } else {
-            boolean runningOnDevserver =
-                servletContext.getServerInfo().indexOf("Development") >= 0;
-            if (runningOnDevserver) {
-                hotReloading = true;
-            } else {
+        if ("Development".equals(System
+            .getProperty("com.google.appengine.runtime.environment"))) {
+            if ("false".equalsIgnoreCase(System
+                .getProperty(ControllerConstants.HOT_RELOADING_KEY))) {
                 hotReloading = false;
+            } else {
+                hotReloading = true;
             }
+        } else {
+            hotReloading = false;
         }
         if (hotReloading) {
             System.setSecurityManager(null);

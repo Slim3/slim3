@@ -520,7 +520,8 @@ public abstract class Controller {
      * @return whether this application is running on the development server
      */
     protected boolean isDevelopment() {
-        return servletContext.getServerInfo().indexOf("Development") >= 0;
+        return "Development".equals(System
+            .getProperty("com.google.appengine.runtime.environment"));
     }
 
     /**

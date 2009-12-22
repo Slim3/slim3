@@ -157,8 +157,14 @@ public class ControllerTest extends ControllerTestCase {
     @Test
     public void isDevelopment() throws Exception {
         assertThat(controller.isDevelopment(), is(false));
-        tester.servletContext.setServerInfo("Development");
-        assertThat(controller.isDevelopment(), is(true));
+        System.setProperty(
+            "com.google.appengine.runtime.environment",
+            "Development");
+        try {
+            assertThat(controller.isDevelopment(), is(true));
+        } finally {
+            System.clearProperty("com.google.appengine.runtime.environment");
+        }
     }
 
     /**

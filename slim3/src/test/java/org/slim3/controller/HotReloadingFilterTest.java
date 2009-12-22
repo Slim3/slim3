@@ -46,13 +46,20 @@ public class HotReloadingFilterTest {
     @Test
     public void hotReloading() throws Exception {
         MockServletContext servletContext = new MockServletContext();
-        servletContext.setServerInfo("Development");
-        filter.servletContext = servletContext;
-        filter.initHotReloading();
-        assertThat(filter.hotReloading, is(true));
-        assertThat(
-            ServletContextLocator.get(),
-            is(HotServletContextWrapper.class));
+        System.setProperty(
+            "com.google.appengine.runtime.environment",
+            "Development");
+        try {
+            filter.servletContext = servletContext;
+            filter.initHotReloading();
+            assertThat(filter.hotReloading, is(true));
+            assertThat(
+                ServletContextLocator.get(),
+                is(HotServletContextWrapper.class));
+        } finally {
+            System.clearProperty("com.google.appengine.runtime.environment");
+        }
+
     }
 
     /**
