@@ -67,7 +67,7 @@ public class InverseModelListRef<M> extends AbstractModelRef<M> {
      * @param <O>
      *            the owner type
      * @param mappedAttributeMeta
-     *            the mapped {@link AbstractAttributeMeta}
+     *            the mapped {@link AttributeMeta}
      * @param owner
      *            the owner that has this {@link InverseModelListRef}the sort
      *            criteria

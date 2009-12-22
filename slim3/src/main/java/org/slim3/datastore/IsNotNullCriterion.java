@@ -35,7 +35,7 @@ public class IsNotNullCriterion extends AbstractFilterCriterion {
      * @throws NullPointerException
      *             if the attributeMeta parameter is null
      */
-    public IsNotNullCriterion(AbstractAttributeMeta<?, ?> attributeMeta)
+    public IsNotNullCriterion(AttributeMeta<?, ?> attributeMeta)
             throws NullPointerException {
         super(attributeMeta);
         filterPredicates =

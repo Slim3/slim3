@@ -40,7 +40,7 @@ public class ContainsCriterion extends AbstractCriterion implements
      * @throws NullPointerException
      *             if the attributeMeta parameter is null
      */
-    public ContainsCriterion(AbstractAttributeMeta<?, ?> attributeMeta,
+    public ContainsCriterion(AttributeMeta<?, ?> attributeMeta,
             String value) throws NullPointerException {
         super(attributeMeta);
         this.value = value;

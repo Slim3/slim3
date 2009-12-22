@@ -29,7 +29,7 @@ package org.slim3.datastore;
  * 
  */
 public class CollectionAttributeMeta<M, A, E> extends
-        AbstractAttributeMeta<M, A> {
+        AttributeMeta<M, A> {
 
     /**
      * Constructor.

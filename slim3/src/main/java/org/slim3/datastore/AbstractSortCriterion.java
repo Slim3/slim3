@@ -40,7 +40,7 @@ public abstract class AbstractSortCriterion extends AbstractCriterion implements
      * @throws NullPointerException
      *             if the attributeMeta parameter is null
      */
-    public AbstractSortCriterion(AbstractAttributeMeta<?, ?> attributeMeta)
+    public AbstractSortCriterion(AttributeMeta<?, ?> attributeMeta)
             throws NullPointerException {
         super(attributeMeta);
     }

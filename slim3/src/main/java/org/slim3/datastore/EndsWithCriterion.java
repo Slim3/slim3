@@ -40,7 +40,7 @@ public class EndsWithCriterion extends AbstractCriterion implements
      * @throws NullPointerException
      *             if the attributeMeta parameter is null
      */
-    public EndsWithCriterion(AbstractAttributeMeta<?, ?> attributeMeta,
+    public EndsWithCriterion(AttributeMeta<?, ?> attributeMeta,
             String value) throws NullPointerException {
         super(attributeMeta);
         this.value = value;

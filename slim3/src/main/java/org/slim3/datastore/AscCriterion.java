@@ -38,7 +38,7 @@ public class AscCriterion extends AbstractSortCriterion {
      * @throws NullPointerException
      *             if the attributeMeta parameter is null
      */
-    public AscCriterion(AbstractAttributeMeta<?, ?> attributeMeta)
+    public AscCriterion(AttributeMeta<?, ?> attributeMeta)
             throws NullPointerException {
         super(attributeMeta);
         sortPredicate =

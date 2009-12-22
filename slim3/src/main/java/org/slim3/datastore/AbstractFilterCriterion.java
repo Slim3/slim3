@@ -37,9 +37,9 @@ public abstract class AbstractFilterCriterion extends AbstractCriterion
      * 
      * @param attributeMeta
      *            the meta data of attribute
-     * @see AbstractCriterion#AbstractCriterion(AbstractAttributeMeta)
+     * @see AbstractCriterion#AbstractCriterion(AttributeMeta)
      */
-    public AbstractFilterCriterion(AbstractAttributeMeta<?, ?> attributeMeta) {
+    public AbstractFilterCriterion(AttributeMeta<?, ?> attributeMeta) {
         super(attributeMeta);
     }
 

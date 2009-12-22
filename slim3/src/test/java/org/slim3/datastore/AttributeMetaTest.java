@@ -29,7 +29,7 @@ import com.google.appengine.api.datastore.Key;
  * @author higa
  * 
  */
-public class AbstAttributeMetaTest extends LocalServiceTestCase {
+public class AttributeMetaTest extends LocalServiceTestCase {
 
     private HogeMeta meta = new HogeMeta();
 

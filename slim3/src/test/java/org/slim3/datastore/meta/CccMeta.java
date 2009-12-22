@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Ccc;
 
+import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 
 /**
@@ -86,6 +87,14 @@ public final class CccMeta extends
         org.slim3.datastore.model.Ccc m = (org.slim3.datastore.model.Ccc) model;
         long version = m.getVersion() != null ? m.getVersion().longValue() : 0L;
         m.setVersion(Long.valueOf(version + 1L));
+    }
+
+    @Override
+    protected void prePost(Entity entity) {
+    }
+
+    @Override
+    protected void preDelete(Entity entity) {
     }
 
     @Override

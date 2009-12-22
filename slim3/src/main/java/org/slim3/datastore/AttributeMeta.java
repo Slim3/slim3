@@ -28,7 +28,7 @@ import org.slim3.util.PropertyDesc;
  * @since 3.0
  * 
  */
-public abstract class AbstractAttributeMeta<M, A> {
+public abstract class AttributeMeta<M, A> {
 
     /**
      * The "ascending" sort criterion
@@ -82,7 +82,7 @@ public abstract class AbstractAttributeMeta<M, A> {
      *             is null or if the attributeClass parameter is null or if the
      *             fieldName parameter is null
      */
-    public AbstractAttributeMeta(ModelMeta<M> modelMeta, String name,
+    public AttributeMeta(ModelMeta<M> modelMeta, String name,
             String fieldName, Class<? super A> attributeClass) {
         if (modelMeta == null) {
             throw new NullPointerException(

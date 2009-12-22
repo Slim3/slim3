@@ -130,7 +130,7 @@ public class AbstCriterionTest {
          * @param attributeMeta
          * @throws NullPointerException
          */
-        public MyCriterion(AbstractAttributeMeta<?, ?> attributeMeta)
+        public MyCriterion(AttributeMeta<?, ?> attributeMeta)
                 throws NullPointerException {
             super(attributeMeta);
         }

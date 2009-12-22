@@ -26,7 +26,7 @@ package org.slim3.datastore;
  * @since 3.0
  * 
  */
-public class CoreAttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
+public class CoreAttributeMeta<M, A> extends AttributeMeta<M, A> {
 
     /**
      * The "is not null" filter.

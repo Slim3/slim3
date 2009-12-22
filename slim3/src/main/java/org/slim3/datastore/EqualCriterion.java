@@ -42,7 +42,7 @@ public class EqualCriterion extends AbstractFilterCriterion {
      * @throws NullPointerException
      *             if the attributeMeta parameter is null
      */
-    public EqualCriterion(AbstractAttributeMeta<?, ?> attributeMeta,
+    public EqualCriterion(AttributeMeta<?, ?> attributeMeta,
             Object value) throws NullPointerException {
         super(attributeMeta);
         this.value = convertValueForDatastore(value);

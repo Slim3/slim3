@@ -43,7 +43,7 @@ public class GreaterThanOrEqualCriterion extends AbstractFilterCriterion {
      *             if the attributeMeta parameter is null
      */
     public GreaterThanOrEqualCriterion(
-            AbstractAttributeMeta<?, ?> attributeMeta, Object value)
+            AttributeMeta<?, ?> attributeMeta, Object value)
             throws NullPointerException {
         super(attributeMeta);
         this.value = convertValueForDatastore(value);

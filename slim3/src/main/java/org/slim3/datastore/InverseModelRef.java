@@ -58,7 +58,7 @@ public class InverseModelRef<M> extends AbstractModelRef<M> {
      * @param <O>
      *            the owner type
      * @param mappedAttributeMeta
-     *            the mapped {@link AbstractAttributeMeta}
+     *            the mapped {@link AttributeMeta}
      * @param owner
      *            the owner that has this {@link InverseModelRef}
      * @throws NullPointerException

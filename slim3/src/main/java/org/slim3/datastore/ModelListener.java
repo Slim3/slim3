@@ -15,31 +15,35 @@
  */
 package org.slim3.datastore;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.google.appengine.api.datastore.Entity;
 
 /**
- * An annotation for entity.
+ * A model listener interface for receiving put and delete events.
  * 
  * @author higa
- * @since 3.0
+ * @param <MM>
+ *            the model meta type
  * 
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface Model {
+public interface ModelListener<MM extends ModelMeta<?>> {
 
     /**
-     * The kind of entity.
+     * This method is invoked before putting the entity.
+     * 
+     * @param entity
+     *            the entity
+     * @param modelMeta
+     *            the meta data of model
      */
-    String kind() default "";
+    void prePut(Entity entity, MM modelMeta);
 
     /**
-     * The array of model listeners.
+     * This method is invoked before deleting the entity.
+     * 
+     * @param entity
+     *            the entity
+     * @param modelMeta
+     *            the meta data of model
      */
-    Class<? extends ModelListener<?>>[] modelListeners() default {};
+    void preDelete(Entity entity, MM modelMeta);
 }

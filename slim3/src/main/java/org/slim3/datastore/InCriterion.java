@@ -45,7 +45,7 @@ public class InCriterion extends AbstractFilterCriterion {
      * @throws IllegalArgumentException
      *             if the IN(value) parameter is empty
      */
-    public InCriterion(AbstractAttributeMeta<?, ?> attributeMeta,
+    public InCriterion(AttributeMeta<?, ?> attributeMeta,
             Iterable<?> value) throws NullPointerException {
         super(attributeMeta);
         if (value == null) {

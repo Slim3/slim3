@@ -31,7 +31,7 @@ import com.google.appengine.api.datastore.Key;
  * 
  */
 public class ModelRefAttributeMeta<M, A, RM> extends
-        AbstractAttributeMeta<M, A> {
+        AttributeMeta<M, A> {
 
     /**
      * The "is not null" filter.

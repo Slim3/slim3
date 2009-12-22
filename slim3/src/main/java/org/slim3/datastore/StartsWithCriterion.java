@@ -47,7 +47,7 @@ public class StartsWithCriterion extends AbstractFilterCriterion {
      * @throws NullPointerException
      *             if the attributeMeta parameter is null
      */
-    public StartsWithCriterion(AbstractAttributeMeta<?, ?> attributeMeta,
+    public StartsWithCriterion(AttributeMeta<?, ?> attributeMeta,
             String value) throws NullPointerException {
         super(attributeMeta);
         this.value = value;

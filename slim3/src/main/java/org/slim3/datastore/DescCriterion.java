@@ -38,7 +38,7 @@ public class DescCriterion extends AbstractSortCriterion {
      * @throws NullPointerException
      *             if the attributeMeta parameter is null
      */
-    public DescCriterion(AbstractAttributeMeta<?, ?> attributeMeta)
+    public DescCriterion(AttributeMeta<?, ?> attributeMeta)
             throws NullPointerException {
         super(attributeMeta);
         sortPredicate =
