@@ -121,6 +121,7 @@ public class ModelMetaGenerator implements Generator {
         printer.indent();
         printAttributeMetaFields(printer);
         printSingletonField(printer);
+        printGetMethod(printer);
         printConstructor(printer);
         printer.unindent();
         printer.println();
@@ -131,7 +132,8 @@ public class ModelMetaGenerator implements Generator {
         printSetKeyMethod(printer);
         printGetVersion(printer);
         printIncrementVersionMethod(printer);
-        printGetMethod(printer);
+        printPrePutMethod(printer);
+        printPreDeleteMethod(printer);
         printer.unindent();
         printer.print("}");
     }
@@ -388,6 +390,34 @@ public class ModelMetaGenerator implements Generator {
                 .getModelClassName());
             printer.println("    m.%1$s(key);", attr.getWriteMethodName());
         }
+        printer.println("}");
+        printer.println();
+    }
+
+    /**
+     * Generates the {@code setKey} method.
+     * 
+     * @param printer
+     *            the printer
+     */
+    protected void printPrePutMethod(final Printer printer) {
+        printer.println("@Override");
+        printer
+            .println("protected void prePost(com.google.appengine.api.datastore.Entity entity) {");
+        printer.println("}");
+        printer.println();
+    }
+
+    /**
+     * Generates the {@code setKey} method.
+     * 
+     * @param printer
+     *            the printer
+     */
+    protected void printPreDeleteMethod(final Printer printer) {
+        printer.println("@Override");
+        printer
+            .println("protected void preDelete(com.google.appengine.api.datastore.Entity entity) {");
         printer.println("}");
         printer.println();
     }
