@@ -41,6 +41,7 @@ import org.slim3.controller.router.Router;
 import org.slim3.controller.router.RouterFactory;
 import org.slim3.controller.upload.FileUpload;
 import org.slim3.controller.validator.Errors;
+import org.slim3.util.AppEngineUtil;
 import org.slim3.util.ApplicationMessage;
 import org.slim3.util.ClassUtil;
 import org.slim3.util.LocaleLocator;
@@ -265,8 +266,7 @@ public class FrontController implements Filter {
         synchronized (this) {
             if (servletContext.getAttribute(ControllerConstants.UUID_KEY) == null) {
                 servletContext.setAttribute(ControllerConstants.UUID_KEY, uuid);
-                if (System
-                    .getProperty("com.google.appengine.runtime.environment") != null
+                if (AppEngineUtil.isAppEngine()
                     && ("get".equalsIgnoreCase(request.getMethod()) || request
                         .getHeader("X-AppEngine-QueueName") != null)) {
                     doRedirect(request, response, path);

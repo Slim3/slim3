@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.slim3.controller.validator.Errors;
+import org.slim3.util.AppEngineUtil;
 import org.slim3.util.BooleanUtil;
 import org.slim3.util.DateUtil;
 import org.slim3.util.DoubleUtil;
@@ -515,13 +516,12 @@ public abstract class Controller {
     }
 
     /**
-     * Determines if this application is running on the development server.
+     * Determines if this application is running on development server.
      * 
-     * @return whether this application is running on the development server
+     * @return whether this application is running on development server
      */
     protected boolean isDevelopment() {
-        return "Development".equals(System
-            .getProperty("com.google.appengine.runtime.environment"));
+        return AppEngineUtil.isDevelopment();
     }
 
     /**

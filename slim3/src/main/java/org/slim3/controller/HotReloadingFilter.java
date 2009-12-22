@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slim3.controller.router.Router;
 import org.slim3.controller.router.RouterFactory;
+import org.slim3.util.AppEngineUtil;
 import org.slim3.util.Cleaner;
 import org.slim3.util.RequestLocator;
 import org.slim3.util.RequestUtil;
@@ -100,8 +101,7 @@ public class HotReloadingFilter implements Filter {
      * Initializes the HOT reloading setting.
      */
     protected void initHotReloading() {
-        if ("Development".equals(System
-            .getProperty("com.google.appengine.runtime.environment"))) {
+        if (AppEngineUtil.isDevelopment()) {
             if ("false".equalsIgnoreCase(System
                 .getProperty(ControllerConstants.HOT_RELOADING_KEY))) {
                 hotReloading = false;
