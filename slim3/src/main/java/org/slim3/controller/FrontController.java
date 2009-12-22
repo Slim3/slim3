@@ -16,6 +16,7 @@
 package org.slim3.controller;
 
 import java.io.IOException;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Locale;
@@ -459,11 +460,17 @@ public class FrontController implements Filter {
             return null;
         }
         if (!Controller.class.isAssignableFrom(clazz)) {
-            throw new IllegalStateException("The controller("
-                + className
-                + ") must extend \""
-                + Controller.class.getName()
-                + "\".");
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, "The class("
+                    + className
+                    + ") does not extend \""
+                    + Controller.class.getName()
+                    + "\".");
+            }
+            return null;
+        }
+        if (Modifier.isAbstract(clazz.getModifiers())) {
+            return null;
         }
         return ClassUtil.newInstance(clazz);
     }

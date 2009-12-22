@@ -146,10 +146,23 @@ public class FrontControllerTest extends ControllerTestCase {
      * @throws Exception
      * 
      */
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void createControllerForControllerThatDoesNotExtendController()
             throws Exception {
-        tester.frontController.createController("/bad");
+        assertThat(
+            tester.frontController.createController("/bad"),
+            is(nullValue()));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void createControllerForAbstractController() throws Exception {
+        assertThat(
+            tester.frontController.createController("/abstract"),
+            is(nullValue()));
     }
 
     /**
