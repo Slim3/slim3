@@ -298,6 +298,30 @@ public class ControllerTest extends ControllerTestCase {
         assertThat(controller.isPost(), is(false));
     }
 
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void isPut() throws Exception {
+        tester.request.setMethod("put");
+        assertThat(controller.isPut(), is(true));
+        tester.request.setMethod("get");
+        assertThat(controller.isPut(), is(false));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void isDelete() throws Exception {
+        tester.request.setMethod("delete");
+        assertThat(controller.isDelete(), is(true));
+        tester.request.setMethod("get");
+        assertThat(controller.isDelete(), is(false));
+    }
+
     private static class IndexController extends Controller {
 
         @Override

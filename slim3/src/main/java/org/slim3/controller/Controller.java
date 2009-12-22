@@ -566,4 +566,22 @@ public abstract class Controller {
     protected boolean isPost() {
         return "post".equalsIgnoreCase(request.getMethod());
     }
+
+    /**
+     * Determines if this request is put method.
+     * 
+     * @return whether this request is put method
+     */
+    protected boolean isPut() {
+        return "put".equalsIgnoreCase(request.getMethod());
+    }
+
+    /**
+     * Determines if this request is delete method.
+     * 
+     * @return whether this request is delete method
+     */
+    protected boolean isDelete() {
+        return "delete".equalsIgnoreCase(request.getMethod());
+    }
 }
