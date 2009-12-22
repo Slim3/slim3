@@ -465,44 +465,15 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
      * Returns a number of entities.
      * 
      * @return a number of entities
-     * @throws IllegalStateException
-     *             if in-memory filers are specified or if in-memory sorts are
-     *             specified
      */
     @Override
-    public int count() throws IllegalStateException {
-        if (inMemoryFilterCriteria.size() > 0) {
-            throw new IllegalStateException(
-                "In the case of count(), you cannot specify filterInMemory().");
-        }
-        if (inMemorySortCriteria.size() > 0) {
-            throw new IllegalStateException(
-                "In the case of count(), you cannot specify sortInMemory().");
-        }
+    public int count() {
+        inMemorySortCriteria.clear();
         addFilterIfPolyModel();
+        if (inMemoryFilterCriteria.size() > 0) {
+            return asList().size();
+        }
         return super.count();
-    }
-
-    /**
-     * Returns a number of entities. This method can only return up to 1,000
-     * results, but this method can return the results quickly.
-     * 
-     * @return a number of entities
-     * @throws IllegalStateException
-     *             if in-memory filers are specified
-     */
-    @Override
-    public int countQuickly() throws IllegalStateException {
-        if (inMemoryFilterCriteria.size() > 0) {
-            throw new IllegalStateException(
-                "In the case of countQuickly(), you cannot specify filterInMemory().");
-        }
-        if (inMemorySortCriteria.size() > 0) {
-            throw new IllegalStateException(
-                "In the case of countQuickly(), you cannot specify sortInMemory().");
-        }
-        addFilterIfPolyModel();
-        return super.countQuickly();
     }
 
     /**

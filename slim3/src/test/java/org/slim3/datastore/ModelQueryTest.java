@@ -534,19 +534,27 @@ public class ModelQueryTest extends LocalServiceTestCase {
     /**
      * @throws Exception
      */
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void countAndFilterInMemory() throws Exception {
+        Hoge hoge = new Hoge();
+        hoge.setMyString("aaa");
+        Datastore.put(hoge);
         ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
-        query.filterInMemory(meta.myString.equal("aaa")).count();
+        assertThat(
+            query.filterInMemory(meta.myString.equal("aaa")).count(),
+            is(1));
     }
 
     /**
      * @throws Exception
      */
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void countAndSortInMemory() throws Exception {
+        Hoge hoge = new Hoge();
+        hoge.setMyString("aaa");
+        Datastore.put(hoge);
         ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
-        query.sortInMemory(meta.myString.asc).count();
+        assertThat(query.sortInMemory(meta.myString.asc).count(), is(1));
     }
 
     /**
@@ -562,38 +570,5 @@ public class ModelQueryTest extends LocalServiceTestCase {
 
         ModelQuery<Bbb> query2 = new ModelQuery<Bbb>(bbbMeta);
         assertThat(query2.count(), is(1));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test(expected = IllegalStateException.class)
-    public void countQuicklyAndFilterInMemory() throws Exception {
-        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
-        query.filterInMemory(meta.myString.equal("aaa")).countQuickly();
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test(expected = IllegalStateException.class)
-    public void countQuicklyAndSortInMemory() throws Exception {
-        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
-        query.sortInMemory(meta.myString.asc).countQuickly();
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void countQuicklyForPolyModel() throws Exception {
-        Datastore.put(new Aaa());
-        Datastore.put(new Bbb());
-
-        ModelQuery<Aaa> query = new ModelQuery<Aaa>(aaaMeta);
-        assertThat(query.countQuickly(), is(2));
-
-        ModelQuery<Bbb> query2 = new ModelQuery<Bbb>(bbbMeta);
-        assertThat(query2.countQuickly(), is(1));
     }
 }
