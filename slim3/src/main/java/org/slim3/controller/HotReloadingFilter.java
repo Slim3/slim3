@@ -16,8 +16,6 @@
 package org.slim3.controller;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -51,8 +49,8 @@ public class HotReloadingFilter implements Filter {
     /**
      * The logger.
      */
-    private static final Logger logger =
-        Logger.getLogger(HotReloadingFilter.class.getName());
+    // private static final Logger logger =
+    // Logger.getLogger(HotReloadingFilter.class.getName());
 
     /**
      * The servlet context.
@@ -116,8 +114,8 @@ public class HotReloadingFilter implements Filter {
             ServletContextLocator.set(new HotServletContextWrapper(
                 servletContext));
         }
-        if (logger.isLoggable(Level.INFO)) {
-            logger.log(Level.INFO, "Slim3 HOT reloading:" + hotReloading);
+        if (AppEngineUtil.isDevelopment()) {
+            System.out.println("Slim3 HOT reloading:" + hotReloading);
         }
     }
 

@@ -66,7 +66,7 @@ public class FrontController implements Filter {
     /**
      * The logger.
      */
-    private static final Logger logger =
+    protected static final Logger logger =
         Logger.getLogger(FrontController.class.getName());
 
     /**
@@ -123,8 +123,11 @@ public class FrontController implements Filter {
         initDefaultLocale();
         initDefaultTimeZone();
         initRootPackageName();
-        logger
-            .log(Level.INFO, "Initialized FrontController(UUID:" + uuid + ")");
+        if (AppEngineUtil.isProduction() && logger.isLoggable(Level.INFO)) {
+            logger.log(Level.INFO, "Initialized FrontController(UUID:"
+                + uuid
+                + ")");
+        }
     }
 
     /**
@@ -135,21 +138,26 @@ public class FrontController implements Filter {
      *             if multiple front controllers are registered in the classpath
      */
     protected void checkDuplicateClasses() throws IllegalStateException {
-        try {
-            Enumeration<URL> resources =
-                Thread.currentThread().getContextClassLoader().getResources(
-                    getClass().getName().replace('.', '/') + ".class");
-            int count = 0;
-            while (resources.hasMoreElements()) {
-                resources.nextElement();
-                count++;
+        if (AppEngineUtil.isDevelopment()) {
+            try {
+                Enumeration<URL> resources =
+                    Thread
+                        .currentThread()
+                        .getContextClassLoader()
+                        .getResources(
+                            getClass().getName().replace('.', '/') + ".class");
+                int count = 0;
+                while (resources.hasMoreElements()) {
+                    resources.nextElement();
+                    count++;
+                }
+                if (count > 1) {
+                    throw new IllegalStateException(
+                        "slim3-xxx.jar files are duplicate in the classpath.");
+                }
+            } catch (IOException e) {
+                throw new WrapRuntimeException(e);
             }
-            if (count > 1) {
-                throw new IllegalStateException(
-                    "slim3-xxx.jar files are duplicate in the classpath.");
-            }
-        } catch (IOException e) {
-            throw new WrapRuntimeException(e);
         }
     }
 
@@ -231,7 +239,6 @@ public class FrontController implements Filter {
         if (servletContextSet) {
             ServletContextLocator.set(null);
         }
-        logger.log(Level.INFO, "Destroyed FrontController(UUID:" + uuid + ")");
     }
 
     public void doFilter(ServletRequest request, ServletResponse response,
@@ -259,9 +266,6 @@ public class FrontController implements Filter {
     protected void doFilter(HttpServletRequest request,
             HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        if (request.getCharacterEncoding() == null) {
-            request.setCharacterEncoding(charset);
-        }
         String path = RequestUtil.getPath(request);
         synchronized (this) {
             if (servletContext.getAttribute(ControllerConstants.UUID_KEY) == null) {
@@ -273,6 +277,9 @@ public class FrontController implements Filter {
                     return;
                 }
             }
+        }
+        if (request.getCharacterEncoding() == null) {
+            request.setCharacterEncoding(charset);
         }
         Router router = RouterFactory.getRouter();
         if (request.getAttribute(ControllerConstants.ROUTED_KEY) == Boolean.TRUE) {
@@ -454,14 +461,14 @@ public class FrontController implements Filter {
         try {
             clazz = Class.forName(className, true, loader);
         } catch (Throwable t) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, t.getMessage(), t);
+            if (AppEngineUtil.isDevelopment()) {
+                System.out.println(t);
             }
             return null;
         }
         if (!Controller.class.isAssignableFrom(clazz)) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, "The class("
+            if (AppEngineUtil.isDevelopment()) {
+                System.out.println("The class("
                     + className
                     + ") does not extend \""
                     + Controller.class.getName()
