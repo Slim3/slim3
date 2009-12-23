@@ -193,6 +193,21 @@ public class AttributeMetaDescFactory {
         }
         if (attributeMetaDesc.isPersistent()) {
             DataType dataType = attributeMetaDesc.getDataType();
+            if (dataType instanceof ModelRefType) {
+                if (classDeclaration
+                    .equals(fieldDeclaration.getDeclaringType())) {
+                    throw new ValidationException(
+                        MessageCode.SILM3GEN1043,
+                        env,
+                        fieldDeclaration.getPosition());
+                }
+                throw new ValidationException(
+                    MessageCode.SILM3GEN1044,
+                    env,
+                    classDeclaration.getPosition(),
+                    fieldDeclaration.getSimpleName(),
+                    fieldDeclaration.getDeclaringType().getQualifiedName());
+            }
             if (dataType instanceof InverseModelRefType) {
                 if (classDeclaration
                     .equals(fieldDeclaration.getDeclaringType())) {
@@ -596,7 +611,15 @@ public class AttributeMetaDescFactory {
                 wirteMethodDeclaration);
         }
         DataType dataType = attributeMetaDesc.getDataType();
-        if (dataType instanceof InverseModelRefType) {
+        if (dataType instanceof ModelRefType) {
+            validateReadMethodOnly(
+                attributeMetaDesc,
+                (ModelRefType) dataType,
+                classDeclaration,
+                fieldDeclaration,
+                readMethodDeclaration,
+                wirteMethodDeclaration);
+        } else if (dataType instanceof InverseModelRefType) {
             validateReadMethodOnly(
                 attributeMetaDesc,
                 (InverseModelRefType) dataType,
@@ -654,6 +677,67 @@ public class AttributeMetaDescFactory {
                 classDeclaration.getPosition(),
                 fieldDeclaration.getSimpleName(),
                 fieldDeclaration.getDeclaringType().getQualifiedName());
+        }
+    }
+
+    /**
+     * Validates that the read method is inexistent and the write method is
+     * existent.
+     * 
+     * @param attributeMetaDesc
+     *            the attribute mete description
+     * @param modelRefType
+     *            the model reference type
+     * @param classDeclaration
+     *            the model declaration
+     * @param fieldDeclaration
+     *            the field declaration
+     * @param readMethodDeclaration
+     *            the read method declaration
+     * @param writeMethodDeclaration
+     *            the write method declaration
+     */
+    protected void validateReadMethodOnly(AttributeMetaDesc attributeMetaDesc,
+            ModelRefType modelRefType, ClassDeclaration classDeclaration,
+            FieldDeclaration fieldDeclaration,
+            MethodDeclaration readMethodDeclaration,
+            MethodDeclaration writeMethodDeclaration) {
+        if (readMethodDeclaration == null) {
+            if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
+                throw new ValidationException(
+                    MessageCode.SILM3GEN1011,
+                    env,
+                    fieldDeclaration.getPosition());
+            }
+            throw new ValidationException(
+                MessageCode.SILM3GEN1024,
+                env,
+                classDeclaration.getPosition(),
+                fieldDeclaration.getSimpleName(),
+                fieldDeclaration.getDeclaringType().getQualifiedName());
+        }
+        if (writeMethodDeclaration != null) {
+            String fieldDefinition =
+                String.format(
+                    "%1$s %2$s = new %1$s(%3$s%4$s.get());",
+                    fieldDeclaration.getType(),
+                    fieldDeclaration.getSimpleName(),
+                    modelRefType.getReferenceModelClassName(),
+                    Constants.META_SUFFIX);
+            if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
+                throw new ValidationException(
+                    MessageCode.SILM3GEN1041,
+                    env,
+                    fieldDeclaration.getPosition(),
+                    fieldDefinition);
+            }
+            throw new ValidationException(
+                MessageCode.SILM3GEN1042,
+                env,
+                classDeclaration.getPosition(),
+                fieldDeclaration.getSimpleName(),
+                fieldDeclaration.getDeclaringType().getQualifiedName(),
+                fieldDefinition);
         }
     }
 
