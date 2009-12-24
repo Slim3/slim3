@@ -116,13 +116,9 @@ public enum MessageCode {
     /** */
     SILM3GEN1040("The setter method for the property[{0}] of the class[{1}] is not allowed. Define the property as follows:\n{2}\nThe ''xxx'' means the mapped property name."),
     /** */
-    SILM3GEN1041("The setter method is not allowed. Define the property as follows:\n{0}"),
+    SILM3GEN1041("The setter method for the property[{0}] is not allowed. Define the property as follows:\n{1}"),
     /** */
-    SILM3GEN1042("The setter method for the property[{0}] of the class[{1}] is not allowed. Define the property as follows:\n{2}"),
-    /** */
-    SILM3GEN1043("Specify @Attribute(persistent = false) for the org.slim3.datastore.ModelRef property."),
-    /** */
-    SILM3GEN1044("Specify @Attribute(persistent = false) for the org.slim3.datastore.ModelRef property. (the property[{0}] of the class[{1}])");
+    SILM3GEN1042("The setter method for the property[{0}] of the class[{1}] is not allowed. Define the property as follows:\n{2}");
 
     /** the message */
     public final String message;

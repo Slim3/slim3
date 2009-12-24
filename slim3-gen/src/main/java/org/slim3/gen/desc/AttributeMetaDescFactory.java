@@ -193,21 +193,6 @@ public class AttributeMetaDescFactory {
         }
         if (attributeMetaDesc.isPersistent()) {
             DataType dataType = attributeMetaDesc.getDataType();
-            if (dataType instanceof ModelRefType) {
-                if (classDeclaration
-                    .equals(fieldDeclaration.getDeclaringType())) {
-                    throw new ValidationException(
-                        MessageCode.SILM3GEN1043,
-                        env,
-                        fieldDeclaration.getPosition());
-                }
-                throw new ValidationException(
-                    MessageCode.SILM3GEN1044,
-                    env,
-                    classDeclaration.getPosition(),
-                    fieldDeclaration.getSimpleName(),
-                    fieldDeclaration.getDeclaringType().getQualifiedName());
-            }
             if (dataType instanceof InverseModelRefType) {
                 if (classDeclaration
                     .equals(fieldDeclaration.getDeclaringType())) {
@@ -602,24 +587,26 @@ public class AttributeMetaDescFactory {
                 }
             }
         }
-        if (attributeMetaDesc.isPersistent()) {
-            validateReadAndWriteMethods(
-                attributeMetaDesc,
-                classDeclaration,
-                fieldDeclaration,
-                readMethodDeclaration,
-                wirteMethodDeclaration);
-        }
         DataType dataType = attributeMetaDesc.getDataType();
-        if (dataType instanceof ModelRefType) {
-            validateReadMethodOnly(
-                attributeMetaDesc,
-                (ModelRefType) dataType,
-                classDeclaration,
-                fieldDeclaration,
-                readMethodDeclaration,
-                wirteMethodDeclaration);
-        } else if (dataType instanceof InverseModelRefType) {
+        if (attributeMetaDesc.isPersistent()) {
+            if (dataType instanceof ModelRefType) {
+                validateReadMethodOnly(
+                    attributeMetaDesc,
+                    (ModelRefType) dataType,
+                    classDeclaration,
+                    fieldDeclaration,
+                    readMethodDeclaration,
+                    wirteMethodDeclaration);
+            } else {
+                validateReadAndWriteMethods(
+                    attributeMetaDesc,
+                    classDeclaration,
+                    fieldDeclaration,
+                    readMethodDeclaration,
+                    wirteMethodDeclaration);
+            }
+        }
+        if (dataType instanceof InverseModelRefType) {
             validateReadMethodOnly(
                 attributeMetaDesc,
                 (InverseModelRefType) dataType,
@@ -728,7 +715,8 @@ public class AttributeMetaDescFactory {
                 throw new ValidationException(
                     MessageCode.SILM3GEN1041,
                     env,
-                    fieldDeclaration.getPosition(),
+                    writeMethodDeclaration.getPosition(),
+                    fieldDeclaration.getSimpleName(),
                     fieldDefinition);
             }
             throw new ValidationException(
