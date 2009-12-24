@@ -20,17 +20,16 @@ import java.util.List;
 
 import org.slim3.gen.AnnotationConstants;
 import org.slim3.gen.ClassConstants;
-import org.slim3.gen.Constants;
 import org.slim3.gen.datastore.ArrayType;
 import org.slim3.gen.datastore.CollectionType;
 import org.slim3.gen.datastore.CoreReferenceType;
 import org.slim3.gen.datastore.DataType;
 import org.slim3.gen.datastore.DataTypeFactory;
-import org.slim3.gen.datastore.InverseModelListRefType;
 import org.slim3.gen.datastore.InverseModelRefType;
 import org.slim3.gen.datastore.ModelRefType;
 import org.slim3.gen.datastore.OtherReferenceType;
 import org.slim3.gen.message.MessageCode;
+import org.slim3.gen.processor.Options;
 import org.slim3.gen.processor.ValidationException;
 import org.slim3.gen.util.AnnotationMirrorUtil;
 import org.slim3.gen.util.DeclarationUtil;
@@ -203,21 +202,6 @@ public class AttributeMetaDescFactory {
                 }
                 throw new ValidationException(
                     MessageCode.SILM3GEN1036,
-                    env,
-                    classDeclaration.getPosition(),
-                    fieldDeclaration.getSimpleName(),
-                    fieldDeclaration.getDeclaringType().getQualifiedName());
-            }
-            if (dataType instanceof InverseModelListRefType) {
-                if (classDeclaration
-                    .equals(fieldDeclaration.getDeclaringType())) {
-                    throw new ValidationException(
-                        MessageCode.SILM3GEN1037,
-                        env,
-                        fieldDeclaration.getPosition());
-                }
-                throw new ValidationException(
-                    MessageCode.SILM3GEN1038,
                     env,
                     classDeclaration.getPosition(),
                     fieldDeclaration.getSimpleName(),
@@ -706,11 +690,15 @@ public class AttributeMetaDescFactory {
         if (writeMethodDeclaration != null) {
             String fieldDefinition =
                 String.format(
-                    "%1$s %2$s = new %1$s(%3$s%4$s.get());",
+                    "%1$s %2$s = new %1$s(%3$s.get());",
                     fieldDeclaration.getType(),
                     fieldDeclaration.getSimpleName(),
-                    modelRefType.getReferenceModelClassName(),
-                    Constants.META_SUFFIX);
+                    new ModelMetaClassName(
+                        modelRefType.getReferenceModelClassName(),
+                        Options.getModelPackage(env),
+                        Options.getMetaPackage(env),
+                        Options.getSharedPackage(env),
+                        Options.getServerPackage(env)).getQualifiedName());
             if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
                 throw new ValidationException(
                     MessageCode.SILM3GEN1041,
@@ -769,11 +757,15 @@ public class AttributeMetaDescFactory {
         if (writeMethodDeclaration != null) {
             String fieldDefinition =
                 String.format(
-                    "%1$s %2$s = new %1$s(%3$s%4$s.get().xxx, this);",
+                    "%1$s %2$s = new %1$s(%3$s.get().xxx, this);",
                     fieldDeclaration.getType(),
                     fieldDeclaration.getSimpleName(),
-                    inverseModelRefType.getReferenceModelClassName(),
-                    Constants.META_SUFFIX);
+                    new ModelMetaClassName(
+                        inverseModelRefType.getReferenceModelClassName(),
+                        Options.getModelPackage(env),
+                        Options.getMetaPackage(env),
+                        Options.getSharedPackage(env),
+                        Options.getServerPackage(env)).getQualifiedName());
             if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
                 throw new ValidationException(
                     MessageCode.SILM3GEN1039,
