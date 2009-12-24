@@ -20,6 +20,8 @@ import static org.junit.Assert.*;
 
 import java.io.Writer;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.junit.Test;
 
 /**
@@ -72,5 +74,27 @@ public class MockHttpServletResponseTest {
         response.setDateHeader("aaa", 1000);
         System.out.println(response.getHeader("aaa"));
         assertThat(response.getDateHeader("aaa"), is(1000L));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void getStatus() throws Exception {
+        assertThat(response.getStatus(), is(HttpServletResponse.SC_OK));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void setRedirect() throws Exception {
+        response.sendRedirect("/abc");
+        assertThat(response.redirectPath, is("/abc"));
+        assertThat(
+            response.getStatus(),
+            is(HttpServletResponse.SC_MOVED_TEMPORARILY));
     }
 }

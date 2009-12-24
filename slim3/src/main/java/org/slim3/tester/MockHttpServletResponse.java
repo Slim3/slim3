@@ -59,7 +59,7 @@ public class MockHttpServletResponse implements HttpServletResponse {
     /**
      * The status.
      */
-    protected int status;
+    protected int status = SC_OK;
 
     /**
      * The message.
@@ -300,6 +300,7 @@ public class MockHttpServletResponse implements HttpServletResponse {
     }
 
     public void sendRedirect(String path) throws IOException {
+        setStatus(SC_MOVED_TEMPORARILY);
         redirectPath = path;
     }
 
