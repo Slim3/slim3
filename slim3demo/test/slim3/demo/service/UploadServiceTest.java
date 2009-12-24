@@ -8,8 +8,6 @@ import org.slim3.controller.upload.FileItem;
 import org.slim3.datastore.Datastore;
 import org.slim3.tester.LocalServiceTestCase;
 
-import slim3.demo.meta.UploadedDataFragmentMeta;
-import slim3.demo.meta.UploadedDataMeta;
 import slim3.demo.model.UploadedData;
 import slim3.demo.model.UploadedDataFragment;
 
@@ -31,16 +29,16 @@ public class UploadServiceTest extends LocalServiceTestCase {
 
     @Test
     public void upload() throws Exception {
-        UploadedDataMeta d = new UploadedDataMeta();
-        UploadedDataFragmentMeta f = new UploadedDataFragmentMeta();
         FileItem formFile =
             new FileItem("aaa.txt", "text/html", new byte[] { 'a' });
-        UploadedData data = Datastore.get(d, service.upload(formFile).getKey());
+        UploadedData data =
+            Datastore
+                .get(UploadedData.class, service.upload(formFile).getKey());
         assertThat(data.getFileName(), is("aaa.txt"));
         assertThat(data.getLength(), is(1));
-        assertThat(data.getFragmentKeyList().size(), is(1));
+        assertThat(data.getFragmentListRef().getModelList().size(), is(1));
         UploadedDataFragment fragment =
-            Datastore.get(f, data.getFragmentKeyList().get(0));
+            data.getFragmentListRef().getModelList().get(0);
         assertThat(fragment.getBytes(), is(new byte[] { 'a' }));
     }
 

@@ -44,12 +44,14 @@ public class UploadService {
             Datastore
                 .allocateIds(data.getKey(), f, bytesArray.length)
                 .iterator();
-        for (byte[] fragmentData : bytesArray) {
+        for (int i = 0; i < bytesArray.length; i++) {
+            byte[] fragmentData = bytesArray[i];
             UploadedDataFragment fragment = new UploadedDataFragment();
             models.add(fragment);
             fragment.setKey(keys.next());
             fragment.setBytes(fragmentData);
-            data.getFragmentKeyList().add(fragment.getKey());
+            fragment.setIndex(i);
+            fragment.getUploadDataRef().setModel(data);
         }
         Transaction tx = Datastore.beginTransaction();
         for (Object model : models) {
@@ -69,7 +71,7 @@ public class UploadService {
                 "The uploadedData parameter is null.");
         }
         List<UploadedDataFragment> fragmentList =
-            Datastore.get(f, uploadedData.getFragmentKeyList());
+            uploadedData.getFragmentListRef().getModelList();
         byte[][] bytesArray = new byte[fragmentList.size()][0];
         for (int i = 0; i < fragmentList.size(); i++) {
             bytesArray[i] = fragmentList.get(i).getBytes();

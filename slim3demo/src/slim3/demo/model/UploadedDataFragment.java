@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import org.slim3.datastore.Attribute;
 import org.slim3.datastore.Model;
+import org.slim3.datastore.ModelRef;
 
 import com.google.appengine.api.datastore.Key;
 
@@ -17,6 +18,12 @@ public class UploadedDataFragment implements Serializable {
 
     @Attribute(lob = true)
     private byte[] bytes;
+
+    private ModelRef<UploadedData> uploadDataRef =
+        new org.slim3.datastore.ModelRef<slim3.demo.model.UploadedData>(
+            slim3.demo.meta.UploadedDataMeta.get());
+
+    private int index;
 
     /**
      * @return the key
@@ -46,5 +53,26 @@ public class UploadedDataFragment implements Serializable {
      */
     public void setBytes(byte[] bytes) {
         this.bytes = bytes;
+    }
+
+    /**
+     * @return the uploadDataRef
+     */
+    public ModelRef<UploadedData> getUploadDataRef() {
+        return uploadDataRef;
+    }
+
+    /**
+     * @param index the index to set
+     */
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    /**
+     * @return the index
+     */
+    public int getIndex() {
+        return index;
     }
 }
