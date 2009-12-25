@@ -6,10 +6,6 @@ import org.slim3.datastore.Attribute;
 import org.slim3.datastore.Model;
 import org.slim3.datastore.ModelRef;
 
-import slim3.demo.meta.AddressMeta;
-import slim3.demo.meta.DepartmentMeta;
-import slim3.demo.meta.EmployeeMeta;
-
 import com.google.appengine.api.datastore.Key;
 
 @Model
@@ -25,14 +21,13 @@ public class Employee implements Serializable {
 
     private Integer schemaVersion = 1;
 
-    private ModelRef<Department> departmentRef =
-        new ModelRef<Department>(DepartmentMeta.get());
+    private org.slim3.datastore.ModelRef<slim3.demo.model.Address> addressRef =
+        new org.slim3.datastore.ModelRef<slim3.demo.model.Address>(
+            slim3.demo.meta.AddressMeta.get());
 
-    private ModelRef<Address> addressRef =
-        new ModelRef<Address>(AddressMeta.get());
-
-    private ModelRef<Employee> managerRef =
-        new ModelRef<Employee>(EmployeeMeta.get());
+    private org.slim3.datastore.ModelRef<slim3.demo.model.Department> departmentRef =
+        new org.slim3.datastore.ModelRef<slim3.demo.model.Department>(
+            slim3.demo.meta.DepartmentMeta.get());
 
     /**
      * Returns the key.
@@ -122,13 +117,6 @@ public class Employee implements Serializable {
     }
 
     /**
-     * @return the departmentRef
-     */
-    public ModelRef<Department> getDepartmentRef() {
-        return departmentRef;
-    }
-
-    /**
      * @return the addressRef
      */
     public ModelRef<Address> getAddressRef() {
@@ -136,9 +124,9 @@ public class Employee implements Serializable {
     }
 
     /**
-     * @return the managerRef
+     * @return the departmentRef
      */
-    public ModelRef<Employee> getManagerRef() {
-        return managerRef;
+    public ModelRef<Department> getDepartmentRef() {
+        return departmentRef;
     }
 }

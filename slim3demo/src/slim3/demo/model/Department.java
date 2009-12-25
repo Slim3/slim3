@@ -6,8 +6,6 @@ import org.slim3.datastore.Attribute;
 import org.slim3.datastore.InverseModelListRef;
 import org.slim3.datastore.Model;
 
-import slim3.demo.meta.EmployeeMeta;
-
 import com.google.appengine.api.datastore.Key;
 
 @Model
@@ -24,9 +22,9 @@ public class Department implements Serializable {
     private Integer schemaVersion = 1;
 
     @Attribute(persistent = false)
-    private InverseModelListRef<Employee> employeeListRef =
-        new InverseModelListRef<Employee>(
-            EmployeeMeta.get().departmentRef,
+    private org.slim3.datastore.InverseModelListRef<slim3.demo.model.Employee> employeeListRef =
+        new org.slim3.datastore.InverseModelListRef<slim3.demo.model.Employee>(
+            slim3.demo.meta.EmployeeMeta.get().departmentRef,
             this);
 
     /**
