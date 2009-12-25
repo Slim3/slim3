@@ -104,17 +104,17 @@ public enum MessageCode {
     /** */
     SILM3GEN1034("The actual type argument of ModelRef is not specified. (the property[{0}] of the class[{1}])."),
     /** */
-    SILM3GEN1035("Specify @Attribute(persistent = false), because this property is not persisted."),
+    SILM3GEN1035("Specify @Attribute(persistent = false). ModelRef has a key internally, so you need to persist it. But this property is read only, so you do not need to persist it."),
     /** */
-    SILM3GEN1036("Specify @Attribute(persistent = false), because this property is not persisted. (the property[{0}] of the class[{1}])"),
+    SILM3GEN1036("Specify @Attribute(persistent = false). ModelRef has a key internally, so you need to persist it. But this property is read only, so you do not need to persist it. (the property[{0}] of the class[{1}])"),
     /** */
-    SILM3GEN1039("The setter method for the property[{0}] is not allowed. Define the property field as follows:\n{1}\nThe ''xxx'' means the mapped ModelRef property."),
+    SILM3GEN1039("The setter method for the field[{0}] is not allowed. Define the field as follows:\n{1}\nThe ''xxx'' means the mapped ModelRef property."),
     /** */
-    SILM3GEN1040("The setter method for the property[{0}] of the class[{1}] is not allowed. Define the property as follows:\n{2}\nThe ''xxx'' means the mapped ModelRef property."),
+    SILM3GEN1040("The setter method for the field[{0}] of the class[{1}] is not allowed. Define the field as follows:\n{2}\nThe ''xxx'' means the mapped ModelRef property."),
     /** */
-    SILM3GEN1041("The setter method for the property[{0}] is not allowed. Define the property as follows:\n{1}"),
+    SILM3GEN1041("The setter method for the field[{0}] is not allowed. Define the field as follows:\n{1}"),
     /** */
-    SILM3GEN1042("The setter method for the property[{0}] of the class[{1}] is not allowed. Define the property as follows:\n{2}");
+    SILM3GEN1042("The setter method for the field[{0}] of the class[{1}] is not allowed. Define the field as follows:\n{2}");
 
     /** the message */
     public final String message;
