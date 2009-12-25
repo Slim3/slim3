@@ -771,7 +771,8 @@ public class AttributeMetaDescFactory {
                     env,
                     writeMethodDeclaration.getPosition(),
                     fieldDeclaration.getSimpleName(),
-                    fieldDefinition);
+                    fieldDefinition,
+                    classDeclaration.getSimpleName());
             }
             throw new ValidationException(
                 MessageCode.SILM3GEN1040,
@@ -779,7 +780,8 @@ public class AttributeMetaDescFactory {
                 classDeclaration.getPosition(),
                 fieldDeclaration.getSimpleName(),
                 fieldDeclaration.getDeclaringType().getQualifiedName(),
-                fieldDefinition);
+                fieldDefinition,
+                classDeclaration.getSimpleName());
         }
     }
 
