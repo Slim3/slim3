@@ -15,7 +15,19 @@
  */
 package org.slim3.gen.generator;
 
-import static org.slim3.gen.ClassConstants.*;
+import static org.slim3.gen.ClassConstants.Blob;
+import static org.slim3.gen.ClassConstants.CollectionAttributeMeta;
+import static org.slim3.gen.ClassConstants.CoreAttributeMeta;
+import static org.slim3.gen.ClassConstants.Double;
+import static org.slim3.gen.ClassConstants.Entity;
+import static org.slim3.gen.ClassConstants.Key;
+import static org.slim3.gen.ClassConstants.Long;
+import static org.slim3.gen.ClassConstants.ModelRefAttributeMeta;
+import static org.slim3.gen.ClassConstants.Object;
+import static org.slim3.gen.ClassConstants.String;
+import static org.slim3.gen.ClassConstants.StringAttributeMeta;
+import static org.slim3.gen.ClassConstants.StringCollectionAttributeMeta;
+import static org.slim3.gen.ClassConstants.Text;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -469,8 +481,8 @@ public class ModelMetaGenerator implements Generator {
                     CoreAttributeMeta,
                     modelMetaDesc.getModelClassName(),
                     type.getWrapperClassName(),
+                    p.getFieldName(),
                     p.getName(),
-                    p.getPropertyName(),
                     type.getClassName());
             printer.println();
             return null;
@@ -486,8 +498,8 @@ public class ModelMetaGenerator implements Generator {
                     CoreAttributeMeta,
                     modelMetaDesc.getModelClassName(),
                     type.getTypeName(),
+                    p.getFieldName(),
                     p.getName(),
-                    p.getPropertyName(),
                     type.getClassName());
             printer.println();
             return null;
@@ -504,8 +516,8 @@ public class ModelMetaGenerator implements Generator {
                     modelMetaDesc.getModelClassName(),
                     type.getTypeName(),
                     type.getReferenceModelTypeName(),
+                    p.getFieldName(),
                     p.getName(),
-                    p.getPropertyName(),
                     type.getClassName(),
                     type.getReferenceModelTypeName());
             printer.println();
@@ -518,7 +530,7 @@ public class ModelMetaGenerator implements Generator {
 
             String propertyName = "__key__";
             if (!p.isPrimaryKey()) {
-                propertyName = p.getPropertyName();
+                propertyName = p.getName();
             }
             printer.println("/** */");
             printer
@@ -527,7 +539,7 @@ public class ModelMetaGenerator implements Generator {
                     CoreAttributeMeta,
                     modelMetaDesc.getModelClassName(),
                     type.getTypeName(),
-                    p.getName(),
+                    p.getFieldName(),
                     propertyName,
                     type.getClassName());
             printer.println();
@@ -543,8 +555,8 @@ public class ModelMetaGenerator implements Generator {
                     "public final %1$s<%2$s> %3$s = new %1$s<%2$s>(this, \"%4$s\", \"%3$s\");",
                     StringAttributeMeta,
                     modelMetaDesc.getModelClassName(),
-                    p.getName(),
-                    p.getPropertyName());
+                    p.getFieldName(),
+                    p.getName());
             printer.println();
             return null;
         }
@@ -584,8 +596,8 @@ public class ModelMetaGenerator implements Generator {
                                 StringCollectionAttributeMeta,
                                 modelMetaDesc.getModelClassName(),
                                 collectionType.getTypeName(),
+                                attr.getFieldName(),
                                 attr.getName(),
-                                attr.getPropertyName(),
                                 collectionType.getClassName());
                         printer.println();
                         return null;
@@ -603,8 +615,8 @@ public class ModelMetaGenerator implements Generator {
                                 modelMetaDesc.getModelClassName(),
                                 collectionType.getTypeName(),
                                 elementType.getTypeName(),
+                                attr.getFieldName(),
                                 attr.getName(),
-                                attr.getPropertyName(),
                                 collectionType.getClassName());
                         printer.println();
                         return null;
@@ -676,11 +688,11 @@ public class ModelMetaGenerator implements Generator {
                 .println(
                     "%1$s _%2$s = blobToSerializable((%3$s) entity.getProperty(\"%4$s\"));",
                     type.getTypeName(),
-                    p.getName(),
+                    p.getFieldName(),
                     Blob,
-                    p.getPropertyName());
+                    p.getName());
             printer.println("model.%1$s(_%2$s);", p.getWriteMethodName(), p
-                .getName());
+                .getFieldName());
             return null;
         }
 
@@ -692,7 +704,7 @@ public class ModelMetaGenerator implements Generator {
                     "model.%1$s(booleanToPrimitiveBoolean((%2$s) entity.getProperty(\"%3$s\")));",
                     p.getWriteMethodName(),
                     type.getWrapperClassName(),
-                    p.getPropertyName());
+                    p.getName());
             return null;
         }
 
@@ -704,7 +716,7 @@ public class ModelMetaGenerator implements Generator {
                     "model.%1$s(doubleToPrimitiveDouble((%2$s) entity.getProperty(\"%3$s\")));",
                     p.getWriteMethodName(),
                     type.getWrapperClassName(),
-                    p.getPropertyName());
+                    p.getName());
             return null;
         }
 
@@ -716,7 +728,7 @@ public class ModelMetaGenerator implements Generator {
                     "model.%1$s(doubleToPrimitiveFloat((%2$s) entity.getProperty(\"%3$s\")));",
                     p.getWriteMethodName(),
                     Double,
-                    p.getPropertyName());
+                    p.getName());
             return null;
         }
 
@@ -728,7 +740,7 @@ public class ModelMetaGenerator implements Generator {
                     "model.%1$s(longToPrimitiveInt((%2$s) entity.getProperty(\"%3$s\")));",
                     p.getWriteMethodName(),
                     Long,
-                    p.getPropertyName());
+                    p.getName());
             return null;
         }
 
@@ -740,7 +752,7 @@ public class ModelMetaGenerator implements Generator {
                     "model.%1$s(longToPrimitiveLong((%2$s) entity.getProperty(\"%3$s\")));",
                     p.getWriteMethodName(),
                     type.getWrapperClassName(),
-                    p.getPropertyName());
+                    p.getName());
             return null;
         }
 
@@ -752,7 +764,7 @@ public class ModelMetaGenerator implements Generator {
                     "model.%1$s(longToPrimitiveShort((%2$s) entity.getProperty(\"%3$s\")));",
                     p.getWriteMethodName(),
                     Long,
-                    p.getPropertyName());
+                    p.getName());
             return null;
         }
 
@@ -763,7 +775,7 @@ public class ModelMetaGenerator implements Generator {
                 "model.%1$s((%2$s) entity.getProperty(\"%3$s\"));",
                 p.getWriteMethodName(),
                 type.getTypeName(),
-                p.getPropertyName());
+                p.getName());
             return null;
         }
 
@@ -775,7 +787,7 @@ public class ModelMetaGenerator implements Generator {
                     "model.%1$s(doubleToFloat((%2$s) entity.getProperty(\"%3$s\")));",
                     p.getWriteMethodName(),
                     Double,
-                    p.getPropertyName());
+                    p.getName());
             return null;
         }
 
@@ -787,7 +799,7 @@ public class ModelMetaGenerator implements Generator {
                     "model.%1$s(longToInteger((%2$s) entity.getProperty(\"%3$s\")));",
                     p.getWriteMethodName(),
                     Long,
-                    p.getPropertyName());
+                    p.getName());
             return null;
         }
 
@@ -799,7 +811,7 @@ public class ModelMetaGenerator implements Generator {
                     "model.%1$s(longToShort((%2$s) entity.getProperty(\"%3$s\")));",
                     p.getWriteMethodName(),
                     Long,
-                    p.getPropertyName());
+                    p.getName());
             return null;
         }
 
@@ -812,7 +824,7 @@ public class ModelMetaGenerator implements Generator {
                         "model.%1$s(textToString((%2$s) entity.getProperty(\"%3$s\")));",
                         p.getWriteMethodName(),
                         Text,
-                        p.getPropertyName());
+                        p.getName());
                 return null;
             }
             return super.visitStringType(type, p);
@@ -827,7 +839,7 @@ public class ModelMetaGenerator implements Generator {
                     p.getWriteMethodName(),
                     type.getTypeName(),
                     String,
-                    p.getPropertyName());
+                    p.getName());
             return null;
         }
 
@@ -842,7 +854,7 @@ public class ModelMetaGenerator implements Generator {
                     "model.%1$s((%2$s) entity.getProperty(\"%3$s\"));",
                     p.getWriteMethodName(),
                     type.getTypeName(),
-                    p.getPropertyName());
+                    p.getName());
             }
             return null;
         }
@@ -855,13 +867,13 @@ public class ModelMetaGenerator implements Generator {
             printer
                 .println(
                     "    throw new NullPointerException(\"The property(%1$s) is null.\");",
-                    p.getName());
+                    p.getFieldName());
             printer.println("}");
             printer.println(
                 "model.%1$s().setKey((%2$s) entity.getProperty(\"%3$s\"));",
                 p.getReadMethodName(),
                 Key,
-                p.getPropertyName());
+                p.getName());
             return null;
         }
 
@@ -883,7 +895,7 @@ public class ModelMetaGenerator implements Generator {
                                     "model.%1$s(blobToBytes((%2$s) entity.getProperty(\"%3$s\")));",
                                     attr.getWriteMethodName(),
                                     Blob,
-                                    attr.getPropertyName());
+                                    attr.getName());
 
                             return true;
                         }
@@ -914,7 +926,7 @@ public class ModelMetaGenerator implements Generator {
                                     "model.%1$s(toList(%2$s.class, entity.getProperty(\"%3$s\")));",
                                     attr.getWriteMethodName(),
                                     type.getClassName(),
-                                    attr.getPropertyName());
+                                    attr.getName());
                             return true;
                         }
 
@@ -925,7 +937,7 @@ public class ModelMetaGenerator implements Generator {
                                 .println(
                                     "model.%1$s(longListToShortList(entity.getProperty(\"%2$s\")));",
                                     attr.getWriteMethodName(),
-                                    attr.getPropertyName());
+                                    attr.getName());
                             return true;
                         }
 
@@ -936,7 +948,7 @@ public class ModelMetaGenerator implements Generator {
                                 .println(
                                     "model.%1$s(longListToIntegerList(entity.getProperty(\"%2$s\")));",
                                     attr.getWriteMethodName(),
-                                    attr.getPropertyName());
+                                    attr.getName());
                             return true;
                         }
 
@@ -947,7 +959,7 @@ public class ModelMetaGenerator implements Generator {
                                 .println(
                                     "model.%1$s(doubleListToFloatList(entity.getProperty(\"%2$s\")));",
                                     attr.getWriteMethodName(),
-                                    attr.getPropertyName());
+                                    attr.getName());
                             return true;
                         }
 
@@ -974,7 +986,7 @@ public class ModelMetaGenerator implements Generator {
                                     "model.%1$s(toSet(%2$s.class, entity.getProperty(\"%3$s\")));",
                                     attr.getWriteMethodName(),
                                     type.getClassName(),
-                                    attr.getPropertyName());
+                                    attr.getName());
                             return true;
                         }
 
@@ -985,7 +997,7 @@ public class ModelMetaGenerator implements Generator {
                                 .println(
                                     "model.%1$s(longListToShortSet(entity.getProperty(\"%2$s\")));",
                                     attr.getWriteMethodName(),
-                                    attr.getPropertyName());
+                                    attr.getName());
                             return true;
                         }
 
@@ -996,7 +1008,7 @@ public class ModelMetaGenerator implements Generator {
                                 .println(
                                     "model.%1$s(longListToIntegerSet(entity.getProperty(\"%2$s\")));",
                                     attr.getWriteMethodName(),
-                                    attr.getPropertyName());
+                                    attr.getName());
                             return true;
                         }
 
@@ -1007,7 +1019,7 @@ public class ModelMetaGenerator implements Generator {
                                 .println(
                                     "model.%1$s(doubleListToFloatSet(entity.getProperty(\"%2$s\")));",
                                     attr.getWriteMethodName(),
-                                    attr.getPropertyName());
+                                    attr.getName());
                             return true;
                         }
 
@@ -1034,7 +1046,7 @@ public class ModelMetaGenerator implements Generator {
                                     "model.%1$s(toSortedSet(%2$s.class, entity.getProperty(\"%3$s\")));",
                                     attr.getWriteMethodName(),
                                     type.getClassName(),
-                                    attr.getPropertyName());
+                                    attr.getName());
                             return true;
                         }
 
@@ -1045,7 +1057,7 @@ public class ModelMetaGenerator implements Generator {
                                 .println(
                                     "model.%1$s(longListToShortSortedSet(entity.getProperty(\"%2$s\")));",
                                     attr.getWriteMethodName(),
-                                    attr.getPropertyName());
+                                    attr.getName());
                             return true;
                         }
 
@@ -1056,7 +1068,7 @@ public class ModelMetaGenerator implements Generator {
                                 .println(
                                     "model.%1$s(longListToIntegerSortedSet(entity.getProperty(\"%2$s\")));",
                                     attr.getWriteMethodName(),
-                                    attr.getPropertyName());
+                                    attr.getName());
                             return true;
                         }
 
@@ -1067,7 +1079,7 @@ public class ModelMetaGenerator implements Generator {
                                 .println(
                                     "model.%1$s(doubleListToFloatSortedSet(entity.getProperty(\"%2$s\")));",
                                     attr.getWriteMethodName(),
-                                    attr.getPropertyName());
+                                    attr.getName());
                             return true;
                         }
 
@@ -1159,7 +1171,7 @@ public class ModelMetaGenerator implements Generator {
             printer
                 .println(
                     "entity.setUnindexedProperty(\"%1$s\", serializableToBlob(m.%2$s()));",
-                    p.getPropertyName(),
+                    p.getName(),
                     p.getReadMethodName());
 
             return null;
@@ -1171,11 +1183,11 @@ public class ModelMetaGenerator implements Generator {
             if (p.isUnindexed()) {
                 printer.println(
                     "entity.setUnindexedProperty(\"%1$s\", m.%2$s());",
-                    p.getPropertyName(),
+                    p.getName(),
                     p.getReadMethodName());
             } else {
                 printer.println("entity.setProperty(\"%1$s\", m.%2$s());", p
-                    .getPropertyName(), p.getReadMethodName());
+                    .getName(), p.getReadMethodName());
             }
             return null;
         }
@@ -1186,11 +1198,11 @@ public class ModelMetaGenerator implements Generator {
             if (p.isUnindexed()) {
                 printer.println(
                     "entity.setUnindexedProperty(\"%1$s\", m.%2$s());",
-                    p.getPropertyName(),
+                    p.getName(),
                     p.getReadMethodName());
             } else {
                 printer.println("entity.setProperty(\"%1$s\", m.%2$s());", p
-                    .getPropertyName(), p.getReadMethodName());
+                    .getName(), p.getReadMethodName());
             }
             return null;
         }
@@ -1202,7 +1214,7 @@ public class ModelMetaGenerator implements Generator {
                 printer
                     .println(
                         "entity.setUnindexedProperty(\"%1$s\", stringToText(m.%2$s()));",
-                        p.getPropertyName(),
+                        p.getName(),
                         p.getReadMethodName());
                 return null;
             }
@@ -1216,12 +1228,12 @@ public class ModelMetaGenerator implements Generator {
                 printer
                     .println(
                         "entity.setUnindexedProperty(\"%1$s\", enumToString(m.%2$s()));",
-                        p.getPropertyName(),
+                        p.getName(),
                         p.getReadMethodName());
             } else {
                 printer.println(
                     "entity.setProperty(\"%1$s\", enumToString(m.%2$s()));",
-                    p.getPropertyName(),
+                    p.getName(),
                     p.getReadMethodName());
             }
             return null;
@@ -1232,7 +1244,7 @@ public class ModelMetaGenerator implements Generator {
                 throws RuntimeException {
             printer.println(
                 "entity.setUnindexedProperty(\"%1$s\", m.%2$s());",
-                p.getPropertyName(),
+                p.getName(),
                 p.getReadMethodName());
             return null;
         }
@@ -1244,7 +1256,7 @@ public class ModelMetaGenerator implements Generator {
             printer
                 .println(
                     "    throw new NullPointerException(\"The property(%1$s) must not be null.\");",
-                    p.getName());
+                    p.getFieldName());
             printer.println("}");
             printer
                 .println(
@@ -1253,18 +1265,18 @@ public class ModelMetaGenerator implements Generator {
             printer
                 .println(
                     "    throw new NullPointerException(\"The key of the property(%1$s) must not be null. Set a key to the model or put the model to datastore.\");",
-                    p.getName());
+                    p.getFieldName());
             printer.println("}");
             if (p.isUnindexed()) {
                 printer
                     .println(
                         "entity.setUnindexedProperty(\"%1$s\", m.%2$s().getKey());",
-                        p.getPropertyName(),
+                        p.getName(),
                         p.getReadMethodName());
             } else {
                 printer.println(
                     "entity.setProperty(\"%1$s\", m.%2$s().getKey());",
-                    p.getPropertyName(),
+                    p.getName(),
                     p.getReadMethodName());
             }
             return null;
@@ -1286,7 +1298,7 @@ public class ModelMetaGenerator implements Generator {
                             printer
                                 .println(
                                     "entity.setUnindexedProperty(\"%1$s\", bytesToBlob(m.%2$s()));",
-                                    attr.getPropertyName(),
+                                    attr.getName(),
                                     attr.getReadMethodName());
                             return true;
                         }
@@ -1305,7 +1317,7 @@ public class ModelMetaGenerator implements Generator {
                 return super.visitCollectionType(type, p);
             }
             printer.println("entity.setProperty(\"%1$s\", m.%2$s());", p
-                .getPropertyName(), p.getReadMethodName());
+                .getName(), p.getReadMethodName());
             return null;
         }
     }
