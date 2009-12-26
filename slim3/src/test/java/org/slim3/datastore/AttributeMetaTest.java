@@ -74,4 +74,42 @@ public class AttributeMetaTest extends LocalServiceTestCase {
         assertThat((String) meta.myString.getValue(hoge), is("aaa"));
         assertThat((Key) meta.key.getValue(hoge), is(hoge.getKey()));
     }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void charAt() throws Exception {
+        assertThat(meta.myString.charAt(3), is("myString".charAt(3)));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void length() throws Exception {
+        assertThat(meta.myString.length(), is("myString".length()));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void subSequence() throws Exception {
+        assertThat(meta.myString.subSequence(1, 3), is("myString".subSequence(
+            1,
+            3)));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void testToString() throws Exception {
+        assertThat(meta.myString.toString(), is("myString"));
+    }
 }

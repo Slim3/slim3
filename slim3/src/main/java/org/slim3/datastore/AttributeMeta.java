@@ -28,7 +28,7 @@ import org.slim3.util.PropertyDesc;
  * @since 3.0
  * 
  */
-public abstract class AttributeMeta<M, A> {
+public abstract class AttributeMeta<M, A> implements CharSequence {
 
     /**
      * The "ascending" sort criterion
@@ -82,8 +82,8 @@ public abstract class AttributeMeta<M, A> {
      *             is null or if the attributeClass parameter is null or if the
      *             fieldName parameter is null
      */
-    public AttributeMeta(ModelMeta<M> modelMeta, String name,
-            String fieldName, Class<? super A> attributeClass) {
+    public AttributeMeta(ModelMeta<M> modelMeta, String name, String fieldName,
+            Class<? super A> attributeClass) {
         if (modelMeta == null) {
             throw new NullPointerException(
                 "The modelMeta parameter must not be null.");
@@ -132,6 +132,23 @@ public abstract class AttributeMeta<M, A> {
      * @return the field name
      */
     public String getFieldName() {
+        return fieldName;
+    }
+
+    public char charAt(int index) {
+        return fieldName.charAt(index);
+    }
+
+    public int length() {
+        return fieldName.length();
+    }
+
+    public CharSequence subSequence(int start, int end) {
+        return fieldName.subSequence(start, end);
+    }
+
+    @Override
+    public String toString() {
         return fieldName;
     }
 
