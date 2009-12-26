@@ -65,7 +65,8 @@ public class ControllerTester extends ServletTester {
      */
     public ControllerTester(Class<?> testClass) throws NullPointerException {
         if (testClass == null) {
-            throw new NullPointerException("The testClass parameter is null.");
+            throw new NullPointerException(
+                "The testClass parameter must not be null.");
         }
         this.testClass = testClass;
     }

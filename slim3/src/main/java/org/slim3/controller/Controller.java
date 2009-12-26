@@ -189,9 +189,15 @@ public abstract class Controller {
      * @param name
      *            the parameter name
      * @return the parameter value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    protected String param(String name) {
-        return request.getParameter(name);
+    protected String param(CharSequence name) throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        return request.getParameter(name.toString());
     }
 
     /**
@@ -200,9 +206,16 @@ public abstract class Controller {
      * @param name
      *            the parameter name
      * @return the parameter value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    protected String[] paramValues(String name) {
-        return request.getParameterValues(name);
+    protected String[] paramValues(CharSequence name)
+            throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        return request.getParameterValues(name.toString());
     }
 
     /**
@@ -213,10 +226,33 @@ public abstract class Controller {
      * @param name
      *            the attribute name
      * @return the request attribute
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
     @SuppressWarnings("unchecked")
-    protected <T> T requestScope(String name) {
-        return (T) request.getAttribute(name);
+    protected <T> T requestScope(CharSequence name) throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        return (T) request.getAttribute(name.toString());
+    }
+
+    /**
+     * Returns the request attribute value as string.
+     * 
+     * @param name
+     *            the attribute name
+     * @return the string attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null
+     */
+    protected String asString(CharSequence name) throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        return StringUtil.toString(request.getAttribute(name.toString()));
     }
 
     /**
@@ -225,9 +261,15 @@ public abstract class Controller {
      * @param name
      *            the attribute name
      * @return the short attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    protected Short asShort(String name) {
-        return ShortUtil.toShort(request.getAttribute(name));
+    protected Short asShort(CharSequence name) throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        return ShortUtil.toShort(request.getAttribute(name.toString()));
     }
 
     /**
@@ -238,8 +280,16 @@ public abstract class Controller {
      * @param pattern
      *            the pattern for {@link DecimalFormat}
      * @return the short attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null or if the pattern parameter is
+     *             null
      */
-    protected Short asShort(String name, String pattern) {
+    protected Short asShort(CharSequence name, String pattern)
+            throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
         return ShortUtil.toShort(NumberUtil.toNumber(asString(name), pattern));
     }
 
@@ -249,9 +299,15 @@ public abstract class Controller {
      * @param name
      *            the attribute name
      * @return the integer attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    protected Integer asInteger(String name) {
-        return IntegerUtil.toInteger(request.getAttribute(name));
+    protected Integer asInteger(CharSequence name) throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        return IntegerUtil.toInteger(request.getAttribute(name.toString()));
     }
 
     /**
@@ -262,8 +318,12 @@ public abstract class Controller {
      * @param pattern
      *            the pattern for {@link DecimalFormat}
      * @return the integer attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null or if the pattern parameter is
+     *             null
      */
-    protected Integer asInteger(String name, String pattern) {
+    protected Integer asInteger(CharSequence name, String pattern)
+            throws NullPointerException {
         return IntegerUtil.toInteger(NumberUtil.toNumber(
             asString(name),
             pattern));
@@ -275,9 +335,15 @@ public abstract class Controller {
      * @param name
      *            the attribute name
      * @return the long attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    protected Long asLong(String name) {
-        return LongUtil.toLong(request.getAttribute(name));
+    protected Long asLong(CharSequence name) throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        return LongUtil.toLong(request.getAttribute(name.toString()));
     }
 
     /**
@@ -288,8 +354,12 @@ public abstract class Controller {
      * @param pattern
      *            the pattern for {@link DecimalFormat}
      * @return the long attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null or if the pattern parameter is
+     *             null
      */
-    protected Long asLong(String name, String pattern) {
+    protected Long asLong(CharSequence name, String pattern)
+            throws NullPointerException {
         return LongUtil.toLong(NumberUtil.toNumber(asString(name), pattern));
     }
 
@@ -299,9 +369,15 @@ public abstract class Controller {
      * @param name
      *            the attribute name
      * @return the float attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    protected Float asFloat(String name) {
-        return FloatUtil.toFloat(request.getAttribute(name));
+    protected Float asFloat(CharSequence name) throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        return FloatUtil.toFloat(request.getAttribute(name.toString()));
     }
 
     /**
@@ -312,8 +388,12 @@ public abstract class Controller {
      * @param pattern
      *            the pattern for {@link DecimalFormat}
      * @return the float attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null or if the pattern parameter is
+     *             null
      */
-    protected Float asFloat(String name, String pattern) {
+    protected Float asFloat(CharSequence name, String pattern)
+            throws NullPointerException {
         return FloatUtil.toFloat(NumberUtil.toNumber(asString(name), pattern));
     }
 
@@ -323,9 +403,15 @@ public abstract class Controller {
      * @param name
      *            the attribute name
      * @return the double attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    protected Double asDouble(String name) {
-        return DoubleUtil.toDouble(request.getAttribute(name));
+    protected Double asDouble(CharSequence name) throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        return DoubleUtil.toDouble(request.getAttribute(name.toString()));
     }
 
     /**
@@ -336,21 +422,14 @@ public abstract class Controller {
      * @param pattern
      *            the pattern for {@link DecimalFormat}
      * @return the double attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null or if the pattern parameter is
+     *             null
      */
-    protected Double asDouble(String name, String pattern) {
+    protected Double asDouble(CharSequence name, String pattern)
+            throws NullPointerException {
         return DoubleUtil
             .toDouble(NumberUtil.toNumber(asString(name), pattern));
-    }
-
-    /**
-     * Returns the request attribute value as string.
-     * 
-     * @param name
-     *            the attribute name
-     * @return the string attribute value
-     */
-    protected String asString(String name) {
-        return StringUtil.toString(request.getAttribute(name));
     }
 
     /**
@@ -359,9 +438,15 @@ public abstract class Controller {
      * @param name
      *            the attribute name
      * @return the boolean attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    protected Boolean asBoolean(String name) {
-        return BooleanUtil.toBoolean(request.getAttribute(name));
+    protected Boolean asBoolean(CharSequence name) throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        return BooleanUtil.toBoolean(request.getAttribute(name.toString()));
     }
 
     /**
@@ -372,8 +457,12 @@ public abstract class Controller {
      * @param pattern
      *            the pattern for {@link SimpleDateFormat}
      * @return the date attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null or if the pattern parameter is
+     *             null
      */
-    protected Date asDate(String name, String pattern) {
+    protected Date asDate(CharSequence name, String pattern)
+            throws NullPointerException {
         return DateUtil.toDate(asString(name), pattern);
     }
 
@@ -383,9 +472,15 @@ public abstract class Controller {
      * @param name
      *            the attribute name
      * @return the request attribute value as {@link Key}
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    protected Key asKey(String name) {
-        Object key = request.getAttribute(name);
+    protected Key asKey(CharSequence name) throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        Object key = request.getAttribute(name.toString());
         if (key == null) {
             return null;
         }
@@ -402,9 +497,16 @@ public abstract class Controller {
      *            the attribute name
      * @param value
      *            the attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    protected void requestScope(String name, Object value) {
-        request.setAttribute(name, value);
+    protected void requestScope(CharSequence name, Object value)
+            throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        request.setAttribute(name.toString(), value);
     }
 
     /**
@@ -415,11 +517,18 @@ public abstract class Controller {
      * @param name
      *            the attribute name
      * @return the removed value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
     @SuppressWarnings("unchecked")
-    protected <T> T removeRequestScope(String name) {
-        T value = (T) request.getAttribute(name);
-        request.removeAttribute(name);
+    protected <T> T removeRequestScope(CharSequence name)
+            throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        T value = (T) request.getAttribute(name.toString());
+        request.removeAttribute(name.toString());
         return value;
     }
 
@@ -431,14 +540,20 @@ public abstract class Controller {
      * @param name
      *            the attribute name
      * @return the attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
     @SuppressWarnings("unchecked")
-    protected <T> T sessionScope(String name) {
+    protected <T> T sessionScope(CharSequence name) throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
         HttpSession session = request.getSession(false);
         if (session == null) {
             return null;
         }
-        return (T) session.getAttribute(name);
+        return (T) session.getAttribute(name.toString());
     }
 
     /**
@@ -448,9 +563,16 @@ public abstract class Controller {
      *            the attribute name
      * @param value
      *            the attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    protected void sessionScope(String name, Object value) {
-        request.getSession().setAttribute(name, value);
+    protected void sessionScope(CharSequence name, Object value)
+            throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        request.getSession().setAttribute(name.toString(), value);
     }
 
     /**
@@ -461,15 +583,22 @@ public abstract class Controller {
      * @param name
      *            the attribute name
      * @return the removed value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
     @SuppressWarnings("unchecked")
-    protected <T> T removeSessionScope(String name) {
+    protected <T> T removeSessionScope(CharSequence name)
+            throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
         HttpSession session = request.getSession(false);
         if (session == null) {
             return null;
         }
-        T value = (T) session.getAttribute(name);
-        session.removeAttribute(name);
+        T value = (T) session.getAttribute(name.toString());
+        session.removeAttribute(name.toString());
         return value;
     }
 
@@ -481,10 +610,17 @@ public abstract class Controller {
      * @param name
      *            the attribute name
      * @return the attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
     @SuppressWarnings("unchecked")
-    protected <T> T applicationScope(String name) {
-        return (T) servletContext.getAttribute(name);
+    protected <T> T applicationScope(CharSequence name)
+            throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        return (T) servletContext.getAttribute(name.toString());
     }
 
     /**
@@ -494,9 +630,16 @@ public abstract class Controller {
      *            the attribute name
      * @param value
      *            the attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    protected void applicationScope(String name, Object value) {
-        servletContext.setAttribute(name, value);
+    protected void applicationScope(CharSequence name, Object value)
+            throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        servletContext.setAttribute(name.toString(), value);
     }
 
     /**
@@ -507,11 +650,18 @@ public abstract class Controller {
      * @param name
      *            the attribute name
      * @return the removed value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
     @SuppressWarnings("unchecked")
-    protected <T> T removeApplicationScope(String name) {
-        T value = (T) servletContext.getAttribute(name);
-        servletContext.removeAttribute(name);
+    protected <T> T removeApplicationScope(CharSequence name)
+            throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        T value = (T) servletContext.getAttribute(name.toString());
+        servletContext.removeAttribute(name.toString());
         return value;
     }
 
