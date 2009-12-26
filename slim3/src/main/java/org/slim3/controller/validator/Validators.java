@@ -94,12 +94,12 @@ public class Validators {
      * @throws NullPointerException
      *             if the name parameter is null
      */
-    public Validators add(String name, Validator... validators)
+    public Validators add(CharSequence name, Validator... validators)
             throws NullPointerException {
         if (name == null) {
             throw new NullPointerException("The name parameter is null.");
         }
-        validatorsMap.put(name, validators);
+        validatorsMap.put(name.toString(), validators);
         return this;
     }
 

@@ -75,8 +75,12 @@ public class CopyOptions {
      *            the included property names
      * @return this instance
      */
-    public CopyOptions include(String... propertyNames) {
-        includedPropertyNames = propertyNames;
+    public CopyOptions include(CharSequence... propertyNames) {
+        final int length = propertyNames.length;
+        includedPropertyNames = new String[length];
+        for (int i = 0; i < length; i++) {
+            includedPropertyNames[i] = propertyNames[i].toString();
+        }
         return this;
     }
 
@@ -88,7 +92,11 @@ public class CopyOptions {
      * @return this instance
      */
     public CopyOptions exclude(String... propertyNames) {
-        excludedPropertyNames = propertyNames;
+        final int length = propertyNames.length;
+        excludedPropertyNames = new String[length];
+        for (int i = 0; i < length; i++) {
+            excludedPropertyNames[i] = propertyNames[i].toString();
+        }
         return this;
     }
 
@@ -124,15 +132,15 @@ public class CopyOptions {
      *             if the converter parameter is null
      */
     public CopyOptions converter(Converter<?> converter,
-            String... propertyNames) throws NullPointerException {
+            CharSequence... propertyNames) throws NullPointerException {
         if (converter == null) {
             throw new NullPointerException("The converter parameter is null.");
         }
         if (propertyNames.length == 0) {
             converters.add(converter);
         } else {
-            for (String name : propertyNames) {
-                converterMap.put(name, converter);
+            for (CharSequence name : propertyNames) {
+                converterMap.put(name.toString(), converter);
             }
         }
         return this;
@@ -147,7 +155,8 @@ public class CopyOptions {
      *            the property names
      * @return this instance
      */
-    public CopyOptions dateConverter(String pattern, String... propertyNames) {
+    public CopyOptions dateConverter(String pattern,
+            CharSequence... propertyNames) {
         return converter(new DateConverter(pattern), propertyNames);
     }
 
@@ -160,7 +169,8 @@ public class CopyOptions {
      *            the property names
      * @return this instance
      */
-    public CopyOptions numberConverter(String pattern, String... propertyNames) {
+    public CopyOptions numberConverter(String pattern,
+            CharSequence... propertyNames) {
         return converter(new NumberConverter(pattern), propertyNames);
     }
 
