@@ -259,7 +259,7 @@ public class HotReloadingFilter implements Filter {
                 + rootPackageName
                 + "."
                 + coolPackageName
-                + "\" package.",
+                + "\" package.\nSee http://sites.google.com/site/slim3appengine/hot-reloading",
             cause);
     }
 }
