@@ -68,7 +68,7 @@ public class UploadService {
     public byte[] getBytes(UploadedData uploadedData) {
         if (uploadedData == null) {
             throw new NullPointerException(
-                "The uploadedData parameter is null.");
+                "The uploadedData parameter must not be null.");
         }
         List<UploadedDataFragment> fragmentList =
             uploadedData.getFragmentListRef().getModelList();

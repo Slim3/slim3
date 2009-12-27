@@ -5,12 +5,15 @@ import org.slim3.controller.Navigation;
 import org.slim3.controller.validator.Validators;
 import org.slim3.util.BeanUtil;
 
+import slim3.demo.meta.BlogMeta;
 import slim3.demo.model.Blog;
 import slim3.demo.service.BlogService;
 
 public class InsertController extends Controller {
 
     private BlogService service = new BlogService();
+
+    private BlogMeta meta = BlogMeta.get();
 
     @Override
     public Navigation run() {
@@ -25,8 +28,8 @@ public class InsertController extends Controller {
 
     protected boolean validate() {
         Validators v = new Validators(request);
-        v.add("title", v.required());
-        v.add("content", v.required());
+        v.add(meta.title, v.required());
+        v.add(meta.content, v.required());
         return v.validate();
     }
 }
