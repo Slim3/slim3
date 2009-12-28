@@ -1,4 +1,6 @@
+com.google.appengine.api.datastore
 org.slim3.controller
+org.slim3.controller.router
 org.slim3.controller.upload
 org.slim3.controller.validator
 org.slim3.datastore

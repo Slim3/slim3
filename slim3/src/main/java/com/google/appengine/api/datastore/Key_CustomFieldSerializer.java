@@ -5,7 +5,7 @@ import com.google.gwt.user.client.rpc.SerializationStreamReader;
 import com.google.gwt.user.client.rpc.SerializationStreamWriter;
 
 /**
- * Custom field serializer for {@link Key}.
+ * Custom field serializer for Key.
  * 
  * @author bufferings
  * @author higa

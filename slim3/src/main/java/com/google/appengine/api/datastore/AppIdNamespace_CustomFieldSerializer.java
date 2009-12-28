@@ -5,7 +5,7 @@ import com.google.gwt.user.client.rpc.SerializationStreamReader;
 import com.google.gwt.user.client.rpc.SerializationStreamWriter;
 
 /**
- * Custom field serializer for {@link AppIdNamespace}.
+ * Custom field serializer for AppIdNamespace.
  * 
  * @author bufferings
  * @author higa
@@ -15,12 +15,12 @@ import com.google.gwt.user.client.rpc.SerializationStreamWriter;
 public final class AppIdNamespace_CustomFieldSerializer {
 
     /**
-     * Deserializes the {@link AppIdNamespace}.
+     * Deserializes the AppIdNamespace.
      * 
      * @param streamReader
      *            the stream reader
      * @param instance
-     *            the {@link AppIdNamespace}
+     *            the AppIdNamespace
      * @throws SerializationException
      *             if an exception occurred when deserializing
      */
@@ -29,11 +29,11 @@ public final class AppIdNamespace_CustomFieldSerializer {
     }
 
     /**
-     * Instantiates an {@link AppIdNamespace}.
+     * Instantiates an AppIdNamespace.
      * 
      * @param streamReader
      *            the stream reader
-     * @return an {@link AppIdNamespace}
+     * @return an AppIdNamespace
      * @throws SerializationException
      *             if an exception occurred when instantiating.
      */
@@ -46,12 +46,12 @@ public final class AppIdNamespace_CustomFieldSerializer {
     }
 
     /**
-     * Serializes the {@link AppIdNamespace}.
+     * Serializes the AppIdNamespace.
      * 
      * @param streamWriter
      *            the stream writer
      * @param instance
-     *            the {@link AppIdNamespace}
+     *            the AppIdNamespace
      * @throws SerializationException
      *             if an exception occurred when serializing
      */
