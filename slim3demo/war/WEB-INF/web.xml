@@ -67,6 +67,14 @@
     </security-constraint>
     <security-constraint>
         <web-resource-collection>
+            <url-pattern>/cron/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>admin</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <web-resource-collection>
             <url-pattern>/_ah/mail/*</url-pattern>
         </web-resource-collection>
         <auth-constraint>
