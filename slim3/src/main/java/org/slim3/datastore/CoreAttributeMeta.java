@@ -15,6 +15,8 @@
  */
 package org.slim3.datastore;
 
+import java.util.Arrays;
+
 /**
  * A meta data of attribute.
  * 
@@ -136,6 +138,19 @@ public class CoreAttributeMeta<M, A> extends AttributeMeta<M, A> {
     public FilterCriterion in(Iterable<A> value) throws NullPointerException,
             IllegalArgumentException {
         return new InCriterion(this, value);
+    }
+
+    /**
+     * Returns the "in" filter.
+     * 
+     * @param value
+     *            the value
+     * @return the "in" filter
+     * @throws IllegalArgumentException
+     *             if the value parameter is empty
+     */
+    public FilterCriterion in(A... value) throws IllegalArgumentException {
+        return new InCriterion(this, Arrays.asList(value));
     }
 
     /**

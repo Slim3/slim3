@@ -110,9 +110,20 @@ public class CoreAttributeMetaTest {
      * @throws Exception
      * 
      */
+    @Test
+    public void inForVarargs() throws Exception {
+        assertThat(meta.myString.in("a"), is(InCriterion.class));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
     @Test(expected = NullPointerException.class)
     public void inForNull() throws Exception {
-        assertThat(meta.myString.in(null), is(notNullValue()));
+        assertThat(
+            meta.myString.in((Iterable<String>) null),
+            is(notNullValue()));
     }
 
     /**
