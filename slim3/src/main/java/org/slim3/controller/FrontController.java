@@ -271,6 +271,7 @@ public class FrontController implements Filter {
             if (servletContext.getAttribute(ControllerConstants.UUID_KEY) == null) {
                 servletContext.setAttribute(ControllerConstants.UUID_KEY, uuid);
                 if (AppEngineUtil.isAppEngine()
+                    && request.getHeader("X-AppEngine-Cron") == null
                     && ("get".equalsIgnoreCase(request.getMethod()) || request
                         .getHeader("X-AppEngine-QueueName") != null)) {
                     doRedirect(request, response, path);
