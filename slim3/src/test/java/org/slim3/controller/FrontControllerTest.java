@@ -74,6 +74,9 @@ public class FrontControllerTest extends ControllerTestCase {
         assertThat(
             tester.frontController.toControllerClassName("/"),
             is(IndexController.class.getName()));
+        assertThat(
+            tester.frontController.toControllerClassName("/_ah/admin"),
+            is(nullValue()));
     }
 
     /**
@@ -173,6 +176,17 @@ public class FrontControllerTest extends ControllerTestCase {
     public void createControllerForClassNotFound() throws Exception {
         assertThat(
             tester.frontController.createController("/xxx"),
+            is(nullValue()));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void createControllerForAppEnginePath() throws Exception {
+        assertThat(
+            tester.frontController.createController("/_ah/admin"),
             is(nullValue()));
     }
 

@@ -456,6 +456,9 @@ public class FrontController implements Filter {
     protected Controller createController(String path)
             throws IllegalStateException {
         String className = toControllerClassName(path);
+        if (className == null) {
+            return null;
+        }
         Class<?> clazz = null;
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         try {
@@ -493,6 +496,9 @@ public class FrontController implements Filter {
      */
     protected String toControllerClassName(String path)
             throws IllegalStateException {
+        if (path.startsWith("/_ah/")) {
+            return null;
+        }
         String className =
             rootPackageName
                 + "."
