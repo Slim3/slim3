@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.slim3.gen.AnnotationConstants;
+import org.slim3.gen.ClassConstants;
 import org.slim3.gen.message.MessageCode;
 import org.slim3.gen.processor.AptException;
 import org.slim3.gen.processor.Options;
@@ -29,15 +30,21 @@ import org.slim3.gen.processor.UnknownDeclarationException;
 import org.slim3.gen.processor.ValidationException;
 import org.slim3.gen.util.AnnotationMirrorUtil;
 import org.slim3.gen.util.DeclarationUtil;
+import org.slim3.gen.util.TypeUtil;
 
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.declaration.AnnotationMirror;
+import com.sun.mirror.declaration.AnnotationValue;
 import com.sun.mirror.declaration.ClassDeclaration;
 import com.sun.mirror.declaration.FieldDeclaration;
 import com.sun.mirror.declaration.InterfaceDeclaration;
 import com.sun.mirror.declaration.MethodDeclaration;
 import com.sun.mirror.declaration.Modifier;
+import com.sun.mirror.declaration.TypeDeclaration;
+import com.sun.mirror.type.ClassType;
+import com.sun.mirror.type.DeclaredType;
 import com.sun.mirror.type.InterfaceType;
+import com.sun.mirror.type.TypeMirror;
 
 /**
  * Creates a model meta description.
@@ -92,12 +99,12 @@ public class ModelMetaDescFactory {
         validateNonGenericType(classDeclaration);
         validateDefaultConstructor(classDeclaration);
 
-        AnnotationMirror anno =
+        AnnotationMirror model =
             DeclarationUtil.getAnnotationMirror(
                 env,
                 classDeclaration,
                 AnnotationConstants.Model);
-        if (anno == null) {
+        if (model == null) {
             throw new IllegalStateException(AnnotationConstants.Model
                 + " not found.");
         }
@@ -110,7 +117,7 @@ public class ModelMetaDescFactory {
         List<String> classHierarchyList = new ArrayList<String>();
         PolyModelDesc polyModelDesc = createPolyModelDesc(classDeclaration);
         if (polyModelDesc == null) {
-            kind = getKind(anno, modelMetaClassName.getKind());
+            kind = getKind(model, modelMetaClassName.getKind());
         } else {
             kind = polyModelDesc.getKind();
             classHierarchyList = polyModelDesc.getClassHierarchyList();
@@ -125,6 +132,7 @@ public class ModelMetaDescFactory {
                 modelClassName,
                 kind,
                 classHierarchyList);
+        handelModelListeners(classDeclaration, modelMetaDesc, model);
         handleAttributes(classDeclaration, modelMetaDesc);
         return modelMetaDesc;
     }
@@ -276,6 +284,111 @@ public class ModelMetaDescFactory {
         return new ModelMetaClassName(modelClassName, Options
             .getModelPackage(env), Options.getMetaPackage(env), Options
             .getSharedPackage(env), Options.getServerPackage(env));
+    }
+
+    /**
+     * Handles model listeners.
+     * 
+     * @param classDeclaration
+     *            the model declaration.
+     * @param modelMetaDesc
+     *            the model meta description
+     * @param model
+     *            the model annotation
+     */
+    protected void handelModelListeners(ClassDeclaration classDeclaration,
+            ModelMetaDesc modelMetaDesc, AnnotationMirror model) {
+        Collection<AnnotationValue> modelListeners =
+            AnnotationMirrorUtil.getElementValue(
+                model,
+                AnnotationConstants.modelListeners);
+        if (modelListeners == null) {
+            return;
+        }
+        for (AnnotationValue listener : modelListeners) {
+            Object value = listener.getValue();
+            if (!(value instanceof TypeMirror)) {
+                continue;
+            }
+            ClassType listenerClassType =
+                TypeUtil.toClassType((TypeMirror) value);
+            if (listenerClassType == null) {
+                throw new ValidationException(
+                    MessageCode.SILM3GEN1047,
+                    env,
+                    listener.getPosition(),
+                    value.toString());
+            }
+            ClassDeclaration listenerClassDeclaration =
+                listenerClassType.getDeclaration();
+            if (listenerClassDeclaration == null) {
+                throw new UnknownDeclarationException(
+                    env,
+                    listenerClassDeclaration,
+                    listenerClassType);
+            }
+            if (!listenerClassDeclaration.getModifiers().contains(
+                Modifier.PUBLIC)) {
+                throw new ValidationException(
+                    MessageCode.SILM3GEN1017,
+                    env,
+                    listener.getPosition());
+            }
+            if (listenerClassDeclaration.getModifiers().contains(
+                Modifier.ABSTRACT)) {
+                throw new ValidationException(
+                    MessageCode.SILM3GEN1048,
+                    env,
+                    listener.getPosition());
+            }
+            if (!listenerClassDeclaration.getFormalTypeParameters().isEmpty()) {
+                throw new ValidationException(
+                    MessageCode.SILM3GEN1020,
+                    env,
+                    listener.getPosition());
+            }
+            if (!DeclarationUtil
+                .hasPublicDefaultConstructor(listenerClassDeclaration)) {
+                throw new ValidationException(
+                    MessageCode.SILM3GEN1018,
+                    env,
+                    listener.getPosition());
+            }
+            DeclaredType supertype =
+                TypeUtil.getSuperDeclaredType(
+                    env,
+                    listenerClassType,
+                    ClassConstants.ModelListener);
+            if (supertype == null
+                || supertype.getActualTypeArguments().isEmpty()) {
+                continue;
+            }
+            DeclaredType argumentType =
+                TypeUtil.toDeclaredType(supertype
+                    .getActualTypeArguments()
+                    .iterator()
+                    .next());
+            if (argumentType == null) {
+                continue;
+            }
+            TypeDeclaration argumentDeclaration = argumentType.getDeclaration();
+            if (argumentDeclaration == null) {
+                throw new UnknownDeclarationException(
+                    env,
+                    classDeclaration,
+                    argumentType);
+            }
+            if (!modelMetaDesc.getQualifiedName().equals(
+                argumentDeclaration.getQualifiedName())) {
+                throw new ValidationException(
+                    MessageCode.SILM3GEN1046,
+                    env,
+                    listener.getPosition(),
+                    modelMetaDesc.getQualifiedName());
+            }
+            modelMetaDesc.addModelListenerClassName(listenerClassDeclaration
+                .getQualifiedName());
+        }
     }
 
     /**

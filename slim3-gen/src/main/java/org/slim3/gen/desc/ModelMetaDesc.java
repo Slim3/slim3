@@ -48,6 +48,10 @@ public class ModelMetaDesc implements ClassDesc {
     /** the class hierarchy list */
     protected final List<String> classHierarchyList;
 
+    /** the class name list of model listener */
+    protected final List<String> modelListenerClassNames =
+        new ArrayList<String>();
+
     /** the key attribute meta description */
     protected AttributeMetaDesc keyAttributeMetaDesc;
 
@@ -219,6 +223,22 @@ public class ModelMetaDesc implements ClassDesc {
      */
     public void setError(boolean error) {
         this.error = error;
+    }
+
+    /**
+     * @param modelListenerClassName
+     *            the class name of model listener
+     */
+    public void addModelListenerClassName(String modelListenerClassName) {
+        this.modelListenerClassNames.add(modelListenerClassName);
+    }
+
+    /**
+     * 
+     * @return the class name list of model listener
+     */
+    public List<String> getModelListenerClassNames() {
+        return modelListenerClassNames;
     }
 
 }

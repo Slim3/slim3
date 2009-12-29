@@ -503,7 +503,19 @@ public class AttributeMetaDescFactory {
             ClassType listenerClassType =
                 TypeUtil.toClassType((TypeMirror) value);
             if (listenerClassType == null) {
-                continue;
+                if (classDeclaration
+                    .equals(fieldDeclaration.getDeclaringType())) {
+                    throw new ValidationException(
+                        MessageCode.SILM3GEN1047,
+                        env,
+                        listener.getPosition(),
+                        value.toString());
+                }
+                throw new ValidationException(
+                    MessageCode.SILM3GEN1047,
+                    env,
+                    classDeclaration.getPosition(),
+                    value.toString());
             }
             ClassDeclaration listenerClassDeclaration =
                 listenerClassType.getDeclaration();
@@ -524,6 +536,21 @@ public class AttributeMetaDescFactory {
                 }
                 throw new ValidationException(
                     MessageCode.SILM3GEN1043,
+                    env,
+                    classDeclaration.getPosition(),
+                    listenerClassDeclaration.getQualifiedName());
+            }
+            if (listenerClassDeclaration.getModifiers().contains(
+                Modifier.ABSTRACT)) {
+                if (classDeclaration
+                    .equals(fieldDeclaration.getDeclaringType())) {
+                    throw new ValidationException(
+                        MessageCode.SILM3GEN1048,
+                        env,
+                        listener.getPosition());
+                }
+                throw new ValidationException(
+                    MessageCode.SILM3GEN1048,
                     env,
                     classDeclaration.getPosition(),
                     listenerClassDeclaration.getQualifiedName());
