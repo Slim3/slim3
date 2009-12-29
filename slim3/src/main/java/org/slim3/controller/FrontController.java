@@ -175,6 +175,7 @@ public class FrontController implements Filter {
         } else {
             servletContext = ServletContextLocator.get();
         }
+        servletContext.setAttribute(ControllerConstants.UUID_KEY, uuid);
     }
 
     /**
@@ -267,18 +268,6 @@ public class FrontController implements Filter {
             HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         String path = RequestUtil.getPath(request);
-        synchronized (this) {
-            if (servletContext.getAttribute(ControllerConstants.UUID_KEY) == null) {
-                servletContext.setAttribute(ControllerConstants.UUID_KEY, uuid);
-                if (AppEngineUtil.isAppEngine()
-                    && request.getHeader("X-AppEngine-Cron") == null
-                    && ("get".equalsIgnoreCase(request.getMethod()) || request
-                        .getHeader("X-AppEngine-QueueName") != null)) {
-                    doRedirect(request, response, path);
-                    return;
-                }
-            }
-        }
         if (request.getCharacterEncoding() == null) {
             request.setCharacterEncoding(charset);
         }
