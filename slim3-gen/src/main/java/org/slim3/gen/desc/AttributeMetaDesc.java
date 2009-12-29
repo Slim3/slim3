@@ -15,6 +15,9 @@
  */
 package org.slim3.gen.desc;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slim3.gen.datastore.DataType;
 
 /**
@@ -33,6 +36,10 @@ public class AttributeMetaDesc {
 
     /** the datastore data type */
     protected final DataType dataType;
+
+    /** the class name list of attribute Listener */
+    protected final List<String> attributeListenerClassNames =
+        new ArrayList<String>();
 
     /** the primaryKey */
     protected boolean primaryKey;
@@ -212,4 +219,19 @@ public class AttributeMetaDesc {
         this.unindexed = unindexed;
     }
 
+    /**
+     * @param attributeListenerClassName
+     *            the class name of attribute listener
+     */
+    public void addAttributeListenerClassName(String attributeListenerClassName) {
+        this.attributeListenerClassNames.add(attributeListenerClassName);
+    }
+
+    /**
+     * 
+     * @return the class name list of attribute listener
+     */
+    public List<String> getAttributeListenerClassNames() {
+        return attributeListenerClassNames;
+    }
 }

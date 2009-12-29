@@ -107,6 +107,29 @@ public final class TypeUtil {
     }
 
     /**
+     * Returns {@code true} if a typeMirror represents {@link ClassType}.
+     * 
+     * @param typeMirror
+     *            the typemirror
+     * @return {@code true} if a typeMirror represents {@link ClassType},
+     *         otherwise {@code null}.
+     */
+    public static ClassType toClassType(TypeMirror typeMirror) {
+        class Visitor extends SimpleTypeVisitor {
+            ClassType result;
+
+            @Override
+            public void visitClassType(ClassType classtype) {
+                result = classtype;
+            }
+
+        }
+        Visitor visitor = new Visitor();
+        typeMirror.accept(visitor);
+        return visitor.result;
+    }
+
+    /**
      * Returns {@code true} if a {@code subtype} is subtype of {@code supertype}
      * .
      * 

@@ -114,7 +114,13 @@ public enum MessageCode {
     /** */
     SILM3GEN1041("The setter method for the field[{0}] is not allowed. Define the field as follows:\n{1}"),
     /** */
-    SILM3GEN1042("The setter method for the field[{0}] of the class[{1}] is not allowed. Define the field as follows:\n{2}");
+    SILM3GEN1042("The setter method for the field[{0}] of the class[{1}] is not allowed. Define the field as follows:\n{2}"),
+    /** */
+    SILM3GEN1043("The modifier must be public. (the class[{0}])"),
+    /** */
+    SILM3GEN1044("The type parameter is not supported. (the class[{0}])"),
+    /** */
+    SILM3GEN1045("The public default constructor is not found. (the class[{0}])"), ;
 
     /** the message */
     public final String message;

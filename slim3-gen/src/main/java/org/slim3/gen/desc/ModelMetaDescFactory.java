@@ -33,7 +33,6 @@ import org.slim3.gen.util.DeclarationUtil;
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.declaration.AnnotationMirror;
 import com.sun.mirror.declaration.ClassDeclaration;
-import com.sun.mirror.declaration.ConstructorDeclaration;
 import com.sun.mirror.declaration.FieldDeclaration;
 import com.sun.mirror.declaration.InterfaceDeclaration;
 import com.sun.mirror.declaration.MethodDeclaration;
@@ -233,18 +232,12 @@ public class ModelMetaDescFactory {
      *            the class declaration
      */
     protected void validateDefaultConstructor(ClassDeclaration classDeclaration) {
-        for (ConstructorDeclaration constructor : classDeclaration
-            .getConstructors()) {
-            if (constructor.getModifiers().contains(Modifier.PUBLIC)) {
-                if (constructor.getParameters().isEmpty()) {
-                    return;
-                }
-            }
+        if (!DeclarationUtil.hasPublicDefaultConstructor(classDeclaration)) {
+            throw new ValidationException(
+                MessageCode.SILM3GEN1018,
+                env,
+                classDeclaration.getPosition());
         }
-        throw new ValidationException(
-            MessageCode.SILM3GEN1018,
-            env,
-            classDeclaration.getPosition());
     }
 
     /**

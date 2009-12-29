@@ -30,6 +30,7 @@ import org.slim3.gen.datastore.ModelRefType;
 import org.slim3.gen.datastore.OtherReferenceType;
 import org.slim3.gen.message.MessageCode;
 import org.slim3.gen.processor.Options;
+import org.slim3.gen.processor.UnknownDeclarationException;
 import org.slim3.gen.processor.ValidationException;
 import org.slim3.gen.util.AnnotationMirrorUtil;
 import org.slim3.gen.util.DeclarationUtil;
@@ -38,9 +39,11 @@ import org.slim3.gen.util.TypeUtil;
 
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.declaration.AnnotationMirror;
+import com.sun.mirror.declaration.AnnotationValue;
 import com.sun.mirror.declaration.ClassDeclaration;
 import com.sun.mirror.declaration.FieldDeclaration;
 import com.sun.mirror.declaration.MethodDeclaration;
+import com.sun.mirror.declaration.Modifier;
 import com.sun.mirror.declaration.TypeDeclaration;
 import com.sun.mirror.type.ClassType;
 import com.sun.mirror.type.DeclaredType;
@@ -189,6 +192,11 @@ public class AttributeMetaDescFactory {
             AnnotationConstants.persistent) == Boolean.FALSE) {
             handleNotPersistent(attributeMetaDesc, fieldDeclaration);
         }
+        handleAttributeListeners(
+            attributeMetaDesc,
+            classDeclaration,
+            fieldDeclaration,
+            attribute);
         if (attributeMetaDesc.isPersistent()) {
             DataType dataType = attributeMetaDesc.getDataType();
             if (dataType instanceof InverseModelRefType) {
@@ -462,6 +470,97 @@ public class AttributeMetaDescFactory {
                 AnnotationConstants.persistent + " = false");
         }
         attributeMetaDesc.setUnindexed(true);
+    }
+
+    /**
+     * Handles attributeListeners.
+     * 
+     * @param attributeMetaDesc
+     *            the attribute meta description
+     * @param classDeclaration
+     *            the model class declaration
+     * @param fieldDeclaration
+     *            the field declaration
+     * @param attribute
+     *            the annotation mirror for Attribute
+     */
+    protected void handleAttributeListeners(
+            AttributeMetaDesc attributeMetaDesc,
+            ClassDeclaration classDeclaration,
+            FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
+        Collection<AnnotationValue> attributeListeners =
+            AnnotationMirrorUtil.getElementValue(
+                attribute,
+                AnnotationConstants.attributeListeners);
+        if (attributeListeners == null) {
+            return;
+        }
+        for (AnnotationValue listener : attributeListeners) {
+            Object value = listener.getValue();
+            if (!(value instanceof TypeMirror)) {
+                continue;
+            }
+            ClassType listenerClassType =
+                TypeUtil.toClassType((TypeMirror) value);
+            if (listenerClassType == null) {
+                continue;
+            }
+            ClassDeclaration listenerClassDeclaration =
+                listenerClassType.getDeclaration();
+            if (listenerClassDeclaration == null) {
+                throw new UnknownDeclarationException(
+                    env,
+                    listenerClassDeclaration,
+                    listenerClassType);
+            }
+            if (!listenerClassDeclaration.getModifiers().contains(
+                Modifier.PUBLIC)) {
+                if (classDeclaration
+                    .equals(fieldDeclaration.getDeclaringType())) {
+                    throw new ValidationException(
+                        MessageCode.SILM3GEN1017,
+                        env,
+                        listener.getPosition());
+                }
+                throw new ValidationException(
+                    MessageCode.SILM3GEN1043,
+                    env,
+                    classDeclaration.getPosition(),
+                    listenerClassDeclaration.getQualifiedName());
+            }
+            if (!listenerClassDeclaration.getFormalTypeParameters().isEmpty()) {
+                if (classDeclaration
+                    .equals(fieldDeclaration.getDeclaringType())) {
+                    throw new ValidationException(
+                        MessageCode.SILM3GEN1020,
+                        env,
+                        listener.getPosition());
+                }
+                throw new ValidationException(
+                    MessageCode.SILM3GEN1044,
+                    env,
+                    classDeclaration.getPosition(),
+                    listenerClassDeclaration.getQualifiedName());
+            }
+            if (!DeclarationUtil
+                .hasPublicDefaultConstructor(listenerClassDeclaration)) {
+                if (classDeclaration
+                    .equals(fieldDeclaration.getDeclaringType())) {
+                    throw new ValidationException(
+                        MessageCode.SILM3GEN1018,
+                        env,
+                        listener.getPosition());
+                }
+                throw new ValidationException(
+                    MessageCode.SILM3GEN1045,
+                    env,
+                    classDeclaration.getPosition(),
+                    listenerClassDeclaration.getQualifiedName());
+            }
+            attributeMetaDesc
+                .addAttributeListenerClassName(listenerClassDeclaration
+                    .getQualifiedName());
+        }
     }
 
     /**
@@ -971,4 +1070,5 @@ public class AttributeMetaDescFactory {
             fieldDeclaration.getSimpleName(),
             fieldDeclaration.getDeclaringType().getQualifiedName());
     }
+
 }

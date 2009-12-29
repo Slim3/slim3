@@ -15,6 +15,7 @@
  */
 package org.slim3.gen.generator;
 
+import static org.slim3.gen.ClassConstants.AttributeListener;
 import static org.slim3.gen.ClassConstants.Blob;
 import static org.slim3.gen.ClassConstants.CollectionAttributeMeta;
 import static org.slim3.gen.ClassConstants.CoreAttributeMeta;
@@ -132,6 +133,7 @@ public class ModelMetaGenerator implements Generator {
         printer.println();
         printer.indent();
         printAttributeMetaFields(printer);
+        printAttributeListenersFields(printer);
         printSingletonField(printer);
         printGetMethod(printer);
         printConstructor(printer);
@@ -151,20 +153,6 @@ public class ModelMetaGenerator implements Generator {
     }
 
     /**
-     * Prints the singleton field.
-     * 
-     * @param printer
-     *            the printer
-     */
-    protected void printSingletonField(Printer printer) {
-        printer.println("/** */");
-        printer.println(
-            "private static final %1$s singleton = new %1$s();",
-            modelMetaDesc.getSimpleName());
-        printer.println();
-    }
-
-    /**
      * Generates attribute meta fields.
      * 
      * @param printer
@@ -174,6 +162,31 @@ public class ModelMetaGenerator implements Generator {
         AttributeMetaFieldsGenerator generator =
             new AttributeMetaFieldsGenerator(printer);
         generator.generate();
+    }
+
+    /**
+     * Generates attribute listeners fields.
+     * 
+     * @param printer
+     *            the printer
+     */
+    protected void printAttributeListenersFields(Printer printer) {
+        AttributeListenersFieldsGenerator generator =
+            new AttributeListenersFieldsGenerator(printer);
+        generator.generate();
+    }
+
+    /**
+     * Prints the singleton field.
+     * 
+     * @param printer
+     *            the printer
+     */
+    protected void printSingletonField(Printer printer) {
+        printer.println(
+            "private static final %1$s singleton = new %1$s();",
+            modelMetaDesc.getSimpleName());
+        printer.println();
     }
 
     /**
@@ -416,6 +429,17 @@ public class ModelMetaGenerator implements Generator {
         printer.println("@Override");
         printer
             .println("protected void prePost(com.google.appengine.api.datastore.Entity entity) {");
+        for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
+            printer
+                .println(
+                    "    for (%1$s attributeListener : slim3_%2$sAttributeListeners) {",
+                    AttributeListener,
+                    attr.getFieldName());
+            printer.println(
+                "        attributeListener.prePut(entity, %1$s);",
+                attr.getFieldName());
+            printer.println("    }");
+        }
         printer.println("}");
         printer.println();
     }
@@ -430,8 +454,70 @@ public class ModelMetaGenerator implements Generator {
         printer.println("@Override");
         printer
             .println("protected void preDelete(com.google.appengine.api.datastore.Entity entity) {");
+        for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
+            printer
+                .println(
+                    "    for (%1$s attributeListener : slim3_%2$sAttributeListeners) {",
+                    AttributeListener,
+                    attr.getFieldName());
+            printer.println(
+                "        attributeListener.preDelete(entity, %1$s);",
+                attr.getFieldName());
+            printer.println("    }");
+        }
         printer.println("}");
         printer.println();
+    }
+
+    /**
+     * Represents attribute listeners fields generator.
+     * 
+     * @author taedium
+     * @since 3.0
+     * 
+     */
+    protected class AttributeListenersFieldsGenerator extends
+            SimpleDataTypeVisitor<Void, AttributeMetaDesc, RuntimeException> {
+
+        /** the printer */
+        protected final Printer printer;
+
+        /**
+         * Creates a new {@link AttributeMetaFieldsGenerator}.
+         * 
+         * @param printer
+         *            the printer
+         */
+        protected AttributeListenersFieldsGenerator(Printer printer) {
+            this.printer = printer;
+        }
+
+        /**
+         * Generates attribute meta fields.
+         */
+        public void generate() {
+            for (AttributeMetaDesc attr : modelMetaDesc
+                .getAttributeMetaDescList()) {
+                StringBuilder buf = new StringBuilder();
+                for (String attributeListenerClassName : attr
+                    .getAttributeListenerClassNames()) {
+                    buf.append("new ");
+                    buf.append(attributeListenerClassName);
+                    buf.append("()");
+                    buf.append(", ");
+                }
+                if (buf.length() > 2) {
+                    buf.setLength(buf.length() - 2);
+                }
+                printer
+                    .println(
+                        "private static final java.util.List<%1$s> slim3_%2$sAttributeListeners = java.util.Arrays.asList(%3$s);",
+                        AttributeListener,
+                        attr.getFieldName(),
+                        buf);
+                printer.println();
+            }
+        }
     }
 
     /**

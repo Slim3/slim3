@@ -20,7 +20,10 @@ import org.slim3.gen.processor.UnknownDeclarationException;
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.declaration.AnnotationMirror;
 import com.sun.mirror.declaration.AnnotationTypeDeclaration;
+import com.sun.mirror.declaration.ClassDeclaration;
+import com.sun.mirror.declaration.ConstructorDeclaration;
 import com.sun.mirror.declaration.Declaration;
+import com.sun.mirror.declaration.Modifier;
 
 /**
  * A utility class for operationg declarations.
@@ -63,4 +66,24 @@ public final class DeclarationUtil {
         return null;
     }
 
+    /**
+     * Returns {@code true} if the class declaration has a public default
+     * constructor.
+     * 
+     * @param classDeclaration
+     *            the class declaration
+     * @return if the class declaration has a public default constructor.
+     */
+    public static boolean hasPublicDefaultConstructor(
+            ClassDeclaration classDeclaration) {
+        for (ConstructorDeclaration constructor : classDeclaration
+            .getConstructors()) {
+            if (constructor.getModifiers().contains(Modifier.PUBLIC)) {
+                if (constructor.getParameters().isEmpty()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }
