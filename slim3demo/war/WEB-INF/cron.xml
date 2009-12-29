@@ -2,7 +2,7 @@
 <cronentries>
   <cron>
     <url>/cron/</url>
-    <description>Wake up the instance every 2 minutes</description>
-    <schedule>every 2 minutes</schedule>
+    <description>for waking up the instance</description>
+    <schedule>every 1 minutes</schedule>
   </cron>
 </cronentries>
