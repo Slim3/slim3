@@ -35,7 +35,7 @@ import org.slim3.util.RequestMap;
 public class Validators {
 
     /**
-     * The map of validators.
+     * The registered validators.
      */
     protected ArrayMap<String, Validator[]> validatorsMap =
         new ArrayMap<String, Validator[]>();
@@ -73,13 +73,14 @@ public class Validators {
     public Validators(Map<String, Object> parameters)
             throws NullPointerException, IllegalStateException {
         if (parameters == null) {
-            throw new NullPointerException("The parameters parameter is null.");
+            throw new NullPointerException(
+                "The parameters parameter must not be null.");
         }
         this.parameters = parameters;
         errors = (Errors) parameters.get(ControllerConstants.ERRORS_KEY);
         if (errors == null) {
             throw new IllegalStateException(
-                "The errors is not found in request.");
+                "The errors is not found in parameters.");
         }
     }
 
@@ -87,7 +88,7 @@ public class Validators {
      * Adds the validators.
      * 
      * @param name
-     *            the name
+     *            the parameter name
      * @param validators
      *            the validators
      * @return this instance
@@ -97,7 +98,8 @@ public class Validators {
     public Validators add(CharSequence name, Validator... validators)
             throws NullPointerException {
         if (name == null) {
-            throw new NullPointerException("The name parameter is null.");
+            throw new NullPointerException(
+                "The name parameter must not be null.");
         }
         validatorsMap.put(name.toString(), validators);
         return this;
