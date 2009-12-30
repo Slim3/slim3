@@ -26,7 +26,8 @@ import org.slim3.util.ArrayMap;
 import org.slim3.util.RequestMap;
 
 /**
- * A class to control validation process.
+ * A class to control validation process. The error messages of validation are
+ * stored in application[_locale].properties.
  * 
  * @author higa
  * @since 3.0
@@ -135,7 +136,8 @@ public class Validators {
     }
 
     /**
-     * Returns {@link RequiredValidator}.
+     * Returns {@link RequiredValidator}. The key of error message is
+     * "validator.required".
      * 
      * @return {@link RequiredValidator}
      */
@@ -155,7 +157,8 @@ public class Validators {
     }
 
     /**
-     * Returns {@link ByteTypeValidator}.
+     * Returns {@link ByteTypeValidator}. The key of error message is
+     * "validator.byteType".
      * 
      * @return {@link ByteTypeValidator}
      */
@@ -175,7 +178,8 @@ public class Validators {
     }
 
     /**
-     * Returns {@link ShortTypeValidator}.
+     * Returns {@link ShortTypeValidator}. The key of error message is
+     * "validator.shortType".
      * 
      * @return {@link ShortTypeValidator}
      */
@@ -195,7 +199,8 @@ public class Validators {
     }
 
     /**
-     * Returns {@link IntegerTypeValidator}.
+     * Returns {@link IntegerTypeValidator}. The key of error message is
+     * "validator.integerType".
      * 
      * @return {@link IntegerTypeValidator}
      */
@@ -215,7 +220,8 @@ public class Validators {
     }
 
     /**
-     * Returns {@link LongTypeValidator}.
+     * Returns {@link LongTypeValidator}. The key of error message is
+     * "validator.longType".
      * 
      * @return {@link LongTypeValidator}
      */
@@ -235,7 +241,8 @@ public class Validators {
     }
 
     /**
-     * Returns {@link FloatTypeValidator}.
+     * Returns {@link FloatTypeValidator}. The key of error message is
+     * "validator.floatType".
      * 
      * @return {@link FloatTypeValidator}
      */
@@ -255,7 +262,8 @@ public class Validators {
     }
 
     /**
-     * Returns {@link DoubleTypeValidator}.
+     * Returns {@link DoubleTypeValidator}. The key of error message is
+     * "validator.doubleType".
      * 
      * @return {@link DoubleTypeValidator}
      */
@@ -275,7 +283,8 @@ public class Validators {
     }
 
     /**
-     * Returns {@link NumberTypeValidator}.
+     * Returns {@link NumberTypeValidator}. The key of error message is
+     * "validator.numberType".
      * 
      * @param pattern
      *            the pattern of {@link DecimalFormat}
@@ -301,7 +310,8 @@ public class Validators {
     }
 
     /**
-     * Returns {@link DateTypeValidator}.
+     * Returns {@link DateTypeValidator}. The key of error message is
+     * "validator.dateType".
      * 
      * @param pattern
      *            the pattern of {@link SimpleDateFormat}
@@ -326,7 +336,8 @@ public class Validators {
     }
 
     /**
-     * Returns {@link MinlengthValidator}.
+     * Returns {@link MinlengthValidator}. The key of error message is
+     * "validator.minlength".
      * 
      * @param minlength
      *            the minimum length
@@ -351,7 +362,8 @@ public class Validators {
     }
 
     /**
-     * Returns {@link MaxlengthValidator}.
+     * Returns {@link MaxlengthValidator}. The key of error message is
+     * "validator.maxlength".
      * 
      * @param maxlength
      *            the maximum length
@@ -376,7 +388,8 @@ public class Validators {
     }
 
     /**
-     * Returns {@link LongRangeValidator}.
+     * Returns {@link LongRangeValidator}. The key of error message is
+     * "validator.range".
      * 
      * @param minimum
      *            the minimum value
@@ -405,7 +418,8 @@ public class Validators {
     }
 
     /**
-     * Returns {@link DoubleRangeValidator}.
+     * Returns {@link DoubleRangeValidator}. The key of error message is
+     * "validator.range".
      * 
      * @param minimum
      *            the minimum value
@@ -434,7 +448,8 @@ public class Validators {
     }
 
     /**
-     * Returns {@link RegexpValidator}.
+     * Returns {@link RegexpValidator}. The key of error message is
+     * "validator.regexp".
      * 
      * @param pattern
      *            the pattern for regular expression
