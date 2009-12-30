@@ -37,7 +37,7 @@
 
   <function>
     <description>
-      Converts blank to entity reference nbsp.
+      Converts a blank to &amp;nbsp;.
     </description>
     <name>nbsp</name>
     <function-class>org.slim3.jsp.Functions</function-class>
@@ -49,7 +49,7 @@
     
   <function>
     <description>
-      Converts line break to br tag.
+      Converts a line break to &lt;br /&gt;.
     </description>
     <name>br</name>
     <function-class>org.slim3.jsp.Functions</function-class>
