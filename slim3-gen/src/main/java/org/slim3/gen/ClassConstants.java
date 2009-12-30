@@ -77,6 +77,10 @@ public final class ClassConstants {
     public static final String StringAttributeMeta =
         "org.slim3.datastore.StringAttributeMeta";
 
+    /** {@code org.slim3.datastore.UnindexedAttributeMeta} */
+    public static final String UnindexedAttributeMeta =
+        "org.slim3.datastore.UnindexedAttributeMeta";
+
     /** {@code org.slim3.datastore.CollectionAttributeMeta} */
     public static final String CollectionAttributeMeta =
         "org.slim3.datastore.CollectionAttributeMeta";
