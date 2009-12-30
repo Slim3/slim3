@@ -33,7 +33,7 @@ Source:
 <tbody>
 <c:forEach var="e" items="${blogList}">
 <tr>
-<td>${f:h(e.title)}</td><td>${f:h(e.content)}</td>
+<td>${f:h(e.title)}</td><td>${f:br(f:nbsp(f:h(e.content)))}</td>
 <c:set var="editUrl" value="edit/${f:key(e.key)}/${e.version}"/>
 <c:set var="deleteUrl" value="delete/${f:key(e.key)}/${e.version}"/>
 <td><a href="${f:url(editUrl)}">Edit</a></td>
