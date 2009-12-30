@@ -208,6 +208,16 @@ public class DatastoreTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
+    public void deleteUniqueValue() throws Exception {
+        assertThat(Datastore.putUniqueValue("screenName", "aaa"), is(true));
+        Datastore.deleteUniqueValue("screenName", "aaa");
+        assertThat(Datastore.putUniqueValue("screenName", "aaa"), is(true));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getModelUsingModelMeta() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Hoge model = Datastore.get(meta, key);

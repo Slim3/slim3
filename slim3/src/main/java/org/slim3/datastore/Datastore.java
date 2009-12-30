@@ -607,10 +607,11 @@ public final class Datastore {
             throws NullPointerException {
         if (uniqueIndexName == null) {
             throw new NullPointerException(
-                "The uniqueIndexName parameter is null.");
+                "The uniqueIndexName parameter must not be null.");
         }
         if (value == null) {
-            throw new NullPointerException("The value parameter is null.");
+            throw new NullPointerException(
+                "The value parameter must not be null.");
         }
         Key key = createKey(uniqueIndexName, value);
         Transaction tx = beginTransaction();
@@ -630,6 +631,30 @@ public final class Datastore {
             rollback(tx);
 
         }
+    }
+
+    /**
+     * Deletes the unique value.
+     * 
+     * @param uniqueIndexName
+     *            the unique index name
+     * @param value
+     *            the unique value
+     * @throws NullPointerException
+     *             if the uniqueIndexName parameter is null or if the value
+     *             parameter is null
+     */
+    public static void deleteUniqueValue(String uniqueIndexName, String value)
+            throws NullPointerException {
+        if (uniqueIndexName == null) {
+            throw new NullPointerException(
+                "The uniqueIndexName parameter must not be null.");
+        }
+        if (value == null) {
+            throw new NullPointerException("The value parameter is null.");
+        }
+        Key key = createKey(uniqueIndexName, value);
+        delete((Transaction) null, key);
     }
 
     /**
