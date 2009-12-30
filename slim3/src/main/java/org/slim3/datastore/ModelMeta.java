@@ -191,15 +191,15 @@ public abstract class ModelMeta<M> {
      * @param entity
      *            the entity
      */
-    protected abstract void prePost(Entity entity);
+    protected abstract void prePut(Entity entity);
 
     /**
      * This method is invoked before deleting the entity.
      * 
-     * @param entity
-     *            the entity
+     * @param key
+     *            the key
      */
-    protected abstract void preDelete(Entity entity);
+    protected abstract void preDelete(Key key);
 
     /**
      * Returns a key of the model.

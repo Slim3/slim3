@@ -79,11 +79,11 @@ public final class CccMeta extends
     }
 
     @Override
-    protected void prePost(Entity entity) {
+    protected void prePut(Entity entity) {
     }
 
     @Override
-    protected void preDelete(Entity entity) {
+    protected void preDelete(Key key) {
     }
 
     @Override

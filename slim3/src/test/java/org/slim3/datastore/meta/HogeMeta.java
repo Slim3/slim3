@@ -25,6 +25,7 @@ import org.slim3.datastore.CoreAttributeMeta;
 import org.slim3.datastore.ModelMeta;
 import org.slim3.datastore.StringAttributeMeta;
 import org.slim3.datastore.StringCollectionAttributeMeta;
+import org.slim3.datastore.UnindexedAttributeMeta;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.datastore.model.MySerializable;
 
@@ -347,6 +348,16 @@ public class HogeMeta extends ModelMeta<Hoge> {
     /**
      * 
      */
+    public UnindexedAttributeMeta<Hoge, Text> myText =
+        new UnindexedAttributeMeta<Hoge, Text>(
+            this,
+            "myText",
+            "myText",
+            Text.class);
+
+    /**
+     * 
+     */
     public HogeMeta() {
         super("Hoge", Hoge.class);
     }
@@ -515,10 +526,10 @@ public class HogeMeta extends ModelMeta<Hoge> {
     }
 
     @Override
-    protected void prePost(Entity entity) {
+    protected void prePut(Entity entity) {
     }
 
     @Override
-    protected void preDelete(Entity entity) {
+    protected void preDelete(Key key) {
     }
 }

@@ -15,36 +15,31 @@
  */
 package org.slim3.datastore;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+import org.slim3.datastore.meta.HogeMeta;
+import org.slim3.tester.LocalServiceTestCase;
+
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
 
 /**
- * A model listener interface for receiving put and delete events.
- * 
  * @author higa
- * @param <MM>
- *            the model meta type
  * 
  */
-public interface ModelListener<MM extends ModelMeta<?>> {
+public class PutTimestampListenerTest extends LocalServiceTestCase {
+
+    private PutTimestampListener listener = new PutTimestampListener();
 
     /**
-     * This method is invoked before putting the entity.
+     * @throws Exception
      * 
-     * @param entity
-     *            the entity
-     * @param modelMeta
-     *            the meta data of model
      */
-    void prePut(Entity entity, MM modelMeta);
-
-    /**
-     * This method is invoked before deleting the entity.
-     * 
-     * @param key
-     *            the key
-     * @param modelMeta
-     *            the meta data of model
-     */
-    void preDelete(Key key, MM modelMeta);
+    @Test
+    public void prePost() throws Exception {
+        Entity entity = new Entity("Hoge");
+        listener.prePut(entity, HogeMeta.get().myDate);
+        assertThat(entity.getProperty("myDate"), is(not(nullValue())));
+    }
 }

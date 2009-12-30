@@ -16,6 +16,7 @@
 package org.slim3.datastore;
 
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
 
 /**
  * An attribute listener interface for receiving put and delete events.
@@ -39,10 +40,10 @@ public interface AttributeListener {
     /**
      * This method is invoked before deleting the entity.
      * 
-     * @param entity
-     *            the entity
+     * @param key
+     *            the key
      * @param attributeMeta
      *            the meta data of attribute
      */
-    void preDelete(Entity entity, AttributeMeta<?, ?> attributeMeta);
+    void preDelete(Key key, AttributeMeta<?, ?> attributeMeta);
 }

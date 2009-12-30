@@ -15,36 +15,23 @@
  */
 package org.slim3.datastore;
 
+import java.util.Date;
+
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 
 /**
- * A model listener interface for receiving put and delete events.
+ * An {@link AttributeListener} for put timestamp.
  * 
  * @author higa
- * @param <MM>
- *            the model meta type
  * 
  */
-public interface ModelListener<MM extends ModelMeta<?>> {
+public class PutTimestampListener implements AttributeListener {
 
-    /**
-     * This method is invoked before putting the entity.
-     * 
-     * @param entity
-     *            the entity
-     * @param modelMeta
-     *            the meta data of model
-     */
-    void prePut(Entity entity, MM modelMeta);
+    public void preDelete(Key key, AttributeMeta<?, ?> attributeMeta) {
+    }
 
-    /**
-     * This method is invoked before deleting the entity.
-     * 
-     * @param key
-     *            the key
-     * @param modelMeta
-     *            the meta data of model
-     */
-    void preDelete(Key key, MM modelMeta);
+    public void prePut(Entity entity, AttributeMeta<?, ?> attributeMeta) {
+        entity.setProperty(attributeMeta.getName(), new Date());
+    }
 }
