@@ -10,7 +10,7 @@
 </head>
 <body>
 <form action="${f:url('update')}" method="post">
-<input type="hidden" ${f:hiddenKey("key")}/>
+<input type="hidden" ${f:hidden("key")}/>
 <input type="hidden" ${f:hidden("version")}/>
 Title<br />
 <input type="text" ${f:text("title")} class="${f:errorClass('title', 'err')}"/>${f:h(errors.title)}<br />
