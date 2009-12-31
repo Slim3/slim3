@@ -13,7 +13,10 @@
   
   <function>
     <description>
-      Escapes string that could be interpreted as HTML.
+      Encodes the input object.
+      If the object is a string, it is escaped as HTML.
+      If the object is a key, it is encoded as Base64.
+      Anything else is converted to a string using toString() method.
     </description>
     <name>h</name>
     <function-class>org.slim3.jsp.Functions</function-class>
@@ -61,7 +64,7 @@
   
   <function>
     <description>
-      Returns the current locale.
+      Returns the current locale that is set by FrontController#processLocale().
     </description>
     <name>locale</name>
     <function-class>org.slim3.jsp.Functions</function-class>
@@ -73,49 +76,13 @@
   
   <function>
     <description>
-      Returns the current time zone.
+      Returns the current time zone that is set by FrontController#processTimeZone().
     </description>
     <name>timeZone</name>
     <function-class>org.slim3.jsp.Functions</function-class>
     <function-signature>java.util.TimeZone timeZone()</function-signature>
     <example>
       &lt;fmt:setTimeZone value="${f:timeZone()}"/&gt;
-    </example>
-  </function>
-  
-  <function>
-    <description>
-      Returns the error style class.
-    </description>
-    <name>errorClass</name>
-    <function-class>org.slim3.jsp.Functions</function-class>
-    <function-signature>java.lang.String errorClass(java.lang.String, java.lang.String)</function-signature>
-    <example>
-      &lt;input type="text" name="aaa" class="${f:errorClass('aaa', 'error')}" value="${f:h(aaa)}"/&gt;
-    </example>
-  </function>
-  
-  <function>
-    <description>
-      Returns the errors iterator.
-    </description>
-    <name>errors</name>
-    <function-class>org.slim3.jsp.Functions</function-class>
-    <function-signature>java.util.Iterator errors()</function-signature>
-    <example>
-      &lt;c:forEach var="e" items="${f:errors()}"&gt;
-    </example>
-  </function>
-
-  <function>
-    <description>
-      Represents the key.
-    </description>
-    <name>key</name>
-    <function-class>org.slim3.jsp.Functions</function-class>
-    <function-signature>java.lang.String key(com.google.appengine.api.datastore.Key)</function-signature>
-    <example>
-      ${f:key(key)}
     </example>
   </function>
     
@@ -140,18 +107,6 @@
     <function-signature>java.lang.String hidden(java.lang.String)</function-signature>
     <example>
       &lt;input type="hidden" ${f:hidden("aaa")}/&gt;
-    </example>
-  </function>
-
-  <function>
-    <description>
-      Represents the hidden tag of key.
-    </description>
-    <name>hiddenKey</name>
-    <function-class>org.slim3.jsp.Functions</function-class>
-    <function-signature>java.lang.String hiddenKey(java.lang.String)</function-signature>
-    <example>
-      &lt;input type="hidden" ${f:hiddenKey("key")}/&gt;
     </example>
   </function>
     
@@ -212,6 +167,54 @@
     <function-signature>java.lang.String multiselect(java.lang.String,java.lang.String)</function-signature>
     <example>
       &lt;option ${f:multiselect("aaa", "1")}&gt;One&lt;/option&gt;;
+    </example>
+  </function>
+  
+  <function>
+    <description>
+      Returns the error style class if there is an error for the attribute.
+    </description>
+    <name>errorClass</name>
+    <function-class>org.slim3.jsp.Functions</function-class>
+    <function-signature>java.lang.String errorClass(java.lang.String, java.lang.String)</function-signature>
+    <example>
+      &lt;input type="text" name="aaa" class="${f:errorClass('aaa', 'error')}" value="${f:h(aaa)}"/&gt;
+    </example>
+  </function>
+  
+  <function>
+    <description>
+      Returns the errors iterator.
+    </description>
+    <name>errors</name>
+    <function-class>org.slim3.jsp.Functions</function-class>
+    <function-signature>java.util.Iterator errors()</function-signature>
+    <example>
+      &lt;c:forEach var="e" items="${f:errors()}"&gt;
+    </example>
+  </function>
+  
+  <function>
+    <description>
+      Encodes the key as Base64.
+    </description>
+    <name>key</name>
+    <function-class>org.slim3.jsp.Functions</function-class>
+    <function-signature>java.lang.String key(com.google.appengine.api.datastore.Key)</function-signature>
+    <example>
+      ${f:key(key)}
+    </example>
+  </function>
+  
+  <function>
+    <description>
+      Represents the hidden tag of key.
+    </description>
+    <name>hiddenKey</name>
+    <function-class>org.slim3.jsp.Functions</function-class>
+    <function-signature>java.lang.String hiddenKey(java.lang.String)</function-signature>
+    <example>
+      &lt;input type="hidden" ${f:hiddenKey("key")}/&gt;
     </example>
   </function>
 </taglib>

@@ -56,7 +56,9 @@ public final class Functions {
     private static List<String> EMPTY_STRING_LIST = new ArrayList<String>(0);
 
     /**
-     * Escapes string that could be interpreted as HTML.
+     * Encodes the input object. If the object is a string, it is escaped as
+     * HTML. If the object is a key, it is encoded as Base64. Anything else is
+     * converted to a string using toString() method.
      * 
      * @param input
      *            the input value
@@ -71,30 +73,6 @@ public final class Functions {
         }
         if (input.getClass() == Key.class) {
             return KeyFactory.keyToString((Key) input);
-        }
-        if (input.getClass().isArray()) {
-            Class<?> clazz = input.getClass().getComponentType();
-            if (clazz.isPrimitive()) {
-                if (clazz == boolean.class) {
-                    return Arrays.toString((boolean[]) input);
-                } else if (clazz == int.class) {
-                    return Arrays.toString((int[]) input);
-                } else if (clazz == long.class) {
-                    return Arrays.toString((long[]) input);
-                } else if (clazz == byte.class) {
-                    return Arrays.toString((byte[]) input);
-                } else if (clazz == short.class) {
-                    return Arrays.toString((short[]) input);
-                } else if (clazz == float.class) {
-                    return Arrays.toString((float[]) input);
-                } else if (clazz == double.class) {
-                    return Arrays.toString((double[]) input);
-                } else if (clazz == char.class) {
-                    return Arrays.toString((char[]) input);
-                }
-            } else {
-                return Arrays.toString((Object[]) input);
-            }
         }
         return input.toString();
     }
@@ -179,58 +157,6 @@ public final class Functions {
     }
 
     /**
-     * Returns the error style class
-     * 
-     * @param name
-     *            the name
-     * @param styleClass
-     *            the error style class
-     * @return the error style class
-     */
-    @SuppressWarnings("unchecked")
-    public static String errorClass(String name, String styleClass) {
-        HttpServletRequest request = RequestLocator.get();
-        Map<String, String> errors =
-            (Map<String, String>) request
-                .getAttribute(ControllerConstants.ERRORS_KEY);
-        if (errors != null && errors.containsKey(name)) {
-            return styleClass;
-        }
-        return "";
-    }
-
-    /**
-     * Returns errors iterator.
-     * 
-     * @return errors iterator
-     */
-    @SuppressWarnings("unchecked")
-    public static Iterator<String> errors() {
-        HttpServletRequest request = RequestLocator.get();
-        Map<String, String> errors =
-            (Map<String, String>) request
-                .getAttribute(ControllerConstants.ERRORS_KEY);
-        if (errors != null) {
-            return errors.values().iterator();
-        }
-        return null;
-    }
-
-    /**
-     * Returns a string representation of {@link Key}.
-     * 
-     * @param key
-     *            the key
-     * @return a string representation of {@link Key}
-     */
-    public static String key(Key key) {
-        if (key == null) {
-            return "";
-        }
-        return KeyFactory.keyToString(key);
-    }
-
-    /**
      * Returns the text tag representation.
      * 
      * @param name
@@ -241,7 +167,7 @@ public final class Functions {
      */
     public static String text(String name) throws IllegalArgumentException {
         if (name.endsWith(ARRAY_SUFFIX)) {
-            throw new IllegalArgumentException("The text property name("
+            throw new IllegalArgumentException("The property name("
                 + name
                 + ") must not end with \"Array\".");
         }
@@ -263,45 +189,7 @@ public final class Functions {
      *             if the property name ends with "Array"
      */
     public static String hidden(String name) throws IllegalArgumentException {
-        if (name.endsWith(ARRAY_SUFFIX)) {
-            throw new IllegalArgumentException("The hidden property name("
-                + name
-                + ") must not end with \"Array\".");
-        }
-        HttpServletRequest request = RequestLocator.get();
-        return "name=\""
-            + name
-            + "\" value=\""
-            + h(request.getAttribute(name))
-            + "\"";
-    }
-
-    /**
-     * Returns the hidden tag representation.
-     * 
-     * @param name
-     *            the property name
-     * @return the hidden tag representation
-     * @throws IllegalArgumentException
-     *             if the property name ends with "Array"
-     */
-    public static String hiddenKey(String name) throws IllegalArgumentException {
-        if (name.endsWith(ARRAY_SUFFIX)) {
-            throw new IllegalArgumentException("The hidden property name("
-                + name
-                + ") must not end with \"Array\".");
-        }
-        HttpServletRequest request = RequestLocator.get();
-        Object value = request.getAttribute(name);
-        String s = "";
-        if (value != null) {
-            if (value instanceof Key) {
-                s = key((Key) value);
-            } else {
-                s = value.toString();
-            }
-        }
-        return "name=\"" + name + "\" value=\"" + s + "\"";
+        return text(name);
     }
 
     /**
@@ -476,6 +364,88 @@ public final class Functions {
             + h(value)
             + "\""
             + (list.contains(value) ? " selected=\"selected\"" : "");
+    }
+
+    /**
+     * Returns the error style class
+     * 
+     * @param name
+     *            the name
+     * @param styleClass
+     *            the error style class
+     * @return the error style class
+     */
+    @SuppressWarnings("unchecked")
+    public static String errorClass(String name, String styleClass) {
+        HttpServletRequest request = RequestLocator.get();
+        Map<String, String> errors =
+            (Map<String, String>) request
+                .getAttribute(ControllerConstants.ERRORS_KEY);
+        if (errors != null && errors.containsKey(name)) {
+            return styleClass;
+        }
+        return "";
+    }
+
+    /**
+     * Returns errors iterator.
+     * 
+     * @return errors iterator
+     */
+    @SuppressWarnings("unchecked")
+    public static Iterator<String> errors() {
+        HttpServletRequest request = RequestLocator.get();
+        Map<String, String> errors =
+            (Map<String, String>) request
+                .getAttribute(ControllerConstants.ERRORS_KEY);
+        if (errors != null) {
+            return errors.values().iterator();
+        }
+        return null;
+    }
+
+    /**
+     * Returns a string representation of {@link Key}. Use {@link #h(Object)}.
+     * 
+     * @param key
+     *            the key
+     * @return a string representation of {@link Key}
+     */
+    @Deprecated
+    public static String key(Key key) {
+        if (key == null) {
+            return "";
+        }
+        return KeyFactory.keyToString(key);
+    }
+
+    /**
+     * Returns the hidden tag representation. Use {@link #hidden(String)}.
+     * 
+     * @param name
+     *            the property name
+     * @return the hidden tag representation
+     * @throws IllegalArgumentException
+     *             if the property name ends with "Array"
+     */
+    @Deprecated
+    public static String hiddenKey(String name) throws IllegalArgumentException {
+        if (name.endsWith(ARRAY_SUFFIX)) {
+            throw new IllegalArgumentException("The hidden property name("
+                + name
+                + ") must not end with \"Array\".");
+        }
+        HttpServletRequest request = RequestLocator.get();
+        Object value = request.getAttribute(name);
+        String s = "";
+        if (value != null) {
+            if (value instanceof Key) {
+                s = key((Key) value);
+            } else {
+                s = value.toString();
+            }
+        }
+        return "name=\"" + name + "\" value=\"" + s + "\"";
     }
 
     private Functions() {

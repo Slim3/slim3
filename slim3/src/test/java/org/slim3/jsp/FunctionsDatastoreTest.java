@@ -39,41 +39,4 @@ public class FunctionsDatastoreTest extends ServletTestCase {
         String encodedKey = KeyFactory.keyToString(key);
         assertThat(Functions.h(key), is(encodedKey));
     }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void key() throws Exception {
-        assertThat(Functions.key(null), is(""));
-        String s = Functions.key(KeyFactory.createKey("Hoge", 1));
-        System.out.println(s);
-        assertThat(s, is(not(nullValue())));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void hiddenKey() throws Exception {
-        Key key = KeyFactory.createKey("Hoge", 1);
-        String encodedKey = KeyFactory.keyToString(key);
-        tester.request.setAttribute("aaa", key);
-        assertThat(Functions.hiddenKey("aaa"), is("name=\"aaa\" value=\""
-            + encodedKey
-            + "\""));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void hiddenKeyForEncodedKey() throws Exception {
-        Key key = KeyFactory.createKey("Hoge", 1);
-        String encodedKey = KeyFactory.keyToString(key);
-        tester.request.setAttribute("aaa", encodedKey);
-        assertThat(Functions.hiddenKey("aaa"), is("name=\"aaa\" value=\""
-            + encodedKey
-            + "\""));
-    }
 }
