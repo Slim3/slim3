@@ -18,7 +18,7 @@ Source:
 <hr />
 
 <form method="post" action="${f:url('')}">
-aaaArray:${f:h(aaaArray)}<br />
+aaaArray:<br />
 <select name="aaaArray" multiple="multiple" size="3">
 <option ${f:multiselect("aaaArray", "1")}>One</option>
 <option ${f:multiselect("aaaArray", "2")}>Two</option>

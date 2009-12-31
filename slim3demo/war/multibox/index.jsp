@@ -18,7 +18,7 @@ Source:
 <hr />
 
 <form method="post" action="${f:url('')}">
-aaaArray:${f:h(aaaArray)}<br />
+aaaArray:<br />
 <input type="checkbox" ${f:multibox("aaaArray", "111")}/>111<br />
 <input type="checkbox" ${f:multibox("aaaArray", "222")}/>222<br />
 <input type="submit" value="Submit"/>
