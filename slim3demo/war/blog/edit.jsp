@@ -9,13 +9,18 @@
 <link rel="stylesheet" type="text/css" href="/css/global.css" />
 </head>
 <body>
+<ul>
+<c:forEach var="e" items="${f:errors()}">
+<li>${f:h(e)}</li>
+</c:forEach>
+</ul>
 <form action="${f:url('update')}" method="post">
 <input type="hidden" ${f:hidden("key")}/>
 <input type="hidden" ${f:hidden("version")}/>
 Title<br />
-<input type="text" ${f:text("title")} class="${f:errorClass('title', 'err')}"/>${f:h(errors.title)}<br />
+<input type="text" ${f:text("title")} class="${f:errorClass('title', 'err')}"/><br />
 Content<br />
-<textarea name="content" class="${f:errorClass('content', 'err')}">${f:h(content)}</textarea>${f:h(errors.content)}<br />
+<textarea name="content" class="${f:errorClass('content', 'err')}">${f:h(content)}</textarea><br />
 <input type="submit" value="Update"/>
 </form>
 </body>
