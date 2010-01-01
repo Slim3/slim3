@@ -40,6 +40,7 @@ public final class CoolBridge {
      * @throws WrapRuntimeException
      *             if the implementation class is not found
      */
+    @SuppressWarnings("unchecked")
     public static <T> T create(Class<T> interfaceClass)
             throws NullPointerException, IllegalArgumentException,
             WrapRuntimeException {
@@ -67,7 +68,7 @@ public final class CoolBridge {
                 + interfaceName
                 + ".");
         }
-        return ClassUtil.newInstance(clazz);
+        return (T) ClassUtil.newInstance(clazz);
     }
 
     private CoolBridge() {
