@@ -15,7 +15,6 @@
  */
 package org.slim3.datastore;
 
-
 /**
  * A meta data of unindexed attribute.
  * 
@@ -47,7 +46,7 @@ public class UnindexedAttributeMeta<M, A> extends AttributeMeta<M, A> {
      *             fieldName parameter is null
      */
     public UnindexedAttributeMeta(ModelMeta<M> modelMeta, String name,
-            String fieldName, Class<A> attributeClass)
+            String fieldName, Class<? super A> attributeClass)
             throws NullPointerException {
         super(modelMeta, name, fieldName, attributeClass);
     }
