@@ -64,6 +64,14 @@ public abstract class AbstractQuery<SUB> {
     /**
      * Constructor.
      * 
+     */
+    public AbstractQuery() {
+        setUpQuery();
+    }
+
+    /**
+     * Constructor.
+     * 
      * @param kind
      *            the kind
      * @throws NullPointerException
@@ -104,10 +112,11 @@ public abstract class AbstractQuery<SUB> {
     }
 
     /**
-     * Constructor.
+     * Sets up an internal query.
      * 
      */
-    protected AbstractQuery() {
+    protected void setUpQuery() {
+        query = new Query();
     }
 
     /**

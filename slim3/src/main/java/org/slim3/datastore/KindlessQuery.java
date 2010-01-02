@@ -29,7 +29,15 @@ import com.google.appengine.api.datastore.Transaction;
  * @since 3.0
  * 
  */
-public class KindlessAncestorQuery extends AbstractQuery<KindlessAncestorQuery> {
+public class KindlessQuery extends AbstractQuery<KindlessQuery> {
+
+    /**
+     * Constructor.
+     * 
+     */
+    public KindlessQuery() {
+        super();
+    }
 
     /**
      * Constructor.
@@ -39,7 +47,7 @@ public class KindlessAncestorQuery extends AbstractQuery<KindlessAncestorQuery> 
      * @throws NullPointerException
      *             if the ancestorKey parameter is null
      */
-    public KindlessAncestorQuery(Key ancestorKey) throws NullPointerException {
+    public KindlessQuery(Key ancestorKey) throws NullPointerException {
         super(ancestorKey);
     }
 
@@ -53,7 +61,7 @@ public class KindlessAncestorQuery extends AbstractQuery<KindlessAncestorQuery> 
      * @throws NullPointerException
      *             if the ancestorKey parameter is null
      */
-    public KindlessAncestorQuery(Transaction tx, Key ancestorKey)
+    public KindlessQuery(Transaction tx, Key ancestorKey)
             throws NullPointerException {
         super(ancestorKey);
         setTx(tx);

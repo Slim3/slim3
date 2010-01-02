@@ -2081,27 +2081,36 @@ public final class Datastore {
     }
 
     /**
-     * Returns a {@link KindlessAncestorQuery}.
+     * Returns a {@link KindlessQuery}.
      * 
-     * @param ancestorKey
-     *            the ancestor key
-     * @return a {@link KindlessAncestorQuery}
+     * @return a {@link KindlessQuery}
      */
-    public static KindlessAncestorQuery query(Key ancestorKey) {
-        return new KindlessAncestorQuery(ancestorKey);
+    public static KindlessQuery query() {
+        return new KindlessQuery();
     }
 
     /**
-     * Returns a {@link KindlessAncestorQuery}.
+     * Returns a {@link KindlessQuery}.
+     * 
+     * @param ancestorKey
+     *            the ancestor key
+     * @return a {@link KindlessQuery}
+     */
+    public static KindlessQuery query(Key ancestorKey) {
+        return new KindlessQuery(ancestorKey);
+    }
+
+    /**
+     * Returns a {@link KindlessQuery}.
      * 
      * @param tx
      *            the transaction
      * @param ancestorKey
      *            the ancestor key
-     * @return a {@link KindlessAncestorQuery}
+     * @return a {@link KindlessQuery}
      */
-    public static KindlessAncestorQuery query(Transaction tx, Key ancestorKey) {
-        return new KindlessAncestorQuery(tx, ancestorKey);
+    public static KindlessQuery query(Transaction tx, Key ancestorKey) {
+        return new KindlessQuery(tx, ancestorKey);
     }
 
     /**

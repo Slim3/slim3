@@ -45,6 +45,16 @@ public class AbstQueryTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
+    public void constructor() throws Exception {
+        MyQuery q = new MyQuery();
+        assertThat(q.query, is(notNullValue()));
+        assertThat(q.query.getKind(), is(nullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void constructorUsingKind() throws Exception {
         MyQuery q = new MyQuery("Hoge");
         assertThat(q.query.getKind(), is("Hoge"));
@@ -264,6 +274,13 @@ public class AbstQueryTest extends LocalServiceTestCase {
     }
 
     private static class MyQuery extends AbstractQuery<MyQuery> {
+
+        /**
+         * 
+         */
+        public MyQuery() {
+            super();
+        }
 
         /**
          * @param ancestorKey

@@ -30,7 +30,7 @@ import com.google.appengine.api.datastore.KeyFactory;
  * @author higa
  * 
  */
-public class KindlessAncestorQueryTest extends LocalServiceTestCase {
+public class KindlessQueryTest extends LocalServiceTestCase {
 
     private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
@@ -40,8 +40,8 @@ public class KindlessAncestorQueryTest extends LocalServiceTestCase {
     @Test
     public void constructorUsingTxAndAncestorKey() throws Exception {
         Key ancestorKey = KeyFactory.createKey("Ancestor", 1);
-        KindlessAncestorQuery query =
-            new KindlessAncestorQuery(ds.beginTransaction(), ancestorKey);
+        KindlessQuery query =
+            new KindlessQuery(ds.beginTransaction(), ancestorKey);
         assertThat(query.query.getAncestor(), is(ancestorKey));
         assertThat(query.tx, is(notNullValue()));
     }

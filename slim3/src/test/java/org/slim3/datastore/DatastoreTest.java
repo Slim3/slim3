@@ -1568,10 +1568,18 @@ public class DatastoreTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
+    public void kindlessQuery() throws Exception {
+        assertThat(Datastore.query(), is(KindlessQuery.class));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void queryUsingAncestorKey() throws Exception {
         assertThat(
             Datastore.query(KeyFactory.createKey("Parent", 1)),
-            is(KindlessAncestorQuery.class));
+            is(KindlessQuery.class));
     }
 
     /**
@@ -1581,7 +1589,7 @@ public class DatastoreTest extends LocalServiceTestCase {
     public void queryUsingTxAndAncestorKey() throws Exception {
         assertThat(Datastore.query(ds.beginTransaction(), KeyFactory.createKey(
             "Parent",
-            1)), is(KindlessAncestorQuery.class));
+            1)), is(KindlessQuery.class));
     }
 
     /**
