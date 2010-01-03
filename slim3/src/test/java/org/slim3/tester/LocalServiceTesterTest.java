@@ -110,4 +110,13 @@ public class LocalServiceTesterTest {
         ds.put(new Entity("Hoge"));
         assertThat(localServiceTester.count("Hoge"), is(1));
     }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void environment() throws Exception {
+        assertThat(localServiceTester.environment, is(notNullValue()));
+    }
 }

@@ -98,6 +98,11 @@ public class LocalServiceTester {
      */
     protected static Method clearProfilesMethod;
 
+    /**
+     * The environment for test.
+     */
+    public TestEnvironment environment = new TestEnvironment();
+
     static {
         ClassLoader loader = loadLibraries();
         prepareLocalServices(loader);
@@ -241,7 +246,7 @@ public class LocalServiceTester {
      * 
      */
     public void setUp() throws Exception {
-        ApiProxy.setEnvironmentForCurrentThread(new TestEnvironment());
+        ApiProxy.setEnvironmentForCurrentThread(environment);
         ApiProxy.setDelegate((Delegate<?>) apiProxyLocalImpl);
     }
 
