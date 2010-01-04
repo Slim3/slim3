@@ -15,10 +15,14 @@
  */
 package org.slim3.gwt.server.rpc;
 
-import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import com.google.gwt.user.client.rpc.SerializationException;
 import com.google.gwt.user.server.rpc.SerializationPolicy;
+import com.google.gwt.user.server.rpc.impl.TypeNameObfuscator;
 
 /**
  * The serialization policy for HOT reloading.
@@ -27,61 +31,122 @@ import com.google.gwt.user.server.rpc.SerializationPolicy;
  * @since 3.0
  * 
  */
-public class HotSerializationPolicy extends SerializationPolicy {
+public class HotSerializationPolicy extends SerializationPolicy implements
+        TypeNameObfuscator {
+
+    private final Map<String, Set<String>> clientFields;
+    private final Map<String, Boolean> deserializationWhitelist;
+    private final Map<String, Boolean> serializationWhitelist;
+    private final Map<String, String> typeIds;
+    private final Map<String, String> typeIdsToClasses =
+        new HashMap<String, String>();
 
     /**
-     * Constructor.
+     * Field serializable types are primitives and types on the specified
+     * whitelist.
      */
-    public HotSerializationPolicy() {
+    private static boolean isFieldSerializable(Class<?> clazz,
+            Map<String, Boolean> whitelist) {
+        if (clazz.isPrimitive()) {
+            return true;
+        }
+        return whitelist.containsKey(clazz.getName());
+    }
+
+    /**
+     * Instantiable types are primitives and types on the specified whitelist
+     * which can be instantiated.
+     */
+    private static boolean isInstantiable(Class<?> clazz,
+            Map<String, Boolean> whitelist) {
+        if (clazz.isPrimitive()) {
+            return true;
+        }
+        Boolean instantiable = whitelist.get(clazz.getName());
+        return (instantiable != null && instantiable);
+    }
+
+    /**
+     * Constructs a {@link SerializationPolicy} from several {@link Map}s.
+     * 
+     * @param serializationWhitelist
+     *            the serialization white list
+     * @param deserializationWhitelist
+     *            the deserialization white list
+     * @param obfuscatedTypeIds
+     *            the obfuscated type identifiers
+     * @param clientFields
+     *            the client fields
+     */
+    public HotSerializationPolicy(Map<String, Boolean> serializationWhitelist,
+            Map<String, Boolean> deserializationWhitelist,
+            Map<String, String> obfuscatedTypeIds,
+            Map<String, Set<String>> clientFields) {
+        if (serializationWhitelist == null || deserializationWhitelist == null) {
+            throw new NullPointerException("whitelist");
+        }
+        this.serializationWhitelist = serializationWhitelist;
+        this.deserializationWhitelist = deserializationWhitelist;
+        this.typeIds = obfuscatedTypeIds;
+        this.clientFields = clientFields;
+        for (String key : obfuscatedTypeIds.keySet()) {
+            String value = obfuscatedTypeIds.get(key);
+            assert key != null : "null key";
+            assert value != null : "null value for " + key;
+            assert !typeIdsToClasses.containsKey(value) : "Duplicate type id "
+                + value;
+            typeIdsToClasses.put(value, key);
+        }
+    }
+
+    public final String getClassNameForTypeId(String id)
+            throws SerializationException {
+        return typeIdsToClasses.get(id);
+    }
+
+    @Override
+    public Set<String> getClientFieldNamesForEnhancedClass(Class<?> clazz) {
+        if (clientFields == null) {
+            return null;
+        }
+        Set<String> fieldNames = clientFields.get(clazz.getName());
+        return fieldNames == null ? null : Collections
+            .unmodifiableSet(fieldNames);
+    }
+
+    public final String getTypeIdForClass(Class<?> clazz)
+            throws SerializationException {
+        return typeIds.get(clazz.getName());
     }
 
     @Override
     public boolean shouldDeserializeFields(Class<?> clazz) {
-        return isSerializable(clazz);
+        return isFieldSerializable(clazz, deserializationWhitelist);
     }
 
     @Override
     public boolean shouldSerializeFields(Class<?> clazz) {
-        return isSerializable(clazz);
+        return isFieldSerializable(clazz, serializationWhitelist);
     }
 
     @Override
     public void validateDeserialize(Class<?> clazz)
             throws SerializationException {
-        if (!isSerializable(clazz)) {
-            throw new SerializationException("Type '"
-                + clazz.getName()
-                + "' is not assignable to '"
-                + Serializable.class.getName()
-                + "'.");
+        if (!isInstantiable(clazz, deserializationWhitelist)) {
+            throw new SerializationException(
+                "Type '"
+                    + clazz.getName()
+                    + "' was not included in the set of types which can be deserialized by this SerializationPolicy or its Class object could not be loaded. For security purposes, this type will not be deserialized.");
         }
     }
 
     @Override
     public void validateSerialize(Class<?> clazz) throws SerializationException {
-        if (!isSerializable(clazz)) {
-            throw new SerializationException("Type '"
-                + clazz.getName()
-                + "' is not assignable to '"
-                + Serializable.class.getName()
-                + "'.");
+        if (!isInstantiable(clazz, serializationWhitelist)) {
+            throw new SerializationException(
+                "Type '"
+                    + clazz.getName()
+                    + "' was not included in the set of types which can be serialized by this SerializationPolicy or its Class object could not be loaded. For security purposes, this type will not be serialized.");
         }
-    }
-
-    /**
-     * Determines if the class is able to be serialized.
-     * 
-     * @param clazz
-     *            the class
-     * @return whether the class is able to be serialized
-     */
-    protected boolean isSerializable(Class<?> clazz) {
-        if (clazz.isPrimitive()) {
-            return true;
-        }
-        if (clazz.isArray()) {
-            return isSerializable(clazz.getComponentType());
-        }
-        return Serializable.class.isAssignableFrom(clazz);
     }
 }

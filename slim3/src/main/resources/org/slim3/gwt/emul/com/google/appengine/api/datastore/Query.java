@@ -2,7 +2,9 @@ package com.google.appengine.api.datastore;
 
 import java.io.Serializable;
 
-public class Query {
+public class Query implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
     
     protected Query() {
     }
@@ -12,7 +14,7 @@ public class Query {
         DESCENDING;
     }
     
-    public static class SortPredicate implements Seriliazable {
+    public static class SortPredicate implements Serializable {
         
         private static final long serialVersionUID = 1L;
         
@@ -21,6 +23,11 @@ public class Query {
         private SortDirection direction;
         
         protected SortPredicate() {
+        }
+        
+        public SortPredicate(String propertyName, SortDirection direction) {
+            this.propertyName = propertyName;
+            this.direction = direction;
         }
         
         public String getPropertyName() {

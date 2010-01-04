@@ -49,13 +49,14 @@ public class ModelRef<M> extends AbstractModelRef<M> {
     /**
      * Constructor.
      * 
-     * @param modelMeta
-     *            the meta data of model
+     * @param modelClass
+     *            the model class
+     * 
      * @throws NullPointerException
-     *             if the modelMeta parameter is null
+     *             if the modelClass parameter is null
      */
-    public ModelRef(ModelMeta<M> modelMeta) throws NullPointerException {
-        super(modelMeta);
+    public ModelRef(Class<M> modelClass) throws NullPointerException {
+        super(modelClass);
     }
 
     /**

@@ -24,7 +24,6 @@ import org.slim3.datastore.Attribute;
 import org.slim3.datastore.InverseModelListRef;
 import org.slim3.datastore.InverseModelRef;
 import org.slim3.datastore.Model;
-import org.slim3.datastore.meta.BbbMeta;
 
 import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Key;
@@ -123,12 +122,12 @@ public class Hoge {
     private Long version;
 
     @Attribute(persistent = false)
-    private InverseModelRef<Bbb> bbbRef =
-        new InverseModelRef<Bbb>(BbbMeta.get().hogeRef, this);
+    private InverseModelRef<Bbb, Hoge> bbbRef =
+        new InverseModelRef<Bbb, Hoge>(Bbb.class, "hogeRef", this);
 
     @Attribute(persistent = false)
-    private InverseModelListRef<Bbb> bbbListRef =
-        new InverseModelListRef<Bbb>(BbbMeta.get().hoge2Ref, this);
+    private InverseModelListRef<Bbb, Hoge> bbbListRef =
+        new InverseModelListRef<Bbb, Hoge>(Bbb.class, "hoge2Ref", this);
 
     /**
      * @return the key
@@ -718,14 +717,14 @@ public class Hoge {
     /**
      * @return the bbbRef
      */
-    public InverseModelRef<Bbb> getBbbRef() {
+    public InverseModelRef<Bbb, Hoge> getBbbRef() {
         return bbbRef;
     }
 
     /**
      * @return the bbbListRef
      */
-    public InverseModelListRef<Bbb> getBbbListRef() {
+    public InverseModelListRef<Bbb, Hoge> getBbbListRef() {
         return bbbListRef;
     }
 }

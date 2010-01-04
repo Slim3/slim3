@@ -1,7 +1,8 @@
 package org.slim3.datastore;
 
+import org.slim3.datastore.Datastore;
+
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.Transaction;
 
 public class ModelRef<M> extends AbstractModelRef<M> {
 
@@ -14,7 +15,7 @@ public class ModelRef<M> extends AbstractModelRef<M> {
     protected ModelRef() {
     }
 
-    public ModelRef(Class<M> modelClass) throws NullPointerException {
+    public ModelRef(Class<M> modelClass) {
         super(modelClass);
     }
 
@@ -22,22 +23,27 @@ public class ModelRef<M> extends AbstractModelRef<M> {
         return model;
     }
 
-    public void setModel(M model) throws IllegalArgumentException {
-        this.model = model;
+    public void setModel(M model) {
+        if (model == null) {
+            this.model = null;
+            this.key = null;
+        } else {
+            this.model = model;
+        }
     }
-
+    
     public Key getKey() {
         return key;
     }
+    
+    public void setKey(Key key) {
+        throw new UnsupportedOperationException("This method is unsupported on GWT.");
+    }
 
-    public void setKey(Key key) throws IllegalArgumentException {
-        this.key = key;
+    public M refresh() {
+        throw new UnsupportedOperationException("This method is unsupported on GWT.");
     }
     
-    public M refresh() {
-        return null;
-    }
-
     public void clear() {
         model = null;
         key = null;

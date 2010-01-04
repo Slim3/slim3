@@ -16,7 +16,6 @@
 package org.slim3.datastore;
 
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.Query.FilterOperator;
 
 /**
  * An inverse reference for model.
@@ -29,19 +28,24 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
  * @since 3.0
  * 
  */
-public class InverseModelRef<M, O> extends AbstractInverseModelRef<M, O> {
+public abstract class AbstractInverseModelRef<M, O> extends AbstractModelRef<M> {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * The model.
+     * The mapped property name.
      */
-    protected M model;
+    protected String mappedPropertyName;
+
+    /**
+     * The owner that has this {@link AbstractInverseModelRef}.
+     */
+    protected O owner;
 
     /**
      * Constructor.
      */
-    protected InverseModelRef() {
+    protected AbstractInverseModelRef() {
     }
 
     /**
@@ -52,51 +56,33 @@ public class InverseModelRef<M, O> extends AbstractInverseModelRef<M, O> {
      * @param mappedPropertyName
      *            the mapped property name
      * @param owner
-     *            the owner that has this {@link InverseModelRef}
+     *            the owner that has this {@link AbstractInverseModelRef}
      * @throws NullPointerException
      *             if the modelClass parameter is null or if the
      *             mappedPropertyName parameter is null or if the owner
      *             parameter is null
      */
-    public InverseModelRef(Class<M> modelClass, String mappedPropertyName,
-            O owner) throws NullPointerException {
-        super(modelClass, mappedPropertyName, owner);
-    }
-
-    /**
-     * Returns the model.
-     * 
-     * @return the model
-     */
-    public M getModel() {
-        if (model != null) {
-            return model;
+    public AbstractInverseModelRef(Class<M> modelClass,
+            String mappedPropertyName, O owner) throws NullPointerException {
+        super(modelClass);
+        if (mappedPropertyName == null) {
+            throw new NullPointerException(
+                "The mappedPropertyName must not be null.");
         }
-        return refresh();
+        if (owner == null) {
+            throw new NullPointerException("The owner must not be null.");
+        }
+        this.mappedPropertyName = mappedPropertyName;
+        this.owner = owner;
     }
 
     /**
-     * Refreshes the model.
+     * Returns the key of owner.
      * 
      * @return a refreshed model
      */
-    public M refresh() {
-        Key key = getOwnerKey();
-        if (key == null) {
-            return null;
-        }
-        model =
-            Datastore.query(getModelMeta()).filter(
-                mappedPropertyName,
-                FilterOperator.EQUAL,
-                key).asSingle();
-        return model;
-    }
-
-    /**
-     * Clears the state of this {@link InverseModelRef}.
-     */
-    public void clear() {
-        model = null;
+    protected Key getOwnerKey() {
+        ModelMeta<?> ownerModelMeta = Datastore.getModelMeta(owner.getClass());
+        return ownerModelMeta.getKey(owner);
     }
 }

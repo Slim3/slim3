@@ -28,25 +28,17 @@ import com.google.appengine.api.datastore.Query.SortPredicate;
  * @author higa
  * @param <M>
  *            the model type
+ * @param <O>
+ *            the owner type
  * @since 3.0
  * 
  */
-public class InverseModelListRef<M> extends AbstractModelRef<M> {
+public class InverseModelListRef<M, O> extends AbstractInverseModelRef<M, O> {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * The mapped property name.
-     */
-    protected String mappedPropertyName;
-
-    /**
-     * The owner that has this {@link InverseModelListRef}.
-     */
-    protected Object owner;
-
-    /**
-     * The default {@link SortPredicate}s.
+     * The default sort orders.
      */
     protected SortPredicate[] defaultSortPredicates;
 
@@ -64,41 +56,24 @@ public class InverseModelListRef<M> extends AbstractModelRef<M> {
     /**
      * Constructor.
      * 
-     * @param <O>
-     *            the owner type
-     * @param mappedAttributeMeta
-     *            the mapped {@link AttributeMeta}
+     * @param modelClass
+     *            the model class
+     * @param mappedPropertyName
+     *            the mapped property name
      * @param owner
-     *            the owner that has this {@link InverseModelListRef}the sort
-     *            criteria
-     * @param criteria
-     *            the sort criteria
+     *            the owner that has this {@link InverseModelRef}
+     * @param defaultSortPredicates
+     *            the default sort orders
      * @throws NullPointerException
-     *             if the attributeMeta parameter is null or if the owner
-     *             parameter is null or if the element of criteria is null
+     *             if the modelClass parameter is null or if the
+     *             mappedPropertyName parameter is null or if the owner
+     *             parameter is null
      */
-    public <O> InverseModelListRef(
-            ModelRefAttributeMeta<M, ModelRef<O>, O> mappedAttributeMeta,
-            O owner, SortCriterion... criteria) throws NullPointerException {
-        if (mappedAttributeMeta == null) {
-            throw new NullPointerException(
-                "The mappedAttributeMeta must not be null.");
-        }
-        if (owner == null) {
-            throw new NullPointerException("The owner must not be null.");
-        }
-        mappedPropertyName = mappedAttributeMeta.getName();
-        setModelMeta(mappedAttributeMeta.modelMeta);
-        this.owner = owner;
-        defaultSortPredicates = new SortPredicate[criteria.length];
-        for (int i = 0; i < criteria.length; i++) {
-            SortCriterion c = criteria[i];
-            if (c == null) {
-                throw new NullPointerException(
-                    "The element of criteria must not be null.");
-            }
-            defaultSortPredicates[i] = c.getSortPredicate();
-        }
+    public InverseModelListRef(Class<M> modelClass, String mappedPropertyName,
+            O owner, SortPredicate... defaultSortPredicates)
+            throws NullPointerException {
+        super(modelClass, mappedPropertyName, owner);
+        this.defaultSortPredicates = defaultSortPredicates;
     }
 
     /**

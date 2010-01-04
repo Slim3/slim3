@@ -19,7 +19,6 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.slim3.datastore.meta.BbbMeta;
 import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.LocalServiceTestCase;
@@ -32,19 +31,8 @@ public class InverseModelRefTest extends LocalServiceTestCase {
 
     private Hoge hoge = new Hoge();
 
-    private InverseModelRef<Bbb> ref =
-        new InverseModelRef<Bbb>(BbbMeta.get().hogeRef, hoge);
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void constructor() throws Exception {
-        assertThat(ref.mappedPropertyName, is("hogeRef"));
-        assertThat(ref.modelClass.getName(), is(Bbb.class.getName()));
-        assertThat(ref.modelMeta.modelClass.getName(), is(Bbb.class.getName()));
-        assertThat((Hoge) ref.owner, is(sameInstance(hoge)));
-    }
+    private InverseModelRef<Bbb, Hoge> ref =
+        new InverseModelRef<Bbb, Hoge>(Bbb.class, "hogeRef", hoge);
 
     /**
      * @throws Exception

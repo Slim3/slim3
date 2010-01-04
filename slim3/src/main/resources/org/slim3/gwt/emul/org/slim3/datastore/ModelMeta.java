@@ -5,36 +5,28 @@ import java.util.List;
 
 import com.google.appengine.api.datastore.Entity;
 
-public abstract class ModelMeta<M> implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-    
-    protected String kind;
-
-    protected Class<M> modelClass;
-
-    protected List<String> classHierarchyList;
+public abstract class ModelMeta<M> {    
 
     protected ModelMeta() {
     }
 
     public String getKind() {
-        return kind;
+        throw new UnsupportedOperationException("This method is unsupported on GWT.");
     }
 
     public Class<M> getModelClass() {
-        return modelClass;
+        throw new UnsupportedOperationException("This method is unsupported on GWT.");
     }
 
     public List<String> getClassHierarchyList() {
-        return classHierarchyList;
+        throw new UnsupportedOperationException("This method is unsupported on GWT.");
     }
     
     public M entityToModel(Entity entity) {
-        return null;
+        throw new UnsupportedOperationException("This method is unsupported on GWT.");
     }
 
     public Entity modelToEntity(Object model) {
-        return null;
+        throw new UnsupportedOperationException("This method is unsupported on GWT.");
     }
 }

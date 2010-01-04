@@ -19,7 +19,6 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.LocalServiceTestCase;
 import org.slim3.util.ByteUtil;
@@ -30,7 +29,16 @@ import org.slim3.util.ByteUtil;
  */
 public class AbstModelRefTest extends LocalServiceTestCase {
 
-    private ModelRef<Hoge> ref = new ModelRef<Hoge>(HogeMeta.get());
+    private ModelRef<Hoge> ref = new ModelRef<Hoge>(Hoge.class);
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void constructor() throws Exception {
+        assertThat(ref.modelClass, is(notNullValue()));
+    }
 
     /**
      * @throws Exception

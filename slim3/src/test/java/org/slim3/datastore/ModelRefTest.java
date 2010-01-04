@@ -19,7 +19,6 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.LocalServiceTestCase;
 
@@ -31,7 +30,7 @@ import com.google.appengine.api.datastore.Key;
  */
 public class ModelRefTest extends LocalServiceTestCase {
 
-    private ModelRef<Hoge> ref = new ModelRef<Hoge>(HogeMeta.get());
+    private ModelRef<Hoge> ref = new ModelRef<Hoge>(Hoge.class);
 
     /**
      * @throws Exception

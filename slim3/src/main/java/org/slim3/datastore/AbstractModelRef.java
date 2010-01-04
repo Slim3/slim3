@@ -45,7 +45,7 @@ public class AbstractModelRef<M> implements Serializable {
     /**
      * The model class name.
      */
-    protected transient String modelClassName;
+    protected String modelClassName;
 
     /**
      * Constructor.
@@ -56,13 +56,14 @@ public class AbstractModelRef<M> implements Serializable {
     /**
      * Constructor.
      * 
-     * @param modelMeta
-     *            the meta data of model
+     * @param modelClass
+     *            the model class
+     * 
      * @throws NullPointerException
-     *             if the modelMeta parameter is null
+     *             if the modelClass parameter is null
      */
-    public AbstractModelRef(ModelMeta<M> modelMeta) throws NullPointerException {
-        setModelMeta(modelMeta);
+    public AbstractModelRef(Class<M> modelClass) throws NullPointerException {
+        setModelClass(modelClass);
     }
 
     /**
@@ -75,6 +76,24 @@ public class AbstractModelRef<M> implements Serializable {
             modelClass = ClassUtil.forName(modelClassName);
         }
         return modelClass;
+    }
+
+    /**
+     * Sets the model class
+     * 
+     * @param modelClass
+     *            the model class
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     */
+    protected void setModelClass(Class<M> modelClass)
+            throws NullPointerException {
+        if (modelClass == null) {
+            throw new NullPointerException(
+                "The modelClass parameter must not be null.");
+        }
+        this.modelClass = modelClass;
+        modelClassName = modelClass.getName();
     }
 
     /**
@@ -106,17 +125,5 @@ public class AbstractModelRef<M> implements Serializable {
         }
         this.modelMeta = modelMeta;
         this.modelClass = modelMeta.modelClass;
-    }
-
-    private void writeObject(java.io.ObjectOutputStream s)
-            throws java.io.IOException {
-        s.defaultWriteObject();
-        s.writeUTF(modelClass.getName());
-    }
-
-    private void readObject(java.io.ObjectInputStream s)
-            throws java.io.IOException, ClassNotFoundException {
-        s.defaultReadObject();
-        modelClassName = s.readUTF();
     }
 }

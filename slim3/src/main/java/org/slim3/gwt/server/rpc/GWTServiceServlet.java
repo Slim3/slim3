@@ -15,10 +15,16 @@
  */
 package org.slim3.gwt.server.rpc;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.ParseException;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -51,13 +57,95 @@ public class GWTServiceServlet extends RemoteServiceServlet {
 
     private static final long serialVersionUID = 1L;
 
-    private static HotSerializationPolicy hotSerializationPolicy =
-        new HotSerializationPolicy();
-
     /**
      * Whether the servlet context is set to {@link ServletContextLocator}.
      */
     protected boolean servletContextSet = false;
+
+    private static SerializationPolicy loadHotSerializationPolicy(
+            HttpServlet servlet, HttpServletRequest request,
+            String moduleBaseURL, String strongName) {
+        // The request can tell you the path of the web app relative to the
+        // container root.
+        String contextPath = request.getContextPath();
+
+        String modulePath = null;
+        if (moduleBaseURL != null) {
+            try {
+                modulePath = new URL(moduleBaseURL).getPath();
+            } catch (MalformedURLException ex) {
+                // log the information, we will default
+                servlet.log("Malformed moduleBaseURL: " + moduleBaseURL, ex);
+            }
+        }
+
+        SerializationPolicy serializationPolicy = null;
+
+        /*
+         * Check that the module path must be in the same web app as the servlet
+         * itself. If you need to implement a scheme different than this,
+         * override this method.
+         */
+        if (modulePath == null || !modulePath.startsWith(contextPath)) {
+            String message =
+                "ERROR: The module path requested, "
+                    + modulePath
+                    + ", is not in the same web application as this servlet, "
+                    + contextPath
+                    + ".  Your module may not be properly configured or your client and server code maybe out of date.";
+            servlet.log(message, null);
+        } else {
+            // Strip off the context path from the module base URL. It should be
+            // a
+            // strict prefix.
+            String contextRelativePath =
+                modulePath.substring(contextPath.length());
+
+            String serializationPolicyFilePath =
+                HotSerializationPolicyLoader
+                    .getSerializationPolicyFileName(contextRelativePath
+                        + strongName);
+
+            // Open the RPC resource file and read its contents.
+            InputStream is =
+                servlet.getServletContext().getResourceAsStream(
+                    serializationPolicyFilePath);
+            try {
+                if (is != null) {
+                    try {
+                        serializationPolicy =
+                            HotSerializationPolicyLoader.loadFromStream(
+                                is,
+                                null);
+                    } catch (ParseException e) {
+                        servlet.log("ERROR: Failed to parse the policy file '"
+                            + serializationPolicyFilePath
+                            + "'", e);
+                    } catch (IOException e) {
+                        servlet.log("ERROR: Could not read the policy file '"
+                            + serializationPolicyFilePath
+                            + "'", e);
+                    }
+                } else {
+                    String message =
+                        "ERROR: The serialization policy file '"
+                            + serializationPolicyFilePath
+                            + "' was not found; did you forget to include it in this deployment?";
+                    servlet.log(message, null);
+                }
+            } finally {
+                if (is != null) {
+                    try {
+                        is.close();
+                    } catch (IOException e) {
+                        // Ignore this error
+                    }
+                }
+            }
+        }
+
+        return serializationPolicy;
+    }
 
     @Override
     public void init() throws ServletException {
@@ -290,7 +378,11 @@ public class GWTServiceServlet extends RemoteServiceServlet {
     protected SerializationPolicy doGetSerializationPolicy(
             HttpServletRequest request, String moduleBaseURL, String strongName) {
         if (Thread.currentThread().getContextClassLoader() instanceof HotReloadingClassLoader) {
-            return hotSerializationPolicy;
+            return loadHotSerializationPolicy(
+                this,
+                request,
+                moduleBaseURL,
+                strongName);
         }
         return super.doGetSerializationPolicy(
             request,
