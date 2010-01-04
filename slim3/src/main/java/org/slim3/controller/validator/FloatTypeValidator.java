@@ -63,8 +63,12 @@ public class FloatTypeValidator extends AbstractValidator {
             if (message != null) {
                 return message;
             }
-            return ApplicationMessage
-                .get("validator.floatType", getLabel(name));
+            return ApplicationMessage.get(getMessageKey(), getLabel(name));
         }
+    }
+
+    @Override
+    protected String getMessageKey() {
+        return "validator.floatType";
     }
 }

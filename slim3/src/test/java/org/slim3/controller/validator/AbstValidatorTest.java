@@ -69,5 +69,10 @@ public class AbstValidatorTest {
         public String validate(Map<String, Object> parameters, String name) {
             return null;
         }
+
+        @Override
+        protected String getMessageKey() {
+            return null;
+        }
     }
 }

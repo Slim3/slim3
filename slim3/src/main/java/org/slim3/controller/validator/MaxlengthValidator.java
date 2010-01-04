@@ -72,8 +72,13 @@ public class MaxlengthValidator extends AbstractValidator {
             return message;
         }
         return ApplicationMessage.get(
-            "validator.maxlength",
+            getMessageKey(),
             getLabel(name),
             maxlength);
+    }
+
+    @Override
+    protected String getMessageKey() {
+        return "validator.maxlength";
     }
 }

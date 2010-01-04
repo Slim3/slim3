@@ -111,4 +111,14 @@ public class DoubleTypeValidatorTest {
             new DoubleTypeValidator("hoge").validate(parameters, "aaa"),
             is("hoge"));
     }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getMessageKey() throws Exception {
+        assertThat(
+            DoubleTypeValidator.INSTANCE.getMessageKey(),
+            is("validator.doubleType"));
+    }
 }

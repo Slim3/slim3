@@ -105,4 +105,14 @@ public class RegexpValidatorTest {
             parameters,
             "aaa"), is("hoge"));
     }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getMessageKey() throws Exception {
+        assertThat(
+            new RegexpValidator("abc", "hoge").getMessageKey(),
+            is("validator.regexp"));
+    }
 }

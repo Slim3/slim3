@@ -107,4 +107,12 @@ public class NumberTypeValidatorTest {
             parameters,
             "aaa"), is("hoge"));
     }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getMessageKey() throws Exception {
+        assertThat(validator.getMessageKey(), is("validator.numberType"));
+    }
 }

@@ -72,8 +72,13 @@ public class MinlengthValidator extends AbstractValidator {
             return message;
         }
         return ApplicationMessage.get(
-            "validator.minlength",
+            getMessageKey(),
             getLabel(name),
             minlength);
+    }
+
+    @Override
+    protected String getMessageKey() {
+        return "validator.minlength";
     }
 }

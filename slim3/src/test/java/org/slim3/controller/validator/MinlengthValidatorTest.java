@@ -106,4 +106,12 @@ public class MinlengthValidatorTest {
         assertThat(new MinlengthValidator(3, "hoge")
             .validate(parameters, "aaa"), is("hoge"));
     }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getMessageKey() throws Exception {
+        assertThat(validator.getMessageKey(), is("validator.minlength"));
+    }
 }

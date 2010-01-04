@@ -56,8 +56,13 @@ public class RequiredValidator extends AbstractValidator {
             if (message != null) {
                 return message;
             }
-            return ApplicationMessage.get("validator.required", getLabel(name));
+            return ApplicationMessage.get(getMessageKey(), getLabel(name));
         }
         return null;
+    }
+
+    @Override
+    protected String getMessageKey() {
+        return "validator.required";
     }
 }

@@ -63,9 +63,12 @@ public class IntegerTypeValidator extends AbstractValidator {
             if (message != null) {
                 return message;
             }
-            return ApplicationMessage.get(
-                "validator.integerType",
-                getLabel(name));
+            return ApplicationMessage.get(getMessageKey(), getLabel(name));
         }
+    }
+
+    @Override
+    protected String getMessageKey() {
+        return "validator.integerType";
     }
 }

@@ -111,4 +111,14 @@ public class FloatTypeValidatorTest {
             new FloatTypeValidator("hoge").validate(parameters, "aaa"),
             is("hoge"));
     }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getMessageKey() throws Exception {
+        assertThat(
+            FloatTypeValidator.INSTANCE.getMessageKey(),
+            is("validator.floatType"));
+    }
 }

@@ -63,7 +63,12 @@ public class LongTypeValidator extends AbstractValidator {
             if (message != null) {
                 return message;
             }
-            return ApplicationMessage.get("validator.longType", getLabel(name));
+            return ApplicationMessage.get(getMessageKey(), getLabel(name));
         }
+    }
+
+    @Override
+    protected String getMessageKey() {
+        return "validator.longType";
     }
 }

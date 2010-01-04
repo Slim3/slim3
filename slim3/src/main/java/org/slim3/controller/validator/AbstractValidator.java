@@ -50,6 +50,13 @@ public abstract class AbstractValidator implements Validator {
     }
 
     /**
+     * Returns the message key.
+     * 
+     * @return the message key
+     */
+    protected abstract String getMessageKey();
+
+    /**
      * Returns the label.
      * 
      * @param name

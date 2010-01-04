@@ -83,9 +83,14 @@ public class LongRangeValidator extends AbstractValidator {
             return message;
         }
         return ApplicationMessage.get(
-            "validator.range",
+            getMessageKey(),
             getLabel(name),
             minimum,
             maximum);
+    }
+
+    @Override
+    protected String getMessageKey() {
+        return "validator.range";
     }
 }

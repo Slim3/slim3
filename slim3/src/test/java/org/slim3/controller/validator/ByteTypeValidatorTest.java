@@ -111,4 +111,14 @@ public class ByteTypeValidatorTest {
             new ByteTypeValidator("hoge").validate(parameters, "aaa"),
             is("hoge"));
     }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getMessageKey() throws Exception {
+        assertThat(
+            ByteTypeValidator.INSTANCE.getMessageKey(),
+            is("validator.byteType"));
+    }
 }

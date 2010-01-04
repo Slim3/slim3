@@ -77,9 +77,14 @@ public class NumberTypeValidator extends AbstractValidator {
                 return message;
             }
             return ApplicationMessage.get(
-                "validator.numberType",
+                getMessageKey(),
                 getLabel(name),
                 pattern);
         }
+    }
+
+    @Override
+    protected String getMessageKey() {
+        return "validator.numberType";
     }
 }

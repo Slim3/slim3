@@ -84,9 +84,11 @@ public class RegexpValidator extends AbstractValidator {
         if (message != null) {
             return message;
         }
-        return ApplicationMessage.get(
-            "validator.regexp",
-            getLabel(name),
-            pattern);
+        return ApplicationMessage.get(getMessageKey(), getLabel(name), pattern);
+    }
+
+    @Override
+    protected String getMessageKey() {
+        return "validator.regexp";
     }
 }

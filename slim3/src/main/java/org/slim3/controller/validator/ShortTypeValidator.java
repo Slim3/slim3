@@ -63,8 +63,12 @@ public class ShortTypeValidator extends AbstractValidator {
             if (message != null) {
                 return message;
             }
-            return ApplicationMessage
-                .get("validator.shortType", getLabel(name));
+            return ApplicationMessage.get(getMessageKey(), getLabel(name));
         }
+    }
+
+    @Override
+    protected String getMessageKey() {
+        return "validator.shortType";
     }
 }

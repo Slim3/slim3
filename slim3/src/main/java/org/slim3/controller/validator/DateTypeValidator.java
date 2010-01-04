@@ -79,9 +79,14 @@ public class DateTypeValidator extends AbstractValidator {
                 return message;
             }
             return ApplicationMessage.get(
-                "validator.dateType",
+                getMessageKey(),
                 getLabel(name),
                 pattern);
         }
+    }
+
+    @Override
+    protected String getMessageKey() {
+        return "validator.dateType";
     }
 }

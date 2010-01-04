@@ -100,4 +100,14 @@ public class RequiredValidatorTest {
             RequiredValidator.INSTANCE.validate(parameters, "aaa"),
             is(nullValue()));
     }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getMessageKey() throws Exception {
+        assertThat(
+            RequiredValidator.INSTANCE.getMessageKey(),
+            is("validator.required"));
+    }
 }

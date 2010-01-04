@@ -111,4 +111,14 @@ public class LongTypeValidatorTest {
             new LongTypeValidator("hoge").validate(parameters, "aaa"),
             is("hoge"));
     }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getMessageKey() throws Exception {
+        assertThat(
+            LongTypeValidator.INSTANCE.getMessageKey(),
+            is("validator.longType"));
+    }
 }
