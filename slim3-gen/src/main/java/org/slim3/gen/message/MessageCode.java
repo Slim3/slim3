@@ -108,9 +108,9 @@ public enum MessageCode {
     /** */
     SILM3GEN1036("Specify @Attribute(persistent = false). ModelRef has a key internally, so you need to persist it. But this property is read only, so you do not need to persist it. (the property[{0}] of the class[{1}])"),
     /** */
-    SILM3GEN1039("The setter method for the field[{0}] is not allowed. Define the field as follows:\n{1}\nThe ''xxx'' means the mapped ModelRef<{2}> property."),
+    SILM3GEN1039("The setter method for the field[{0}] is not allowed. Define the field as follows:\n{1}\nThe \"xxx\" means the mapped ModelRef<{2}> property name in the class[{3}]."),
     /** */
-    SILM3GEN1040("The setter method for the field[{0}] of the class[{1}] is not allowed. Define the field as follows:\n{2}\nThe ''xxx'' means the mapped ModelRef<{3}> property."),
+    SILM3GEN1040("The setter method for the field[{0}] of the class[{1}] is not allowed. Define the field as follows:\n{2}\nThe \"xxx\" means the mapped ModelRef<{3}> property name in the class[{4}]."),
     /** */
     SILM3GEN1041("The setter method for the field[{0}] is not allowed. Define the field as follows:\n{1}"),
     /** */

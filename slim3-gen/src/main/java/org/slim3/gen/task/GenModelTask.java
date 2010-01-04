@@ -41,7 +41,8 @@ public class GenModelTask extends AbstractGenJavaFileTask {
     protected String packageName;
 
     /** the superclass name of testcase */
-    protected String testCaseSuperclassName = ClassConstants.Object;
+    protected String testCaseSuperclassName =
+        ClassConstants.LocalServiceTestCase;
 
     /** the modelDefinition */
     protected String modelDefinition;
