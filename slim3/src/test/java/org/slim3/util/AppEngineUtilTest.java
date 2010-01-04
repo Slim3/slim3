@@ -40,12 +40,12 @@ public class AppEngineUtilTest {
      * @throws Exception
      */
     @Test
-    public void isAppEngine() throws Exception {
-        assertThat(AppEngineUtil.isAppEngine(), is(false));
+    public void isServer() throws Exception {
+        assertThat(AppEngineUtil.isServer(), is(false));
         System.setProperty(
             AppEngineUtil.ENVIRONMENT_KEY,
             AppEngineUtil.DEVELOPMENT);
-        assertThat(AppEngineUtil.isAppEngine(), is(true));
+        assertThat(AppEngineUtil.isServer(), is(true));
     }
 
     /**

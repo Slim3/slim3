@@ -47,11 +47,11 @@ public final class AppEngineUtil {
     public static final String DEVELOPMENT = "Development";
 
     /**
-     * Determines if this application is running on App Engine.
+     * Determines if this application is running on App Engine Server.
      * 
-     * @return whether this application is running on App Engine
+     * @return whether this application is running on App Engine Server
      */
-    public static boolean isAppEngine() {
+    public static boolean isServer() {
         return System.getProperty(ENVIRONMENT_KEY) != null;
     }
 
