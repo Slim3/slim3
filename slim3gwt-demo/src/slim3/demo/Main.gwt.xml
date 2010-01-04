@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.0.0//EN" "http://google-web-toolkit.googlecode.com/svn/tags/2.0.0/distro-source/core/src/gwt-module.dtd">
+<module rename-to='main'>
+	<inherits name="com.google.gwt.user.User" />
+	<inherits name='org.slim3.gwt.emul.S3Emulation' />
+
+	<source path="client" />
+	<source path="shared" />
+	<entry-point class="slim3.demo.client.MainEntryPoint" />
+</module>

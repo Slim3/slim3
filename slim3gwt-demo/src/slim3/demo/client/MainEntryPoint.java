@@ -19,10 +19,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-/**
- * Entry point classes define <code>onModuleLoad()</code>.
- */
-public class Slim3gwt_demo implements EntryPoint {
+public class MainEntryPoint implements EntryPoint {
 
     /**
      * Create a remote service proxy to talk to the server-side Greeting
