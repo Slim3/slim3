@@ -40,6 +40,7 @@
 		<copy file="src/main/resources/org/slim3/gwt/emul/org/slim3/datastore/AbstractInverseModelRef.java" tofile="build/classes/org/slim3/gwt/emul/org/slim3/datastore/AbstractInverseModelRef.java"/>
 		<copy file="src/main/resources/org/slim3/gwt/emul/org/slim3/datastore/InverseModelRef.java" tofile="build/classes/org/slim3/gwt/emul/org/slim3/datastore/InverseModelRef.java"/>
 		<copy file="src/main/resources/org/slim3/gwt/emul/org/slim3/datastore/InverseModelListRef.java" tofile="build/classes/org/slim3/gwt/emul/org/slim3/datastore/InverseModelListRef.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/org/slim3/datastore/Sort.java" tofile="build/classes/org/slim3/gwt/emul/org/slim3/datastore/Sort.java"/>
 	    <jar jarfile="target/slim3-${ver}.jar" basedir="build/classes"/>
 	    <jar jarfile="target/slim3-${ver}-sources.jar" basedir="src/main/java"/>
 	</target>

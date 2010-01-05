@@ -37,7 +37,6 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.PreparedQuery.TooManyResultsException;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
@@ -109,13 +108,12 @@ public class ModelQueryTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
-    public void filterForFilterPredicates() throws Exception {
+    public void filterForFilter() throws Exception {
         ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
-        assertThat(query, is(sameInstance(query
-            .filter(new Query.FilterPredicate(
-                "myString",
-                FilterOperator.EQUAL,
-                "aaa")))));
+        assertThat(query, is(sameInstance(query.filter(new Filter(
+            "myString",
+            FilterOperator.EQUAL,
+            "aaa")))));
         assertThat(query.query.getFilterPredicates().size(), is(1));
     }
 
@@ -123,7 +121,7 @@ public class ModelQueryTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
-    public void filterForFilterPredicate() throws Exception {
+    public void filterWithPropertyNameAndOperatorAndValue() throws Exception {
         ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
         assertThat(query, is(sameInstance(query.filter(
             "myString",
@@ -146,11 +144,11 @@ public class ModelQueryTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
-    public void sortForSortPredicates() throws Exception {
+    public void sortForSort() throws Exception {
         ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
-        assertThat(query.sort(new Query.SortPredicate(
-            "myString",
-            SortDirection.ASCENDING)), is(sameInstance(query)));
+        assertThat(
+            query.sort(new Sort("myString", SortDirection.ASCENDING)),
+            is(sameInstance(query)));
         assertThat(query.query.getSortPredicates().size(), is(1));
     }
 
@@ -158,7 +156,7 @@ public class ModelQueryTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
-    public void sortForSortPredicate() throws Exception {
+    public void sortWithPropertyName() throws Exception {
         ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
         assertThat(query.sort("myString"), is(sameInstance(query)));
         assertThat(query.query.getSortPredicates().size(), is(1));
@@ -168,7 +166,7 @@ public class ModelQueryTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
-    public void sortForSortPredicateWithDirection() throws Exception {
+    public void sortForWithPropertyNameAndDirection() throws Exception {
         ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
         assertThat(
             query.sort("myString", SortDirection.ASCENDING),

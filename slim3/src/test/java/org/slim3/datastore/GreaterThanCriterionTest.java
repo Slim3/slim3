@@ -26,7 +26,6 @@ import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.LocalServiceTestCase;
 
 import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
 /**
@@ -63,13 +62,13 @@ public class GreaterThanCriterionTest extends LocalServiceTestCase {
      * 
      */
     @Test
-    public void getFilerPredicates() throws Exception {
+    public void getFilers() throws Exception {
         GreaterThanCriterion c = new GreaterThanCriterion(meta.myString, "aaa");
-        FilterPredicate[] predicates = c.getFilterPredicates();
-        assertThat(predicates.length, is(1));
-        assertThat(predicates[0].getPropertyName(), is("myString"));
-        assertThat(predicates[0].getOperator(), is(FilterOperator.GREATER_THAN));
-        assertThat((String) predicates[0].getValue(), is("aaa"));
+        Filter[] filters = c.getFilters();
+        assertThat(filters.length, is(1));
+        assertThat(filters[0].getPropertyName(), is("myString"));
+        assertThat(filters[0].getOperator(), is(FilterOperator.GREATER_THAN));
+        assertThat((String) filters[0].getValue(), is("aaa"));
     }
 
     /**
@@ -77,14 +76,14 @@ public class GreaterThanCriterionTest extends LocalServiceTestCase {
      * 
      */
     @Test
-    public void getFilerPredicatesForEnum() throws Exception {
+    public void getFilersForEnum() throws Exception {
         GreaterThanCriterion c =
             new GreaterThanCriterion(meta.myEnum, SortDirection.ASCENDING);
-        FilterPredicate[] predicates = c.getFilterPredicates();
-        assertThat(predicates.length, is(1));
-        assertThat(predicates[0].getPropertyName(), is("myEnum"));
-        assertThat(predicates[0].getOperator(), is(FilterOperator.GREATER_THAN));
-        assertThat((String) predicates[0].getValue(), is("ASCENDING"));
+        Filter[] filters = c.getFilters();
+        assertThat(filters.length, is(1));
+        assertThat(filters[0].getPropertyName(), is("myEnum"));
+        assertThat(filters[0].getOperator(), is(FilterOperator.GREATER_THAN));
+        assertThat((String) filters[0].getValue(), is("ASCENDING"));
     }
 
     /**
@@ -92,13 +91,13 @@ public class GreaterThanCriterionTest extends LocalServiceTestCase {
      * 
      */
     @Test
-    public void getFilerPredicatesForNull() throws Exception {
+    public void getFilersForNull() throws Exception {
         GreaterThanCriterion c = new GreaterThanCriterion(meta.myString, null);
-        FilterPredicate[] predicates = c.getFilterPredicates();
-        assertThat(predicates.length, is(1));
-        assertThat(predicates[0].getPropertyName(), is("myString"));
-        assertThat(predicates[0].getOperator(), is(FilterOperator.GREATER_THAN));
-        assertThat(predicates[0].getValue(), is(nullValue()));
+        Filter[] filters = c.getFilters();
+        assertThat(filters.length, is(1));
+        assertThat(filters[0].getPropertyName(), is("myString"));
+        assertThat(filters[0].getOperator(), is(FilterOperator.GREATER_THAN));
+        assertThat(filters[0].getValue(), is(nullValue()));
     }
 
     /**

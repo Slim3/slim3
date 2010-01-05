@@ -16,7 +16,6 @@
 package org.slim3.datastore;
 
 import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 /**
  * An implementation class for "is not null" filter.
@@ -38,8 +37,8 @@ public class IsNotNullCriterion extends AbstractFilterCriterion {
     public IsNotNullCriterion(AttributeMeta<?, ?> attributeMeta)
             throws NullPointerException {
         super(attributeMeta);
-        filterPredicates =
-            new FilterPredicate[] { new FilterPredicate(
+        filters =
+            new Filter[] { new Filter(
                 attributeMeta.getName(),
                 FilterOperator.GREATER_THAN,
                 null) };

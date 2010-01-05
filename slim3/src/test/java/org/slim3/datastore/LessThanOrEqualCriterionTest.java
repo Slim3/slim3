@@ -26,7 +26,6 @@ import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.LocalServiceTestCase;
 
 import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
 /**
@@ -64,16 +63,16 @@ public class LessThanOrEqualCriterionTest extends LocalServiceTestCase {
      * 
      */
     @Test
-    public void getFilterPredicates() throws Exception {
+    public void getFilters() throws Exception {
         LessThanOrEqualCriterion c =
             new LessThanOrEqualCriterion(meta.myString, "aaa");
-        FilterPredicate[] predicates = c.getFilterPredicates();
-        assertThat(predicates.length, is(1));
-        assertThat(predicates[0].getPropertyName(), is("myString"));
+        Filter[] filters = c.getFilters();
+        assertThat(filters.length, is(1));
+        assertThat(filters[0].getPropertyName(), is("myString"));
         assertThat(
-            predicates[0].getOperator(),
+            filters[0].getOperator(),
             is(FilterOperator.LESS_THAN_OR_EQUAL));
-        assertThat((String) predicates[0].getValue(), is("aaa"));
+        assertThat((String) filters[0].getValue(), is("aaa"));
     }
 
     /**
@@ -81,16 +80,16 @@ public class LessThanOrEqualCriterionTest extends LocalServiceTestCase {
      * 
      */
     @Test
-    public void getFilterPredicatesForEnum() throws Exception {
+    public void getFiltersForEnum() throws Exception {
         LessThanOrEqualCriterion c =
             new LessThanOrEqualCriterion(meta.myEnum, SortDirection.ASCENDING);
-        FilterPredicate[] predicates = c.getFilterPredicates();
-        assertThat(predicates.length, is(1));
-        assertThat(predicates[0].getPropertyName(), is("myEnum"));
+        Filter[] filters = c.getFilters();
+        assertThat(filters.length, is(1));
+        assertThat(filters[0].getPropertyName(), is("myEnum"));
         assertThat(
-            predicates[0].getOperator(),
+            filters[0].getOperator(),
             is(FilterOperator.LESS_THAN_OR_EQUAL));
-        assertThat((String) predicates[0].getValue(), is("ASCENDING"));
+        assertThat((String) filters[0].getValue(), is("ASCENDING"));
     }
 
     /**
@@ -98,16 +97,16 @@ public class LessThanOrEqualCriterionTest extends LocalServiceTestCase {
      * 
      */
     @Test
-    public void getFilterPredicatesForNull() throws Exception {
+    public void getFiltersForNull() throws Exception {
         LessThanOrEqualCriterion c =
             new LessThanOrEqualCriterion(meta.myString, null);
-        FilterPredicate[] predicates = c.getFilterPredicates();
-        assertThat(predicates.length, is(1));
-        assertThat(predicates[0].getPropertyName(), is("myString"));
+        Filter[] filters = c.getFilters();
+        assertThat(filters.length, is(1));
+        assertThat(filters[0].getPropertyName(), is("myString"));
         assertThat(
-            predicates[0].getOperator(),
+            filters[0].getOperator(),
             is(FilterOperator.LESS_THAN_OR_EQUAL));
-        assertThat(predicates[0].getValue(), is(nullValue()));
+        assertThat(filters[0].getValue(), is(nullValue()));
     }
 
     /**

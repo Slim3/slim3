@@ -16,7 +16,6 @@
 package org.slim3.datastore;
 
 import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 /**
  * An implementation class for "startsWith" filter.
@@ -47,20 +46,20 @@ public class StartsWithCriterion extends AbstractFilterCriterion {
      * @throws NullPointerException
      *             if the attributeMeta parameter is null
      */
-    public StartsWithCriterion(AttributeMeta<?, ?> attributeMeta,
-            String value) throws NullPointerException {
+    public StartsWithCriterion(AttributeMeta<?, ?> attributeMeta, String value)
+            throws NullPointerException {
         super(attributeMeta);
         this.value = value;
         if (value != null) {
             highValue = value + highValue;
         }
-        filterPredicates =
-            new FilterPredicate[] {
-                new FilterPredicate(
+        filters =
+            new Filter[] {
+                new Filter(
                     attributeMeta.getName(),
                     FilterOperator.GREATER_THAN_OR_EQUAL,
                     this.value),
-                new FilterPredicate(
+                new Filter(
                     attributeMeta.getName(),
                     FilterOperator.LESS_THAN,
                     highValue) };

@@ -27,7 +27,6 @@ import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.LocalServiceTestCase;
 
 import com.google.appengine.api.datastore.Query.SortDirection;
-import com.google.appengine.api.datastore.Query.SortPredicate;
 
 /**
  * @author higa
@@ -42,7 +41,7 @@ public class InverseModelListRefTest extends LocalServiceTestCase {
             Bbb.class,
             "hoge2Ref",
             hoge,
-            new SortPredicate("hoge2Ref", SortDirection.ASCENDING));
+            new Sort("hoge2Ref", SortDirection.ASCENDING));
 
     /**
      * @throws Exception
@@ -53,7 +52,7 @@ public class InverseModelListRefTest extends LocalServiceTestCase {
         assertThat(ref.modelClass.getName(), is(Bbb.class.getName()));
         assertThat(ref.modelMeta, is(nullValue()));
         assertThat(ref.owner, is(sameInstance(hoge)));
-        assertThat(ref.defaultSortPredicates.length, is(1));
+        assertThat(ref.defaultSorts.length, is(1));
     }
 
     /**

@@ -27,7 +27,6 @@ import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.LocalServiceTestCase;
 
 import com.google.appengine.api.datastore.Query.SortDirection;
-import com.google.appengine.api.datastore.Query.SortPredicate;
 
 /**
  * @author higa
@@ -107,12 +106,12 @@ public class AscCriterionTest extends LocalServiceTestCase {
      * @throws Exception
      */
     @Test
-    public void getSortPredicate() throws Exception {
+    public void getSort() throws Exception {
         AscCriterion c = new AscCriterion(meta.myString);
-        SortPredicate sp = c.getSortPredicate();
-        assertThat(sp, is(notNullValue()));
-        assertThat(sp.getPropertyName(), is("myString"));
-        assertThat(sp.getDirection(), is(SortDirection.ASCENDING));
+        Sort s = c.getSort();
+        assertThat(s, is(notNullValue()));
+        assertThat(s.getPropertyName(), is("myString"));
+        assertThat(s.getDirection(), is(SortDirection.ASCENDING));
     }
 
     /**

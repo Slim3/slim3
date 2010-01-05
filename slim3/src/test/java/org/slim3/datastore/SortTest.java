@@ -15,36 +15,36 @@
  */
 package org.slim3.datastore;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+import com.google.appengine.api.datastore.Query.SortDirection;
 
 /**
- * An abstract class for filter.
- * 
  * @author higa
- * @since 3.0
  * 
  */
-public abstract class AbstractSortCriterion extends AbstractCriterion implements
-        SortCriterion {
+public class SortTest {
 
     /**
-     * The {@link Sort}.
+     * @throws Exception
      */
-    protected Sort sort;
-
-    /**
-     * Constructor.
-     * 
-     * @param attributeMeta
-     *            the meta data of attribute
-     * @throws NullPointerException
-     *             if the attributeMeta parameter is null
-     */
-    public AbstractSortCriterion(AttributeMeta<?, ?> attributeMeta)
-            throws NullPointerException {
-        super(attributeMeta);
+    @Test
+    public void constructor() throws Exception {
+        Sort sort = new Sort("aaa");
+        assertThat(sort.getPropertyName(), is("aaa"));
+        assertThat(sort.getDirection(), is(SortDirection.ASCENDING));
     }
 
-    public Sort getSort() {
-        return sort;
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void constructor2() throws Exception {
+        Sort sort = new Sort("aaa", SortDirection.DESCENDING);
+        assertThat(sort.getPropertyName(), is("aaa"));
+        assertThat(sort.getDirection(), is(SortDirection.DESCENDING));
     }
 }

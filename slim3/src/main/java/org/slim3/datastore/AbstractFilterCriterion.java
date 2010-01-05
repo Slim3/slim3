@@ -15,7 +15,6 @@
  */
 package org.slim3.datastore;
 
-import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 /**
  * An abstract class for filter.
@@ -28,9 +27,9 @@ public abstract class AbstractFilterCriterion extends AbstractCriterion
         implements FilterCriterion {
 
     /**
-     * The array of {@link FilterPredicate}s.
+     * The array of {@link Filter}s.
      */
-    protected FilterPredicate[] filterPredicates;
+    protected Filter[] filters;
 
     /**
      * Constructor.
@@ -43,7 +42,7 @@ public abstract class AbstractFilterCriterion extends AbstractCriterion
         super(attributeMeta);
     }
 
-    public FilterPredicate[] getFilterPredicates() {
-        return filterPredicates;
+    public Filter[] getFilters() {
+        return filters;
     }
 }

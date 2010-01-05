@@ -15,8 +15,9 @@
  */
 package org.slim3.datastore;
 
+import java.util.List;
+
 import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 /**
  * An implementation class for "in" filter.
@@ -30,7 +31,7 @@ public class InCriterion extends AbstractFilterCriterion {
     /**
      * The value;
      */
-    protected Iterable<?> value;
+    protected List<?> value;
 
     /**
      * Constructor.
@@ -45,15 +46,19 @@ public class InCriterion extends AbstractFilterCriterion {
      * @throws IllegalArgumentException
      *             if the IN(value) parameter is empty
      */
-    public InCriterion(AttributeMeta<?, ?> attributeMeta,
-            Iterable<?> value) throws NullPointerException {
+    public InCriterion(AttributeMeta<?, ?> attributeMeta, Iterable<?> value)
+            throws NullPointerException {
         super(attributeMeta);
         if (value == null) {
             throw new NullPointerException("The IN parameter must not be null.");
         }
         this.value = convertValueForDatastore(value);
-        filterPredicates =
-            new FilterPredicate[] { new FilterPredicate(
+        if (this.value.isEmpty()) {
+            throw new IllegalArgumentException(
+                "The IN parameter must not be empty.");
+        }
+        filters =
+            new Filter[] { new Filter(
                 attributeMeta.getName(),
                 FilterOperator.IN,
                 this.value) };

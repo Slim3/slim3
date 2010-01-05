@@ -15,7 +15,6 @@
  */
 package org.slim3.datastore;
 
-import com.google.appengine.api.datastore.Query.SortPredicate;
 
 /**
  * A criterion interface for sort.
@@ -27,11 +26,11 @@ import com.google.appengine.api.datastore.Query.SortPredicate;
 public interface SortCriterion {
 
     /**
-     * Returns {@link SortPredicate}.
+     * Returns {@link Sort}.
      * 
-     * @return {@link SortPredicate}
+     * @return {@link Sort}
      */
-    SortPredicate getSortPredicate();
+    Sort getSort();
 
     /**
      * Compares its two arguments for order. Returns a negative integer, zero,

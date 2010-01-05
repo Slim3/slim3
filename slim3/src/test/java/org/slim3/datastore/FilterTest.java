@@ -15,20 +15,27 @@
  */
 package org.slim3.datastore;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+import com.google.appengine.api.datastore.Query.FilterOperator;
 
 /**
- * A criterion interface for filter.
- * 
  * @author higa
- * @since 3.0
  * 
  */
-public interface FilterCriterion extends InMemoryFilterCriterion {
+public class FilterTest {
 
     /**
-     * Returns array of {@link Filter}s.
-     * 
-     * @return array of {@link Filter}s
+     * @throws Exception
      */
-    Filter[] getFilters();
+    @Test
+    public void constructor() throws Exception {
+        Filter filter = new Filter("aaa", FilterOperator.EQUAL, "xxx");
+        assertThat(filter.getPropertyName(), is("aaa"));
+        assertThat(filter.getOperator(), is(FilterOperator.EQUAL));
+        assertThat((String) filter.getValue(), is("xxx"));
+    }
 }

@@ -19,7 +19,6 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import com.google.appengine.api.datastore.Query.SortDirection;
-import com.google.appengine.api.datastore.Query.SortPredicate;
 
 /**
  * An implementation class for "descending" sort.
@@ -41,8 +40,7 @@ public class DescCriterion extends AbstractSortCriterion {
     public DescCriterion(AttributeMeta<?, ?> attributeMeta)
             throws NullPointerException {
         super(attributeMeta);
-        sortPredicate =
-            new SortPredicate(attributeMeta.getName(), SortDirection.DESCENDING);
+        sort = new Sort(attributeMeta.getName(), SortDirection.DESCENDING);
     }
 
     public int compare(Object model1, Object model2) {

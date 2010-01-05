@@ -2,13 +2,11 @@ package org.slim3.datastore;
 
 import java.util.List;
 
-//import com.google.appengine.api.datastore.Query.SortPredicate;
-
 public class InverseModelListRef<M, O> extends AbstractInverseModelRef<M, O> {
 
     private static final long serialVersionUID = 1L;
 
-    //protected SortPredicate[] defaultSortPredicates;
+    protected Sort[] defaultSorts;
 
     protected List<M> modelList;
 
@@ -16,9 +14,9 @@ public class InverseModelListRef<M, O> extends AbstractInverseModelRef<M, O> {
     }
 
     public InverseModelListRef(Class<M> modelClass, String mappedPropertyName,
-            O owner) {
+            O owner, Sort... defaultSorts) {
         super(modelClass, mappedPropertyName, owner);
-        //this.defaultSortPredicates = defaultSortPredicates;
+        this.defaultSorts = defaultSorts;
     }
 
     public List<M> getModelList() {

@@ -16,7 +16,6 @@
 package org.slim3.datastore;
 
 import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 /**
  * An implementation class for "greater than or equal" filter.
@@ -42,13 +41,12 @@ public class GreaterThanOrEqualCriterion extends AbstractFilterCriterion {
      * @throws NullPointerException
      *             if the attributeMeta parameter is null
      */
-    public GreaterThanOrEqualCriterion(
-            AttributeMeta<?, ?> attributeMeta, Object value)
-            throws NullPointerException {
+    public GreaterThanOrEqualCriterion(AttributeMeta<?, ?> attributeMeta,
+            Object value) throws NullPointerException {
         super(attributeMeta);
         this.value = convertValueForDatastore(value);
-        filterPredicates =
-            new FilterPredicate[] { new FilterPredicate(
+        filters =
+            new Filter[] { new Filter(
                 attributeMeta.getName(),
                 FilterOperator.GREATER_THAN_OR_EQUAL,
                 this.value) };

@@ -26,9 +26,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
-import com.google.appengine.api.datastore.Query.SortPredicate;
 
 /**
  * A query class for select.
@@ -53,7 +51,7 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
         new ArrayList<InMemoryFilterCriterion>();
 
     /**
-     * The in-memory sort criteria.
+     * The in-memory sort orders.
      */
     protected List<SortCriterion> inMemorySortCriteria =
         new ArrayList<SortCriterion>();
@@ -139,8 +137,8 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
                 throw new NullPointerException(
                     "The element of the criteria parameter must not be null.");
             }
-            for (FilterPredicate p : c.getFilterPredicates()) {
-                query.addFilter(p.getPropertyName(), p.getOperator(), p
+            for (Filter f : c.getFilters()) {
+                query.addFilter(f.getPropertyName(), f.getOperator(), f
                     .getValue());
             }
         }
@@ -156,9 +154,8 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
      * @throws NullPointerException
      *             if the element of the filters parameter is null
      */
-    public ModelQuery<M> filter(FilterPredicate... filters)
-            throws NullPointerException {
-        for (FilterPredicate f : filters) {
+    public ModelQuery<M> filter(Filter... filters) throws NullPointerException {
+        for (Filter f : filters) {
             if (f == null) {
                 throw new NullPointerException(
                     "The element of the filters parameter must not be null.");
@@ -234,8 +231,8 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
                 throw new NullPointerException(
                     "The element of the criteria parameter must not be null.");
             }
-            SortPredicate p = c.getSortPredicate();
-            query.addSort(p.getPropertyName(), p.getDirection());
+            Sort s = c.getSort();
+            query.addSort(s.getPropertyName(), s.getDirection());
         }
         return this;
     }
@@ -249,9 +246,8 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
      * @throws NullPointerException
      *             if the element of the sorts parameter is null
      */
-    public ModelQuery<M> sort(SortPredicate... sorts)
-            throws NullPointerException {
-        for (SortPredicate s : sorts) {
+    public ModelQuery<M> sort(Sort... sorts) throws NullPointerException {
+        for (Sort s : sorts) {
             if (s == null) {
                 throw new NullPointerException(
                     "The element of the sorts parameter must not be null.");

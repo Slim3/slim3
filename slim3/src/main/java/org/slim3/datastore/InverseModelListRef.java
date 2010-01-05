@@ -20,7 +20,6 @@ import java.util.List;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.SortPredicate;
 
 /**
  * An inverse reference for models.
@@ -40,7 +39,7 @@ public class InverseModelListRef<M, O> extends AbstractInverseModelRef<M, O> {
     /**
      * The default sort orders.
      */
-    protected SortPredicate[] defaultSortPredicates;
+    protected Sort[] defaultSorts;
 
     /**
      * The model.
@@ -62,7 +61,7 @@ public class InverseModelListRef<M, O> extends AbstractInverseModelRef<M, O> {
      *            the mapped property name
      * @param owner
      *            the owner that has this {@link InverseModelRef}
-     * @param defaultSortPredicates
+     * @param defaultSorts
      *            the default sort orders
      * @throws NullPointerException
      *             if the modelClass parameter is null or if the
@@ -70,10 +69,9 @@ public class InverseModelListRef<M, O> extends AbstractInverseModelRef<M, O> {
      *             parameter is null
      */
     public InverseModelListRef(Class<M> modelClass, String mappedPropertyName,
-            O owner, SortPredicate... defaultSortPredicates)
-            throws NullPointerException {
+            O owner, Sort... defaultSorts) throws NullPointerException {
         super(modelClass, mappedPropertyName, owner);
-        this.defaultSortPredicates = defaultSortPredicates;
+        this.defaultSorts = defaultSorts;
     }
 
     /**
@@ -184,15 +182,13 @@ public class InverseModelListRef<M, O> extends AbstractInverseModelRef<M, O> {
          * @return models
          */
         public List<M> getModelList() {
-            ModelMeta<?> ownerModelMeta =
-                Datastore.getModelMeta(owner.getClass());
-            Key key = ownerModelMeta.getKey(owner);
+            Key key = getOwnerKey();
             if (key == null) {
                 modelList = new ArrayList<M>();
             } else {
                 query.filter(mappedPropertyName, FilterOperator.EQUAL, key);
                 if (!sortsSet) {
-                    query.sort(defaultSortPredicates);
+                    query.sort(defaultSorts);
                 }
                 modelList = query.asList();
             }

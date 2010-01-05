@@ -24,7 +24,6 @@ import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.LocalServiceTestCase;
 
 import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
 
 /**
  * @author higa
@@ -39,13 +38,13 @@ public class IsNotNullCriterionTest extends LocalServiceTestCase {
      * 
      */
     @Test
-    public void getFilterPredicates() throws Exception {
+    public void getFilters() throws Exception {
         IsNotNullCriterion c = new IsNotNullCriterion(meta.myString);
-        FilterPredicate[] predicates = c.getFilterPredicates();
-        assertThat(predicates.length, is(1));
-        assertThat(predicates[0].getPropertyName(), is("myString"));
-        assertThat(predicates[0].getOperator(), is(FilterOperator.GREATER_THAN));
-        assertThat(predicates[0].getValue(), is(nullValue()));
+        Filter[] filters = c.getFilters();
+        assertThat(filters.length, is(1));
+        assertThat(filters[0].getPropertyName(), is("myString"));
+        assertThat(filters[0].getOperator(), is(FilterOperator.GREATER_THAN));
+        assertThat(filters[0].getValue(), is(nullValue()));
     }
 
     /**
