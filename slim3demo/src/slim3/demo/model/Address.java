@@ -22,9 +22,10 @@ public class Address implements Serializable {
     private Integer schemaVersion = 1;
 
     @Attribute(persistent = false)
-    private org.slim3.datastore.InverseModelRef<slim3.demo.model.Employee> employeeRef =
-        new org.slim3.datastore.InverseModelRef<slim3.demo.model.Employee>(
-            slim3.demo.meta.EmployeeMeta.get().addressRef,
+    private org.slim3.datastore.InverseModelRef<slim3.demo.model.Employee, slim3.demo.model.Address> employeeRef =
+        new org.slim3.datastore.InverseModelRef<slim3.demo.model.Employee, slim3.demo.model.Address>(
+            slim3.demo.model.Employee.class,
+            "addressRef",
             this);
 
     /**
@@ -117,7 +118,7 @@ public class Address implements Serializable {
     /**
      * @return the employeeRef
      */
-    public InverseModelRef<Employee> getEmployeeRef() {
+    public InverseModelRef<Employee, Address> getEmployeeRef() {
         return employeeRef;
     }
 }

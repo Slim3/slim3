@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import org.slim3.datastore.Attribute;
 import org.slim3.datastore.Model;
-import org.slim3.datastore.ModelRef;
 
 import com.google.appengine.api.datastore.Key;
 
@@ -23,11 +22,11 @@ public class Employee implements Serializable {
 
     private org.slim3.datastore.ModelRef<slim3.demo.model.Address> addressRef =
         new org.slim3.datastore.ModelRef<slim3.demo.model.Address>(
-            slim3.demo.meta.AddressMeta.get());
+            slim3.demo.model.Address.class);
 
     private org.slim3.datastore.ModelRef<slim3.demo.model.Department> departmentRef =
         new org.slim3.datastore.ModelRef<slim3.demo.model.Department>(
-            slim3.demo.meta.DepartmentMeta.get());
+            slim3.demo.model.Department.class);
 
     /**
      * Returns the key.
@@ -119,14 +118,14 @@ public class Employee implements Serializable {
     /**
      * @return the addressRef
      */
-    public ModelRef<Address> getAddressRef() {
+    public org.slim3.datastore.ModelRef<slim3.demo.model.Address> getAddressRef() {
         return addressRef;
     }
 
     /**
      * @return the departmentRef
      */
-    public ModelRef<Department> getDepartmentRef() {
+    public org.slim3.datastore.ModelRef<slim3.demo.model.Department> getDepartmentRef() {
         return departmentRef;
     }
 }

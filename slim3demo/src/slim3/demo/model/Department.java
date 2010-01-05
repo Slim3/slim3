@@ -22,9 +22,10 @@ public class Department implements Serializable {
     private Integer schemaVersion = 1;
 
     @Attribute(persistent = false)
-    private org.slim3.datastore.InverseModelListRef<slim3.demo.model.Employee> employeeListRef =
-        new org.slim3.datastore.InverseModelListRef<slim3.demo.model.Employee>(
-            slim3.demo.meta.EmployeeMeta.get().departmentRef,
+    private org.slim3.datastore.InverseModelListRef<slim3.demo.model.Employee, slim3.demo.model.Department> employeeListRef =
+        new org.slim3.datastore.InverseModelListRef<slim3.demo.model.Employee, slim3.demo.model.Department>(
+            slim3.demo.model.Employee.class,
+            "departmentRef",
             this);
 
     /**
@@ -117,7 +118,7 @@ public class Department implements Serializable {
     /**
      * @return the employeeListRef
      */
-    public InverseModelListRef<Employee> getEmployeeListRef() {
+    public InverseModelListRef<Employee, Department> getEmployeeListRef() {
         return employeeListRef;
     }
 }

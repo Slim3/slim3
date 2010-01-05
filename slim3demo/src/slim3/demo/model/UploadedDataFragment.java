@@ -19,9 +19,9 @@ public class UploadedDataFragment implements Serializable {
     @Attribute(lob = true)
     private byte[] bytes;
 
-    private ModelRef<UploadedData> uploadDataRef =
+    private org.slim3.datastore.ModelRef<slim3.demo.model.UploadedData> uploadDataRef =
         new org.slim3.datastore.ModelRef<slim3.demo.model.UploadedData>(
-            slim3.demo.meta.UploadedDataMeta.get());
+            slim3.demo.model.UploadedData.class);
 
     private int index;
 
@@ -56,14 +56,8 @@ public class UploadedDataFragment implements Serializable {
     }
 
     /**
-     * @return the uploadDataRef
-     */
-    public ModelRef<UploadedData> getUploadDataRef() {
-        return uploadDataRef;
-    }
-
-    /**
-     * @param index the index to set
+     * @param index
+     *            the index to set
      */
     public void setIndex(int index) {
         this.index = index;
@@ -74,5 +68,12 @@ public class UploadedDataFragment implements Serializable {
      */
     public int getIndex() {
         return index;
+    }
+
+    /**
+     * @return the uploadDataRef
+     */
+    public ModelRef<UploadedData> getUploadDataRef() {
+        return uploadDataRef;
     }
 }

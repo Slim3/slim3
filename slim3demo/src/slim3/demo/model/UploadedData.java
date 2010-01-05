@@ -5,8 +5,7 @@ import java.io.Serializable;
 import org.slim3.datastore.Attribute;
 import org.slim3.datastore.InverseModelListRef;
 import org.slim3.datastore.Model;
-
-import slim3.demo.meta.UploadedDataFragmentMeta;
+import org.slim3.datastore.Sort;
 
 import com.google.appengine.api.datastore.Key;
 
@@ -26,11 +25,12 @@ public class UploadedData implements Serializable {
     private int length;
 
     @Attribute(persistent = false)
-    private InverseModelListRef<UploadedDataFragment> fragmentListRef =
-        new InverseModelListRef<UploadedDataFragment>(
-            UploadedDataFragmentMeta.get().uploadDataRef,
+    private org.slim3.datastore.InverseModelListRef<slim3.demo.model.UploadedDataFragment, slim3.demo.model.UploadedData> fragmentListRef =
+        new org.slim3.datastore.InverseModelListRef<slim3.demo.model.UploadedDataFragment, slim3.demo.model.UploadedData>(
+            slim3.demo.model.UploadedDataFragment.class,
+            "uploadDataRef",
             this,
-            UploadedDataFragmentMeta.get().index.asc);
+            new Sort("index"));
 
     public Key getKey() {
         return key;
@@ -67,7 +67,7 @@ public class UploadedData implements Serializable {
     /**
      * @return the fragmentListRef
      */
-    public InverseModelListRef<UploadedDataFragment> getFragmentListRef() {
+    public InverseModelListRef<UploadedDataFragment, UploadedData> getFragmentListRef() {
         return fragmentListRef;
     }
 }
