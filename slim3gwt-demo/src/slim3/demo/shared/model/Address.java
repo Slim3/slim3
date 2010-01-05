@@ -3,7 +3,6 @@ package slim3.demo.shared.model;
 import java.io.Serializable;
 
 import org.slim3.datastore.Attribute;
-import org.slim3.datastore.InverseModelRef;
 import org.slim3.datastore.Model;
 
 import com.google.appengine.api.datastore.Key;
@@ -22,7 +21,7 @@ public class Address implements Serializable {
     private Integer schemaVersion = 1;
 
     @Attribute(persistent = false)
-    private org.slim3.datastore.InverseModelRef<slim3.demo.shared.model.Employee> employeeRef = new org.slim3.datastore.InverseModelRef<slim3.demo.shared.model.Employee>(
+    private org.slim3.datastore.InverseModelRef<slim3.demo.shared.model.Employee, slim3.demo.shared.model.Address> employeeRef = new org.slim3.datastore.InverseModelRef<slim3.demo.shared.model.Employee, slim3.demo.shared.model.Address>(
             slim3.demo.shared.model.Employee.class, "addressRef", this);
 
     /**
@@ -115,7 +114,7 @@ public class Address implements Serializable {
     /**
      * @return the employeeRef
      */
-    public InverseModelRef<Employee> getEmployeeRef() {
+    public org.slim3.datastore.InverseModelRef<slim3.demo.shared.model.Employee, Address> getEmployeeRef() {
         return employeeRef;
     }
 }

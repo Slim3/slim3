@@ -3,7 +3,6 @@ package slim3.demo.shared.model;
 import java.io.Serializable;
 
 import org.slim3.datastore.Attribute;
-import org.slim3.datastore.InverseModelListRef;
 import org.slim3.datastore.Model;
 
 import com.google.appengine.api.datastore.Key;
@@ -22,7 +21,7 @@ public class Department implements Serializable {
     private Integer schemaVersion = 1;
 
     @Attribute(persistent = false)
-    private org.slim3.datastore.InverseModelListRef<slim3.demo.shared.model.Employee> employeeListRef = new org.slim3.datastore.InverseModelListRef<slim3.demo.shared.model.Employee>(
+    private org.slim3.datastore.InverseModelListRef<slim3.demo.shared.model.Employee, slim3.demo.shared.model.Department> employeeListRef = new org.slim3.datastore.InverseModelListRef<slim3.demo.shared.model.Employee, slim3.demo.shared.model.Department>(
             slim3.demo.shared.model.Employee.class, "departmentRef", this);
 
     /**
@@ -115,7 +114,7 @@ public class Department implements Serializable {
     /**
      * @return the employeeListRef
      */
-    public InverseModelListRef<Employee> getEmployeeListRef() {
+    public org.slim3.datastore.InverseModelListRef<slim3.demo.shared.model.Employee, Department> getEmployeeListRef() {
         return employeeListRef;
     }
 }
