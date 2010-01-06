@@ -6,12 +6,12 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.slim3.controller.upload.FileItem;
 import org.slim3.datastore.Datastore;
-import org.slim3.tester.LocalServiceTestCase;
+import org.slim3.tester.AppEngineTestCase;
 
 import slim3.demo.model.UploadedData;
 import slim3.demo.model.UploadedDataFragment;
 
-public class UploadServiceTest extends LocalServiceTestCase {
+public class UploadServiceTest extends AppEngineTestCase {
 
     private UploadService service = new UploadService();
 

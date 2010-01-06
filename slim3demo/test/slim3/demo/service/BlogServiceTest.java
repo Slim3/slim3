@@ -10,11 +10,11 @@ import java.util.Map;
 import org.junit.Test;
 import org.slim3.datastore.Datastore;
 import org.slim3.datastore.EntityNotFoundRuntimeException;
-import org.slim3.tester.LocalServiceTestCase;
+import org.slim3.tester.AppEngineTestCase;
 
 import slim3.demo.model.Blog;
 
-public class BlogServiceTest extends LocalServiceTestCase {
+public class BlogServiceTest extends AppEngineTestCase {
 
     private BlogService service = new BlogService();
 

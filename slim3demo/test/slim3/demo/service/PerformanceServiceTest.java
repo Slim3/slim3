@@ -7,14 +7,14 @@ import java.util.List;
 
 import org.junit.Test;
 import org.slim3.datastore.Datastore;
-import org.slim3.tester.LocalServiceTestCase;
+import org.slim3.tester.AppEngineTestCase;
 
 import slim3.demo.cool.model.BarJDO;
 import slim3.demo.model.Bar;
 
 import com.google.appengine.api.datastore.Entity;
 
-public class PerformanceServiceTest extends LocalServiceTestCase {
+public class PerformanceServiceTest extends AppEngineTestCase {
 
     private PerformanceService service = new PerformanceService();
 
