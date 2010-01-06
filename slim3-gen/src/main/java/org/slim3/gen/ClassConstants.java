@@ -236,12 +236,4 @@ public final class ClassConstants {
     /** {@code org.hamcrest.CoreMatchers} */
     public static final String CoreMatchers = "org.hamcrest.CoreMatchers";
 
-    /** {@code org.slim3.datastore.ModelListener} */
-    public static final String ModelListener =
-        "org.slim3.datastore.ModelListener";
-
-    /** {@code org.slim3.datastore.AttributeListener} */
-    public static final String AttributeListener =
-        "org.slim3.datastore.AttributeListener";
-
 }

@@ -38,9 +38,6 @@ public final class AnnotationConstants {
     /** the name of kind element */
     public static final String kind = "kind";
 
-    /** the name of modelListeners element */
-    public static final String modelListeners = "modelListeners";
-
     /** the name of name element */
     public static final String name = "name";
 
@@ -58,9 +55,6 @@ public final class AnnotationConstants {
 
     /** the name of persistent element */
     public static final String persistent = "persistent";
-
-    /** the name of attributeListeners element */
-    public static final String attributeListeners = "attributeListeners";
 
     /** {@code org.junit.Test} */
     public static final String Test = "org.junit.Test";
