@@ -15,7 +15,20 @@
  */
 package org.slim3.gen.generator;
 
-import static org.slim3.gen.ClassConstants.*;
+import static org.slim3.gen.ClassConstants.Blob;
+import static org.slim3.gen.ClassConstants.CollectionAttributeMeta;
+import static org.slim3.gen.ClassConstants.CoreAttributeMeta;
+import static org.slim3.gen.ClassConstants.Double;
+import static org.slim3.gen.ClassConstants.Entity;
+import static org.slim3.gen.ClassConstants.Key;
+import static org.slim3.gen.ClassConstants.Long;
+import static org.slim3.gen.ClassConstants.ModelRefAttributeMeta;
+import static org.slim3.gen.ClassConstants.Object;
+import static org.slim3.gen.ClassConstants.String;
+import static org.slim3.gen.ClassConstants.StringAttributeMeta;
+import static org.slim3.gen.ClassConstants.StringCollectionAttributeMeta;
+import static org.slim3.gen.ClassConstants.Text;
+import static org.slim3.gen.ClassConstants.UnindexedAttributeMeta;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -120,8 +133,6 @@ public class ModelMetaGenerator implements Generator {
         printer.println();
         printer.indent();
         printAttributeMetaFields(printer);
-        printModelListenersField(printer);
-        printAttributeListenersFields(printer);
         printSingletonField(printer);
         printGetMethod(printer);
         printConstructor(printer);
@@ -134,8 +145,6 @@ public class ModelMetaGenerator implements Generator {
         printSetKeyMethod(printer);
         printGetVersion(printer);
         printIncrementVersionMethod(printer);
-        printPrePutMethod(printer);
-        printPreDeleteMethod(printer);
         printer.unindent();
         printer.print("}");
     }
@@ -150,59 +159,6 @@ public class ModelMetaGenerator implements Generator {
         AttributeMetaFieldsGenerator generator =
             new AttributeMetaFieldsGenerator(printer);
         generator.generate();
-    }
-
-    /**
-     * Generates model listeners field.
-     * 
-     * @param printer
-     *            the printer
-     */
-    protected void printModelListenersField(Printer printer) {
-        if (!modelMetaDesc.getModelListenerClassNames().isEmpty()) {
-            printer
-                .println(
-                    "private static final java.util.List<%1$s<%2$s>> slim3_modelListeners = new java.util.ArrayList<%1$s<%2$s>>();",
-                    ModelListener,
-                    modelMetaDesc.getSimpleName());
-            printer.println("static {");
-            for (String modelListenerClassName : modelMetaDesc
-                .getModelListenerClassNames()) {
-                printer.println(
-                    "    slim3_modelListeners.add(new %1$s());",
-                    modelListenerClassName);
-            }
-            printer.println("}");
-            printer.println();
-        }
-    }
-
-    /**
-     * Generates attribute listeners fields.
-     * 
-     * @param printer
-     *            the printer
-     */
-    protected void printAttributeListenersFields(Printer printer) {
-        for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
-            if (!attr.getAttributeListenerClassNames().isEmpty()) {
-                printer
-                    .println(
-                        "private static final java.util.List<%1$s> slim3_%2$sAttributeListeners = new java.util.ArrayList<%1$s>();",
-                        AttributeListener,
-                        attr.getFieldName());
-                printer.println("static {");
-                for (String attributeListenerClassName : attr
-                    .getAttributeListenerClassNames()) {
-                    printer.println(
-                        "    slim3_%1$sAttributeListeners.add(new %2$s());",
-                        attr.getFieldName(),
-                        attributeListenerClassName);
-                }
-                printer.println("}");
-                printer.println();
-            }
-        }
     }
 
     /**
@@ -443,76 +399,6 @@ public class ModelMetaGenerator implements Generator {
             printer.println("    %1$s m = (%1$s) model;", modelMetaDesc
                 .getModelClassName());
             printer.println("    m.%1$s(key);", attr.getWriteMethodName());
-        }
-        printer.println("}");
-        printer.println();
-    }
-
-    /**
-     * Generates the {@code setKey} method.
-     * 
-     * @param printer
-     *            the printer
-     */
-    protected void printPrePutMethod(final Printer printer) {
-        printer.println("@Override");
-        printer
-            .println("protected void prePut(com.google.appengine.api.datastore.Entity entity) {");
-        if (!modelMetaDesc.getModelListenerClassNames().isEmpty()) {
-            printer.println(
-                "    for (%1$s<%2$s> modelListener : slim3_modelListeners) {",
-                ModelListener,
-                modelMetaDesc.getSimpleName());
-            printer.println("        modelListener.prePut(entity, this);");
-            printer.println("    }");
-        }
-        for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
-            if (!attr.getAttributeListenerClassNames().isEmpty()) {
-                printer
-                    .println(
-                        "    for (%1$s attributeListener : slim3_%2$sAttributeListeners) {",
-                        AttributeListener,
-                        attr.getFieldName());
-                printer.println(
-                    "        attributeListener.prePut(entity, this.%1$s);",
-                    attr.getFieldName());
-                printer.println("    }");
-            }
-        }
-        printer.println("}");
-        printer.println();
-    }
-
-    /**
-     * Generates the {@code setKey} method.
-     * 
-     * @param printer
-     *            the printer
-     */
-    protected void printPreDeleteMethod(final Printer printer) {
-        printer.println("@Override");
-        printer
-            .println("protected void preDelete(com.google.appengine.api.datastore.Key key) {");
-        if (!modelMetaDesc.getModelListenerClassNames().isEmpty()) {
-            printer.println(
-                "    for (%1$s<%2$s> modelListener : slim3_modelListeners) {",
-                ModelListener,
-                modelMetaDesc.getSimpleName());
-            printer.println("        modelListener.preDelete(key, this);");
-            printer.println("    }");
-        }
-        for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
-            if (!attr.getAttributeListenerClassNames().isEmpty()) {
-                printer
-                    .println(
-                        "    for (%1$s attributeListener : slim3_%2$sAttributeListeners) {",
-                        AttributeListener,
-                        attr.getFieldName());
-                printer.println(
-                    "        attributeListener.preDelete(key, this.%1$s);",
-                    attr.getFieldName());
-                printer.println("    }");
-            }
         }
         printer.println("}");
         printer.println();

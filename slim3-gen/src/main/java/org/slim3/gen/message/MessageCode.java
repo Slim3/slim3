@@ -114,21 +114,7 @@ public enum MessageCode {
     /** */
     SILM3GEN1041("The setter method for the field[{0}] is not allowed. Define the field as follows:\n{1}"),
     /** */
-    SILM3GEN1042("The setter method for the field[{0}] of the class[{1}] is not allowed. Define the field as follows:\n{2}"),
-    /** */
-    SILM3GEN1043("The modifier of the class[{0}] must be public."),
-    /** */
-    SILM3GEN1044("The type parameter of the class[{0}] is not supported."),
-    /** */
-    SILM3GEN1045("The public default constructor of the class[{0}] is not found. "),
-    /** */
-    SILM3GEN1046("The type argument of ModelListener must be the class[{0}]."),
-    /** */
-    SILM3GEN1047("The type[{0}] must be the class."),
-    /** */
-    SILM3GEN1048("The modifier must not be abstract."),
-    /** */
-    SILM3GEN1049("The modifier of the class[{0}] must not be abstract."), ;
+    SILM3GEN1042("The setter method for the field[{0}] of the class[{1}] is not allowed. Define the field as follows:\n{2}"), ;
 
     /** the message */
     public final String message;
