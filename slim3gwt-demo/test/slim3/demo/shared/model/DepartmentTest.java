@@ -1,11 +1,12 @@
 package slim3.demo.shared.model;
 
-import org.slim3.tester.LocalServiceTestCase;
-import org.junit.Test;
-import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
-public class DepartmentTest extends LocalServiceTestCase {
+import org.junit.Test;
+import org.slim3.tester.AppEngineTestCase;
+
+public class DepartmentTest extends AppEngineTestCase {
 
     private Department model = new Department();
 
