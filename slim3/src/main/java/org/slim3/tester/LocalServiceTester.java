@@ -26,6 +26,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slim3.util.AppEngineUtil;
 import org.slim3.util.ThrowableUtil;
 import org.slim3.util.WrapRuntimeException;
 
@@ -104,8 +105,10 @@ public class LocalServiceTester {
     public TestEnvironment environment = new TestEnvironment();
 
     static {
-        ClassLoader loader = loadLibraries();
-        prepareLocalServices(loader);
+        if (!AppEngineUtil.isServer()) {
+            ClassLoader loader = loadLibraries();
+            prepareLocalServices(loader);
+        }
     }
 
     /**
@@ -246,8 +249,10 @@ public class LocalServiceTester {
      * 
      */
     public void setUp() throws Exception {
-        ApiProxy.setEnvironmentForCurrentThread(environment);
-        ApiProxy.setDelegate((Delegate<?>) apiProxyLocalImpl);
+        if (!AppEngineUtil.isServer()) {
+            ApiProxy.setEnvironmentForCurrentThread(environment);
+            ApiProxy.setDelegate((Delegate<?>) apiProxyLocalImpl);
+        }
     }
 
     /**
@@ -257,14 +262,16 @@ public class LocalServiceTester {
      *             if an exception has occurred
      */
     public void tearDown() throws Exception {
-        clearProfilesMethod.invoke(localDatastoreService);
         for (Transaction tx : DatastoreServiceFactory
             .getDatastoreService()
             .getActiveTransactions()) {
             tx.rollback();
         }
-        ApiProxy.setDelegate(null);
-        ApiProxy.setEnvironmentForCurrentThread(null);
+        if (!AppEngineUtil.isServer()) {
+            clearProfilesMethod.invoke(localDatastoreService);
+            ApiProxy.setDelegate(null);
+            ApiProxy.setEnvironmentForCurrentThread(null);
+        }
     }
 
     /**
