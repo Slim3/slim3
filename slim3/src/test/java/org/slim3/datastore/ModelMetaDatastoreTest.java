@@ -17,7 +17,7 @@ package org.slim3.datastore;
 
 import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
-import org.slim3.tester.LocalServiceTestCase;
+import org.slim3.tester.AppEngineTestCase;
 
 import com.google.appengine.api.datastore.KeyFactory;
 
@@ -25,7 +25,7 @@ import com.google.appengine.api.datastore.KeyFactory;
  * @author higa
  * 
  */
-public class ModelMetaDatastoreTest extends LocalServiceTestCase {
+public class ModelMetaDatastoreTest extends AppEngineTestCase {
 
     private HogeMeta meta = new HogeMeta();
 

@@ -30,7 +30,7 @@ import org.junit.Test;
 import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.datastore.model.MySerializable;
-import org.slim3.tester.LocalServiceTestCase;
+import org.slim3.tester.AppEngineTestCase;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -44,7 +44,7 @@ import com.google.appengine.api.datastore.Query.SortDirection;
  * @author higa
  * 
  */
-public class ModelMetaDatastoreTest extends LocalServiceTestCase {
+public class ModelMetaDatastoreTest extends AppEngineTestCase {
 
     private HogeMeta meta = new HogeMeta();
 

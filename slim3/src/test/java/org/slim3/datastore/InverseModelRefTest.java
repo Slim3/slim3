@@ -21,13 +21,13 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Hoge;
-import org.slim3.tester.LocalServiceTestCase;
+import org.slim3.tester.AppEngineTestCase;
 
 /**
  * @author higa
  * 
  */
-public class InverseModelRefTest extends LocalServiceTestCase {
+public class InverseModelRefTest extends AppEngineTestCase {
 
     private Hoge hoge = new Hoge();
 

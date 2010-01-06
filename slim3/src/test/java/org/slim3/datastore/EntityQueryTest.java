@@ -21,7 +21,7 @@ import static org.junit.Assert.*;
 import java.util.Iterator;
 
 import org.junit.Test;
-import org.slim3.tester.LocalServiceTestCase;
+import org.slim3.tester.AppEngineTestCase;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -35,7 +35,7 @@ import com.google.appengine.api.datastore.Query.SortDirection;
  * @author higa
  * 
  */
-public class EntityQueryTest extends LocalServiceTestCase {
+public class EntityQueryTest extends AppEngineTestCase {
 
     private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 

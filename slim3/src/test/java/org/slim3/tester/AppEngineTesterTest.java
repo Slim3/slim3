@@ -33,16 +33,16 @@ import com.google.appengine.api.datastore.Entity;
  * @author higa
  * 
  */
-public class LocalServiceTesterTest {
+public class AppEngineTesterTest {
 
-    private LocalServiceTester localServiceTester = new LocalServiceTester();
+    private AppEngineTester tester = new AppEngineTester();
 
     /**
      * @throws Exception
      */
     @Before
     public void setUp() throws Exception {
-        localServiceTester.setUp();
+        tester.setUp();
     }
 
     /**
@@ -50,7 +50,7 @@ public class LocalServiceTesterTest {
      */
     @After
     public void tearDown() throws Exception {
-        localServiceTester.tearDown();
+        tester.tearDown();
     }
 
     /**
@@ -59,7 +59,7 @@ public class LocalServiceTesterTest {
      */
     @Test
     public void getLibDir() throws Exception {
-        File libDir = LocalServiceTester.getLibDir();
+        File libDir = AppEngineTester.getLibDir();
         System.out.println(libDir);
         assertThat(libDir.exists(), is(true));
         assertThat(libDir.isDirectory(), is(true));
@@ -71,13 +71,13 @@ public class LocalServiceTesterTest {
      */
     @Test
     public void getLocalRuntimeJar() throws Exception {
-        File libDir = LocalServiceTester.getLibDir();
-        File implDir = new File(libDir, LocalServiceTester.IMPL_DIR_NAME);
+        File libDir = AppEngineTester.getLibDir();
+        File implDir = new File(libDir, AppEngineTester.IMPL_DIR_NAME);
         if (implDir.exists()) {
             URL url =
-                LocalServiceTester.getLibraryURL(
+                AppEngineTester.getLibraryURL(
                     implDir,
-                    LocalServiceTester.LOCAL_RUNTIME_LIB_NAME);
+                    AppEngineTester.LOCAL_RUNTIME_LIB_NAME);
             assertThat(url, is(notNullValue()));
         }
     }
@@ -88,13 +88,13 @@ public class LocalServiceTesterTest {
      */
     @Test
     public void getApiStubsJar() throws Exception {
-        File libDir = LocalServiceTester.getLibDir();
-        File implDir = new File(libDir, LocalServiceTester.IMPL_DIR_NAME);
+        File libDir = AppEngineTester.getLibDir();
+        File implDir = new File(libDir, AppEngineTester.IMPL_DIR_NAME);
         if (implDir.exists()) {
             URL url =
-                LocalServiceTester.getLibraryURL(
+                AppEngineTester.getLibraryURL(
                     implDir,
-                    LocalServiceTester.API_STUBS_LIB_NAME);
+                    AppEngineTester.API_STUBS_LIB_NAME);
             System.out.println(url);
             assertThat(url, is(notNullValue()));
         }
@@ -108,7 +108,7 @@ public class LocalServiceTesterTest {
     public void getCount() throws Exception {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         ds.put(new Entity("Hoge"));
-        assertThat(localServiceTester.count("Hoge"), is(1));
+        assertThat(tester.count("Hoge"), is(1));
     }
 
     /**
@@ -117,6 +117,6 @@ public class LocalServiceTesterTest {
      */
     @Test
     public void environment() throws Exception {
-        assertThat(localServiceTester.environment, is(notNullValue()));
+        assertThat(tester.environment, is(notNullValue()));
     }
 }

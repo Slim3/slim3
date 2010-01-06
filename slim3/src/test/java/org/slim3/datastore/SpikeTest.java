@@ -18,13 +18,13 @@ package org.slim3.datastore;
 import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
-import org.slim3.tester.LocalServiceTestCase;
+import org.slim3.tester.AppEngineTestCase;
 
 /**
  * @author higa
  * 
  */
-public class SpikeTest extends LocalServiceTestCase {
+public class SpikeTest extends AppEngineTestCase {
 
     /**
      * @throws Exception

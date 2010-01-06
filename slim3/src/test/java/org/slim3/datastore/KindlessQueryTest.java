@@ -19,7 +19,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.slim3.tester.LocalServiceTestCase;
+import org.slim3.tester.AppEngineTestCase;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -30,7 +30,7 @@ import com.google.appengine.api.datastore.KeyFactory;
  * @author higa
  * 
  */
-public class KindlessQueryTest extends LocalServiceTestCase {
+public class KindlessQueryTest extends AppEngineTestCase {
 
     private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 

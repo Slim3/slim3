@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.slim3.datastore.meta.BbbMeta;
 import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Hoge;
-import org.slim3.tester.LocalServiceTestCase;
+import org.slim3.tester.AppEngineTestCase;
 
 import com.google.appengine.api.datastore.Query.SortDirection;
 
@@ -32,7 +32,7 @@ import com.google.appengine.api.datastore.Query.SortDirection;
  * @author higa
  * 
  */
-public class InverseModelListRefTest extends LocalServiceTestCase {
+public class InverseModelListRefTest extends AppEngineTestCase {
 
     private Hoge hoge = new Hoge();
 

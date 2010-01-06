@@ -20,14 +20,14 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.slim3.datastore.model.Hoge;
-import org.slim3.tester.LocalServiceTestCase;
+import org.slim3.tester.AppEngineTestCase;
 import org.slim3.util.ByteUtil;
 
 /**
  * @author higa
  * 
  */
-public class AbstModelRefTest extends LocalServiceTestCase {
+public class AbstModelRefTest extends AppEngineTestCase {
 
     private ModelRef<Hoge> ref = new ModelRef<Hoge>(Hoge.class);
 

@@ -28,7 +28,7 @@ import com.google.appengine.api.datastore.Entity;
  * @author higa
  * 
  */
-public class LocalServiceTestCaseTest extends LocalServiceTestCase {
+public class AppEngineCaseTest extends AppEngineTestCase {
 
     /**
      * @throws Exception

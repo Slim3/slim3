@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
-import org.slim3.tester.LocalServiceTestCase;
+import org.slim3.tester.AppEngineTestCase;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -37,7 +37,7 @@ import com.google.appengine.api.datastore.Transaction;
  * @author higa
  * 
  */
-public class AbstQueryTest extends LocalServiceTestCase {
+public class AbstQueryTest extends AppEngineTestCase {
 
     private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 

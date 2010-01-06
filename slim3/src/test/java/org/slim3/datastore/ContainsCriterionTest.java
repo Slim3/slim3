@@ -23,13 +23,13 @@ import java.util.Arrays;
 import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
-import org.slim3.tester.LocalServiceTestCase;
+import org.slim3.tester.AppEngineTestCase;
 
 /**
  * @author higa
  * 
  */
-public class ContainsCriterionTest extends LocalServiceTestCase {
+public class ContainsCriterionTest extends AppEngineTestCase {
 
     private HogeMeta meta = new HogeMeta();
 

@@ -32,7 +32,7 @@ import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Aaa;
 import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Hoge;
-import org.slim3.tester.LocalServiceTestCase;
+import org.slim3.tester.AppEngineTestCase;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -47,7 +47,7 @@ import com.google.appengine.api.datastore.Transaction;
  * @author higa
  * 
  */
-public class DatastoreTest extends LocalServiceTestCase {
+public class DatastoreTest extends AppEngineTestCase {
 
     private HogeMeta meta = new HogeMeta();
 

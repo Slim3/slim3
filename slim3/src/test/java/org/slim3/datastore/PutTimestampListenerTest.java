@@ -20,7 +20,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
-import org.slim3.tester.LocalServiceTestCase;
+import org.slim3.tester.AppEngineTestCase;
 
 import com.google.appengine.api.datastore.Entity;
 
@@ -28,7 +28,7 @@ import com.google.appengine.api.datastore.Entity;
  * @author higa
  * 
  */
-public class PutTimestampListenerTest extends LocalServiceTestCase {
+public class PutTimestampListenerTest extends AppEngineTestCase {
 
     private PutTimestampListener listener = new PutTimestampListener();
 

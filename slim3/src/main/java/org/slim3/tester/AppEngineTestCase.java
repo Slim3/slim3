@@ -25,12 +25,12 @@ import org.junit.Before;
  * @since 3.0
  * 
  */
-public abstract class LocalServiceTestCase {
+public abstract class AppEngineTestCase {
 
     /**
      * The tester for appengine local services.
      */
-    protected LocalServiceTester tester = new LocalServiceTester();
+    protected AppEngineTester tester = new AppEngineTester();
 
     /**
      * Sets up this test.

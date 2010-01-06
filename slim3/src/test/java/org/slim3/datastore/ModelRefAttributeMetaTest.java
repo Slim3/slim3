@@ -21,7 +21,7 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.slim3.datastore.meta.BbbMeta;
-import org.slim3.tester.LocalServiceTestCase;
+import org.slim3.tester.AppEngineTestCase;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -30,7 +30,7 @@ import com.google.appengine.api.datastore.KeyFactory;
  * @author higa
  * 
  */
-public class ModelRefAttributeMetaTest extends LocalServiceTestCase {
+public class ModelRefAttributeMetaTest extends AppEngineTestCase {
 
     private BbbMeta meta = new BbbMeta();
 

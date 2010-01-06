@@ -52,7 +52,7 @@ import com.google.appengine.api.datastore.KeyFactory;
  * @since 3.0
  * 
  */
-public class ServletTester extends LocalServiceTester {
+public class ServletTester extends AppEngineTester {
 
     /**
      * The mock for {@link ServletContext}.

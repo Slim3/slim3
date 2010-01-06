@@ -44,7 +44,7 @@ import com.google.apphosting.api.ApiProxy.Delegate;
  * @since 3.0
  * 
  */
-public class LocalServiceTester {
+public class AppEngineTester {
 
     /**
      * The name of ApiProxyLocalImpl class.
@@ -117,7 +117,7 @@ public class LocalServiceTester {
      * @return {@link ClassLoader} to prepare local services
      */
     protected static ClassLoader loadLibraries() {
-        ClassLoader loader = LocalServiceTester.class.getClassLoader();
+        ClassLoader loader = AppEngineTester.class.getClassLoader();
         if (loader instanceof URLClassLoader) {
             File libDir = getLibDir();
             File implDir = new File(libDir, IMPL_DIR_NAME);

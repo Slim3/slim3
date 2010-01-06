@@ -19,7 +19,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.slim3.tester.LocalServiceTestCase;
+import org.slim3.tester.AppEngineTestCase;
 
 import com.google.appengine.api.datastore.KeyFactory;
 
@@ -27,7 +27,7 @@ import com.google.appengine.api.datastore.KeyFactory;
  * @author higa
  * 
  */
-public class KeyDescComparatorTest extends LocalServiceTestCase {
+public class KeyDescComparatorTest extends AppEngineTestCase {
 
     /**
      * @throws Exception
