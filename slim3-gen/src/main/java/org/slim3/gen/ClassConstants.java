@@ -106,9 +106,9 @@ public final class ClassConstants {
     public static final String ServletTestCase =
         "org.slim3.tester.ServletTestCase";
 
-    /** {@code org.slim3.tester.LocalServiceTestCase} */
-    public static final String LocalServiceTestCase =
-        "org.slim3.tester.LocalServiceTestCase";
+    /** {@code org.slim3.tester.AppEngineTestCase} */
+    public static final String AppEngineTestCase =
+        "org.slim3.tester.AppEngineTestCase";
 
     /** {@code com.google.gwt.user.client.rpc.AsyncCallback} */
     public static final String AsyncCallback =
