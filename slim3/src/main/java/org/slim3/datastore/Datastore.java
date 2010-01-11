@@ -628,8 +628,9 @@ public final class Datastore {
                 return false;
             }
         } finally {
-            rollback(tx);
-
+            if (tx.isActive()) {
+                rollback(tx);
+            }
         }
     }
 
@@ -1652,7 +1653,8 @@ public final class Datastore {
             throw new NullPointerException("The model parameter is null.");
         }
         ModelMeta<?> modelMeta = getModelMeta(model.getClass());
-        Entity entity = updatePropertiesAndConvertToEntity(modelMeta, model);
+        Entity entity =
+            DatastoreUtil.updatePropertiesAndConvertToEntity(modelMeta, model);
         Key key = put(entity);
         modelMeta.setKey(model, key);
         return key;
@@ -1697,7 +1699,8 @@ public final class Datastore {
             throw new NullPointerException("The model parameter is null.");
         }
         ModelMeta<?> modelMeta = getModelMeta(model.getClass());
-        Entity entity = updatePropertiesAndConvertToEntity(modelMeta, model);
+        Entity entity =
+            DatastoreUtil.updatePropertiesAndConvertToEntity(modelMeta, model);
         Key key = put(tx, entity);
         modelMeta.setKey(model, key);
         return key;
@@ -1717,12 +1720,12 @@ public final class Datastore {
         if (models == null) {
             throw new NullPointerException("The models parameter is null.");
         }
-        List<ModelMeta<?>> modelMetaList = getModelMetaList(models);
+        List<ModelMeta<?>> modelMetaList =
+            DatastoreUtil.getModelMetaList(models);
         List<Key> keys =
-            DatastoreUtil.put(updatePropertiesAndConvertToEntities(
-                models,
-                modelMetaList));
-        setKeys(models, keys, modelMetaList);
+            DatastoreUtil.put(DatastoreUtil
+                .updatePropertiesAndConvertToEntities(modelMetaList, models));
+        DatastoreUtil.setKeys(modelMetaList, models, keys);
         return keys;
     }
 
@@ -1757,12 +1760,12 @@ public final class Datastore {
         if (models == null) {
             throw new NullPointerException("The models parameter is null.");
         }
-        List<ModelMeta<?>> modelMetaList = getModelMetaList(models);
+        List<ModelMeta<?>> modelMetaList =
+            DatastoreUtil.getModelMetaList(models);
         List<Key> keys =
-            DatastoreUtil.put(tx, updatePropertiesAndConvertToEntities(
-                models,
-                modelMetaList));
-        setKeys(models, keys, modelMetaList);
+            DatastoreUtil.put(tx, DatastoreUtil
+                .updatePropertiesAndConvertToEntities(modelMetaList, models));
+        DatastoreUtil.setKeys(modelMetaList, models, keys);
         return keys;
     }
 
@@ -1781,60 +1784,6 @@ public final class Datastore {
     public static List<Key> put(Transaction tx, Object... models)
             throws IllegalStateException {
         return put(tx, Arrays.asList(models));
-    }
-
-    private static List<ModelMeta<?>> getModelMetaList(Iterable<?> models)
-            throws NullPointerException {
-        List<ModelMeta<?>> list = new ArrayList<ModelMeta<?>>();
-        for (Object model : models) {
-            if (model == null) {
-                throw new NullPointerException(
-                    "The element of the models is null.");
-            }
-            if (model instanceof Entity) {
-                list.add(null);
-            } else {
-                list.add(getModelMeta(model.getClass()));
-            }
-        }
-        return list;
-    }
-
-    private static Entity updatePropertiesAndConvertToEntity(
-            ModelMeta<?> modelMeta, Object model) throws NullPointerException {
-        modelMeta.incrementVersion(model);
-        return modelMeta.modelToEntity(model);
-    }
-
-    private static List<Entity> updatePropertiesAndConvertToEntities(
-            Iterable<?> models, List<ModelMeta<?>> modelMetaList)
-            throws NullPointerException {
-        List<Entity> entities = new ArrayList<Entity>();
-        int i = 0;
-        for (Object model : models) {
-            ModelMeta<?> modelMeta = modelMetaList.get(i);
-            if (modelMeta == null) {
-                entities.add((Entity) model);
-            } else {
-                Entity entity =
-                    updatePropertiesAndConvertToEntity(modelMeta, model);
-                entities.add(entity);
-            }
-            i++;
-        }
-        return entities;
-    }
-
-    private static void setKeys(Iterable<?> models, List<Key> keys,
-            List<ModelMeta<?>> modelMetaList) {
-        int i = 0;
-        for (Object model : models) {
-            ModelMeta<?> modelMeta = modelMetaList.get(i);
-            if (modelMeta != null) {
-                modelMeta.setKey(model, keys.get(i));
-            }
-            i++;
-        }
     }
 
     /**

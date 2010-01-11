@@ -16,9 +16,8 @@
 package org.slim3.datastore;
 
 import org.junit.Test;
-import org.slim3.datastore.meta.HogeMeta;
-import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.AppEngineTestCase;
+import org.slim3.util.ArrayMap;
 
 /**
  * @author higa
@@ -31,12 +30,10 @@ public class SpikeTest extends AppEngineTestCase {
      */
     @Test
     public void spike() throws Exception {
-        Hoge hoge = new Hoge();
-        hoge.setMyString("abc");
-        Datastore.put(hoge);
-        System.out.println(Datastore.query(Hoge.class).filter(
-            HogeMeta.get().myString.startsWith(null)).count());
-        System.out.println(Datastore.query(Hoge.class).filterInMemory(
-            HogeMeta.get().myString.startsWith(null)).asList().size());
+        ArrayMap<String, String> map = new ArrayMap<String, String>();
+        map.put("1", null);
+        map.put("2", null);
+        map.put("1", null);
+        System.out.println(map);
     }
 }

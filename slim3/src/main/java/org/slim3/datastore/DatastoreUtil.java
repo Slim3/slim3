@@ -32,12 +32,14 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.DatastoreTimeoutException;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.EntityTranslator;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyRange;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Transaction;
+import com.google.storage.onestore.v3.OnestoreEntity.EntityProto;
 
 /**
  * A utility for {@link DatastoreService}.
@@ -104,16 +106,17 @@ public final class DatastoreUtil {
      *            the transaction
      * @throws NullPointerException
      *             if the tx parameter is null
-     * @throws IllegalStateException
+     * @throws IllegalArgumentException
      *             if the transaction is not active
      */
     public static void commit(Transaction tx) throws NullPointerException,
-            IllegalStateException {
+            IllegalArgumentException {
         if (tx == null) {
             throw new NullPointerException("The tx parameter must not be null.");
         }
         if (!tx.isActive()) {
-            throw new IllegalStateException("The transaction must be active.");
+            throw new IllegalArgumentException(
+                "The transaction must be active.");
         }
         try {
             tx.commit();
@@ -141,13 +144,17 @@ public final class DatastoreUtil {
      *            the transaction
      * @throws NullPointerException
      *             if the tx parameter is null
+     * @throws IllegalArgumentException
+     *             if the transaction is not active
      */
-    public static void rollback(Transaction tx) throws NullPointerException {
+    public static void rollback(Transaction tx) throws NullPointerException,
+            IllegalArgumentException {
         if (tx == null) {
             throw new NullPointerException("The tx parameter is null.");
         }
         if (!tx.isActive()) {
-            return;
+            throw new IllegalArgumentException(
+                "The transaction must be active.");
         }
         try {
             tx.rollback();
@@ -1032,6 +1039,182 @@ public final class DatastoreUtil {
                 + modelClass.getName()
                 + ") is not found.");
         }
+    }
+
+    /**
+     * Converts the entity to an array of bytes.
+     * 
+     * @param entity
+     *            the entity
+     * @return an array of bytes
+     * @throws NullPointerException
+     *             if the entity parameter is null
+     */
+    public static byte[] entityToBytes(Entity entity)
+            throws NullPointerException {
+        if (entity == null) {
+            throw new NullPointerException(
+                "The entity parameter must not be null.");
+        }
+        EntityProto pb = EntityTranslator.convertToPb(entity);
+        byte[] buf = new byte[pb.encodingSize()];
+        pb.outputTo(buf, 0);
+        return buf;
+    }
+
+    /**
+     * Converts the array of bytes to an entity.
+     * 
+     * @param bytes
+     *            the array of bytes
+     * @return an entity
+     * @throws NullPointerException
+     *             if the bytes parameter is null
+     */
+    public static Entity bytesToEntity(byte[] bytes)
+            throws NullPointerException {
+        if (bytes == null) {
+            throw new NullPointerException(
+                "The bytes parameter must not be null.");
+        }
+        EntityProto pb = new EntityProto();
+        pb.mergeFrom(bytes);
+        return EntityTranslator.createFromPb(pb);
+    }
+
+    /**
+     * Returns a list of {@link ModelMeta}s.
+     * 
+     * @param models
+     *            the models
+     * @return a list of {@link ModelMeta}s
+     * @throws NullPointerException
+     *             if the models parameter is null or if the element of models
+     *             is null
+     */
+    public static List<ModelMeta<?>> getModelMetaList(Iterable<?> models)
+            throws NullPointerException {
+        if (models == null) {
+            throw new NullPointerException(
+                "The models parameter must not be null.");
+        }
+        List<ModelMeta<?>> list = new ArrayList<ModelMeta<?>>();
+        for (Object model : models) {
+            if (model == null) {
+                throw new NullPointerException(
+                    "The element of the models must not be null.");
+            }
+            if (model instanceof Entity) {
+                list.add(null);
+            } else {
+                list.add(getModelMeta(model.getClass()));
+            }
+        }
+        return list;
+    }
+
+    /**
+     * Updates the properties of the model and convert it to an entity.
+     * 
+     * @param modelMeta
+     *            the meta data of the model
+     * @param model
+     *            the model
+     * @return an entity
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null or if the model parameter
+     *             is null
+     */
+    public static Entity updatePropertiesAndConvertToEntity(
+            ModelMeta<?> modelMeta, Object model) throws NullPointerException {
+        if (modelMeta == null) {
+            throw new NullPointerException(
+                "The modelMeta parameter must not be null.");
+        }
+        if (model == null) {
+            throw new NullPointerException(
+                "The model parameter must not be null.");
+        }
+        modelMeta.incrementVersion(model);
+        return modelMeta.modelToEntity(model);
+    }
+
+    /**
+     * Updates the properties of the models and convert them to entities.
+     * 
+     * @param modelMetaList
+     *            the list of {@link ModelMeta}
+     * @param models
+     *            the models
+     * @return a list of entities
+     * @throws NullPointerException
+     *             if the modelMetaList parameter is null or if the models
+     *             parameter is null
+     */
+    public static List<Entity> updatePropertiesAndConvertToEntities(
+            List<ModelMeta<?>> modelMetaList, Iterable<?> models)
+            throws NullPointerException {
+        if (modelMetaList == null) {
+            throw new NullPointerException(
+                "The modelMetaList parameter must not be null.");
+        }
+        if (models == null) {
+            throw new NullPointerException(
+                "The models parameter must not be null.");
+        }
+        List<Entity> entities = new ArrayList<Entity>(modelMetaList.size());
+        int i = 0;
+        for (Object model : models) {
+            ModelMeta<?> modelMeta = modelMetaList.get(i);
+            if (modelMeta == null) {
+                entities.add((Entity) model);
+            } else {
+                Entity entity =
+                    updatePropertiesAndConvertToEntity(modelMeta, model);
+                entities.add(entity);
+            }
+            i++;
+        }
+        return entities;
+    }
+
+    /**
+     * Sets the keys to the models.
+     * 
+     * @param modelMetaList
+     *            the list of {@link ModelMeta}s
+     * @param models
+     *            the models
+     * @param keys
+     *            the keys
+     */
+    public static void setKeys(List<ModelMeta<?>> modelMetaList,
+            Iterable<?> models, List<Key> keys) {
+        int i = 0;
+        for (Object model : models) {
+            ModelMeta<?> modelMeta = modelMetaList.get(i);
+            if (modelMeta != null) {
+                modelMeta.setKey(model, keys.get(i));
+            }
+            i++;
+        }
+    }
+
+    /**
+     * Determines if the key is incomplete.
+     * 
+     * @param key
+     *            the key
+     * @return whether the key is incomplete
+     * @throws NullPointerException
+     *             if the key parameter is null
+     */
+    public static boolean isIncomplete(Key key) throws NullPointerException {
+        if (key == null) {
+            throw new NullPointerException(
+                "The key parameter must not be null.");
+        }
+        return key.getName() == null && key.getId() <= 0;
     }
 
     private DatastoreUtil() {

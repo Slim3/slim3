@@ -545,4 +545,99 @@ public class DatastoreUtilTest extends AppEngineTestCase {
         ModelMeta<?> modelMeta = DatastoreUtil.getModelMeta(Ccc.class);
         assertThat(modelMeta, is(notNullValue()));
     }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void entityToBytes() throws Exception {
+        assertThat(
+            DatastoreUtil.entityToBytes(new Entity("Hoge")),
+            is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void bytesToEntity() throws Exception {
+        Entity entity = new Entity(Datastore.createKey("Hoge", 1));
+        byte[] bytes = DatastoreUtil.entityToBytes(entity);
+        Entity entity2 = DatastoreUtil.bytesToEntity(bytes);
+        assertThat(entity2, is(notNullValue()));
+        assertThat(entity2, is(entity));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelMetaList() throws Exception {
+        Entity entity = new Entity("Hoge");
+        Hoge hoge = new Hoge();
+        List<ModelMeta<?>> modelMetaList =
+            DatastoreUtil.getModelMetaList(Arrays.asList(entity, hoge));
+        assertThat(modelMetaList.size(), is(2));
+        assertThat(modelMetaList.get(0), is(nullValue()));
+        assertThat(modelMetaList.get(1).getKind(), is("Hoge"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void updatePropertiesAndConvertToEntity() throws Exception {
+        Hoge hoge = new Hoge();
+        Entity entity =
+            DatastoreUtil.updatePropertiesAndConvertToEntity(
+                HogeMeta.get(),
+                hoge);
+        assertThat((Long) entity.getProperty("version"), is(1L));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void updatePropertiesAndConvertToEntities() throws Exception {
+        Entity entity = new Entity("Hoge");
+        Hoge hoge = new Hoge();
+        List<ModelMeta<?>> modelMetaList =
+            DatastoreUtil.getModelMetaList(Arrays.asList(entity, hoge));
+        List<Entity> entities =
+            DatastoreUtil.updatePropertiesAndConvertToEntities(
+                modelMetaList,
+                Arrays.asList(entity, hoge));
+        assertThat(entities.size(), is(2));
+        assertThat((Long) entities.get(1).getProperty("version"), is(1L));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void setKeys() throws Exception {
+        List<ModelMeta<?>> modelMetaList = new ArrayList<ModelMeta<?>>();
+        modelMetaList.add(HogeMeta.get());
+        Hoge hoge = new Hoge();
+        Key key = Datastore.createKey(Hoge.class, 1);
+        DatastoreUtil.setKeys(modelMetaList, Arrays.asList(hoge), Arrays
+            .asList(key));
+        assertThat(hoge.getKey(), is(key));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void isIncomplete() throws Exception {
+        assertThat(
+            DatastoreUtil.isIncomplete(Datastore.createKey("Hoge", 1)),
+            is(false));
+        assertThat(DatastoreUtil.isIncomplete(Datastore
+            .createKey("Hoge", "aaa")), is(false));
+        assertThat(
+            DatastoreUtil.isIncomplete(new Entity("Hoge").getKey()),
+            is(true));
+    }
 }
