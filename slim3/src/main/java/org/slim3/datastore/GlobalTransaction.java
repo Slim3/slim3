@@ -93,16 +93,6 @@ public class GlobalTransaction {
     protected static final String COMMITTED_STATUS = "committed";
 
     /**
-     * The "applied" status.
-     */
-    protected static final String APPLIED_STATUS = "applied";
-
-    /**
-     * The "rolledBack" status.
-     */
-    protected static final String ROLLED_BACK_STATUS = "rolledBack";
-
-    /**
      * The value for putting.
      */
     protected static final String PUT_TYPE = "put";
@@ -199,6 +189,134 @@ public class GlobalTransaction {
     }
 
     /**
+     * Converts the list of target keys to a list of keys for journal.
+     * 
+     * @param targetKeyList
+     *            the list of target keys
+     * @return a list of keys for journal
+     * @throws NullPointerException
+     *             if the targetKeyList parameter is null
+     */
+    protected static List<Key> toJournalKeyList(List<Key> targetKeyList)
+            throws NullPointerException {
+        if (targetKeyList == null) {
+            throw new NullPointerException(
+                "The targetKeyList parameter must not be null.");
+        }
+        List<Key> journalKeyList = new ArrayList<Key>(targetKeyList.size());
+        for (Key key : targetKeyList) {
+            journalKeyList.add(createJournalKey(key));
+        }
+        return journalKeyList;
+    }
+
+    /**
+     * Rolls forward the transaction.
+     * 
+     * @param gtxKey
+     *            the global transaction key
+     * @throws NullPointerException
+     *             if the gtxKey parameter is null or if the targetKeyList
+     *             property is null
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key is found
+     * @throws IllegalStateException
+     *             if deleting journals failed
+     */
+    @SuppressWarnings("unchecked")
+    protected static void rollForward(Key gtxKey) throws NullPointerException,
+            EntityNotFoundRuntimeException, IllegalStateException {
+        if (gtxKey == null) {
+            throw new NullPointerException(
+                "The gtxKey parameter must not be null.");
+        }
+        if (!GLOBAL_TRANSACTION_KIND.equals(gtxKey.getKind())) {
+            throw new IllegalArgumentException("The kind of the key("
+                + gtxKey
+                + ") must be "
+                + GLOBAL_TRANSACTION_KIND
+                + ".");
+        }
+        Transaction tx = Datastore.beginTransaction();
+        try {
+            Entity gtx = Datastore.get(tx, gtxKey);
+            if (!COMMITTED_STATUS.equals(gtx.getProperty(STATUS_PROPERTY))) {
+                return;
+            }
+            List<Key> targetKeyList =
+                (List<Key>) gtx.getProperty(TARGET_KEY_LIST_PROPERTY);
+            if (targetKeyList == null) {
+                throw new NullPointerException(
+                    "The targetKeyList property must not be null.");
+            }
+            List<Key> journalKeyList = toJournalKeyList(targetKeyList);
+            Map<Key, Entity> map =
+                Datastore.getAsMap((Transaction) null, journalKeyList);
+            for (Key key : journalKeyList) {
+                Entity journalEntity = map.get(key);
+                if (journalEntity == null
+                    || !gtxKey.equals(journalEntity
+                        .getProperty(GLOBAL_TRANSACTION_KEY_PROPERTY))) {
+                    continue;
+                }
+                if (!applyJournal(journalEntity)) {
+                    throw new IllegalStateException(
+                        "Rolling forward the global transaction("
+                            + gtx.getKey()
+                            + ") failed.");
+                }
+            }
+            Datastore.delete(tx, gtxKey);
+            Datastore.commit(tx);
+        } finally {
+            if (tx.isActive()) {
+                Datastore.rollback(tx);
+            }
+        }
+    }
+
+    /**
+     * Applies a journal in transaction.
+     * 
+     * @param journalEntity
+     *            the entity for journal
+     * @return whether this operation succeeded
+     */
+    protected static boolean applyJournal(Entity journalEntity) {
+        Blob blob = (Blob) journalEntity.getProperty(CONTENT_PROPERTY);
+        Key journalKey = journalEntity.getKey();
+        Key targetKey = journalKey.getParent();
+        for (int i = 0; i < MAX_RETRY; i++) {
+            Transaction tx = Datastore.beginTransaction();
+            try {
+                if (blob != null) {
+                    Entity targetEntity =
+                        DatastoreUtil.bytesToEntity(blob.getBytes());
+                    Datastore.put(tx, targetEntity);
+                    Datastore.delete(tx, createLockKey(targetKey), journalKey);
+                } else {
+                    Datastore.delete(
+                        tx,
+                        targetKey,
+                        createLockKey(targetKey),
+                        journalKey);
+                }
+                Datastore.commit(tx);
+                return true;
+            } catch (ConcurrentModificationException ignore) {
+            } catch (Throwable cause) {
+                logger.log(Level.WARNING, cause.getMessage(), cause);
+                return false;
+            } finally {
+                if (tx.isActive()) {
+                    Datastore.rollback(tx);
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Rolls back the transaction.
      * 
      * @param gtxKey
@@ -218,39 +336,59 @@ public class GlobalTransaction {
             throw new NullPointerException(
                 "The gtxKey parameter must not be null.");
         }
-        Entity gtx = Datastore.get(gtxKey);
-        List<Key> targetKeyList =
-            (List<Key>) gtx.getProperty(TARGET_KEY_LIST_PROPERTY);
-        if (targetKeyList == null) {
-            throw new NullPointerException(
-                "The targetKeyList property must not be null.");
+        if (!GLOBAL_TRANSACTION_KIND.equals(gtxKey.getKind())) {
+            throw new IllegalArgumentException("The kind of the key("
+                + gtxKey
+                + ") must be "
+                + GLOBAL_TRANSACTION_KIND
+                + ".");
         }
-        List<Key> lockKeyList = toLockKeyList(targetKeyList);
-        Map<Key, Entity> map = Datastore.getAsMap(lockKeyList);
-        for (Key key : lockKeyList) {
-            Entity lockEntity = map.get(key);
-            if (lockEntity == null
-                || !gtx.getKey().equals(
-                    lockEntity.getProperty(GLOBAL_TRANSACTION_KEY_PROPERTY))) {
-                continue;
+        Transaction tx = Datastore.beginTransaction();
+        try {
+            Entity gtx = Datastore.get(tx, gtxKey);
+            if (!STARTED_STATUS.equals(gtx.getProperty(STATUS_PROPERTY))) {
+                return;
             }
-            if (!deleteInTx(key, createJournalKey(key.getParent()))) {
-                throw new IllegalStateException(
-                    "Rolling back the global transaction("
-                        + gtx.getKey()
-                        + ") failed.");
+            List<Key> targetKeyList =
+                (List<Key>) gtx.getProperty(TARGET_KEY_LIST_PROPERTY);
+            if (targetKeyList == null) {
+                throw new NullPointerException(
+                    "The targetKeyList property must not be null.");
+            }
+            List<Key> lockKeyList = toLockKeyList(targetKeyList);
+            Map<Key, Entity> map =
+                Datastore.getAsMap((Transaction) null, lockKeyList);
+            for (Key key : lockKeyList) {
+                Entity lockEntity = map.get(key);
+                if (lockEntity == null
+                    || !gtxKey.equals(lockEntity
+                        .getProperty(GLOBAL_TRANSACTION_KEY_PROPERTY))) {
+                    continue;
+                }
+                if (!deleteJournal(key, createJournalKey(key.getParent()))) {
+                    throw new IllegalStateException(
+                        "Rolling back the global transaction("
+                            + gtx.getKey()
+                            + ") failed.");
+                }
+            }
+            Datastore.delete(tx, gtxKey);
+            Datastore.commit(tx);
+        } finally {
+            if (tx.isActive()) {
+                Datastore.rollback(tx);
             }
         }
     }
 
     /**
-     * Deletes entities specified by the keys.
+     * Deletes entities for lock and journal.
      * 
      * @param keys
      *            the keys
      * @return whether this operation succeeded
      */
-    protected static boolean deleteInTx(Key... keys) {
+    protected static boolean deleteJournal(Key... keys) {
         for (int i = 0; i < MAX_RETRY; i++) {
             Transaction tx = Datastore.beginTransaction();
             try {
@@ -326,6 +464,7 @@ public class GlobalTransaction {
     protected void commit() throws IllegalStateException {
         startTransactionInternally();
         if (!writeJournals()) {
+            delete(txEntity.getKey());
             throw new IllegalStateException(
                 "Writing journals failed, so this transaction was rolled back automatically.");
         }
@@ -355,11 +494,10 @@ public class GlobalTransaction {
         for (int i = 0; i < entrySet.size(); i++) {
             if (!entrySet.get(i).writeJournal()) {
                 for (int j = 0; j < i; j++) {
-                    deleteInTx(
+                    deleteJournal(
                         entrySet.get(j).lockKey,
                         entrySet.get(j).journalKey);
                 }
-                deleteInTx(txEntity.getKey());
                 return false;
             }
         }
@@ -518,8 +656,7 @@ public class GlobalTransaction {
             }
             Entity gtx = Datastore.get((Transaction) null, gtxKey);
             String status = (String) gtx.getProperty(STATUS_PROPERTY);
-            return !STARTED_STATUS.equals(status)
-                && !ROLLED_BACK_STATUS.equals(status);
+            return !STARTED_STATUS.equals(status);
         }
     }
 }

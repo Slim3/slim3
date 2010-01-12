@@ -17,7 +17,8 @@ package org.slim3.datastore;
 
 import org.junit.Test;
 import org.slim3.tester.AppEngineTestCase;
-import org.slim3.util.ArrayMap;
+
+import com.google.appengine.api.datastore.Query.FilterOperator;
 
 /**
  * @author higa
@@ -30,10 +31,9 @@ public class SpikeTest extends AppEngineTestCase {
      */
     @Test
     public void spike() throws Exception {
-        ArrayMap<String, String> map = new ArrayMap<String, String>();
-        map.put("1", null);
-        map.put("2", null);
-        map.put("1", null);
-        System.out.println(map);
+        Datastore.query("Hoge").filter(
+            "__key__",
+            FilterOperator.GREATER_THAN,
+            null).asList();
     }
 }
