@@ -35,11 +35,14 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.EntityTranslator;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.KeyRange;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.storage.onestore.v3.OnestoreEntity.EntityProto;
+import com.google.storage.onestore.v3.OnestoreEntity.Reference;
+import com.google.storage.onestore.v3.OnestoreEntity.Path.Element;
 
 /**
  * A utility for {@link DatastoreService}.
@@ -1080,6 +1083,48 @@ public final class DatastoreUtil {
         EntityProto pb = new EntityProto();
         pb.mergeFrom(bytes);
         return EntityTranslator.createFromPb(pb);
+    }
+
+    /**
+     * Converts the reference to a key.
+     * 
+     * @param reference
+     *            the reference object
+     * @return a key
+     * @throws NullPointerException
+     *             if the reference parameter is null
+     */
+    public static Key referenceToKey(Reference reference)
+            throws NullPointerException {
+        if (reference == null) {
+            throw new NullPointerException(
+                "The reference parameter must not be null.");
+        }
+        Key key = null;
+        for (Element e : reference.getPath().elements()) {
+            String kind = e.getType();
+            long id = e.getId();
+            String name = e.getName();
+            if (key == null) {
+                if (id > 0) {
+                    key = KeyFactory.createKey(kind, id);
+                } else {
+                    key = KeyFactory.createKey(kind, name);
+                }
+            } else {
+                if (id > 0) {
+                    key = KeyFactory.createKey(key, kind, id);
+                } else {
+                    key = KeyFactory.createKey(key, kind, name);
+                }
+            }
+        }
+        if (key == null) {
+            throw new IllegalArgumentException("The reference("
+                + reference
+                + ") cannot be converted to Key.");
+        }
+        return key;
     }
 
     /**

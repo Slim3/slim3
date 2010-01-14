@@ -21,6 +21,7 @@ import java.util.Map;
 import org.slim3.util.StringUtil;
 
 import com.google.apphosting.api.ApiProxy;
+import com.google.apphosting.api.ApiProxy.Environment;
 
 /**
  * The test environment.
@@ -70,6 +71,29 @@ public class TestEnvironment implements ApiProxy.Environment {
      * Constructor.
      */
     public TestEnvironment() {
+        attributes.put("com.google.appengine.server_url_key", "dummy");
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param other
+     *            the other environment
+     * @throws NullPointerException
+     *             if the other parameter is null
+     */
+    public TestEnvironment(Environment other) throws NullPointerException {
+        if (other == null) {
+            throw new NullPointerException(
+                "The other parameter must not be null.");
+        }
+        appId = other.getAppId();
+        versionId = other.getVersionId();
+        requestNamespace = other.getRequestNamespace();
+        authDomain = other.getAuthDomain();
+        email = other.getEmail();
+        admin = other.isAdmin();
+        attributes = other.getAttributes();
     }
 
     /**
@@ -91,6 +115,7 @@ public class TestEnvironment implements ApiProxy.Environment {
      *            whether the current user is an administrator
      */
     public TestEnvironment(String email, boolean admin) {
+        this();
         setEmail(email);
         setAdmin(admin);
     }
@@ -185,5 +210,15 @@ public class TestEnvironment implements ApiProxy.Environment {
 
     public Map<String, Object> getAttributes() {
         return attributes;
+    }
+
+    /**
+     * Sets the attributes.
+     * 
+     * @param attributes
+     *            the attributes
+     */
+    public void setAttributes(Map<String, Object> attributes) {
+        this.attributes = attributes;
     }
 }

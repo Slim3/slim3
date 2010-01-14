@@ -15,10 +15,12 @@
  */
 package org.slim3.datastore;
 
+import java.util.ArrayList;
+
 import org.junit.Test;
 import org.slim3.tester.AppEngineTestCase;
 
-import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Key;
 
 /**
  * @author higa
@@ -31,9 +33,6 @@ public class SpikeTest extends AppEngineTestCase {
      */
     @Test
     public void spike() throws Exception {
-        Datastore.query("Hoge").filter(
-            "__key__",
-            FilterOperator.GREATER_THAN,
-            null).asList();
+        Datastore.delete(new ArrayList<Key>());
     }
 }

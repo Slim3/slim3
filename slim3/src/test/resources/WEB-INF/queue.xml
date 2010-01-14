@@ -1,0 +1,11 @@
+<queue-entries>
+  <queue>
+    <name>default</name>
+    <rate>1/s</rate>
+  </queue>
+  <queue>
+    <name>test-queue</name>
+    <rate>10/s</rate>
+    <bucket-size>10</bucket-size>
+  </queue>
+</queue-entries>

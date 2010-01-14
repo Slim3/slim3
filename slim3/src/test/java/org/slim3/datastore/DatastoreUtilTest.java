@@ -44,6 +44,9 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.storage.onestore.v3.OnestoreEntity.Path;
+import com.google.storage.onestore.v3.OnestoreEntity.Reference;
+import com.google.storage.onestore.v3.OnestoreEntity.Path.Element;
 
 /**
  * @author higa
@@ -639,5 +642,54 @@ public class DatastoreUtilTest extends AppEngineTestCase {
         assertThat(
             DatastoreUtil.isIncomplete(new Entity("Hoge").getKey()),
             is(true));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void refereceToKeyForId() throws Exception {
+        Key key = KeyFactory.createKey("Hoge", 1);
+        Reference reference = new Reference();
+        Path path = new Path();
+        reference.setPath(path);
+        Element element = path.addElement();
+        element.setType("Hoge");
+        element.setId(1);
+        assertThat(DatastoreUtil.referenceToKey(reference), is(key));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void refereceToKeyForName() throws Exception {
+        Key key = KeyFactory.createKey("Hoge", "aaa");
+        Reference reference = new Reference();
+        Path path = new Path();
+        reference.setPath(path);
+        Element element = path.addElement();
+        element.setType("Hoge");
+        element.setName("aaa");
+        assertThat(DatastoreUtil.referenceToKey(reference), is(key));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void refereceToKeyForParent() throws Exception {
+        Key parentKey = KeyFactory.createKey("Parent", 1);
+        Key childKey = KeyFactory.createKey(parentKey, "Child", 1);
+        Reference reference = new Reference();
+        Path path = new Path();
+        reference.setPath(path);
+        Element element = path.addElement();
+        element.setType("Parent");
+        element.setId(1);
+        element = path.addElement();
+        element.setType("Child");
+        element.setId(1);
+        assertThat(DatastoreUtil.referenceToKey(reference), is(childKey));
     }
 }

@@ -75,9 +75,39 @@ public class ServletTester extends AppEngineTester {
      */
     public MockHttpServletResponse response = new MockHttpServletResponse();
 
+    /**
+     * The previous {@link ServletContext}.
+     */
+    protected ServletContext previousServletContext;
+
+    /**
+     * The previous {@link HttpServletRequest}.
+     */
+    protected HttpServletRequest previousRequest;
+
+    /**
+     * The previous {@link HttpServletResponse}.
+     */
+    protected HttpServletResponse previousResponse;
+
+    /**
+     * The previous {@link Locale}.
+     */
+    protected Locale previousLocale;
+
+    /**
+     * The previous {@link TimeZone}.
+     */
+    protected TimeZone previousTimeZone;
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        previousServletContext = ServletContextLocator.get();
+        previousRequest = RequestLocator.get();
+        previousResponse = ResponseLocator.get();
+        previousLocale = LocaleLocator.get();
+        previousTimeZone = TimeZoneLocator.get();
         ServletContextLocator.set(servletContext);
         RequestLocator.set(request);
         ResponseLocator.set(response);
@@ -91,11 +121,11 @@ public class ServletTester extends AppEngineTester {
         config = null;
         request = null;
         response = null;
-        ServletContextLocator.set(null);
-        RequestLocator.set(null);
-        ResponseLocator.set(null);
-        LocaleLocator.set(null);
-        TimeZoneLocator.set(null);
+        ServletContextLocator.set(previousServletContext);
+        RequestLocator.set(previousRequest);
+        ResponseLocator.set(previousResponse);
+        LocaleLocator.set(previousLocale);
+        TimeZoneLocator.set(previousTimeZone);
         super.tearDown();
     }
 

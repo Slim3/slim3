@@ -19,6 +19,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 
 import org.junit.After;
@@ -28,6 +29,18 @@ import org.junit.Test;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.labs.taskqueue.Queue;
+import com.google.appengine.api.labs.taskqueue.QueueFactory;
+import com.google.appengine.api.labs.taskqueue.TaskOptions;
+import com.google.appengine.api.labs.taskqueue.TaskQueuePb.TaskQueueAddRequest;
+import com.google.appengine.api.mail.MailServiceFactory;
+import com.google.appengine.api.mail.MailService.Message;
+import com.google.appengine.api.mail.MailServicePb.MailMessage;
+import com.google.appengine.api.urlfetch.HTTPRequest;
+import com.google.appengine.api.urlfetch.HTTPResponse;
+import com.google.appengine.api.urlfetch.URLFetchService;
+import com.google.appengine.api.urlfetch.URLFetchServiceFactory;
+import com.google.appengine.api.urlfetch.URLFetchServicePb.URLFetchRequest;
 
 /**
  * @author higa
@@ -118,5 +131,84 @@ public class AppEngineTesterTest {
     @Test
     public void environment() throws Exception {
         assertThat(tester.environment, is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void mail() throws Exception {
+        Message message = new Message();
+        String to = "foo@bar.com";
+        String sender = "hoge@fuga.com";
+        String subject = "subject";
+        String body = "body";
+        message.setTo(to);
+        message.setSender(sender);
+        message.setSubject(subject);
+        message.setTextBody(body);
+        MailServiceFactory.getMailService().sendToAdmins(message);
+        assertThat(tester.mailMessages.size(), is(1));
+        MailMessage mes = tester.mailMessages.get(0);
+        assertThat(mes.getTo(0), is(to));
+        assertThat(mes.getSender(), is(sender));
+        assertThat(mes.getSubject(), is(subject));
+        assertThat(mes.getTextBody(), is(body));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void taskQueueForDefaultQueue() throws Exception {
+        Queue queue = QueueFactory.getDefaultQueue();
+        queue.add(TaskOptions.Builder.url("/tqHandler").param("key", "aaa"));
+        assertThat(tester.tasks.size(), is(1));
+        TaskQueueAddRequest task = tester.tasks.get(0);
+        assertThat(task.getUrl(), is("/tqHandler"));
+        assertThat(task.getBody(), is("key=aaa"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void taskQueueForNamedQueue() throws Exception {
+        Queue queue = QueueFactory.getQueue("test-queue");
+        queue.add(TaskOptions.Builder.url("/tqHandler").param("key", "aaa"));
+        assertThat(tester.tasks.size(), is(1));
+        TaskQueueAddRequest task = tester.tasks.get(0);
+        assertThat(task.getUrl(), is("/tqHandler"));
+        assertThat(task.getBody(), is("key=aaa"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void urlFetch() throws Exception {
+        URLFetchService service = URLFetchServiceFactory.getURLFetchService();
+        HTTPRequest httpRequest = new HTTPRequest(new URL("http://hoge"));
+        String queryString = "aaa=111";
+        httpRequest.setPayload(queryString.getBytes("utf-8"));
+        tester.setUrlFetchHandler(new URLFetchHandler() {
+
+            public int getStatusCode(URLFetchRequest request)
+                    throws IOException {
+                return 200;
+            }
+
+            public byte[] getContent(URLFetchRequest request)
+                    throws IOException {
+                return "hello".getBytes();
+            }
+        });
+        HTTPResponse httpResponse = service.fetch(httpRequest);
+        assertThat(httpResponse.getResponseCode(), is(200));
+        assertThat(new String(httpResponse.getContent()), is("hello"));
     }
 }

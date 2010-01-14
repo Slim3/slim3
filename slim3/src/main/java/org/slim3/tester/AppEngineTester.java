@@ -25,17 +25,31 @@ import java.net.URLClassLoader;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Future;
 
+import org.slim3.datastore.DatastoreUtil;
 import org.slim3.util.AppEngineUtil;
 import org.slim3.util.ThrowableUtil;
 import org.slim3.util.WrapRuntimeException;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.labs.taskqueue.TaskQueuePb.TaskQueueAddRequest;
+import com.google.appengine.api.mail.MailServicePb.MailMessage;
+import com.google.appengine.api.urlfetch.URLFetchServicePb.URLFetchRequest;
+import com.google.appengine.api.urlfetch.URLFetchServicePb.URLFetchResponse;
+import com.google.appengine.repackaged.com.google.protobuf.ByteString;
 import com.google.apphosting.api.ApiProxy;
+import com.google.apphosting.api.ApiProxy.ApiConfig;
+import com.google.apphosting.api.ApiProxy.ApiProxyException;
 import com.google.apphosting.api.ApiProxy.Delegate;
+import com.google.apphosting.api.ApiProxy.Environment;
+import com.google.apphosting.api.ApiProxy.LogRecord;
+import com.google.apphosting.api.DatastorePb.PutResponse;
+import com.google.storage.onestore.v3.OnestoreEntity.Reference;
 
 /**
  * A tester for local services.
@@ -44,7 +58,7 @@ import com.google.apphosting.api.ApiProxy.Delegate;
  * @since 3.0
  * 
  */
-public class AppEngineTester {
+public class AppEngineTester implements Delegate<Environment> {
 
     /**
      * The name of ApiProxyLocalImpl class.
@@ -85,24 +99,90 @@ public class AppEngineTester {
     protected static final String NO_STORAGE_PROPERTY = "datastore.no_storage";
 
     /**
+     * The internal name of datastore service.
+     */
+    protected static final String DATASTORE_SERVICE = "datastore_v3";
+
+    /**
+     * The internal name of mail service.
+     */
+    protected static final String MAIL_SERVICE = "mail";
+
+    /**
+     * The internal name of taskqueue service.
+     */
+    protected static final String TASKQUEUE_SERVICE = "taskqueue";
+
+    /**
+     * The internal name of urlfetch service.
+     */
+    protected static final String URLFETCH_SERVICE = "urlfetch";
+
+    /**
+     * The internal name of put method.
+     */
+    protected static final String PUT_METHOD = "Put";
+
+    /**
+     * The internal name of send method.
+     */
+    protected static final String SEND_METHOD = "Send";
+
+    /**
+     * The internal name of add method.
+     */
+    protected static final String ADD_METHOD = "Add";
+
+    /**
+     * The internal name of fetch method.
+     */
+    protected static final String FETCH_METHOD = "Fetch";
+
+    /**
      * The ApiProxyLocalImpl instance.
      */
-    protected static Object apiProxyLocalImpl;
-
-    /**
-     * The local datastore service.
-     */
-    protected static Object localDatastoreService;
-
-    /**
-     * The clearProfiles method.
-     */
-    protected static Method clearProfilesMethod;
+    protected static Delegate<Environment> apiProxyLocalImpl;
 
     /**
      * The environment for test.
      */
-    public TestEnvironment environment = new TestEnvironment();
+    public TestEnvironment environment;
+
+    /**
+     * The list of mail messages.
+     */
+    public final List<MailMessage> mailMessages = new ArrayList<MailMessage>();
+
+    /**
+     * The list of tasks.
+     */
+    public final List<TaskQueueAddRequest> tasks =
+        new ArrayList<TaskQueueAddRequest>();
+
+    /**
+     * The original delegate.
+     */
+    protected Delegate<Environment> originalDelegate;
+
+    /**
+     * The parent delegate.
+     */
+    protected Delegate<Environment> parentDelegate;
+
+    /**
+     * The original environment.
+     */
+    protected Environment originalEnvironment;
+
+    /**
+     * The list of put keys.
+     */
+    protected List<Key> putKeyList = new ArrayList<Key>();
+
+    /**
+     * The handler to fetch URL.
+     */
+    protected URLFetchHandler urlFetchHandler;
 
     static {
         if (!AppEngineUtil.isServer()) {
@@ -209,6 +289,7 @@ public class AppEngineTester {
      * @param loader
      *            the {@link ClassLoader}
      */
+    @SuppressWarnings("unchecked")
     protected static void prepareLocalServices(ClassLoader loader) {
         try {
             Class<?> apiProxyLocalImplClass =
@@ -216,26 +297,9 @@ public class AppEngineTester {
             Constructor<?> con =
                 apiProxyLocalImplClass.getDeclaredConstructor(File.class);
             con.setAccessible(true);
-            apiProxyLocalImpl = con.newInstance(new File("build"));
-            Method setPropertyMethod =
-                apiProxyLocalImplClass.getMethod(
-                    "setProperty",
-                    String.class,
-                    String.class);
-            setPropertyMethod.invoke(
-                apiProxyLocalImpl,
-                NO_STORAGE_PROPERTY,
-                Boolean.TRUE.toString());
-            Method getServiceMethod =
-                apiProxyLocalImplClass.getMethod("getService", String.class);
-            localDatastoreService =
-                getServiceMethod.invoke(
-                    apiProxyLocalImpl,
-                    LOCAL_DETASTORE_SERVICE_NAME);
-            Class<?> localDatastoreServiceClass =
-                loader.loadClass(LOCAL_DATASTORE_SERVICE_CLASS_NAME);
-            clearProfilesMethod =
-                localDatastoreServiceClass.getMethod("clearProfiles");
+            apiProxyLocalImpl =
+                (Delegate<Environment>) con.newInstance(new File(
+                    "build/test-classes"));
         } catch (Throwable cause) {
             ThrowableUtil.wrapAndThrow(cause);
         }
@@ -248,11 +312,19 @@ public class AppEngineTester {
      *             if an exception has occurred
      * 
      */
+    @SuppressWarnings("unchecked")
     public void setUp() throws Exception {
-        if (!AppEngineUtil.isServer()) {
-            ApiProxy.setEnvironmentForCurrentThread(environment);
-            ApiProxy.setDelegate((Delegate<?>) apiProxyLocalImpl);
+        originalDelegate = ApiProxy.getDelegate();
+        originalEnvironment = ApiProxy.getCurrentEnvironment();
+        if (AppEngineUtil.isServer()) {
+            parentDelegate = originalDelegate;
+            environment = new TestEnvironment(originalEnvironment);
+        } else {
+            parentDelegate = apiProxyLocalImpl;
+            environment = new TestEnvironment();
         }
+        ApiProxy.setDelegate(this);
+        ApiProxy.setEnvironmentForCurrentThread(environment);
     }
 
     /**
@@ -262,16 +334,83 @@ public class AppEngineTester {
      *             if an exception has occurred
      */
     public void tearDown() throws Exception {
-        for (Transaction tx : DatastoreServiceFactory
-            .getDatastoreService()
-            .getActiveTransactions()) {
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        for (Transaction tx : ds.getActiveTransactions()) {
             tx.rollback();
         }
-        if (!AppEngineUtil.isServer()) {
-            clearProfilesMethod.invoke(localDatastoreService);
-            ApiProxy.setDelegate(null);
-            ApiProxy.setEnvironmentForCurrentThread(null);
+        if (!putKeyList.isEmpty()) {
+            ds.delete(putKeyList);
+            putKeyList.clear();
         }
+        mailMessages.clear();
+        ApiProxy.setDelegate(originalDelegate);
+        ApiProxy.setEnvironmentForCurrentThread(originalEnvironment);
+    }
+
+    public byte[] makeSyncCall(Environment env, String service, String method,
+            byte[] requestBuf) throws ApiProxyException {
+        if (service.equals(URLFETCH_SERVICE)
+            && method.equals(FETCH_METHOD)
+            && urlFetchHandler != null) {
+            try {
+                URLFetchRequest requestPb =
+                    URLFetchRequest.parseFrom(requestBuf);
+                return URLFetchResponse
+                    .newBuilder()
+                    .setContent(
+                        ByteString.copyFrom(urlFetchHandler
+                            .getContent(requestPb)))
+                    .setStatusCode(urlFetchHandler.getStatusCode(requestPb))
+                    .build()
+                    .toByteArray();
+            } catch (Exception e) {
+                ThrowableUtil.wrapAndThrow(e);
+            }
+        }
+        byte[] responseBuf =
+            parentDelegate.makeSyncCall(env, service, method, requestBuf);
+        if (DATASTORE_SERVICE.equals(service) && PUT_METHOD.equals(method)) {
+            PutResponse response = new PutResponse();
+            response.mergeFrom(responseBuf);
+            for (Reference r : response.keys()) {
+                putKeyList.add(DatastoreUtil.referenceToKey(r));
+            }
+        } else if (service.equals(MAIL_SERVICE)
+            && method.startsWith(SEND_METHOD)) { // Send[ToAdmins]
+            MailMessage messagePb = new MailMessage();
+            messagePb.mergeFrom(requestBuf);
+            mailMessages.add(messagePb);
+        } else if (service.equals(TASKQUEUE_SERVICE)
+            && method.startsWith(ADD_METHOD)) {
+            TaskQueueAddRequest taskPb = new TaskQueueAddRequest();
+            taskPb.mergeFrom(requestBuf);
+            tasks.add(taskPb);
+        }
+        return responseBuf;
+    }
+
+    public Future<byte[]> makeAsyncCall(Environment env, String service,
+            String method, byte[] requestBuf, ApiConfig config) {
+        return parentDelegate.makeAsyncCall(
+            env,
+            service,
+            method,
+            requestBuf,
+            config);
+    }
+
+    public void log(Environment env, LogRecord rec) {
+        parentDelegate.log(env, rec);
+    }
+
+    /**
+     * Sets {@link URLFetchHandler}.
+     * 
+     * @param urlFetchHandler
+     *            the {@link URLFetchHandler}
+     */
+    public void setUrlFetchHandler(URLFetchHandler urlFetchHandler) {
+        this.urlFetchHandler = urlFetchHandler;
     }
 
     /**
