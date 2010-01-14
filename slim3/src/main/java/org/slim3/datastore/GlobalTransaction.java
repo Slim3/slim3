@@ -15,7 +15,10 @@
  */
 package org.slim3.datastore;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Map;
@@ -23,12 +26,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.slim3.util.ArraySet;
+import org.slim3.util.ThrowableUtil;
 
 import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.labs.taskqueue.Queue;
+import com.google.appengine.api.labs.taskqueue.QueueFactory;
+import com.google.appengine.api.labs.taskqueue.TaskOptions;
 
 /**
  * The global transaction coordinator. If an error occurs during transaction,
@@ -93,16 +100,6 @@ public class GlobalTransaction {
     protected static final String COMMITTED_STATUS = "committed";
 
     /**
-     * The value for putting.
-     */
-    protected static final String PUT_TYPE = "put";
-
-    /**
-     * The value for deleting.
-     */
-    protected static final String DELETE_TYPE = "delete";
-
-    /**
      * The 30 seconds as millisecond.
      */
     protected static final long THIRTY_SECONDS = 30 * 1000;
@@ -111,6 +108,21 @@ public class GlobalTransaction {
      * The max retry count.
      */
     protected static final int MAX_RETRY = 10;
+
+    /**
+     * The queue name.
+     */
+    protected static final String QUEUE_NAME = "slim3-gtx-queue";
+
+    /**
+     * The path for rolling forward.
+     */
+    protected static final String ROLLFORWARD_PATH = "/slim3/gtx/rollforward/";
+
+    /**
+     * The path for rolling back
+     */
+    protected static final String ROLLBACK_PATH = "/slim3/gtx/rollback/";
 
     /**
      * The logger.
@@ -415,7 +427,33 @@ public class GlobalTransaction {
     }
 
     /**
-     * Registers an entry for putting.
+     * Puts the model.
+     * 
+     * @param model
+     *            the model
+     * @return a key
+     * @throws NullPointerException
+     *             if the model parameter is null
+     * @throws IllegalArgumentException
+     *             if the key is incomplete
+     */
+    public Key put(Object model) throws NullPointerException,
+            IllegalArgumentException {
+        if (model == null) {
+            throw new NullPointerException(
+                "The model parameter must not be null.");
+        }
+        ModelMeta<?> modelMeta = DatastoreUtil.getModelMeta(model.getClass());
+        if (modelMeta.getKey(model) == null) {
+            modelMeta.setKey(model, Datastore.allocateId(modelMeta));
+        }
+        Entity entity =
+            DatastoreUtil.updatePropertiesAndConvertToEntity(modelMeta, model);
+        return put(entity);
+    }
+
+    /**
+     * Puts the entity.
      * 
      * @param entity
      *            the entity
@@ -425,7 +463,7 @@ public class GlobalTransaction {
      * @throws IllegalArgumentException
      *             if the key is incomplete
      */
-    protected Key put(Entity entity) throws NullPointerException,
+    public Key put(Entity entity) throws NullPointerException,
             IllegalArgumentException {
         if (entity == null) {
             throw new NullPointerException(
@@ -440,14 +478,55 @@ public class GlobalTransaction {
     }
 
     /**
-     * Registers an entry for deleting.
+     * Puts the models.
+     * 
+     * @param models
+     *            the models
+     * @return a list of keys
+     * @throws NullPointerException
+     *             if the models parameter is null
+     * @throws IllegalArgumentException
+     *             if the key is incomplete
+     */
+    public List<Key> put(Iterable<?> models) throws NullPointerException,
+            IllegalArgumentException {
+        if (models == null) {
+            throw new NullPointerException(
+                "The models parameter must not be null.");
+        }
+        List<Key> keys = new ArrayList<Key>();
+        for (Object model : models) {
+            if (model instanceof Entity) {
+                keys.add(put((Entity) model));
+            } else {
+                keys.add(put(model));
+            }
+        }
+        return keys;
+    }
+
+    /**
+     * Puts the models.
+     * 
+     * @param models
+     *            the models
+     * @return a list of keys
+     * @throws IllegalArgumentException
+     *             if the key is incomplete
+     */
+    public List<Key> put(Object... models) throws IllegalArgumentException {
+        return put(Arrays.asList(models));
+    }
+
+    /**
+     * Deletes the entity.
      * 
      * @param key
      *            the key
      * @throws NullPointerException
      *             if the key parameter is null
      */
-    protected void delete(Key key) throws NullPointerException {
+    public void delete(Key key) throws NullPointerException {
         if (key == null) {
             throw new NullPointerException(
                 "The key parameter must not be null.");
@@ -456,24 +535,58 @@ public class GlobalTransaction {
     }
 
     /**
-     * Commits this transaction.
+     * Deletes the models.
      * 
-     * @throws IllegalStateException
-     *             if an error occurs while committing this transaction
+     * @param keys
+     *            the keys
+     * @throws NullPointerException
+     *             if the keys parameter is null
      */
-    protected void commit() throws IllegalStateException {
-        startTransactionInternally();
-        if (!writeJournals()) {
-            delete(txEntity.getKey());
-            throw new IllegalStateException(
-                "Writing journals failed, so this transaction was rolled back automatically.");
+    public void delete(Iterable<Key> keys) throws NullPointerException {
+        if (keys == null) {
+            throw new NullPointerException(
+                "The keys parameter must not be null.");
+        }
+        for (Key key : keys) {
+            delete(key);
         }
     }
 
     /**
-     * Starts a transaction internally.
+     * Deletes the models.
+     * 
+     * @param keys
+     *            the keys
      */
-    protected void startTransactionInternally() {
+    public void delete(Key... keys) {
+        delete(Arrays.asList(keys));
+    }
+
+    /**
+     * Commits this transaction. If an exception occurred while committing, the
+     * transaction will be rolled back automatically.
+     * 
+     * @throws IllegalStateException
+     *             if writing journals failed or if this transaction has already
+     *             begun
+     */
+    public void commit() throws IllegalStateException {
+        startTransactionInternally();
+        writeJournals();
+        commitTransactionInternally();
+    }
+
+    /**
+     * Starts a transaction internally.
+     * 
+     * @throws IllegalStateException
+     *             if this transaction has already begun
+     */
+    protected void startTransactionInternally() throws IllegalStateException {
+        if (txEntity != null) {
+            throw new IllegalStateException(
+                "This transaction has already begun.");
+        }
         txEntity = new Entity(GLOBAL_TRANSACTION_KIND);
         txEntity.setProperty(START_TIME_PROPERTY, startTime);
         List<Key> targetKeyList = new ArrayList<Key>();
@@ -488,9 +601,8 @@ public class GlobalTransaction {
     /**
      * Writes journals.
      * 
-     * @return whether this operation succeeded
      */
-    protected boolean writeJournals() {
+    protected void writeJournals() {
         for (int i = 0; i < entrySet.size(); i++) {
             if (!entrySet.get(i).writeJournal()) {
                 for (int j = 0; j < i; j++) {
@@ -498,10 +610,38 @@ public class GlobalTransaction {
                         entrySet.get(j).lockKey,
                         entrySet.get(j).journalKey);
                 }
-                return false;
+                delete(txEntity.getKey());
+                throw new IllegalStateException(
+                    "Writing journal(key:"
+                        + entrySet.get(i).targetKey
+                        + ") failed, so this transaction was rolled back automatically.");
             }
         }
-        return true;
+    }
+
+    /**
+     * Starts a transaction internally.
+     */
+    protected void commitTransactionInternally() {
+        Transaction tx = Datastore.beginTransaction();
+        try {
+            txEntity.setProperty(STATUS_PROPERTY, COMMITTED_STATUS);
+            Datastore.put(tx, txEntity);
+            Queue queue = QueueFactory.getQueue(QUEUE_NAME);
+            String encodedKey =
+                URLEncoder.encode(
+                    Datastore.keyToString(txEntity.getKey()),
+                    "UTF-8");
+            queue.add(tx, TaskOptions.Builder
+                .url(ROLLFORWARD_PATH + encodedKey));
+            Datastore.commit(tx);
+        } catch (UnsupportedEncodingException e) {
+            ThrowableUtil.wrapAndThrow(e);
+        } finally {
+            if (tx.isActive()) {
+                Datastore.rollback(tx);
+            }
+        }
     }
 
     /**

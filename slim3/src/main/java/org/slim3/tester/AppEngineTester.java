@@ -38,6 +38,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.labs.taskqueue.TaskQueuePb.TaskQueueAddRequest;
+import com.google.appengine.api.labs.taskqueue.TaskQueuePb.TaskQueueAddResponse;
 import com.google.appengine.api.mail.MailServicePb.MailMessage;
 import com.google.appengine.api.urlfetch.URLFetchServicePb.URLFetchRequest;
 import com.google.appengine.api.urlfetch.URLFetchServicePb.URLFetchResponse;
@@ -366,6 +367,13 @@ public class AppEngineTester implements Delegate<Environment> {
             } catch (Exception e) {
                 ThrowableUtil.wrapAndThrow(e);
             }
+        } else if (service.equals(TASKQUEUE_SERVICE)
+            && method.startsWith(ADD_METHOD)) {
+            TaskQueueAddRequest taskPb = new TaskQueueAddRequest();
+            taskPb.mergeFrom(requestBuf);
+            tasks.add(taskPb);
+            TaskQueueAddResponse responsePb = new TaskQueueAddResponse();
+            return responsePb.toByteArray();
         }
         byte[] responseBuf =
             parentDelegate.makeSyncCall(env, service, method, requestBuf);
@@ -380,11 +388,6 @@ public class AppEngineTester implements Delegate<Environment> {
             MailMessage messagePb = new MailMessage();
             messagePb.mergeFrom(requestBuf);
             mailMessages.add(messagePb);
-        } else if (service.equals(TASKQUEUE_SERVICE)
-            && method.startsWith(ADD_METHOD)) {
-            TaskQueueAddRequest taskPb = new TaskQueueAddRequest();
-            taskPb.mergeFrom(requestBuf);
-            tasks.add(taskPb);
         }
         return responseBuf;
     }

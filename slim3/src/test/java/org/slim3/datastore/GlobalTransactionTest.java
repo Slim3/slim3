@@ -23,11 +23,13 @@ import java.util.List;
 
 import org.junit.Test;
 import org.slim3.datastore.GlobalTransaction.TxEntry;
+import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.AppEngineTestCase;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.labs.taskqueue.TaskQueuePb.TaskQueueAddRequest;
 
 /**
  * @author higa
@@ -41,7 +43,7 @@ public class GlobalTransactionTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void put() throws Exception {
+    public void putEntity() throws Exception {
         Key key = Datastore.createKey("Hoge", 1);
         Entity entity = new Entity(key);
         assertThat(gtx.put(entity), is(key));
@@ -55,13 +57,98 @@ public class GlobalTransactionTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void delete() throws Exception {
+    public void putModelWithoutKey() throws Exception {
+        Hoge hoge = new Hoge();
+        assertThat(gtx.put(hoge), is(notNullValue()));
+        assertThat(hoge.getKey(), is(notNullValue()));
+        assertThat(gtx.entrySet.size(), is(1));
+        TxEntry entry = gtx.entrySet.iterator().next();
+        assertThat(entry.targetKey, is(hoge.getKey()));
+        assertThat(entry.targetContent, is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void putModelWithKey() throws Exception {
+        Hoge hoge = new Hoge();
+        hoge.setKey(Datastore.createKey("Hoge", 1));
+        assertThat(gtx.put(hoge), is(notNullValue()));
+        assertThat(hoge.getKey(), is(notNullValue()));
+        assertThat(gtx.entrySet.size(), is(1));
+        TxEntry entry = gtx.entrySet.iterator().next();
+        assertThat(entry.targetKey, is(hoge.getKey()));
+        assertThat(entry.targetContent, is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void putModels() throws Exception {
+        Hoge hoge = new Hoge();
+        List<Key> keys = gtx.put(Arrays.asList(hoge));
+        assertThat(keys.size(), is(1));
+        assertThat(keys.get(0), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void putModelsForVarargs() throws Exception {
+        Hoge hoge = new Hoge();
+        Hoge hoge2 = new Hoge();
+        List<Key> keys = gtx.put(hoge, hoge2);
+        assertThat(keys.size(), is(2));
+        assertThat(keys.get(0), is(notNullValue()));
+        assertThat(keys.get(0), is(hoge.getKey()));
+        assertThat(keys.get(1), is(notNullValue()));
+        assertThat(keys.get(1), is(hoge2.getKey()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void deleteModel() throws Exception {
         Key key = Datastore.createKey("Hoge", 1);
         gtx.delete(key);
         assertThat(gtx.entrySet.size(), is(1));
         TxEntry entry = gtx.entrySet.iterator().next();
         assertThat(entry.targetKey, is(key));
         assertThat(entry.targetContent, is(nullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void deleteModels() throws Exception {
+        Key key = Datastore.createKey("Hoge", 1);
+        gtx.delete(Arrays.asList(key));
+        assertThat(gtx.entrySet.size(), is(1));
+        TxEntry entry = gtx.entrySet.iterator().next();
+        assertThat(entry.targetKey, is(key));
+        assertThat(entry.targetContent, is(nullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void deleteModelsForVarargs() throws Exception {
+        Key key = Datastore.createKey("Hoge", 1);
+        Key key2 = Datastore.createKey("Hoge", 2);
+        gtx.delete(key, key2);
+        assertThat(gtx.entrySet.size(), is(2));
+        TxEntry entry = gtx.entrySet.get(0);
+        assertThat(entry.targetKey, is(key));
+        assertThat(entry.targetContent, is(nullValue()));
+        TxEntry entry2 = gtx.entrySet.get(1);
+        assertThat(entry2.targetKey, is(key2));
+        assertThat(entry2.targetContent, is(nullValue()));
     }
 
     /**
@@ -401,7 +488,7 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         Entity entity = new Entity(putKey);
         gtx.put(entity);
         gtx.startTransactionInternally();
-        assertThat(gtx.writeJournals(), is(true));
+        gtx.writeJournals();
         TxEntry entry = gtx.entrySet.iterator().next();
         assertThat(Datastore.get(entry.lockKey), is(notNullValue()));
         assertThat(Datastore.get(entry.journalKey), is(notNullValue()));
@@ -424,7 +511,12 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         lockEntity.setProperty(GlobalTransaction.START_TIME_PROPERTY, System
             .currentTimeMillis());
         Datastore.put(lockEntity);
-        assertThat(gtx.writeJournals(), is(false));
+        try {
+            gtx.writeJournals();
+            fail();
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
         assertThat(Datastore.query(GlobalTransaction.LOCK_KIND).filter(
             GlobalTransaction.GLOBAL_TRANSACTION_KEY_PROPERTY,
             FilterOperator.EQUAL,
@@ -433,6 +525,9 @@ public class GlobalTransactionTest extends AppEngineTestCase {
             GlobalTransaction.GLOBAL_TRANSACTION_KEY_PROPERTY,
             FilterOperator.EQUAL,
             gtx.txEntity.getKey()).count(), is(0));
+        assertThat(
+            Datastore.query(GlobalTransaction.JOURNAL_KIND).count(),
+            is(0));
     }
 
     /**
@@ -663,5 +758,30 @@ public class GlobalTransactionTest extends AppEngineTestCase {
             .currentTimeMillis());
         Datastore.put(lockEntity);
         gtx.commit();
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void commitTransactionInternally() throws Exception {
+        Key putKey = Datastore.createKey("Hoge", 1);
+        Entity entity = new Entity(putKey);
+        gtx.put(entity);
+        gtx.startTransactionInternally();
+        gtx.commitTransactionInternally();
+        Entity txEntity = Datastore.get(gtx.txEntity.getKey());
+        assertThat(
+            (String) gtx.txEntity
+                .getProperty(GlobalTransaction.STATUS_PROPERTY),
+            is(GlobalTransaction.COMMITTED_STATUS));
+        assertThat(
+            (String) txEntity.getProperty(GlobalTransaction.STATUS_PROPERTY),
+            is(GlobalTransaction.COMMITTED_STATUS));
+        assertThat(tester.tasks.size(), is(1));
+        TaskQueueAddRequest task = tester.tasks.get(0);
+        assertThat(task.getUrl(), is("/slim3/gtx/rollforward/"
+            + Datastore.keyToString(txEntity.getKey())));
+        assertThat(task.getTransaction(), is(notNullValue()));
     }
 }

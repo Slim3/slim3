@@ -74,6 +74,15 @@ public final class Datastore {
     }
 
     /**
+     * Begins a global transaction.
+     * 
+     * @return a begun global transaction
+     */
+    public static GlobalTransaction beginGlobalTransaction() {
+        return new GlobalTransaction();
+    }
+
+    /**
      * Allocates a key within a namespace defined by the kind.
      * 
      * @param kind
