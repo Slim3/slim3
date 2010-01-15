@@ -20,6 +20,7 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -109,6 +110,24 @@ public class DatastoreUtilTest extends AppEngineTestCase {
         KeyRange range = DatastoreUtil.allocateIds(parentKey, "Child", 2);
         assertThat(range, is(notNullValue()));
         assertThat(range.getSize(), is(2L));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void allocateId() throws Exception {
+        Key key = DatastoreUtil.allocateId("Hoge");
+        assertThat(key, is(notNullValue()));
+        assertThat(DatastoreUtil.keysCache.size(), is(1));
+        Iterator<Key> keys = DatastoreUtil.keysCache.get("Hoge");
+        assertThat(keys, is(notNullValue()));
+        for (int i = 0; i < 50; i++) {
+            DatastoreUtil.allocateId("Hoge");
+        }
+        assertThat(
+            DatastoreUtil.keysCache.get("Hoge"),
+            is(not(sameInstance(keys))));
     }
 
     /**

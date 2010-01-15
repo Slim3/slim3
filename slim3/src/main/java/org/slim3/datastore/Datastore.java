@@ -92,7 +92,7 @@ public final class Datastore {
      *             if the kind parameter is null
      */
     public static Key allocateId(String kind) throws NullPointerException {
-        return allocateIds(kind, 1).iterator().next();
+        return DatastoreUtil.allocateId(kind);
     }
 
     /**

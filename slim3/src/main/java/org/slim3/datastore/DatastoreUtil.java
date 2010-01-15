@@ -17,6 +17,7 @@ package org.slim3.datastore;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -55,11 +56,22 @@ public final class DatastoreUtil {
 
     private static final int MAX_RETRY = 10;
 
+    private static final int KEY_CACHE_SIZE = 50;
+
     private static Logger logger =
         Logger.getLogger(DatastoreUtil.class.getName());
 
-    private static ConcurrentHashMap<String, ModelMeta<?>> modelMetaCache =
+    /**
+     * The cache for {@link ModelMeta}.
+     */
+    protected static ConcurrentHashMap<String, ModelMeta<?>> modelMetaCache =
         new ConcurrentHashMap<String, ModelMeta<?>>(87);
+
+    /**
+     * The cache for the result of allocateIds().
+     */
+    protected static ConcurrentHashMap<String, Iterator<Key>> keysCache =
+        new ConcurrentHashMap<String, Iterator<Key>>(87);
 
     private static volatile boolean initialized = false;
 
@@ -176,6 +188,29 @@ public final class DatastoreUtil {
             }
             throw e;
         }
+    }
+
+    /**
+     * Allocates a key within a namespace defined by the kind.
+     * 
+     * @param kind
+     *            the kind
+     * @return a key within a namespace defined by the kind
+     * @throws NullPointerException
+     *             if the kind parameter is null
+     */
+    public static Key allocateId(String kind) throws NullPointerException {
+        if (kind == null) {
+            throw new NullPointerException(
+                "The kind parameter must not be null.");
+        }
+        Iterator<Key> keys = keysCache.get(kind);
+        if (keys != null && keys.hasNext()) {
+            return keys.next();
+        }
+        keys = allocateIds(kind, KEY_CACHE_SIZE).iterator();
+        keysCache.put(kind, keys);
+        return keys.next();
     }
 
     /**
