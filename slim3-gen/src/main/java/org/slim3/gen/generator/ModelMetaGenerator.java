@@ -1239,26 +1239,20 @@ public class ModelMetaGenerator implements Generator {
                     "    throw new NullPointerException(\"The property(%1$s) must not be null.\");",
                     p.getFieldName());
             printer.println("}");
-            printer
-                .println(
-                    "if (m.%1$s().getModel() != null && m.%1$s().getKey() == null) {",
-                    p.getReadMethodName());
-            printer
-                .println(
-                    "    throw new NullPointerException(\"The key of the property(%1$s) must not be null. Set a key to the model or put the model to datastore.\");",
-                    p.getFieldName());
-            printer.println("}");
             if (p.isUnindexed()) {
                 printer
                     .println(
-                        "entity.setUnindexedProperty(\"%1$s\", m.%2$s().getKey());",
+                        "entity.setUnindexedProperty(\"%1$s\", %2$s.assignKeyIfNecessary(m.%3$s().getModelMeta(), m.%3$s().getModel()));",
                         p.getName(),
+                        ClassConstants.ModelMeta,
                         p.getReadMethodName());
             } else {
-                printer.println(
-                    "entity.setProperty(\"%1$s\", m.%2$s().getKey());",
-                    p.getName(),
-                    p.getReadMethodName());
+                printer
+                    .println(
+                        "entity.setProperty(\"%1$s\", %2$s.assignKeyIfNecessary(m.%3$s().getModelMeta(), m.%3$s().getModel()));",
+                        p.getName(),
+                        ClassConstants.ModelMeta,
+                        p.getReadMethodName());
             }
             return null;
         }
