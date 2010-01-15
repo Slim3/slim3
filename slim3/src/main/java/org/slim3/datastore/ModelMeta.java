@@ -242,6 +242,26 @@ public abstract class ModelMeta<M> {
     }
 
     /**
+     * Assigns a new key to the model if necessary.
+     * 
+     * @param model
+     *            the model
+     * @return a key
+     */
+    protected Key assignKeyIfNecessary(Object model) {
+        if (model == null) {
+            return null;
+        }
+        Key key = getKey(model);
+        if (key != null) {
+            return key;
+        }
+        key = Datastore.allocateId(kind);
+        setKey(model, key);
+        return key;
+    }
+
+    /**
      * Converts the long to a primitive short.
      * 
      * @param value

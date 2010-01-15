@@ -15,8 +15,12 @@
  */
 package org.slim3.datastore;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
+import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.AppEngineTestCase;
 
 import com.google.appengine.api.datastore.KeyFactory;
@@ -35,5 +39,15 @@ public class ModelMetaDatastoreTest extends AppEngineTestCase {
     @Test(expected = IllegalArgumentException.class)
     public void validateKey() throws Exception {
         meta.validateKey(KeyFactory.createKey("Aaa", 1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void assignKeyIfNecessary() throws Exception {
+        Hoge hoge = new Hoge();
+        assertThat(meta.assignKeyIfNecessary(hoge), is(notNullValue()));
+        assertThat(hoge.getKey(), is(notNullValue()));
     }
 }
