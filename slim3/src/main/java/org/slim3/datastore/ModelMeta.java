@@ -72,6 +72,26 @@ public abstract class ModelMeta<M> {
     protected BeanDesc beanDesc;
 
     /**
+     * Assigns a new key to the model if necessary.
+     * 
+     * @param modelMeta
+     * 
+     * @param model
+     *            the model
+     * @return a key
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null
+     */
+    protected static Key assignKeyIfNecessary(ModelMeta<?> modelMeta,
+            Object model) throws NullPointerException {
+        if (modelMeta == null) {
+            throw new NullPointerException(
+                "The modelMeta parameter must not be null.");
+        }
+        return modelMeta.assignKeyIfNecessary(model);
+    }
+
+    /**
      * Constructor.
      * 
      * @param kind
