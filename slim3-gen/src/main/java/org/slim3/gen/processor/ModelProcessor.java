@@ -85,7 +85,7 @@ public class ModelProcessor implements AnnotationProcessor {
                     e.sendError();
                 } catch (RuntimeException e) {
                     Logger.error(env, element.getPosition(), MessageFormatter
-                        .getMessage(MessageCode.SILM3GEN0001, annotation
+                        .getMessage(MessageCode.SLIM3GEN0001, annotation
                             .getQualifiedName()));
                     throw e;
                 }

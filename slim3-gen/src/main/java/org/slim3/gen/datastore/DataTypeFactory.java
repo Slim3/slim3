@@ -272,7 +272,7 @@ public class DataTypeFactory {
                 return;
             }
             throw new ValidationException(
-                MessageCode.SILM3GEN1002,
+                MessageCode.SLIM3GEN1002,
                 env,
                 declaration.getPosition(),
                 kind.name().toLowerCase());
@@ -463,7 +463,7 @@ public class DataTypeFactory {
                 declaredType.getActualTypeArguments();
             if (typeArgs.isEmpty()) {
                 throw new ValidationException(
-                    MessageCode.SILM3GEN1004,
+                    MessageCode.SLIM3GEN1004,
                     env,
                     declaration.getPosition(),
                     declaredType);
@@ -473,7 +473,7 @@ public class DataTypeFactory {
                 TypeUtil.toDeclaredType(elementType);
             if (elementDeclaredType == null) {
                 throw new ValidationException(
-                    MessageCode.SILM3GEN1016,
+                    MessageCode.SLIM3GEN1016,
                     env,
                     declaration.getPosition(),
                     elementType);
@@ -530,7 +530,7 @@ public class DataTypeFactory {
                 return new TreeSetType(className, typeName, elementType);
             }
             throw new ValidationException(
-                MessageCode.SILM3GEN1002,
+                MessageCode.SLIM3GEN1002,
                 env,
                 declaration.getPosition(),
                 className);

@@ -74,7 +74,7 @@ public class WebConfig {
             return rootPackageName;
         }
         throw new RuntimeException(MessageFormatter
-            .getMessage(MessageCode.SILM3GEN0008));
+            .getMessage(MessageCode.SLIM3GEN0008));
     }
 
     /**

@@ -194,12 +194,12 @@ public class AttributeMetaDescFactory {
                 if (classDeclaration
                     .equals(fieldDeclaration.getDeclaringType())) {
                     throw new ValidationException(
-                        MessageCode.SILM3GEN1035,
+                        MessageCode.SLIM3GEN1035,
                         env,
                         fieldDeclaration.getPosition());
                 }
                 throw new ValidationException(
-                    MessageCode.SILM3GEN1036,
+                    MessageCode.SLIM3GEN1036,
                     env,
                     classDeclaration.getPosition(),
                     fieldDeclaration.getSimpleName(),
@@ -308,12 +308,12 @@ public class AttributeMetaDescFactory {
             .getClassName())) {
             if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
                 throw new ValidationException(
-                    MessageCode.SILM3GEN1007,
+                    MessageCode.SLIM3GEN1007,
                     env,
                     fieldDeclaration.getPosition());
             }
             throw new ValidationException(
-                MessageCode.SILM3GEN1029,
+                MessageCode.SLIM3GEN1029,
                 env,
                 classDeclaration.getPosition(),
                 fieldDeclaration.getSimpleName(),
@@ -362,12 +362,12 @@ public class AttributeMetaDescFactory {
             && !ClassConstants.primitive_long.equals(className)) {
             if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
                 throw new ValidationException(
-                    MessageCode.SILM3GEN1008,
+                    MessageCode.SLIM3GEN1008,
                     env,
                     fieldDeclaration.getPosition());
             }
             throw new ValidationException(
-                MessageCode.SILM3GEN1030,
+                MessageCode.SLIM3GEN1030,
                 env,
                 classDeclaration.getPosition(),
                 fieldDeclaration.getSimpleName(),
@@ -489,12 +489,12 @@ public class AttributeMetaDescFactory {
                         if (classDeclaration.equals(fieldDeclaration
                             .getDeclaringType())) {
                             throw new ValidationException(
-                                MessageCode.SILM3GEN1033,
+                                MessageCode.SLIM3GEN1033,
                                 env,
                                 fieldDeclaration.getPosition());
                         }
                         throw new ValidationException(
-                            MessageCode.SILM3GEN1034,
+                            MessageCode.SLIM3GEN1034,
                             env,
                             classDeclaration.getPosition(),
                             fieldDeclaration.getSimpleName(),
@@ -622,12 +622,12 @@ public class AttributeMetaDescFactory {
         if (readMethodDeclaration == null) {
             if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
                 throw new ValidationException(
-                    MessageCode.SILM3GEN1011,
+                    MessageCode.SLIM3GEN1011,
                     env,
                     fieldDeclaration.getPosition());
             }
             throw new ValidationException(
-                MessageCode.SILM3GEN1024,
+                MessageCode.SLIM3GEN1024,
                 env,
                 classDeclaration.getPosition(),
                 fieldDeclaration.getSimpleName(),
@@ -636,12 +636,12 @@ public class AttributeMetaDescFactory {
         if (writeMethodDeclaration == null) {
             if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
                 throw new ValidationException(
-                    MessageCode.SILM3GEN1012,
+                    MessageCode.SLIM3GEN1012,
                     env,
                     fieldDeclaration.getPosition());
             }
             throw new ValidationException(
-                MessageCode.SILM3GEN1025,
+                MessageCode.SLIM3GEN1025,
                 env,
                 classDeclaration.getPosition(),
                 fieldDeclaration.getSimpleName(),
@@ -674,12 +674,12 @@ public class AttributeMetaDescFactory {
         if (readMethodDeclaration == null) {
             if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
                 throw new ValidationException(
-                    MessageCode.SILM3GEN1011,
+                    MessageCode.SLIM3GEN1011,
                     env,
                     fieldDeclaration.getPosition());
             }
             throw new ValidationException(
-                MessageCode.SILM3GEN1024,
+                MessageCode.SLIM3GEN1024,
                 env,
                 classDeclaration.getPosition(),
                 fieldDeclaration.getSimpleName(),
@@ -694,14 +694,14 @@ public class AttributeMetaDescFactory {
                     modelRefType.getReferenceModelClassName());
             if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
                 throw new ValidationException(
-                    MessageCode.SILM3GEN1041,
+                    MessageCode.SLIM3GEN1041,
                     env,
                     writeMethodDeclaration.getPosition(),
                     fieldDeclaration.getSimpleName(),
                     fieldDefinition);
             }
             throw new ValidationException(
-                MessageCode.SILM3GEN1042,
+                MessageCode.SLIM3GEN1042,
                 env,
                 classDeclaration.getPosition(),
                 fieldDeclaration.getSimpleName(),
@@ -736,12 +736,12 @@ public class AttributeMetaDescFactory {
         if (readMethodDeclaration == null) {
             if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
                 throw new ValidationException(
-                    MessageCode.SILM3GEN1011,
+                    MessageCode.SLIM3GEN1011,
                     env,
                     fieldDeclaration.getPosition());
             }
             throw new ValidationException(
-                MessageCode.SILM3GEN1024,
+                MessageCode.SLIM3GEN1024,
                 env,
                 classDeclaration.getPosition(),
                 fieldDeclaration.getSimpleName(),
@@ -756,7 +756,7 @@ public class AttributeMetaDescFactory {
                     inverseModelRefType.getReferenceModelClassName());
             if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
                 throw new ValidationException(
-                    MessageCode.SILM3GEN1039,
+                    MessageCode.SLIM3GEN1039,
                     env,
                     writeMethodDeclaration.getPosition(),
                     fieldDeclaration.getSimpleName(),
@@ -765,7 +765,7 @@ public class AttributeMetaDescFactory {
                     inverseModelRefType.getReferenceModelClassName());
             }
             throw new ValidationException(
-                MessageCode.SILM3GEN1040,
+                MessageCode.SLIM3GEN1040,
                 env,
                 classDeclaration.getPosition(),
                 fieldDeclaration.getSimpleName(),
@@ -864,12 +864,12 @@ public class AttributeMetaDescFactory {
             FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
         if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
             throw new ValidationException(
-                MessageCode.SILM3GEN1005,
+                MessageCode.SLIM3GEN1005,
                 env,
                 fieldDeclaration.getPosition());
         }
         throw new ValidationException(
-            MessageCode.SILM3GEN1026,
+            MessageCode.SLIM3GEN1026,
             env,
             classDeclaration.getPosition(),
             fieldDeclaration.getSimpleName(),
@@ -896,14 +896,14 @@ public class AttributeMetaDescFactory {
             String element1, String element2) {
         if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
             throw new ValidationException(
-                MessageCode.SILM3GEN1021,
+                MessageCode.SLIM3GEN1021,
                 env,
                 attribute.getPosition(),
                 element1,
                 element2);
         }
         throw new ValidationException(
-            MessageCode.SILM3GEN1027,
+            MessageCode.SLIM3GEN1027,
             env,
             classDeclaration.getPosition(),
             element1,
@@ -927,12 +927,12 @@ public class AttributeMetaDescFactory {
             FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
         if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
             throw new ValidationException(
-                MessageCode.SILM3GEN1009,
+                MessageCode.SLIM3GEN1009,
                 env,
                 fieldDeclaration.getPosition());
         }
         throw new ValidationException(
-            MessageCode.SILM3GEN1028,
+            MessageCode.SLIM3GEN1028,
             env,
             classDeclaration.getPosition(),
             fieldDeclaration.getSimpleName(),
@@ -951,12 +951,12 @@ public class AttributeMetaDescFactory {
             ClassDeclaration classDeclaration, FieldDeclaration fieldDeclaration) {
         if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
             throw new ValidationException(
-                MessageCode.SILM3GEN1031,
+                MessageCode.SLIM3GEN1031,
                 env,
                 fieldDeclaration.getPosition());
         }
         throw new ValidationException(
-            MessageCode.SILM3GEN1032,
+            MessageCode.SLIM3GEN1032,
             env,
             classDeclaration.getPosition(),
             fieldDeclaration.getSimpleName(),

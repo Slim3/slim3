@@ -103,7 +103,7 @@ public class GenModelTask extends AbstractGenJavaFileTask {
         }
         if (getProject().getProperty(modelClassNameProperty) != null) {
             throw new IllegalStateException(MessageFormatter.getMessage(
-                MessageCode.SILM3GEN0009,
+                MessageCode.SLIM3GEN0009,
                 modelClassNameProperty));
         }
 
@@ -172,7 +172,7 @@ public class GenModelTask extends AbstractGenJavaFileTask {
             String keyword = tokenizer.nextToken();
             if (!"extends".equals(keyword)) {
                 throw new RuntimeException(MessageFormatter.getSimpleMessage(
-                    MessageCode.SILM3GEN0012,
+                    MessageCode.SLIM3GEN0012,
                     keyword,
                     input));
             }
@@ -180,7 +180,7 @@ public class GenModelTask extends AbstractGenJavaFileTask {
             return parsedText;
         }
         throw new RuntimeException(MessageFormatter.getSimpleMessage(
-            MessageCode.SILM3GEN0013,
+            MessageCode.SLIM3GEN0013,
             input,
             count));
     }

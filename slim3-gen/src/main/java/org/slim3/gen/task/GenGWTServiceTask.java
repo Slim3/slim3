@@ -101,7 +101,7 @@ public class GenGWTServiceTask extends AbstractGenJavaFileTask {
         }
         if (getProject().getProperty(serviceClassNameProperty) != null) {
             throw new IllegalStateException(MessageFormatter.getMessage(
-                MessageCode.SILM3GEN0009,
+                MessageCode.SLIM3GEN0009,
                 serviceClassNameProperty));
         }
 

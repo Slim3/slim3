@@ -190,7 +190,7 @@ public class ModelMetaDescFactory {
     protected void validateTopLevel(ClassDeclaration classDeclaration) {
         if (classDeclaration.getDeclaringType() != null) {
             throw new ValidationException(
-                MessageCode.SILM3GEN1019,
+                MessageCode.SLIM3GEN1019,
                 env,
                 classDeclaration.getPosition());
         }
@@ -205,7 +205,7 @@ public class ModelMetaDescFactory {
     protected void validatePublicModifier(ClassDeclaration classDeclaration) {
         if (!classDeclaration.getModifiers().contains(Modifier.PUBLIC)) {
             throw new ValidationException(
-                MessageCode.SILM3GEN1017,
+                MessageCode.SLIM3GEN1017,
                 env,
                 classDeclaration.getPosition());
         }
@@ -219,7 +219,7 @@ public class ModelMetaDescFactory {
     protected void validateNonGenericType(ClassDeclaration classDeclaration) {
         if (!classDeclaration.getFormalTypeParameters().isEmpty()) {
             throw new ValidationException(
-                MessageCode.SILM3GEN1020,
+                MessageCode.SLIM3GEN1020,
                 env,
                 classDeclaration.getPosition());
         }
@@ -234,7 +234,7 @@ public class ModelMetaDescFactory {
     protected void validateDefaultConstructor(ClassDeclaration classDeclaration) {
         if (!DeclarationUtil.hasPublicDefaultConstructor(classDeclaration)) {
             throw new ValidationException(
-                MessageCode.SILM3GEN1018,
+                MessageCode.SLIM3GEN1018,
                 env,
                 classDeclaration.getPosition());
         }
@@ -260,7 +260,7 @@ public class ModelMetaDescFactory {
             AnnotationMirrorUtil
                 .getElementValue(anno, AnnotationConstants.kind);
         if (value != null && value.length() > 0) {
-            throw new ValidationException(MessageCode.SILM3GEN1022, env, anno
+            throw new ValidationException(MessageCode.SLIM3GEN1022, env, anno
                 .getPosition());
         }
     }
@@ -306,14 +306,14 @@ public class ModelMetaDescFactory {
             if (attributeMetaDesc.isPrimaryKey()
                 && modelMetaDesc.getKeyAttributeMetaDesc() != null) {
                 throw new ValidationException(
-                    MessageCode.SILM3GEN1013,
+                    MessageCode.SLIM3GEN1013,
                     env,
                     classDeclaration.getPosition());
             }
             if (attributeMetaDesc.isVersion()
                 && modelMetaDesc.getVersionAttributeMetaDesc() != null) {
                 throw new ValidationException(
-                    MessageCode.SILM3GEN1014,
+                    MessageCode.SLIM3GEN1014,
                     env,
                     classDeclaration.getPosition());
             }
@@ -322,7 +322,7 @@ public class ModelMetaDescFactory {
         if (!modelMetaDesc.isError()
             && modelMetaDesc.getKeyAttributeMetaDesc() == null) {
             throw new ValidationException(
-                MessageCode.SILM3GEN1015,
+                MessageCode.SLIM3GEN1015,
                 env,
                 classDeclaration.getPosition());
         }

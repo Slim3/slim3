@@ -107,7 +107,7 @@ public abstract class AbstractGenJavaFileTask extends AbstractGenFileTask {
         String className = javaFile.getClassName();
         if (file.exists()) {
             log(MessageFormatter.getSimpleMessage(
-                MessageCode.SILM3GEN0004,
+                MessageCode.SLIM3GEN0004,
                 className));
             return;
         }
@@ -121,7 +121,7 @@ public abstract class AbstractGenJavaFileTask extends AbstractGenFileTask {
             }
         }
         log(MessageFormatter.getSimpleMessage(
-            MessageCode.SILM3GEN0005,
+            MessageCode.SLIM3GEN0005,
             className));
     }
 

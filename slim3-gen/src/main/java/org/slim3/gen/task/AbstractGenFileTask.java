@@ -98,7 +98,7 @@ public abstract class AbstractGenFileTask extends Task {
             throws IOException {
         if (file.exists()) {
             log(MessageFormatter.getSimpleMessage(
-                MessageCode.SILM3GEN0006,
+                MessageCode.SLIM3GEN0006,
                 file.getAbsolutePath()));
             return;
         }
@@ -111,7 +111,7 @@ public abstract class AbstractGenFileTask extends Task {
                 printer.close();
             }
         }
-        log(MessageFormatter.getSimpleMessage(MessageCode.SILM3GEN0007, file
+        log(MessageFormatter.getSimpleMessage(MessageCode.SLIM3GEN0007, file
             .getAbsolutePath()));
     }
 

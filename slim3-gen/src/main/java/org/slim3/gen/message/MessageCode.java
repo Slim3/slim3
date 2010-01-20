@@ -24,97 +24,97 @@ package org.slim3.gen.message;
 public enum MessageCode {
 
     /** */
-    SILM3GEN0001("Failed to process annotation[{0}]. Check a detail message displayed in the Error Log view(for Eclipse) or the console(for javac)."),
+    SLIM3GEN0001("Failed to process annotation[{0}]. Check a detail message displayed in the Error Log view(for Eclipse) or the console(for javac)."),
     /** */
-    SILM3GEN0004("Already exists. Generation Skipped. ({0}.java:0)"),
+    SLIM3GEN0004("Already exists. Generation Skipped. ({0}.java:0)"),
     /** */
-    SILM3GEN0005("Generated. ({0}.java:0)"),
+    SLIM3GEN0005("Generated. ({0}.java:0)"),
     /** */
-    SILM3GEN0006("Already exists. Generation Skipped. ({0})"),
+    SLIM3GEN0006("Already exists. Generation Skipped. ({0})"),
     /** */
-    SILM3GEN0007("Generated. ({0})"),
+    SLIM3GEN0007("Generated. ({0})"),
     /** */
-    SILM3GEN0008("The context-param 'slim3.rootPackage' is not found in web.xml."),
+    SLIM3GEN0008("The context-param 'slim3.rootPackage' is not found in web.xml."),
     /** */
-    SILM3GEN0009("The property[{0}] has already been set."),
+    SLIM3GEN0009("The property[{0}] has already been set."),
     /** */
-    SILM3GEN0011("@com.google.gwt.user.client.rpc.RemoteServiceRelativePath is available only to an interface."),
+    SLIM3GEN0011("@com.google.gwt.user.client.rpc.RemoteServiceRelativePath is available only to an interface."),
     /** */
-    SILM3GEN0012("The second token[{0}] of the input[{1}] is illegal. It must be \"extends\"."),
+    SLIM3GEN0012("The second token[{0}] of the input[{1}] is illegal. It must be \"extends\"."),
     /** */
-    SILM3GEN0013("The input[{0}] consists of [{1}] tokens. The token count must be 1 or 3."),
+    SLIM3GEN0013("The input[{0}] consists of [{1}] tokens. The token count must be 1 or 3."),
     /** */
-    SILM3GEN1001("Unknown type[{0}] is found."),
+    SLIM3GEN1001("Unknown type[{0}] is found."),
     /** */
-    SILM3GEN1002("The class[{0}] is not supported."),
+    SLIM3GEN1002("The class[{0}] is not supported."),
     /** */
-    SILM3GEN1004("The class[{0}] must be parametalized."),
+    SLIM3GEN1004("The class[{0}] must be parametalized."),
     /** */
-    SILM3GEN1005("Specify @Attribute(lob = true) or @Attribute(persistent = false)."),
+    SLIM3GEN1005("Specify @Attribute(lob = true) or @Attribute(persistent = false)."),
     /** */
-    SILM3GEN1007("The type annotated with @Attribute(primaryKey = true) must be com.google.appengine.api.datastore.Key."),
+    SLIM3GEN1007("The type annotated with @Attribute(primaryKey = true) must be com.google.appengine.api.datastore.Key."),
     /** */
-    SILM3GEN1008("The type annotated with @Attribute(version = true) must be primitive long or java.lang.Long."),
+    SLIM3GEN1008("The type annotated with @Attribute(version = true) must be primitive long or java.lang.Long."),
     /** */
-    SILM3GEN1009("The type annotated with @Attribute(lob = true) is not supported."),
+    SLIM3GEN1009("The type annotated with @Attribute(lob = true) is not supported."),
     /** */
-    SILM3GEN1011("The getter method is not found."),
+    SLIM3GEN1011("The getter method is not found."),
     /** */
-    SILM3GEN1012("The setter method is not found."),
+    SLIM3GEN1012("The setter method is not found."),
     /** */
-    SILM3GEN1013("Multiple primary keys are not allowed."),
+    SLIM3GEN1013("Multiple primary keys are not allowed."),
     /** */
-    SILM3GEN1014("Multiple version property are not allowed."),
+    SLIM3GEN1014("Multiple version property are not allowed."),
     /** */
-    SILM3GEN1015("You should define @Attribute(primaryKey = true) to a primary key field."),
+    SLIM3GEN1015("You should define @Attribute(primaryKey = true) to a primary key field."),
     /** */
-    SILM3GEN1016("The type parameter[{0}] is not supported."),
+    SLIM3GEN1016("The type parameter[{0}] is not supported."),
     /** */
-    SILM3GEN1017("The modifier must be public."),
+    SLIM3GEN1017("The modifier must be public."),
     /** */
-    SILM3GEN1018("The public default constructor is not found."),
+    SLIM3GEN1018("The public default constructor is not found."),
     /** */
-    SILM3GEN1019("The model class must be top level class."),
+    SLIM3GEN1019("The model class must be top level class."),
     /** */
-    SILM3GEN1020("The type parameter is not supported."),
+    SLIM3GEN1020("The type parameter is not supported."),
     /** */
-    SILM3GEN1021("The element[{0}] and the element[{1}] can not be defined at the same time."),
+    SLIM3GEN1021("The element[{0}] and the element[{1}] can not be defined at the same time."),
     /** */
-    SILM3GEN1022("The kind element is not supported for a sub model, because the kind of sub model is identical to the super model."),
+    SLIM3GEN1022("The kind element is not supported for a sub model, because the kind of sub model is identical to the super model."),
     /** */
-    SILM3GEN1024("The getter method is not found. (the property[{0}] of the class[{1}])."),
+    SLIM3GEN1024("The getter method is not found. (the property[{0}] of the class[{1}])."),
     /** */
-    SILM3GEN1025("The setter method is not found. (the property[{0}] of the class[{1}])."),
+    SLIM3GEN1025("The setter method is not found. (the property[{0}] of the class[{1}])."),
     /** */
-    SILM3GEN1026("Specify @Attribute(lob = true) or @Attribute(persistent = false). (the property[{0}] of the class[{1}])."),
+    SLIM3GEN1026("Specify @Attribute(lob = true) or @Attribute(persistent = false). (the property[{0}] of the class[{1}])."),
     /** */
-    SILM3GEN1027("The element[{0}] and the element[{1}] can not be defined at the same time. (the property[{2}] of the class[{3}])."),
+    SLIM3GEN1027("The element[{0}] and the element[{1}] can not be defined at the same time. (the property[{2}] of the class[{3}])."),
     /** */
-    SILM3GEN1028("The type annotated with @Attribute(lob = true) is not supported. (the property[{0}] of the class[{1}])."),
+    SLIM3GEN1028("The type annotated with @Attribute(lob = true) is not supported. (the property[{0}] of the class[{1}])."),
     /** */
-    SILM3GEN1029("The type annotated with @Attribute(primaryKey = true) must be com.google.appengine.api.datastore.Key. (the property[{0}] of the class[{1}])."),
+    SLIM3GEN1029("The type annotated with @Attribute(primaryKey = true) must be com.google.appengine.api.datastore.Key. (the property[{0}] of the class[{1}])."),
     /** */
-    SILM3GEN1030("The type annotated with @Attribute(version = true) must be primitive long or java.lang.Long. (the property[{0}] of the class[{1}])."),
+    SLIM3GEN1030("The type annotated with @Attribute(version = true) must be primitive long or java.lang.Long. (the property[{0}] of the class[{1}])."),
     /** */
-    SILM3GEN1031("The actual type argument of ModelRef must be a model."),
+    SLIM3GEN1031("The actual type argument of ModelRef must be a model."),
     /** */
-    SILM3GEN1032("The actual type argument of ModelRef must be a model. (the property[{0}] of the class[{1}])."),
+    SLIM3GEN1032("The actual type argument of ModelRef must be a model. (the property[{0}] of the class[{1}])."),
     /** */
-    SILM3GEN1033("The actual type argument of ModelRef is not specified."),
+    SLIM3GEN1033("The actual type argument of ModelRef is not specified."),
     /** */
-    SILM3GEN1034("The actual type argument of ModelRef is not specified. (the property[{0}] of the class[{1}])."),
+    SLIM3GEN1034("The actual type argument of ModelRef is not specified. (the property[{0}] of the class[{1}])."),
     /** */
-    SILM3GEN1035("Specify @Attribute(persistent = false). ModelRef has a key internally, so you need to persist it. But this property is read only, so you do not need to persist it."),
+    SLIM3GEN1035("Specify @Attribute(persistent = false). ModelRef has a key internally, so you need to persist it. But this property is read only, so you do not need to persist it."),
     /** */
-    SILM3GEN1036("Specify @Attribute(persistent = false). ModelRef has a key internally, so you need to persist it. But this property is read only, so you do not need to persist it. (the property[{0}] of the class[{1}])"),
+    SLIM3GEN1036("Specify @Attribute(persistent = false). ModelRef has a key internally, so you need to persist it. But this property is read only, so you do not need to persist it. (the property[{0}] of the class[{1}])"),
     /** */
-    SILM3GEN1039("The setter method for the field[{0}] is not allowed. Define the field as follows:\n{1}\nThe \"xxx\" means the mapped ModelRef<{2}> property name in the class[{3}]."),
+    SLIM3GEN1039("The setter method for the field[{0}] is not allowed. Define the field as follows:\n{1}\nThe \"xxx\" means the mapped ModelRef<{2}> property name in the class[{3}]."),
     /** */
-    SILM3GEN1040("The setter method for the field[{0}] of the class[{1}] is not allowed. Define the field as follows:\n{2}\nThe \"xxx\" means the mapped ModelRef<{3}> property name in the class[{4}]."),
+    SLIM3GEN1040("The setter method for the field[{0}] of the class[{1}] is not allowed. Define the field as follows:\n{2}\nThe \"xxx\" means the mapped ModelRef<{3}> property name in the class[{4}]."),
     /** */
-    SILM3GEN1041("The setter method for the field[{0}] is not allowed. Define the field as follows:\n{1}"),
+    SLIM3GEN1041("The setter method for the field[{0}] is not allowed. Define the field as follows:\n{1}"),
     /** */
-    SILM3GEN1042("The setter method for the field[{0}] of the class[{1}] is not allowed. Define the field as follows:\n{2}"), ;
+    SLIM3GEN1042("The setter method for the field[{0}] of the class[{1}] is not allowed. Define the field as follows:\n{2}"), ;
 
     /** the message */
     public final String message;
