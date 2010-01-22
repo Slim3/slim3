@@ -41,11 +41,10 @@ public class ViewGenerator implements Generator {
     }
 
     public void generate(Printer p) {
-        p.println("<%%@page pageEncoding=\"UTF-8\" isELIgnored=\"false\"%%>");
+        p
+            .println("<%%@page pageEncoding=\"UTF-8\" isELIgnored=\"false\" session=\"false\"%%>");
         p
             .println("<%%@taglib prefix=\"c\" uri=\"http://java.sun.com/jsp/jstl/core\"%%>");
-        p
-            .println("<%%@taglib prefix=\"fmt\" uri=\"http://java.sun.com/jsp/jstl/fmt\"%%>");
         p
             .println("<%%@taglib prefix=\"fn\" uri=\"http://java.sun.com/jsp/jstl/functions\"%%>");
         p
