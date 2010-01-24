@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cronentries>
+<!--
+  <cron>
+    <url>/cron/</url>
+    <description>for waking up the instance</description>
+    <schedule>every 1 minutes</schedule>
+  </cron>
+-->
+</cronentries>
