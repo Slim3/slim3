@@ -18,13 +18,20 @@ package org.slim3.tester;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+import java.util.concurrent.Future;
+
 import org.junit.After;
 import org.junit.Test;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityTranslator;
 import com.google.apphosting.api.ApiProxy;
+import com.google.apphosting.api.ApiProxy.ApiConfig;
+import com.google.apphosting.api.ApiProxy.Delegate;
+import com.google.apphosting.api.ApiProxy.Environment;
+import com.google.apphosting.api.DatastorePb.PutRequest;
 
 /**
  * @author higa
@@ -52,6 +59,33 @@ public class AppEngineTester2Test {
         tester.setUp();
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         ds.put(new Entity("Hoge"));
+        tester.tearDown();
+        ApiProxy.setDelegate(AppEngineTester.apiProxyLocalImpl);
+        ApiProxy.setEnvironmentForCurrentThread(new TestEnvironment());
+        assertThat(tester.count("Hoge"), is(0));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void deleteEntitiesForAsyncPut() throws Exception {
+        tester.setUp();
+        Environment env = ApiProxy.getCurrentEnvironment();
+        Delegate<Environment> delegate = ApiProxy.getDelegate();
+        PutRequest reqPb = new PutRequest();
+        reqPb.addEntity(EntityTranslator.convertToPb(new Entity("Hoge")));
+        Future<byte[]> future =
+            delegate.makeAsyncCall(
+                env,
+                AppEngineTester.DATASTORE_SERVICE,
+                AppEngineTester.PUT_METHOD,
+                reqPb.toByteArray(),
+                new ApiConfig());
+        future.get();
+        assertThat(tester.count("Hoge"), is(1));
         tester.tearDown();
         ApiProxy.setDelegate(AppEngineTester.apiProxyLocalImpl);
         ApiProxy.setEnvironmentForCurrentThread(new TestEnvironment());

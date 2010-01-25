@@ -24,7 +24,10 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import org.slim3.datastore.DatastoreUtil;
@@ -176,9 +179,9 @@ public class AppEngineTester implements Delegate<Environment> {
     protected Environment originalEnvironment;
 
     /**
-     * The list of put keys.
+     * The set of put keys.
      */
-    protected List<Key> putKeyList = new ArrayList<Key>();
+    protected Set<Key> putKeys = new HashSet<Key>();
 
     /**
      * The handler to fetch URL.
@@ -339,9 +342,9 @@ public class AppEngineTester implements Delegate<Environment> {
         for (Transaction tx : ds.getActiveTransactions()) {
             tx.rollback();
         }
-        if (!putKeyList.isEmpty()) {
-            ds.delete(putKeyList);
-            putKeyList.clear();
+        if (!putKeys.isEmpty()) {
+            ds.delete(putKeys);
+            putKeys.clear();
         }
         mailMessages.clear();
         ApiProxy.setDelegate(originalDelegate);
@@ -381,7 +384,7 @@ public class AppEngineTester implements Delegate<Environment> {
             PutResponse response = new PutResponse();
             response.mergeFrom(responseBuf);
             for (Reference r : response.keys()) {
-                putKeyList.add(DatastoreUtil.referenceToKey(r));
+                putKeys.add(DatastoreUtil.referenceToKey(r));
             }
         } else if (service.equals(MAIL_SERVICE)
             && method.startsWith(SEND_METHOD)) { // Send[ToAdmins]
@@ -394,12 +397,30 @@ public class AppEngineTester implements Delegate<Environment> {
 
     public Future<byte[]> makeAsyncCall(Environment env, String service,
             String method, byte[] requestBuf, ApiConfig config) {
-        return parentDelegate.makeAsyncCall(
-            env,
-            service,
-            method,
-            requestBuf,
-            config);
+        Future<byte[]> future =
+            parentDelegate.makeAsyncCall(
+                env,
+                service,
+                method,
+                requestBuf,
+                config);
+        byte[] responseBuf = null;
+        try {
+            responseBuf = future.get();
+        } catch (InterruptedException e) {
+            throw ThrowableUtil.wrap(e);
+        } catch (ExecutionException e) {
+            Throwable cause = e.getCause();
+            throw ThrowableUtil.wrap(cause);
+        }
+        if (DATASTORE_SERVICE.equals(service) && PUT_METHOD.equals(method)) {
+            PutResponse response = new PutResponse();
+            response.mergeFrom(responseBuf);
+            for (Reference r : response.keys()) {
+                putKeys.add(DatastoreUtil.referenceToKey(r));
+            }
+        }
+        return future;
     }
 
     public void log(Environment env, LogRecord rec) {
