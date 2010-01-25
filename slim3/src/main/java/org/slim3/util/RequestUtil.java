@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 public final class RequestUtil {
 
     /**
-     * Wraps and throws the exception.
+     * Returns the path of the request.
      * 
      * @param request
      *            the request
@@ -37,7 +37,8 @@ public final class RequestUtil {
     public static String getPath(HttpServletRequest request)
             throws NullPointerException {
         if (request == null) {
-            throw new NullPointerException("The request parameter is null.");
+            throw new NullPointerException(
+                "The request parameter must not be null.");
         }
         return request.getServletPath();
     }

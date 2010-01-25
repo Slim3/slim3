@@ -191,7 +191,7 @@ public class FrontController implements Filter {
     }
 
     /**
-     * Initializes the default time zone.
+     * Initializes the bundle name.
      */
     protected void initBundleName() {
         bundleName =
