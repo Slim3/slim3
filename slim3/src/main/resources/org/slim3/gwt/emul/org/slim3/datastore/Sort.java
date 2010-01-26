@@ -15,11 +15,11 @@ public class Sort implements Serializable {
     protected Sort() {
     }
 
-    public Sort(String propertyName) throws NullPointerException {
+    public Sort(CharSequence propertyName) throws NullPointerException {
         this(propertyName, SortDirection.ASCENDING);
     }
 
-    public Sort(String propertyName, SortDirection direction)
+    public Sort(CharSequence propertyName, SortDirection direction)
             throws NullPointerException {
         if (propertyName == null) {
             throw new NullPointerException(
@@ -29,7 +29,7 @@ public class Sort implements Serializable {
             throw new NullPointerException(
                 "The direction parameter must not be null.");
         }
-        this.propertyName = propertyName;
+        this.propertyName = propertyName.toString();
         this.direction = direction;
     }
 

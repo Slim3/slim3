@@ -68,8 +68,9 @@ public class InverseModelListRef<M, O> extends AbstractInverseModelRef<M, O> {
      *             mappedPropertyName parameter is null or if the owner
      *             parameter is null
      */
-    public InverseModelListRef(Class<M> modelClass, String mappedPropertyName,
-            O owner, Sort... defaultSorts) throws NullPointerException {
+    public InverseModelListRef(Class<M> modelClass,
+            CharSequence mappedPropertyName, O owner, Sort... defaultSorts)
+            throws NullPointerException {
         super(modelClass, mappedPropertyName, owner);
         this.defaultSorts = defaultSorts;
     }

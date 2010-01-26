@@ -12,7 +12,7 @@ public abstract class AbstractInverseModelRef<M, O> extends AbstractModelRef<M> 
     }
 
     public AbstractInverseModelRef(Class<M> modelClass,
-            String mappedPropertyName, O owner) throws NullPointerException {
+            CharSequence mappedPropertyName, O owner) throws NullPointerException {
         super(modelClass);
         if (mappedPropertyName == null) {
             throw new NullPointerException(
@@ -21,7 +21,7 @@ public abstract class AbstractInverseModelRef<M, O> extends AbstractModelRef<M> 
         if (owner == null) {
             throw new NullPointerException("The owner must not be null.");
         }
-        this.mappedPropertyName = mappedPropertyName;
+        this.mappedPropertyName = mappedPropertyName.toString();
         this.owner = owner;
     }
 }

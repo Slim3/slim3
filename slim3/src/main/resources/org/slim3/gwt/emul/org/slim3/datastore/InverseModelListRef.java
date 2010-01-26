@@ -13,7 +13,7 @@ public class InverseModelListRef<M, O> extends AbstractInverseModelRef<M, O> {
     protected InverseModelListRef() {
     }
 
-    public InverseModelListRef(Class<M> modelClass, String mappedPropertyName,
+    public InverseModelListRef(Class<M> modelClass, CharSequence mappedPropertyName,
             O owner, Sort... defaultSorts) {
         super(modelClass, mappedPropertyName, owner);
         this.defaultSorts = defaultSorts;

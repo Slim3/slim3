@@ -9,7 +9,7 @@ public class InverseModelRef<M, O> extends AbstractInverseModelRef<M, O> {
     protected InverseModelRef() {
     }
 
-    public InverseModelRef(Class<M> modelClass, String mappedPropertyName,
+    public InverseModelRef(Class<M> modelClass, CharSequence mappedPropertyName,
             O owner) {
         super(modelClass, mappedPropertyName, owner);
     }

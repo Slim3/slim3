@@ -58,8 +58,9 @@ public class InverseModelRef<M, O> extends AbstractInverseModelRef<M, O> {
      *             mappedPropertyName parameter is null or if the owner
      *             parameter is null
      */
-    public InverseModelRef(Class<M> modelClass, String mappedPropertyName,
-            O owner) throws NullPointerException {
+    public InverseModelRef(Class<M> modelClass,
+            CharSequence mappedPropertyName, O owner)
+            throws NullPointerException {
         super(modelClass, mappedPropertyName, owner);
     }
 
