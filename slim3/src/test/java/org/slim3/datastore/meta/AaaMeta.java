@@ -1,6 +1,5 @@
 package org.slim3.datastore.meta;
 
-import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 
 //@javax.annotation.Generated(value = { "slim3-gen", "null" }, date = "2009-11-09 15:30:15")
@@ -81,14 +80,6 @@ public final class AaaMeta extends
         org.slim3.datastore.model.Aaa m = (org.slim3.datastore.model.Aaa) model;
         long version = m.getVersion() != null ? m.getVersion().longValue() : 0L;
         m.setVersion(Long.valueOf(version + 1L));
-    }
-
-    @Override
-    protected void prePut(Entity entity) {
-    }
-
-    @Override
-    protected void preDelete(Key key) {
     }
 
     @Override

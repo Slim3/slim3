@@ -6,7 +6,6 @@ import org.slim3.datastore.ModelRef;
 import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Hoge;
 
-import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 
 /**
@@ -109,14 +108,6 @@ public final class BbbMeta extends
         org.slim3.datastore.model.Bbb m = (org.slim3.datastore.model.Bbb) model;
         long version = m.getVersion() != null ? m.getVersion().longValue() : 0L;
         m.setVersion(Long.valueOf(version + 1L));
-    }
-
-    @Override
-    protected void prePut(Entity entity) {
-    }
-
-    @Override
-    protected void preDelete(Key key) {
     }
 
     @Override

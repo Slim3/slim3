@@ -524,12 +524,4 @@ public class HogeMeta extends ModelMeta<Hoge> {
         long version = m.getVersion() != null ? m.getVersion().longValue() : 0L;
         m.setVersion(version + 1);
     }
-
-    @Override
-    protected void prePut(Entity entity) {
-    }
-
-    @Override
-    protected void preDelete(Key key) {
-    }
 }

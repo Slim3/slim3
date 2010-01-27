@@ -62,9 +62,4 @@ public @interface Attribute {
      * Whether this property is unindexed.
      */
     boolean unindexed() default false;
-
-    /**
-     * The array of attribute listeners.
-     */
-    Class<? extends AttributeListener>[] attributeListeners() default {};
 }

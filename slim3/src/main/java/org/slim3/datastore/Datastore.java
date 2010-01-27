@@ -79,7 +79,8 @@ public final class Datastore {
      * @return a begun global transaction
      */
     public static GlobalTransaction beginGlobalTransaction() {
-        return new GlobalTransaction();
+        GlobalTransaction gtx = new GlobalTransaction();
+        return gtx;
     }
 
     /**
@@ -738,6 +739,73 @@ public final class Datastore {
     }
 
     /**
+     * Returns an entity specified by the key without transaction.
+     * 
+     * @param key
+     *            the key
+     * @return an entity specified by the key
+     * @throws NullPointerException
+     *             if the key parameter is null
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     */
+    public static Entity getWithoutTx(Key key) throws NullPointerException,
+            EntityNotFoundRuntimeException {
+        return DatastoreUtil.get((Transaction) null, key);
+    }
+
+    /**
+     * Returns a model specified by the key without transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param key
+     *            the key
+     * @return a model specified by the key
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
+     */
+    public static <M> M getWithoutTx(Class<M> modelClass, Key key)
+            throws NullPointerException, EntityNotFoundRuntimeException,
+            IllegalArgumentException {
+        return getWithoutTx(getModelMeta(modelClass), key);
+    }
+
+    /**
+     * Returns a model specified by the key without transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param key
+     *            the key
+     * @return a model specified by the key
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     */
+    public static <M> M getWithoutTx(ModelMeta<M> modelMeta, Key key)
+            throws NullPointerException, EntityNotFoundRuntimeException {
+        if (modelMeta == null) {
+            throw new NullPointerException("The modelMeta parameter is null.");
+        }
+        Entity entity = getWithoutTx(key);
+        ModelMeta<M> mm = DatastoreUtil.getModelMeta(modelMeta, entity);
+        mm.validateKey(key);
+        return mm.entityToModel(entity);
+    }
+
+    /**
      * Returns a model specified by the key and checks the version. If there is
      * a current transaction, this operation will execute within that
      * transaction.
@@ -836,7 +904,7 @@ public final class Datastore {
      *             if the transaction is not null and the transaction is not
      *             active
      * @throws EntityNotFoundRuntimeException
-     *             if no entity specified by the key could be found
+     *             if no entity specified by the key is found
      */
     public static Entity get(Transaction tx, Key key)
             throws NullPointerException, IllegalStateException,
@@ -1138,6 +1206,141 @@ public final class Datastore {
     }
 
     /**
+     * Returns entities specified by the keys without transaction.
+     * 
+     * @param keys
+     *            the keys
+     * @return entities specified by the key
+     * @throws NullPointerException
+     *             if the keys parameter is null
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     */
+    public static List<Entity> getWithoutTx(Iterable<Key> keys)
+            throws NullPointerException, EntityNotFoundRuntimeException {
+        return mapToList(keys, getAsMapWithoutTx(keys));
+    }
+
+    /**
+     * Returns entities specified by the keys. If there is a current
+     * transaction, this operation will execute within that transaction.
+     * 
+     * @param keys
+     *            the keys
+     * @return entities specified by the key
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     */
+    public static List<Entity> getWithoutTx(Key... keys)
+            throws EntityNotFoundRuntimeException {
+        return getWithoutTx(Arrays.asList(keys));
+    }
+
+    /**
+     * Returns models specified by the keys without transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param keys
+     *            the keys
+     * @return models specified by the keys
+     * @throws NullPointerException
+     *             if the modelClass parameter is null of if the keys parameter
+     *             is null
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
+     */
+    public static <M> List<M> getWithoutTx(Class<M> modelClass,
+            Iterable<Key> keys) throws NullPointerException,
+            EntityNotFoundRuntimeException, IllegalArgumentException {
+        return getWithoutTx(getModelMeta(modelClass), keys);
+    }
+
+    /**
+     * Returns models specified by the keys without transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param keys
+     *            the keys
+     * @return models specified by the keys
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null of if the keys parameter
+     *             is null
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
+     */
+    public static <M> List<M> getWithoutTx(ModelMeta<M> modelMeta,
+            Iterable<Key> keys) throws NullPointerException,
+            EntityNotFoundRuntimeException, IllegalArgumentException {
+        return mapToList(modelMeta, keys, getAsMapWithoutTx(keys));
+
+    }
+
+    /**
+     * Returns models specified by the keys without transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param keys
+     *            the keys
+     * @return models specified by the keys
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
+     */
+    public static <M> List<M> getWithoutTx(Class<M> modelClass, Key... keys)
+            throws NullPointerException, EntityNotFoundRuntimeException,
+            IllegalArgumentException {
+        return getWithoutTx(modelClass, Arrays.asList(keys));
+    }
+
+    /**
+     * Returns models specified by the keys without transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param keys
+     *            the keys
+     * @return models specified by the keys
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null or if the keys parameter
+     *             is null
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
+     */
+    public static <M> List<M> getWithoutTx(ModelMeta<M> modelMeta, Key... keys)
+            throws NullPointerException, EntityNotFoundRuntimeException,
+            IllegalArgumentException {
+        return getWithoutTx(modelMeta, Arrays.asList(keys));
+    }
+
+    /**
      * Returns entities specified by the keys within the provided transaction.
      * 
      * @param tx
@@ -1312,7 +1515,7 @@ public final class Datastore {
      */
     public static Map<Key, Entity> getAsMap(Iterable<Key> keys)
             throws NullPointerException {
-        return DatastoreUtil.get(keys);
+        return DatastoreUtil.getAsMap(keys);
     }
 
     /**
@@ -1424,6 +1627,123 @@ public final class Datastore {
     }
 
     /**
+     * Returns entities specified by the keys without transaction.
+     * 
+     * @param keys
+     *            the keys
+     * @return entities specified by the keys
+     * @throws NullPointerException
+     *             if the keys parameter is null
+     */
+    public static Map<Key, Entity> getAsMapWithoutTx(Iterable<Key> keys)
+            throws NullPointerException {
+        return DatastoreUtil.getAsMap((Transaction) null, keys);
+    }
+
+    /**
+     * Returns entities specified by the keys without transaction.
+     * 
+     * @param keys
+     *            the keys
+     * @return entities specified by the keys
+     */
+    public static Map<Key, Entity> getAsMapWithoutTx(Key... keys) {
+        return getAsMapWithoutTx(Arrays.asList(keys));
+    }
+
+    /**
+     * Returns models specified by the keys without transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param keys
+     *            the keys
+     * @return models specified by the keys
+     * @throws NullPointerException
+     *             if the modelClass parameter is null or if the keys parameter
+     *             is null
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
+     */
+    public static <M> Map<Key, M> getAsMapWithoutTx(Class<M> modelClass,
+            Iterable<Key> keys) throws NullPointerException,
+            IllegalArgumentException {
+        return getAsMapWithoutTx(getModelMeta(modelClass), keys);
+    }
+
+    /**
+     * Returns models specified by the keys without transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param keys
+     *            the keys
+     * @return models specified by the keys
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null or if the keys parameter
+     *             is null
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
+     */
+    public static <M> Map<Key, M> getAsMapWithoutTx(ModelMeta<M> modelMeta,
+            Iterable<Key> keys) throws NullPointerException,
+            IllegalArgumentException {
+        return mapToMap(modelMeta, getAsMapWithoutTx(keys));
+    }
+
+    /**
+     * Returns models specified by the keys without transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param keys
+     *            the keys
+     * @return models specified by the keys
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
+     */
+    public static <M> Map<Key, M> getAsMapWithoutTx(Class<M> modelClass,
+            Key... keys) throws NullPointerException, IllegalArgumentException {
+        return getAsMapWithoutTx(getModelMeta(modelClass), Arrays.asList(keys));
+    }
+
+    /**
+     * Returns models specified by the keys without transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param keys
+     *            the keys
+     * @return models specified by the keys
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
+     */
+    public static <M> Map<Key, M> getAsMapWithoutTx(ModelMeta<M> modelMeta,
+            Key... keys) throws NullPointerException, IllegalArgumentException {
+        return getAsMapWithoutTx(modelMeta, Arrays.asList(keys));
+    }
+
+    /**
      * Returns entities specified by the keys within the provided transaction.
      * 
      * @param tx
@@ -1439,7 +1759,7 @@ public final class Datastore {
      */
     public static Map<Key, Entity> getAsMap(Transaction tx, Iterable<Key> keys)
             throws NullPointerException, IllegalStateException {
-        return DatastoreUtil.get(tx, keys);
+        return DatastoreUtil.getAsMap(tx, keys);
     }
 
     /**
@@ -1648,6 +1968,19 @@ public final class Datastore {
     }
 
     /**
+     * Puts the entity to datastore without transaction.
+     * 
+     * @param entity
+     *            the entity
+     * @return a key
+     * @throws NullPointerException
+     *             if the entity parameter is null
+     */
+    public static Key putWithoutTx(Entity entity) throws NullPointerException {
+        return DatastoreUtil.put((Transaction) null, entity);
+    }
+
+    /**
      * Puts the model to datastore. If there is a current transaction, this
      * operation will execute within that transaction.
      * 
@@ -1665,6 +1998,27 @@ public final class Datastore {
         Entity entity =
             DatastoreUtil.updatePropertiesAndConvertToEntity(modelMeta, model);
         Key key = put(entity);
+        modelMeta.setKey(model, key);
+        return key;
+    }
+
+    /**
+     * Puts the model to datastore without transaction.
+     * 
+     * @param model
+     *            the model
+     * @return a key
+     * @throws NullPointerException
+     *             if the model parameter is null
+     */
+    public static Key putWithoutTx(Object model) throws NullPointerException {
+        if (model == null) {
+            throw new NullPointerException("The model parameter is null.");
+        }
+        ModelMeta<?> modelMeta = getModelMeta(model.getClass());
+        Entity entity =
+            DatastoreUtil.updatePropertiesAndConvertToEntity(modelMeta, model);
+        Key key = putWithoutTx(entity);
         modelMeta.setKey(model, key);
         return key;
     }
@@ -1726,14 +2080,35 @@ public final class Datastore {
      *             if the models parameter is null
      */
     public static List<Key> put(Iterable<?> models) throws NullPointerException {
-        if (models == null) {
-            throw new NullPointerException("The models parameter is null.");
-        }
         List<ModelMeta<?>> modelMetaList =
             DatastoreUtil.getModelMetaList(models);
-        List<Key> keys =
-            DatastoreUtil.put(DatastoreUtil
-                .updatePropertiesAndConvertToEntities(modelMetaList, models));
+        Iterable<Entity> entities =
+            DatastoreUtil.updatePropertiesAndConvertToEntities(
+                modelMetaList,
+                models);
+        List<Key> keys = DatastoreUtil.put(entities);
+        DatastoreUtil.setKeys(modelMetaList, models, keys);
+        return keys;
+    }
+
+    /**
+     * Puts the models or entities to datastore without transaction.
+     * 
+     * @param models
+     *            the models or entities
+     * @return a list of keys
+     * @throws NullPointerException
+     *             if the models parameter is null
+     */
+    public static List<Key> putWithoutTx(Iterable<?> models)
+            throws NullPointerException {
+        List<ModelMeta<?>> modelMetaList =
+            DatastoreUtil.getModelMetaList(models);
+        Iterable<Entity> entities =
+            DatastoreUtil.updatePropertiesAndConvertToEntities(
+                modelMetaList,
+                models);
+        List<Key> keys = DatastoreUtil.put((Transaction) null, entities);
         DatastoreUtil.setKeys(modelMetaList, models, keys);
         return keys;
     }
@@ -1748,6 +2123,17 @@ public final class Datastore {
      */
     public static List<Key> put(Object... models) {
         return put(Arrays.asList(models));
+    }
+
+    /**
+     * Puts the models or entities to datastore without transaction.
+     * 
+     * @param models
+     *            the models or entities
+     * @return a list of keys
+     */
+    public static List<Key> putWithoutTx(Object... models) {
+        return putWithoutTx(Arrays.asList(models));
     }
 
     /**
@@ -1766,14 +2152,13 @@ public final class Datastore {
      */
     public static List<Key> put(Transaction tx, Iterable<?> models)
             throws NullPointerException, IllegalStateException {
-        if (models == null) {
-            throw new NullPointerException("The models parameter is null.");
-        }
         List<ModelMeta<?>> modelMetaList =
             DatastoreUtil.getModelMetaList(models);
-        List<Key> keys =
-            DatastoreUtil.put(tx, DatastoreUtil
-                .updatePropertiesAndConvertToEntities(modelMetaList, models));
+        Iterable<Entity> entities =
+            DatastoreUtil.updatePropertiesAndConvertToEntities(
+                modelMetaList,
+                models);
+        List<Key> keys = DatastoreUtil.put(tx, entities);
         DatastoreUtil.setKeys(modelMetaList, models, keys);
         return keys;
     }
@@ -1809,6 +2194,19 @@ public final class Datastore {
     }
 
     /**
+     * Deletes entities specified by the keys without transaction.
+     * 
+     * @param keys
+     *            the keys
+     * @throws NullPointerException
+     *             if the keys parameter is null
+     */
+    public static void deleteWithoutTx(Iterable<Key> keys)
+            throws NullPointerException {
+        DatastoreUtil.delete((Transaction) null, keys);
+    }
+
+    /**
      * Deletes entities specified by the keys. If there is a current
      * transaction, this operation will execute within that transaction.
      * 
@@ -1817,6 +2215,16 @@ public final class Datastore {
      */
     public static void delete(Key... keys) {
         delete(Arrays.asList(keys));
+    }
+
+    /**
+     * Deletes entities specified by the keys without transaction.
+     * 
+     * @param keys
+     *            the keys
+     */
+    public static void deleteWithoutTx(Key... keys) {
+        deleteWithoutTx(Arrays.asList(keys));
     }
 
     /**

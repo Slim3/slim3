@@ -37,9 +37,4 @@ public @interface Model {
      * The kind of entity.
      */
     String kind() default "";
-
-    /**
-     * The array of model listeners.
-     */
-    Class<? extends ModelListener<?>>[] modelListeners() default {};
 }

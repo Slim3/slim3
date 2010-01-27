@@ -236,9 +236,29 @@ public class DatastoreTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getModelUsingModelMetaWithoutTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Hoge model = Datastore.getWithoutTx(meta, key);
+        assertThat(model, is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getModelUsingClass() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Hoge model = Datastore.get(Hoge.class, key);
+        assertThat(model, is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelUsingClassWithoutTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Hoge model = Datastore.getWithoutTx(Hoge.class, key);
         assertThat(model, is(notNullValue()));
     }
 
@@ -490,10 +510,36 @@ public class DatastoreTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getModelsWithoutTxUsingModelMeta() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        List<Hoge> models =
+            Datastore.getWithoutTx(meta, Arrays.asList(key, key2));
+        assertThat(models, is(not(nullValue())));
+        assertThat(models.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getModelsUsingClass() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         List<Hoge> models = Datastore.get(Hoge.class, Arrays.asList(key, key2));
+        assertThat(models, is(notNullValue()));
+        assertThat(models.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelsWithoutTxUsingClass() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        List<Hoge> models =
+            Datastore.getWithoutTx(Hoge.class, Arrays.asList(key, key2));
         assertThat(models, is(notNullValue()));
         assertThat(models.size(), is(2));
     }
@@ -526,10 +572,22 @@ public class DatastoreTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void getModelsForVarargs() throws Exception {
+    public void getModelsUsingModelMetaForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         List<Hoge> models = Datastore.get(meta, key, key2);
+        assertThat(models, is(not(nullValue())));
+        assertThat(models.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelsWithoutTxUsingModelMetaForVarargs() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        List<Hoge> models = Datastore.getWithoutTx(meta, key, key2);
         assertThat(models, is(not(nullValue())));
         assertThat(models.size(), is(2));
     }
@@ -570,6 +628,18 @@ public class DatastoreTest extends AppEngineTestCase {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         List<Hoge> models = Datastore.get(Hoge.class, key, key2);
+        assertThat(models, is(not(nullValue())));
+        assertThat(models.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelsWithoutTxUsingClassForVarargs() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        List<Hoge> models = Datastore.getWithoutTx(Hoge.class, key, key2);
         assertThat(models, is(not(nullValue())));
         assertThat(models.size(), is(2));
     }
@@ -739,6 +809,21 @@ public class DatastoreTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getModelsAsMapWithoutTxUsnigModelMeta() throws Exception {
+        Key key = Datastore.put(new Aaa());
+        Key key2 = Datastore.put(new Bbb());
+        Datastore.beginTransaction();
+        Map<Key, Aaa> map =
+            Datastore
+                .getAsMapWithoutTx(AaaMeta.get(), Arrays.asList(key, key2));
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getModelsAsMapUsingClass() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
@@ -782,10 +867,23 @@ public class DatastoreTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void getModelsAsMapForVarargs() throws Exception {
+    public void getModelsAsMapForVarargsUsingModelMeta() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         Map<Key, Hoge> map = Datastore.getAsMap(meta, key, key2);
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelsAsMapWithoutTxForVarargsUsingModelMeta()
+            throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        Map<Key, Hoge> map = Datastore.getAsMapWithoutTx(meta, key, key2);
         assertThat(map, is(not(nullValue())));
         assertThat(map.size(), is(2));
     }
@@ -798,6 +896,18 @@ public class DatastoreTest extends AppEngineTestCase {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         Map<Key, Hoge> map = Datastore.getAsMap(Hoge.class, key, key2);
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelsAsMapWithoutTxForVarargsUsingClass() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        Map<Key, Hoge> map = Datastore.getAsMapWithoutTx(Hoge.class, key, key2);
         assertThat(map, is(not(nullValue())));
         assertThat(map.size(), is(2));
     }
@@ -961,6 +1071,16 @@ public class DatastoreTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getEntityWithoutTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Entity entity = Datastore.getWithoutTx(key);
+        assertThat(entity, is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getEntityInTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Transaction tx = ds.beginTransaction();
@@ -985,10 +1105,37 @@ public class DatastoreTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getEntitiesAsMapWithoutTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge2"));
+        Datastore.beginTransaction();
+        Map<Key, Entity> map =
+            Datastore.getAsMapWithoutTx(Arrays.asList(key, key2));
+        assertThat(map, is(notNullValue()));
+        assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getEntitiesAsMapForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         Map<Key, Entity> map = Datastore.getAsMap(key, key2);
+        assertThat(map, is(notNullValue()));
+        assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getEntitiesAsMapWithoutTxForVarargs() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge2"));
+        Datastore.beginTransaction();
+        Map<Key, Entity> map = Datastore.getAsMapWithoutTx(key, key2);
         assertThat(map, is(notNullValue()));
         assertThat(map.size(), is(2));
     }
@@ -1046,10 +1193,36 @@ public class DatastoreTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getEntitiesWithoutTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge2"));
+        Datastore.beginTransaction();
+        List<Entity> list = Datastore.getWithoutTx(Arrays.asList(key, key2));
+        assertThat(list, is(not(nullValue())));
+        assertThat(list.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getEntitiesForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         List<Entity> list = Datastore.get(key, key2);
+        assertThat(list, is(not(nullValue())));
+        assertThat(list.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getEntitiesWithoutTxForVarargs() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        Datastore.beginTransaction();
+        List<Entity> list = Datastore.getWithoutTx(key, key2);
         assertThat(list, is(not(nullValue())));
         assertThat(list.size(), is(2));
     }
@@ -1130,6 +1303,17 @@ public class DatastoreTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
+    @Test
+    public void putModelWithoutTx() throws Exception {
+        Hoge hoge = new Hoge();
+        assertThat(Datastore.putWithoutTx(hoge), is(notNullValue()));
+        assertThat(hoge.getKey(), is(notNullValue()));
+        assertThat(hoge.getVersion(), is(1L));
+    }
+
+    /**
+     * @throws Exception
+     */
     @SuppressWarnings("unchecked")
     @Test
     public void putPolyModel() throws Exception {
@@ -1187,10 +1371,41 @@ public class DatastoreTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void putModelsWithoutTx() throws Exception {
+        List<Hoge> models = Arrays.asList(new Hoge(), new Hoge());
+        List<Key> keys = Datastore.putWithoutTx(models);
+        assertThat(keys, is(not(nullValue())));
+        assertEquals(2, keys.size());
+        for (Hoge hoge : models) {
+            assertThat(hoge.getKey(), is(not(nullValue())));
+            assertThat(hoge.getVersion(), is(1L));
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void putModelsForVarargs() throws Exception {
         Hoge hoge = new Hoge();
         Hoge hoge2 = new Hoge();
         List<Key> keys = Datastore.put(hoge, hoge2);
+        assertThat(keys, is(not(nullValue())));
+        assertThat(keys.size(), is(2));
+        assertThat(hoge.getKey(), is(not(nullValue())));
+        assertThat(hoge2.getKey(), is(not(nullValue())));
+        assertThat(hoge.getVersion(), is(1L));
+        assertThat(hoge2.getVersion(), is(1L));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void putModelsWithoutTxForVarargs() throws Exception {
+        Hoge hoge = new Hoge();
+        Hoge hoge2 = new Hoge();
+        List<Key> keys = Datastore.putWithoutTx(hoge, hoge2);
         assertThat(keys, is(not(nullValue())));
         assertThat(keys.size(), is(2));
         assertThat(hoge.getKey(), is(not(nullValue())));
@@ -1283,6 +1498,16 @@ public class DatastoreTest extends AppEngineTestCase {
     @Test
     public void putEntity() throws Exception {
         assertThat(Datastore.put(new Entity("Hoge")), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void putEntityWithoutTx() throws Exception {
+        assertThat(
+            Datastore.putWithoutTx(new Entity("Hoge")),
+            is(notNullValue()));
     }
 
     /**
@@ -1435,11 +1660,39 @@ public class DatastoreTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void deleteEntitiesWithoutTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge2"));
+        Datastore.beginTransaction();
+        Datastore.deleteWithoutTx(Arrays.asList(key, key2));
+        assertThat(
+            Datastore.getAsMapWithoutTx(Arrays.asList(key, key2)).size(),
+            is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void deleteEntitiesForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         Datastore.delete(key, key2);
         assertThat(ds.get(Arrays.asList(key, key2)).size(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void deleteEntitiesWithoutTxForVarargs() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge2"));
+        Datastore.beginTransaction();
+        Datastore.deleteWithoutTx(key, key2);
+        assertThat(
+            Datastore.getAsMapWithoutTx(Arrays.asList(key, key2)).size(),
+            is(0));
     }
 
     /**

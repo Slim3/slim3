@@ -206,22 +206,6 @@ public abstract class ModelMeta<M> {
     protected abstract void incrementVersion(Object model);
 
     /**
-     * This method is invoked before putting the entity.
-     * 
-     * @param entity
-     *            the entity
-     */
-    protected abstract void prePut(Entity entity);
-
-    /**
-     * This method is invoked before deleting the entity.
-     * 
-     * @param key
-     *            the key
-     */
-    protected abstract void preDelete(Key key);
-
-    /**
      * Returns a key of the model.
      * 
      * @param model

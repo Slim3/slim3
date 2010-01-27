@@ -20,18 +20,17 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
+import java.util.Set;
 import java.util.logging.Logger;
 
-import org.slim3.util.ArraySet;
 import org.slim3.util.ThrowableUtil;
 
-import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
@@ -50,64 +49,12 @@ public class GlobalTransaction {
     /**
      * The kind of global transaction entity.
      */
-    protected static final String GLOBAL_TRANSACTION_KIND =
-        "slim3.GlobalTransaction";
+    public static final String KIND = "slim3.GlobalTransaction";
 
     /**
-     * The kind of lock entity.
+     * The timestamp property name.
      */
-    protected static final String LOCK_KIND = "slim3.Lock";
-
-    /**
-     * The kind of journal entity.
-     */
-    protected static final String JOURNAL_KIND = "slim3.Journal";
-
-    /**
-     * The startTime property name.
-     */
-    protected static final String START_TIME_PROPERTY = "startTime";
-
-    /**
-     * The targetKeyList property name.
-     */
-    protected static final String TARGET_KEY_LIST_PROPERTY = "targetKeyList";
-
-    /**
-     * The status property name.
-     */
-    protected static final String STATUS_PROPERTY = "status";
-
-    /**
-     * The globalTransactionKey property name.
-     */
-    protected static final String GLOBAL_TRANSACTION_KEY_PROPERTY =
-        "globalTransactionKey";
-
-    /**
-     * The content property name.
-     */
-    protected static final String CONTENT_PROPERTY = "content";
-
-    /**
-     * The "started" status.
-     */
-    protected static final String STARTED_STATUS = "started";
-
-    /**
-     * The "committed" status.
-     */
-    protected static final String COMMITTED_STATUS = "committed";
-
-    /**
-     * The 30 seconds as millisecond.
-     */
-    protected static final long THIRTY_SECONDS = 30 * 1000;
-
-    /**
-     * The max retry count.
-     */
-    protected static final int MAX_RETRY = 10;
+    public static final String TIMESTAMP_PROPERTY = "timestamp";
 
     /**
      * The queue name.
@@ -125,207 +72,95 @@ public class GlobalTransaction {
     protected static final String ROLLBACK_PATH = "/slim3/gtx/rollback/";
 
     /**
+     * The maximum retry count.
+     */
+    protected static final int MAX_RETRY = 10;
+
+    /**
      * The logger.
      */
     private static final Logger logger =
         Logger.getLogger(GlobalTransaction.class.getName());
-    /**
-     * The time that this transaction started.
-     */
-    protected long startTime = System.currentTimeMillis();
 
     /**
-     * The transaction entity.
+     * Whether this transaction is active.
      */
-    protected Entity txEntity;
+    protected boolean active = true;
 
     /**
-     * The set of {@link TxEntry}.
+     * The global transaction key.
      */
-    protected ArraySet<TxEntry> entrySet = new ArraySet<TxEntry>();
+    protected Key globalTransactionKey = Datastore.allocateId(KIND);
 
     /**
-     * Creates a key for lock.
+     * The time-stamp that a process begun.
+     */
+    protected long timestamp = System.currentTimeMillis();
+
+    /**
+     * The map of {@link Lock}.
+     */
+    protected Map<Key, Lock> lockMap = new HashMap<Key, Lock>();
+
+    /**
+     * The map of {@link Journal}.
+     */
+    protected Map<Key, Journal> journalMap = new HashMap<Key, Journal>();
+
+    /**
+     * The set of root keys.
+     */
+    protected Set<Key> rootKeySet = new HashSet<Key>();
+
+    /**
+     * Determines if the global transaction exists.
      * 
-     * @param targetKey
-     *            the target key
-     * @return a key for lock
-     * @throws NullPointerException
-     *             if the targetKey parameter is null
+     * @param key
+     *            the global transaction key
+     * @return whether the global transaction exists
      */
-    protected static Key createLockKey(Key targetKey)
-            throws NullPointerException {
-        if (targetKey == null) {
-            throw new NullPointerException("The target key must not be null.");
-        }
-        return KeyFactory.createKey(targetKey, LOCK_KIND, 1);
-    }
-
-    /**
-     * Creates a key for journal.
-     * 
-     * @param targetKey
-     *            the target key
-     * @return a key for journal
-     * @throws NullPointerException
-     *             if the targetKey parameter is null
-     */
-    protected static Key createJournalKey(Key targetKey)
-            throws NullPointerException {
-        if (targetKey == null) {
-            throw new NullPointerException("The target key must not be null.");
-        }
-        return KeyFactory.createKey(targetKey, JOURNAL_KIND, 1);
-    }
-
-    /**
-     * Converts the list of target keys to a list of keys for lock.
-     * 
-     * @param targetKeyList
-     *            the list of target keys
-     * @return a list of keys for lock
-     * @throws NullPointerException
-     *             if the targetKeyList parameter is null
-     */
-    protected static List<Key> toLockKeyList(List<Key> targetKeyList)
-            throws NullPointerException {
-        if (targetKeyList == null) {
+    public static boolean exists(Key key) {
+        if (key == null) {
             throw new NullPointerException(
-                "The targetKeyList parameter must not be null.");
+                "The key parameter must not be null.");
         }
-        List<Key> lockKeyList = new ArrayList<Key>(targetKeyList.size());
-        for (Key key : targetKeyList) {
-            lockKeyList.add(createLockKey(key));
+        if (!KIND.equals(key.getKind())) {
+            throw new IllegalArgumentException("The kind("
+                + key.getKind()
+                + ") of the key("
+                + key
+                + ") must be "
+                + KIND
+                + ".");
         }
-        return lockKeyList;
-    }
-
-    /**
-     * Converts the list of target keys to a list of keys for journal.
-     * 
-     * @param targetKeyList
-     *            the list of target keys
-     * @return a list of keys for journal
-     * @throws NullPointerException
-     *             if the targetKeyList parameter is null
-     */
-    protected static List<Key> toJournalKeyList(List<Key> targetKeyList)
-            throws NullPointerException {
-        if (targetKeyList == null) {
-            throw new NullPointerException(
-                "The targetKeyList parameter must not be null.");
-        }
-        List<Key> journalKeyList = new ArrayList<Key>(targetKeyList.size());
-        for (Key key : targetKeyList) {
-            journalKeyList.add(createJournalKey(key));
-        }
-        return journalKeyList;
+        return !Datastore.getAsMap(key).isEmpty();
     }
 
     /**
      * Rolls forward the transaction.
      * 
-     * @param gtxKey
+     * @param globalTransactionKey
      *            the global transaction key
      * @throws NullPointerException
-     *             if the gtxKey parameter is null or if the targetKeyList
-     *             property is null
-     * @throws EntityNotFoundRuntimeException
-     *             if no entity specified by the key is found
-     * @throws IllegalStateException
-     *             if deleting journals failed
+     *             if the globalTransactionKey parameter is null or if the
+     *             targetKeyList property is null
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from
+     *             slim3.GlobalTransaction
      */
-    @SuppressWarnings("unchecked")
-    protected static void rollForward(Key gtxKey) throws NullPointerException,
-            EntityNotFoundRuntimeException, IllegalStateException {
-        if (gtxKey == null) {
+    public static void rollForward(Key globalTransactionKey)
+            throws NullPointerException, IllegalArgumentException {
+        if (globalTransactionKey == null) {
             throw new NullPointerException(
                 "The gtxKey parameter must not be null.");
         }
-        if (!GLOBAL_TRANSACTION_KIND.equals(gtxKey.getKind())) {
+        if (!KIND.equals(globalTransactionKey.getKind())) {
             throw new IllegalArgumentException("The kind of the key("
-                + gtxKey
+                + globalTransactionKey
                 + ") must be "
-                + GLOBAL_TRANSACTION_KIND
+                + KIND
                 + ".");
         }
-        Transaction tx = Datastore.beginTransaction();
-        try {
-            Entity gtx = Datastore.get(tx, gtxKey);
-            if (!COMMITTED_STATUS.equals(gtx.getProperty(STATUS_PROPERTY))) {
-                return;
-            }
-            List<Key> targetKeyList =
-                (List<Key>) gtx.getProperty(TARGET_KEY_LIST_PROPERTY);
-            if (targetKeyList == null) {
-                throw new NullPointerException(
-                    "The targetKeyList property must not be null.");
-            }
-            List<Key> journalKeyList = toJournalKeyList(targetKeyList);
-            Map<Key, Entity> map =
-                Datastore.getAsMap((Transaction) null, journalKeyList);
-            for (Key key : journalKeyList) {
-                Entity journalEntity = map.get(key);
-                if (journalEntity == null
-                    || !gtxKey.equals(journalEntity
-                        .getProperty(GLOBAL_TRANSACTION_KEY_PROPERTY))) {
-                    continue;
-                }
-                if (!applyJournal(journalEntity)) {
-                    throw new IllegalStateException(
-                        "Rolling forward the global transaction("
-                            + gtx.getKey()
-                            + ") failed.");
-                }
-            }
-            Datastore.delete(tx, gtxKey);
-            Datastore.commit(tx);
-        } finally {
-            if (tx.isActive()) {
-                Datastore.rollback(tx);
-            }
-        }
-    }
-
-    /**
-     * Applies a journal in transaction.
-     * 
-     * @param journalEntity
-     *            the entity for journal
-     * @return whether this operation succeeded
-     */
-    protected static boolean applyJournal(Entity journalEntity) {
-        Blob blob = (Blob) journalEntity.getProperty(CONTENT_PROPERTY);
-        Key journalKey = journalEntity.getKey();
-        Key targetKey = journalKey.getParent();
-        for (int i = 0; i < MAX_RETRY; i++) {
-            Transaction tx = Datastore.beginTransaction();
-            try {
-                if (blob != null) {
-                    Entity targetEntity =
-                        DatastoreUtil.bytesToEntity(blob.getBytes());
-                    Datastore.put(tx, targetEntity);
-                    Datastore.delete(tx, createLockKey(targetKey), journalKey);
-                } else {
-                    Datastore.delete(
-                        tx,
-                        targetKey,
-                        createLockKey(targetKey),
-                        journalKey);
-                }
-                Datastore.commit(tx);
-                return true;
-            } catch (ConcurrentModificationException ignore) {
-            } catch (Throwable cause) {
-                logger.log(Level.WARNING, cause.getMessage(), cause);
-                return false;
-            } finally {
-                if (tx.isActive()) {
-                    Datastore.rollback(tx);
-                }
-            }
-        }
-        return false;
     }
 
     /**
@@ -341,83 +176,19 @@ public class GlobalTransaction {
      * @throws IllegalStateException
      *             if deleting journals failed
      */
-    @SuppressWarnings("unchecked")
     protected static void rollback(Key gtxKey) throws NullPointerException,
             EntityNotFoundRuntimeException, IllegalStateException {
         if (gtxKey == null) {
             throw new NullPointerException(
                 "The gtxKey parameter must not be null.");
         }
-        if (!GLOBAL_TRANSACTION_KIND.equals(gtxKey.getKind())) {
+        if (!KIND.equals(gtxKey.getKind())) {
             throw new IllegalArgumentException("The kind of the key("
                 + gtxKey
                 + ") must be "
-                + GLOBAL_TRANSACTION_KIND
+                + KIND
                 + ".");
         }
-        Transaction tx = Datastore.beginTransaction();
-        try {
-            Entity gtx = Datastore.get(tx, gtxKey);
-            if (!STARTED_STATUS.equals(gtx.getProperty(STATUS_PROPERTY))) {
-                return;
-            }
-            List<Key> targetKeyList =
-                (List<Key>) gtx.getProperty(TARGET_KEY_LIST_PROPERTY);
-            if (targetKeyList == null) {
-                throw new NullPointerException(
-                    "The targetKeyList property must not be null.");
-            }
-            List<Key> lockKeyList = toLockKeyList(targetKeyList);
-            Map<Key, Entity> map =
-                Datastore.getAsMap((Transaction) null, lockKeyList);
-            for (Key key : lockKeyList) {
-                Entity lockEntity = map.get(key);
-                if (lockEntity == null
-                    || !gtxKey.equals(lockEntity
-                        .getProperty(GLOBAL_TRANSACTION_KEY_PROPERTY))) {
-                    continue;
-                }
-                if (!deleteJournal(key, createJournalKey(key.getParent()))) {
-                    throw new IllegalStateException(
-                        "Rolling back the global transaction("
-                            + gtx.getKey()
-                            + ") failed.");
-                }
-            }
-            Datastore.delete(tx, gtxKey);
-            Datastore.commit(tx);
-        } finally {
-            if (tx.isActive()) {
-                Datastore.rollback(tx);
-            }
-        }
-    }
-
-    /**
-     * Deletes entities for lock and journal.
-     * 
-     * @param keys
-     *            the keys
-     * @return whether this operation succeeded
-     */
-    protected static boolean deleteJournal(Key... keys) {
-        for (int i = 0; i < MAX_RETRY; i++) {
-            Transaction tx = Datastore.beginTransaction();
-            try {
-                Datastore.delete(tx, keys);
-                Datastore.commit(tx);
-                return true;
-            } catch (ConcurrentModificationException ignore) {
-            } catch (Throwable cause) {
-                logger.log(Level.WARNING, cause.getMessage(), cause);
-                return false;
-            } finally {
-                if (tx.isActive()) {
-                    Datastore.rollback(tx);
-                }
-            }
-        }
-        return false;
     }
 
     /**
@@ -427,7 +198,271 @@ public class GlobalTransaction {
     }
 
     /**
-     * Puts the model.
+     * Determines if this transaction is active.
+     * 
+     * @return whether this transaction is active
+     */
+    public boolean isActive() {
+        return active;
+    }
+
+    /**
+     * Asserts that this transaction is active.if this transaction is not active
+     * 
+     * @throws IllegalStateException
+     *             if this transaction is not active
+     */
+    protected void assertActive() throws IllegalStateException {
+        if (!active) {
+            throw new IllegalStateException("This transaction must be active.");
+        }
+    }
+
+    /**
+     * Returns the global transaction identifier.
+     * 
+     * @return the global transaction identifier
+     */
+    public long getId() {
+        return globalTransactionKey.getId();
+    }
+
+    /**
+     * Gets an entity specified by the key. If locking the entity failed, the
+     * other locks that this transaction has are released automatically.
+     * 
+     * @param key
+     *            a key
+     * @return an entity
+     * @throws NullPointerException
+     *             if the key parameter is null
+     * @throws ConcurrentModificationException
+     *             if locking the entity specified by the key failed
+     */
+    public Entity get(Key key) throws NullPointerException,
+            ConcurrentModificationException {
+        lock(key);
+        return Datastore.getWithoutTx(key);
+    }
+
+    /**
+     * Gets a model specified by the key. If locking the entity failed, the
+     * other locks that this transaction has are released automatically.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param key
+     *            a key
+     * @return a model
+     * @throws NullPointerException
+     *             if the key parameter is null
+     * @throws ConcurrentModificationException
+     *             if locking the entity specified by the key failed
+     */
+    public <M> M get(Class<M> modelClass, Key key) throws NullPointerException,
+            ConcurrentModificationException {
+        lock(key);
+        return Datastore.getWithoutTx(modelClass, key);
+    }
+
+    /**
+     * Gets a model specified by the key. If locking the entity failed, the
+     * other locks that this transaction has are released automatically.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param key
+     *            a key
+     * @return a model
+     * @throws NullPointerException
+     *             if the key parameter is null
+     * @throws ConcurrentModificationException
+     *             if locking the entity specified by the key failed
+     */
+    public <M> M get(ModelMeta<M> modelMeta, Key key)
+            throws NullPointerException, ConcurrentModificationException {
+        lock(key);
+        return Datastore.getWithoutTx(modelMeta, key);
+    }
+
+    /**
+     * Gets entities specified by the keys. If locking the entities failed, the
+     * other locks that this transaction has are released automatically.
+     * 
+     * @param keys
+     *            keys
+     * @return entities
+     * @throws NullPointerException
+     *             if the keys parameter is null
+     * @throws ConcurrentModificationException
+     *             if locking the entity specified by the key failed
+     */
+    public List<Entity> get(Iterable<Key> keys) throws NullPointerException,
+            ConcurrentModificationException {
+        if (keys == null) {
+            throw new NullPointerException(
+                "The keys parameter must not be null.");
+        }
+        for (Key key : keys) {
+            lock(key);
+        }
+        return Datastore.getWithoutTx(keys);
+    }
+
+    /**
+     * Gets models specified by the keys. If locking the entities failed, the
+     * other locks that this transaction has are released automatically.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param keys
+     *            keys
+     * @return models
+     * @throws NullPointerException
+     *             if the keys parameter is null
+     * @throws ConcurrentModificationException
+     *             if locking the entity specified by the key failed
+     */
+    public <M> List<M> get(Class<M> modelClass, Iterable<Key> keys)
+            throws NullPointerException, ConcurrentModificationException {
+        if (keys == null) {
+            throw new NullPointerException(
+                "The keys parameter must not be null.");
+        }
+        for (Key key : keys) {
+            lock(key);
+        }
+        return Datastore.getWithoutTx(modelClass, keys);
+    }
+
+    /**
+     * Gets models specified by the keys. If locking the entities failed, the
+     * other locks that this transaction has are released automatically.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param keys
+     *            keys
+     * @return models
+     * @throws NullPointerException
+     *             if the keys parameter is null
+     * @throws ConcurrentModificationException
+     *             if locking the entity specified by the key failed
+     */
+    public <M> List<M> get(ModelMeta<M> modelMeta, Iterable<Key> keys)
+            throws NullPointerException, ConcurrentModificationException {
+        if (keys == null) {
+            throw new NullPointerException(
+                "The keys parameter must not be null.");
+        }
+        for (Key key : keys) {
+            lock(key);
+        }
+        return Datastore.getWithoutTx(modelMeta, keys);
+    }
+
+    /**
+     * Gets entities specified by the keys. If locking the entities failed, the
+     * other locks that this transaction has are released automatically.
+     * 
+     * @param keys
+     *            keys
+     * @return entities
+     * @throws ConcurrentModificationException
+     *             if locking the entity specified by the key failed
+     */
+    public List<Entity> get(Key... keys) throws ConcurrentModificationException {
+        for (Key key : keys) {
+            lock(key);
+        }
+        return Datastore.getWithoutTx(keys);
+    }
+
+    /**
+     * Gets models specified by the keys. If locking the entities failed, the
+     * other locks that this transaction has are released automatically.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param keys
+     *            keys
+     * @return models
+     * @throws ConcurrentModificationException
+     *             if locking the entity specified by the key failed
+     */
+    public <M> List<M> get(Class<M> modelClass, Key... keys)
+            throws ConcurrentModificationException {
+        for (Key key : keys) {
+            lock(key);
+        }
+        return Datastore.getWithoutTx(modelClass, keys);
+    }
+
+    /**
+     * Gets models specified by the keys. If locking the entities failed, the
+     * other locks that this transaction has are released automatically.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param keys
+     *            keys
+     * @return models
+     * @throws ConcurrentModificationException
+     *             if locking the entity specified by the key failed
+     */
+    public <M> List<M> get(ModelMeta<M> modelMeta, Key... keys)
+            throws ConcurrentModificationException {
+        for (Key key : keys) {
+            lock(key);
+        }
+        return Datastore.getWithoutTx(modelMeta, keys);
+    }
+
+    /**
+     * Puts the entity. If locking the entity failed, the other locks that this
+     * transaction has are released automatically.
+     * 
+     * @param entity
+     *            the entity
+     * @return a key
+     * @throws NullPointerException
+     *             if the entity parameter is null
+     * @throws IllegalArgumentException
+     *             if the key is incomplete or if the size of the entity is more
+     *             than 980,000 bytes
+     * @throws ConcurrentModificationException
+     *             if locking the entity specified by the key failed
+     */
+    public Key put(Entity entity) throws NullPointerException,
+            IllegalArgumentException, ConcurrentModificationException {
+        if (entity == null) {
+            throw new NullPointerException(
+                "The entity parameter must not be null.");
+        }
+        Key key = entity.getKey();
+        if (DatastoreUtil.isIncomplete(key)) {
+            throw new IllegalArgumentException("The key is incomplete.");
+        }
+        lock(key);
+        journalMap.put(key, new Journal(globalTransactionKey, entity));
+        return key;
+    }
+
+    /**
+     * Puts the model. If locking the entity failed, the other locks that this
+     * transaction has are released automatically.
      * 
      * @param model
      *            the model
@@ -435,10 +470,13 @@ public class GlobalTransaction {
      * @throws NullPointerException
      *             if the model parameter is null
      * @throws IllegalArgumentException
-     *             if the key is incomplete
+     *             if the key is incomplete or if the size of the entity is more
+     *             than 980,000 bytes
+     * @throws ConcurrentModificationException
+     *             if locking the entity specified by the key failed
      */
     public Key put(Object model) throws NullPointerException,
-            IllegalArgumentException {
+            IllegalArgumentException, ConcurrentModificationException {
         if (model == null) {
             throw new NullPointerException(
                 "The model parameter must not be null.");
@@ -453,32 +491,8 @@ public class GlobalTransaction {
     }
 
     /**
-     * Puts the entity.
-     * 
-     * @param entity
-     *            the entity
-     * @return a key
-     * @throws NullPointerException
-     *             if the entity parameter is null
-     * @throws IllegalArgumentException
-     *             if the key is incomplete
-     */
-    public Key put(Entity entity) throws NullPointerException,
-            IllegalArgumentException {
-        if (entity == null) {
-            throw new NullPointerException(
-                "The entity parameter must not be null.");
-        }
-        Key key = entity.getKey();
-        if (DatastoreUtil.isIncomplete(key)) {
-            throw new IllegalArgumentException("The key is incomplete.");
-        }
-        entrySet.add(new TxEntry(key, DatastoreUtil.entityToBytes(entity)));
-        return key;
-    }
-
-    /**
-     * Puts the models.
+     * Puts the models. If locking the entities failed, the other locks that
+     * this transaction has are released automatically.
      * 
      * @param models
      *            the models
@@ -486,10 +500,13 @@ public class GlobalTransaction {
      * @throws NullPointerException
      *             if the models parameter is null
      * @throws IllegalArgumentException
-     *             if the key is incomplete
+     *             if the key is incomplete or if the size of the entity is more
+     *             than 980,000 bytes
+     * @throws ConcurrentModificationException
+     *             if locking the entity specified by the key failed
      */
     public List<Key> put(Iterable<?> models) throws NullPointerException,
-            IllegalArgumentException {
+            IllegalArgumentException, ConcurrentModificationException {
         if (models == null) {
             throw new NullPointerException(
                 "The models parameter must not be null.");
@@ -506,43 +523,57 @@ public class GlobalTransaction {
     }
 
     /**
-     * Puts the models.
+     * Puts the models. If locking the entities failed, the other locks that
+     * this transaction has are released automatically.
      * 
      * @param models
      *            the models
      * @return a list of keys
      * @throws IllegalArgumentException
-     *             if the key is incomplete
+     *             if the key is incomplete or if the size of the entity is more
+     *             than 980,000 bytes
+     * @throws ConcurrentModificationException
+     *             if locking the entity specified by the key failed
      */
-    public List<Key> put(Object... models) throws IllegalArgumentException {
+    public List<Key> put(Object... models) throws IllegalArgumentException,
+            ConcurrentModificationException {
         return put(Arrays.asList(models));
     }
 
     /**
-     * Deletes the entity.
+     * Deletes the entity. If locking the entity failed, the other locks that
+     * this transaction has are released automatically.
      * 
      * @param key
      *            the key
      * @throws NullPointerException
      *             if the key parameter is null
+     * @throws ConcurrentModificationException
+     *             if locking the entity specified by the key failed
      */
-    public void delete(Key key) throws NullPointerException {
+    public void delete(Key key) throws NullPointerException,
+            ConcurrentModificationException {
         if (key == null) {
             throw new NullPointerException(
                 "The key parameter must not be null.");
         }
-        entrySet.add(new TxEntry(key));
+        lock(key);
+        journalMap.remove(key);
     }
 
     /**
-     * Deletes the models.
+     * Deletes the models. If locking the entities failed, the other locks that
+     * this transaction has are released automatically.
      * 
      * @param keys
      *            the keys
      * @throws NullPointerException
      *             if the keys parameter is null
+     * @throws ConcurrentModificationException
+     *             if locking the entity specified by the key failed
      */
-    public void delete(Iterable<Key> keys) throws NullPointerException {
+    public void delete(Iterable<Key> keys) throws NullPointerException,
+            ConcurrentModificationException {
         if (keys == null) {
             throw new NullPointerException(
                 "The keys parameter must not be null.");
@@ -553,84 +584,86 @@ public class GlobalTransaction {
     }
 
     /**
-     * Deletes the models.
+     * Deletes the models. If locking the entities failed, the other locks that
+     * this transaction has are released automatically.
      * 
      * @param keys
      *            the keys
+     * @throws ConcurrentModificationException
+     *             if locking the entity specified by the key failed
      */
-    public void delete(Key... keys) {
+    public void delete(Key... keys) throws ConcurrentModificationException {
         delete(Arrays.asList(keys));
     }
 
     /**
-     * Commits this transaction. If an exception occurred while committing, the
-     * transaction will be rolled back automatically.
-     * 
-     * @throws IllegalStateException
-     *             if writing journals failed or if this transaction has already
-     *             begun
+     * Commits this transaction asynchronously using TaskQueue.
      */
-    public void commit() throws IllegalStateException {
-        startTransactionInternally();
-        writeJournals();
-        commitTransactionInternally();
+    public void commitAsync() {
+        active = false;
+        if (lockMap.size() > 0) {
+            Journal.put(journalMap.values());
+            commitAsyncInternally();
+        } else {
+            Datastore.deleteWithoutTx(globalTransactionKey);
+        }
     }
 
     /**
-     * Starts a transaction internally.
+     * Lock the entity. If locking the entity failed, the other locks that this
+     * transaction has are released automatically.
      * 
-     * @throws IllegalStateException
-     *             if this transaction has already begun
+     * @param key
+     *            a key
+     * @throws NullPointerException
+     *             if the key parameter is null
+     * @throws ConcurrentModificationException
+     *             if locking an entity specified by the key failed
      */
-    protected void startTransactionInternally() throws IllegalStateException {
-        if (txEntity != null) {
-            throw new IllegalStateException(
-                "This transaction has already begun.");
+    protected void lock(Key key) throws NullPointerException,
+            ConcurrentModificationException {
+        if (key == null) {
+            throw new NullPointerException(
+                "The key parameter must not be null.");
         }
-        txEntity = new Entity(GLOBAL_TRANSACTION_KIND);
-        txEntity.setProperty(START_TIME_PROPERTY, startTime);
-        List<Key> targetKeyList = new ArrayList<Key>();
-        for (TxEntry e : entrySet) {
-            targetKeyList.add(e.targetKey);
-        }
-        txEntity.setUnindexedProperty(TARGET_KEY_LIST_PROPERTY, targetKeyList);
-        txEntity.setProperty(STATUS_PROPERTY, STARTED_STATUS);
-        Datastore.put(txEntity);
-    }
-
-    /**
-     * Writes journals.
-     * 
-     */
-    protected void writeJournals() {
-        for (int i = 0; i < entrySet.size(); i++) {
-            if (!entrySet.get(i).writeJournal()) {
-                for (int j = 0; j < i; j++) {
-                    deleteJournal(
-                        entrySet.get(j).lockKey,
-                        entrySet.get(j).journalKey);
-                }
-                delete(txEntity.getKey());
-                throw new IllegalStateException(
-                    "Writing journal(key:"
-                        + entrySet.get(i).targetKey
-                        + ") failed, so this transaction was rolled back automatically.");
+        assertActive();
+        Lock lock = new Lock(globalTransactionKey, key, timestamp);
+        Lock other = lockMap.get(key);
+        if (other == null) {
+            try {
+                lock.lock();
+            } catch (ConcurrentModificationException e) {
+                active = false;
+                unlock();
+                throw e;
             }
+            lockMap.put(key, lock);
         }
     }
 
     /**
-     * Starts a transaction internally.
+     * Unlocks entities.
      */
-    protected void commitTransactionInternally() {
+    protected void unlock() {
+        active = false;
+        List<Key> keys = new ArrayList<Key>();
+        for (Lock lock : lockMap.values()) {
+            keys.add(lock.getKey());
+        }
+        Datastore.deleteWithoutTx(keys);
+        lockMap.clear();
+    }
+
+    /**
+     * Commits this transaction asynchronously.
+     */
+    protected void commitAsyncInternally() {
         Transaction tx = Datastore.beginTransaction();
         try {
-            txEntity.setProperty(STATUS_PROPERTY, COMMITTED_STATUS);
-            Datastore.put(tx, txEntity);
             Queue queue = QueueFactory.getQueue(QUEUE_NAME);
             String encodedKey =
                 URLEncoder.encode(
-                    Datastore.keyToString(txEntity.getKey()),
+                    Datastore.keyToString(globalTransactionKey),
                     "UTF-8");
             queue.add(tx, TaskOptions.Builder
                 .url(ROLLFORWARD_PATH + encodedKey));
@@ -641,162 +674,6 @@ public class GlobalTransaction {
             if (tx.isActive()) {
                 Datastore.rollback(tx);
             }
-        }
-    }
-
-    /**
-     * An entry for global transaction.
-     * 
-     */
-    protected class TxEntry {
-
-        /**
-         * The target key.
-         */
-        protected Key targetKey;
-
-        /**
-         * The target content.
-         */
-        protected byte[] targetContent;
-
-        /**
-         * The key for lock.
-         */
-        protected Key lockKey;
-
-        /**
-         * The key for journal.
-         */
-        protected Key journalKey;
-
-        /**
-         * Constructor.
-         * 
-         * @param targetKey
-         *            the target key
-         * @throws NullPointerException
-         *             if the targetKey parameter is null
-         */
-        public TxEntry(Key targetKey) throws NullPointerException {
-            this(targetKey, null);
-        }
-
-        /**
-         * Constructor.
-         * 
-         * @param targetKey
-         *            the target key
-         * @param targetContent
-         *            the target content
-         * @throws NullPointerException
-         *             if the targetKey parameter is null
-         */
-        public TxEntry(Key targetKey, byte[] targetContent)
-                throws NullPointerException {
-            if (targetKey == null) {
-                throw new NullPointerException(
-                    "The targetKey parameter must not be null.");
-            }
-            this.targetKey = targetKey;
-            this.targetContent = targetContent;
-            lockKey = createLockKey(targetKey);
-            journalKey = createJournalKey(targetKey);
-        }
-
-        /**
-         * Writes a journal.
-         * 
-         * @return whether Writing a journal succeeded.
-         */
-        protected boolean writeJournal() {
-            Transaction tx = Datastore.beginTransaction();
-            try {
-                try {
-                    if (isLocked(Datastore.get(tx, lockKey))) {
-                        return false;
-                    }
-                } catch (EntityNotFoundRuntimeException ignore) {
-                }
-                Datastore.put(tx, createLockEntity(), createJournalEntity());
-                Datastore.commit(tx);
-                return true;
-            } catch (Throwable cause) {
-                logger.log(Level.WARNING, cause.getMessage(), cause);
-                return false;
-            } finally {
-                if (tx.isActive()) {
-                    Datastore.rollback(tx);
-                }
-            }
-        }
-
-        /**
-         * Creates an entity for lock.
-         * 
-         * @return an entity for lock
-         */
-        protected Entity createLockEntity() {
-            Entity entity = new Entity(lockKey);
-            entity.setProperty(START_TIME_PROPERTY, startTime);
-            entity.setProperty(GLOBAL_TRANSACTION_KEY_PROPERTY, txEntity
-                .getKey());
-            return entity;
-        }
-
-        /**
-         * Creates an entity for journal.
-         * 
-         * @return an entity for journal
-         * @throws NullPointerException
-         *             if the targetContent field is null
-         */
-        protected Entity createJournalEntity() throws NullPointerException {
-            Entity entity = new Entity(journalKey);
-            if (targetContent != null) {
-                entity.setUnindexedProperty(CONTENT_PROPERTY, new Blob(
-                    targetContent));
-            }
-            entity.setProperty(GLOBAL_TRANSACTION_KEY_PROPERTY, txEntity
-                .getKey());
-            return entity;
-        }
-
-        /**
-         * Determines if the entity is locked.
-         * 
-         * @param lockEntity
-         *            the entity for lock
-         * @return whether the entity is locked
-         * @throws NullPointerException
-         *             if the lockEntity parameter is null or if the startTime
-         *             property is null or if the globalTransactionKey property
-         *             is null
-         */
-        protected boolean isLocked(Entity lockEntity)
-                throws NullPointerException {
-            if (lockEntity == null) {
-                throw new NullPointerException(
-                    "The lockEntity parameter must not be null.");
-            }
-            Long lockStartTime =
-                (Long) lockEntity.getProperty(START_TIME_PROPERTY);
-            if (lockStartTime == null) {
-                throw new NullPointerException(
-                    "The startTime property must not be null.");
-            }
-            if (startTime <= lockStartTime + THIRTY_SECONDS) {
-                return true;
-            }
-            Key gtxKey =
-                (Key) lockEntity.getProperty(GLOBAL_TRANSACTION_KEY_PROPERTY);
-            if (gtxKey == null) {
-                throw new NullPointerException(
-                    "The globalTransactionKey property must not be null.");
-            }
-            Entity gtx = Datastore.get((Transaction) null, gtxKey);
-            String status = (String) gtx.getProperty(STATUS_PROPERTY);
-            return !STARTED_STATUS.equals(status);
         }
     }
 }

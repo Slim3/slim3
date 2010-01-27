@@ -191,10 +191,10 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void getEntities() throws Exception {
+    public void getEntitiesAsMap() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
-        Map<Key, Entity> map = DatastoreUtil.get(Arrays.asList(key, key2));
+        Map<Key, Entity> map = DatastoreUtil.getAsMap(Arrays.asList(key, key2));
         assertThat(map, is(notNullValue()));
         assertThat(map.size(), is(2));
     }
@@ -203,11 +203,12 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void getEntitiesInTx() throws Exception {
+    public void getEntitiesAsMapInTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = ds.beginTransaction();
-        Map<Key, Entity> map = DatastoreUtil.get(tx, Arrays.asList(key, key2));
+        Map<Key, Entity> map =
+            DatastoreUtil.getAsMap(tx, Arrays.asList(key, key2));
         assertThat(map, is(notNullValue()));
         assertThat(map.size(), is(2));
     }
@@ -216,11 +217,11 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void getEntitiesInTxWhenTxIsNull() throws Exception {
+    public void getEntitiesAsMapInTxWhenTxIsNull() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Map<Key, Entity> map =
-            DatastoreUtil.get(null, Arrays.asList(key, key2));
+            DatastoreUtil.getAsMap(null, Arrays.asList(key, key2));
         assertThat(map, is(notNullValue()));
         assertThat(map.size(), is(2));
     }
@@ -228,9 +229,13 @@ public class DatastoreUtilTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
-    @Test
+    @Test(expected = EntityNotFoundException.class)
     public void putEntity() throws Exception {
-        assertThat(DatastoreUtil.put(new Entity("Hoge")), is(notNullValue()));
+        Transaction tx = ds.beginTransaction();
+        Key key = DatastoreUtil.put(new Entity("Hoge"));
+        tx.rollback();
+        assertThat(key, is(notNullValue()));
+        ds.get(key);
     }
 
     /**
@@ -260,11 +265,15 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      */
     @Test
     public void putEntities() throws Exception {
-        List<Key> keys =
-            DatastoreUtil.put(Arrays.asList(new Entity("Hoge"), new Entity(
-                "Hoge")));
+        Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
+        Entity entity2 =
+            new Entity(KeyFactory.createKey(entity.getKey(), "Hoge", 1));
+        Transaction tx = ds.beginTransaction();
+        List<Key> keys = DatastoreUtil.put(Arrays.asList(entity, entity2));
+        tx.rollback();
         assertThat(keys, is(notNullValue()));
         assertThat(keys.size(), is(2));
+        assertThat(ds.get(keys).size(), is(0));
     }
 
     /**
@@ -304,9 +313,10 @@ public class DatastoreUtilTest extends AppEngineTestCase {
     @Test
     public void deleteEntities() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
-        Key key2 = ds.put(new Entity("Hoge"));
-        DatastoreUtil.delete(Arrays.asList(key, key2));
-        assertThat(ds.get(Arrays.asList(key, key2)).size(), is(0));
+        Transaction tx = ds.beginTransaction();
+        DatastoreUtil.delete(Arrays.asList(key));
+        tx.rollback();
+        assertThat(ds.get(key), is(notNullValue()));
     }
 
     /**
