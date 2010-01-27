@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
+import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -56,6 +57,20 @@ import com.google.gwt.user.server.rpc.impl.TypeNameObfuscator;
 public class GWTServiceServlet extends RemoteServiceServlet {
 
     private static final long serialVersionUID = 1L;
+
+    private static final HashMap<String, Class<?>> TYPE_NAMES;
+
+    static {
+        TYPE_NAMES = new HashMap<String, Class<?>>();
+        TYPE_NAMES.put("Z", boolean.class);
+        TYPE_NAMES.put("B", byte.class);
+        TYPE_NAMES.put("C", char.class);
+        TYPE_NAMES.put("D", double.class);
+        TYPE_NAMES.put("F", float.class);
+        TYPE_NAMES.put("I", int.class);
+        TYPE_NAMES.put("J", long.class);
+        TYPE_NAMES.put("S", short.class);
+    }
 
     /**
      * Whether the servlet context is set to {@link ServletContextLocator}.
@@ -402,6 +417,10 @@ public class GWTServiceServlet extends RemoteServiceServlet {
     protected Class<?> getClass(String className) throws NullPointerException {
         if (className == null) {
             throw new NullPointerException("The className parameter is null.");
+        }
+        Class<?> clazz = TYPE_NAMES.get(className);
+        if (clazz != null) {
+            return clazz;
         }
         try {
             return Class.forName(className, false, Thread

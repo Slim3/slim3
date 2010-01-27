@@ -39,4 +39,12 @@ public class GWTServiceServletTest {
             .getServiceClass(HogeService.class.getName())
             .getName(), equalTo(HogeServiceImpl.class.getName()));
     }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void testGetClass() throws Exception {
+        assertThat(servlet.getClass("I").getName(), is(int.class.getName()));
+    }
 }
