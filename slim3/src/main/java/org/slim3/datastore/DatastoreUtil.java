@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 import org.slim3.util.ClassUtil;
 import org.slim3.util.Cleanable;
@@ -55,6 +56,9 @@ public final class DatastoreUtil {
     private static final int MAX_RETRY = 10;
 
     private static final int KEY_CACHE_SIZE = 50;
+
+    private static final Logger logger =
+        Logger.getLogger(DatastoreUtil.class.getName());
 
     /**
      * The cache for {@link ModelMeta}.
@@ -97,6 +101,10 @@ public final class DatastoreUtil {
                 return ds.beginTransaction();
             } catch (DatastoreTimeoutException e) {
                 dte = e;
+                logger.info("This message is just INFORMATION. Retry["
+                    + i
+                    + "]:"
+                    + e);
             }
         }
         throw dte;
@@ -128,6 +136,10 @@ public final class DatastoreUtil {
                 return;
             } catch (DatastoreTimeoutException e) {
                 dte = e;
+                logger.info("This message is a just INFORMATION. Retry["
+                    + i
+                    + "]:"
+                    + e);
             }
         }
         throw dte;
@@ -159,6 +171,10 @@ public final class DatastoreUtil {
                 return;
             } catch (DatastoreTimeoutException e) {
                 dte = e;
+                logger.info("This message is a just INFORMATION. Retry["
+                    + i
+                    + "]:"
+                    + e);
             }
         }
         throw dte;
@@ -210,6 +226,10 @@ public final class DatastoreUtil {
                 return ds.allocateIds(kind, num);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
+                logger.info("This message is a just INFORMATION. Retry["
+                    + i
+                    + "]:"
+                    + e);
             }
         }
         throw dte;
@@ -243,6 +263,10 @@ public final class DatastoreUtil {
                 return ds.allocateIds(parentKey, kind, num);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
+                logger.info("This message is a just INFORMATION. Retry["
+                    + i
+                    + "]:"
+                    + e);
             }
         }
         throw dte;
@@ -274,6 +298,10 @@ public final class DatastoreUtil {
                     return ds.get(key);
                 } catch (DatastoreTimeoutException e) {
                     dte = e;
+                    logger.info("This message is a just INFORMATION. Retry["
+                        + i
+                        + "]:"
+                        + e);
                 }
             }
             throw dte;
@@ -316,6 +344,10 @@ public final class DatastoreUtil {
                     return ds.get(tx, key);
                 } catch (DatastoreTimeoutException e) {
                     dte = e;
+                    logger.info("This message is a just INFORMATION. Retry["
+                        + i
+                        + "]:"
+                        + e);
                 }
             }
             throw dte;
@@ -347,6 +379,10 @@ public final class DatastoreUtil {
                 return ds.get(keys);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
+                logger.info("This message is a just INFORMATION. Retry["
+                    + i
+                    + "]:"
+                    + e);
             }
         }
         throw dte;
@@ -383,6 +419,10 @@ public final class DatastoreUtil {
                 return ds.get(tx, keys);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
+                logger.info("This message is a just INFORMATION. Retry["
+                    + i
+                    + "]:"
+                    + e);
             }
         }
         throw dte;
@@ -414,6 +454,10 @@ public final class DatastoreUtil {
                 return ds.put(entity);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
+                logger.info("This message is a just INFORMATION. Retry["
+                    + i
+                    + "]:"
+                    + e);
             }
         }
         throw dte;
@@ -449,6 +493,10 @@ public final class DatastoreUtil {
                 return ds.put(tx, entity);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
+                logger.info("This message is a just INFORMATION. Retry["
+                    + i
+                    + "]:"
+                    + e);
             }
         }
         throw dte;
@@ -475,6 +523,10 @@ public final class DatastoreUtil {
                 return ds.put(entities);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
+                logger.info("This message is a just INFORMATION. Retry["
+                    + i
+                    + "]:"
+                    + e);
             }
         }
         throw dte;
@@ -509,6 +561,10 @@ public final class DatastoreUtil {
                 return ds.put(tx, entities);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
+                logger.info("This message is a just INFORMATION. Retry["
+                    + i
+                    + "]:"
+                    + e);
             }
         }
         throw dte;
@@ -535,6 +591,10 @@ public final class DatastoreUtil {
                 return;
             } catch (DatastoreTimeoutException e) {
                 dte = e;
+                logger.info("This message is a just INFORMATION. Retry["
+                    + i
+                    + "]:"
+                    + e);
             }
         }
         throw dte;
@@ -570,6 +630,10 @@ public final class DatastoreUtil {
                 return;
             } catch (DatastoreTimeoutException e) {
                 dte = e;
+                logger.info("This message is a just INFORMATION. Retry["
+                    + i
+                    + "]:"
+                    + e);
             }
         }
         throw dte;
@@ -601,6 +665,10 @@ public final class DatastoreUtil {
                 return ds.prepare(query);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
+                logger.info("This message is a just INFORMATION. Retry["
+                    + i
+                    + "]:"
+                    + e);
             }
         }
         throw dte;
@@ -635,6 +703,10 @@ public final class DatastoreUtil {
                 return ds.prepare(tx, query);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
+                logger.info("This message is a just INFORMATION. Retry["
+                    + i
+                    + "]:"
+                    + e);
             }
         }
         throw dte;
@@ -668,6 +740,10 @@ public final class DatastoreUtil {
                 return preparedQuery.asList(fetchOptions);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
+                logger.info("This message is a just INFORMATION. Retry["
+                    + i
+                    + "]:"
+                    + e);
             }
         }
         throw dte;
@@ -694,6 +770,10 @@ public final class DatastoreUtil {
                 return preparedQuery.asSingleEntity();
             } catch (DatastoreTimeoutException e) {
                 dte = e;
+                logger.info("This message is a just INFORMATION. Retry["
+                    + i
+                    + "]:"
+                    + e);
             }
         }
         throw dte;
@@ -727,6 +807,10 @@ public final class DatastoreUtil {
                 return preparedQuery.asIterable(fetchOptions);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
+                logger.info("This message is a just INFORMATION. Retry["
+                    + i
+                    + "]:"
+                    + e);
             }
         }
         throw dte;
@@ -753,6 +837,10 @@ public final class DatastoreUtil {
                 return preparedQuery.countEntities();
             } catch (DatastoreTimeoutException e) {
                 dte = e;
+                logger.info("This message is a just INFORMATION. Retry["
+                    + i
+                    + "]:"
+                    + e);
             }
         }
         throw dte;
