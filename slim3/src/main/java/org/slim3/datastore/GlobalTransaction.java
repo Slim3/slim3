@@ -133,7 +133,7 @@ public class GlobalTransaction {
                 + KIND
                 + ".");
         }
-        return !Datastore.getAsMap(key).isEmpty();
+        return !Datastore.getAsMapWithoutTx(key).isEmpty();
     }
 
     /**

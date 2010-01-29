@@ -21,6 +21,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.slim3.tester.AppEngineTestCase;
 
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 
@@ -47,6 +48,10 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(GlobalTransaction.exists(key), is(true));
         assertThat(GlobalTransaction.exists(Datastore
             .allocateId(GlobalTransaction.KIND)), is(false));
+        assertThat(DatastoreServiceFactory
+            .getDatastoreService()
+            .getActiveTransactions()
+            .size(), is(0));
     }
 
     /**

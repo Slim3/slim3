@@ -37,6 +37,7 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.KeyRange;
+import com.google.appengine.api.datastore.KeyUtil;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Transaction;
@@ -273,6 +274,45 @@ public final class DatastoreUtil {
     }
 
     /**
+     * Assigns a new key to the entity if necessary.
+     * 
+     * @param entity
+     *            the entity
+     * @throws NullPointerException
+     *             if the entity parameter is null
+     */
+    public static void assignKeyIfNecessary(Entity entity)
+            throws NullPointerException {
+        if (entity == null) {
+            throw new NullPointerException(
+                "The entity parameter must not be null.");
+        }
+        if (isIncomplete(entity.getKey())) {
+            KeyUtil
+                .setId(entity.getKey(), allocateId(entity.getKind()).getId());
+        }
+    }
+
+    /**
+     * Assigns a new key to the entity if necessary.
+     * 
+     * @param entities
+     *            the entities
+     * @throws NullPointerException
+     *             if the entities parameter is null
+     */
+    public static void assignKeyIfNecessary(Iterable<Entity> entities)
+            throws NullPointerException {
+        if (entities == null) {
+            throw new NullPointerException(
+                "The entities parameter must not be null.");
+        }
+        for (Entity e : entities) {
+            assignKeyIfNecessary(e);
+        }
+    }
+
+    /**
      * Returns an entity specified by the key. If there is a current
      * transaction, this operation will execute within that transaction.
      * 
@@ -443,10 +483,7 @@ public final class DatastoreUtil {
      */
     public static Key put(Entity entity) throws NullPointerException,
             IllegalStateException {
-        if (entity == null) {
-            throw new NullPointerException(
-                "The entity parameter must not be null.");
-        }
+        assignKeyIfNecessary(entity);
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         DatastoreTimeoutException dte = null;
         for (int i = 0; i < MAX_RETRY; i++) {
@@ -479,10 +516,7 @@ public final class DatastoreUtil {
      */
     public static Key put(Transaction tx, Entity entity)
             throws NullPointerException, IllegalStateException {
-        if (entity == null) {
-            throw new NullPointerException(
-                "The entity parameter must not be null.");
-        }
+        assignKeyIfNecessary(entity);
         if (tx != null && !tx.isActive()) {
             throw new IllegalStateException("The transaction must be active.");
         }
@@ -513,9 +547,7 @@ public final class DatastoreUtil {
      */
     public static List<Key> put(Iterable<Entity> entities)
             throws NullPointerException {
-        if (entities == null) {
-            throw new NullPointerException("The entities parameter is null.");
-        }
+        assignKeyIfNecessary(entities);
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         DatastoreTimeoutException dte = null;
         for (int i = 0; i < MAX_RETRY; i++) {
@@ -548,9 +580,7 @@ public final class DatastoreUtil {
      */
     public static List<Key> put(Transaction tx, Iterable<Entity> entities)
             throws NullPointerException, IllegalStateException {
-        if (entities == null) {
-            throw new NullPointerException("The entities parameter is null.");
-        }
+        assignKeyIfNecessary(entities);
         if (tx != null && !tx.isActive()) {
             throw new IllegalStateException("The transaction must be active.");
         }

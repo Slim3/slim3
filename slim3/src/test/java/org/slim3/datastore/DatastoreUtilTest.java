@@ -119,7 +119,6 @@ public class DatastoreUtilTest extends AppEngineTestCase {
     public void allocateId() throws Exception {
         Key key = DatastoreUtil.allocateId("Hoge");
         assertThat(key, is(notNullValue()));
-        assertThat(DatastoreUtil.keysCache.size(), is(1));
         Iterator<Key> keys = DatastoreUtil.keysCache.get("Hoge");
         assertThat(keys, is(notNullValue()));
         for (int i = 0; i < 50; i++) {
@@ -128,6 +127,26 @@ public class DatastoreUtilTest extends AppEngineTestCase {
         assertThat(
             DatastoreUtil.keysCache.get("Hoge"),
             is(not(sameInstance(keys))));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void assignKeyIfNecessary() throws Exception {
+        Entity entity = new Entity("Hoge");
+        DatastoreUtil.assignKeyIfNecessary(entity);
+        assertThat(entity.getKey().getId(), is(not(0L)));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void assignKeyIfNecessaryForEntities() throws Exception {
+        Entity entity = new Entity("Hoge");
+        DatastoreUtil.assignKeyIfNecessary(Arrays.asList(entity));
+        assertThat(entity.getKey().getId(), is(not(0L)));
     }
 
     /**
