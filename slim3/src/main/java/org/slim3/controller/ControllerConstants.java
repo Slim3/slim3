@@ -120,4 +120,10 @@ public final class ControllerConstants {
      * The key whether the path is routed.
      */
     public static String ROUTED_KEY = "slim3.routed";
+
+    /**
+     * The path before forwarding.
+     */
+    public static String FORWARD_SERVLET_PATH_KEY =
+        "javax.servlet.forward.servlet_path";
 }

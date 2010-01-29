@@ -95,7 +95,12 @@ public final class Functions {
         if (contextPath.length() > 1) {
             sb.append(contextPath);
         }
-        String path = RequestUtil.getPath(request);
+        String path =
+            (String) request
+                .getAttribute(ControllerConstants.FORWARD_SERVLET_PATH_KEY);
+        if (path == null) {
+            path = RequestUtil.getPath(request);
+        }
         int pos = path.lastIndexOf('/');
         path = path.substring(0, pos + 1);
         if (empty) {
