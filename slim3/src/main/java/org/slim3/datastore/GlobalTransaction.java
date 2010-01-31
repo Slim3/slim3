@@ -241,7 +241,8 @@ public class GlobalTransaction {
      */
     public Entity get(Key key) throws NullPointerException,
             ConcurrentModificationException {
-        lock(key);
+        Key rootKey = DatastoreUtil.getRoot(key);
+        lock(rootKey);
         return Datastore.getWithoutTx(key);
     }
 
@@ -263,7 +264,8 @@ public class GlobalTransaction {
      */
     public <M> M get(Class<M> modelClass, Key key) throws NullPointerException,
             ConcurrentModificationException {
-        lock(key);
+        Key rootKey = DatastoreUtil.getRoot(key);
+        lock(rootKey);
         return Datastore.getWithoutTx(modelClass, key);
     }
 
@@ -285,7 +287,8 @@ public class GlobalTransaction {
      */
     public <M> M get(ModelMeta<M> modelMeta, Key key)
             throws NullPointerException, ConcurrentModificationException {
-        lock(key);
+        Key rootKey = DatastoreUtil.getRoot(key);
+        lock(rootKey);
         return Datastore.getWithoutTx(modelMeta, key);
     }
 
@@ -308,7 +311,8 @@ public class GlobalTransaction {
                 "The keys parameter must not be null.");
         }
         for (Key key : keys) {
-            lock(key);
+            Key rootKey = DatastoreUtil.getRoot(key);
+            lock(rootKey);
         }
         return Datastore.getWithoutTx(keys);
     }
@@ -336,7 +340,8 @@ public class GlobalTransaction {
                 "The keys parameter must not be null.");
         }
         for (Key key : keys) {
-            lock(key);
+            Key rootKey = DatastoreUtil.getRoot(key);
+            lock(rootKey);
         }
         return Datastore.getWithoutTx(modelClass, keys);
     }
@@ -364,7 +369,8 @@ public class GlobalTransaction {
                 "The keys parameter must not be null.");
         }
         for (Key key : keys) {
-            lock(key);
+            Key rootKey = DatastoreUtil.getRoot(key);
+            lock(rootKey);
         }
         return Datastore.getWithoutTx(modelMeta, keys);
     }
@@ -381,7 +387,8 @@ public class GlobalTransaction {
      */
     public List<Entity> get(Key... keys) throws ConcurrentModificationException {
         for (Key key : keys) {
-            lock(key);
+            Key rootKey = DatastoreUtil.getRoot(key);
+            lock(rootKey);
         }
         return Datastore.getWithoutTx(keys);
     }
@@ -403,7 +410,8 @@ public class GlobalTransaction {
     public <M> List<M> get(Class<M> modelClass, Key... keys)
             throws ConcurrentModificationException {
         for (Key key : keys) {
-            lock(key);
+            Key rootKey = DatastoreUtil.getRoot(key);
+            lock(rootKey);
         }
         return Datastore.getWithoutTx(modelClass, keys);
     }
@@ -425,7 +433,8 @@ public class GlobalTransaction {
     public <M> List<M> get(ModelMeta<M> modelMeta, Key... keys)
             throws ConcurrentModificationException {
         for (Key key : keys) {
-            lock(key);
+            Key rootKey = DatastoreUtil.getRoot(key);
+            lock(rootKey);
         }
         return Datastore.getWithoutTx(modelMeta, keys);
     }
@@ -440,8 +449,7 @@ public class GlobalTransaction {
      * @throws NullPointerException
      *             if the entity parameter is null
      * @throws IllegalArgumentException
-     *             if the key is incomplete or if the size of the entity is more
-     *             than 980,000 bytes
+     *             if the size of the entity is more than 1,000,000 bytes
      * @throws ConcurrentModificationException
      *             if locking the entity specified by the key failed
      */
@@ -451,11 +459,11 @@ public class GlobalTransaction {
             throw new NullPointerException(
                 "The entity parameter must not be null.");
         }
+        DatastoreUtil.assignKeyIfNecessary(entity);
         Key key = entity.getKey();
-        if (DatastoreUtil.isIncomplete(key)) {
-            throw new IllegalArgumentException("The key is incomplete.");
-        }
-        lock(key);
+        Key rootKey = DatastoreUtil.getRoot(key);
+        lock(rootKey);
+        rootKeySet.add(rootKey);
         journalMap.put(key, new Journal(globalTransactionKey, entity));
         return key;
     }
@@ -470,23 +478,13 @@ public class GlobalTransaction {
      * @throws NullPointerException
      *             if the model parameter is null
      * @throws IllegalArgumentException
-     *             if the key is incomplete or if the size of the entity is more
-     *             than 980,000 bytes
+     *             if the size of the entity is more than 1,000,000 bytes
      * @throws ConcurrentModificationException
      *             if locking the entity specified by the key failed
      */
     public Key put(Object model) throws NullPointerException,
             IllegalArgumentException, ConcurrentModificationException {
-        if (model == null) {
-            throw new NullPointerException(
-                "The model parameter must not be null.");
-        }
-        ModelMeta<?> modelMeta = DatastoreUtil.getModelMeta(model.getClass());
-        if (modelMeta.getKey(model) == null) {
-            modelMeta.setKey(model, Datastore.allocateId(modelMeta));
-        }
-        Entity entity =
-            DatastoreUtil.updatePropertiesAndConvertToEntity(modelMeta, model);
+        Entity entity = DatastoreUtil.modelToEntity(model);
         return put(entity);
     }
 
@@ -500,8 +498,7 @@ public class GlobalTransaction {
      * @throws NullPointerException
      *             if the models parameter is null
      * @throws IllegalArgumentException
-     *             if the key is incomplete or if the size of the entity is more
-     *             than 980,000 bytes
+     *             if the size of the entity is more than 1,000,000 bytes
      * @throws ConcurrentModificationException
      *             if locking the entity specified by the key failed
      */
@@ -530,8 +527,7 @@ public class GlobalTransaction {
      *            the models
      * @return a list of keys
      * @throws IllegalArgumentException
-     *             if the key is incomplete or if the size of the entity is more
-     *             than 980,000 bytes
+     *             if the size of the entity is more than 1,000,000 bytes
      * @throws ConcurrentModificationException
      *             if locking the entity specified by the key failed
      */
@@ -553,12 +549,10 @@ public class GlobalTransaction {
      */
     public void delete(Key key) throws NullPointerException,
             ConcurrentModificationException {
-        if (key == null) {
-            throw new NullPointerException(
-                "The key parameter must not be null.");
-        }
-        lock(key);
-        journalMap.remove(key);
+        Key rootKey = DatastoreUtil.getRoot(key);
+        lock(rootKey);
+        rootKeySet.add(rootKey);
+        journalMap.put(key, new Journal(globalTransactionKey, key));
     }
 
     /**
@@ -600,6 +594,7 @@ public class GlobalTransaction {
      * Commits this transaction asynchronously using TaskQueue.
      */
     public void commitAsync() {
+        assertActive();
         active = false;
         if (lockMap.size() > 0) {
             Journal.put(journalMap.values());
@@ -613,31 +608,29 @@ public class GlobalTransaction {
      * Lock the entity. If locking the entity failed, the other locks that this
      * transaction has are released automatically.
      * 
-     * @param key
-     *            a key
+     * @param rootKey
+     *            a root key
      * @throws NullPointerException
      *             if the key parameter is null
      * @throws ConcurrentModificationException
      *             if locking an entity specified by the key failed
      */
-    protected void lock(Key key) throws NullPointerException,
+    protected void lock(Key rootKey) throws NullPointerException,
             ConcurrentModificationException {
-        if (key == null) {
+        if (rootKey == null) {
             throw new NullPointerException(
                 "The key parameter must not be null.");
         }
         assertActive();
-        Lock lock = new Lock(globalTransactionKey, key, timestamp);
-        Lock other = lockMap.get(key);
-        if (other == null) {
+        if (!lockMap.containsKey(rootKey)) {
+            Lock lock = new Lock(globalTransactionKey, rootKey, timestamp);
             try {
                 lock.lock();
             } catch (ConcurrentModificationException e) {
-                active = false;
                 unlock();
                 throw e;
             }
-            lockMap.put(key, lock);
+            lockMap.put(rootKey, lock);
         }
     }
 
@@ -648,9 +641,13 @@ public class GlobalTransaction {
         active = false;
         List<Key> keys = new ArrayList<Key>();
         for (Lock lock : lockMap.values()) {
-            keys.add(lock.getKey());
+            keys.add(lock.key);
         }
-        Datastore.deleteWithoutTx(keys);
+        try {
+            Datastore.deleteWithoutTx(keys);
+        } catch (ConcurrentModificationException e) {
+            Lock.delete(globalTransactionKey);
+        }
         lockMap.clear();
     }
 

@@ -1964,6 +1964,7 @@ public final class Datastore {
      *             if the entity parameter is null
      */
     public static Key put(Entity entity) throws NullPointerException {
+        DatastoreUtil.assignKeyIfNecessary(entity);
         return DatastoreUtil.put(entity);
     }
 
@@ -1977,6 +1978,7 @@ public final class Datastore {
      *             if the entity parameter is null
      */
     public static Key putWithoutTx(Entity entity) throws NullPointerException {
+        DatastoreUtil.assignKeyIfNecessary(entity);
         return DatastoreUtil.put((Transaction) null, entity);
     }
 
@@ -1991,15 +1993,8 @@ public final class Datastore {
      *             if the model parameter is null
      */
     public static Key put(Object model) throws NullPointerException {
-        if (model == null) {
-            throw new NullPointerException("The model parameter is null.");
-        }
-        ModelMeta<?> modelMeta = getModelMeta(model.getClass());
-        Entity entity =
-            DatastoreUtil.updatePropertiesAndConvertToEntity(modelMeta, model);
-        Key key = put(entity);
-        modelMeta.setKey(model, key);
-        return key;
+        Entity entity = DatastoreUtil.modelToEntity(model);
+        return DatastoreUtil.put(entity);
     }
 
     /**
@@ -2012,15 +2007,8 @@ public final class Datastore {
      *             if the model parameter is null
      */
     public static Key putWithoutTx(Object model) throws NullPointerException {
-        if (model == null) {
-            throw new NullPointerException("The model parameter is null.");
-        }
-        ModelMeta<?> modelMeta = getModelMeta(model.getClass());
-        Entity entity =
-            DatastoreUtil.updatePropertiesAndConvertToEntity(modelMeta, model);
-        Key key = putWithoutTx(entity);
-        modelMeta.setKey(model, key);
-        return key;
+        Entity entity = DatastoreUtil.modelToEntity(model);
+        return DatastoreUtil.put((Transaction) null, entity);
     }
 
     /**
@@ -2039,6 +2027,7 @@ public final class Datastore {
      */
     public static Key put(Transaction tx, Entity entity)
             throws NullPointerException, IllegalStateException {
+        DatastoreUtil.assignKeyIfNecessary(entity);
         return DatastoreUtil.put(tx, entity);
     }
 
@@ -2058,15 +2047,8 @@ public final class Datastore {
      */
     public static Key put(Transaction tx, Object model)
             throws NullPointerException, IllegalStateException {
-        if (model == null) {
-            throw new NullPointerException("The model parameter is null.");
-        }
-        ModelMeta<?> modelMeta = getModelMeta(model.getClass());
-        Entity entity =
-            DatastoreUtil.updatePropertiesAndConvertToEntity(modelMeta, model);
-        Key key = put(tx, entity);
-        modelMeta.setKey(model, key);
-        return key;
+        Entity entity = DatastoreUtil.modelToEntity(model);
+        return DatastoreUtil.put(tx, entity);
     }
 
     /**
@@ -2080,15 +2062,8 @@ public final class Datastore {
      *             if the models parameter is null
      */
     public static List<Key> put(Iterable<?> models) throws NullPointerException {
-        List<ModelMeta<?>> modelMetaList =
-            DatastoreUtil.getModelMetaList(models);
-        Iterable<Entity> entities =
-            DatastoreUtil.updatePropertiesAndConvertToEntities(
-                modelMetaList,
-                models);
-        List<Key> keys = DatastoreUtil.put(entities);
-        DatastoreUtil.setKeys(modelMetaList, models, keys);
-        return keys;
+        List<Entity> entities = DatastoreUtil.modelsToEntities(models);
+        return DatastoreUtil.put(entities);
     }
 
     /**
@@ -2102,15 +2077,8 @@ public final class Datastore {
      */
     public static List<Key> putWithoutTx(Iterable<?> models)
             throws NullPointerException {
-        List<ModelMeta<?>> modelMetaList =
-            DatastoreUtil.getModelMetaList(models);
-        Iterable<Entity> entities =
-            DatastoreUtil.updatePropertiesAndConvertToEntities(
-                modelMetaList,
-                models);
-        List<Key> keys = DatastoreUtil.put((Transaction) null, entities);
-        DatastoreUtil.setKeys(modelMetaList, models, keys);
-        return keys;
+        List<Entity> entities = DatastoreUtil.modelsToEntities(models);
+        return DatastoreUtil.put((Transaction) null, entities);
     }
 
     /**
@@ -2152,15 +2120,8 @@ public final class Datastore {
      */
     public static List<Key> put(Transaction tx, Iterable<?> models)
             throws NullPointerException, IllegalStateException {
-        List<ModelMeta<?>> modelMetaList =
-            DatastoreUtil.getModelMetaList(models);
-        Iterable<Entity> entities =
-            DatastoreUtil.updatePropertiesAndConvertToEntities(
-                modelMetaList,
-                models);
-        List<Key> keys = DatastoreUtil.put(tx, entities);
-        DatastoreUtil.setKeys(modelMetaList, models, keys);
-        return keys;
+        List<Entity> entities = DatastoreUtil.modelsToEntities(models);
+        return DatastoreUtil.put(tx, entities);
     }
 
     /**

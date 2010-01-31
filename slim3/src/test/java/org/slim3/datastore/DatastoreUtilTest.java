@@ -623,58 +623,27 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void getModelMetaList() throws Exception {
-        Entity entity = new Entity("Hoge");
+    public void modelToEntity() throws Exception {
         Hoge hoge = new Hoge();
-        List<ModelMeta<?>> modelMetaList =
-            DatastoreUtil.getModelMetaList(Arrays.asList(entity, hoge));
-        assertThat(modelMetaList.size(), is(2));
-        assertThat(modelMetaList.get(0), is(nullValue()));
-        assertThat(modelMetaList.get(1).getKind(), is("Hoge"));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void updatePropertiesAndConvertToEntity() throws Exception {
-        Hoge hoge = new Hoge();
-        Entity entity =
-            DatastoreUtil.updatePropertiesAndConvertToEntity(
-                HogeMeta.get(),
-                hoge);
+        Entity entity = DatastoreUtil.modelToEntity(hoge);
         assertThat((Long) entity.getProperty("version"), is(1L));
+        assertThat(hoge.getKey(), is(notNullValue()));
+        assertThat(hoge.getKey(), is(entity.getKey()));
     }
 
     /**
      * @throws Exception
      */
     @Test
-    public void updatePropertiesAndConvertToEntities() throws Exception {
+    public void modelsToEntities() throws Exception {
+        Hoge hoge = new Hoge();
         Entity entity = new Entity("Hoge");
-        Hoge hoge = new Hoge();
-        List<ModelMeta<?>> modelMetaList =
-            DatastoreUtil.getModelMetaList(Arrays.asList(entity, hoge));
         List<Entity> entities =
-            DatastoreUtil.updatePropertiesAndConvertToEntities(
-                modelMetaList,
-                Arrays.asList(entity, hoge));
+            DatastoreUtil.modelsToEntities(Arrays.asList(hoge, entity));
         assertThat(entities.size(), is(2));
-        assertThat((Long) entities.get(1).getProperty("version"), is(1L));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void setKeys() throws Exception {
-        List<ModelMeta<?>> modelMetaList = new ArrayList<ModelMeta<?>>();
-        modelMetaList.add(HogeMeta.get());
-        Hoge hoge = new Hoge();
-        Key key = Datastore.createKey(Hoge.class, 1);
-        DatastoreUtil.setKeys(modelMetaList, Arrays.asList(hoge), Arrays
-            .asList(key));
-        assertThat(hoge.getKey(), is(key));
+        assertThat((Long) entities.get(0).getProperty("version"), is(1L));
+        assertThat(hoge.getKey(), is(notNullValue()));
+        assertThat(hoge.getKey(), is(entities.get(0).getKey()));
     }
 
     /**
@@ -739,5 +708,18 @@ public class DatastoreUtilTest extends AppEngineTestCase {
         element.setType("Child");
         element.setId(1);
         assertThat(DatastoreUtil.referenceToKey(reference), is(childKey));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getRoot() throws Exception {
+        Key parentKey = KeyFactory.createKey("Parent", 1);
+        Key childKey = KeyFactory.createKey(parentKey, "Child", 1);
+        Key grandChildKey = KeyFactory.createKey(childKey, "GrandChild", 1);
+        assertThat(DatastoreUtil.getRoot(parentKey), is(parentKey));
+        assertThat(DatastoreUtil.getRoot(childKey), is(parentKey));
+        assertThat(DatastoreUtil.getRoot(grandChildKey), is(parentKey));
     }
 }

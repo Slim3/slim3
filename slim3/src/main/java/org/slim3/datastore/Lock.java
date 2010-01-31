@@ -16,6 +16,7 @@
 package org.slim3.datastore;
 
 import java.util.ConcurrentModificationException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,6 +24,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.datastore.Query.FilterOperator;
 
 /**
  * A class to lock a target entity.
@@ -149,6 +151,39 @@ public class Lock {
     public static Lock get(Transaction tx, Key key)
             throws EntityNotFoundRuntimeException {
         return toLock(Datastore.get(tx, key));
+    }
+
+    /**
+     * Deletes lock entities specified by the global transaction key.
+     * 
+     * @param globalTransactionKey
+     *            the global transaction key
+     * @throws NullPointerException
+     *             if the globalTransactionKey parameter is null
+     * @throws ConcurrentModificationException
+     *             if the other request modify an entity group.
+     */
+    public static void delete(Key globalTransactionKey)
+            throws NullPointerException, ConcurrentModificationException {
+        if (globalTransactionKey == null) {
+            throw new NullPointerException(
+                "The globalTransactionKey parameter must not be null.");
+        }
+        ConcurrentModificationException cme = null;
+        for (int i = 0; i < GlobalTransaction.MAX_RETRY; i++) {
+            try {
+                List<Key> keys =
+                    Datastore.query(KIND).filter(
+                        GLOBAL_TRANSACTION_KEY_PROPERTY,
+                        FilterOperator.EQUAL,
+                        globalTransactionKey).asKeyList();
+                Datastore.deleteWithoutTx(keys);
+                return;
+            } catch (ConcurrentModificationException e) {
+                cme = e;
+            }
+        }
+        throw cme;
     }
 
     /**

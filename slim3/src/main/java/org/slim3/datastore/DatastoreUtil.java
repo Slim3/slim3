@@ -483,7 +483,6 @@ public final class DatastoreUtil {
      */
     public static Key put(Entity entity) throws NullPointerException,
             IllegalStateException {
-        assignKeyIfNecessary(entity);
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         DatastoreTimeoutException dte = null;
         for (int i = 0; i < MAX_RETRY; i++) {
@@ -516,7 +515,6 @@ public final class DatastoreUtil {
      */
     public static Key put(Transaction tx, Entity entity)
             throws NullPointerException, IllegalStateException {
-        assignKeyIfNecessary(entity);
         if (tx != null && !tx.isActive()) {
             throw new IllegalStateException("The transaction must be active.");
         }
@@ -547,7 +545,6 @@ public final class DatastoreUtil {
      */
     public static List<Key> put(Iterable<Entity> entities)
             throws NullPointerException {
-        assignKeyIfNecessary(entities);
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         DatastoreTimeoutException dte = null;
         for (int i = 0; i < MAX_RETRY; i++) {
@@ -580,7 +577,6 @@ public final class DatastoreUtil {
      */
     public static List<Key> put(Transaction tx, Iterable<Entity> entities)
             throws NullPointerException, IllegalStateException {
-        assignKeyIfNecessary(entities);
         if (tx != null && !tx.isActive()) {
             throw new IllegalStateException("The transaction must be active.");
         }
@@ -1150,121 +1146,51 @@ public final class DatastoreUtil {
     }
 
     /**
-     * Returns a list of {@link ModelMeta}s.
+     * Converts the model to an entity.
      * 
-     * @param models
-     *            the models
-     * @return a list of {@link ModelMeta}s
-     * @throws NullPointerException
-     *             if the models parameter is null or if the element of models
-     *             is null
-     */
-    public static List<ModelMeta<?>> getModelMetaList(Iterable<?> models)
-            throws NullPointerException {
-        if (models == null) {
-            throw new NullPointerException(
-                "The models parameter must not be null.");
-        }
-        List<ModelMeta<?>> list = new ArrayList<ModelMeta<?>>();
-        for (Object model : models) {
-            if (model == null) {
-                throw new NullPointerException(
-                    "The element of the models must not be null.");
-            }
-            if (model instanceof Entity) {
-                list.add(null);
-            } else {
-                list.add(getModelMeta(model.getClass()));
-            }
-        }
-        return list;
-    }
-
-    /**
-     * Updates the properties of the model and convert it to an entity.
-     * 
-     * @param modelMeta
-     *            the meta data of the model
      * @param model
      *            the model
      * @return an entity
      * @throws NullPointerException
-     *             if the modelMeta parameter is null or if the model parameter
-     *             is null
+     *             if the model parameter is null
      */
-    public static Entity updatePropertiesAndConvertToEntity(
-            ModelMeta<?> modelMeta, Object model) throws NullPointerException {
-        if (modelMeta == null) {
-            throw new NullPointerException(
-                "The modelMeta parameter must not be null.");
-        }
+    public static Entity modelToEntity(Object model)
+            throws NullPointerException {
         if (model == null) {
-            throw new NullPointerException(
-                "The model parameter must not be null.");
+            throw new NullPointerException("The model parameter is null.");
         }
+        ModelMeta<?> modelMeta = getModelMeta(model.getClass());
+        modelMeta.assignKeyIfNecessary(model);
         modelMeta.incrementVersion(model);
         return modelMeta.modelToEntity(model);
     }
 
     /**
-     * Updates the properties of the models and convert them to entities.
+     * Converts the models to entities.
      * 
-     * @param modelMetaList
-     *            the list of {@link ModelMeta}
      * @param models
      *            the models
-     * @return a list of entities
+     * @return entities
      * @throws NullPointerException
-     *             if the modelMetaList parameter is null or if the models
-     *             parameter is null
+     *             if the models parameter is null
      */
-    public static List<Entity> updatePropertiesAndConvertToEntities(
-            List<ModelMeta<?>> modelMetaList, Iterable<?> models)
+    public static List<Entity> modelsToEntities(Iterable<?> models)
             throws NullPointerException {
-        if (modelMetaList == null) {
-            throw new NullPointerException(
-                "The modelMetaList parameter must not be null.");
-        }
         if (models == null) {
             throw new NullPointerException(
                 "The models parameter must not be null.");
         }
-        List<Entity> entities = new ArrayList<Entity>(modelMetaList.size());
-        int i = 0;
+        List<Entity> entities = new ArrayList<Entity>();
         for (Object model : models) {
-            ModelMeta<?> modelMeta = modelMetaList.get(i);
-            if (modelMeta == null) {
-                entities.add((Entity) model);
-            } else {
-                Entity entity =
-                    updatePropertiesAndConvertToEntity(modelMeta, model);
+            if (model instanceof Entity) {
+                Entity entity = (Entity) model;
+                DatastoreUtil.assignKeyIfNecessary(entity);
                 entities.add(entity);
+            } else {
+                entities.add(modelToEntity(model));
             }
-            i++;
         }
         return entities;
-    }
-
-    /**
-     * Sets the keys to the models.
-     * 
-     * @param modelMetaList
-     *            the list of {@link ModelMeta}s
-     * @param models
-     *            the models
-     * @param keys
-     *            the keys
-     */
-    public static void setKeys(List<ModelMeta<?>> modelMetaList,
-            Iterable<?> models, List<Key> keys) {
-        int i = 0;
-        for (Object model : models) {
-            ModelMeta<?> modelMeta = modelMetaList.get(i);
-            if (modelMeta != null) {
-                modelMeta.setKey(model, keys.get(i));
-            }
-            i++;
-        }
     }
 
     /**
@@ -1282,6 +1208,28 @@ public final class DatastoreUtil {
                 "The key parameter must not be null.");
         }
         return key.getName() == null && key.getId() <= 0;
+    }
+
+    /**
+     * Returns a root key.
+     * 
+     * @param key
+     *            the key
+     * @return a root key
+     */
+    public static Key getRoot(Key key) {
+        if (key == null) {
+            throw new NullPointerException(
+                "The key parameter must not be null.");
+        }
+        while (key != null) {
+            Key parent = key.getParent();
+            if (parent == null) {
+                break;
+            }
+            key = parent;
+        }
+        return key;
     }
 
     private DatastoreUtil() {

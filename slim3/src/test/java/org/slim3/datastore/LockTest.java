@@ -93,6 +93,20 @@ public class LockTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void delete() throws Exception {
+        Key rootKey = Datastore.createKey("Hoge", 1);
+        long timestamp = System.currentTimeMillis();
+        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
+        Lock lock = new Lock(globalTransactionKey, rootKey, timestamp);
+        Datastore.put(lock.toEntity());
+        Lock.delete(globalTransactionKey);
+        assertThat(Datastore.query(Lock.KIND, lock.key).count(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void constructor() throws Exception {
         Key rootKey = Datastore.createKey("Hoge", 1);
         Key key = Lock.createKey(rootKey);
