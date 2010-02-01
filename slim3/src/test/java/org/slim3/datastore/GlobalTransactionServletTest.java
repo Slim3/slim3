@@ -15,6 +15,7 @@
  */
 package org.slim3.datastore;
 
+import org.junit.Test;
 import org.slim3.tester.ServletTestCase;
 
 /**
@@ -23,4 +24,10 @@ import org.slim3.tester.ServletTestCase;
  */
 public class GlobalTransactionServletTest extends ServletTestCase {
 
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void test() throws Exception {
+    }
 }
