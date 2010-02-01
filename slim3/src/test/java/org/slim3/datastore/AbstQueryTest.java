@@ -139,9 +139,52 @@ public class AbstQueryTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void asEntityListForKindlessQuery() throws Exception {
+        ds.put(new Entity("Hoge"));
+        MyQuery query = new MyQuery();
+        List<Entity> list = query.asEntityList();
+        assertThat(list.size(), is(1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asEntityListForKindlessAncestorQuery() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        MyQuery query = new MyQuery(key);
+        List<Entity> list = query.asEntityList();
+        assertThat(list.size(), is(1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asEntityListInternally() throws Exception {
+        ds.put(new Entity("Hoge"));
+        MyQuery query = new MyQuery("Hoge");
+        List<Entity> list = query.asEntityList(ds, query.query);
+        assertThat(list.size(), is(1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void asSingleEntity() throws Exception {
         ds.put(new Entity("Hoge"));
         MyQuery query = new MyQuery("Hoge");
+        assertThat(query.asSingleEntity(), is(not(nullValue())));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asSingleEntityForKindlessQuery() throws Exception {
+        ds.put(new Entity("Hoge"));
+        MyQuery query = new MyQuery();
         assertThat(query.asSingleEntity(), is(not(nullValue())));
     }
 

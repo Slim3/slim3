@@ -15,14 +15,10 @@
  */
 package org.slim3.datastore;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Test;
 import org.slim3.tester.AppEngineTestCase;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.Entity;
 
 /**
  * @author higa
@@ -35,11 +31,7 @@ public class SpikeTest extends AppEngineTestCase {
      */
     @Test
     public void spike() throws Exception {
-        Key key = KeyFactory.createKey("Hoge", 1);
-        List<Key> keys = new ArrayList<Key>();
-        for (int i = 0; i < 501; i++) {
-            keys.add(key);
-        }
-        Datastore.getAsMap(keys);
+        Datastore.put(new Entity("Hoge"));
+        System.out.println(Datastore.query().asList());
     }
 }

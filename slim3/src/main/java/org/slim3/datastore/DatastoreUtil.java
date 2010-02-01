@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
+import org.slim3.util.AppEngineUtil;
 import org.slim3.util.ClassUtil;
 import org.slim3.util.Cleanable;
 import org.slim3.util.Cleaner;
@@ -41,6 +42,9 @@ import com.google.appengine.api.datastore.KeyUtil;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Transaction;
+import com.google.apphosting.api.ApiProxy;
+import com.google.apphosting.api.DatastorePb.GetSchemaRequest;
+import com.google.apphosting.api.DatastorePb.Schema;
 import com.google.storage.onestore.v3.OnestoreEntity.EntityProto;
 import com.google.storage.onestore.v3.OnestoreEntity.Reference;
 import com.google.storage.onestore.v3.OnestoreEntity.Path.Element;
@@ -57,6 +61,10 @@ public final class DatastoreUtil {
     private static final int MAX_RETRY = 10;
 
     private static final int KEY_CACHE_SIZE = 50;
+
+    private static final String DATASTORE_SERVICE = "datastore_v3";
+
+    private static final String GET_SCHEMA_METHOD = "GetSchema";
 
     private static final Logger logger =
         Logger.getLogger(DatastoreUtil.class.getName());
@@ -1230,6 +1238,98 @@ public final class DatastoreUtil {
             key = parent;
         }
         return key;
+    }
+
+    /**
+     * Returns a schema.
+     * 
+     * @return a schema
+     * @throws IllegalStateException
+     *             if this method is called on production server
+     */
+    public static Schema getSchema() throws IllegalStateException {
+        if (AppEngineUtil.isProduction()) {
+            throw new IllegalStateException(
+                "This method does not work on production server.");
+        }
+        GetSchemaRequest req = new GetSchemaRequest();
+        req.setApp(ApiProxy.getCurrentEnvironment().getAppId());
+        byte[] resBuf =
+            ApiProxy.makeSyncCall(DATASTORE_SERVICE, GET_SCHEMA_METHOD, req
+                .toByteArray());
+        Schema schema = new Schema();
+        schema.mergeFrom(resBuf);
+        return schema;
+    }
+
+    /**
+     * Returns a list of kinds.
+     * 
+     * @return a list of kinds
+     * @throws IllegalStateException
+     *             if this method is called on production server
+     */
+    public static List<String> getKinds() throws IllegalStateException {
+        if (AppEngineUtil.isProduction()) {
+            throw new IllegalStateException(
+                "This method does not work on production server.");
+        }
+        Schema schema = getSchema();
+        List<EntityProto> entityProtoList = schema.kinds();
+        List<String> kindList = new ArrayList<String>(entityProtoList.size());
+        for (EntityProto entityProto : entityProtoList) {
+            List<String> types = getKinds(entityProto.getKey());
+            kindList.add(types.get(types.size() - 1));
+        }
+        return kindList;
+    }
+
+    /**
+     * Returns a list of kinds that include the ancestor kind.
+     * 
+     * @param ancestorKind
+     *            the ancestor kind
+     * @return a list of kinds
+     * @throws NullPointerException
+     *             if the ancestorKind parameter is null
+     * @throws IllegalStateException
+     *             if this method is called on production server
+     */
+    public static List<String> getKinds(String ancestorKind)
+            throws NullPointerException, IllegalStateException {
+        if (AppEngineUtil.isProduction()) {
+            throw new IllegalStateException(
+                "This method does not work on production server.");
+        }
+        if (ancestorKind == null) {
+            throw new NullPointerException(
+                "The ancestorKind parameter must not be null.");
+        }
+        Schema schema = getSchema();
+        List<EntityProto> entityProtoList = schema.kinds();
+        List<String> kindList = new ArrayList<String>(entityProtoList.size());
+        for (EntityProto entityProto : entityProtoList) {
+            List<String> types = getKinds(entityProto.getKey());
+            if (types.contains(ancestorKind)) {
+                kindList.add(types.get(types.size() - 1));
+            }
+        }
+        return kindList;
+    }
+
+    /**
+     * Returns a list of kinds included in the key.
+     * 
+     * @param key
+     *            the key
+     * @return a list of kinds
+     */
+    public static List<String> getKinds(Reference key) {
+        List<String> kinds = new ArrayList<String>(key.getPath().elementSize());
+        for (Element e : key.getPath().elements()) {
+            kinds.add(e.getType());
+        }
+        return kinds;
     }
 
     private DatastoreUtil() {

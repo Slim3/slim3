@@ -18,6 +18,8 @@ package org.slim3.datastore;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slim3.util.AppEngineUtil;
+
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -247,15 +249,45 @@ public abstract class AbstractQuery<SUB> {
     }
 
     /**
-     * Returns entities as a list.
+     * Returns entities as list.
      * 
-     * @return entities as a list
+     * @return entities as list
      */
     protected List<Entity> asEntityList() {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        if (!AppEngineUtil.isProduction() && query.getKind() == null) {
+            List<Entity> list = new ArrayList<Entity>();
+            Key ancestor = query.getAncestor();
+            if (ancestor != null) {
+                for (String kind : DatastoreUtil.getKinds(ancestor.getKind())) {
+                    Query q = new Query(kind, ancestor);
+                    list.addAll(asEntityList(ds, q));
+                }
+            } else {
+                for (String kind : DatastoreUtil.getKinds()) {
+                    Query q = new Query(kind);
+                    list.addAll(asEntityList(ds, q));
+                }
+            }
+            return list;
+        }
+        return asEntityList(ds, query);
+    }
+
+    /**
+     * Returns entities as list.
+     * 
+     * @param ds
+     *            the datastore service
+     * @param qry
+     *            the query
+     * @return entities as list
+     */
+    protected List<Entity> asEntityList(DatastoreService ds, Query qry) {
         PreparedQuery pq =
-            txSet ? DatastoreUtil.prepare(ds, tx, query) : DatastoreUtil
-                .prepare(ds, query);
+            txSet ? DatastoreUtil.prepare(ds, tx, qry) : DatastoreUtil.prepare(
+                ds,
+                qry);
         return DatastoreUtil.asList(pq, fetchOptions);
     }
 
@@ -265,6 +297,16 @@ public abstract class AbstractQuery<SUB> {
      * @return a single entity
      */
     protected Entity asSingleEntity() {
+        if (!AppEngineUtil.isProduction() && query.getKind() == null) {
+            List<Entity> list = asEntityList();
+            if (list.size() == 0) {
+                return null;
+            }
+            if (list.size() > 1) {
+                throw new PreparedQuery.TooManyResultsException();
+            }
+            return list.get(0);
+        }
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         PreparedQuery pq =
             txSet ? DatastoreUtil.prepare(ds, tx, query) : DatastoreUtil
