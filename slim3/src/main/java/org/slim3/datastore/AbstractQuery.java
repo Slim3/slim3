@@ -257,14 +257,15 @@ public abstract class AbstractQuery<SUB> {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         if (!AppEngineUtil.isProduction() && query.getKind() == null) {
             List<Entity> list = new ArrayList<Entity>();
+            List<String> kinds = DatastoreUtil.getKinds();
             Key ancestor = query.getAncestor();
             if (ancestor != null) {
-                for (String kind : DatastoreUtil.getKinds(ancestor.getKind())) {
+                for (String kind : kinds) {
                     Query q = new Query(kind, ancestor);
                     list.addAll(asEntityList(ds, q));
                 }
             } else {
-                for (String kind : DatastoreUtil.getKinds()) {
+                for (String kind : kinds) {
                     Query q = new Query(kind);
                     list.addAll(asEntityList(ds, q));
                 }

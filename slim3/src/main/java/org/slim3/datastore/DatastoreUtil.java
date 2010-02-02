@@ -1278,58 +1278,21 @@ public final class DatastoreUtil {
         List<EntityProto> entityProtoList = schema.kinds();
         List<String> kindList = new ArrayList<String>(entityProtoList.size());
         for (EntityProto entityProto : entityProtoList) {
-            List<String> types = getKinds(entityProto.getKey());
-            kindList.add(types.get(types.size() - 1));
+            kindList.add(getKind(entityProto.getKey()));
         }
         return kindList;
     }
 
     /**
-     * Returns a list of kinds that include the ancestor kind.
-     * 
-     * @param ancestorKind
-     *            the ancestor kind
-     * @return a list of kinds
-     * @throws NullPointerException
-     *             if the ancestorKind parameter is null
-     * @throws IllegalStateException
-     *             if this method is called on production server
-     */
-    public static List<String> getKinds(String ancestorKind)
-            throws NullPointerException, IllegalStateException {
-        if (AppEngineUtil.isProduction()) {
-            throw new IllegalStateException(
-                "This method does not work on production server.");
-        }
-        if (ancestorKind == null) {
-            throw new NullPointerException(
-                "The ancestorKind parameter must not be null.");
-        }
-        Schema schema = getSchema();
-        List<EntityProto> entityProtoList = schema.kinds();
-        List<String> kindList = new ArrayList<String>(entityProtoList.size());
-        for (EntityProto entityProto : entityProtoList) {
-            List<String> types = getKinds(entityProto.getKey());
-            if (types.contains(ancestorKind)) {
-                kindList.add(types.get(types.size() - 1));
-            }
-        }
-        return kindList;
-    }
-
-    /**
-     * Returns a list of kinds included in the key.
+     * Returns a leaf kind.
      * 
      * @param key
      *            the key
      * @return a list of kinds
      */
-    public static List<String> getKinds(Reference key) {
-        List<String> kinds = new ArrayList<String>(key.getPath().elementSize());
-        for (Element e : key.getPath().elements()) {
-            kinds.add(e.getType());
-        }
-        return kinds;
+    public static String getKind(Reference key) {
+        List<Element> elements = key.getPath().elements();
+        return elements.get(elements.size() - 1).getType();
     }
 
     private DatastoreUtil() {

@@ -1747,6 +1747,52 @@ public class DatastoreTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void deleteAll() throws Exception {
+        Key parentKey = Datastore.createKey("Parent", 1);
+        Key childKey = Datastore.createKey(parentKey, "Child", 1);
+        ds.put(new Entity(parentKey));
+        ds.put(new Entity(childKey));
+        Datastore.deleteAll(parentKey);
+        assertThat(Datastore.query("Parent").count(), is(0));
+        assertThat(Datastore.query("Child").count(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void deleteAllInTx() throws Exception {
+        Key parentKey = Datastore.createKey("Parent", 1);
+        Key childKey = Datastore.createKey(parentKey, "Child", 1);
+        ds.put(new Entity(parentKey));
+        ds.put(new Entity(childKey));
+        Transaction tx = Datastore.beginTransaction();
+        Datastore.deleteAll(tx, parentKey);
+        Datastore.rollback(tx);
+        assertThat(Datastore.query("Parent").count(), is(1));
+        assertThat(Datastore.query("Child").count(), is(1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void deleteAllWithoutTx() throws Exception {
+        Key parentKey = Datastore.createKey("Parent", 1);
+        Key childKey = Datastore.createKey(parentKey, "Child", 1);
+        ds.put(new Entity(parentKey));
+        ds.put(new Entity(childKey));
+        Transaction tx = Datastore.beginTransaction();
+        Datastore.deleteAllWithoutTx(parentKey);
+        Datastore.rollback(tx);
+        assertThat(Datastore.query("Parent").count(), is(0));
+        assertThat(Datastore.query("Child").count(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void queryUsingModelClass() throws Exception {
         assertThat(Datastore.query(Hoge.class), is(ModelQuery.class));
     }

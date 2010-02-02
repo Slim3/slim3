@@ -2223,6 +2223,63 @@ public final class Datastore {
     }
 
     /**
+     * Deletes all descendant entities.
+     * 
+     * @param ancestorKey
+     *            the ancestor key
+     * @throws NullPointerException
+     *             if the ancestorKey parameter is null
+     */
+    public static void deleteAll(Key ancestorKey) throws NullPointerException {
+        if (ancestorKey == null) {
+            throw new NullPointerException(
+                "The ancestorKey parameter must not be null.");
+        }
+        DatastoreUtil.delete(Datastore.query(ancestorKey).asKeyList());
+    }
+
+    /**
+     * Deletes all descendant entities within the provided transaction.
+     * 
+     * @param tx
+     *            the transaction
+     * @param ancestorKey
+     *            the ancestor key
+     * @throws NullPointerException
+     *             if the ancestorKey parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public static void deleteAll(Transaction tx, Key ancestorKey)
+            throws NullPointerException, IllegalStateException {
+        if (ancestorKey == null) {
+            throw new NullPointerException(
+                "The ancestorKey parameter must not be null.");
+        }
+        DatastoreUtil.delete(tx, Datastore.query(ancestorKey).asKeyList());
+    }
+
+    /**
+     * Deletes all descendant entities without transaction.
+     * 
+     * @param ancestorKey
+     *            the ancestor key
+     * @throws NullPointerException
+     *             if the ancestorKey parameter is null
+     */
+    public static void deleteAllWithoutTx(Key ancestorKey)
+            throws NullPointerException {
+        if (ancestorKey == null) {
+            throw new NullPointerException(
+                "The ancestorKey parameter must not be null.");
+        }
+        DatastoreUtil.delete((Transaction) null, Datastore
+            .query(ancestorKey)
+            .asKeyList());
+    }
+
+    /**
      * Returns a {@link ModelQuery}.
      * 
      * @param <M>

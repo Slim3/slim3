@@ -151,10 +151,11 @@ public class AbstQueryTest extends AppEngineTestCase {
      */
     @Test
     public void asEntityListForKindlessAncestorQuery() throws Exception {
-        Key key = ds.put(new Entity("Hoge"));
-        MyQuery query = new MyQuery(key);
+        Key parentKey = ds.put(new Entity("Parent"));
+        ds.put(new Entity(KeyFactory.createKey(parentKey, "Child", 1)));
+        MyQuery query = new MyQuery(parentKey);
         List<Entity> list = query.asEntityList();
-        assertThat(list.size(), is(1));
+        assertThat(list.size(), is(2));
     }
 
     /**

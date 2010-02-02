@@ -755,19 +755,7 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void getKindsUsingAncestorKind() throws Exception {
-        Datastore.put(new Entity("Hoge"));
-        Datastore.put(new Entity("Hoge2"));
-        List<String> kinds = DatastoreUtil.getKinds("Hoge");
-        assertThat(kinds.size(), is(1));
-        assertThat(kinds.get(0), is("Hoge"));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void getKindsForReference() throws Exception {
+    public void getKind() throws Exception {
         Reference key = new Reference();
         Path path = new Path();
         key.setPath(path);
@@ -777,9 +765,6 @@ public class DatastoreUtilTest extends AppEngineTestCase {
         element = path.addElement();
         element.setType("Child");
         element.setId(1);
-        List<String> kinds = DatastoreUtil.getKinds(key);
-        assertThat(kinds.size(), is(2));
-        assertThat(kinds.get(0), is("Parent"));
-        assertThat(kinds.get(1), is("Child"));
+        assertThat(DatastoreUtil.getKind(key), is("Child"));
     }
 }
