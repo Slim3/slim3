@@ -14,6 +14,7 @@
     <precompilation-enabled>true</precompilation-enabled> 
     
 	<system-properties>
+	    <property name="slim3.hotReloading" value="true"/>
 	    <property name="java.util.logging.config.file" value="WEB-INF/classes/logging.properties"/>
 	</system-properties>
 	<sessions-enabled>true</sessions-enabled>
