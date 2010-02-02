@@ -97,9 +97,6 @@ public abstract class Controller {
         try {
             navigation = run();
         } catch (Throwable t) {
-            if (logger.isLoggable(Level.WARNING)) {
-                logger.log(Level.WARNING, t.getMessage(), t);
-            }
             error = t;
         } finally {
             try {
@@ -107,9 +104,6 @@ public abstract class Controller {
             } catch (Throwable t) {
                 if (logger.isLoggable(Level.WARNING)) {
                     logger.log(Level.WARNING, t.getMessage(), t);
-                }
-                if (error == null) {
-                    error = t;
                 }
             }
         }
