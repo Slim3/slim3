@@ -91,7 +91,7 @@ public class CopyOptions {
      *            the excluded property names
      * @return this instance
      */
-    public CopyOptions exclude(String... propertyNames) {
+    public CopyOptions exclude(CharSequence... propertyNames) {
         final int length = propertyNames.length;
         excludedPropertyNames = new String[length];
         for (int i = 0; i < length; i++) {
