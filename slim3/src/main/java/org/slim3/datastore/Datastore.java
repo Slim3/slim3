@@ -2423,11 +2423,11 @@ public final class Datastore {
     }
 
     /**
-     * Returns a {@link EntityQuery}.
+     * Returns an {@link EntityQuery}.
      * 
      * @param kind
      *            the kind
-     * @return a {@link EntityQuery}
+     * @return an {@link EntityQuery}
      * @see EntityQuery#EntityQuery(String)
      */
     public static EntityQuery query(String kind) {
@@ -2435,13 +2435,13 @@ public final class Datastore {
     }
 
     /**
-     * Returns a {@link EntityQuery}.
+     * Returns an {@link EntityQuery}.
      * 
      * @param kind
      *            the kind
      * @param ancestorKey
      *            the ancestor key
-     * @return a {@link EntityQuery}
+     * @return an {@link EntityQuery}
      * @see EntityQuery#EntityQuery(String, Key)
      */
     public static EntityQuery query(String kind, Key ancestorKey) {
@@ -2449,7 +2449,7 @@ public final class Datastore {
     }
 
     /**
-     * Returns a {@link EntityQuery}.
+     * Returns an {@link EntityQuery}.
      * 
      * @param tx
      *            the transaction
@@ -2457,7 +2457,7 @@ public final class Datastore {
      *            the kind
      * @param ancestorKey
      *            the ancestor key
-     * @return a {@link EntityQuery}
+     * @return an {@link EntityQuery}
      * @see EntityQuery#EntityQuery(String, Key)
      */
     public static EntityQuery query(Transaction tx, String kind, Key ancestorKey) {

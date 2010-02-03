@@ -440,6 +440,72 @@ public class GlobalTransaction {
     }
 
     /**
+     * Returns an {@link EntityQuery}.
+     * 
+     * @param kind
+     *            the kind
+     * @param ancestorKey
+     *            the ancestor key
+     * @return an {@link EntityQuery}
+     * @see Datastore#query(String, Key)
+     */
+    public EntityQuery query(String kind, Key ancestorKey) {
+        Key rootKey = DatastoreUtil.getRoot(ancestorKey);
+        lock(rootKey);
+        return Datastore.query(kind, ancestorKey);
+    }
+
+    /**
+     * Returns a {@link ModelQuery}.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param ancestorKey
+     *            the ancestor key
+     * @return a {@link ModelQuery}
+     * @see Datastore#query(Class, Key)
+     */
+    public <M> ModelQuery<M> query(Class<M> modelClass, Key ancestorKey) {
+        Key rootKey = DatastoreUtil.getRoot(ancestorKey);
+        lock(rootKey);
+        return Datastore.query(modelClass, ancestorKey);
+    }
+
+    /**
+     * Returns a {@link ModelQuery}.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param ancestorKey
+     *            the ancestor key
+     * @return a {@link ModelQuery}
+     * @see Datastore#query(ModelMeta, Key)
+     */
+    public <M> ModelQuery<M> query(ModelMeta<M> modelMeta, Key ancestorKey) {
+        Key rootKey = DatastoreUtil.getRoot(ancestorKey);
+        lock(rootKey);
+        return Datastore.query(modelMeta, ancestorKey);
+    }
+
+    /**
+     * Returns a {@link KindlessQuery}.
+     * 
+     * @param ancestorKey
+     *            the ancestor key
+     * @return a {@link KindlessQuery}
+     * @see Datastore#query(Key)
+     */
+    public KindlessQuery query(Key ancestorKey) {
+        Key rootKey = DatastoreUtil.getRoot(ancestorKey);
+        lock(rootKey);
+        return Datastore.query(ancestorKey);
+    }
+
+    /**
      * Puts the entity. If locking the entity failed, the other locks that this
      * transaction has are released automatically.
      * 

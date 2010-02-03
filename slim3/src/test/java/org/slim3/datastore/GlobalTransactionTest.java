@@ -238,6 +238,46 @@ public class GlobalTransactionTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void queryUsingKindAndAncestorKey() throws Exception {
+        Key ancestorKey = Datastore.createKey("Hoge", 1);
+        assertThat(gtx.query("Hoge", ancestorKey), is(notNullValue()));
+        assertThat(gtx.lockMap.get(ancestorKey), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void queryUsingModelClassAndAncestorKey() throws Exception {
+        Key ancestorKey = Datastore.createKey("Hoge", 1);
+        assertThat(gtx.query(Hoge.class, ancestorKey), is(notNullValue()));
+        assertThat(gtx.lockMap.get(ancestorKey), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void queryUsingModelMetaAndAncestorKey() throws Exception {
+        Key ancestorKey = Datastore.createKey("Hoge", 1);
+        assertThat(gtx.query(HogeMeta.get(), ancestorKey), is(notNullValue()));
+        assertThat(gtx.lockMap.get(ancestorKey), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void queryUsingAncestorKey() throws Exception {
+        Key ancestorKey = Datastore.createKey("Hoge", 1);
+        assertThat(gtx.query(ancestorKey), is(notNullValue()));
+        assertThat(gtx.lockMap.get(ancestorKey), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void putEntity() throws Exception {
         Key rootKey = Datastore.createKey("Parent", 1);
         Key key = Datastore.createKey(rootKey, "Child", 1);
