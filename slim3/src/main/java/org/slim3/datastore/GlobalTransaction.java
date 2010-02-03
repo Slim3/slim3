@@ -119,7 +119,7 @@ public class GlobalTransaction {
      *            the global transaction key
      * @return whether the global transaction exists
      */
-    public static boolean exists(Key key) {
+    protected static boolean exists(Key key) {
         if (key == null) {
             throw new NullPointerException(
                 "The key parameter must not be null.");
@@ -148,7 +148,7 @@ public class GlobalTransaction {
      *             if the kind of the key is different from
      *             slim3.GlobalTransaction
      */
-    public static void rollForward(Key globalTransactionKey)
+    protected static void rollForward(Key globalTransactionKey)
             throws NullPointerException, IllegalArgumentException {
         if (globalTransactionKey == null) {
             throw new NullPointerException(
@@ -588,6 +588,25 @@ public class GlobalTransaction {
      */
     public void delete(Key... keys) throws ConcurrentModificationException {
         delete(Arrays.asList(keys));
+    }
+
+    /**
+     * Deletes all descendant entities. If locking the entity failed, the other
+     * locks that this transaction has are released automatically.
+     * 
+     * @param key
+     *            the key
+     * @throws NullPointerException
+     *             if the key parameter is null
+     * @throws ConcurrentModificationException
+     *             if locking the entity specified by the key failed
+     */
+    public void deleteAll(Key key) throws NullPointerException,
+            ConcurrentModificationException {
+        Key rootKey = DatastoreUtil.getRoot(key);
+        lock(rootKey);
+        rootKeySet.add(rootKey);
+        journalMap.put(key, new Journal(globalTransactionKey, key, true));
     }
 
     /**

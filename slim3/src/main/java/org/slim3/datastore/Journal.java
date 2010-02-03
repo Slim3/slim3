@@ -91,6 +91,11 @@ public class Journal {
     protected byte[] content;
 
     /**
+     * Whether this journal is "deleteAll()".
+     */
+    protected boolean deleteAll = false;
+
+    /**
      * Creates a key.
      * 
      * @param targetKey
@@ -139,7 +144,7 @@ public class Journal {
     }
 
     /**
-     * Constructor.
+     * Constructor for "put".
      * 
      * @param globalTransactionKey
      *            the global transaction key
@@ -174,7 +179,7 @@ public class Journal {
     }
 
     /**
-     * Constructor.
+     * Constructor for "delete".
      * 
      * @param globalTransactionKey
      *            the global transaction key
@@ -185,6 +190,24 @@ public class Journal {
      *             targetKey parameter is null
      */
     public Journal(Key globalTransactionKey, Key targetKey)
+            throws NullPointerException {
+        this(globalTransactionKey, targetKey, false);
+    }
+
+    /**
+     * Constructor for "delete".
+     * 
+     * @param globalTransactionKey
+     *            the global transaction key
+     * @param targetKey
+     *            the targetKey
+     * @param deleteAll
+     *            whether this journal is "deleteAll()"
+     * @throws NullPointerException
+     *             if the globalTransactionKey parameter is null or if the
+     *             targetKey parameter is null
+     */
+    public Journal(Key globalTransactionKey, Key targetKey, boolean deleteAll)
             throws NullPointerException {
         if (globalTransactionKey == null) {
             throw new NullPointerException(
@@ -197,6 +220,7 @@ public class Journal {
         this.globalTransactionKey = globalTransactionKey;
         this.targetKey = targetKey;
         this.key = createKey(targetKey);
+        this.deleteAll = deleteAll;
     }
 
     /**
@@ -287,5 +311,14 @@ public class Journal {
             targetEntityProto.outputTo(content, 0);
         }
         return content;
+    }
+
+    /**
+     * Determines if this journal is "deleteAll()".
+     * 
+     * @return the deleteAll whether this journal is "deleteAll()"
+     */
+    public boolean isDeleteAll() {
+        return deleteAll;
     }
 }

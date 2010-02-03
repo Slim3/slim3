@@ -88,6 +88,24 @@ public class JournalTest extends AppEngineTestCase {
         assertThat(journal.targetEntityProto, is(nullValue()));
         assertThat(journal.contentSize, is(0));
         assertThat(journal.content, is(nullValue()));
+        assertThat(journal.deleteAll, is(false));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void constructorForDeleteAll() throws Exception {
+        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
+        Key targetKey = Datastore.createKey("Hoge", 1);
+        Journal journal = new Journal(globalTransactionKey, targetKey, true);
+        assertThat(journal.key, is(Journal.createKey(targetKey)));
+        assertThat(journal.targetKey, is(targetKey));
+        assertThat(journal.targetEntity, is(nullValue()));
+        assertThat(journal.targetEntityProto, is(nullValue()));
+        assertThat(journal.contentSize, is(0));
+        assertThat(journal.content, is(nullValue()));
+        assertThat(journal.deleteAll, is(true));
     }
 
     /**

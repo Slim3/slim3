@@ -354,4 +354,21 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(journal2.key, is(Journal.createKey(key2)));
         assertThat(journal2.targetEntityProto, is(nullValue()));
     }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void deleteAll() throws Exception {
+        Key rootKey = Datastore.createKey("Parent", 1);
+        Key key = Datastore.createKey(rootKey, "Child", 1);
+        gtx.deleteAll(key);
+        assertThat(gtx.lockMap.containsKey(rootKey), is(true));
+        assertThat(gtx.rootKeySet.contains(rootKey), is(true));
+        Journal journal = gtx.journalMap.get(key);
+        assertThat(journal, is(notNullValue()));
+        assertThat(journal.key, is(Journal.createKey(key)));
+        assertThat(journal.targetEntityProto, is(nullValue()));
+        assertThat(journal.deleteAll, is(true));
+    }
 }
