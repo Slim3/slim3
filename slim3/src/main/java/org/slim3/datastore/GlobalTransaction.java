@@ -727,6 +727,9 @@ public class GlobalTransaction {
      */
     protected void unlock() {
         active = false;
+        if (lockMap.size() == 0) {
+            return;
+        }
         List<Key> keys = new ArrayList<Key>();
         for (Lock lock : lockMap.values()) {
             keys.add(lock.key);
@@ -753,7 +756,6 @@ public class GlobalTransaction {
             unlock();
         }
         committed = true;
-        active = false;
     }
 
     /**
@@ -763,8 +765,8 @@ public class GlobalTransaction {
         Journal.put(journalMap.values());
         commitGlobalTransactionInternally();
         committed = true;
-
-        active = false;
+        Journal.applyWithinGlobalTransaction(journalMap.values());
+        unlock();
     }
 
     /**
