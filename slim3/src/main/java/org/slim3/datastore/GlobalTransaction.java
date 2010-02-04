@@ -693,19 +693,6 @@ public class GlobalTransaction {
     }
 
     /**
-     * Commits this transaction asynchronously using TaskQueue.
-     */
-    public void commitAsync() {
-        assertActive();
-        if (lockMap.size() > 0) {
-            Journal.put(journalMap.values());
-            commitAsyncInternally();
-        }
-        committed = true;
-        active = false;
-    }
-
-    /**
      * Lock the entity. If locking the entity failed, the other locks that this
      * transaction has are released automatically.
      * 
@@ -758,7 +745,7 @@ public class GlobalTransaction {
     protected void commitLocalTransaction() {
         Transaction tx = Datastore.beginTransaction();
         try {
-            Journal.apply(tx, journalMap.values());
+            Journal.applyWithinLocalTransaction(tx, journalMap.values());
         } finally {
             if (tx.isActive()) {
                 Datastore.rollback(tx);
@@ -773,8 +760,20 @@ public class GlobalTransaction {
      * Commits this transaction as global transaction.
      */
     protected void commitGlobalTransaction() {
+        Journal.put(journalMap.values());
+        commitGlobalTransactionInternally();
         committed = true;
+
         active = false;
+    }
+
+    /**
+     * Commits this global transaction asynchronously.
+     */
+    protected void commitGlobalTransactionInternally() {
+        Entity entity = new Entity(globalTransactionKey);
+        entity.setProperty(TIMESTAMP_PROPERTY, timestamp);
+        Datastore.putWithoutTx(entity);
     }
 
     /**

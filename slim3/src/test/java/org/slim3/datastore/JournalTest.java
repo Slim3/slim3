@@ -52,7 +52,7 @@ public class JournalTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void applyForDeleteAll() throws Exception {
+    public void applyWithinLocalTransactionForDeleteAll() throws Exception {
         Key targetKey = Datastore.createKey("Parent", 1);
         Key childKey = Datastore.createKey(targetKey, "Child", 1);
         Datastore.put(new Entity(targetKey));
@@ -60,7 +60,7 @@ public class JournalTest extends AppEngineTestCase {
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
         Journal journal = new Journal(globalTransactionKey, targetKey, true);
         Transaction tx = Datastore.beginTransaction();
-        Journal.apply(tx, Arrays.asList(journal));
+        Journal.applyWithinLocalTransaction(tx, Arrays.asList(journal));
         Datastore.commit(tx);
         assertThat(Datastore.query("Parent").count(), is(0));
         assertThat(Datastore.query("Child").count(), is(0));
@@ -70,13 +70,13 @@ public class JournalTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void applyForDelete() throws Exception {
+    public void applyWithinLocalTransactionForDelete() throws Exception {
         Key targetKey = Datastore.createKey("Hoge", 1);
         Datastore.put(new Entity(targetKey));
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
         Journal journal = new Journal(globalTransactionKey, targetKey);
         Transaction tx = Datastore.beginTransaction();
-        Journal.apply(tx, Arrays.asList(journal));
+        Journal.applyWithinLocalTransaction(tx, Arrays.asList(journal));
         Datastore.commit(tx);
         assertThat(Datastore.query("Hoge").count(), is(0));
     }
@@ -85,7 +85,8 @@ public class JournalTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void applyForDeleteManyEntities() throws Exception {
+    public void applyWithinLocalTransactionForDeleteManyEntities()
+            throws Exception {
         Key parentKey = Datastore.createKey("Parent", 1);
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
         List<Journal> journals = new ArrayList<Journal>();
@@ -101,7 +102,7 @@ public class JournalTest extends AppEngineTestCase {
                 i)));
         }
         Transaction tx = Datastore.beginTransaction();
-        Journal.apply(tx, journals);
+        Journal.applyWithinLocalTransaction(tx, journals);
         Datastore.commit(tx);
         assertThat(Datastore.query("Hoge").count(), is(0));
     }
@@ -110,13 +111,13 @@ public class JournalTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void applyForPut() throws Exception {
+    public void applyWithinLocalTransactionForPut() throws Exception {
         Key targetKey = Datastore.createKey("Hoge", 1);
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
         Journal journal =
             new Journal(globalTransactionKey, new Entity(targetKey));
         Transaction tx = Datastore.beginTransaction();
-        Journal.apply(tx, Arrays.asList(journal));
+        Journal.applyWithinLocalTransaction(tx, Arrays.asList(journal));
         Datastore.commit(tx);
         assertThat(Datastore.query("Hoge").count(), is(1));
     }
@@ -125,7 +126,7 @@ public class JournalTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void applyForPutBigEntities() throws Exception {
+    public void applyWithinLocalTransactionForPutBigEntities() throws Exception {
         Blob blob = new Blob(new byte[Journal.MAX_CONTENT_SIZE - 100]);
         Key targetKey = Datastore.createKey("Hoge", 1);
         Key targetKey2 = Datastore.createKey(targetKey, "Hoge", 2);
@@ -137,7 +138,8 @@ public class JournalTest extends AppEngineTestCase {
         Journal journal = new Journal(globalTransactionKey, entity);
         Journal journal2 = new Journal(globalTransactionKey, entity2);
         Transaction tx = Datastore.beginTransaction();
-        Journal.apply(tx, Arrays.asList(journal, journal2));
+        Journal.applyWithinLocalTransaction(tx, Arrays
+            .asList(journal, journal2));
         Datastore.commit(tx);
         assertThat(Datastore.query("Hoge").count(), is(2));
     }
@@ -146,7 +148,8 @@ public class JournalTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void applyForPutManyEntities() throws Exception {
+    public void applyWithinLocalTransactionForPutManyEntities()
+            throws Exception {
         Key parentKey = Datastore.createKey("Parent", 1);
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
         List<Journal> journals = new ArrayList<Journal>();
@@ -156,9 +159,125 @@ public class JournalTest extends AppEngineTestCase {
                 .createKey(parentKey, "Hoge", i))));
         }
         Transaction tx = Datastore.beginTransaction();
-        Journal.apply(tx, journals);
+        Journal.applyWithinLocalTransaction(tx, journals);
         Datastore.commit(tx);
         assertThat(Datastore.query("Hoge").count(), is(count));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void applyWithinGlobalTransactionForDeleteAll() throws Exception {
+        Key targetKey = Datastore.createKey("Parent", 1);
+        Key childKey = Datastore.createKey(targetKey, "Child", 1);
+        Datastore.put(new Entity(targetKey));
+        Datastore.put(new Entity(childKey));
+        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
+        Journal journal = new Journal(globalTransactionKey, targetKey, true);
+        Journal.put(Arrays.asList(journal));
+        Journal.applyWithinGlobalTransaction(Arrays.asList(journal));
+        assertThat(Datastore.query("Parent").count(), is(0));
+        assertThat(Datastore.query("Child").count(), is(0));
+        assertThat(Datastore.query(Journal.KIND).count(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void applyWithinGlobalTransactionForDelete() throws Exception {
+        Key targetKey = Datastore.createKey("Hoge", 1);
+        Datastore.put(new Entity(targetKey));
+        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
+        Journal journal = new Journal(globalTransactionKey, targetKey);
+        Journal.put(Arrays.asList(journal));
+        Journal.applyWithinGlobalTransaction(Arrays.asList(journal));
+        assertThat(Datastore.query("Hoge").count(), is(0));
+        assertThat(Datastore.query(Journal.KIND).count(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void applyWithinGlobalTransactionForDeleteManyEntities()
+            throws Exception {
+        Key parentKey = Datastore.createKey("Parent", 1);
+        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
+        List<Journal> journals = new ArrayList<Journal>();
+        int count = 101;
+        for (int i = 1; i <= count; i++) {
+            Datastore
+                .put(new Entity(Datastore.createKey(parentKey, "Hoge", i)));
+        }
+        for (int i = 1; i <= count; i++) {
+            journals.add(new Journal(globalTransactionKey, Datastore.createKey(
+                parentKey,
+                "Hoge",
+                i)));
+        }
+        Journal.put(journals);
+        Journal.applyWithinGlobalTransaction(journals);
+        assertThat(Datastore.query("Hoge").count(), is(0));
+        assertThat(Datastore.query(Journal.KIND).count(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void applyWithinGlobalTransactionForPut() throws Exception {
+        Key targetKey = Datastore.createKey("Hoge", 1);
+        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
+        Journal journal =
+            new Journal(globalTransactionKey, new Entity(targetKey));
+        Journal.put(Arrays.asList(journal));
+        Journal.applyWithinGlobalTransaction(Arrays.asList(journal));
+        assertThat(Datastore.query("Hoge").count(), is(1));
+        assertThat(Datastore.query(Journal.KIND).count(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void applyWithinGlobalTransactionForPutBigEntities()
+            throws Exception {
+        Blob blob = new Blob(new byte[Journal.MAX_CONTENT_SIZE - 100]);
+        Key targetKey = Datastore.createKey("Hoge", 1);
+        Key targetKey2 = Datastore.createKey(targetKey, "Hoge", 2);
+        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
+        Entity entity = new Entity(targetKey);
+        entity.setUnindexedProperty("aaa", blob);
+        Entity entity2 = new Entity(targetKey2);
+        entity2.setUnindexedProperty("aaa", blob);
+        Journal journal = new Journal(globalTransactionKey, entity);
+        Journal journal2 = new Journal(globalTransactionKey, entity2);
+        Journal.put(Arrays.asList(journal, journal2));
+        Journal.applyWithinGlobalTransaction(Arrays.asList(journal, journal2));
+        assertThat(Datastore.query("Hoge").count(), is(2));
+        assertThat(Datastore.query(Journal.KIND).count(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void applyWithinGlobalTransactionForPutManyEntities()
+            throws Exception {
+        Key parentKey = Datastore.createKey("Parent", 1);
+        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
+        List<Journal> journals = new ArrayList<Journal>();
+        int count = 101;
+        for (int i = 1; i <= count; i++) {
+            journals.add(new Journal(globalTransactionKey, new Entity(Datastore
+                .createKey(parentKey, "Hoge", i))));
+        }
+        Journal.put(journals);
+        Journal.applyWithinGlobalTransaction(journals);
+        assertThat(Datastore.query("Hoge").count(), is(count));
+        assertThat(Datastore.query(Journal.KIND).count(), is(0));
     }
 
     /**
@@ -228,6 +347,17 @@ public class JournalTest extends AppEngineTestCase {
         Key targetKey = Datastore.createKey("Hoge", 1);
         Datastore.put(new Entity(targetKey));
         Journal.deleteInternally(null, Arrays.asList(targetKey));
+        assertThat(Datastore.query("Hoge").count(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void deleteAllInternally() throws Exception {
+        Key targetKey = Datastore.createKey("Hoge", 1);
+        Datastore.put(new Entity(targetKey));
+        Journal.deleteAllInternally(null, targetKey);
         assertThat(Datastore.query("Hoge").count(), is(0));
     }
 

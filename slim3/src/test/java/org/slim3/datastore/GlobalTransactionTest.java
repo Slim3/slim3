@@ -423,4 +423,13 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         gtx.put(new Entity("Hoge"));
         assertThat(gtx.isLocalTransaction(), is(false));
     }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void commitGlobalTransactionInternally() throws Exception {
+        gtx.commitGlobalTransactionInternally();
+        assertThat(Datastore.get(gtx.globalTransactionKey), is(notNullValue()));
+    }
 }

@@ -141,8 +141,8 @@ public class Journal {
      *             null
      * 
      */
-    public static void apply(Transaction tx, Iterable<Journal> journals)
-            throws NullPointerException {
+    public static void applyWithinLocalTransaction(Transaction tx,
+            Iterable<Journal> journals) throws NullPointerException {
         if (tx == null) {
             throw new NullPointerException("The tx parameter must not be null.");
         }
@@ -159,7 +159,7 @@ public class Journal {
         List<Key> deleteKeys = new ArrayList<Key>();
         for (Journal journal : journals) {
             if (journal.deleteAll) {
-                Datastore.deleteAll(tx, journal.targetKey);
+                deleteAllInternally(tx, journal.targetKey);
             } else if (journal.contentSize == 0) {
                 if (deleteKeys.size() >= MAX_SIZE_JOURNALS) {
                     deleteInternally(tx, deleteKeys);
@@ -182,6 +182,67 @@ public class Journal {
         }
         if (putEntities.size() > 0) {
             putInternally(tx, putEntities);
+        }
+    }
+
+    /**
+     * Applies the journals within global transaction.
+     * 
+     * @param journals
+     *            the journals
+     * @throws NullPointerException
+     *             if the journals parameter is null
+     * 
+     */
+    public static void applyWithinGlobalTransaction(Iterable<Journal> journals)
+            throws NullPointerException {
+        if (journals == null) {
+            throw new NullPointerException(
+                "The journals parameter must not be null.");
+        }
+        if (journals instanceof Collection<?>
+            && ((Collection<?>) journals).size() == 0) {
+            return;
+        }
+        int totalSize = 0;
+        List<Entity> putEntities = new ArrayList<Entity>();
+        List<Key> deleteKeys = new ArrayList<Key>();
+        List<Key> putJournalKeys = new ArrayList<Key>();
+        List<Key> deleteJournalKeys = new ArrayList<Key>();
+        for (Journal journal : journals) {
+            if (journal.deleteAll) {
+                deleteAllInternally(null, journal.targetKey);
+                deleteAllInternally(null, journal.key);
+            } else if (journal.contentSize == 0) {
+                if (deleteKeys.size() >= MAX_SIZE_JOURNALS) {
+                    deleteInternally(null, deleteKeys);
+                    deleteInternally(null, deleteJournalKeys);
+                    deleteKeys.clear();
+                    deleteJournalKeys.clear();
+                }
+                deleteKeys.add(journal.targetKey);
+                deleteJournalKeys.add(journal.key);
+            } else {
+                if (totalSize + journal.contentSize > MAX_CONTENT_SIZE
+                    || putEntities.size() >= MAX_SIZE_JOURNALS) {
+                    putInternally(null, putEntities);
+                    deleteInternally(null, putJournalKeys);
+                    putEntities.clear();
+                    putJournalKeys.clear();
+                    totalSize = 0;
+                }
+                totalSize += journal.contentSize;
+                putEntities.add(journal.getTargetEntity());
+                putJournalKeys.add(journal.key);
+            }
+        }
+        if (deleteKeys.size() > 0) {
+            deleteInternally(null, deleteKeys);
+            deleteInternally(null, deleteJournalKeys);
+        }
+        if (putEntities.size() > 0) {
+            putInternally(null, putEntities);
+            deleteInternally(null, putJournalKeys);
         }
     }
 
@@ -256,6 +317,27 @@ public class Journal {
         for (int i = 0; i < GlobalTransaction.MAX_RETRY; i++) {
             try {
                 Datastore.delete(tx, keys);
+                return;
+            } catch (ConcurrentModificationException e) {
+                cme = e;
+            }
+        }
+        throw cme;
+    }
+
+    /**
+     * Deletes all descendant entities internally.
+     * 
+     * @param tx
+     *            the transaction
+     * @param ancestorKey
+     *            the ancestor key
+     */
+    protected static void deleteAllInternally(Transaction tx, Key ancestorKey) {
+        ConcurrentModificationException cme = null;
+        for (int i = 0; i < GlobalTransaction.MAX_RETRY; i++) {
+            try {
+                Datastore.deleteAll(tx, ancestorKey);
                 return;
             } catch (ConcurrentModificationException e) {
                 cme = e;
