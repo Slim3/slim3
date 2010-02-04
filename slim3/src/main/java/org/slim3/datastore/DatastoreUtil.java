@@ -16,7 +16,9 @@
 package org.slim3.datastore;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -420,6 +422,9 @@ public final class DatastoreUtil {
             throw new NullPointerException(
                 "The keys parameter must not be null.");
         }
+        if (keys instanceof Collection<?> && ((Collection<?>) keys).size() == 0) {
+            return new HashMap<Key, Entity>();
+        }
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         DatastoreTimeoutException dte = null;
         for (int i = 0; i < MAX_RETRY; i++) {
@@ -459,6 +464,9 @@ public final class DatastoreUtil {
         }
         if (tx != null && !tx.isActive()) {
             throw new IllegalStateException("The transaction must be active.");
+        }
+        if (keys instanceof Collection<?> && ((Collection<?>) keys).size() == 0) {
+            return new HashMap<Key, Entity>();
         }
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         DatastoreTimeoutException dte = null;
@@ -553,6 +561,14 @@ public final class DatastoreUtil {
      */
     public static List<Key> put(Iterable<Entity> entities)
             throws NullPointerException {
+        if (entities == null) {
+            throw new NullPointerException(
+                "The entities parameter must not be null.");
+        }
+        if (entities instanceof Collection<?>
+            && ((Collection<?>) entities).size() == 0) {
+            return new ArrayList<Key>();
+        }
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         DatastoreTimeoutException dte = null;
         for (int i = 0; i < MAX_RETRY; i++) {
@@ -585,8 +601,16 @@ public final class DatastoreUtil {
      */
     public static List<Key> put(Transaction tx, Iterable<Entity> entities)
             throws NullPointerException, IllegalStateException {
+        if (entities == null) {
+            throw new NullPointerException(
+                "The entities parameter must not be null.");
+        }
         if (tx != null && !tx.isActive()) {
             throw new IllegalStateException("The transaction must be active.");
+        }
+        if (entities instanceof Collection<?>
+            && ((Collection<?>) entities).size() == 0) {
+            return new ArrayList<Key>();
         }
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         DatastoreTimeoutException dte = null;
@@ -616,6 +640,9 @@ public final class DatastoreUtil {
         if (keys == null) {
             throw new NullPointerException(
                 "The keys parameter must not be null.");
+        }
+        if (keys instanceof Collection<?> && ((Collection<?>) keys).size() == 0) {
+            return;
         }
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         DatastoreTimeoutException dte = null;
@@ -655,6 +682,9 @@ public final class DatastoreUtil {
         }
         if (tx != null && !tx.isActive()) {
             throw new IllegalStateException("The transaction must be active.");
+        }
+        if (keys instanceof Collection<?> && ((Collection<?>) keys).size() == 0) {
+            return;
         }
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         DatastoreTimeoutException dte = null;

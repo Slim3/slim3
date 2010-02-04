@@ -16,6 +16,8 @@
 package org.slim3.datastore;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 
 import com.google.appengine.api.datastore.Blob;
@@ -23,6 +25,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityTranslator;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.Transaction;
 import com.google.storage.onestore.v3.OnestoreEntity.EntityProto;
 
 /**
@@ -51,9 +54,24 @@ public class Journal {
     public static final String CONTENT_PROPERTY = "content";
 
     /**
+     * The deleteAll property name.
+     */
+    public static final String DELETE_ALL_PROPERTY = "deleteAll";
+
+    /**
      * The maximum size(bytes) of content.
      */
     public static final int MAX_CONTENT_SIZE = 1000000;
+
+    /**
+     * The extra size.
+     */
+    public static final int EXTRA_SIZE = 200;
+
+    /**
+     * The maximum size of journals.
+     */
+    public static final int MAX_SIZE_JOURNALS = 100;
 
     /**
      * 
@@ -112,7 +130,63 @@ public class Journal {
     }
 
     /**
-     * Puts journals.
+     * Applies the journals within the local transaction.
+     * 
+     * @param tx
+     *            the transaction
+     * @param journals
+     *            the journals
+     * @throws NullPointerException
+     *             if the tx parameter is null or if the journals parameter is
+     *             null
+     * 
+     */
+    public static void apply(Transaction tx, Iterable<Journal> journals)
+            throws NullPointerException {
+        if (tx == null) {
+            throw new NullPointerException("The tx parameter must not be null.");
+        }
+        if (journals == null) {
+            throw new NullPointerException(
+                "The journals parameter must not be null.");
+        }
+        if (journals instanceof Collection<?>
+            && ((Collection<?>) journals).size() == 0) {
+            return;
+        }
+        int totalSize = 0;
+        List<Entity> putEntities = new ArrayList<Entity>();
+        List<Key> deleteKeys = new ArrayList<Key>();
+        for (Journal journal : journals) {
+            if (journal.deleteAll) {
+                Datastore.deleteAll(tx, journal.targetKey);
+            } else if (journal.contentSize == 0) {
+                if (deleteKeys.size() >= MAX_SIZE_JOURNALS) {
+                    deleteInternally(tx, deleteKeys);
+                    deleteKeys.clear();
+                }
+                deleteKeys.add(journal.targetKey);
+            } else {
+                if (totalSize + journal.contentSize > MAX_CONTENT_SIZE
+                    || putEntities.size() >= MAX_SIZE_JOURNALS) {
+                    putInternally(tx, putEntities);
+                    putEntities.clear();
+                    totalSize = 0;
+                }
+                totalSize += journal.contentSize;
+                putEntities.add(journal.getTargetEntity());
+            }
+        }
+        if (deleteKeys.size() > 0) {
+            deleteInternally(tx, deleteKeys);
+        }
+        if (putEntities.size() > 0) {
+            putInternally(tx, putEntities);
+        }
+    }
+
+    /**
+     * Puts the journals to the datastore.
      * 
      * @param journals
      *            the journals
@@ -126,21 +200,68 @@ public class Journal {
             throw new NullPointerException(
                 "The journals parameter must not be null.");
         }
-        int total = 0;
+        if (journals instanceof Collection<?>
+            && ((Collection<?>) journals).size() == 0) {
+            return;
+        }
+        int totalSize = 0;
         List<Entity> entities = new ArrayList<Entity>();
         for (Journal journal : journals) {
-            int length = journal.getContent().length;
-            if (total + length > MAX_CONTENT_SIZE) {
-                Datastore.putWithoutTx(entities);
-                total = 0;
+            if (totalSize + journal.contentSize + EXTRA_SIZE > MAX_CONTENT_SIZE
+                || entities.size() >= MAX_SIZE_JOURNALS) {
+                putInternally(null, entities);
                 entities.clear();
+                totalSize = 0;
             }
-            total += length;
+            totalSize += journal.contentSize + EXTRA_SIZE;
             entities.add(journal.toEntity());
         }
         if (entities.size() > 0) {
-            Datastore.putWithoutTx(entities);
+            putInternally(null, entities);
         }
+    }
+
+    /**
+     * Deletes the entities internally.
+     * 
+     * @param tx
+     *            the transaction
+     * @param entities
+     *            the entities
+     * @return keys
+     */
+    protected static List<Key> putInternally(Transaction tx,
+            Iterable<Entity> entities) {
+        ConcurrentModificationException cme = null;
+        for (int i = 0; i < GlobalTransaction.MAX_RETRY; i++) {
+            try {
+                return Datastore.put(tx, entities);
+            } catch (ConcurrentModificationException e) {
+                cme = e;
+            }
+        }
+        throw cme;
+    }
+
+    /**
+     * Deletes the entities internally.
+     * 
+     * @param tx
+     *            the transaction
+     * @param keys
+     *            the keys
+     */
+    protected static void deleteInternally(Transaction tx, Iterable<Key> keys) {
+        ConcurrentModificationException cme = null;
+        for (int i = 0; i < GlobalTransaction.MAX_RETRY; i++) {
+            try {
+                Datastore.delete(tx, keys);
+                return;
+            } catch (ConcurrentModificationException e) {
+                cme = e;
+            }
+        }
+        throw cme;
     }
 
     /**
@@ -253,8 +374,25 @@ public class Journal {
      */
     public Entity toEntity() {
         Entity entity = new Entity(key);
-        entity.setUnindexedProperty(CONTENT_PROPERTY, new Blob(content));
+        entity.setProperty(
+            GLOBAL_TRANSACTION_KEY_PROPERTY,
+            globalTransactionKey);
+        if (contentSize > 0) {
+            entity.setUnindexedProperty(
+                CONTENT_PROPERTY,
+                new Blob(getContent()));
+        }
+        entity.setUnindexedProperty(DELETE_ALL_PROPERTY, deleteAll);
         return entity;
+    }
+
+    /**
+     * Returns the global transaction key.
+     * 
+     * @return the global transactionKey
+     */
+    public Key getGlobalTransactionKey() {
+        return globalTransactionKey;
     }
 
     /**

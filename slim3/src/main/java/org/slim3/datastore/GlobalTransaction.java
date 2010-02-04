@@ -88,6 +88,11 @@ public class GlobalTransaction {
     protected boolean active = true;
 
     /**
+     * Whether this transaction is committed.
+     */
+    protected boolean committed = false;
+
+    /**
      * The global transaction key.
      */
     protected Key globalTransactionKey = Datastore.allocateId(KIND);
@@ -108,9 +113,9 @@ public class GlobalTransaction {
     protected Map<Key, Journal> journalMap = new HashMap<Key, Journal>();
 
     /**
-     * The set of root keys.
+     * The set of root keys for journal.
      */
-    protected Set<Key> rootKeySet = new HashSet<Key>();
+    protected Set<Key> journalRootKeySet = new HashSet<Key>();
 
     /**
      * Determines if the global transaction exists.
@@ -529,7 +534,7 @@ public class GlobalTransaction {
         Key key = entity.getKey();
         Key rootKey = DatastoreUtil.getRoot(key);
         lock(rootKey);
-        rootKeySet.add(rootKey);
+        journalRootKeySet.add(rootKey);
         journalMap.put(key, new Journal(globalTransactionKey, entity));
         return key;
     }
@@ -617,7 +622,7 @@ public class GlobalTransaction {
             ConcurrentModificationException {
         Key rootKey = DatastoreUtil.getRoot(key);
         lock(rootKey);
-        rootKeySet.add(rootKey);
+        journalRootKeySet.add(rootKey);
         journalMap.put(key, new Journal(globalTransactionKey, key));
     }
 
@@ -671,8 +676,20 @@ public class GlobalTransaction {
             ConcurrentModificationException {
         Key rootKey = DatastoreUtil.getRoot(key);
         lock(rootKey);
-        rootKeySet.add(rootKey);
+        journalRootKeySet.add(rootKey);
         journalMap.put(key, new Journal(globalTransactionKey, key, true));
+    }
+
+    /**
+     * Commits this transaction.
+     */
+    public void commit() {
+        assertActive();
+        if (isLocalTransaction()) {
+            commitLocalTransaction();
+        } else {
+            commitGlobalTransaction();
+        }
     }
 
     /**
@@ -680,13 +697,12 @@ public class GlobalTransaction {
      */
     public void commitAsync() {
         assertActive();
-        active = false;
         if (lockMap.size() > 0) {
             Journal.put(journalMap.values());
             commitAsyncInternally();
-        } else {
-            Datastore.deleteWithoutTx(globalTransactionKey);
         }
+        committed = true;
+        active = false;
     }
 
     /**
@@ -737,6 +753,31 @@ public class GlobalTransaction {
     }
 
     /**
+     * Commits this transaction as local transaction.
+     */
+    protected void commitLocalTransaction() {
+        Transaction tx = Datastore.beginTransaction();
+        try {
+            Journal.apply(tx, journalMap.values());
+        } finally {
+            if (tx.isActive()) {
+                Datastore.rollback(tx);
+            }
+            unlock();
+        }
+        committed = true;
+        active = false;
+    }
+
+    /**
+     * Commits this transaction as global transaction.
+     */
+    protected void commitGlobalTransaction() {
+        committed = true;
+        active = false;
+    }
+
+    /**
      * Commits this transaction asynchronously.
      */
     protected void commitAsyncInternally() {
@@ -757,5 +798,14 @@ public class GlobalTransaction {
                 Datastore.rollback(tx);
             }
         }
+    }
+
+    /**
+     * Determines if this is a local transaction.
+     * 
+     * @return whether this is a local transaction
+     */
+    protected boolean isLocalTransaction() {
+        return journalRootKeySet.size() <= 1;
     }
 }

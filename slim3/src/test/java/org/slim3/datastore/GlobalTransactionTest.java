@@ -284,7 +284,7 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         Entity entity = new Entity(key);
         assertThat(gtx.put(entity), is(entity.getKey()));
         assertThat(gtx.lockMap.containsKey(rootKey), is(true));
-        assertThat(gtx.rootKeySet.contains(rootKey), is(true));
+        assertThat(gtx.journalRootKeySet.contains(rootKey), is(true));
         Journal journal = gtx.journalMap.get(key);
         assertThat(journal, is(notNullValue()));
         assertThat(journal.key, is(Journal.createKey(key)));
@@ -300,7 +300,7 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         Hoge hoge = new Hoge();
         assertThat(gtx.put(hoge), is(hoge.getKey()));
         assertThat(gtx.lockMap.containsKey(hoge.getKey()), is(true));
-        assertThat(gtx.rootKeySet.contains(hoge.getKey()), is(true));
+        assertThat(gtx.journalRootKeySet.contains(hoge.getKey()), is(true));
     }
 
     /**
@@ -314,7 +314,7 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(keys, is(notNullValue()));
         assertThat(keys.size(), is(2));
         assertThat(gtx.lockMap.size(), is(2));
-        assertThat(gtx.rootKeySet.size(), is(2));
+        assertThat(gtx.journalRootKeySet.size(), is(2));
     }
 
     /**
@@ -328,7 +328,7 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(keys, is(notNullValue()));
         assertThat(keys.size(), is(2));
         assertThat(gtx.lockMap.size(), is(2));
-        assertThat(gtx.rootKeySet.size(), is(2));
+        assertThat(gtx.journalRootKeySet.size(), is(2));
     }
 
     /**
@@ -340,7 +340,7 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         Key key = Datastore.createKey(rootKey, "Child", 1);
         gtx.delete(key);
         assertThat(gtx.lockMap.containsKey(rootKey), is(true));
-        assertThat(gtx.rootKeySet.contains(rootKey), is(true));
+        assertThat(gtx.journalRootKeySet.contains(rootKey), is(true));
         Journal journal = gtx.journalMap.get(key);
         assertThat(journal, is(notNullValue()));
         assertThat(journal.key, is(Journal.createKey(key)));
@@ -358,9 +358,9 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(gtx.lockMap.size(), is(2));
         assertThat(gtx.lockMap.containsKey(key), is(true));
         assertThat(gtx.lockMap.containsKey(key2), is(true));
-        assertThat(gtx.rootKeySet.size(), is(2));
-        assertThat(gtx.rootKeySet.contains(key), is(true));
-        assertThat(gtx.rootKeySet.contains(key2), is(true));
+        assertThat(gtx.journalRootKeySet.size(), is(2));
+        assertThat(gtx.journalRootKeySet.contains(key), is(true));
+        assertThat(gtx.journalRootKeySet.contains(key2), is(true));
         Journal journal = gtx.journalMap.get(key);
         assertThat(journal, is(notNullValue()));
         assertThat(journal.key, is(Journal.createKey(key)));
@@ -382,9 +382,9 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(gtx.lockMap.size(), is(2));
         assertThat(gtx.lockMap.containsKey(key), is(true));
         assertThat(gtx.lockMap.containsKey(key2), is(true));
-        assertThat(gtx.rootKeySet.size(), is(2));
-        assertThat(gtx.rootKeySet.contains(key), is(true));
-        assertThat(gtx.rootKeySet.contains(key2), is(true));
+        assertThat(gtx.journalRootKeySet.size(), is(2));
+        assertThat(gtx.journalRootKeySet.contains(key), is(true));
+        assertThat(gtx.journalRootKeySet.contains(key2), is(true));
         Journal journal = gtx.journalMap.get(key);
         assertThat(journal, is(notNullValue()));
         assertThat(journal.key, is(Journal.createKey(key)));
@@ -404,11 +404,23 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         Key key = Datastore.createKey(rootKey, "Child", 1);
         gtx.deleteAll(key);
         assertThat(gtx.lockMap.containsKey(rootKey), is(true));
-        assertThat(gtx.rootKeySet.contains(rootKey), is(true));
+        assertThat(gtx.journalRootKeySet.contains(rootKey), is(true));
         Journal journal = gtx.journalMap.get(key);
         assertThat(journal, is(notNullValue()));
         assertThat(journal.key, is(Journal.createKey(key)));
         assertThat(journal.targetEntityProto, is(nullValue()));
         assertThat(journal.deleteAll, is(true));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void isLocalTransaction() throws Exception {
+        assertThat(gtx.isLocalTransaction(), is(true));
+        gtx.put(new Entity("Hoge"));
+        assertThat(gtx.isLocalTransaction(), is(true));
+        gtx.put(new Entity("Hoge"));
+        assertThat(gtx.isLocalTransaction(), is(false));
     }
 }
