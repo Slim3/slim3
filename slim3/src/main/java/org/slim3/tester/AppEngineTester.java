@@ -328,7 +328,9 @@ public class AppEngineTester implements Delegate<Environment> {
             environment = new TestEnvironment();
         }
         ApiProxy.setDelegate(this);
-        ApiProxy.setEnvironmentForCurrentThread(environment);
+        if (!AppEngineUtil.isProduction()) {
+            ApiProxy.setEnvironmentForCurrentThread(environment);
+        }
     }
 
     /**
@@ -348,7 +350,9 @@ public class AppEngineTester implements Delegate<Environment> {
         }
         mailMessages.clear();
         ApiProxy.setDelegate(originalDelegate);
-        ApiProxy.setEnvironmentForCurrentThread(originalEnvironment);
+        if (!AppEngineUtil.isProduction()) {
+            ApiProxy.setEnvironmentForCurrentThread(originalEnvironment);
+        }
     }
 
     public byte[] makeSyncCall(Environment env, String service, String method,

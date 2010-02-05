@@ -18,6 +18,7 @@ package org.slim3.tester;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slim3.util.AppEngineUtil;
 import org.slim3.util.StringUtil;
 
 import com.google.apphosting.api.ApiProxy;
@@ -131,6 +132,7 @@ public class TestEnvironment implements ApiProxy.Environment {
      *            the application identifier
      */
     public void setAppId(String appId) {
+        assertNotProduction();
         this.appId = appId;
     }
 
@@ -145,6 +147,7 @@ public class TestEnvironment implements ApiProxy.Environment {
      *            the version identifier
      */
     public void setVersionId(String versionId) {
+        assertNotProduction();
         this.versionId = versionId;
     }
 
@@ -159,6 +162,7 @@ public class TestEnvironment implements ApiProxy.Environment {
      *            the request namespace
      */
     public void setRequestNamespace(String requestNamespace) {
+        assertNotProduction();
         this.requestNamespace = requestNamespace;
     }
 
@@ -173,6 +177,7 @@ public class TestEnvironment implements ApiProxy.Environment {
      *            the authority domain
      */
     public void setAuthDomain(String authDomain) {
+        assertNotProduction();
         this.authDomain = authDomain;
     }
 
@@ -187,6 +192,7 @@ public class TestEnvironment implements ApiProxy.Environment {
      *            the email address
      */
     public void setEmail(String email) {
+        assertNotProduction();
         this.email = email;
     }
 
@@ -205,6 +211,7 @@ public class TestEnvironment implements ApiProxy.Environment {
      *            whether the current user is an administrator
      */
     public void setAdmin(boolean admin) {
+        assertNotProduction();
         this.admin = admin;
     }
 
@@ -219,6 +226,20 @@ public class TestEnvironment implements ApiProxy.Environment {
      *            the attributes
      */
     public void setAttributes(Map<String, Object> attributes) {
+        assertNotProduction();
         this.attributes = attributes;
+    }
+
+    /**
+     * Asserts that the current environment is not production.
+     * 
+     * @throws IllegalStateException
+     *             if the current environment is production
+     */
+    protected void assertNotProduction() throws IllegalStateException {
+        if (AppEngineUtil.isProduction()) {
+            throw new IllegalStateException(
+                "This feature is not supported on production server.");
+        }
     }
 }
