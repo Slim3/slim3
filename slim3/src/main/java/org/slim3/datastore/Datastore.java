@@ -739,6 +739,70 @@ public final class Datastore {
     }
 
     /**
+     * Returns an entity specified by the key. Returns null if no entity is
+     * found. If there is a current transaction, this operation will execute
+     * within that transaction.
+     * 
+     * @param key
+     *            the key
+     * @return an entity specified by the key
+     * @throws NullPointerException
+     *             if the key parameter is null
+     */
+    public static Entity getOrNull(Key key) throws NullPointerException {
+        return getAsMap(key).get(key);
+    }
+
+    /**
+     * Returns a model specified by the key. Returns null if no entity is found.
+     * If there is a current transaction, this operation will execute within
+     * that transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param key
+     *            the key
+     * @return a model specified by the key
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
+     */
+    public static <M> M getOrNull(Class<M> modelClass, Key key)
+            throws NullPointerException, IllegalArgumentException {
+        return getAsMap(getModelMeta(modelClass), key).get(key);
+    }
+
+    /**
+     * Returns a model specified by the key. Returns null if no entity is found.
+     * If there is a current transaction, this operation will execute within
+     * that transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param key
+     *            the key
+     * @return a model specified by the key
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
+     * 
+     */
+    public static <M> M getOrNull(ModelMeta<M> modelMeta, Key key)
+            throws NullPointerException, IllegalArgumentException {
+        return getAsMap(modelMeta, key).get(key);
+    }
+
+    /**
      * Returns an entity specified by the key without transaction.
      * 
      * @param key
@@ -803,6 +867,67 @@ public final class Datastore {
         ModelMeta<M> mm = DatastoreUtil.getModelMeta(modelMeta, entity);
         mm.validateKey(key);
         return mm.entityToModel(entity);
+    }
+
+    /**
+     * Returns an entity specified by the key without transaction. Returns null
+     * if no entity is found.
+     * 
+     * @param key
+     *            the key
+     * @return an entity specified by the key
+     * @throws NullPointerException
+     *             if the key parameter is null
+     */
+    public static Entity getOrNullWithoutTx(Key key)
+            throws NullPointerException {
+        return getAsMapWithoutTx(key).get(key);
+    }
+
+    /**
+     * Returns a model specified by the key without transaction. Returns null if
+     * no entity is found.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param key
+     *            the key
+     * @return a model specified by the key
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
+     */
+    public static <M> M getOrNullWithoutTx(Class<M> modelClass, Key key)
+            throws NullPointerException, IllegalArgumentException {
+        return getAsMapWithoutTx(getModelMeta(modelClass), key).get(key);
+    }
+
+    /**
+     * Returns a model specified by the key without transaction. Returns null if
+     * no entity is found.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param key
+     *            the key
+     * @return a model specified by the key
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
+     */
+    public static <M> M getOrNullWithoutTx(ModelMeta<M> modelMeta, Key key)
+            throws NullPointerException, IllegalArgumentException {
+        return getAsMapWithoutTx(modelMeta, key).get(key);
     }
 
     /**
@@ -974,7 +1099,85 @@ public final class Datastore {
         ModelMeta<M> mm = DatastoreUtil.getModelMeta(modelMeta, entity);
         mm.validateKey(key);
         return mm.entityToModel(entity);
+    }
 
+    /**
+     * Returns an entity specified by the key within the provided transaction.
+     * Returns null if no entity is found.
+     * 
+     * @param tx
+     *            the transaction
+     * @param key
+     *            the key
+     * @return an entity specified by the key
+     * @throws NullPointerException
+     *             if the key parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public static Entity getOrNull(Transaction tx, Key key)
+            throws NullPointerException, IllegalStateException {
+        return getAsMap(tx, key).get(key);
+    }
+
+    /**
+     * Returns a model specified by the key within the provided transaction.
+     * Returns null if no entity is found.
+     * 
+     * @param <M>
+     *            the model type
+     * @param tx
+     *            the transaction
+     * @param modelClass
+     *            the model class
+     * @param key
+     *            the key
+     * @return a model specified by the key
+     * @throws NullPointerException
+     *             if the modelClass parameter is null or the key parameter is
+     *             null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
+     */
+    public static <M> M getOrNull(Transaction tx, Class<M> modelClass, Key key)
+            throws NullPointerException, IllegalStateException,
+            IllegalArgumentException {
+        return getAsMap(tx, getModelMeta(modelClass), key).get(key);
+    }
+
+    /**
+     * Returns a model specified by the key within the provided transaction.
+     * Returns null if no entity is found.
+     * 
+     * @param <M>
+     *            the model type
+     * @param tx
+     *            the transaction
+     * @param modelMeta
+     *            the meta data of model
+     * @param key
+     *            the key
+     * @return a model specified by the key
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
+     */
+    public static <M> M getOrNull(Transaction tx, ModelMeta<M> modelMeta,
+            Key key) throws NullPointerException, IllegalStateException,
+            IllegalArgumentException {
+        return getAsMap(tx, modelMeta, key).get(key);
     }
 
     /**

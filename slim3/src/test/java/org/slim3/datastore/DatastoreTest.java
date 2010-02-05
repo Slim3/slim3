@@ -236,6 +236,16 @@ public class DatastoreTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getModelOrNullUsingModelMeta() throws Exception {
+        Key key = Datastore.createKey("Hoge", 1);
+        Hoge model = Datastore.getOrNull(meta, key);
+        assertThat(model, is(nullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getModelUsingModelMetaWithoutTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Hoge model = Datastore.getWithoutTx(meta, key);
@@ -246,7 +256,17 @@ public class DatastoreTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void getModelUsingClass() throws Exception {
+    public void getModelOrNullUsingModelMetaWithoutTx() throws Exception {
+        Key key = Datastore.createKey("Hoge", 1);
+        Hoge model = Datastore.getOrNullWithoutTx(meta, key);
+        assertThat(model, is(nullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelUsingModelClass() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Hoge model = Datastore.get(Hoge.class, key);
         assertThat(model, is(notNullValue()));
@@ -256,10 +276,30 @@ public class DatastoreTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void getModelUsingClassWithoutTx() throws Exception {
+    public void getModelOrNullUsingModelClass() throws Exception {
+        Key key = Datastore.createKey("Hoge", 1);
+        Hoge model = Datastore.getOrNull(Hoge.class, key);
+        assertThat(model, is(nullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelUsingModelClassWithoutTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Hoge model = Datastore.getWithoutTx(Hoge.class, key);
         assertThat(model, is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelOrNullUsingModelClassWithoutTx() throws Exception {
+        Key key = Datastore.createKey("Hoge", 1);
+        Hoge model = Datastore.getOrNullWithoutTx(Hoge.class, key);
+        assertThat(model, is(nullValue()));
     }
 
     /**
@@ -377,7 +417,7 @@ public class DatastoreTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void getModelInTxUsingClass() throws Exception {
+    public void getModelInTxUsingModelClass() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Transaction tx = ds.beginTransaction();
         Hoge model = Datastore.get(tx, Hoge.class, key);
@@ -388,8 +428,44 @@ public class DatastoreTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
+    @Test
+    public void getModelOrNullInTxUsingModelClass() throws Exception {
+        Key key = Datastore.createKey("Hoge", 1);
+        Transaction tx = ds.beginTransaction();
+        Hoge model = Datastore.getOrNull(tx, Hoge.class, key);
+        tx.rollback();
+        assertThat(model, is(nullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelInTxUsingModelMeta() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Transaction tx = ds.beginTransaction();
+        Hoge model = Datastore.get(tx, meta, key);
+        tx.rollback();
+        assertThat(model, is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelOrNullInTxUsingModelMeta() throws Exception {
+        Key key = Datastore.createKey("Hoge", 1);
+        Transaction tx = ds.beginTransaction();
+        Hoge model = Datastore.getOrNull(tx, meta, key);
+        tx.rollback();
+        assertThat(model, is(nullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test(expected = IllegalArgumentException.class)
-    public void getModelInTxUsingClassAndValidateKey() throws Exception {
+    public void getModelInTxUsingModelClassAndValidateKey() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Datastore.get(null, Aaa.class, key);
     }
@@ -1071,10 +1147,30 @@ public class DatastoreTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getEntityOrNull() throws Exception {
+        assertThat(
+            Datastore.getOrNull(Datastore.createKey("Hoge", 1)),
+            is(nullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getEntityWithoutTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Entity entity = Datastore.getWithoutTx(key);
         assertThat(entity, is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getEntityOrNullWithoutTx() throws Exception {
+        assertThat(
+            Datastore.getOrNullWithoutTx(Datastore.createKey("Hoge", 1)),
+            is(nullValue()));
     }
 
     /**
@@ -1086,7 +1182,19 @@ public class DatastoreTest extends AppEngineTestCase {
         Transaction tx = ds.beginTransaction();
         Entity entity = Datastore.get(tx, key);
         tx.rollback();
-        assertThat(entity, is(not(nullValue())));
+        assertThat(entity, is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getEntityOrNullInTx() throws Exception {
+        Key key = Datastore.createKey("Hoge", 1);
+        Transaction tx = ds.beginTransaction();
+        Entity entity = Datastore.getOrNull(tx, key);
+        tx.rollback();
+        assertThat(entity, is(nullValue()));
     }
 
     /**
