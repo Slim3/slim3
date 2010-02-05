@@ -138,7 +138,8 @@ public class Lock {
     }
 
     /**
-     * Returns a {@link Lock} specified by the key.
+     * Returns a {@link Lock} specified by the key. Returns null if no entity is
+     * found.
      * 
      * @param tx
      *            the transaction
@@ -148,9 +149,13 @@ public class Lock {
      * @throws EntityNotFoundRuntimeException
      *             if no entity specified by the key is found
      */
-    public static Lock get(Transaction tx, Key key)
+    public static Lock getOrNull(Transaction tx, Key key)
             throws EntityNotFoundRuntimeException {
-        return toLock(Datastore.get(tx, key));
+        Entity entity = Datastore.getOrNull(tx, key);
+        if (entity == null) {
+            return null;
+        }
+        return toLock(entity);
     }
 
     /**
@@ -244,12 +249,9 @@ public class Lock {
     public void lock() throws ConcurrentModificationException {
         Transaction tx = Datastore.beginTransaction();
         try {
-            try {
-                Lock other = get(tx, key);
-                if (isLockedBy(other)) {
-                    throw createConcurrentModificationException();
-                }
-            } catch (EntityNotFoundRuntimeException ignore) {
+            Lock other = getOrNull(tx, key);
+            if (other != null && isLockedBy(other)) {
+                throw createConcurrentModificationException();
             }
             Datastore.put(tx, toEntity());
             Datastore.commit(tx);

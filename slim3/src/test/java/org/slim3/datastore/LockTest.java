@@ -26,6 +26,7 @@ import org.slim3.tester.AppEngineTestCase;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.Transaction;
 
 /**
  * @author higa
@@ -77,16 +78,30 @@ public class LockTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void get() throws Exception {
+    public void getOrNull() throws Exception {
         Key rootKey = Datastore.createKey("Hoge", 1);
+        Key key = Lock.createKey(rootKey);
         long timestamp = System.currentTimeMillis();
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
-        Datastore.put(new Lock(globalTransactionKey, rootKey, timestamp)
-            .toEntity());
-        Lock lock =
-            Lock.get(Datastore.beginTransaction(), Lock.createKey(rootKey));
+        Datastore.putWithoutTx(new Lock(
+            globalTransactionKey,
+            rootKey,
+            timestamp).toEntity());
+        Transaction tx = Datastore.beginTransaction();
+        Lock lock = Lock.getOrNull(tx, key);
         assertThat(lock.globalTransactionKey, is(globalTransactionKey));
         assertThat(lock.timestamp, is(timestamp));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getOrNullWhenNotFound() throws Exception {
+        Key rootKey = Datastore.createKey("Hoge", 1);
+        Key key = Lock.createKey(rootKey);
+        Transaction tx = Datastore.beginTransaction();
+        assertThat(Lock.getOrNull(tx, key), is(nullValue()));
     }
 
     /**
