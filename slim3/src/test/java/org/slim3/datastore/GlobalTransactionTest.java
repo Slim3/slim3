@@ -428,8 +428,54 @@ public class GlobalTransactionTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void commitLocalTransaction() throws Exception {
+        gtx.put(new Entity("Hoge"));
+        gtx.commitLocalTransaction();
+        assertThat(Datastore.query("Hoge").count(), is(1));
+        assertThat(Datastore.query(GlobalTransaction.KIND).count(), is(0));
+        assertThat(Datastore.query(Lock.KIND).count(), is(0));
+        assertThat(Datastore.query(Journal.KIND).count(), is(0));
+        assertThat(gtx.isActive(), is(false));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void commitGlobalTransactionInternally() throws Exception {
         gtx.commitGlobalTransactionInternally();
         assertThat(Datastore.get(gtx.globalTransactionKey), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void commitGlobalTransaction() throws Exception {
+        gtx.put(new Entity("Hoge"));
+        gtx.put(new Entity("Hoge2"));
+        gtx.commitGlobalTransaction();
+        assertThat(Datastore.query("Hoge").count(), is(1));
+        assertThat(Datastore.query("Hoge2").count(), is(1));
+        assertThat(Datastore.query(GlobalTransaction.KIND).count(), is(0));
+        assertThat(Datastore.query(Lock.KIND).count(), is(0));
+        assertThat(Datastore.query(Journal.KIND).count(), is(0));
+        assertThat(gtx.isActive(), is(false));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void commit() throws Exception {
+        gtx.put(new Entity("Hoge"));
+        gtx.put(new Entity("Hoge2"));
+        gtx.commit();
+        assertThat(Datastore.query("Hoge").count(), is(1));
+        assertThat(Datastore.query("Hoge2").count(), is(1));
+        assertThat(Datastore.query(GlobalTransaction.KIND).count(), is(0));
+        assertThat(Datastore.query(Lock.KIND).count(), is(0));
+        assertThat(Datastore.query(Journal.KIND).count(), is(0));
+        assertThat(gtx.isActive(), is(false));
     }
 }
