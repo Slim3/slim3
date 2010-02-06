@@ -17,7 +17,6 @@ package org.slim3.util;
 
 import java.lang.reflect.Method;
 
-
 /**
  * This class describes a property.
  * 
@@ -112,6 +111,7 @@ public final class PropertyDesc {
     }
 
     void setReadMethod(Method readMethod) {
+        readMethod.setAccessible(true);
         this.readMethod = readMethod;
     }
 
@@ -134,6 +134,7 @@ public final class PropertyDesc {
     }
 
     void setWriteMethod(Method writeMethod) {
+        writeMethod.setAccessible(true);
         this.writeMethod = writeMethod;
     }
 

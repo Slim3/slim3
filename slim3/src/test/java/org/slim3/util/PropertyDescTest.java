@@ -89,6 +89,20 @@ public class PropertyDescTest {
      * 
      * @throws Exception
      */
+    @Test
+    public void getValueForNonPublicClass() throws Exception {
+        Hoge hoge = new HogeImpl();
+        hoge.setAaa("111");
+        PropertyDesc pd = new PropertyDesc("aaa", String.class, HogeImpl.class);
+        Method m = hoge.getClass().getMethod("getAaa");
+        pd.setReadMethod(m);
+        assertThat((String) pd.getValue(hoge), is("111"));
+    }
+
+    /**
+     * 
+     * @throws Exception
+     */
     @Test(expected = IllegalStateException.class)
     public void valueForNotReadable() throws Exception {
         PropertyDesc pd = new PropertyDesc("aaa", int.class, getClass());
@@ -128,5 +142,53 @@ public class PropertyDescTest {
         Method m = getClass().getDeclaredMethod("setAaa", int.class);
         pd.setWriteMethod(m);
         pd.setValue(this, "xxx");
+    }
+
+    /**
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void setValueForNonPublicClass() throws Exception {
+        Hoge hoge = new HogeImpl();
+        PropertyDesc pd = new PropertyDesc("aaa", String.class, HogeImpl.class);
+        Method m = hoge.getClass().getMethod("setAaa", String.class);
+        pd.setWriteMethod(m);
+        pd.setValue(hoge, "111");
+        assertThat(hoge.getAaa(), is("111"));
+    }
+
+    /**
+     * 
+     */
+    public interface Hoge {
+        /**
+         * @return aaa
+         */
+        String getAaa();
+
+        /**
+         * @param aaa
+         */
+        void setAaa(String aaa);
+    }
+
+    private static class HogeImpl implements Hoge {
+        private String aaa;
+
+        /**
+         * @return the aaa
+         */
+        public String getAaa() {
+            return aaa;
+        }
+
+        /**
+         * @param aaa
+         *            the aaa to set
+         */
+        public void setAaa(String aaa) {
+            this.aaa = aaa;
+        }
     }
 }
