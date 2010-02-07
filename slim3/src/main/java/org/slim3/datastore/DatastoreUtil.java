@@ -18,6 +18,7 @@ package org.slim3.datastore;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -561,6 +562,25 @@ public final class DatastoreUtil {
      */
     public static List<Key> put(Iterable<Entity> entities)
             throws NullPointerException {
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        Transaction tx = ds.getCurrentTransaction(null);
+        if (tx == null) {
+            return putWithoutTx(entities);
+        }
+        return put(tx, entities);
+    }
+
+    /**
+     * Puts the entities to datastore without transaction.
+     * 
+     * @param entities
+     *            the entities
+     * @return a list of keys
+     * @throws NullPointerException
+     *             if the entities parameter is null
+     */
+    public static List<Key> putWithoutTx(Iterable<Entity> entities)
+            throws NullPointerException {
         if (entities == null) {
             throw new NullPointerException(
                 "The entities parameter must not be null.");
@@ -570,19 +590,28 @@ public final class DatastoreUtil {
             return new ArrayList<Key>();
         }
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        DatastoreTimeoutException dte = null;
+        ConcurrentModificationException cme = null;
         for (int i = 0; i < MAX_RETRY; i++) {
             try {
-                return ds.put(entities);
-            } catch (DatastoreTimeoutException e) {
-                dte = e;
-                logger.info("This message is a just INFORMATION. Retry["
-                    + i
-                    + "]:"
-                    + e);
+                DatastoreTimeoutException dte = null;
+                for (int j = 0; j < MAX_RETRY; j++) {
+                    try {
+                        return ds.put(null, entities);
+                    } catch (DatastoreTimeoutException e) {
+                        dte = e;
+                        logger
+                            .info("This message is a just INFORMATION. Retry["
+                                + j
+                                + "]:"
+                                + e);
+                    }
+                }
+                throw dte;
+            } catch (ConcurrentModificationException e) {
+                cme = e;
             }
         }
-        throw dte;
+        throw cme;
     }
 
     /**
@@ -611,6 +640,9 @@ public final class DatastoreUtil {
         if (entities instanceof Collection<?>
             && ((Collection<?>) entities).size() == 0) {
             return new ArrayList<Key>();
+        }
+        if (tx == null) {
+            return putWithoutTx(entities);
         }
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         DatastoreTimeoutException dte = null;
@@ -645,20 +677,55 @@ public final class DatastoreUtil {
             return;
         }
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        DatastoreTimeoutException dte = null;
+        Transaction tx = ds.getCurrentTransaction(null);
+        if (tx == null) {
+            deleteWithoutTx(keys);
+        } else {
+            delete(tx, keys);
+        }
+    }
+
+    /**
+     * Deletes entities specified by the keys without transaction.
+     * 
+     * @param keys
+     *            the keys
+     * @throws NullPointerException
+     *             if the keys parameter is null
+     */
+    public static void deleteWithoutTx(Iterable<Key> keys)
+            throws NullPointerException {
+        if (keys == null) {
+            throw new NullPointerException(
+                "The keys parameter must not be null.");
+        }
+        if (keys instanceof Collection<?> && ((Collection<?>) keys).size() == 0) {
+            return;
+        }
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        ConcurrentModificationException cme = null;
         for (int i = 0; i < MAX_RETRY; i++) {
             try {
-                ds.delete(keys);
-                return;
-            } catch (DatastoreTimeoutException e) {
-                dte = e;
-                logger.info("This message is a just INFORMATION. Retry["
-                    + i
-                    + "]:"
-                    + e);
+                DatastoreTimeoutException dte = null;
+                for (int j = 0; j < MAX_RETRY; j++) {
+                    try {
+                        ds.delete(null, keys);
+                        return;
+                    } catch (DatastoreTimeoutException e) {
+                        dte = e;
+                        logger
+                            .info("This message is a just INFORMATION. Retry["
+                                + j
+                                + "]:"
+                                + e);
+                    }
+                }
+                throw dte;
+            } catch (ConcurrentModificationException e) {
+                cme = e;
             }
         }
-        throw dte;
+        throw cme;
     }
 
     /**

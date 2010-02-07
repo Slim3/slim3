@@ -89,6 +89,26 @@ public class DatastoreTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getActiveTransactions() throws Exception {
+        assertThat(Datastore.getActiveTransactions().size(), is(0));
+        ds.beginTransaction();
+        assertThat(Datastore.getActiveTransactions().size(), is(1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getCurrentTransaction() throws Exception {
+        assertThat(Datastore.getCurrentTransaction(), is(nullValue()));
+        ds.beginTransaction();
+        assertThat(Datastore.getCurrentTransaction(), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void beginGlobalTransaction() throws Exception {
         assertThat(Datastore.beginGlobalTransaction(), is(notNullValue()));
     }

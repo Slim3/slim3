@@ -17,11 +17,13 @@ package org.slim3.datastore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -74,13 +76,53 @@ public final class Datastore {
     }
 
     /**
+     * Returns the active transactions.
+     * 
+     * @return the active transactions
+     */
+    public static Collection<Transaction> getActiveTransactions() {
+        return DatastoreServiceFactory
+            .getDatastoreService()
+            .getActiveTransactions();
+    }
+
+    /**
+     * Returns the current transaction. Returns null if there is no transaction.
+     * 
+     * @return the current transaction
+     */
+    public static Transaction getCurrentTransaction() {
+        return DatastoreServiceFactory
+            .getDatastoreService()
+            .getCurrentTransaction(null);
+    }
+
+    /**
      * Begins a global transaction.
      * 
      * @return a begun global transaction
      */
     public static GlobalTransaction beginGlobalTransaction() {
-        GlobalTransaction gtx = new GlobalTransaction();
-        return gtx;
+        return new GlobalTransaction();
+    }
+
+    /**
+     * Returns the active global transactions.
+     * 
+     * @return the active global transactions
+     */
+    public static Collection<GlobalTransaction> getActiveGlobalTransactions() {
+        return GlobalTransaction.getActiveTransactions();
+    }
+
+    /**
+     * Returns the current global transaction. Returns null if there is no
+     * transaction.
+     * 
+     * @return the current global transaction
+     */
+    public static GlobalTransaction getCurrentGlobalTransaction() {
+        return GlobalTransaction.getCurrentTransaction();
     }
 
     /**
@@ -2281,7 +2323,7 @@ public final class Datastore {
     public static List<Key> putWithoutTx(Iterable<?> models)
             throws NullPointerException {
         List<Entity> entities = DatastoreUtil.modelsToEntities(models);
-        return DatastoreUtil.put((Transaction) null, entities);
+        return DatastoreUtil.putWithoutTx(entities);
     }
 
     /**
@@ -2367,7 +2409,7 @@ public final class Datastore {
      */
     public static void deleteWithoutTx(Iterable<Key> keys)
             throws NullPointerException {
-        DatastoreUtil.delete((Transaction) null, keys);
+        DatastoreUtil.deleteWithoutTx(keys);
     }
 
     /**

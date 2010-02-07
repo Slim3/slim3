@@ -26,8 +26,8 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Transaction;
+import com.google.apphosting.api.DeadlineExceededException;
 
 /**
  * {@link Filter} for Datastore.
@@ -50,11 +50,26 @@ public class DatastoreFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
         try {
+            GlobalTransaction.clearActiveTransactions();
             chain.doFilter(request, response);
+        } catch (DeadlineExceededException dee) {
+            for (GlobalTransaction tx : Datastore.getActiveGlobalTransactions()) {
+                try {
+                    tx.rollbackAsync();
+                } catch (Throwable t) {
+                    logger.log(Level.WARNING, t.getMessage(), t);
+                }
+            }
+            throw dee;
         } finally {
-            for (Transaction tx : DatastoreServiceFactory
-                .getDatastoreService()
-                .getActiveTransactions()) {
+            for (Transaction tx : Datastore.getActiveTransactions()) {
+                try {
+                    Datastore.rollback(tx);
+                } catch (Throwable t) {
+                    logger.log(Level.WARNING, t.getMessage(), t);
+                }
+            }
+            for (GlobalTransaction tx : Datastore.getActiveGlobalTransactions()) {
                 try {
                     tx.rollback();
                 } catch (Throwable t) {

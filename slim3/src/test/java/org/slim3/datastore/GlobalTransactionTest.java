@@ -30,6 +30,7 @@ import org.slim3.tester.AppEngineTestCase;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.labs.taskqueue.TaskQueuePb.TaskQueueAddRequest;
 
 /**
  * @author higa
@@ -43,6 +44,33 @@ public class GlobalTransactionTest extends AppEngineTestCase {
     public void setUp() throws Exception {
         super.setUp();
         gtx = new GlobalTransaction();
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getActiveTransactions() throws Exception {
+        assertThat(GlobalTransaction.getActiveTransactions().size(), is(1));
+        gtx.rollback();
+        assertThat(GlobalTransaction.getActiveTransactions().size(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getCurrentTransaction() throws Exception {
+        assertThat(GlobalTransaction.getCurrentTransaction(), is(gtx));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void clearActiveTransactions() throws Exception {
+        GlobalTransaction.clearActiveTransactions();
+        assertThat(GlobalTransaction.getActiveTransactions().size(), is(0));
     }
 
     /**
@@ -284,7 +312,6 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         Entity entity = new Entity(key);
         assertThat(gtx.put(entity), is(entity.getKey()));
         assertThat(gtx.lockMap.containsKey(rootKey), is(true));
-        assertThat(gtx.journalRootKeySet.contains(rootKey), is(true));
         Journal journal = gtx.journalMap.get(key);
         assertThat(journal, is(notNullValue()));
         assertThat(journal.key, is(Journal.createKey(key)));
@@ -300,7 +327,6 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         Hoge hoge = new Hoge();
         assertThat(gtx.put(hoge), is(hoge.getKey()));
         assertThat(gtx.lockMap.containsKey(hoge.getKey()), is(true));
-        assertThat(gtx.journalRootKeySet.contains(hoge.getKey()), is(true));
     }
 
     /**
@@ -314,7 +340,6 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(keys, is(notNullValue()));
         assertThat(keys.size(), is(2));
         assertThat(gtx.lockMap.size(), is(2));
-        assertThat(gtx.journalRootKeySet.size(), is(2));
     }
 
     /**
@@ -328,7 +353,6 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(keys, is(notNullValue()));
         assertThat(keys.size(), is(2));
         assertThat(gtx.lockMap.size(), is(2));
-        assertThat(gtx.journalRootKeySet.size(), is(2));
     }
 
     /**
@@ -340,7 +364,6 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         Key key = Datastore.createKey(rootKey, "Child", 1);
         gtx.delete(key);
         assertThat(gtx.lockMap.containsKey(rootKey), is(true));
-        assertThat(gtx.journalRootKeySet.contains(rootKey), is(true));
         Journal journal = gtx.journalMap.get(key);
         assertThat(journal, is(notNullValue()));
         assertThat(journal.key, is(Journal.createKey(key)));
@@ -358,9 +381,6 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(gtx.lockMap.size(), is(2));
         assertThat(gtx.lockMap.containsKey(key), is(true));
         assertThat(gtx.lockMap.containsKey(key2), is(true));
-        assertThat(gtx.journalRootKeySet.size(), is(2));
-        assertThat(gtx.journalRootKeySet.contains(key), is(true));
-        assertThat(gtx.journalRootKeySet.contains(key2), is(true));
         Journal journal = gtx.journalMap.get(key);
         assertThat(journal, is(notNullValue()));
         assertThat(journal.key, is(Journal.createKey(key)));
@@ -382,9 +402,6 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(gtx.lockMap.size(), is(2));
         assertThat(gtx.lockMap.containsKey(key), is(true));
         assertThat(gtx.lockMap.containsKey(key2), is(true));
-        assertThat(gtx.journalRootKeySet.size(), is(2));
-        assertThat(gtx.journalRootKeySet.contains(key), is(true));
-        assertThat(gtx.journalRootKeySet.contains(key2), is(true));
         Journal journal = gtx.journalMap.get(key);
         assertThat(journal, is(notNullValue()));
         assertThat(journal.key, is(Journal.createKey(key)));
@@ -404,7 +421,6 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         Key key = Datastore.createKey(rootKey, "Child", 1);
         gtx.deleteAll(key);
         assertThat(gtx.lockMap.containsKey(rootKey), is(true));
-        assertThat(gtx.journalRootKeySet.contains(rootKey), is(true));
         Journal journal = gtx.journalMap.get(key);
         assertThat(journal, is(notNullValue()));
         assertThat(journal.key, is(Journal.createKey(key)));
@@ -436,6 +452,7 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(Datastore.query(Lock.KIND).count(), is(0));
         assertThat(Datastore.query(Journal.KIND).count(), is(0));
         assertThat(gtx.isActive(), is(false));
+        assertThat(GlobalTransaction.getActiveTransactions().size(), is(0));
     }
 
     /**
@@ -444,7 +461,76 @@ public class GlobalTransactionTest extends AppEngineTestCase {
     @Test
     public void commitGlobalTransactionInternally() throws Exception {
         gtx.commitGlobalTransactionInternally();
-        assertThat(Datastore.get(gtx.globalTransactionKey), is(notNullValue()));
+        Entity entity = Datastore.get(gtx.globalTransactionKey);
+        assertThat(entity, is(notNullValue()));
+        assertThat((Long) entity
+            .getProperty(GlobalTransaction.VERSION_PROPERTY), is(1L));
+        assertThat(gtx.isActive(), is(false));
+        assertThat(GlobalTransaction.getActiveTransactions().size(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void commitAsyncGlobalTransactionInternally() throws Exception {
+        String encodedKey = Datastore.keyToString(gtx.globalTransactionKey);
+        gtx.commitAsyncGlobalTransactionInternally();
+        Entity entity = Datastore.get(gtx.globalTransactionKey);
+        assertThat(entity, is(notNullValue()));
+        assertThat((Long) entity
+            .getProperty(GlobalTransaction.VERSION_PROPERTY), is(1L));
+        assertThat(tester.tasks.size(), is(1));
+        TaskQueueAddRequest task = tester.tasks.get(0);
+        assertThat(task.getUrl(), is(GlobalTransaction.ROLLFORWARD_PATH
+            + encodedKey
+            + "/1"));
+        assertThat(gtx.isActive(), is(false));
+        assertThat(GlobalTransaction.getActiveTransactions().size(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void commitAsyncGlobalTransaction() throws Exception {
+        gtx.put(new Entity("Hoge"));
+        String encodedKey = Datastore.keyToString(gtx.globalTransactionKey);
+        gtx.commitAsyncGlobalTransaction();
+        Entity entity = Datastore.get(gtx.globalTransactionKey);
+        assertThat(entity, is(notNullValue()));
+        assertThat((Long) entity
+            .getProperty(GlobalTransaction.VERSION_PROPERTY), is(1L));
+        assertThat(tester.tasks.size(), is(1));
+        TaskQueueAddRequest task = tester.tasks.get(0);
+        assertThat(task.getUrl(), is(GlobalTransaction.ROLLFORWARD_PATH
+            + encodedKey
+            + "/1"));
+        assertThat(gtx.isActive(), is(false));
+        assertThat(GlobalTransaction.getActiveTransactions().size(), is(0));
+        assertThat(Datastore.query(Journal.KIND).count(), is(1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void commitAsync() throws Exception {
+        gtx.put(new Entity("Hoge"));
+        String encodedKey = Datastore.keyToString(gtx.globalTransactionKey);
+        gtx.commitAsync();
+        Entity entity = Datastore.get(gtx.globalTransactionKey);
+        assertThat(entity, is(notNullValue()));
+        assertThat((Long) entity
+            .getProperty(GlobalTransaction.VERSION_PROPERTY), is(1L));
+        assertThat(tester.tasks.size(), is(1));
+        TaskQueueAddRequest task = tester.tasks.get(0);
+        assertThat(task.getUrl(), is(GlobalTransaction.ROLLFORWARD_PATH
+            + encodedKey
+            + "/1"));
+        assertThat(gtx.isActive(), is(false));
+        assertThat(GlobalTransaction.getActiveTransactions().size(), is(0));
+        assertThat(Datastore.query(Journal.KIND).count(), is(1));
     }
 
     /**
@@ -461,6 +547,7 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(Datastore.query(Lock.KIND).count(), is(0));
         assertThat(Datastore.query(Journal.KIND).count(), is(0));
         assertThat(gtx.isActive(), is(false));
+        assertThat(GlobalTransaction.getActiveTransactions().size(), is(0));
     }
 
     /**
@@ -477,5 +564,158 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(Datastore.query(Lock.KIND).count(), is(0));
         assertThat(Datastore.query(Journal.KIND).count(), is(0));
         assertThat(gtx.isActive(), is(false));
+        assertThat(GlobalTransaction.getActiveTransactions().size(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void rollbackLocalTransaction() throws Exception {
+        gtx.put(new Entity("Hoge"));
+        gtx.rollbackLocalTransaction();
+        assertThat(Datastore.query("Hoge").count(), is(0));
+        assertThat(Datastore.query(GlobalTransaction.KIND).count(), is(0));
+        assertThat(Datastore.query(Lock.KIND).count(), is(0));
+        assertThat(Datastore.query(Journal.KIND).count(), is(0));
+        assertThat(gtx.isActive(), is(false));
+        assertThat(GlobalTransaction.getActiveTransactions().size(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void rollbackGlobalTransaction() throws Exception {
+        gtx.put(new Entity("Hoge"));
+        Journal.put(gtx.journalMap.values());
+        gtx.rollbackGlobalTransaction();
+        assertThat(Datastore.query("Hoge").count(), is(0));
+        assertThat(Datastore.query(GlobalTransaction.KIND).count(), is(0));
+        assertThat(Datastore.query(Lock.KIND).count(), is(0));
+        assertThat(Datastore.query(Journal.KIND).count(), is(0));
+        assertThat(gtx.isActive(), is(false));
+        assertThat(GlobalTransaction.getActiveTransactions().size(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void rollback() throws Exception {
+        gtx.put(new Entity("Hoge"));
+        gtx.put(new Entity("Hoge"));
+        Journal.put(gtx.journalMap.values());
+        gtx.rollback();
+        assertThat(Datastore.query("Hoge").count(), is(0));
+        assertThat(Datastore.query(GlobalTransaction.KIND).count(), is(0));
+        assertThat(Datastore.query(Lock.KIND).count(), is(0));
+        assertThat(Datastore.query(Journal.KIND).count(), is(0));
+        assertThat(gtx.isActive(), is(false));
+        assertThat(GlobalTransaction.getActiveTransactions().size(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void rollbackAsyncGlobalTransaction() throws Exception {
+        String encodedKey = Datastore.keyToString(gtx.globalTransactionKey);
+        gtx.rollbackAsyncGlobalTransaction();
+        assertThat(gtx.isActive(), is(false));
+        assertThat(GlobalTransaction.getActiveTransactions().size(), is(0));
+        assertThat(tester.tasks.size(), is(1));
+        TaskQueueAddRequest task = tester.tasks.get(0);
+        assertThat(task.getUrl(), is(GlobalTransaction.ROLLBACK_PATH
+            + encodedKey));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void rollbackAsync() throws Exception {
+        gtx.put(new Entity("Hoge"));
+        gtx.put(new Entity("Hoge"));
+        String encodedKey = Datastore.keyToString(gtx.globalTransactionKey);
+        gtx.rollbackAsyncGlobalTransaction();
+        assertThat(gtx.isActive(), is(false));
+        assertThat(GlobalTransaction.getActiveTransactions().size(), is(0));
+        assertThat(tester.tasks.size(), is(1));
+        TaskQueueAddRequest task = tester.tasks.get(0);
+        assertThat(task.getUrl(), is(GlobalTransaction.ROLLBACK_PATH
+            + encodedKey));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void submitRollForwardJob() throws Exception {
+        String encodedKey = Datastore.keyToString(gtx.globalTransactionKey);
+        GlobalTransaction.submitRollForwardJob(
+            null,
+            gtx.globalTransactionKey,
+            1);
+        assertThat(tester.tasks.size(), is(1));
+        TaskQueueAddRequest task = tester.tasks.get(0);
+        assertThat(task.getUrl(), is(GlobalTransaction.ROLLFORWARD_PATH
+            + encodedKey
+            + "/1"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void submitRollbackJob() throws Exception {
+        String encodedKey = Datastore.keyToString(gtx.globalTransactionKey);
+        GlobalTransaction.submitRollbackJob(gtx.globalTransactionKey);
+        assertThat(tester.tasks.size(), is(1));
+        TaskQueueAddRequest task = tester.tasks.get(0);
+        assertThat(task.getUrl(), is(GlobalTransaction.ROLLBACK_PATH
+            + encodedKey));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void checkVersion() throws Exception {
+        gtx.commitGlobalTransactionInternally();
+        assertThat(
+            GlobalTransaction.checkVersion(gtx.globalTransactionKey, 1),
+            is(true));
+        Entity entity = Datastore.get(gtx.globalTransactionKey);
+        assertThat((Long) entity
+            .getProperty(GlobalTransaction.VERSION_PROPERTY), is(2L));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void rollForward() throws Exception {
+        gtx.put(new Entity("Hoge"));
+        Journal.put(gtx.journalMap.values());
+        gtx.commitGlobalTransactionInternally();
+        GlobalTransaction.rollForward(gtx.globalTransactionKey, 1);
+        assertThat(Datastore.query("Hoge").count(), is(1));
+        assertThat(Datastore.query(GlobalTransaction.KIND).count(), is(0));
+        assertThat(Datastore.query(Lock.KIND).count(), is(0));
+        assertThat(Datastore.query(Journal.KIND).count(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void rollbackByGlobalTransactionKey() throws Exception {
+        gtx.put(new Entity("Hoge"));
+        Journal.put(gtx.journalMap.values());
+        GlobalTransaction.rollback(gtx.globalTransactionKey);
+        assertThat(Datastore.query("Hoge").count(), is(0));
+        assertThat(Datastore.query(Lock.KIND).count(), is(0));
+        assertThat(Datastore.query(Journal.KIND).count(), is(0));
     }
 }

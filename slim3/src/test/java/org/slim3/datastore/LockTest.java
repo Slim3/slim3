@@ -18,7 +18,10 @@ package org.slim3.datastore;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.ConcurrentModificationException;
+import java.util.List;
 
 import org.junit.Test;
 import org.slim3.tester.AppEngineTestCase;
@@ -108,7 +111,43 @@ public class LockTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void delete() throws Exception {
+    public void deleteLocks() throws Exception {
+        Key rootKey = Datastore.createKey("Hoge", 1);
+        long timestamp = System.currentTimeMillis();
+        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
+        Lock lock = new Lock(globalTransactionKey, rootKey, timestamp);
+        Datastore.put(lock.toEntity());
+        Lock.delete(Arrays.asList(lock));
+        assertThat(Datastore.query(Lock.KIND, lock.key).count(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void deleteManyEntities() throws Exception {
+        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
+        long timestamp = System.currentTimeMillis();
+        List<Lock> locks = new ArrayList<Lock>();
+        int count = 101;
+        for (int i = 1; i <= count; i++) {
+            Lock lock =
+                new Lock(
+                    globalTransactionKey,
+                    Datastore.createKey("Hoge", i),
+                    timestamp);
+            locks.add(lock);
+            Datastore.put(lock.toEntity());
+        }
+        Lock.delete(locks);
+        assertThat(Datastore.query(Lock.KIND).count(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void deleteByGlobalTransactionKey() throws Exception {
         Key rootKey = Datastore.createKey("Hoge", 1);
         long timestamp = System.currentTimeMillis();
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
@@ -171,7 +210,7 @@ public class LockTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void lockWhenOtherWithin30seconds() throws Exception {
+    public void lockWhenOtherIsNotTimeout() throws Exception {
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
         Key rootKey = Datastore.createKey("Hoge", 1);
         long timestamp = System.currentTimeMillis();
@@ -194,25 +233,31 @@ public class LockTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void lockWhenOtherOver30seconds() throws Exception {
+    public void lockWhenOtherIsTimeout() throws Exception {
         Key targetKey = Datastore.createKey("Hoge", 1);
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
+        Key globalTransactionKey2 =
+            Datastore.allocateId(GlobalTransaction.KIND);
         long timestamp = System.currentTimeMillis();
         Lock lock = new Lock(globalTransactionKey, targetKey, timestamp);
         Lock other =
-            new Lock(globalTransactionKey, targetKey, timestamp
-                - Lock.THIRTY_SECONDS
+            new Lock(globalTransactionKey2, targetKey, timestamp
+                - Lock.TIMEOUT
                 - 1);
         other.lock();
         lock.lock();
-        assertThat(Datastore.get(lock.getKey()), is(notNullValue()));
+        Entity entity = Datastore.get(lock.getKey());
+        assertThat(entity, is(notNullValue()));
+        assertThat(
+            (Key) entity.getProperty(Lock.GLOBAL_TRANSACTION_KEY_PROPERTY),
+            is(globalTransactionKey));
     }
 
     /**
      * @throws Exception
      */
     @Test
-    public void isLockByWithin30seconds() throws Exception {
+    public void isLockByNoTimeout() throws Exception {
         Key rootKey = Datastore.createKey("Hoge", 1);
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
         long timestamp = System.currentTimeMillis();
@@ -225,14 +270,14 @@ public class LockTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void isLockByOver30seconds() throws Exception {
+    public void isLockByForTimeout() throws Exception {
         Key rootKey = Datastore.createKey("Hoge", 1);
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
         long timestamp = System.currentTimeMillis();
         Lock lock = new Lock(globalTransactionKey, rootKey, timestamp);
         Lock other =
             new Lock(globalTransactionKey, rootKey, timestamp
-                - Lock.THIRTY_SECONDS
+                - Lock.TIMEOUT
                 - 1);
         assertThat(lock.isLockedBy(other), is(false));
     }
@@ -241,14 +286,14 @@ public class LockTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void isLockByOver30secondsAndGtxExists() throws Exception {
+    public void isLockByOverForTimeoutAndGtxExists() throws Exception {
         Key rootKey = Datastore.createKey("Hoge", 1);
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
         long timestamp = System.currentTimeMillis();
         Lock lock = new Lock(globalTransactionKey, rootKey, timestamp);
         Lock other =
             new Lock(globalTransactionKey, rootKey, timestamp
-                - Lock.THIRTY_SECONDS
+                - Lock.TIMEOUT
                 - 1);
         Entity entity = new Entity(globalTransactionKey);
         Datastore.put(entity);

@@ -15,6 +15,8 @@
  */
 package org.slim3.datastore;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.logging.Level;
@@ -52,9 +54,14 @@ public class Lock {
     public static final String TIMESTAMP_PROPERTY = "timestampType";
 
     /**
-     * The 30 seconds as millisecond.
+     * The timeout.
      */
-    protected static final long THIRTY_SECONDS = 30 * 1000;
+    protected static final long TIMEOUT = 60 * 1000;
+
+    /**
+     * The maximum size of locks.
+     */
+    protected static final int MAX_SIZE_LOCKS = 100;
 
     /**
      * The logger.
@@ -159,6 +166,37 @@ public class Lock {
     }
 
     /**
+     * Deletes the locks from the datastore.
+     * 
+     * @param locks
+     *            the locks
+     * @throws NullPointerException
+     *             if the locks parameter is null
+     * 
+     */
+    public static void delete(Iterable<Lock> locks) throws NullPointerException {
+        if (locks == null) {
+            throw new NullPointerException(
+                "The locks parameter must not be null.");
+        }
+        if (locks instanceof Collection<?>
+            && ((Collection<?>) locks).size() == 0) {
+            return;
+        }
+        List<Key> keys = new ArrayList<Key>();
+        for (Lock lock : locks) {
+            if (keys.size() >= MAX_SIZE_LOCKS) {
+                Datastore.deleteWithoutTx(keys);
+                keys.clear();
+            }
+            keys.add(lock.key);
+        }
+        if (keys.size() > 0) {
+            Datastore.deleteWithoutTx(keys);
+        }
+    }
+
+    /**
      * Deletes lock entities specified by the global transaction key.
      * 
      * @param globalTransactionKey
@@ -166,7 +204,8 @@ public class Lock {
      * @throws NullPointerException
      *             if the globalTransactionKey parameter is null
      * @throws ConcurrentModificationException
-     *             if the other request modify an entity group.
+     *             if the other request modify entity groups specified by the
+     *             global transaction key.
      */
     public static void delete(Key globalTransactionKey)
             throws NullPointerException, ConcurrentModificationException {
@@ -174,21 +213,17 @@ public class Lock {
             throw new NullPointerException(
                 "The globalTransactionKey parameter must not be null.");
         }
-        ConcurrentModificationException cme = null;
-        for (int i = 0; i < GlobalTransaction.MAX_RETRY; i++) {
-            try {
-                List<Key> keys =
-                    Datastore.query(KIND).filter(
-                        GLOBAL_TRANSACTION_KEY_PROPERTY,
-                        FilterOperator.EQUAL,
-                        globalTransactionKey).asKeyList();
-                Datastore.deleteWithoutTx(keys);
+        while (true) {
+            List<Key> keys =
+                Datastore.query(KIND).filter(
+                    GLOBAL_TRANSACTION_KEY_PROPERTY,
+                    FilterOperator.EQUAL,
+                    globalTransactionKey).limit(MAX_SIZE_LOCKS).asKeyList();
+            if (keys.size() == 0) {
                 return;
-            } catch (ConcurrentModificationException e) {
-                cme = e;
             }
+            Datastore.deleteWithoutTx(keys);
         }
-        throw cme;
     }
 
     /**
@@ -279,7 +314,7 @@ public class Lock {
             throw new NullPointerException(
                 "The other parameter must not be null.");
         }
-        if (timestamp <= other.getTimestamp() + THIRTY_SECONDS) {
+        if (timestamp <= other.getTimestamp() + TIMEOUT) {
             return true;
         }
         return GlobalTransaction.exists(other.getGlobalTransactionKey());

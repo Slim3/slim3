@@ -316,6 +316,23 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void putEntitiesWithoutTx() throws Exception {
+        Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
+        Entity entity2 =
+            new Entity(KeyFactory.createKey(entity.getKey(), "Hoge", 1));
+        Transaction tx = ds.beginTransaction();
+        List<Key> keys =
+            DatastoreUtil.putWithoutTx(Arrays.asList(entity, entity2));
+        tx.rollback();
+        assertThat(keys, is(notNullValue()));
+        assertThat(keys.size(), is(2));
+        assertThat(ds.get(keys).size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void putEntitiesInTxWhenTxIsNull() throws Exception {
         Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
         Entity entity2 =
@@ -349,6 +366,18 @@ public class DatastoreUtilTest extends AppEngineTestCase {
         DatastoreUtil.delete(tx, Arrays.asList(key));
         tx.rollback();
         assertThat(ds.get(key), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void deleteEntitiesWithoutTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Transaction tx = ds.beginTransaction();
+        DatastoreUtil.deleteWithoutTx(Arrays.asList(key));
+        tx.rollback();
+        assertThat(ds.get(Arrays.asList(key)).size(), is(0));
     }
 
     /**

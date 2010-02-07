@@ -74,41 +74,43 @@ public class GlobalTransactionServlet extends HttpServlet {
                 + ") must start with /slim3/gtx/.");
         }
         if (args[2].equalsIgnoreCase("rollforward")) {
-            if (args.length != 4) {
+            if (args.length != 5) {
                 throw new ServletException("The path("
                     + path
-                    + ") must be /slim3/gtx/rollforward/encodedKey.");
+                    + ") must be /slim3/gtx/rollforward/encodedKey/version.");
             }
-            rollForward(args[3]);
+            Key key = Datastore.stringToKey(args[3]);
+            rollForward(key, Long.valueOf(args[4]));
         } else if (args[2].equalsIgnoreCase("rollback")) {
             if (args.length != 4) {
                 throw new ServletException("The path("
                     + path
                     + ") must be /slim3/gtx/rollback/encodedKey.");
             }
-            rollback(args[3]);
+            Key key = Datastore.stringToKey(args[3]);
+            rollback(key);
         }
     }
 
     /**
      * Rolls forward the global transaction specified by the key.
      * 
-     * @param encodedKey
-     *            the encoded key
+     * @param globalTransactionKey
+     *            the global transaction key
+     * @param version
+     *            the version
      */
-    protected void rollForward(String encodedKey) {
-        Key key = Datastore.stringToKey(encodedKey);
-        GlobalTransaction.rollForward(key);
+    protected void rollForward(Key globalTransactionKey, long version) {
+        GlobalTransaction.rollForward(globalTransactionKey, version);
     }
 
     /**
      * Rolls back the global transaction specified by the key.
      * 
-     * @param encodedKey
-     *            the encoded key
+     * @param globalTransactionKey
+     *            the global transaction key
      */
-    protected void rollback(String encodedKey) {
-        Key key = Datastore.stringToKey(encodedKey);
-        GlobalTransaction.rollback(key);
+    protected void rollback(Key globalTransactionKey) {
+        GlobalTransaction.rollback(globalTransactionKey);
     }
 }
