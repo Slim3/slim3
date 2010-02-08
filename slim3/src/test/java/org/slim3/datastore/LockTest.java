@@ -154,7 +154,21 @@ public class LockTest extends AppEngineTestCase {
         Lock lock = new Lock(globalTransactionKey, rootKey, timestamp);
         Datastore.put(lock.toEntity());
         Lock.delete(globalTransactionKey);
-        assertThat(Datastore.query(Lock.KIND, lock.key).count(), is(0));
+        assertThat(Datastore.query(Lock.KIND).count(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getKeys() throws Exception {
+        Key rootKey = Datastore.createKey("Hoge", 1);
+        long timestamp = System.currentTimeMillis();
+        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
+        Lock lock = new Lock(globalTransactionKey, rootKey, timestamp);
+        Datastore.put(lock.toEntity());
+        List<Key> keys = Lock.getKeys(globalTransactionKey);
+        assertThat(keys.size(), is(1));
     }
 
     /**
@@ -245,12 +259,16 @@ public class LockTest extends AppEngineTestCase {
                 - Lock.TIMEOUT
                 - 1);
         other.lock();
+        Journal otherJournal =
+            new Journal(globalTransactionKey2, new Entity(targetKey));
+        Datastore.put(otherJournal.toEntity());
         lock.lock();
         Entity entity = Datastore.get(lock.getKey());
         assertThat(entity, is(notNullValue()));
         assertThat(
             (Key) entity.getProperty(Lock.GLOBAL_TRANSACTION_KEY_PROPERTY),
             is(globalTransactionKey));
+        assertThat(Datastore.query(Journal.KIND).count(), is(0));
     }
 
     /**

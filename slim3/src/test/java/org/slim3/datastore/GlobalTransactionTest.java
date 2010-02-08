@@ -718,4 +718,20 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(Datastore.query(Lock.KIND).count(), is(0));
         assertThat(Datastore.query(Journal.KIND).count(), is(0));
     }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void rollbackByGlobalTransactionKeyAndLockKey() throws Exception {
+        gtx.put(new Entity("Hoge"));
+        Journal.put(gtx.journalMap.values());
+        GlobalTransaction.rollback(gtx.globalTransactionKey, gtx.lockMap
+            .values()
+            .iterator()
+            .next().key);
+        assertThat(Datastore.query("Hoge").count(), is(0));
+        assertThat(Datastore.query(Lock.KIND).count(), is(0));
+        assertThat(Datastore.query(Journal.KIND).count(), is(0));
+    }
 }

@@ -185,12 +185,54 @@ public class GlobalTransaction {
      */
     protected static void rollback(Key globalTransactionKey)
             throws NullPointerException {
+        List<Key> lockKeys = Lock.getKeys(globalTransactionKey);
+        for (Key lockKey : lockKeys) {
+            rollback(globalTransactionKey, lockKey);
+        }
+    }
+
+    /**
+     * Rolls back the transaction.
+     * 
+     * @param globalTransactionKey
+     *            the global transaction key
+     * @param lockKey
+     *            the lock key
+     * @throws NullPointerException
+     *             if the globalTransactionKey parameter is null or if the
+     *             lockKey parameter is null
+     */
+    protected static void rollback(Key globalTransactionKey, Key lockKey)
+            throws NullPointerException {
         if (globalTransactionKey == null) {
             throw new NullPointerException(
                 "The globalTransactionKey parameter must not be null.");
         }
-        Journal.delete(globalTransactionKey);
-        Lock.delete(globalTransactionKey);
+        if (lockKey == null) {
+            throw new NullPointerException(
+                "The lockKey parameter must not be null.");
+        }
+        for (int i = 0; i < MAX_RETRY; i++) {
+            Transaction tx = Datastore.beginTransaction();
+            try {
+                Lock lock = Lock.getOrNull(tx, lockKey);
+                if (lock == null
+                    || !globalTransactionKey.equals(lock.globalTransactionKey)) {
+                    return;
+                }
+                List<Key> keys =
+                    Journal.getKeys(tx, lock.rootKey, globalTransactionKey);
+                keys.add(lockKey);
+                Datastore.delete(tx, keys);
+                Datastore.commit(tx);
+                return;
+            } catch (ConcurrentModificationException ignore) {
+            } finally {
+                if (tx.isActive()) {
+                    Datastore.rollback(tx);
+                }
+            }
+        }
     }
 
     /**

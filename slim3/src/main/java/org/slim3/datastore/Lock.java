@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.slim3.util.ListUtil;
+
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -56,7 +58,7 @@ public class Lock {
     /**
      * The timeout.
      */
-    protected static final long TIMEOUT = 60 * 1000;
+    protected static final long TIMEOUT = 30 * 1000;
 
     /**
      * The maximum size of locks.
@@ -153,16 +155,34 @@ public class Lock {
      * @param key
      *            the key
      * @return a {@link Lock} specified by the key
-     * @throws EntityNotFoundRuntimeException
-     *             if no entity specified by the key is found
      */
-    public static Lock getOrNull(Transaction tx, Key key)
-            throws EntityNotFoundRuntimeException {
+    public static Lock getOrNull(Transaction tx, Key key) {
         Entity entity = Datastore.getOrNull(tx, key);
         if (entity == null) {
             return null;
         }
         return toLock(entity);
+    }
+
+    /**
+     * Returns keys specified by the global transaction key.
+     * 
+     * @param globalTransactionKey
+     *            the global transaction key
+     * @return a list of keys
+     * @throws NullPointerException
+     *             if the globalTransactionKey parameter is null
+     */
+    public static List<Key> getKeys(Key globalTransactionKey)
+            throws NullPointerException {
+        if (globalTransactionKey == null) {
+            throw new NullPointerException(
+                "The globalTransactionKey parameter must not be null.");
+        }
+        return Datastore.query(KIND).filter(
+            GLOBAL_TRANSACTION_KEY_PROPERTY,
+            FilterOperator.EQUAL,
+            globalTransactionKey).asKeyList();
     }
 
     /**
@@ -197,32 +217,23 @@ public class Lock {
     }
 
     /**
-     * Deletes lock entities specified by the global transaction key.
+     * Deletes entities specified by the global transaction key.
      * 
      * @param globalTransactionKey
      *            the global transaction key
      * @throws NullPointerException
      *             if the globalTransactionKey parameter is null
-     * @throws ConcurrentModificationException
-     *             if the other request modify entity groups specified by the
-     *             global transaction key.
      */
     public static void delete(Key globalTransactionKey)
-            throws NullPointerException, ConcurrentModificationException {
+            throws NullPointerException {
         if (globalTransactionKey == null) {
             throw new NullPointerException(
                 "The globalTransactionKey parameter must not be null.");
         }
-        while (true) {
-            List<Key> keys =
-                Datastore.query(KIND).filter(
-                    GLOBAL_TRANSACTION_KEY_PROPERTY,
-                    FilterOperator.EQUAL,
-                    globalTransactionKey).limit(MAX_SIZE_LOCKS).asKeyList();
-            if (keys.size() == 0) {
-                return;
-            }
-            Datastore.deleteWithoutTx(keys);
+        List<Key> keys = getKeys(globalTransactionKey);
+        List<List<Key>> keysList = ListUtil.split(keys, MAX_SIZE_LOCKS);
+        for (List<Key> l : keysList) {
+            Datastore.deleteWithoutTx(l);
         }
     }
 
@@ -285,8 +296,11 @@ public class Lock {
         Transaction tx = Datastore.beginTransaction();
         try {
             Lock other = getOrNull(tx, key);
-            if (other != null && isLockedBy(other)) {
-                throw createConcurrentModificationException();
+            if (other != null) {
+                if (isLockedBy(other)) {
+                    throw createConcurrentModificationException();
+                }
+                Journal.delete(tx, other.rootKey, other.globalTransactionKey);
             }
             Datastore.put(tx, toEntity());
             Datastore.commit(tx);

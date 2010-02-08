@@ -284,6 +284,21 @@ public class JournalTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getKeys() throws Exception {
+        Key targetKey = Datastore.createKey("Hoge", 1);
+        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
+        Journal journal = new Journal(globalTransactionKey, targetKey);
+        Journal.put(Arrays.asList(journal));
+        Transaction tx = Datastore.beginTransaction();
+        List<Key> keys = Journal.getKeys(tx, targetKey, globalTransactionKey);
+        Datastore.rollback(tx);
+        assertThat(keys.size(), is(1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void put() throws Exception {
         Key targetKey = Datastore.createKey("Hoge", 1);
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
@@ -345,12 +360,35 @@ public class JournalTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void deleteByGlobalTransactionKey() throws Exception {
+    public void deleteByRootKeyAndGlobalTransactionKey() throws Exception {
         Key targetKey = Datastore.createKey("Hoge", 1);
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
         Journal journal = new Journal(globalTransactionKey, targetKey);
         Journal.put(Arrays.asList(journal));
-        Journal.delete(globalTransactionKey);
+        Transaction tx = Datastore.beginTransaction();
+        Journal.delete(tx, targetKey, globalTransactionKey);
+        Datastore.commit(tx);
+        assertThat(Datastore.query(Journal.KIND).count(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void deleteManyJournalsByRootKeyAndGlobalTransactionKey()
+            throws Exception {
+        Key rootKey = Datastore.createKey("Root", 1);
+        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
+        List<Journal> journals = new ArrayList<Journal>();
+        int count = 101;
+        for (int i = 1; i <= count; i++) {
+            journals.add(new Journal(globalTransactionKey, new Entity(Datastore
+                .createKey(rootKey, "Hoge", i))));
+        }
+        Journal.put(journals);
+        Transaction tx = Datastore.beginTransaction();
+        Journal.delete(tx, rootKey, globalTransactionKey);
+        Datastore.commit(tx);
         assertThat(Datastore.query(Journal.KIND).count(), is(0));
     }
 

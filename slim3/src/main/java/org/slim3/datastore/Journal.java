@@ -17,8 +17,9 @@ package org.slim3.datastore;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.ConcurrentModificationException;
 import java.util.List;
+
+import org.slim3.util.ListUtil;
 
 import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Entity;
@@ -248,6 +249,41 @@ public class Journal {
     }
 
     /**
+     * Returns the keys specified by the root key and the global transaction
+     * key.
+     * 
+     * @param tx
+     *            the transaction
+     * @param rootKey
+     *            the root key
+     * @param globalTransactionKey
+     *            the global transaction key
+     * @return a list of keys
+     * @throws NullPointerException
+     *             if the tx parameter is null or if the rootKey parameter is
+     *             null or if the globalTransactionKey parameter is null
+     * 
+     */
+    public static List<Key> getKeys(Transaction tx, Key rootKey,
+            Key globalTransactionKey) throws NullPointerException {
+        if (tx == null) {
+            throw new NullPointerException("The tx parameter must not be null.");
+        }
+        if (rootKey == null) {
+            throw new NullPointerException(
+                "The rootKey parameter must not be null.");
+        }
+        if (globalTransactionKey == null) {
+            throw new NullPointerException(
+                "The globalTransactionKey parameter must not be null.");
+        }
+        return Datastore.query(tx, KIND, rootKey).filter(
+            GLOBAL_TRANSACTION_KEY_PROPERTY,
+            FilterOperator.EQUAL,
+            globalTransactionKey).asKeyList();
+    }
+
+    /**
      * Puts the journals to the datastore.
      * 
      * @param journals
@@ -316,32 +352,25 @@ public class Journal {
     }
 
     /**
-     * Deletes journal entities specified by the global transaction key.
+     * Deletes journal entities specified by the root key.
      * 
+     * @param tx
+     *            the transaction
+     * @param rootKey
+     *            the root key
      * @param globalTransactionKey
      *            the global transaction key
      * @throws NullPointerException
-     *             if the globalTransactionKey parameter is null
-     * @throws ConcurrentModificationException
-     *             if the other request modify entity groups specified by the
-     *             global transaction key.
+     *             if the tx parameter is null or if the rootKey parameter is
+     *             null or if the globalTransactionKey parameter is null
+     * 
      */
-    public static void delete(Key globalTransactionKey)
-            throws NullPointerException, ConcurrentModificationException {
-        if (globalTransactionKey == null) {
-            throw new NullPointerException(
-                "The globalTransactionKey parameter must not be null.");
-        }
-        while (true) {
-            List<Key> keys =
-                Datastore.query(KIND).filter(
-                    GLOBAL_TRANSACTION_KEY_PROPERTY,
-                    FilterOperator.EQUAL,
-                    globalTransactionKey).limit(MAX_SIZE_JOURNALS).asKeyList();
-            if (keys.size() == 0) {
-                return;
-            }
-            Datastore.deleteWithoutTx(keys);
+    public static void delete(Transaction tx, Key rootKey,
+            Key globalTransactionKey) throws NullPointerException {
+        List<Key> keys = getKeys(tx, rootKey, globalTransactionKey);
+        List<List<Key>> keysList = ListUtil.split(keys, MAX_SIZE_JOURNALS);
+        for (List<Key> l : keysList) {
+            Datastore.delete(tx, l);
         }
     }
 
@@ -384,6 +413,15 @@ public class Journal {
         if (entity == null) {
             throw new NullPointerException(
                 "The entity parameter must not be null.");
+        }
+        if (!KIND.equals(entity.getKind())) {
+            throw new IllegalArgumentException("The kind("
+                + entity.getKind()
+                + ") of the entity("
+                + entity.getKey()
+                + ") must be "
+                + KIND
+                + ".");
         }
         Key globalTransactionKey =
             (Key) entity.getProperty(GLOBAL_TRANSACTION_KEY_PROPERTY);
