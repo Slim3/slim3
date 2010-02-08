@@ -80,7 +80,7 @@ public class GlobalTransactionServlet extends HttpServlet {
                     + ") must be /slim3/gtx/rollforward/encodedKey/version.");
             }
             Key key = Datastore.stringToKey(args[3]);
-            rollForward(key, Long.valueOf(args[4]));
+            GlobalTransaction.rollForward(key, Long.valueOf(args[4]));
         } else if (args[2].equalsIgnoreCase("rollback")) {
             if (args.length != 4) {
                 throw new ServletException("The path("
@@ -88,29 +88,14 @@ public class GlobalTransactionServlet extends HttpServlet {
                     + ") must be /slim3/gtx/rollback/encodedKey.");
             }
             Key key = Datastore.stringToKey(args[3]);
-            rollback(key);
+            GlobalTransaction.rollback(key);
+        } else if (args[2].equalsIgnoreCase("cleanup")) {
+            if (args.length != 3) {
+                throw new ServletException("The path("
+                    + path
+                    + ") must be /slim3/gtx/cleanup.");
+            }
+            GlobalTransaction.cleanUp();
         }
-    }
-
-    /**
-     * Rolls forward the global transaction specified by the key.
-     * 
-     * @param globalTransactionKey
-     *            the global transaction key
-     * @param version
-     *            the version
-     */
-    protected void rollForward(Key globalTransactionKey, long version) {
-        GlobalTransaction.rollForward(globalTransactionKey, version);
-    }
-
-    /**
-     * Rolls back the global transaction specified by the key.
-     * 
-     * @param globalTransactionKey
-     *            the global transaction key
-     */
-    protected void rollback(Key globalTransactionKey) {
-        GlobalTransaction.rollback(globalTransactionKey);
     }
 }

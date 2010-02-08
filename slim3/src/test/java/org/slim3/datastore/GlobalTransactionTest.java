@@ -750,4 +750,21 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(Datastore.query(Lock.KIND).count(), is(0));
         assertThat(Datastore.query(Journal.KIND).count(), is(0));
     }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void cleanUp() throws Exception {
+        String encodedKey = Datastore.keyToString(gtx.globalTransactionKey);
+        gtx.put(new Entity("Hoge"));
+        Journal.put(gtx.journalMap.values());
+        gtx.commitGlobalTransactionInternally();
+        GlobalTransaction.cleanUp();
+        assertThat(tester.tasks.size(), is(1));
+        TaskQueueAddRequest task = tester.tasks.get(0);
+        assertThat(task.getUrl(), is(GlobalTransaction.ROLLFORWARD_PATH
+            + encodedKey
+            + "/1"));
+    }
 }

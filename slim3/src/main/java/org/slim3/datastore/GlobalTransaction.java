@@ -349,6 +349,17 @@ public class GlobalTransaction {
     }
 
     /**
+     * Cleans up unprocessed transactions.
+     */
+    protected static void cleanUp() {
+        for (Entity entity : Datastore.query(KIND).asList()) {
+            submitRollForwardJob(null, entity.getKey(), (Long) entity
+                .getProperty(VERSION_PROPERTY));
+        }
+
+    }
+
+    /**
      * Constructor.
      */
     public GlobalTransaction() {
