@@ -681,14 +681,30 @@ public class GlobalTransactionTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void checkVersion() throws Exception {
+    public void updateVersion() throws Exception {
         gtx.commitGlobalTransactionInternally();
         assertThat(
-            GlobalTransaction.checkVersion(gtx.globalTransactionKey, 1),
-            is(true));
+            GlobalTransaction.updateVersion(gtx.globalTransactionKey, 1),
+            is(2L));
         Entity entity = Datastore.get(gtx.globalTransactionKey);
         assertThat((Long) entity
             .getProperty(GlobalTransaction.VERSION_PROPERTY), is(2L));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void updateVersionWhenFailure() throws Exception {
+        gtx.commitGlobalTransactionInternally();
+        long version =
+            GlobalTransaction.updateVersion(gtx.globalTransactionKey, 1);
+        assertThat(
+            GlobalTransaction.updateVersion(gtx.globalTransactionKey, 1),
+            is(-1L));
+        Entity entity = Datastore.get(gtx.globalTransactionKey);
+        assertThat((Long) entity
+            .getProperty(GlobalTransaction.VERSION_PROPERTY), is(version));
     }
 
     /**

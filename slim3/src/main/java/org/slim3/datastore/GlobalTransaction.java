@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
@@ -30,6 +32,7 @@ import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 import com.google.appengine.api.labs.taskqueue.TaskOptions;
+import com.google.apphosting.api.DeadlineExceededException;
 
 /**
  * The global transaction coordinator. If an error occurs during transaction,
@@ -82,6 +85,9 @@ public class GlobalTransaction {
                 return new Stack<GlobalTransaction>();
             }
         };
+
+    private static final Logger logger =
+        Logger.getLogger(GlobalTransaction.class.getName());
 
     /**
      * Whether this transaction is active.
@@ -167,12 +173,24 @@ public class GlobalTransaction {
      */
     protected static void rollForward(Key globalTransactionKey, long version)
             throws NullPointerException {
-        if (!checkVersion(globalTransactionKey, version)) {
+        version = updateVersion(globalTransactionKey, version);
+        if (version < 0) {
             return;
         }
-        Journal.rollForward(globalTransactionKey);
-        Lock.delete(globalTransactionKey);
-        Datastore.deleteWithoutTx(globalTransactionKey);
+        try {
+            Journal.rollForward(globalTransactionKey);
+            Lock.delete(globalTransactionKey);
+            Datastore.deleteWithoutTx(globalTransactionKey);
+        } catch (DeadlineExceededException e) {
+            logger
+                .info("This roll-forward process will be retried, because a DeadlineExceededException occurred.");
+            submitRollForwardJob(null, globalTransactionKey, version);
+        } catch (Throwable t) {
+            logger.log(
+                Level.WARNING,
+                "An unexpected exception occurred: " + t,
+                t);
+        }
     }
 
     /**
@@ -185,9 +203,20 @@ public class GlobalTransaction {
      */
     protected static void rollback(Key globalTransactionKey)
             throws NullPointerException {
-        List<Key> lockKeys = Lock.getKeys(globalTransactionKey);
-        for (Key lockKey : lockKeys) {
-            rollback(globalTransactionKey, lockKey);
+        try {
+            List<Key> lockKeys = Lock.getKeys(globalTransactionKey);
+            for (Key lockKey : lockKeys) {
+                rollback(globalTransactionKey, lockKey);
+            }
+        } catch (DeadlineExceededException e) {
+            logger
+                .info("This rollback process will be retried, because a DeadlineExceededException occurred.");
+            submitRollbackJob(globalTransactionKey);
+        } catch (Throwable t) {
+            logger.log(
+                Level.WARNING,
+                "An unexpected exception occurred: " + t,
+                t);
         }
     }
 
@@ -236,17 +265,18 @@ public class GlobalTransaction {
     }
 
     /**
-     * Checks the version of the transaction.
+     * Updates the version of the transaction. Returns -1 if the version is
+     * different from the version of argument.
      * 
      * @param globalTransactionKey
      *            the global transaction key
      * @param version
      *            the version
-     * @return whether checking the version is OK
+     * @return the updated version
      * @throws NullPointerException
      *             if the globalTransactionKey parameter is null
      */
-    protected static boolean checkVersion(Key globalTransactionKey, long version)
+    protected static long updateVersion(Key globalTransactionKey, long version)
             throws NullPointerException {
         if (globalTransactionKey == null) {
             throw new NullPointerException(
@@ -257,15 +287,15 @@ public class GlobalTransaction {
             Entity entity = Datastore.get(tx, globalTransactionKey);
             long lastVersion = (Long) entity.getProperty(VERSION_PROPERTY);
             if (version != lastVersion) {
-                return false;
+                return -1;
             }
             version++;
             entity.setUnindexedProperty(VERSION_PROPERTY, version);
             Datastore.put(entity);
             Datastore.commit(tx);
-            return true;
+            return version;
         } catch (ConcurrentModificationException ignore) {
-            return false;
+            return -1;
         } finally {
             if (tx.isActive()) {
                 Datastore.rollback(tx);
