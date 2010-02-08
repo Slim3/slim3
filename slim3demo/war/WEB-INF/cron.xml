@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cronentries>
-<!--
   <cron>
-    <url>/cron/</url>
-    <description>for waking up the instance</description>
-    <schedule>every 1 minutes</schedule>
+    <url>/slim3/gtx/cleanup</url>
+    <description>for cleaning up the unprocessed global transactions</description>
+    <schedule>every 5 minutes</schedule>
   </cron>
--->
 </cronentries>

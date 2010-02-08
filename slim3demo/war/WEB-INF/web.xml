@@ -46,6 +46,17 @@
         <dispatcher>ERROR</dispatcher>
     </filter-mapping>
 
+    <servlet>
+        <servlet-name>GlobalTransactionServlet</servlet-name>
+        <servlet-class>org.slim3.datastore.GlobalTransactionServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+  
+    <servlet-mapping>
+        <servlet-name>GlobalTransactionServlet</servlet-name>
+        <url-pattern>/slim3/gtx</url-pattern>
+    </servlet-mapping>
+    
     <security-constraint>
         <web-resource-collection>
             <url-pattern>*.jsp</url-pattern>
