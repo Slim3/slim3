@@ -5,7 +5,7 @@
   </queue>
   <queue>
     <name>slim3-gtx-queue</name>
-    <rate>20/s</rate>
-    <bucket-size>20</bucket-size>
+    <rate>10/s</rate>
+    <bucket-size>10</bucket-size>
   </queue>
 </queue-entries>
