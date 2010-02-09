@@ -15,30 +15,30 @@
     </context-param>
 
     <filter>
-        <filter-name>hotReloadingFilter</filter-name>
+        <filter-name>HotReloadingFilter</filter-name>
         <filter-class>org.slim3.controller.HotReloadingFilter</filter-class>
     </filter>
     <filter>
-        <filter-name>datastoreFilter</filter-name>
+        <filter-name>DatastoreFilter</filter-name>
         <filter-class>org.slim3.datastore.DatastoreFilter</filter-class>
     </filter>   
     <filter>
-        <filter-name>frontController</filter-name>
+        <filter-name>FrontController</filter-name>
         <filter-class>org.slim3.controller.FrontController</filter-class>
     </filter>
 
     <filter-mapping>
-        <filter-name>hotReloadingFilter</filter-name>
+        <filter-name>HotReloadingFilter</filter-name>
         <url-pattern>/*</url-pattern>
         <dispatcher>REQUEST</dispatcher>
     </filter-mapping>    
     <filter-mapping>
-        <filter-name>datastoreFilter</filter-name>
+        <filter-name>DatastoreFilter</filter-name>
         <url-pattern>/*</url-pattern>
         <dispatcher>REQUEST</dispatcher>
     </filter-mapping>
     <filter-mapping>
-        <filter-name>frontController</filter-name>
+        <filter-name>FrontController</filter-name>
         <url-pattern>/*</url-pattern>
         <dispatcher>REQUEST</dispatcher>
         <dispatcher>FORWARD</dispatcher>
@@ -66,7 +66,7 @@
     </security-constraint>
     <security-constraint>
         <web-resource-collection>
-            <url-pattern>/slim3/gtx/*</url-pattern>
+            <url-pattern>/slim3/gtx</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <role-name>admin</role-name>
