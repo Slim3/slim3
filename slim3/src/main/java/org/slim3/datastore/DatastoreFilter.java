@@ -56,6 +56,9 @@ public class DatastoreFilter implements Filter {
             for (GlobalTransaction tx : Datastore.getActiveGlobalTransactions()) {
                 try {
                     tx.rollbackAsync();
+                    logger.info("The global transaction("
+                        + tx.getId()
+                        + ") was rolled back asynchronously.");
                 } catch (Throwable t) {
                     logger.log(Level.WARNING, t.getMessage(), t);
                 }
@@ -65,6 +68,9 @@ public class DatastoreFilter implements Filter {
             for (Transaction tx : Datastore.getActiveTransactions()) {
                 try {
                     Datastore.rollback(tx);
+                    logger.info("The local transaction("
+                        + tx.getId()
+                        + ") was rolled back.");
                 } catch (Throwable t) {
                     logger.log(Level.WARNING, t.getMessage(), t);
                 }
@@ -72,6 +78,9 @@ public class DatastoreFilter implements Filter {
             for (GlobalTransaction tx : Datastore.getActiveGlobalTransactions()) {
                 try {
                     tx.rollback();
+                    logger.info("The global transaction("
+                        + tx.getId()
+                        + ") was rolled back.");
                 } catch (Throwable t) {
                     logger.log(Level.WARNING, t.getMessage(), t);
                 }

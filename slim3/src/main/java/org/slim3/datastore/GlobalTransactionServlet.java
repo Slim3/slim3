@@ -16,16 +16,16 @@
 package org.slim3.datastore;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slim3.util.RequestUtil;
+import org.slim3.util.StringUtil;
 
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.repackaged.com.google.common.base.StringUtil;
 
 /**
  * {@link HttpServlet} for Global Transaction.
@@ -36,7 +36,45 @@ import com.google.appengine.repackaged.com.google.common.base.StringUtil;
  */
 public class GlobalTransactionServlet extends HttpServlet {
 
+    /**
+     * The servelt path.
+     */
+    public static final String SERVLET_PATH = "/slim3/gtx";
+
+    /**
+     * The name of "command" parameter.
+     */
+    public static final String COMMAND_NAME = "command";
+
+    /**
+     * The name of "key" parameter.
+     */
+    public static final String KEY_NAME = "key";
+
+    /**
+     * The name of "version" parameter.
+     */
+    public static final String VERSION_NAME = "version";
+
+    /**
+     * The name of "rollforward" command.
+     */
+    public static final String ROLLFORWARD_COMMAND = "rollforward";
+
+    /**
+     * The name of "rollback" command.
+     */
+    public static final String ROLLBACK_COMMAND = "rollback";
+
+    /**
+     * The name of "cleanup" command.
+     */
+    public static final String CLEANUP_COMMAND = "cleanup";
+
     private static final long serialVersionUID = 1L;
+
+    private static final Logger logger =
+        Logger.getLogger(GlobalTransactionServlet.class.getName());
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -64,38 +102,38 @@ public class GlobalTransactionServlet extends HttpServlet {
      */
     protected void process(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        String path = RequestUtil.getPath(req);
-        String[] args = StringUtil.split(path, "/");
-        if (args.length < 2
-            || !args[0].equals("slim3")
-            || !args[1].equals("gtx")) {
-            throw new ServletException("The path("
-                + path
-                + ") must start with /slim3/gtx/.");
-        }
-        if (args[2].equalsIgnoreCase("rollforward")) {
-            if (args.length != 5) {
-                throw new ServletException("The path("
-                    + path
-                    + ") must be /slim3/gtx/rollforward/encodedKey/version.");
+        String command = req.getParameter(COMMAND_NAME);
+        logger.info("The command of GlobalTransactionServlet is "
+            + command
+            + ".");
+        if (ROLLFORWARD_COMMAND.equalsIgnoreCase(command)) {
+            String keyStr = req.getParameter(KEY_NAME);
+            if (StringUtil.isEmpty(keyStr)) {
+                throw new ServletException(
+                    "The key parameter must not be null.");
             }
-            Key key = Datastore.stringToKey(args[3]);
-            GlobalTransaction.rollForward(key, Long.valueOf(args[4]));
-        } else if (args[2].equalsIgnoreCase("rollback")) {
-            if (args.length != 4) {
-                throw new ServletException("The path("
-                    + path
-                    + ") must be /slim3/gtx/rollback/encodedKey.");
+            String versionStr = req.getParameter(VERSION_NAME);
+            if (StringUtil.isEmpty(versionStr)) {
+                throw new ServletException(
+                    "The version parameter must not be null.");
             }
-            Key key = Datastore.stringToKey(args[3]);
+            Key key = Datastore.stringToKey(keyStr);
+            long version = Long.valueOf(versionStr);
+            GlobalTransaction.rollForward(key, version);
+        } else if (ROLLBACK_COMMAND.equalsIgnoreCase(command)) {
+            String keyStr = req.getParameter(KEY_NAME);
+            if (StringUtil.isEmpty(keyStr)) {
+                throw new ServletException(
+                    "The key parameter must not be null.");
+            }
+            Key key = Datastore.stringToKey(keyStr);
             GlobalTransaction.rollback(key);
-        } else if (args[2].equalsIgnoreCase("cleanup")) {
-            if (args.length != 3) {
-                throw new ServletException("The path("
-                    + path
-                    + ") must be /slim3/gtx/cleanup.");
-            }
+        } else if (CLEANUP_COMMAND.equalsIgnoreCase(command)) {
             GlobalTransaction.cleanUp();
+        } else {
+            throw new ServletException("The command("
+                + command
+                + ") is unknown.");
         }
     }
 }

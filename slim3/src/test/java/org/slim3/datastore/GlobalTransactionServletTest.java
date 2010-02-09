@@ -43,11 +43,17 @@ public class GlobalTransactionServletTest extends ServletTestCase {
      */
     @Test
     public void rollForward() throws Exception {
+        String encodedKey = Datastore.keyToString(gtx.globalTransactionKey);
         gtx.put(new Entity("Hoge"));
         gtx.commitAsync();
-        tester.request.setServletPath("/slim3/gtx/rollforward/"
-            + Datastore.keyToString(gtx.globalTransactionKey)
-            + "/1");
+        tester.request.setServletPath(GlobalTransactionServlet.SERVLET_PATH);
+        tester.request.setParameter(
+            GlobalTransactionServlet.COMMAND_NAME,
+            GlobalTransactionServlet.ROLLFORWARD_COMMAND);
+        tester.request.setParameter(
+            GlobalTransactionServlet.KEY_NAME,
+            encodedKey);
+        tester.request.setParameter(GlobalTransactionServlet.VERSION_NAME, "1");
         GlobalTransactionServlet servlet = new GlobalTransactionServlet();
         servlet.process(tester.request, tester.response);
         assertThat(Datastore.query("Hoge").count(), is(1));
@@ -61,11 +67,17 @@ public class GlobalTransactionServletTest extends ServletTestCase {
      */
     @Test
     public void rollback() throws Exception {
+        String encodedKey = Datastore.keyToString(gtx.globalTransactionKey);
         gtx.put(new Entity("Hoge"));
         gtx.put(new Entity("Hoge"));
         gtx.rollbackAsync();
-        tester.request.setServletPath("/slim3/gtx/rollback/"
-            + Datastore.keyToString(gtx.globalTransactionKey));
+        tester.request.setServletPath(GlobalTransactionServlet.SERVLET_PATH);
+        tester.request.setParameter(
+            GlobalTransactionServlet.COMMAND_NAME,
+            GlobalTransactionServlet.ROLLBACK_COMMAND);
+        tester.request.setParameter(
+            GlobalTransactionServlet.KEY_NAME,
+            encodedKey);
         GlobalTransactionServlet servlet = new GlobalTransactionServlet();
         servlet.process(tester.request, tester.response);
         assertThat(Datastore.query("Hoge").count(), is(0));
@@ -83,13 +95,25 @@ public class GlobalTransactionServletTest extends ServletTestCase {
         gtx.put(new Entity("Hoge"));
         Journal.put(gtx.journalMap.values());
         gtx.commitGlobalTransactionInternally();
-        tester.request.setServletPath("/slim3/gtx/cleanup");
+        tester.request.setServletPath(GlobalTransactionServlet.SERVLET_PATH);
+        tester.request.setParameter(
+            GlobalTransactionServlet.COMMAND_NAME,
+            GlobalTransactionServlet.CLEANUP_COMMAND);
         GlobalTransactionServlet servlet = new GlobalTransactionServlet();
         servlet.process(tester.request, tester.response);
         assertThat(tester.tasks.size(), is(1));
         TaskQueueAddRequest task = tester.tasks.get(0);
-        assertThat(task.getUrl(), is(GlobalTransaction.ROLLFORWARD_PATH
+        assertThat(task.getQueueName(), is(GlobalTransaction.QUEUE_NAME));
+        assertThat(task.getUrl(), is(GlobalTransactionServlet.SERVLET_PATH));
+        assertThat(task.getBody(), is(GlobalTransactionServlet.COMMAND_NAME
+            + "="
+            + GlobalTransactionServlet.ROLLFORWARD_COMMAND
+            + "&"
+            + GlobalTransactionServlet.KEY_NAME
+            + "="
             + encodedKey
-            + "/1"));
+            + "&"
+            + GlobalTransactionServlet.VERSION_NAME
+            + "=1"));
     }
 }

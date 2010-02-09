@@ -60,16 +60,6 @@ public class GlobalTransaction {
     protected static final String QUEUE_NAME = "slim3-gtx-queue";
 
     /**
-     * The path for rolling forward.
-     */
-    protected static final String ROLLFORWARD_PATH = "/slim3/gtx/rollforward/";
-
-    /**
-     * The path for rolling back
-     */
-    protected static final String ROLLBACK_PATH = "/slim3/gtx/rollback/";
-
-    /**
      * The maximum retry count.
      */
     protected static final int MAX_RETRY = 10;
@@ -323,10 +313,14 @@ public class GlobalTransaction {
         }
         String encodedKey = Datastore.keyToString(globalTransactionKey);
         Queue queue = QueueFactory.getQueue(QUEUE_NAME);
-        queue.add(tx, TaskOptions.Builder.url(ROLLFORWARD_PATH
-            + encodedKey
-            + "/"
-            + version));
+        queue.add(tx, TaskOptions.Builder.url(
+            GlobalTransactionServlet.SERVLET_PATH).param(
+            GlobalTransactionServlet.COMMAND_NAME,
+            GlobalTransactionServlet.ROLLFORWARD_COMMAND).param(
+            GlobalTransactionServlet.KEY_NAME,
+            encodedKey).param(
+            GlobalTransactionServlet.VERSION_NAME,
+            String.valueOf(version)));
     }
 
     /**
@@ -345,7 +339,12 @@ public class GlobalTransaction {
         }
         String encodedKey = Datastore.keyToString(globalTransactionKey);
         Queue queue = QueueFactory.getQueue(QUEUE_NAME);
-        queue.add(TaskOptions.Builder.url(ROLLBACK_PATH + encodedKey));
+        queue.add(TaskOptions.Builder
+            .url(GlobalTransactionServlet.SERVLET_PATH)
+            .param(
+                GlobalTransactionServlet.COMMAND_NAME,
+                GlobalTransactionServlet.ROLLBACK_COMMAND)
+            .param(GlobalTransactionServlet.KEY_NAME, encodedKey));
     }
 
     /**

@@ -482,9 +482,18 @@ public class GlobalTransactionTest extends AppEngineTestCase {
             .getProperty(GlobalTransaction.VERSION_PROPERTY), is(1L));
         assertThat(tester.tasks.size(), is(1));
         TaskQueueAddRequest task = tester.tasks.get(0);
-        assertThat(task.getUrl(), is(GlobalTransaction.ROLLFORWARD_PATH
+        assertThat(task.getQueueName(), is(GlobalTransaction.QUEUE_NAME));
+        assertThat(task.getUrl(), is(GlobalTransactionServlet.SERVLET_PATH));
+        assertThat(task.getBody(), is(GlobalTransactionServlet.COMMAND_NAME
+            + "="
+            + GlobalTransactionServlet.ROLLFORWARD_COMMAND
+            + "&"
+            + GlobalTransactionServlet.KEY_NAME
+            + "="
             + encodedKey
-            + "/1"));
+            + "&"
+            + GlobalTransactionServlet.VERSION_NAME
+            + "=1"));
         assertThat(gtx.isActive(), is(false));
         assertThat(GlobalTransaction.getActiveTransactions().size(), is(0));
     }
@@ -503,9 +512,18 @@ public class GlobalTransactionTest extends AppEngineTestCase {
             .getProperty(GlobalTransaction.VERSION_PROPERTY), is(1L));
         assertThat(tester.tasks.size(), is(1));
         TaskQueueAddRequest task = tester.tasks.get(0);
-        assertThat(task.getUrl(), is(GlobalTransaction.ROLLFORWARD_PATH
+        assertThat(task.getQueueName(), is(GlobalTransaction.QUEUE_NAME));
+        assertThat(task.getUrl(), is(GlobalTransactionServlet.SERVLET_PATH));
+        assertThat(task.getBody(), is(GlobalTransactionServlet.COMMAND_NAME
+            + "="
+            + GlobalTransactionServlet.ROLLFORWARD_COMMAND
+            + "&"
+            + GlobalTransactionServlet.KEY_NAME
+            + "="
             + encodedKey
-            + "/1"));
+            + "&"
+            + GlobalTransactionServlet.VERSION_NAME
+            + "=1"));
         assertThat(gtx.isActive(), is(false));
         assertThat(GlobalTransaction.getActiveTransactions().size(), is(0));
         assertThat(Datastore.query(Journal.KIND).count(), is(1));
@@ -525,9 +543,18 @@ public class GlobalTransactionTest extends AppEngineTestCase {
             .getProperty(GlobalTransaction.VERSION_PROPERTY), is(1L));
         assertThat(tester.tasks.size(), is(1));
         TaskQueueAddRequest task = tester.tasks.get(0);
-        assertThat(task.getUrl(), is(GlobalTransaction.ROLLFORWARD_PATH
+        assertThat(task.getQueueName(), is(GlobalTransaction.QUEUE_NAME));
+        assertThat(task.getUrl(), is(GlobalTransactionServlet.SERVLET_PATH));
+        assertThat(task.getBody(), is(GlobalTransactionServlet.COMMAND_NAME
+            + "="
+            + GlobalTransactionServlet.ROLLFORWARD_COMMAND
+            + "&"
+            + GlobalTransactionServlet.KEY_NAME
+            + "="
             + encodedKey
-            + "/1"));
+            + "&"
+            + GlobalTransactionServlet.VERSION_NAME
+            + "=1"));
         assertThat(gtx.isActive(), is(false));
         assertThat(GlobalTransaction.getActiveTransactions().size(), is(0));
         assertThat(Datastore.query(Journal.KIND).count(), is(1));
@@ -626,7 +653,14 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(GlobalTransaction.getActiveTransactions().size(), is(0));
         assertThat(tester.tasks.size(), is(1));
         TaskQueueAddRequest task = tester.tasks.get(0);
-        assertThat(task.getUrl(), is(GlobalTransaction.ROLLBACK_PATH
+        assertThat(task.getQueueName(), is(GlobalTransaction.QUEUE_NAME));
+        assertThat(task.getUrl(), is(GlobalTransactionServlet.SERVLET_PATH));
+        assertThat(task.getBody(), is(GlobalTransactionServlet.COMMAND_NAME
+            + "="
+            + GlobalTransactionServlet.ROLLBACK_COMMAND
+            + "&"
+            + GlobalTransactionServlet.KEY_NAME
+            + "="
             + encodedKey));
     }
 
@@ -643,7 +677,14 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(GlobalTransaction.getActiveTransactions().size(), is(0));
         assertThat(tester.tasks.size(), is(1));
         TaskQueueAddRequest task = tester.tasks.get(0);
-        assertThat(task.getUrl(), is(GlobalTransaction.ROLLBACK_PATH
+        assertThat(task.getQueueName(), is(GlobalTransaction.QUEUE_NAME));
+        assertThat(task.getUrl(), is(GlobalTransactionServlet.SERVLET_PATH));
+        assertThat(task.getBody(), is(GlobalTransactionServlet.COMMAND_NAME
+            + "="
+            + GlobalTransactionServlet.ROLLBACK_COMMAND
+            + "&"
+            + GlobalTransactionServlet.KEY_NAME
+            + "="
             + encodedKey));
     }
 
@@ -659,9 +700,18 @@ public class GlobalTransactionTest extends AppEngineTestCase {
             1);
         assertThat(tester.tasks.size(), is(1));
         TaskQueueAddRequest task = tester.tasks.get(0);
-        assertThat(task.getUrl(), is(GlobalTransaction.ROLLFORWARD_PATH
+        assertThat(task.getQueueName(), is(GlobalTransaction.QUEUE_NAME));
+        assertThat(task.getUrl(), is(GlobalTransactionServlet.SERVLET_PATH));
+        assertThat(task.getBody(), is(GlobalTransactionServlet.COMMAND_NAME
+            + "="
+            + GlobalTransactionServlet.ROLLFORWARD_COMMAND
+            + "&"
+            + GlobalTransactionServlet.KEY_NAME
+            + "="
             + encodedKey
-            + "/1"));
+            + "&"
+            + GlobalTransactionServlet.VERSION_NAME
+            + "=1"));
     }
 
     /**
@@ -673,7 +723,14 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         GlobalTransaction.submitRollbackJob(gtx.globalTransactionKey);
         assertThat(tester.tasks.size(), is(1));
         TaskQueueAddRequest task = tester.tasks.get(0);
-        assertThat(task.getUrl(), is(GlobalTransaction.ROLLBACK_PATH
+        assertThat(task.getQueueName(), is(GlobalTransaction.QUEUE_NAME));
+        assertThat(task.getUrl(), is(GlobalTransactionServlet.SERVLET_PATH));
+        assertThat(task.getBody(), is(GlobalTransactionServlet.COMMAND_NAME
+            + "="
+            + GlobalTransactionServlet.ROLLBACK_COMMAND
+            + "&"
+            + GlobalTransactionServlet.KEY_NAME
+            + "="
             + encodedKey));
     }
 
@@ -763,8 +820,17 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         GlobalTransaction.cleanUp();
         assertThat(tester.tasks.size(), is(1));
         TaskQueueAddRequest task = tester.tasks.get(0);
-        assertThat(task.getUrl(), is(GlobalTransaction.ROLLFORWARD_PATH
+        assertThat(task.getQueueName(), is(GlobalTransaction.QUEUE_NAME));
+        assertThat(task.getUrl(), is(GlobalTransactionServlet.SERVLET_PATH));
+        assertThat(task.getBody(), is(GlobalTransactionServlet.COMMAND_NAME
+            + "="
+            + GlobalTransactionServlet.ROLLFORWARD_COMMAND
+            + "&"
+            + GlobalTransactionServlet.KEY_NAME
+            + "="
             + encodedKey
-            + "/1"));
+            + "&"
+            + GlobalTransactionServlet.VERSION_NAME
+            + "=1"));
     }
 }

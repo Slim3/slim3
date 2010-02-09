@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.slim3.util.ListUtil;
 
@@ -64,11 +62,6 @@ public class Lock {
      * The maximum size of locks.
      */
     protected static final int MAX_SIZE_LOCKS = 100;
-
-    /**
-     * The logger.
-     */
-    private static final Logger logger = Logger.getLogger(Lock.class.getName());
 
     /**
      * The key.
@@ -304,9 +297,6 @@ public class Lock {
             }
             Datastore.put(tx, toEntity());
             Datastore.commit(tx);
-        } catch (Throwable cause) {
-            logger.log(Level.WARNING, cause.getMessage(), cause);
-            throw createConcurrentModificationException();
         } finally {
             if (tx.isActive()) {
                 Datastore.rollback(tx);
