@@ -400,15 +400,17 @@ public class GlobalTransaction {
      * other locks that this transaction has are released automatically.
      * 
      * @param key
-     *            a key
+     *            the key
      * @return an entity
      * @throws NullPointerException
      *             if the key parameter is null
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
      * @throws ConcurrentModificationException
      *             if locking the entity specified by the key failed
      */
     public Entity get(Key key) throws NullPointerException,
-            ConcurrentModificationException {
+            EntityNotFoundRuntimeException, ConcurrentModificationException {
         Key rootKey = DatastoreUtil.getRoot(key);
         lock(rootKey);
         return Datastore.getWithoutTx(key);
@@ -423,15 +425,17 @@ public class GlobalTransaction {
      * @param modelClass
      *            the model class
      * @param key
-     *            a key
+     *            the key
      * @return a model
      * @throws NullPointerException
      *             if the key parameter is null
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
      * @throws ConcurrentModificationException
      *             if locking the entity specified by the key failed
      */
     public <M> M get(Class<M> modelClass, Key key) throws NullPointerException,
-            ConcurrentModificationException {
+            EntityNotFoundRuntimeException, ConcurrentModificationException {
         Key rootKey = DatastoreUtil.getRoot(key);
         lock(rootKey);
         return Datastore.getWithoutTx(modelClass, key);
@@ -446,18 +450,145 @@ public class GlobalTransaction {
      * @param modelMeta
      *            the meta data of model
      * @param key
-     *            a key
+     *            the key
+     * @return a model
+     * @throws NullPointerException
+     *             if the key parameter is null
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     * @throws ConcurrentModificationException
+     *             if locking the entity specified by the key failed
+     */
+    public <M> M get(ModelMeta<M> modelMeta, Key key)
+            throws NullPointerException, EntityNotFoundRuntimeException,
+            ConcurrentModificationException {
+        Key rootKey = DatastoreUtil.getRoot(key);
+        lock(rootKey);
+        return Datastore.getWithoutTx(modelMeta, key);
+    }
+
+    /**
+     * Gets a model specified by the key. If locking the entity failed, the
+     * other locks that this transaction has are released automatically.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param key
+     *            the key
+     * @param version
+     *            the version
+     * @return a model
+     * @throws NullPointerException
+     *             if the key parameter is null
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     * @throws ConcurrentModificationException
+     *             if locking the entity specified by the key failed
+     */
+    public <M> M get(Class<M> modelClass, Key key, long version)
+            throws NullPointerException, EntityNotFoundRuntimeException,
+            ConcurrentModificationException {
+        Key rootKey = DatastoreUtil.getRoot(key);
+        lock(rootKey);
+        return Datastore.get(null, modelClass, key, version);
+    }
+
+    /**
+     * Gets a model specified by the key. If locking the entity failed, the
+     * other locks that this transaction has are released automatically.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param key
+     *            the key
+     * @param version
+     *            the version
+     * @return a model
+     * @throws NullPointerException
+     *             if the key parameter is null
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     * @throws ConcurrentModificationException
+     *             if locking the entity specified by the key failed
+     */
+    public <M> M get(ModelMeta<M> modelMeta, Key key, long version)
+            throws NullPointerException, EntityNotFoundRuntimeException,
+            ConcurrentModificationException {
+        Key rootKey = DatastoreUtil.getRoot(key);
+        lock(rootKey);
+        return Datastore.get(null, modelMeta, key, version);
+    }
+
+    /**
+     * Gets an entity specified by the key. Returns null if no entity is found.
+     * If locking the entity failed, the other locks that this transaction has
+     * are released automatically.
+     * 
+     * @param key
+     *            the key
+     * @return an entity
+     * @throws NullPointerException
+     *             if the key parameter is null
+     * @throws ConcurrentModificationException
+     *             if locking the entity specified by the key failed
+     */
+    public Entity getOrNull(Key key) throws NullPointerException,
+            ConcurrentModificationException {
+        Key rootKey = DatastoreUtil.getRoot(key);
+        lock(rootKey);
+        return Datastore.getOrNullWithoutTx(key);
+    }
+
+    /**
+     * Gets a model specified by the key. Returns null if no entity is found. If
+     * locking the entity failed, the other locks that this transaction has are
+     * released automatically.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param key
+     *            the key
      * @return a model
      * @throws NullPointerException
      *             if the key parameter is null
      * @throws ConcurrentModificationException
      *             if locking the entity specified by the key failed
      */
-    public <M> M get(ModelMeta<M> modelMeta, Key key)
+    public <M> M getOrNull(Class<M> modelClass, Key key)
             throws NullPointerException, ConcurrentModificationException {
         Key rootKey = DatastoreUtil.getRoot(key);
         lock(rootKey);
-        return Datastore.getWithoutTx(modelMeta, key);
+        return Datastore.getOrNullWithoutTx(modelClass, key);
+    }
+
+    /**
+     * Gets a model specified by the key. Returns null if no entity is found. If
+     * locking the entity failed, the other locks that this transaction has are
+     * released automatically.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param key
+     *            the key
+     * @return a model
+     * @throws NullPointerException
+     *             if the key parameter is null
+     * @throws ConcurrentModificationException
+     *             if locking the entity specified by the key failed
+     */
+    public <M> M getOrNull(ModelMeta<M> modelMeta, Key key)
+            throws NullPointerException, ConcurrentModificationException {
+        Key rootKey = DatastoreUtil.getRoot(key);
+        lock(rootKey);
+        return Datastore.getOrNullWithoutTx(modelMeta, key);
     }
 
     /**

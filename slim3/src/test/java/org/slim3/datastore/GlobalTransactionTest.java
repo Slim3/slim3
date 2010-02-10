@@ -198,6 +198,60 @@ public class GlobalTransactionTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getEntityUsingModelClassAndVersion() throws Exception {
+        Hoge hoge = new Hoge();
+        Datastore.put(hoge);
+        assertThat(gtx.get(Hoge.class, hoge.getKey(), 1), is(notNullValue()));
+        assertThat(gtx.lockMap.get(hoge.getKey()), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getEntityUsingModelMetaAndVersion() throws Exception {
+        Hoge hoge = new Hoge();
+        Datastore.put(hoge);
+        assertThat(
+            gtx.get(HogeMeta.get(), hoge.getKey(), 1),
+            is(notNullValue()));
+        assertThat(gtx.lockMap.get(hoge.getKey()), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getEntityOrNull() throws Exception {
+        Key key = Datastore.createKey("Hoge", 1);
+        assertThat(gtx.getOrNull(key), is(nullValue()));
+        assertThat(gtx.lockMap.get(key), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getEntityOrNulUsingModelClass() throws Exception {
+        Key key = Datastore.createKey("Hoge", 1);
+        assertThat(gtx.getOrNull(Hoge.class, key), is(nullValue()));
+        assertThat(gtx.lockMap.get(key), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getEntityOrNullUsingModelMeta() throws Exception {
+        Key key = Datastore.createKey("Hoge", 1);
+        assertThat(gtx.getOrNull(HogeMeta.get(), key), is(nullValue()));
+        assertThat(gtx.lockMap.get(key), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getEntities() throws Exception {
         Key key = Datastore.createKey("Hoge", 1);
         Datastore.put(new Entity(key));
