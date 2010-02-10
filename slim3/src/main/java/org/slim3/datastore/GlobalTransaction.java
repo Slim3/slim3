@@ -1010,10 +1010,16 @@ public class GlobalTransaction {
      */
     public void rollback() {
         assertActive();
-        if (isLocalTransaction()) {
-            rollbackLocalTransaction();
-        } else {
-            rollbackGlobalTransaction();
+        try {
+            if (isLocalTransaction()) {
+                rollbackLocalTransaction();
+            } else {
+                rollbackGlobalTransaction();
+            }
+        } catch (DeadlineExceededException e) {
+            logger
+                .info("This rollback process will be retried, because a DeadlineExceededException occurred.");
+            submitRollbackJob(globalTransactionKey);
         }
     }
 
@@ -1063,10 +1069,10 @@ public class GlobalTransaction {
      * Unlocks entities.
      */
     protected void unlock() {
-        active = false;
-        activeTransactions.get().remove(this);
         Lock.delete(lockMap.values());
         lockMap.clear();
+        activeTransactions.get().remove(this);
+        active = false;
     }
 
     /**
@@ -1090,8 +1096,6 @@ public class GlobalTransaction {
             if (tx.isActive()) {
                 Datastore.rollback(tx);
             }
-            active = false;
-            activeTransactions.get().remove(this);
             unlock();
         }
     }
@@ -1111,14 +1115,11 @@ public class GlobalTransaction {
      * Commits this global transaction.
      */
     protected void commitGlobalTransactionInternally() {
-        try {
-            Entity entity = new Entity(globalTransactionKey);
-            entity.setUnindexedProperty(VERSION_PROPERTY, 1);
-            Datastore.putWithoutTx(entity);
-        } finally {
-            active = false;
-            activeTransactions.get().remove(this);
-        }
+        Entity entity = new Entity(globalTransactionKey);
+        entity.setUnindexedProperty(VERSION_PROPERTY, 1);
+        Datastore.putWithoutTx(entity);
+        activeTransactions.get().remove(this);
+        active = false;
     }
 
     /**
@@ -1142,12 +1143,12 @@ public class GlobalTransaction {
             Datastore.put(tx, entity);
             submitRollForwardJob(tx, globalTransactionKey, 1);
             Datastore.commit(tx);
+            activeTransactions.get().remove(this);
+            active = false;
         } finally {
             if (tx.isActive()) {
                 Datastore.rollback(tx);
             }
-            active = false;
-            activeTransactions.get().remove(this);
         }
     }
 
@@ -1155,8 +1156,6 @@ public class GlobalTransaction {
      * Rolls back this transaction as local transaction.
      */
     protected void rollbackLocalTransaction() {
-        active = false;
-        activeTransactions.get().remove(this);
         unlock();
     }
 
@@ -1164,8 +1163,6 @@ public class GlobalTransaction {
      * Rolls back this transaction as global transaction.
      */
     protected void rollbackGlobalTransaction() {
-        active = false;
-        activeTransactions.get().remove(this);
         Journal.delete(journalMap.values());
         unlock();
     }
@@ -1174,8 +1171,8 @@ public class GlobalTransaction {
      * Rolls back this transaction as global transaction asynchronously.
      */
     protected void rollbackAsyncGlobalTransaction() {
-        active = false;
-        activeTransactions.get().remove(this);
         submitRollbackJob(globalTransactionKey);
+        activeTransactions.get().remove(this);
+        active = false;
     }
 }
