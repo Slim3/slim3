@@ -1018,7 +1018,7 @@ public class GlobalTransaction {
             }
         } catch (DeadlineExceededException e) {
             logger
-                .info("This rollback process will be retried, because a DeadlineExceededException occurred.");
+                .info("This rollback process will be executed asynchronously, because a DeadlineExceededException occurred.");
             submitRollbackJob(globalTransactionKey);
         }
     }
@@ -1106,9 +1106,15 @@ public class GlobalTransaction {
     protected void commitGlobalTransaction() {
         Journal.put(journalMap.values());
         commitGlobalTransactionInternally();
-        Journal.applyWithinGlobalTransaction(journalMap.values());
-        unlock();
-        Datastore.deleteWithoutTx(globalTransactionKey);
+        try {
+            Journal.applyWithinGlobalTransaction(journalMap.values());
+            unlock();
+            Datastore.deleteWithoutTx(globalTransactionKey);
+        } catch (DeadlineExceededException e) {
+            logger
+                .info("This roll-forward process will be executed asynchronously, because a DeadlineExceededException occurred.");
+            submitRollForwardJob(null, globalTransactionKey, 1);
+        }
     }
 
     /**
