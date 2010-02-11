@@ -18,7 +18,9 @@ package org.slim3.tester;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -71,6 +73,12 @@ public class AppEngineTester implements Delegate<Environment> {
      */
     protected static final String API_PROXY_LOCAL_IMPL_CLASS_NAME =
         "com.google.appengine.tools.development.ApiProxyLocalImpl";
+    /**
+     * The name of LocalServerEnvironment class.
+     */
+    protected static final String LOCAL_SERVER_ENVIRONMENT_CLASS_NAME =
+        "com.google.appengine.tools.development.LocalServerEnvironment";
+
     /**
      * The name of LocalDatastoreService class.
      */
@@ -300,12 +308,31 @@ public class AppEngineTester implements Delegate<Environment> {
         try {
             Class<?> apiProxyLocalImplClass =
                 loader.loadClass(API_PROXY_LOCAL_IMPL_CLASS_NAME);
+            Class<?> localServerEnvironmentClass =
+                loader.loadClass(LOCAL_SERVER_ENVIRONMENT_CLASS_NAME);
             Constructor<?> con =
-                apiProxyLocalImplClass.getDeclaredConstructor(File.class);
+                apiProxyLocalImplClass
+                    .getDeclaredConstructor(localServerEnvironmentClass);
             con.setAccessible(true);
+            InvocationHandler ih = new InvocationHandler() {
+                public Object invoke(Object proxy, Method method, Object[] args)
+                        throws Throwable {
+                    if (method.getName().equals("getAppDir")) {
+                        return new File("build/test-classes");
+                    }
+                    if (method.getName().equals("getPort")) {
+                        return 0;
+                    }
+                    return null;
+                }
+            };
+            Object localServerEnvironment =
+                Proxy.newProxyInstance(
+                    loader,
+                    new Class<?>[] { localServerEnvironmentClass },
+                    ih);
             apiProxyLocalImpl =
-                (Delegate<Environment>) con.newInstance(new File(
-                    "build/test-classes"));
+                (Delegate<Environment>) con.newInstance(localServerEnvironment);
         } catch (Throwable cause) {
             ThrowableUtil.wrapAndThrow(cause);
         }
