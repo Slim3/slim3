@@ -12,22 +12,19 @@ public class IndexController extends Controller {
     @Override
     public Navigation run() {
         Datastore.delete(Datastore.query("Hoge").asKeyList());
-        int count = 100;
-
-        try {
-            Thread.sleep(20000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        int count = 10;
         long start = System.currentTimeMillis();
         for (int i = 0; i < count; i++) {
             GlobalTransaction gtx = Datastore.beginGlobalTransaction();
             gtx.put(new Entity("Hoge"));
             gtx.put(new Entity("Hoge"));
+            gtx.put(new Entity("Hoge"));
+            gtx.put(new Entity("Hoge"));
             gtx.commit();
         }
-        System.out.println("GlobalTransaction:"
-            + (System.currentTimeMillis() - start));
+        long time = System.currentTimeMillis() - start;
+        System.out.println("GlobalTransaction:" + time);
+        requestScope("time", time);
         System.out.println("count:" + Datastore.query("Hoge").count());
         Datastore.delete(Datastore.query("Hoge").asKeyList());
         return forward("index.jsp");
