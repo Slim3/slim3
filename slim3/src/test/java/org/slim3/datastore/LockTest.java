@@ -226,10 +226,12 @@ public class LockTest extends AppEngineTestCase {
     @Test
     public void lockWhenOtherIsNotTimeout() throws Exception {
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
+        Key globalTransactionKey2 =
+            Datastore.allocateId(GlobalTransaction.KIND);
         Key rootKey = Datastore.createKey("Hoge", 1);
         long timestamp = System.currentTimeMillis();
         Lock lock = new Lock(globalTransactionKey, rootKey, timestamp);
-        Lock other = new Lock(globalTransactionKey, rootKey, timestamp);
+        Lock other = new Lock(globalTransactionKey2, rootKey, timestamp);
         other.lock();
         try {
             lock.lock();
@@ -278,10 +280,25 @@ public class LockTest extends AppEngineTestCase {
     public void isLockByNoTimeout() throws Exception {
         Key rootKey = Datastore.createKey("Hoge", 1);
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
+        Key globalTransactionKey2 =
+            Datastore.allocateId(GlobalTransaction.KIND);
+        long timestamp = System.currentTimeMillis();
+        Lock lock = new Lock(globalTransactionKey, rootKey, timestamp);
+        Lock other = new Lock(globalTransactionKey2, rootKey, timestamp);
+        assertThat(lock.isLockedBy(other), is(true));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void isLockByForSameGlobalTransactionKey() throws Exception {
+        Key rootKey = Datastore.createKey("Hoge", 1);
+        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
         long timestamp = System.currentTimeMillis();
         Lock lock = new Lock(globalTransactionKey, rootKey, timestamp);
         Lock other = new Lock(globalTransactionKey, rootKey, timestamp);
-        assertThat(lock.isLockedBy(other), is(true));
+        assertThat(lock.isLockedBy(other), is(false));
     }
 
     /**
@@ -307,13 +324,15 @@ public class LockTest extends AppEngineTestCase {
     public void isLockByOverForTimeoutAndGtxExists() throws Exception {
         Key rootKey = Datastore.createKey("Hoge", 1);
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
+        Key globalTransactionKey2 =
+            Datastore.allocateId(GlobalTransaction.KIND);
         long timestamp = System.currentTimeMillis();
         Lock lock = new Lock(globalTransactionKey, rootKey, timestamp);
         Lock other =
-            new Lock(globalTransactionKey, rootKey, timestamp
+            new Lock(globalTransactionKey2, rootKey, timestamp
                 - Lock.TIMEOUT
                 - 1);
-        Entity entity = new Entity(globalTransactionKey);
+        Entity entity = new Entity(globalTransactionKey2);
         Datastore.put(entity);
         assertThat(lock.isLockedBy(other), is(true));
     }

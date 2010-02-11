@@ -141,20 +141,7 @@ public final class DatastoreUtil {
             throw new IllegalArgumentException(
                 "The transaction must be active.");
         }
-        DatastoreTimeoutException dte = null;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                tx.commit();
-                return;
-            } catch (DatastoreTimeoutException e) {
-                dte = e;
-                logger.info("This message is a just INFORMATION. Retry["
-                    + i
-                    + "]:"
-                    + e);
-            }
-        }
-        throw dte;
+        tx.commit();
     }
 
     /**
@@ -176,20 +163,7 @@ public final class DatastoreUtil {
             throw new IllegalArgumentException(
                 "The transaction must be active.");
         }
-        DatastoreTimeoutException dte = null;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                tx.rollback();
-                return;
-            } catch (DatastoreTimeoutException e) {
-                dte = e;
-                logger.info("This message is a just INFORMATION. Retry["
-                    + i
-                    + "]:"
-                    + e);
-            }
-        }
-        throw dte;
+        tx.rollback();
     }
 
     /**

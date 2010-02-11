@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.slim3.util.ListUtil;
 
+import com.google.appengine.api.datastore.DatastoreTimeoutException;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -286,20 +287,32 @@ public class Lock {
      *             if locking the entity failed
      */
     public void lock() throws ConcurrentModificationException {
-        Transaction tx = Datastore.beginTransaction();
-        try {
-            Lock other = getOrNull(tx, key);
-            if (other != null) {
-                if (isLockedBy(other)) {
-                    throw createConcurrentModificationException();
+        for (int i = 0; i < GlobalTransaction.MAX_RETRY; i++) {
+            Transaction tx = Datastore.beginTransaction();
+            try {
+                Lock other = getOrNull(tx, key);
+                if (other != null) {
+                    if (isLockedBy(other)) {
+                        throw createConcurrentModificationException();
+                    }
+                    Journal.delete(
+                        tx,
+                        other.rootKey,
+                        other.globalTransactionKey);
                 }
-                Journal.delete(tx, other.rootKey, other.globalTransactionKey);
-            }
-            Datastore.put(tx, toEntity());
-            Datastore.commit(tx);
-        } finally {
-            if (tx.isActive()) {
-                Datastore.rollback(tx);
+                Datastore.put(tx, toEntity());
+                Datastore.commit(tx);
+            } catch (DatastoreTimeoutException e) {
+                Lock lock = getOrNull(null, key);
+                if (lock != null
+                    && lock.globalTransactionKey.equals(globalTransactionKey)) {
+                    return;
+                }
+                continue;
+            } finally {
+                if (tx.isActive()) {
+                    Datastore.rollback(tx);
+                }
             }
         }
     }
@@ -317,6 +330,9 @@ public class Lock {
         if (other == null) {
             throw new NullPointerException(
                 "The other parameter must not be null.");
+        }
+        if (globalTransactionKey.equals(other.globalTransactionKey)) {
+            return false;
         }
         if (timestamp <= other.getTimestamp() + TIMEOUT) {
             return true;
