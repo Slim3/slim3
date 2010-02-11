@@ -16,7 +16,6 @@
 package org.slim3.datastore;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -73,9 +72,6 @@ public class GlobalTransactionServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Logger logger =
-        Logger.getLogger(GlobalTransactionServlet.class.getName());
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
@@ -103,9 +99,6 @@ public class GlobalTransactionServlet extends HttpServlet {
     protected void process(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         String command = req.getParameter(COMMAND_NAME);
-        logger.info("The command of GlobalTransactionServlet is "
-            + command
-            + ".");
         if (ROLLFORWARD_COMMAND.equalsIgnoreCase(command)) {
             String keyStr = req.getParameter(KEY_NAME);
             if (StringUtil.isEmpty(keyStr)) {
