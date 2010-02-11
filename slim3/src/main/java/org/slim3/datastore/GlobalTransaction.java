@@ -26,6 +26,7 @@ import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.appengine.api.datastore.DatastoreTimeoutException;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Transaction;
@@ -1142,20 +1143,30 @@ public class GlobalTransaction {
      * Commits this global transaction asynchronously.
      */
     protected void commitAsyncGlobalTransactionInternally() {
-        Transaction tx = Datastore.beginTransaction();
-        try {
-            Entity entity = new Entity(globalTransactionKey);
-            entity.setUnindexedProperty(VERSION_PROPERTY, 1);
-            Datastore.put(tx, entity);
-            submitRollForwardJob(tx, globalTransactionKey, 1);
-            Datastore.commit(tx);
-            activeTransactions.get().remove(this);
-            active = false;
-        } finally {
-            if (tx.isActive()) {
-                Datastore.rollback(tx);
+        DatastoreTimeoutException dte = null;
+        for (int i = 0; i < MAX_RETRY; i++) {
+            Transaction tx = Datastore.beginTransaction();
+            try {
+                Entity entity = new Entity(globalTransactionKey);
+                entity.setUnindexedProperty(VERSION_PROPERTY, 1);
+                Datastore.put(tx, entity);
+                submitRollForwardJob(tx, globalTransactionKey, 1);
+                Datastore.commit(tx);
+                activeTransactions.get().remove(this);
+                active = false;
+                return;
+            } catch (DatastoreTimeoutException e) {
+                if (exists(globalTransactionKey)) {
+                    return;
+                }
+                dte = e;
+            } finally {
+                if (tx.isActive()) {
+                    Datastore.rollback(tx);
+                }
             }
         }
+        throw dte;
     }
 
     /**

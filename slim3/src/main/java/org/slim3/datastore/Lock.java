@@ -287,6 +287,7 @@ public class Lock {
      *             if locking the entity failed
      */
     public void lock() throws ConcurrentModificationException {
+        DatastoreTimeoutException dte = null;
         for (int i = 0; i < GlobalTransaction.MAX_RETRY; i++) {
             Transaction tx = Datastore.beginTransaction();
             try {
@@ -302,19 +303,21 @@ public class Lock {
                 }
                 Datastore.put(tx, toEntity());
                 Datastore.commit(tx);
+                return;
             } catch (DatastoreTimeoutException e) {
                 Lock lock = getOrNull(null, key);
                 if (lock != null
                     && lock.globalTransactionKey.equals(globalTransactionKey)) {
                     return;
                 }
-                continue;
+                dte = e;
             } finally {
                 if (tx.isActive()) {
                     Datastore.rollback(tx);
                 }
             }
         }
+        throw dte;
     }
 
     /**
