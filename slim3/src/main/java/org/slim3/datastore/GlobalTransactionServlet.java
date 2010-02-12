@@ -16,6 +16,7 @@
 package org.slim3.datastore;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -72,6 +73,9 @@ public class GlobalTransactionServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
+    private static final Logger logger =
+        Logger.getLogger(GlobalTransactionServlet.class.getName());
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
@@ -102,13 +106,13 @@ public class GlobalTransactionServlet extends HttpServlet {
         if (ROLLFORWARD_COMMAND.equalsIgnoreCase(command)) {
             String keyStr = req.getParameter(KEY_NAME);
             if (StringUtil.isEmpty(keyStr)) {
-                throw new ServletException(
-                    "The key parameter must not be null.");
+                logger.warning("The key parameter must not be null.");
+                return;
             }
             String versionStr = req.getParameter(VERSION_NAME);
             if (StringUtil.isEmpty(versionStr)) {
-                throw new ServletException(
-                    "The version parameter must not be null.");
+                logger.warning("The version parameter must not be null.");
+                return;
             }
             Key key = Datastore.stringToKey(keyStr);
             long version = Long.valueOf(versionStr);
@@ -116,17 +120,15 @@ public class GlobalTransactionServlet extends HttpServlet {
         } else if (ROLLBACK_COMMAND.equalsIgnoreCase(command)) {
             String keyStr = req.getParameter(KEY_NAME);
             if (StringUtil.isEmpty(keyStr)) {
-                throw new ServletException(
-                    "The key parameter must not be null.");
+                logger.warning("The key parameter must not be null.");
+                return;
             }
             Key key = Datastore.stringToKey(keyStr);
             GlobalTransaction.rollback(key);
         } else if (CLEANUP_COMMAND.equalsIgnoreCase(command)) {
             GlobalTransaction.cleanUp();
         } else {
-            throw new ServletException("The command("
-                + command
-                + ") is unknown.");
+            logger.warning("The command(" + command + ") is unknown.");
         }
     }
 }
