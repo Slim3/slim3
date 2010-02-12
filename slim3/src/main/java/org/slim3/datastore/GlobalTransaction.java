@@ -275,7 +275,10 @@ public class GlobalTransaction {
         }
         Transaction tx = Datastore.beginTransaction();
         try {
-            Entity entity = Datastore.get(tx, globalTransactionKey);
+            Entity entity = Datastore.getOrNull(tx, globalTransactionKey);
+            if (entity == null) {
+                return -1;
+            }
             long lastVersion = (Long) entity.getProperty(VERSION_PROPERTY);
             if (version != lastVersion) {
                 return -1;
