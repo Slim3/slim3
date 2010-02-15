@@ -61,7 +61,10 @@ import com.google.storage.onestore.v3.OnestoreEntity.Path.Element;
  */
 public final class DatastoreUtil {
 
-    private static final int MAX_RETRY = 10;
+    /**
+     * The maximum retry count.
+     */
+    public static final int MAX_RETRY = 10;
 
     private static final int KEY_CACHE_SIZE = 50;
 
@@ -1270,6 +1273,131 @@ public final class DatastoreUtil {
             }
         }
         return entities;
+    }
+
+    /**
+     * Converts the map of entities to a list of entities.
+     * 
+     * @param keys
+     *            the keys
+     * @param map
+     *            the map of entities
+     * @return a list of entities
+     * @throws NullPointerException
+     *             if the keys parameter is null or if the map parameter is null
+     *             or if the element of keys is null
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity bound to a key is found
+     */
+    public static List<Entity> entityMapToEntityList(Iterable<Key> keys,
+            Map<Key, Entity> map) throws NullPointerException,
+            EntityNotFoundRuntimeException {
+        if (keys == null) {
+            throw new NullPointerException(
+                "The keys parameter must not be null.");
+        }
+        if (map == null) {
+            throw new NullPointerException(
+                "The map parameter must not be null.");
+        }
+        List<Entity> list = new ArrayList<Entity>(map.size());
+        for (Key key : keys) {
+            if (key == null) {
+                throw new NullPointerException(
+                    "The element of keys must not be null.");
+            }
+            Entity entity = map.get(key);
+            if (entity == null) {
+                throw new EntityNotFoundRuntimeException(key);
+            }
+            list.add(entity);
+        }
+        return list;
+    }
+
+    /**
+     * Converts the map of entities to a list of models.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param keys
+     *            the keys
+     * @param map
+     *            the map of entities
+     * @return a list of models
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null or if the keys parameter
+     *             is null or if the map parameter is null or if the element of
+     *             keys is null
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity bound to a key is found
+     */
+    public static <M> List<M> entityMapToModelList(ModelMeta<M> modelMeta,
+            Iterable<Key> keys, Map<Key, Entity> map)
+            throws NullPointerException, EntityNotFoundRuntimeException {
+        if (modelMeta == null) {
+            throw new NullPointerException(
+                "The modelMeta parameter must not be null.");
+        }
+        if (keys == null) {
+            throw new NullPointerException(
+                "The keys parameter must not be null.");
+        }
+        if (map == null) {
+            throw new NullPointerException(
+                "The map parameter must not be null.");
+        }
+        List<M> list = new ArrayList<M>(map.size());
+        for (Key key : keys) {
+            if (key == null) {
+                throw new NullPointerException(
+                    "The element of keys must not be null.");
+            }
+            Entity entity = map.get(key);
+            if (entity == null) {
+                throw new EntityNotFoundRuntimeException(key);
+            }
+            ModelMeta<M> mm = DatastoreUtil.getModelMeta(modelMeta, entity);
+            mm.validateKey(key);
+            list.add(mm.entityToModel(entity));
+        }
+        return list;
+    }
+
+    /**
+     * Converts the map of entities to a map of models.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param map
+     *            the map of entities
+     * @return a map of models
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null or if the map parameter is
+     *             null
+     */
+    public static <M> Map<Key, M> entityMapToModelMap(ModelMeta<M> modelMeta,
+            Map<Key, Entity> map) throws NullPointerException {
+        if (modelMeta == null) {
+            throw new NullPointerException(
+                "The modelMeta parameter must not be null.");
+        }
+        if (map == null) {
+            throw new NullPointerException(
+                "The map parameter must not be null.");
+        }
+        Map<Key, M> modelMap = new HashMap<Key, M>(map.size());
+        for (Key key : map.keySet()) {
+            Entity entity = map.get(key);
+            ModelMeta<M> mm = DatastoreUtil.getModelMeta(modelMeta, entity);
+            mm.validateKey(key);
+            modelMap.put(key, mm.entityToModel(entity));
+        }
+        return modelMap;
     }
 
     /**

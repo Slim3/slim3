@@ -20,6 +20,7 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -674,6 +675,115 @@ public class DatastoreUtilTest extends AppEngineTestCase {
         assertThat((Long) entities.get(0).getProperty("version"), is(1L));
         assertThat(hoge.getKey(), is(notNullValue()));
         assertThat(hoge.getKey(), is(entities.get(0).getKey()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void entityMapToEntityList() throws Exception {
+        Key key = Datastore.createKey("Hoge", 1);
+        Key key2 = Datastore.createKey("Hoge", 2);
+        Key key3 = Datastore.createKey("Hoge", 3);
+        Entity entity = new Entity(key);
+        Entity entity2 = new Entity(key2);
+        Entity entity3 = new Entity(key3);
+        Map<Key, Entity> map = new HashMap<Key, Entity>();
+        map.put(key3, entity3);
+        map.put(key2, entity2);
+        map.put(key, entity);
+        List<Entity> list =
+            DatastoreUtil.entityMapToEntityList(
+                Arrays.asList(key, key2, key3),
+                map);
+        assertThat(list.size(), is(3));
+        assertThat(list.get(0), is(entity));
+        assertThat(list.get(1), is(entity2));
+        assertThat(list.get(2), is(entity3));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = EntityNotFoundRuntimeException.class)
+    public void entityMapToEntityListWhenNoEntityIsFound() throws Exception {
+        Key key = Datastore.createKey("Hoge", 1);
+        Key key2 = Datastore.createKey("Hoge", 2);
+        Key key3 = Datastore.createKey("Hoge", 3);
+        Entity entity = new Entity(key);
+        Entity entity2 = new Entity(key2);
+        Map<Key, Entity> map = new HashMap<Key, Entity>();
+        map.put(key2, entity2);
+        map.put(key, entity);
+        DatastoreUtil
+            .entityMapToEntityList(Arrays.asList(key, key2, key3), map);
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void entityMapToModelList() throws Exception {
+        Key key = Datastore.createKey("Hoge", 1);
+        Key key2 = Datastore.createKey("Hoge", 2);
+        Key key3 = Datastore.createKey("Hoge", 3);
+        Entity entity = new Entity(key);
+        Entity entity2 = new Entity(key2);
+        Entity entity3 = new Entity(key3);
+        Map<Key, Entity> map = new HashMap<Key, Entity>();
+        map.put(key3, entity3);
+        map.put(key2, entity2);
+        map.put(key, entity);
+        List<Hoge> list =
+            DatastoreUtil.entityMapToModelList(meta, Arrays.asList(
+                key,
+                key2,
+                key3), map);
+        assertThat(list.size(), is(3));
+        assertThat(list.get(0).getKey(), is(key));
+        assertThat(list.get(1).getKey(), is(key2));
+        assertThat(list.get(2).getKey(), is(key3));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = EntityNotFoundRuntimeException.class)
+    public void entityMapToModelListWhenNoEntityIsFound() throws Exception {
+        Key key = Datastore.createKey("Hoge", 1);
+        Key key2 = Datastore.createKey("Hoge", 2);
+        Key key3 = Datastore.createKey("Hoge", 3);
+        Entity entity = new Entity(key);
+        Entity entity2 = new Entity(key2);
+        Map<Key, Entity> map = new HashMap<Key, Entity>();
+        map.put(key2, entity2);
+        map.put(key, entity);
+        DatastoreUtil.entityMapToModelList(
+            meta,
+            Arrays.asList(key, key2, key3),
+            map);
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void entityMapToModelMap() throws Exception {
+        Key key = Datastore.createKey("Hoge", 1);
+        Key key2 = Datastore.createKey("Hoge", 2);
+        Key key3 = Datastore.createKey("Hoge", 3);
+        Entity entity = new Entity(key);
+        Entity entity2 = new Entity(key2);
+        Entity entity3 = new Entity(key3);
+        Map<Key, Entity> map = new HashMap<Key, Entity>();
+        map.put(key3, entity3);
+        map.put(key2, entity2);
+        map.put(key, entity);
+        Map<Key, Hoge> map2 = DatastoreUtil.entityMapToModelMap(meta, map);
+        assertThat(map2.size(), is(3));
+        assertThat(map2.get(key).getKey(), is(key));
+        assertThat(map2.get(key2).getKey(), is(key2));
+        assertThat(map2.get(key3).getKey(), is(key3));
     }
 
     /**

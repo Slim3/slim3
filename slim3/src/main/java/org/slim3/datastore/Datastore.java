@@ -15,11 +15,9 @@
  */
 package org.slim3.datastore;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -103,7 +101,9 @@ public final class Datastore {
      * @return a begun global transaction
      */
     public static GlobalTransaction beginGlobalTransaction() {
-        return new GlobalTransaction();
+        GlobalTransaction gtx = new GlobalTransaction();
+        gtx.begin();
+        return gtx;
     }
 
     /**
@@ -1324,7 +1324,7 @@ public final class Datastore {
      */
     public static List<Entity> get(Iterable<Key> keys)
             throws NullPointerException, EntityNotFoundRuntimeException {
-        return mapToList(keys, getAsMap(keys));
+        return DatastoreUtil.entityMapToEntityList(keys, getAsMap(keys));
     }
 
     /**
@@ -1393,7 +1393,10 @@ public final class Datastore {
     public static <M> List<M> get(ModelMeta<M> modelMeta, Iterable<Key> keys)
             throws NullPointerException, EntityNotFoundRuntimeException,
             IllegalArgumentException {
-        return mapToList(modelMeta, keys, getAsMap(keys));
+        return DatastoreUtil.entityMapToModelList(
+            modelMeta,
+            keys,
+            getAsMap(keys));
 
     }
 
@@ -1463,7 +1466,9 @@ public final class Datastore {
      */
     public static List<Entity> getWithoutTx(Iterable<Key> keys)
             throws NullPointerException, EntityNotFoundRuntimeException {
-        return mapToList(keys, getAsMapWithoutTx(keys));
+        return DatastoreUtil.entityMapToEntityList(
+            keys,
+            getAsMapWithoutTx(keys));
     }
 
     /**
@@ -1530,7 +1535,10 @@ public final class Datastore {
     public static <M> List<M> getWithoutTx(ModelMeta<M> modelMeta,
             Iterable<Key> keys) throws NullPointerException,
             EntityNotFoundRuntimeException, IllegalArgumentException {
-        return mapToList(modelMeta, keys, getAsMapWithoutTx(keys));
+        return DatastoreUtil.entityMapToModelList(
+            modelMeta,
+            keys,
+            getAsMapWithoutTx(keys));
 
     }
 
@@ -1604,7 +1612,7 @@ public final class Datastore {
     public static List<Entity> get(Transaction tx, Iterable<Key> keys)
             throws NullPointerException, IllegalStateException,
             EntityNotFoundRuntimeException {
-        return mapToList(keys, getAsMap(tx, keys));
+        return DatastoreUtil.entityMapToEntityList(keys, getAsMap(tx, keys));
     }
 
     /**
@@ -1685,7 +1693,9 @@ public final class Datastore {
             Iterable<Key> keys) throws NullPointerException,
             IllegalStateException, EntityNotFoundRuntimeException,
             IllegalArgumentException {
-        return mapToList(modelMeta, keys, getAsMap(tx, keys));
+        return DatastoreUtil.entityMapToModelList(modelMeta, keys, getAsMap(
+            tx,
+            keys));
     }
 
     /**
@@ -1822,7 +1832,7 @@ public final class Datastore {
     public static <M> Map<Key, M> getAsMap(ModelMeta<M> modelMeta,
             Iterable<Key> keys) throws NullPointerException,
             IllegalArgumentException {
-        return mapToMap(modelMeta, getAsMap(keys));
+        return DatastoreUtil.entityMapToModelMap(modelMeta, getAsMap(keys));
     }
 
     /**
@@ -1941,7 +1951,9 @@ public final class Datastore {
     public static <M> Map<Key, M> getAsMapWithoutTx(ModelMeta<M> modelMeta,
             Iterable<Key> keys) throws NullPointerException,
             IllegalArgumentException {
-        return mapToMap(modelMeta, getAsMapWithoutTx(keys));
+        return DatastoreUtil.entityMapToModelMap(
+            modelMeta,
+            getAsMapWithoutTx(keys));
     }
 
     /**
@@ -2080,7 +2092,7 @@ public final class Datastore {
             ModelMeta<M> modelMeta, Iterable<Key> keys)
             throws NullPointerException, IllegalStateException,
             IllegalArgumentException {
-        return mapToMap(modelMeta, getAsMap(tx, keys));
+        return DatastoreUtil.entityMapToModelMap(modelMeta, getAsMap(tx, keys));
 
     }
 
@@ -2140,62 +2152,6 @@ public final class Datastore {
             ModelMeta<M> modelMeta, Key... keys) throws NullPointerException,
             IllegalStateException, IllegalArgumentException {
         return getAsMap(tx, modelMeta, Arrays.asList(keys));
-    }
-
-    private static <M> List<M> mapToList(ModelMeta<M> modelMeta,
-            Iterable<Key> keys, Map<Key, Entity> map)
-            throws NullPointerException, EntityNotFoundRuntimeException {
-        if (modelMeta == null) {
-            throw new NullPointerException("The modelMeta parameter is null.");
-        }
-        if (keys == null) {
-            throw new NullPointerException("The keys parameter is null.");
-        }
-        if (map == null) {
-            throw new NullPointerException("The map parameter is null.");
-        }
-        List<M> list = new ArrayList<M>(map.size());
-        for (Key key : keys) {
-            Entity entity = map.get(key);
-            if (entity == null) {
-                throw new EntityNotFoundRuntimeException(key);
-            }
-            ModelMeta<M> mm = DatastoreUtil.getModelMeta(modelMeta, entity);
-            mm.validateKey(key);
-            list.add(mm.entityToModel(entity));
-        }
-        return list;
-    }
-
-    private static <M> Map<Key, M> mapToMap(ModelMeta<M> modelMeta,
-            Map<Key, Entity> map) throws NullPointerException {
-        if (modelMeta == null) {
-            throw new NullPointerException("The modelMeta parameter is null.");
-        }
-        if (map == null) {
-            throw new NullPointerException("The map parameter is null.");
-        }
-        Map<Key, M> modelMap = new HashMap<Key, M>(map.size());
-        for (Key key : map.keySet()) {
-            Entity entity = map.get(key);
-            ModelMeta<M> mm = DatastoreUtil.getModelMeta(modelMeta, entity);
-            mm.validateKey(key);
-            modelMap.put(key, mm.entityToModel(entity));
-        }
-        return modelMap;
-    }
-
-    private static List<Entity> mapToList(Iterable<Key> keys,
-            Map<Key, Entity> map) throws EntityNotFoundRuntimeException {
-        List<Entity> list = new ArrayList<Entity>(map.size());
-        for (Key key : keys) {
-            Entity entity = map.get(key);
-            if (entity == null) {
-                throw new EntityNotFoundRuntimeException(key);
-            }
-            list.add(entity);
-        }
-        return list;
     }
 
     /**
