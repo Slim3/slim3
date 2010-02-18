@@ -810,10 +810,9 @@ public abstract class Controller {
         try {
             String contentType =
                 URLConnection.getFileNameMap().getContentTypeFor(fileName);
-            if (contentType == null) {
-                contentType = "application/octet-stream";
+            if (contentType != null) {
+                response.setContentType(contentType);
             }
-            response.setContentType(contentType);
             response.setHeader("Content-disposition", "inline; filename=\""
                 + encode(fileName)
                 + "\"");
@@ -852,10 +851,9 @@ public abstract class Controller {
         try {
             String contentType =
                 URLConnection.getFileNameMap().getContentTypeFor(fileName);
-            if (contentType == null) {
-                contentType = "application/octet-stream";
+            if (contentType != null) {
+                response.setContentType(contentType);
             }
-            response.setContentType(contentType);
             response.setHeader("Content-disposition", "inline; filename=\""
                 + encode(fileName)
                 + "\"");
