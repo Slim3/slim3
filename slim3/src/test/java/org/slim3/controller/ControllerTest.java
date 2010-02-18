@@ -322,6 +322,16 @@ public class ControllerTest extends ControllerTestCase {
         assertThat(controller.isDelete(), is(false));
     }
 
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void encode() throws Exception {
+        assertThat(controller.encode("abc"), is("abc"));
+        assertThat(controller.encode("abc", "UTF-8"), is("abc"));
+    }
+
     private static class IndexController extends Controller {
 
         @Override

@@ -31,6 +31,11 @@ public class FileItem {
     protected String fileName;
 
     /**
+     * The short file name.
+     */
+    protected String shortFileName;
+
+    /**
      * The content type.
      */
     protected String contentType;
@@ -54,6 +59,16 @@ public class FileItem {
         this.fileName = fileName;
         this.contentType = contentType;
         this.data = data;
+        if (fileName != null) {
+            shortFileName = fileName;
+            int index = fileName.lastIndexOf("\\");
+            if (index < 0) {
+                index = fileName.lastIndexOf("/");
+            }
+            if (index >= 0) {
+                shortFileName = fileName.substring(index + 1);
+            }
+        }
     }
 
     /**
@@ -63,6 +78,15 @@ public class FileItem {
      */
     public String getFileName() {
         return fileName;
+    }
+
+    /**
+     * Returns the short file name.
+     * 
+     * @return the short file name
+     */
+    public String getShortFileName() {
+        return shortFileName;
     }
 
     /**
