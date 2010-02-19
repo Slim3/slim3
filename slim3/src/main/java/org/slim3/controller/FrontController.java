@@ -54,6 +54,8 @@ import org.slim3.util.StringUtil;
 import org.slim3.util.TimeZoneLocator;
 import org.slim3.util.WrapRuntimeException;
 
+import com.google.apphosting.api.ApiProxy;
+
 /**
  * The front controller of Slim3.
  * 
@@ -154,6 +156,26 @@ public class FrontController implements Filter {
                 if (count > 1) {
                     throw new IllegalStateException(
                         "slim3-xxx.jar files are duplicate in the classpath.");
+                }
+            } catch (IOException e) {
+                throw new WrapRuntimeException(e);
+            }
+            try {
+                Enumeration<URL> resources =
+                    Thread
+                        .currentThread()
+                        .getContextClassLoader()
+                        .getResources(
+                            ApiProxy.class.getName().replace('.', '/')
+                                + ".class");
+                int count = 0;
+                while (resources.hasMoreElements()) {
+                    resources.nextElement();
+                    count++;
+                }
+                if (count > 1) {
+                    throw new IllegalStateException(
+                        "appengine-api-1.0-sdk-xxx.jar files are duplicate in the classpath.");
                 }
             } catch (IOException e) {
                 throw new WrapRuntimeException(e);
