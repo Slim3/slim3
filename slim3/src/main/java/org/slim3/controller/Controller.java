@@ -888,7 +888,9 @@ public abstract class Controller {
             return null;
         }
         String userAgent = request.getHeader("User-Agent");
-        if (userAgent != null && userAgent.indexOf("MSIE") >= 0) {
+        if (userAgent != null
+            && userAgent.indexOf("MSIE") >= 0
+            && userAgent.indexOf("Opera") < 0) {
             return encode(str, "UTF-8");
         }
         return new String(str.getBytes(), "ISO-8859-1");
