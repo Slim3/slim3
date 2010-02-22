@@ -55,8 +55,6 @@ public class ViewGenerator implements Generator {
         p
             .println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />");
         p.println("<title>%s</title>", viewDesc.getTitle());
-        p
-            .println("<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/global.css\" />");
         p.println("</head>");
         p.println("<body>");
         p.println("<p>Hello %s !!!</p>", viewDesc.getTitle());
