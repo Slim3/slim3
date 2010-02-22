@@ -2586,13 +2586,7 @@ public final class Datastore {
      */
     public static <M> ModelQuery<M> query(Transaction tx, Class<M> modelClass,
             Key ancestorKey) throws NullPointerException {
-        if (modelClass == null) {
-            throw new NullPointerException("The modelClass parameter is null.");
-        }
-        if (ancestorKey == null) {
-            throw new NullPointerException("The ancestorKey parameter is null.");
-        }
-        return new ModelQuery<M>(getModelMeta(modelClass), ancestorKey);
+        return query(tx, getModelMeta(modelClass), ancestorKey);
     }
 
     /**
@@ -2614,12 +2608,6 @@ public final class Datastore {
     public static <M> ModelQuery<M> query(Transaction tx,
             ModelMeta<M> modelMeta, Key ancestorKey)
             throws NullPointerException {
-        if (modelMeta == null) {
-            throw new NullPointerException("The modelMeta parameter is null.");
-        }
-        if (ancestorKey == null) {
-            throw new NullPointerException("The ancestorKey parameter is null.");
-        }
         return new ModelQuery<M>(tx, modelMeta, ancestorKey);
     }
 

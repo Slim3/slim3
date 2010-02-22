@@ -52,11 +52,6 @@ public class GlobalTransactionServlet extends HttpServlet {
     public static final String KEY_NAME = "key";
 
     /**
-     * The name of "version" parameter.
-     */
-    public static final String VERSION_NAME = "version";
-
-    /**
      * The name of "rollforward" command.
      */
     public static final String ROLLFORWARD_COMMAND = "rollforward";
@@ -65,11 +60,6 @@ public class GlobalTransactionServlet extends HttpServlet {
      * The name of "rollback" command.
      */
     public static final String ROLLBACK_COMMAND = "rollback";
-
-    /**
-     * The name of "cleanup" command.
-     */
-    public static final String CLEANUP_COMMAND = "cleanup";
 
     private static final long serialVersionUID = 1L;
 
@@ -109,14 +99,8 @@ public class GlobalTransactionServlet extends HttpServlet {
                 logger.warning("The key parameter must not be null.");
                 return;
             }
-            String versionStr = req.getParameter(VERSION_NAME);
-            if (StringUtil.isEmpty(versionStr)) {
-                logger.warning("The version parameter must not be null.");
-                return;
-            }
             Key key = Datastore.stringToKey(keyStr);
-            long version = Long.valueOf(versionStr);
-            GlobalTransaction.rollForward(key, version);
+            GlobalTransaction.rollForward(key);
         } else if (ROLLBACK_COMMAND.equalsIgnoreCase(command)) {
             String keyStr = req.getParameter(KEY_NAME);
             if (StringUtil.isEmpty(keyStr)) {
@@ -125,8 +109,6 @@ public class GlobalTransactionServlet extends HttpServlet {
             }
             Key key = Datastore.stringToKey(keyStr);
             GlobalTransaction.rollback(key);
-        } else if (CLEANUP_COMMAND.equalsIgnoreCase(command)) {
-            GlobalTransaction.cleanUp();
         } else {
             logger.warning("The command(" + command + ") is unknown.");
         }

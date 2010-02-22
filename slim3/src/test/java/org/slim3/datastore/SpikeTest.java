@@ -16,11 +16,8 @@
 package org.slim3.datastore;
 
 import org.junit.Test;
+import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.AppEngineTestCase;
-
-import com.google.appengine.api.memcache.Expiration;
-import com.google.appengine.api.memcache.MemcacheService;
-import com.google.appengine.api.memcache.MemcacheServiceFactory;
 
 /**
  * @author higa
@@ -33,10 +30,9 @@ public class SpikeTest extends AppEngineTestCase {
      */
     @Test
     public void spike() throws Exception {
-        MemcacheService ms = MemcacheServiceFactory.getMemcacheService();
-        ms.setNamespace("hoge");
-        ms.put("aaa", "111", Expiration.byDeltaSeconds(1));
-        // Thread.sleep(100);
-        System.out.println(ms.get("aaa"));
+        GlobalTransaction gtx = Datastore.beginGlobalTransaction();
+        gtx.put(new Hoge());
+        gtx.put(new Hoge());
+        gtx.commit();
     }
 }

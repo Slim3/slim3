@@ -1957,10 +1957,12 @@ public class DatastoreTest extends AppEngineTestCase {
      */
     @Test
     public void queryUsingTxAndModelClassAndAncestorKey() throws Exception {
-        assertThat(Datastore.query(
-            ds.beginTransaction(),
-            Hoge.class,
-            KeyFactory.createKey("Parent", 1)), is(ModelQuery.class));
+        ModelQuery<Hoge> query =
+            Datastore.query(ds.beginTransaction(), Hoge.class, KeyFactory
+                .createKey("Parent", 1));
+        assertThat(query, is(ModelQuery.class));
+        assertThat(query.tx, is(notNullValue()));
+        assertThat(query.txSet, is(true));
     }
 
     /**
@@ -1968,8 +1970,13 @@ public class DatastoreTest extends AppEngineTestCase {
      */
     @Test
     public void queryUsingTxAndModelMetaAndAncestorKey() throws Exception {
-        assertThat(Datastore.query(ds.beginTransaction(), meta, KeyFactory
-            .createKey("Parent", 1)), is(ModelQuery.class));
+        ModelQuery<Hoge> query =
+            Datastore.query(ds.beginTransaction(), meta, KeyFactory.createKey(
+                "Parent",
+                1));
+        assertThat(query, is(ModelQuery.class));
+        assertThat(query.tx, is(notNullValue()));
+        assertThat(query.txSet, is(true));
     }
 
     /**
@@ -1995,8 +2002,12 @@ public class DatastoreTest extends AppEngineTestCase {
      */
     @Test
     public void queryUsingTxAndKindAndAncestorKey() throws Exception {
-        assertThat(Datastore.query(ds.beginTransaction(), "Hoge", KeyFactory
-            .createKey("Parent", 1)), is(EntityQuery.class));
+        EntityQuery query =
+            Datastore.query(ds.beginTransaction(), "Hoge", KeyFactory
+                .createKey("Parent", 1));
+        assertThat(query, is(EntityQuery.class));
+        assertThat(query.tx, is(notNullValue()));
+        assertThat(query.txSet, is(true));
     }
 
     /**
@@ -2022,9 +2033,13 @@ public class DatastoreTest extends AppEngineTestCase {
      */
     @Test
     public void queryUsingTxAndAncestorKey() throws Exception {
-        assertThat(Datastore.query(ds.beginTransaction(), KeyFactory.createKey(
-            "Parent",
-            1)), is(KindlessQuery.class));
+        KindlessQuery query =
+            Datastore.query(ds.beginTransaction(), KeyFactory.createKey(
+                "Parent",
+                1));
+        assertThat(query, is(KindlessQuery.class));
+        assertThat(query.tx, is(notNullValue()));
+        assertThat(query.txSet, is(true));
     }
 
     /**

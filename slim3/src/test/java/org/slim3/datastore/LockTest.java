@@ -18,10 +18,10 @@ package org.slim3.datastore;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.slim3.tester.AppEngineTestCase;
@@ -111,13 +111,13 @@ public class LockTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void deleteLocks() throws Exception {
+    public void deleteInTx() throws Exception {
         Key rootKey = Datastore.createKey("Hoge", 1);
         long timestamp = System.currentTimeMillis();
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
         Lock lock = new Lock(globalTransactionKey, rootKey, timestamp);
         Datastore.put(lock.toEntity());
-        Lock.delete(Arrays.asList(lock));
+        Lock.deleteInTx(globalTransactionKey, lock.key);
         assertThat(Datastore.query(Lock.KIND, lock.key).count(), is(0));
     }
 
@@ -125,35 +125,41 @@ public class LockTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void deleteManyEntities() throws Exception {
-        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
+    public void deleteLocksInTx() throws Exception {
+        Key rootKey = Datastore.createKey("Hoge", 1);
         long timestamp = System.currentTimeMillis();
-        List<Lock> locks = new ArrayList<Lock>();
-        int count = 101;
-        for (int i = 1; i <= count; i++) {
-            Lock lock =
-                new Lock(
-                    globalTransactionKey,
-                    Datastore.createKey("Hoge", i),
-                    timestamp);
-            locks.add(lock);
-            Datastore.put(lock.toEntity());
-        }
-        Lock.delete(locks);
-        assertThat(Datastore.query(Lock.KIND).count(), is(0));
+        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
+        Lock lock = new Lock(globalTransactionKey, rootKey, timestamp);
+        Datastore.put(lock.toEntity());
+        Lock.deleteInTx(globalTransactionKey, Arrays.asList(lock));
+        assertThat(Datastore.query(Lock.KIND, lock.key).count(), is(0));
     }
 
     /**
      * @throws Exception
      */
     @Test
-    public void deleteByGlobalTransactionKey() throws Exception {
+    public void deleteInTxByGlobalTransactionKey() throws Exception {
         Key rootKey = Datastore.createKey("Hoge", 1);
         long timestamp = System.currentTimeMillis();
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
         Lock lock = new Lock(globalTransactionKey, rootKey, timestamp);
         Datastore.put(lock.toEntity());
-        Lock.delete(globalTransactionKey);
+        Lock.deleteInTx(globalTransactionKey);
+        assertThat(Datastore.query(Lock.KIND, lock.key).count(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void deleteWithoutTx() throws Exception {
+        Key rootKey = Datastore.createKey("Hoge", 1);
+        long timestamp = System.currentTimeMillis();
+        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
+        Lock lock = new Lock(globalTransactionKey, rootKey, timestamp);
+        Datastore.put(lock.toEntity());
+        Lock.deleteWithoutTx(globalTransactionKey);
         assertThat(Datastore.query(Lock.KIND).count(), is(0));
     }
 
@@ -169,6 +175,42 @@ public class LockTest extends AppEngineTestCase {
         Datastore.put(lock.toEntity());
         List<Key> keys = Lock.getKeys(globalTransactionKey);
         assertThat(keys.size(), is(1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void verifyAndGetAsMap() throws Exception {
+        Key key = Datastore.putWithoutTx(new Entity("Hoge"));
+        Map<Key, Entity> map =
+            Lock.verifyAndGetAsMap(Datastore.beginTransaction(), key, Arrays
+                .asList(key));
+        assertThat(map.size(), is(1));
+        assertThat(map.get(key), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void verifyAndGetAsMapWhenNoEntityIsFound() throws Exception {
+        Key key = Datastore.createKey("Hoge", 1);
+        Map<Key, Entity> map =
+            Lock.verifyAndGetAsMap(Datastore.beginTransaction(), key, Arrays
+                .asList(key));
+        assertThat(map.size(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = ConcurrentModificationException.class)
+    public void verifyAndGetOrNullWhenLockError() throws Exception {
+        Key key = Datastore.createKey("Hoge", 1);
+        Datastore.putWithoutTx(new Entity(Lock.createKey(key)));
+        Lock.verifyAndGetAsMap(Datastore.beginTransaction(), key, Arrays
+            .asList(key));
     }
 
     /**
@@ -249,35 +291,38 @@ public class LockTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void lockWhenOtherIsTimeout() throws Exception {
-        Key targetKey = Datastore.createKey("Hoge", 1);
-        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
-        Key globalTransactionKey2 =
-            Datastore.allocateId(GlobalTransaction.KIND);
+    public void lockAndGetAsMap() throws Exception {
+        Key key = Datastore.createKey("Hoge", 1);
+        Datastore.put(new Entity(key));
         long timestamp = System.currentTimeMillis();
-        Lock lock = new Lock(globalTransactionKey, targetKey, timestamp);
-        Lock other =
-            new Lock(globalTransactionKey2, targetKey, timestamp
-                - Lock.TIMEOUT
-                - 1);
-        other.lock();
-        Journal otherJournal =
-            new Journal(globalTransactionKey2, new Entity(targetKey));
-        Datastore.put(otherJournal.toEntity());
-        lock.lock();
-        Entity entity = Datastore.get(lock.getKey());
-        assertThat(entity, is(notNullValue()));
-        assertThat(
-            (Key) entity.getProperty(Lock.GLOBAL_TRANSACTION_KEY_PROPERTY),
-            is(globalTransactionKey));
-        assertThat(Datastore.query(Journal.KIND).count(), is(0));
+        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
+        Lock lock = new Lock(globalTransactionKey, key, timestamp);
+        Map<Key, Entity> map = lock.lockAndGetAsMap(Arrays.asList(key));
+        assertThat(map.size(), is(1));
+        assertThat(map.get(key), is(notNullValue()));
+        assertThat(Datastore.get(lock.getKey()), is(notNullValue()));
     }
 
     /**
      * @throws Exception
      */
     @Test
-    public void isLockByNoTimeout() throws Exception {
+    public void lockAndGetAsMapWhenNoEntityIsFound() throws Exception {
+        Key key = Datastore.createKey("Hoge", 1);
+        long timestamp = System.currentTimeMillis();
+        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
+        Lock lock = new Lock(globalTransactionKey, key, timestamp);
+        assertThat(
+            lock.lockAndGetAsMap(Arrays.asList(key)).get(key),
+            is(nullValue()));
+        assertThat(Datastore.get(lock.getKey()), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = ConcurrentModificationException.class)
+    public void verifyForNoTimeout() throws Exception {
         Key rootKey = Datastore.createKey("Hoge", 1);
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
         Key globalTransactionKey2 =
@@ -285,43 +330,49 @@ public class LockTest extends AppEngineTestCase {
         long timestamp = System.currentTimeMillis();
         Lock lock = new Lock(globalTransactionKey, rootKey, timestamp);
         Lock other = new Lock(globalTransactionKey2, rootKey, timestamp);
-        assertThat(lock.isLockedBy(other), is(true));
+        lock.verify(other);
     }
 
     /**
      * @throws Exception
      */
     @Test
-    public void isLockByForSameGlobalTransactionKey() throws Exception {
+    public void verifyForSameGlobalTransactionKey() throws Exception {
         Key rootKey = Datastore.createKey("Hoge", 1);
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
         long timestamp = System.currentTimeMillis();
         Lock lock = new Lock(globalTransactionKey, rootKey, timestamp);
         Lock other = new Lock(globalTransactionKey, rootKey, timestamp);
-        assertThat(lock.isLockedBy(other), is(false));
+        lock.verify(other);
     }
 
     /**
      * @throws Exception
      */
     @Test
-    public void isLockByForTimeout() throws Exception {
+    public void verifyForTimeout() throws Exception {
         Key rootKey = Datastore.createKey("Hoge", 1);
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
+        Key globalTransactionKey2 =
+            Datastore.allocateId(GlobalTransaction.KIND);
         long timestamp = System.currentTimeMillis();
         Lock lock = new Lock(globalTransactionKey, rootKey, timestamp);
         Lock other =
-            new Lock(globalTransactionKey, rootKey, timestamp
+            new Lock(globalTransactionKey2, rootKey, timestamp
                 - Lock.TIMEOUT
                 - 1);
-        assertThat(lock.isLockedBy(other), is(false));
+        lock.verify(other);
+        GlobalTransaction gtx =
+            GlobalTransaction.toGlobalTransaction(Datastore
+                .getWithoutTx(globalTransactionKey2));
+        assertThat(gtx.valid, is(false));
     }
 
     /**
      * @throws Exception
      */
-    @Test
-    public void isLockByOverForTimeoutAndGtxExists() throws Exception {
+    @Test(expected = ConcurrentModificationException.class)
+    public void verifyForTimeoutAndValidGtxExists() throws Exception {
         Key rootKey = Datastore.createKey("Hoge", 1);
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
         Key globalTransactionKey2 =
@@ -333,8 +384,34 @@ public class LockTest extends AppEngineTestCase {
                 - Lock.TIMEOUT
                 - 1);
         Entity entity = new Entity(globalTransactionKey2);
+        entity.setUnindexedProperty(GlobalTransaction.VALID_PROPERTY, true);
         Datastore.put(entity);
-        assertThat(lock.isLockedBy(other), is(true));
+        lock.verify(other);
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void verifyForTimeoutAndInalidGtxExists() throws Exception {
+        Key rootKey = Datastore.createKey("Hoge", 1);
+        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
+        Key globalTransactionKey2 =
+            Datastore.allocateId(GlobalTransaction.KIND);
+        long timestamp = System.currentTimeMillis();
+        Lock lock = new Lock(globalTransactionKey, rootKey, timestamp);
+        Lock other =
+            new Lock(globalTransactionKey2, rootKey, timestamp
+                - Lock.TIMEOUT
+                - 1);
+        Entity entity = new Entity(globalTransactionKey2);
+        entity.setUnindexedProperty(GlobalTransaction.VALID_PROPERTY, false);
+        Datastore.put(entity);
+        lock.verify(other);
+        GlobalTransaction gtx =
+            GlobalTransaction.toGlobalTransaction(Datastore
+                .getWithoutTx(globalTransactionKey2));
+        assertThat(gtx.valid, is(false));
     }
 
     /**
@@ -342,12 +419,9 @@ public class LockTest extends AppEngineTestCase {
      */
     @Test
     public void createConcurrentModificationException() throws Exception {
-        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
         Key targetKey = Datastore.createKey("Hoge", 1);
-        long timestamp = System.currentTimeMillis();
-        Lock lock = new Lock(globalTransactionKey, targetKey, timestamp);
         ConcurrentModificationException e =
-            lock.createConcurrentModificationException();
+            Lock.createConcurrentModificationException(targetKey);
         assertThat(e, is(notNullValue()));
         System.out.println(e);
     }

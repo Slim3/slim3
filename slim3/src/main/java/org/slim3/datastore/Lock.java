@@ -19,8 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.List;
-
-import org.slim3.util.ListUtil;
+import java.util.Map;
 
 import com.google.appengine.api.datastore.DatastoreTimeoutException;
 import com.google.appengine.api.datastore.Entity;
@@ -180,15 +179,43 @@ public class Lock {
     }
 
     /**
-     * Deletes the locks from the datastore.
+     * Deletes entities specified by the global transaction key in transaction.
      * 
+     * @param globalTransactionKey
+     *            the global transaction key
+     * @throws NullPointerException
+     *             if the globalTransactionKey parameter is null
+     * 
+     */
+    public static void deleteInTx(Key globalTransactionKey)
+            throws NullPointerException {
+        if (globalTransactionKey == null) {
+            throw new NullPointerException(
+                "The globalTransactionKey parameter must not be null.");
+        }
+        for (Key key : getKeys(globalTransactionKey)) {
+            deleteInTx(globalTransactionKey, key);
+        }
+    }
+
+    /**
+     * Deletes the locks from the datastore in transaction.
+     * 
+     * @param globalTransactionKey
+     *            the global transaction key
      * @param locks
      *            the locks
      * @throws NullPointerException
-     *             if the locks parameter is null
+     *             if the globalTransactionKey parameter is null or if the locks
+     *             parameter is null
      * 
      */
-    public static void delete(Iterable<Lock> locks) throws NullPointerException {
+    public static void deleteInTx(Key globalTransactionKey, Iterable<Lock> locks)
+            throws NullPointerException {
+        if (globalTransactionKey == null) {
+            throw new NullPointerException(
+                "The globalTransactionKey parameter must not be null.");
+        }
         if (locks == null) {
             throw new NullPointerException(
                 "The locks parameter must not be null.");
@@ -197,38 +224,160 @@ public class Lock {
             && ((Collection<?>) locks).size() == 0) {
             return;
         }
-        List<Key> keys = new ArrayList<Key>();
         for (Lock lock : locks) {
-            if (keys.size() >= MAX_SIZE_LOCKS) {
-                Datastore.deleteWithoutTx(keys);
-                keys.clear();
-            }
-            keys.add(lock.key);
-        }
-        if (keys.size() > 0) {
-            Datastore.deleteWithoutTx(keys);
+            deleteInTx(globalTransactionKey, lock.key);
         }
     }
 
     /**
-     * Deletes entities specified by the global transaction key.
+     * Deletes an entity specified by the key in transaction.
+     * 
+     * @param globalTransactionKey
+     *            the global transaction key
+     * @param key
+     *            the key
+     * 
+     * @throws NullPointerException
+     *             if the globalTransactionKey parameter is null or if the key
+     *             parameter is null
+     */
+    protected static void deleteInTx(Key globalTransactionKey, Key key)
+            throws NullPointerException {
+        if (globalTransactionKey == null) {
+            throw new NullPointerException(
+                "The globalTransactionKey parameter must not be null.");
+        }
+        if (key == null) {
+            throw new NullPointerException(
+                "The key parameter must not be null.");
+        }
+        for (int i = 0; i < DatastoreUtil.MAX_RETRY; i++) {
+            Transaction tx = Datastore.beginTransaction();
+            try {
+                Lock lock = getOrNull(tx, key);
+                if (lock != null
+                    && globalTransactionKey.equals(lock.globalTransactionKey)) {
+                    Datastore.delete(tx, key);
+                    tx.commit();
+                }
+                return;
+            } catch (ConcurrentModificationException e) {
+                continue;
+            } finally {
+                if (tx.isActive()) {
+                    tx.rollback();
+                }
+            }
+        }
+    }
+
+    /**
+     * Deletes entities specified by the global transaction key without
+     * transaction.
      * 
      * @param globalTransactionKey
      *            the global transaction key
      * @throws NullPointerException
      *             if the globalTransactionKey parameter is null
      */
-    public static void delete(Key globalTransactionKey)
+    public static void deleteWithoutTx(Key globalTransactionKey)
             throws NullPointerException {
-        if (globalTransactionKey == null) {
+        Datastore.deleteWithoutTx(getKeys(globalTransactionKey));
+    }
+
+    /**
+     * Verifies lock specified by the root key and returns entities specified by
+     * the keys as map.
+     * 
+     * @param tx
+     *            the transaction
+     * @param rootKey
+     *            the root key
+     * @param keys
+     *            the keys
+     * @return an entity
+     * @throws NullPointerException
+     *             if the tx parameter is null or if the rootKey parameter is
+     *             null or if the keys parameter is null
+     * 
+     * @throws ConcurrentModificationException
+     *             if locking the entity group failed
+     */
+    public static Map<Key, Entity> verifyAndGetAsMap(Transaction tx,
+            Key rootKey, Collection<Key> keys) throws NullPointerException,
+            ConcurrentModificationException {
+        if (tx == null) {
+            throw new NullPointerException("The tx parameter must not be null.");
+        }
+        if (rootKey == null) {
             throw new NullPointerException(
-                "The globalTransactionKey parameter must not be null.");
+                "The rootKey parameter must not be null.");
         }
-        List<Key> keys = getKeys(globalTransactionKey);
-        List<List<Key>> keysList = ListUtil.split(keys, MAX_SIZE_LOCKS);
-        for (List<Key> l : keysList) {
-            Datastore.deleteWithoutTx(l);
+        if (keys == null) {
+            throw new NullPointerException(
+                "The keys parameter must not be null.");
         }
+        Key lockKey = createKey(rootKey);
+        List<Key> keyList = new ArrayList<Key>(keys.size() + 1);
+        keyList.addAll(keys);
+        keyList.add(lockKey);
+        Map<Key, Entity> map = Datastore.getAsMap(tx, keyList);
+        if (map.containsKey(lockKey)) {
+            throw createConcurrentModificationException(rootKey);
+        }
+        return map;
+    }
+
+    /**
+     * Creates a {@link ConcurrentModificationException}.
+     * 
+     * @param rootKey
+     *            the root key
+     * 
+     * @return a {@link ConcurrentModificationException}
+     * @throws NullPointerException
+     *             if the cause parameter is null
+     */
+    protected static ConcurrentModificationException createConcurrentModificationException(
+            Key rootKey) throws NullPointerException {
+        if (rootKey == null) {
+            throw new NullPointerException(
+                "The rootKey parameter must not be null.");
+        }
+        return new ConcurrentModificationException("Locking the entity group("
+            + rootKey
+            + ") failed.");
+    }
+
+    /**
+     * Creates a {@link ConcurrentModificationException}.
+     * 
+     * @param rootKey
+     *            the root key
+     * @param cause
+     *            the cause
+     * 
+     * @return a {@link ConcurrentModificationException}
+     * @throws NullPointerException
+     *             if the rootKey parameter is null or if the cause parameter is
+     *             null
+     */
+    protected static ConcurrentModificationException createConcurrentModificationException(
+            Key rootKey, Throwable cause) throws NullPointerException {
+        if (rootKey == null) {
+            throw new NullPointerException(
+                "The rootKey parameter must not be null.");
+        }
+        if (cause == null) {
+            throw new NullPointerException(
+                "The cause parameter must not be null.");
+        }
+        ConcurrentModificationException cme =
+            new ConcurrentModificationException("Locking the entity group("
+                + rootKey
+                + ") failed.");
+        cme.initCause(cause);
+        return cme;
     }
 
     /**
@@ -281,28 +430,22 @@ public class Lock {
     }
 
     /**
-     * Locks the entity.
+     * Locks the entity group.
      * 
      * @throws ConcurrentModificationException
      *             if locking the entity failed
      */
     public void lock() throws ConcurrentModificationException {
         DatastoreTimeoutException dte = null;
-        for (int i = 0; i < GlobalTransaction.MAX_RETRY; i++) {
+        for (int i = 0; i < DatastoreUtil.MAX_RETRY; i++) {
             Transaction tx = Datastore.beginTransaction();
             try {
                 Lock other = getOrNull(tx, key);
                 if (other != null) {
-                    if (isLockedBy(other)) {
-                        throw createConcurrentModificationException();
-                    }
-                    Journal.delete(
-                        tx,
-                        other.rootKey,
-                        other.globalTransactionKey);
+                    verify(other);
                 }
                 Datastore.put(tx, toEntity());
-                Datastore.commit(tx);
+                tx.commit();
                 return;
             } catch (DatastoreTimeoutException e) {
                 Lock lock = getOrNull(null, key);
@@ -313,7 +456,7 @@ public class Lock {
                 dte = e;
             } finally {
                 if (tx.isActive()) {
-                    Datastore.rollback(tx);
+                    tx.rollback();
                 }
             }
         }
@@ -321,37 +464,104 @@ public class Lock {
     }
 
     /**
-     * Determines if this transaction is locked by the other transaction.
+     * Locks the entity group and returns entities specified by the target keys.
+     * 
+     * @param targetKeys
+     *            the target keys
+     * @return an entity specified by the target keys
+     * @throws NullPointerException
+     *             if the targetKeys parameter is null
+     * @throws ConcurrentModificationException
+     *             if locking the entity failed
+     */
+    public Map<Key, Entity> lockAndGetAsMap(Collection<Key> targetKeys)
+            throws NullPointerException, ConcurrentModificationException {
+        if (targetKeys == null) {
+            throw new NullPointerException(
+                "The targetKeys parameter must not be null.");
+        }
+        DatastoreTimeoutException dte = null;
+        for (int i = 0; i < DatastoreUtil.MAX_RETRY; i++) {
+            Map<Key, Entity> map = null;
+            Transaction tx = Datastore.beginTransaction();
+            try {
+                List<Key> keyList = new ArrayList<Key>(targetKeys.size() + 1);
+                keyList.addAll(targetKeys);
+                keyList.add(key);
+                map = Datastore.getAsMap(tx, keyList);
+                Entity otherEntity = map.remove(key);
+                if (otherEntity != null) {
+                    Lock other = toLock(otherEntity);
+                    verify(other);
+                }
+                Datastore.put(tx, toEntity());
+                tx.commit();
+                return map;
+            } catch (DatastoreTimeoutException e) {
+                Lock lock = getOrNull(null, key);
+                if (lock != null
+                    && lock.globalTransactionKey.equals(globalTransactionKey)) {
+                    return map;
+                }
+                dte = e;
+            } finally {
+                if (tx.isActive()) {
+                    tx.rollback();
+                }
+            }
+        }
+        throw dte;
+    }
+
+    /**
+     * Verifies the other {@link Lock}.
      * 
      * @param other
      *            the other {@link Lock}
-     * @return whether this transaction is locked
      * @throws NullPointerException
      *             if the other parameter is null
+     * @throws ConcurrentModificationException
+     *             if the entity group is locked by the other one
      */
-    protected boolean isLockedBy(Lock other) throws NullPointerException {
+    protected void verify(Lock other) throws NullPointerException,
+            ConcurrentModificationException {
         if (other == null) {
             throw new NullPointerException(
                 "The other parameter must not be null.");
         }
         if (globalTransactionKey.equals(other.globalTransactionKey)) {
-            return false;
+            return;
         }
         if (timestamp <= other.getTimestamp() + TIMEOUT) {
-            return true;
+            throw createConcurrentModificationException(rootKey);
         }
-        return GlobalTransaction.exists(other.getGlobalTransactionKey());
-    }
-
-    /**
-     * Creates a {@link ConcurrentModificationException}.
-     * 
-     * @return a {@link ConcurrentModificationException}
-     */
-    protected ConcurrentModificationException createConcurrentModificationException() {
-        return new ConcurrentModificationException("Locking the entity group("
-            + rootKey
-            + ") failed.");
+        DatastoreTimeoutException dte = null;
+        for (int i = 0; i < DatastoreUtil.MAX_RETRY; i++) {
+            Transaction tx = Datastore.beginTransaction();
+            try {
+                GlobalTransaction gtx =
+                    GlobalTransaction.getOrNull(tx, other.globalTransactionKey);
+                if (gtx != null) {
+                    if (gtx.valid) {
+                        throw createConcurrentModificationException(rootKey);
+                    }
+                    return;
+                }
+                gtx = new GlobalTransaction(other.globalTransactionKey, false);
+                GlobalTransaction.put(tx, gtx);
+                tx.commit();
+                return;
+            } catch (DatastoreTimeoutException e) {
+                dte = e;
+            } catch (ConcurrentModificationException e) {
+                throw createConcurrentModificationException(rootKey, e);
+            } finally {
+                if (tx.isActive()) {
+                    tx.rollback();
+                }
+            }
+        }
+        throw dte;
     }
 
     /**

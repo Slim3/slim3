@@ -17,9 +17,8 @@ package org.slim3.datastore;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.List;
-
-import org.slim3.util.ListUtil;
 
 import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Entity;
@@ -128,67 +127,11 @@ public class Journal {
         if (targetKey == null) {
             throw new NullPointerException("The target key must not be null.");
         }
-        return KeyFactory.createKey(targetKey, KIND, 1);
+        return KeyFactory.createKey(KIND, KeyFactory.keyToString(targetKey));
     }
 
     /**
-     * Applies the journals within the local transaction.
-     * 
-     * @param tx
-     *            the transaction
-     * @param journals
-     *            the journals
-     * @throws NullPointerException
-     *             if the tx parameter is null or if the journals parameter is
-     *             null
-     * 
-     */
-    public static void applyWithinLocalTransaction(Transaction tx,
-            Iterable<Journal> journals) throws NullPointerException {
-        if (tx == null) {
-            throw new NullPointerException("The tx parameter must not be null.");
-        }
-        if (journals == null) {
-            throw new NullPointerException(
-                "The journals parameter must not be null.");
-        }
-        if (journals instanceof Collection<?>
-            && ((Collection<?>) journals).size() == 0) {
-            return;
-        }
-        int totalSize = 0;
-        List<Entity> putEntities = new ArrayList<Entity>();
-        List<Key> deleteKeys = new ArrayList<Key>();
-        for (Journal journal : journals) {
-            if (journal.deleteAll) {
-                Datastore.deleteAll(tx, journal.targetKey);
-            } else if (journal.contentSize == 0) {
-                if (deleteKeys.size() >= MAX_SIZE_JOURNALS) {
-                    Datastore.delete(tx, deleteKeys);
-                    deleteKeys.clear();
-                }
-                deleteKeys.add(journal.targetKey);
-            } else {
-                if (totalSize + journal.contentSize > MAX_CONTENT_SIZE
-                    || putEntities.size() >= MAX_SIZE_JOURNALS) {
-                    Datastore.put(tx, putEntities);
-                    putEntities.clear();
-                    totalSize = 0;
-                }
-                totalSize += journal.contentSize;
-                putEntities.add(journal.getTargetEntity());
-            }
-        }
-        if (deleteKeys.size() > 0) {
-            Datastore.delete(tx, deleteKeys);
-        }
-        if (putEntities.size() > 0) {
-            Datastore.put(tx, putEntities);
-        }
-    }
-
-    /**
-     * Applies the journals within global transaction.
+     * Applies the journals.
      * 
      * @param journals
      *            the journals
@@ -196,7 +139,7 @@ public class Journal {
      *             if the journals parameter is null
      * 
      */
-    public static void applyWithinGlobalTransaction(Iterable<Journal> journals)
+    public static void apply(Iterable<Journal> journals)
             throws NullPointerException {
         if (journals == null) {
             throw new NullPointerException(
@@ -249,35 +192,22 @@ public class Journal {
     }
 
     /**
-     * Returns the keys specified by the root key and the global transaction
-     * key.
+     * Returns the keys specified by the global transaction key.
      * 
-     * @param tx
-     *            the transaction
-     * @param rootKey
-     *            the root key
      * @param globalTransactionKey
      *            the global transaction key
      * @return a list of keys
      * @throws NullPointerException
-     *             if the tx parameter is null or if the rootKey parameter is
-     *             null or if the globalTransactionKey parameter is null
+     *             if the globalTransactionKey parameter is null
      * 
      */
-    public static List<Key> getKeys(Transaction tx, Key rootKey,
-            Key globalTransactionKey) throws NullPointerException {
-        if (tx == null) {
-            throw new NullPointerException("The tx parameter must not be null.");
-        }
-        if (rootKey == null) {
-            throw new NullPointerException(
-                "The rootKey parameter must not be null.");
-        }
+    public static List<Key> getKeys(Key globalTransactionKey)
+            throws NullPointerException {
         if (globalTransactionKey == null) {
             throw new NullPointerException(
                 "The globalTransactionKey parameter must not be null.");
         }
-        return Datastore.query(tx, KIND, rootKey).filter(
+        return Datastore.query(KIND).filter(
             GLOBAL_TRANSACTION_KEY_PROPERTY,
             FilterOperator.EQUAL,
             globalTransactionKey).asKeyList();
@@ -320,57 +250,91 @@ public class Journal {
     }
 
     /**
-     * Puts the journals to the datastore.
+     * Deletes entities specified by the global transaction key in transaction.
      * 
-     * @param journals
-     *            the journals
+     * @param globalTransactionKey
+     *            the global transaction key
      * @throws NullPointerException
-     *             if the journals parameter is null
-     * 
+     *             if the globalTransactionKey parameter is null
      */
-    public static void delete(Iterable<Journal> journals)
+    public static void deleteInTx(Key globalTransactionKey)
             throws NullPointerException {
-        if (journals == null) {
+        if (globalTransactionKey == null) {
             throw new NullPointerException(
-                "The journals parameter must not be null.");
+                "The globalTransactionKey parameter must not be null.");
         }
-        if (journals instanceof Collection<?>
-            && ((Collection<?>) journals).size() == 0) {
-            return;
-        }
-        List<Key> keys = new ArrayList<Key>();
-        for (Journal journal : journals) {
-            if (keys.size() >= MAX_SIZE_JOURNALS) {
-                Datastore.deleteWithoutTx(keys);
-                keys.clear();
-            }
-            keys.add(journal.key);
-        }
-        if (keys.size() > 0) {
-            Datastore.deleteWithoutTx(keys);
+        List<Key> keys = getKeys(globalTransactionKey);
+        for (Key key : keys) {
+            deleteInTx(globalTransactionKey, key);
         }
     }
 
     /**
-     * Deletes journal entities specified by the root key.
+     * Deletes the journals in transaction.
      * 
-     * @param tx
-     *            the transaction
-     * @param rootKey
-     *            the root key
      * @param globalTransactionKey
      *            the global transaction key
+     * @param journals
+     *            the journals
      * @throws NullPointerException
-     *             if the tx parameter is null or if the rootKey parameter is
-     *             null or if the globalTransactionKey parameter is null
-     * 
+     *             if the globalTransactionKey parameter is null or if the
+     *             journals parameter is null
      */
-    public static void delete(Transaction tx, Key rootKey,
-            Key globalTransactionKey) throws NullPointerException {
-        List<Key> keys = getKeys(tx, rootKey, globalTransactionKey);
-        List<List<Key>> keysList = ListUtil.split(keys, MAX_SIZE_JOURNALS);
-        for (List<Key> l : keysList) {
-            Datastore.delete(tx, l);
+    public static void deleteInTx(Key globalTransactionKey,
+            Iterable<Journal> journals) throws NullPointerException {
+        if (globalTransactionKey == null) {
+            throw new NullPointerException(
+                "The globalTransactionKey parameter must not be null.");
+        }
+        if (journals == null) {
+            throw new NullPointerException(
+                "The journals parameter must not be null.");
+        }
+        for (Journal journal : journals) {
+            deleteInTx(globalTransactionKey, journal.key);
+        }
+    }
+
+    /**
+     * Deletes an entity specified by the key in transaction.
+     * 
+     * @param globalTransactionKey
+     *            the global transaction key
+     * @param key
+     *            the key
+     * 
+     * @throws NullPointerException
+     *             if the globalTransactionKey parameter is null or if the key
+     *             parameter is null
+     */
+    protected static void deleteInTx(Key globalTransactionKey, Key key)
+            throws NullPointerException {
+        if (globalTransactionKey == null) {
+            throw new NullPointerException(
+                "The globalTransactionKey parameter must not be null.");
+        }
+        if (key == null) {
+            throw new NullPointerException(
+                "The key parameter must not be null.");
+        }
+        for (int i = 0; i < DatastoreUtil.MAX_RETRY; i++) {
+            Transaction tx = Datastore.beginTransaction();
+            try {
+                Journal journal = getOrNull(tx, key);
+                if (journal != null
+                    && globalTransactionKey
+                        .equals(journal.globalTransactionKey)) {
+                    Datastore.delete(tx, key);
+                    tx.commit();
+                }
+                return;
+            } catch (ConcurrentModificationException e) {
+                continue;
+            } finally {
+                if (tx.isActive()) {
+                    tx.rollback();
+                }
+            }
         }
     }
 
@@ -397,7 +361,7 @@ public class Journal {
         for (Entity e : entities) {
             journals.add(toJournal(e));
         }
-        applyWithinGlobalTransaction(journals);
+        apply(journals);
     }
 
     /**
@@ -436,6 +400,24 @@ public class Journal {
             globalTransactionKey,
             content,
             deleteAll);
+    }
+
+    /**
+     * Returns a {@link Journal} specified by the key. Returns null if no entity
+     * is found.
+     * 
+     * @param tx
+     *            the transaction
+     * @param key
+     *            the key
+     * @return a {@link Lock} specified by the key
+     */
+    public static Journal getOrNull(Transaction tx, Key key) {
+        Entity entity = Datastore.getOrNull(tx, key);
+        if (entity == null) {
+            return null;
+        }
+        return toJournal(entity);
     }
 
     /**
@@ -540,7 +522,7 @@ public class Journal {
                 "The key parameter must not be null.");
         }
         this.key = key;
-        this.targetKey = key.getParent();
+        this.targetKey = KeyFactory.stringToKey(key.getName());
         this.globalTransactionKey = globalTransactionKey;
         if (content != null) {
             this.content = content;

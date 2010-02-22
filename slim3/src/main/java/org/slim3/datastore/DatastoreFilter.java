@@ -65,20 +65,20 @@ public class DatastoreFilter implements Filter {
             }
             throw dee;
         } finally {
-            for (Transaction tx : Datastore.getActiveTransactions()) {
+            for (GlobalTransaction tx : Datastore.getActiveGlobalTransactions()) {
                 try {
-                    Datastore.rollback(tx);
-                    logger.info("The local transaction("
+                    tx.rollback();
+                    logger.info("The global transaction("
                         + tx.getId()
                         + ") was rolled back.");
                 } catch (Throwable t) {
                     logger.log(Level.WARNING, t.getMessage(), t);
                 }
             }
-            for (GlobalTransaction tx : Datastore.getActiveGlobalTransactions()) {
+            for (Transaction tx : Datastore.getActiveTransactions()) {
                 try {
-                    tx.rollback();
-                    logger.info("The global transaction("
+                    Datastore.rollback(tx);
+                    logger.info("The local transaction("
                         + tx.getId()
                         + ") was rolled back.");
                 } catch (Throwable t) {

@@ -22,7 +22,6 @@ import org.junit.Test;
 import org.slim3.tester.ServletTestCase;
 
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.labs.taskqueue.TaskQueuePb.TaskQueueAddRequest;
 
 /**
  * @author higa
@@ -36,6 +35,7 @@ public class GlobalTransactionServletTest extends ServletTestCase {
     public void setUp() throws Exception {
         super.setUp();
         gtx = new GlobalTransaction();
+        gtx.begin();
     }
 
     /**
@@ -43,9 +43,9 @@ public class GlobalTransactionServletTest extends ServletTestCase {
      */
     @Test
     public void rollForward() throws Exception {
-        String encodedKey = Datastore.keyToString(gtx.globalTransactionKey);
         gtx.put(new Entity("Hoge"));
-        gtx.commitAsync();
+        gtx.commitGlobalTransaction();
+        String encodedKey = Datastore.keyToString(gtx.globalTransactionKey);
         tester.request.setServletPath(GlobalTransactionServlet.SERVLET_PATH);
         tester.request.setParameter(
             GlobalTransactionServlet.COMMAND_NAME,
@@ -53,7 +53,6 @@ public class GlobalTransactionServletTest extends ServletTestCase {
         tester.request.setParameter(
             GlobalTransactionServlet.KEY_NAME,
             encodedKey);
-        tester.request.setParameter(GlobalTransactionServlet.VERSION_NAME, "1");
         GlobalTransactionServlet servlet = new GlobalTransactionServlet();
         servlet.process(tester.request, tester.response);
         assertThat(Datastore.query("Hoge").count(), is(1));
@@ -67,10 +66,10 @@ public class GlobalTransactionServletTest extends ServletTestCase {
      */
     @Test
     public void rollback() throws Exception {
-        String encodedKey = Datastore.keyToString(gtx.globalTransactionKey);
         gtx.put(new Entity("Hoge"));
         gtx.put(new Entity("Hoge"));
         gtx.rollbackAsync();
+        String encodedKey = Datastore.keyToString(gtx.globalTransactionKey);
         tester.request.setServletPath(GlobalTransactionServlet.SERVLET_PATH);
         tester.request.setParameter(
             GlobalTransactionServlet.COMMAND_NAME,
@@ -84,36 +83,5 @@ public class GlobalTransactionServletTest extends ServletTestCase {
         assertThat(Datastore.query(GlobalTransaction.KIND).count(), is(0));
         assertThat(Datastore.query(Lock.KIND).count(), is(0));
         assertThat(Datastore.query(Journal.KIND).count(), is(0));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void cleanUp() throws Exception {
-        String encodedKey = Datastore.keyToString(gtx.globalTransactionKey);
-        gtx.put(new Entity("Hoge"));
-        Journal.put(gtx.journalMap.values());
-        gtx.commitGlobalTransactionInternally();
-        tester.request.setServletPath(GlobalTransactionServlet.SERVLET_PATH);
-        tester.request.setParameter(
-            GlobalTransactionServlet.COMMAND_NAME,
-            GlobalTransactionServlet.CLEANUP_COMMAND);
-        GlobalTransactionServlet servlet = new GlobalTransactionServlet();
-        servlet.process(tester.request, tester.response);
-        assertThat(tester.tasks.size(), is(1));
-        TaskQueueAddRequest task = tester.tasks.get(0);
-        assertThat(task.getQueueName(), is(GlobalTransaction.QUEUE_NAME));
-        assertThat(task.getUrl(), is(GlobalTransactionServlet.SERVLET_PATH));
-        assertThat(task.getBody(), is(GlobalTransactionServlet.COMMAND_NAME
-            + "="
-            + GlobalTransactionServlet.ROLLFORWARD_COMMAND
-            + "&"
-            + GlobalTransactionServlet.KEY_NAME
-            + "="
-            + encodedKey
-            + "&"
-            + GlobalTransactionServlet.VERSION_NAME
-            + "=1"));
     }
 }

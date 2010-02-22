@@ -370,10 +370,10 @@ public class AppEngineTester implements Delegate<Environment> {
      */
     public void tearDown() throws Exception {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        for (Transaction tx : Datastore.getActiveTransactions()) {
+        for (GlobalTransaction tx : Datastore.getActiveGlobalTransactions()) {
             tx.rollback();
         }
-        for (GlobalTransaction tx : Datastore.getActiveGlobalTransactions()) {
+        for (Transaction tx : Datastore.getActiveTransactions()) {
             tx.rollback();
         }
         if (!putKeys.isEmpty()) {
