@@ -30,7 +30,7 @@ public class UploadServiceTest extends AppEngineTestCase {
     @Test
     public void upload() throws Exception {
         FileItem formFile =
-            new FileItem("aaa.txt", "text/html", new byte[] { 'a' });
+            new FileItem("/root/aaa.txt", "text/html", new byte[] { 'a' });
         UploadedData data =
             Datastore
                 .get(UploadedData.class, service.upload(formFile).getKey());

@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cronentries>
+<!--
   <cron>
     <url>/slim3/gtx?command=cleanup</url>
     <description>for cleaning up the unprocessed global transactions</description>
     <schedule>every 1 minutes</schedule>
   </cron>
+-->
 </cronentries>

@@ -36,7 +36,7 @@ public class UploadService {
         UploadedData data = new UploadedData();
         models.add(data);
         data.setKey(Datastore.allocateId(d));
-        data.setFileName(formFile.getFileName());
+        data.setFileName(formFile.getShortFileName());
         data.setLength(formFile.getData().length);
         byte[] bytes = formFile.getData();
         byte[][] bytesArray = ByteUtil.split(bytes, FRAGMENT_SIZE);
