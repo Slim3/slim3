@@ -55,11 +55,6 @@ public class Journal {
     public static final String CONTENT_PROPERTY = "content";
 
     /**
-     * The deleteAll property name.
-     */
-    public static final String DELETE_ALL_PROPERTY = "deleteAll";
-
-    /**
      * The maximum size(bytes) of content.
      */
     public static final int MAX_CONTENT_SIZE = 1000000;
@@ -68,11 +63,6 @@ public class Journal {
      * The extra size.
      */
     public static final int EXTRA_SIZE = 200;
-
-    /**
-     * The maximum size of journals.
-     */
-    public static final int MAX_SIZE_JOURNALS = 100;
 
     /**
      * 
@@ -108,11 +98,6 @@ public class Journal {
      * The content of target entity.
      */
     protected byte[] content;
-
-    /**
-     * Whether this journal is "deleteAll()".
-     */
-    protected boolean deleteAll = false;
 
     /**
      * Creates a key.
@@ -155,21 +140,11 @@ public class Journal {
         List<Key> putJournalKeys = new ArrayList<Key>();
         List<Key> deleteJournalKeys = new ArrayList<Key>();
         for (Journal journal : journals) {
-            if (journal.deleteAll) {
-                Datastore.deleteAllWithoutTx(journal.targetKey);
-                Datastore.deleteWithoutTx(journal.key);
-            } else if (journal.contentSize == 0) {
-                if (deleteKeys.size() >= MAX_SIZE_JOURNALS) {
-                    Datastore.deleteWithoutTx(deleteKeys);
-                    Datastore.deleteWithoutTx(deleteJournalKeys);
-                    deleteKeys.clear();
-                    deleteJournalKeys.clear();
-                }
+            if (journal.contentSize == 0) {
                 deleteKeys.add(journal.targetKey);
                 deleteJournalKeys.add(journal.key);
             } else {
-                if (totalSize + journal.contentSize > MAX_CONTENT_SIZE
-                    || putEntities.size() >= MAX_SIZE_JOURNALS) {
+                if (totalSize + journal.contentSize > MAX_CONTENT_SIZE) {
                     Datastore.putWithoutTx(putEntities);
                     Datastore.deleteWithoutTx(putJournalKeys);
                     putEntities.clear();
@@ -235,8 +210,7 @@ public class Journal {
         int totalSize = 0;
         List<Entity> entities = new ArrayList<Entity>();
         for (Journal journal : journals) {
-            if (totalSize + journal.contentSize + EXTRA_SIZE > MAX_CONTENT_SIZE
-                || entities.size() >= MAX_SIZE_JOURNALS) {
+            if (totalSize + journal.contentSize + EXTRA_SIZE > MAX_CONTENT_SIZE) {
                 Datastore.putWithoutTx(entities);
                 entities.clear();
                 totalSize = 0;
@@ -394,12 +368,7 @@ public class Journal {
         if (blob != null) {
             content = blob.getBytes();
         }
-        boolean deleteAll = (Boolean) entity.getProperty(DELETE_ALL_PROPERTY);
-        return new Journal(
-            entity.getKey(),
-            globalTransactionKey,
-            content,
-            deleteAll);
+        return new Journal(entity.getKey(), globalTransactionKey, content);
     }
 
     /**
@@ -468,24 +437,6 @@ public class Journal {
      */
     public Journal(Key globalTransactionKey, Key targetKey)
             throws NullPointerException {
-        this(globalTransactionKey, targetKey, false);
-    }
-
-    /**
-     * Constructor for "delete".
-     * 
-     * @param globalTransactionKey
-     *            the global transaction key
-     * @param targetKey
-     *            the targetKey
-     * @param deleteAll
-     *            whether this journal is "deleteAll()"
-     * @throws NullPointerException
-     *             if the globalTransactionKey parameter is null or if the
-     *             targetKey parameter is null
-     */
-    public Journal(Key globalTransactionKey, Key targetKey, boolean deleteAll)
-            throws NullPointerException {
         if (globalTransactionKey == null) {
             throw new NullPointerException(
                 "The globalTransactionKey parameter must not be null.");
@@ -497,7 +448,6 @@ public class Journal {
         this.globalTransactionKey = globalTransactionKey;
         this.targetKey = targetKey;
         this.key = createKey(targetKey);
-        this.deleteAll = deleteAll;
     }
 
     /**
@@ -509,14 +459,12 @@ public class Journal {
      *            the global transaction key
      * @param content
      *            the content of target entity
-     * @param deleteAll
-     *            whether this journal is for "deleteAll"
      * 
      * @throws NullPointerException
      *             if the key parameter is null
      */
-    public Journal(Key key, Key globalTransactionKey, byte[] content,
-            boolean deleteAll) throws NullPointerException {
+    public Journal(Key key, Key globalTransactionKey, byte[] content)
+            throws NullPointerException {
         if (key == null) {
             throw new NullPointerException(
                 "The key parameter must not be null.");
@@ -531,8 +479,6 @@ public class Journal {
             contentSize = targetEntityProto.encodingSize();
             targetEntity = EntityTranslator.createFromPb(targetEntityProto);
         }
-        this.deleteAll = deleteAll;
-
     }
 
     /**
@@ -550,7 +496,6 @@ public class Journal {
                 CONTENT_PROPERTY,
                 new Blob(getContent()));
         }
-        entity.setUnindexedProperty(DELETE_ALL_PROPERTY, deleteAll);
         return entity;
     }
 
@@ -617,14 +562,5 @@ public class Journal {
             targetEntityProto.outputTo(content, 0);
         }
         return content;
-    }
-
-    /**
-     * Determines if this journal is "deleteAll()".
-     * 
-     * @return the deleteAll whether this journal is "deleteAll()"
-     */
-    public boolean isDeleteAll() {
-        return deleteAll;
     }
 }

@@ -16,8 +16,10 @@
 package org.slim3.datastore;
 
 import org.junit.Test;
-import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.AppEngineTestCase;
+
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Query.FilterOperator;
 
 /**
  * @author higa
@@ -30,9 +32,10 @@ public class SpikeTest extends AppEngineTestCase {
      */
     @Test
     public void spike() throws Exception {
-        GlobalTransaction gtx = Datastore.beginGlobalTransaction();
-        gtx.put(new Hoge());
-        gtx.put(new Hoge());
-        gtx.commit();
+        Datastore.put(new Entity(Datastore.createKey("Hoge", "AA01")));
+        System.out.println(Datastore.query("Hoge").filter(
+            "__key__",
+            FilterOperator.GREATER_THAN_OR_EQUAL,
+            Datastore.createKey("Hoge", "AA")).count());
     }
 }

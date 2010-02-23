@@ -1057,7 +1057,6 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(journal, is(notNullValue()));
         assertThat(journal.globalTransactionKey, is(gtx.globalTransactionKey));
         assertThat(journal.targetEntityProto, is(notNullValue()));
-        assertThat(journal.deleteAll, is(false));
     }
 
     /**
@@ -1156,7 +1155,6 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(journal, is(notNullValue()));
         assertThat(journal.globalTransactionKey, is(gtx.globalTransactionKey));
         assertThat(journal.targetEntityProto, is(nullValue()));
-        assertThat(journal.deleteAll, is(false));
     }
 
     /**
@@ -1179,7 +1177,6 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(journal, is(notNullValue()));
         assertThat(journal.globalTransactionKey, is(gtx.globalTransactionKey));
         assertThat(journal.targetEntityProto, is(nullValue()));
-        assertThat(journal.deleteAll, is(false));
     }
 
     /**
@@ -1202,7 +1199,6 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(journal, is(notNullValue()));
         assertThat(journal.globalTransactionKey, is(gtx.globalTransactionKey));
         assertThat(journal.targetEntityProto, is(nullValue()));
-        assertThat(journal.deleteAll, is(false));
     }
 
     /**
@@ -1253,20 +1249,26 @@ public class GlobalTransactionTest extends AppEngineTestCase {
     public void deleteAllAsGlobalTransaction() throws Exception {
         Key rootKey = Datastore.createKey("Parent", 1);
         Key key = Datastore.createKey(rootKey, "Child", 1);
-        Key key2 = Datastore.createKey("Hoge", 1);
-        gtx.getAsMap(key2);
-        gtx.deleteAll(key);
+        Key key2 = Datastore.createKey(rootKey, "Child", 2);
+        Key key3 = Datastore.createKey("Hoge", 1);
+        Datastore.putWithoutTx(new Entity(key));
+        Datastore.putWithoutTx(new Entity(key2));
+        gtx.getAsMap(key3);
+        gtx.deleteAll(rootKey);
         assertThat(gtx.lockMap.size(), is(1));
         Lock lock = gtx.lockMap.get(rootKey);
         assertThat(lock, is(notNullValue()));
         assertThat(lock.globalTransactionKey, is(gtx.globalTransactionKey));
         assertThat(lock.timestamp, is(not(0L)));
-        assertThat(gtx.journalMap.size(), is(1));
+        assertThat(gtx.journalMap.size(), is(2));
         Journal journal = gtx.journalMap.get(key);
         assertThat(journal, is(notNullValue()));
         assertThat(journal.globalTransactionKey, is(gtx.globalTransactionKey));
         assertThat(journal.targetEntityProto, is(nullValue()));
-        assertThat(journal.deleteAll, is(true));
+        journal = gtx.journalMap.get(key2);
+        assertThat(journal, is(notNullValue()));
+        assertThat(journal.globalTransactionKey, is(gtx.globalTransactionKey));
+        assertThat(journal.targetEntityProto, is(nullValue()));
     }
 
     /**
@@ -1557,5 +1559,105 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(Datastore.query("Hoge").count(), is(0));
         assertThat(Datastore.query(Lock.KIND).count(), is(0));
         assertThat(Datastore.query(Journal.KIND).count(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void verifyLockSizeWithin100() throws Exception {
+        Key key = Datastore.createKey("Hoge", 1);
+        gtx.getAsMap(key);
+        for (int i = 1; i <= 100; i++) {
+            gtx.put(new Entity("Hoge" + i));
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void verifyLockSizeWithin100ForGetAsMap() throws Exception {
+        Key key = Datastore.createKey("Hoge", 1);
+        gtx.getAsMap(key);
+        for (int i = 1; i <= 100; i++) {
+            gtx.getAsMap(Datastore.createKey("Hoge" + i, i));
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalStateException.class)
+    public void verifyLockSizeOver100ForPut() throws Exception {
+        Key key = Datastore.createKey("Hoge", 1);
+        gtx.getAsMap(key);
+        for (int i = 1; i <= 101; i++) {
+            gtx.put(new Entity("Hoge" + i));
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalStateException.class)
+    public void verifyLockSizeOver100ForGetAsMap() throws Exception {
+        Key key = Datastore.createKey("Hoge", 1);
+        gtx.getAsMap(key);
+        for (int i = 1; i <= 101; i++) {
+            gtx.getAsMap(Datastore.createKey("Hoge" + i, i));
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void verifyJournalSizeWithin500ForPut() throws Exception {
+        Key parentKey = Datastore.createKey("Parent", 1);
+        Key parentKey2 = Datastore.createKey("Parent", 2);
+        gtx.getAsMap(parentKey2);
+        for (int i = 1; i <= 500; i++) {
+            gtx.put(new Entity(Datastore.createKey(parentKey, "Hoge", i)));
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void verifyJournalSizeWithin500ForDelete() throws Exception {
+        Key parentKey = Datastore.createKey("Parent", 1);
+        Key parentKey2 = Datastore.createKey("Parent", 2);
+        gtx.getAsMap(parentKey2);
+        for (int i = 1; i <= 500; i++) {
+            gtx.delete(Datastore.createKey(parentKey, "Hoge", i));
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalStateException.class)
+    public void verifyJournalSizeOver500ForPut() throws Exception {
+        Key parentKey = Datastore.createKey("Parent", 1);
+        Key parentKey2 = Datastore.createKey("Parent", 2);
+        gtx.getAsMap(parentKey2);
+        for (int i = 1; i <= 501; i++) {
+            gtx.put(new Entity(Datastore.createKey(parentKey, "Hoge", i)));
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalStateException.class)
+    public void verifyJournalSizeOver500ForDelete() throws Exception {
+        Key parentKey = Datastore.createKey("Parent", 1);
+        Key parentKey2 = Datastore.createKey("Parent", 2);
+        gtx.getAsMap(parentKey2);
+        for (int i = 1; i <= 501; i++) {
+            gtx.delete(Datastore.createKey(parentKey, "Hoge", i));
+        }
     }
 }

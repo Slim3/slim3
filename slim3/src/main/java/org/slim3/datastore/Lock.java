@@ -59,11 +59,6 @@ public class Lock {
     protected static final long TIMEOUT = 30 * 1000;
 
     /**
-     * The maximum size of locks.
-     */
-    protected static final int MAX_SIZE_LOCKS = 100;
-
-    /**
      * The key.
      */
     protected Key key;
