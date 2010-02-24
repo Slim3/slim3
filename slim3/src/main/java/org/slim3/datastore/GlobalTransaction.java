@@ -99,11 +99,6 @@ public class GlobalTransaction {
     protected Key localTransactionRootKey;
 
     /**
-     * Whether this transaction is active.
-     */
-    protected boolean active = false;
-
-    /**
      * The global transaction key.
      */
     protected Key globalTransactionKey;
@@ -364,7 +359,10 @@ public class GlobalTransaction {
      * @return whether this transaction is active
      */
     public boolean isActive() {
-        return active;
+        if (localTransaction != null) {
+            return localTransaction.isActive();
+        }
+        return false;
     }
 
     /**
@@ -374,7 +372,7 @@ public class GlobalTransaction {
      *             if this transaction is not active
      */
     protected void assertActive() throws IllegalStateException {
-        if (!active) {
+        if (!isActive()) {
             throw new IllegalStateException("This transaction must be active.");
         }
     }
@@ -398,7 +396,6 @@ public class GlobalTransaction {
         timestamp = System.currentTimeMillis();
         lockMap = new HashMap<Key, Lock>();
         journalMap = new HashMap<Key, Journal>();
-        active = true;
     }
 
     /**
@@ -1483,6 +1480,7 @@ public class GlobalTransaction {
      * Unlocks entities.
      */
     protected void unlock() {
+        activeTransactions.get().remove(this);
         if (localTransaction.isActive()) {
             localTransaction.rollback();
         }
@@ -1490,8 +1488,6 @@ public class GlobalTransaction {
             Lock.deleteInTx(globalTransactionKey, lockMap.values());
             lockMap.clear();
         }
-        activeTransactions.get().remove(this);
-        active = false;
     }
 
     /**
@@ -1502,6 +1498,7 @@ public class GlobalTransaction {
      */
     protected void verifyLockSize() throws IllegalStateException {
         if (lockMap.size() >= MAX_LOCKS) {
+            unlock();
             throw new IllegalStateException(
                 "You cannot add more than 100 locks into this global transaction. NOTE: The lock of first entity group is not counted.");
         }
@@ -1516,6 +1513,7 @@ public class GlobalTransaction {
      */
     protected void verifyJournalSize() throws IllegalStateException {
         if (journalMap.size() >= MAX_JOURNALS) {
+            unlock();
             throw new IllegalStateException(
                 "You cannot add more than 500 journals into this global transaction. NOTE: The journals of first entity group are not counted.");
         }
@@ -1534,7 +1532,6 @@ public class GlobalTransaction {
      * Commits this transaction as local transaction.
      */
     protected void commitLocalTransaction() {
-        active = false;
         activeTransactions.get().remove(this);
         try {
             localTransaction.commit();
@@ -1579,7 +1576,6 @@ public class GlobalTransaction {
      * Commits this global transaction.
      */
     protected void commitGlobalTransactionInternally() {
-        active = false;
         activeTransactions.get().remove(this);
         try {
             Datastore.put(localTransaction, toEntity());
@@ -1637,6 +1633,8 @@ public class GlobalTransaction {
     protected void rollbackAsyncGlobalTransaction() {
         submitRollbackJob(globalTransactionKey);
         activeTransactions.get().remove(this);
-        active = false;
+        if (localTransaction.isActive()) {
+            localTransaction.rollback();
+        }
     }
 }

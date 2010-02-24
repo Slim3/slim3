@@ -97,6 +97,16 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void clearActiveGlobalTransaction() throws Exception {
+        Datastore.beginGlobalTransaction();
+        DatastoreUtil.clearActiveGlobalTransactions();
+        assertThat(Datastore.getActiveGlobalTransactions().size(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void allocateIds() throws Exception {
         KeyRange range = DatastoreUtil.allocateIds("Hoge", 2);
         assertThat(range, is(notNullValue()));

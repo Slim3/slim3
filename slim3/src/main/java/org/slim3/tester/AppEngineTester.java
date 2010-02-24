@@ -32,9 +32,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import org.slim3.datastore.Datastore;
 import org.slim3.datastore.DatastoreUtil;
-import org.slim3.datastore.GlobalTransaction;
 import org.slim3.util.AppEngineUtil;
 import org.slim3.util.ThrowableUtil;
 import org.slim3.util.WrapRuntimeException;
@@ -369,11 +367,9 @@ public class AppEngineTester implements Delegate<Environment> {
      *             if an exception has occurred
      */
     public void tearDown() throws Exception {
+        DatastoreUtil.clearActiveGlobalTransactions();
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        for (GlobalTransaction tx : Datastore.getActiveGlobalTransactions()) {
-            tx.rollback();
-        }
-        for (Transaction tx : Datastore.getActiveTransactions()) {
+        for (Transaction tx : ds.getActiveTransactions()) {
             tx.rollback();
         }
         if (!putKeys.isEmpty()) {

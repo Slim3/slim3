@@ -148,7 +148,7 @@ public class GlobalTransactionTest extends AppEngineTestCase {
     public void begin() throws Exception {
         assertThat(gtx.localTransaction, is(notNullValue()));
         assertThat(gtx.globalTransactionKey, is(nullValue()));
-        assertThat(gtx.active, is(true));
+        assertThat(gtx.isActive(), is(true));
         assertThat(gtx.timestamp, is(not(0L)));
         assertThat(gtx.lockMap, is(notNullValue()));
         assertThat(gtx.journalMap, is(notNullValue()));

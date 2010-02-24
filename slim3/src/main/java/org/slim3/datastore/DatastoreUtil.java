@@ -170,6 +170,13 @@ public final class DatastoreUtil {
     }
 
     /**
+     * Clears the active transactions.
+     */
+    public static void clearActiveGlobalTransactions() {
+        GlobalTransaction.clearActiveTransactions();
+    }
+
+    /**
      * Allocates a key within a namespace defined by the kind.
      * 
      * @param kind
