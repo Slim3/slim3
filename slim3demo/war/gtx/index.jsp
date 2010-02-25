@@ -10,7 +10,7 @@
 <link rel="stylesheet" type="text/css" href="/css/global.css" />
 </head>
 <body>
-tx time:${txtime} gtx time:${gtxtime}
+time1:${time1} time2:${time2}
 
 </body>
 </html>

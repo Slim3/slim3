@@ -16,27 +16,28 @@ public class IndexController extends Controller {
         Datastore.delete(Datastore.query("Hoge").asKeyList());
         int count = 10;
         long start = System.currentTimeMillis();
+        int index = 1;
         for (int i = 0; i < count; i++) {
             Transaction tx = Datastore.beginTransaction();
-            Key key = Datastore.createKey("Hoge", i + 1);
+            Key key = Datastore.createKey("Hoge", index++);
             Datastore.put(tx, new Entity(key));
             tx.commit();
         }
         long time = System.currentTimeMillis() - start;
-        System.out.println("tx time:" + time);
-        requestScope("txtime", time);
+        System.out.println("time1:" + time);
+        requestScope("time1", time);
         Datastore.delete(Datastore.query("Hoge").asKeyList());
 
         start = System.currentTimeMillis();
         GlobalTransaction gtx = Datastore.beginGlobalTransaction();
         for (int i = 0; i < count; i++) {
-            Key key = Datastore.createKey("Hoge", i + 1);
+            Key key = Datastore.createKey("Hoge", index++);
             gtx.put(new Entity(key));
         }
         gtx.commit();
         time = System.currentTimeMillis() - start;
-        System.out.println("gtx time:" + time);
-        requestScope("gtxtime", time);
+        System.out.println("time2:" + time);
+        requestScope("time2", time);
         return forward("index.jsp");
     }
 }
