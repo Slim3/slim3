@@ -19,7 +19,8 @@ import org.junit.Test;
 import org.slim3.tester.AppEngineTestCase;
 
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.EntityTranslator;
+import com.google.storage.onestore.v3.OnestoreEntity.EntityProto;
 
 /**
  * @author higa
@@ -32,10 +33,12 @@ public class SpikeTest extends AppEngineTestCase {
      */
     @Test
     public void spike() throws Exception {
-        Datastore.put(new Entity(Datastore.createKey("Hoge", "AA01")));
-        System.out.println(Datastore.query("Hoge").filter(
-            "__key__",
-            FilterOperator.GREATER_THAN_OR_EQUAL,
-            Datastore.createKey("Hoge", "AA")).count());
+        Entity entity = new Entity(Datastore.createKey("Hoge", "AA01"));
+        EntityProto proto = EntityTranslator.convertToPb(entity);
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < 10000; i++) {
+            proto.encodingSize();
+        }
+        System.out.println(System.currentTimeMillis() - start);
     }
 }

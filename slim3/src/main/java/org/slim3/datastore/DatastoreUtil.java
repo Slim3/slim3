@@ -47,6 +47,7 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.apphosting.api.ApiProxy;
 import com.google.apphosting.api.DatastorePb.GetSchemaRequest;
+import com.google.apphosting.api.DatastorePb.PutRequest;
 import com.google.apphosting.api.DatastorePb.Schema;
 import com.google.storage.onestore.v3.OnestoreEntity.EntityProto;
 import com.google.storage.onestore.v3.OnestoreEntity.Reference;
@@ -71,6 +72,8 @@ public final class DatastoreUtil {
     private static final String DATASTORE_SERVICE = "datastore_v3";
 
     private static final String GET_SCHEMA_METHOD = "GetSchema";
+
+    private static final String PUT_METHOD = "Put";
 
     private static final Logger logger =
         Logger.getLogger(DatastoreUtil.class.getName());
@@ -642,6 +645,43 @@ public final class DatastoreUtil {
             }
         }
         throw dte;
+    }
+
+    /**
+     * Puts the entities.
+     * 
+     * @param entities
+     *            the entities
+     */
+    public static void put(Iterable<EntityProto> entities) {
+        if (entities == null) {
+            throw new NullPointerException(
+                "The entities parameter must not be null.");
+        }
+        if (entities instanceof Collection<?>
+            && ((Collection<?>) entities).size() == 0) {
+            return;
+        }
+        PutRequest req = new PutRequest();
+        for (EntityProto e : entities) {
+            req.addEntity(e);
+        }
+        put(req);
+    }
+
+    /**
+     * Puts the request for put.
+     * 
+     * @param putRequest
+     *            the request for put
+     */
+    public static void put(PutRequest putRequest) {
+        if (putRequest == null) {
+            throw new NullPointerException(
+                "The putRequest parameter must not be null.");
+        }
+        ApiProxy.makeSyncCall(DATASTORE_SERVICE, PUT_METHOD, putRequest
+            .toByteArray());
     }
 
     /**

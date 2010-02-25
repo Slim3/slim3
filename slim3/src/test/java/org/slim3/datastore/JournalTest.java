@@ -18,8 +18,10 @@ package org.slim3.datastore;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.slim3.tester.AppEngineTestCase;
@@ -27,8 +29,7 @@ import org.slim3.tester.AppEngineTestCase;
 import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.datastore.Query.FilterOperator;
 
 /**
  * @author higa
@@ -40,62 +41,33 @@ public class JournalTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void createKey() throws Exception {
-        Key targetKey = Datastore.createKey("Hoge", 1);
-        Key key = Journal.createKey(targetKey);
-        assertThat(key.getParent(), is(nullValue()));
-        assertThat(key.getKind(), is(Journal.KIND));
-        assertThat(key.getName(), is(KeyFactory.keyToString(targetKey)));
+    public void createEntity() throws Exception {
+        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
+        Entity entity = Journal.createEntity(globalTransactionKey);
+        assertThat(entity, is(notNullValue()));
+        assertThat(DatastoreUtil.isIncomplete(entity.getKey()), is(false));
+        assertThat(
+            (Key) entity.getProperty(Journal.GLOBAL_TRANSACTION_KEY_PROPERTY),
+            is(globalTransactionKey));
     }
 
     /**
      * @throws Exception
      */
     @Test
-    public void applyForDelete() throws Exception {
-        Key targetKey = Datastore.createKey("Hoge", 1);
-        Datastore.put(new Entity(targetKey));
+    public void apply() throws Exception {
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
-        Journal journal = new Journal(globalTransactionKey, targetKey);
-        Journal.put(Arrays.asList(journal));
-        Journal.apply(Arrays.asList(journal));
-        assertThat(Datastore.query("Hoge").count(), is(0));
-        assertThat(Datastore.query(Journal.KIND).count(), is(0));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void applyForPut() throws Exception {
-        Key targetKey = Datastore.createKey("Hoge", 1);
-        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
-        Journal journal =
-            new Journal(globalTransactionKey, new Entity(targetKey));
-        Journal.put(Arrays.asList(journal));
-        Journal.apply(Arrays.asList(journal));
-        assertThat(Datastore.query("Hoge").count(), is(1));
-        assertThat(Datastore.query(Journal.KIND).count(), is(0));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void applyPutBigEntities() throws Exception {
-        Blob blob = new Blob(new byte[Journal.MAX_CONTENT_SIZE - 100]);
-        Key targetKey = Datastore.createKey("Hoge", 1);
-        Key targetKey2 = Datastore.createKey(targetKey, "Hoge", 2);
-        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
-        Entity entity = new Entity(targetKey);
-        entity.setUnindexedProperty("aaa", blob);
-        Entity entity2 = new Entity(targetKey2);
-        entity2.setUnindexedProperty("aaa", blob);
-        Journal journal = new Journal(globalTransactionKey, entity);
-        Journal journal2 = new Journal(globalTransactionKey, entity2);
-        Journal.put(Arrays.asList(journal, journal2));
-        Journal.apply(Arrays.asList(journal, journal2));
-        assertThat(Datastore.query("Hoge").count(), is(2));
+        Key key = Datastore.createKey("Hoge", 1);
+        Key key2 = Datastore.createKey("Hoge", 2);
+        Datastore.putWithoutTx(new Entity(key2));
+        Map<Key, Entity> journalMap = new LinkedHashMap<Key, Entity>();
+        Entity putEntity = new Entity(key);
+        journalMap.put(key, putEntity);
+        journalMap.put(key2, null);
+        Journal.put(globalTransactionKey, journalMap);
+        Journal.apply(globalTransactionKey);
+        assertThat(Datastore.getOrNull(key), is(notNullValue()));
+        assertThat(Datastore.getOrNull(key2), is(nullValue()));
         assertThat(Datastore.query(Journal.KIND).count(), is(0));
     }
 
@@ -106,8 +78,9 @@ public class JournalTest extends AppEngineTestCase {
     public void getKeys() throws Exception {
         Key targetKey = Datastore.createKey("Hoge", 1);
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
-        Journal journal = new Journal(globalTransactionKey, targetKey);
-        Journal.put(Arrays.asList(journal));
+        Map<Key, Entity> journalMap = new HashMap<Key, Entity>();
+        journalMap.put(targetKey, null);
+        Journal.put(globalTransactionKey, journalMap);
         List<Key> keys = Journal.getKeys(globalTransactionKey);
         assertThat(keys.size(), is(1));
     }
@@ -117,12 +90,25 @@ public class JournalTest extends AppEngineTestCase {
      */
     @Test
     public void put() throws Exception {
-        Key targetKey = Datastore.createKey("Hoge", 1);
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
-        Journal journal =
-            new Journal(globalTransactionKey, new Entity(targetKey));
-        Journal.put(Arrays.asList(journal));
-        assertThat(Datastore.query(Journal.KIND).count(), is(1));
+        Key key = Datastore.createKey("Hoge", 1);
+        Key key2 = Datastore.createKey("Hoge", 2);
+        Map<Key, Entity> journalMap = new LinkedHashMap<Key, Entity>();
+        Entity putEntity = new Entity(key);
+        journalMap.put(key, putEntity);
+        journalMap.put(key2, null);
+        Journal.put(globalTransactionKey, journalMap);
+        Entity entity =
+            Datastore.query(Journal.KIND).filter(
+                Journal.GLOBAL_TRANSACTION_KEY_PROPERTY,
+                FilterOperator.EQUAL,
+                globalTransactionKey).asSingleEntity();
+        assertThat(entity, is(notNullValue()));
+        assertThat(entity.hasProperty("put0"), is(true));
+        Blob blob = (Blob) entity.getProperty("put0");
+        assertThat(DatastoreUtil.bytesToEntity(blob.getBytes()), is(putEntity));
+        assertThat(entity.hasProperty("delete1"), is(true));
+        assertThat((Key) entity.getProperty("delete1"), is(key2));
     }
 
     /**
@@ -130,31 +116,34 @@ public class JournalTest extends AppEngineTestCase {
      */
     @Test
     public void putBigEntities() throws Exception {
-        Blob blob = new Blob(new byte[Journal.MAX_CONTENT_SIZE - 100]);
-        Key targetKey = Datastore.createKey("Hoge", 1);
-        Key targetKey2 = Datastore.createKey(targetKey, "Hoge", 2);
+        Blob blob = new Blob(new byte[Journal.MAX_ENTITY_SIZE]);
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
-        Entity entity = new Entity(targetKey);
-        entity.setUnindexedProperty("aaa", blob);
-        Entity entity2 = new Entity(targetKey2);
-        entity2.setUnindexedProperty("aaa", blob);
-        Journal journal = new Journal(globalTransactionKey, entity);
-        Journal journal2 = new Journal(globalTransactionKey, entity2);
-        Journal.put(Arrays.asList(journal, journal2));
-        assertThat(Datastore.query(Journal.KIND).count(), is(2));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void deleteJournalsInTxByGlobalTransactionKey() throws Exception {
-        Key targetKey = Datastore.createKey("Hoge", 1);
-        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
-        Journal journal = new Journal(globalTransactionKey, targetKey);
-        Journal.put(Arrays.asList(journal));
-        Journal.deleteInTx(globalTransactionKey, Arrays.asList(journal));
-        assertThat(Datastore.query(Journal.KIND).count(), is(0));
+        Key key = Datastore.createKey("Hoge", 1);
+        Key key2 = Datastore.createKey("Hoge", 2);
+        Map<Key, Entity> journalMap = new LinkedHashMap<Key, Entity>();
+        Entity e = new Entity(key);
+        e.setUnindexedProperty("aaa", blob);
+        Entity e2 = new Entity(key2);
+        e2.setUnindexedProperty("aaa", blob);
+        journalMap.put(key, e);
+        journalMap.put(key2, e2);
+        Journal.put(globalTransactionKey, journalMap);
+        List<Entity> entities =
+            Datastore.query(Journal.KIND).filter(
+                Journal.GLOBAL_TRANSACTION_KEY_PROPERTY,
+                FilterOperator.EQUAL,
+                globalTransactionKey).asList();
+        assertThat(entities.size(), is(2));
+        Entity entity = entities.get(0);
+        assertThat(entity, is(notNullValue()));
+        assertThat(entity.hasProperty("put0"), is(true));
+        Blob blob2 = (Blob) entity.getProperty("put0");
+        assertThat(DatastoreUtil.bytesToEntity(blob2.getBytes()), is(e));
+        entity = entities.get(1);
+        assertThat(entity, is(notNullValue()));
+        assertThat(entity.hasProperty("put1"), is(true));
+        blob2 = (Blob) entity.getProperty("put1");
+        assertThat(DatastoreUtil.bytesToEntity(blob2.getBytes()), is(e2));
     }
 
     /**
@@ -164,8 +153,9 @@ public class JournalTest extends AppEngineTestCase {
     public void deleteInTxByGlobalTransactionKey() throws Exception {
         Key targetKey = Datastore.createKey("Hoge", 1);
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
-        Journal journal = new Journal(globalTransactionKey, targetKey);
-        Journal.put(Arrays.asList(journal));
+        Map<Key, Entity> journalMap = new HashMap<Key, Entity>();
+        journalMap.put(targetKey, null);
+        Journal.put(globalTransactionKey, journalMap);
         Journal.deleteInTx(globalTransactionKey);
         assertThat(Datastore.query(Journal.KIND).count(), is(0));
     }
@@ -177,199 +167,11 @@ public class JournalTest extends AppEngineTestCase {
     public void deleteInTx() throws Exception {
         Key targetKey = Datastore.createKey("Hoge", 1);
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
-        Journal journal = new Journal(globalTransactionKey, targetKey);
-        Journal.put(Arrays.asList(journal));
-        Journal.deleteInTx(globalTransactionKey, journal.key);
+        Map<Key, Entity> journalMap = new HashMap<Key, Entity>();
+        journalMap.put(targetKey, null);
+        Journal.put(globalTransactionKey, journalMap);
+        List<Key> keys = Journal.getKeys(globalTransactionKey);
+        Journal.deleteInTx(globalTransactionKey, keys.get(0));
         assertThat(Datastore.query(Journal.KIND).count(), is(0));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void toJournal() throws Exception {
-        Key targetKey = Datastore.createKey("Hoge", 1);
-        Key key = Journal.createKey(targetKey);
-        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
-        Entity targetEntity = new Entity(targetKey);
-        byte[] content = DatastoreUtil.entityToBytes(targetEntity);
-        Entity entity = new Entity(key);
-        entity.setProperty(
-            Journal.GLOBAL_TRANSACTION_KEY_PROPERTY,
-            globalTransactionKey);
-        entity
-            .setUnindexedProperty(Journal.CONTENT_PROPERTY, new Blob(content));
-        Journal journal = Journal.toJournal(entity);
-        assertThat(journal.key, is(key));
-        assertThat(journal.targetKey, is(targetKey));
-        assertThat(journal.globalTransactionKey, is(globalTransactionKey));
-        assertThat(journal.targetEntity, is(targetEntity));
-        assertThat(journal.targetEntityProto, is(notNullValue()));
-        assertThat(journal.content, is(content));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void getOrNull() throws Exception {
-        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
-        Key targetKey = Datastore.createKey("Hoge", 1);
-        Entity targetEntity = new Entity(targetKey);
-        Journal journal = new Journal(globalTransactionKey, targetEntity);
-        Datastore.putWithoutTx(journal.toEntity());
-        Transaction tx = Datastore.beginTransaction();
-        Journal journal2 = Journal.getOrNull(tx, journal.key);
-        assertThat(journal2, is(notNullValue()));
-        assertThat(journal2.globalTransactionKey, is(globalTransactionKey));
-        assertThat(journal2.targetEntityProto, is(notNullValue()));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void getOrNullWhenNotFound() throws Exception {
-        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
-        Key targetKey = Datastore.createKey("Hoge", 1);
-        Entity targetEntity = new Entity(targetKey);
-        Journal journal = new Journal(globalTransactionKey, targetEntity);
-        Transaction tx = Datastore.beginTransaction();
-        Journal journal2 = Journal.getOrNull(tx, journal.key);
-        assertThat(journal2, is(nullValue()));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void rollForward() throws Exception {
-        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
-        Key targetKey = Datastore.createKey("Hoge", 1);
-        Entity targetEntity = new Entity(targetKey);
-        Journal journal = new Journal(globalTransactionKey, targetEntity);
-        Journal.put(Arrays.asList(journal));
-        Journal.rollForward(globalTransactionKey);
-        assertThat(Datastore.query("Hoge").count(), is(1));
-        assertThat(Datastore.query(Journal.KIND).count(), is(0));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void constructorForPut() throws Exception {
-        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
-        Key targetKey = Datastore.createKey("Hoge", 1);
-        Entity targetEntity = new Entity(targetKey);
-        Journal journal = new Journal(globalTransactionKey, targetEntity);
-        assertThat(journal.key, is(Journal.createKey(targetKey)));
-        assertThat(journal.targetKey, is(targetKey));
-        assertThat(journal.targetEntity, is(targetEntity));
-        assertThat(journal.targetEntityProto, is(notNullValue()));
-        assertThat(journal.contentSize, is(DatastoreUtil
-            .entityToBytes(targetEntity).length));
-        assertThat(journal.content, is(nullValue()));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test(expected = IllegalArgumentException.class)
-    public void constructorForTooBigContent() throws Exception {
-        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
-        Key targetKey = Datastore.createKey("Hoge", 1);
-        Entity targetEntity = new Entity(targetKey);
-        targetEntity.setUnindexedProperty("aaa", new Blob(
-            new byte[Journal.MAX_CONTENT_SIZE]));
-        new Journal(globalTransactionKey, targetEntity);
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void constructorForDelete() throws Exception {
-        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
-        Key targetKey = Datastore.createKey("Hoge", 1);
-        Journal journal = new Journal(globalTransactionKey, targetKey);
-        assertThat(journal.key, is(Journal.createKey(targetKey)));
-        assertThat(journal.targetKey, is(targetKey));
-        assertThat(journal.targetEntity, is(nullValue()));
-        assertThat(journal.targetEntityProto, is(nullValue()));
-        assertThat(journal.contentSize, is(0));
-        assertThat(journal.content, is(nullValue()));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void constructorUsingKeyAndGlobalTransactionKeyAndContent()
-            throws Exception {
-        Key targetKey = Datastore.createKey("Hoge", 1);
-        Key key = Journal.createKey(targetKey);
-        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
-        Entity targetEntity = new Entity(targetKey);
-        byte[] content = DatastoreUtil.entityToBytes(targetEntity);
-        Journal journal = new Journal(key, globalTransactionKey, content);
-        assertThat(journal.key, is(key));
-        assertThat(journal.targetKey, is(targetKey));
-        assertThat(journal.globalTransactionKey, is(globalTransactionKey));
-        assertThat(journal.targetEntity, is(targetEntity));
-        assertThat(journal.targetEntityProto, is(notNullValue()));
-        assertThat(journal.content, is(content));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void toEntityForPut() throws Exception {
-        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
-        Key targetKey = Datastore.createKey("Hoge", 1);
-        Entity targetEntity = new Entity(targetKey);
-        Journal journal = new Journal(globalTransactionKey, targetEntity);
-        Entity entity = journal.toEntity();
-        assertThat(entity.getKey(), is(journal.key));
-        assertThat(
-            (Key) entity.getProperty(Journal.GLOBAL_TRANSACTION_KEY_PROPERTY),
-            is(globalTransactionKey));
-        assertThat(((Blob) entity.getProperty(Journal.CONTENT_PROPERTY))
-            .getBytes(), is(journal.content));
-        Datastore.put(entity);
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void toEntityForDelete() throws Exception {
-        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
-        Key targetKey = Datastore.createKey("Hoge", 1);
-        Journal journal = new Journal(globalTransactionKey, targetKey);
-        Entity entity = journal.toEntity();
-        assertThat(entity.getKey(), is(journal.key));
-        assertThat(
-            (Key) entity.getProperty(Journal.GLOBAL_TRANSACTION_KEY_PROPERTY),
-            is(globalTransactionKey));
-        assertThat(
-            entity.getProperty(Journal.CONTENT_PROPERTY),
-            is(nullValue()));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void getContent() throws Exception {
-        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
-        Key targetKey = Datastore.createKey("Hoge", 1);
-        Entity targetEntity = new Entity(targetKey);
-        Journal journal = new Journal(globalTransactionKey, targetEntity);
-        byte[] content = journal.getContent();
-        assertThat(content, is(notNullValue()));
-        assertThat(journal.getContent(), is(sameInstance(content)));
-        assertThat(content, is(DatastoreUtil.entityToBytes(targetEntity)));
     }
 }

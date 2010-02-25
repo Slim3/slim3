@@ -16,17 +16,18 @@
 package org.slim3.datastore;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.ConcurrentModificationException;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityTranslator;
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.apphosting.api.DatastorePb.PutRequest;
 import com.google.storage.onestore.v3.OnestoreEntity.EntityProto;
 
 /**
@@ -55,9 +56,19 @@ public class Journal {
     public static final String CONTENT_PROPERTY = "content";
 
     /**
-     * The maximum size(bytes) of content.
+     * The put property prefix.
      */
-    public static final int MAX_CONTENT_SIZE = 1000000;
+    public static final String PUT_PROPERTY_PREFIX = "put";
+
+    /**
+     * The delete property prefix.
+     */
+    public static final String DELETE_PROPERTY_PREFIX = "delete";
+
+    /**
+     * The maximum size(bytes) of entity.
+     */
+    public static final int MAX_ENTITY_SIZE = 1000000;
 
     /**
      * The extra size.
@@ -65,162 +76,104 @@ public class Journal {
     public static final int EXTRA_SIZE = 200;
 
     /**
-     * 
-     */
-    protected Key globalTransactionKey;
-
-    /**
-     * The key.
-     */
-    protected Key key;
-
-    /**
-     * The target key.
-     */
-    protected Key targetKey;
-
-    /**
-     * The target entity.
-     */
-    protected Entity targetEntity;
-
-    /**
-     * The target entity as protocol buffer.
-     */
-    protected EntityProto targetEntityProto;
-
-    /**
-     * The content size of target entity.
-     */
-    protected int contentSize;
-
-    /**
-     * The content of target entity.
-     */
-    protected byte[] content;
-
-    /**
-     * Creates a key.
-     * 
-     * @param targetKey
-     *            the target key
-     * @return a key
-     * @throws NullPointerException
-     *             if the targetKey parameter is null
-     */
-    public static Key createKey(Key targetKey) throws NullPointerException {
-        if (targetKey == null) {
-            throw new NullPointerException("The target key must not be null.");
-        }
-        return KeyFactory.createKey(KIND, KeyFactory.keyToString(targetKey));
-    }
-
-    /**
      * Applies the journals.
-     * 
-     * @param journals
-     *            the journals
-     * @throws NullPointerException
-     *             if the journals parameter is null
-     * 
-     */
-    public static void apply(Iterable<Journal> journals)
-            throws NullPointerException {
-        if (journals == null) {
-            throw new NullPointerException(
-                "The journals parameter must not be null.");
-        }
-        if (journals instanceof Collection<?>
-            && ((Collection<?>) journals).size() == 0) {
-            return;
-        }
-        int totalSize = 0;
-        List<Entity> putEntities = new ArrayList<Entity>();
-        List<Key> deleteKeys = new ArrayList<Key>();
-        List<Key> putJournalKeys = new ArrayList<Key>();
-        List<Key> deleteJournalKeys = new ArrayList<Key>();
-        for (Journal journal : journals) {
-            if (journal.contentSize == 0) {
-                deleteKeys.add(journal.targetKey);
-                deleteJournalKeys.add(journal.key);
-            } else {
-                if (totalSize + journal.contentSize > MAX_CONTENT_SIZE) {
-                    Datastore.putWithoutTx(putEntities);
-                    Datastore.deleteWithoutTx(putJournalKeys);
-                    putEntities.clear();
-                    putJournalKeys.clear();
-                    totalSize = 0;
-                }
-                totalSize += journal.contentSize;
-                putEntities.add(journal.getTargetEntity());
-                putJournalKeys.add(journal.key);
-            }
-        }
-        if (deleteKeys.size() > 0) {
-            Datastore.deleteWithoutTx(deleteKeys);
-            Datastore.deleteWithoutTx(deleteJournalKeys);
-        }
-        if (putEntities.size() > 0) {
-            Datastore.putWithoutTx(putEntities);
-            Datastore.deleteWithoutTx(putJournalKeys);
-        }
-    }
-
-    /**
-     * Returns the keys specified by the global transaction key.
      * 
      * @param globalTransactionKey
      *            the global transaction key
-     * @return a list of keys
      * @throws NullPointerException
      *             if the globalTransactionKey parameter is null
      * 
      */
-    public static List<Key> getKeys(Key globalTransactionKey)
+    public static void apply(Key globalTransactionKey)
             throws NullPointerException {
         if (globalTransactionKey == null) {
             throw new NullPointerException(
                 "The globalTransactionKey parameter must not be null.");
         }
-        return Datastore.query(KIND).filter(
-            GLOBAL_TRANSACTION_KEY_PROPERTY,
-            FilterOperator.EQUAL,
-            globalTransactionKey).asKeyList();
+        List<Entity> entities =
+            Datastore.query(KIND).filter(
+                GLOBAL_TRANSACTION_KEY_PROPERTY,
+                FilterOperator.EQUAL,
+                globalTransactionKey).asList();
+        for (Entity entity : entities) {
+            Map<String, Object> properties = entity.getProperties();
+            PutRequest putReq = new PutRequest();
+            List<Key> deleteKeys = new ArrayList<Key>();
+            for (Iterator<String> i = properties.keySet().iterator(); i
+                .hasNext();) {
+                String name = i.next();
+                if (name.startsWith(PUT_PROPERTY_PREFIX)) {
+                    Blob blob = (Blob) entity.getProperty(name);
+                    if (blob != null) {
+                        EntityProto proto = putReq.addEntity();
+                        proto.mergeFrom(blob.getBytes());
+                    }
+                } else if (name.startsWith(DELETE_PROPERTY_PREFIX)) {
+                    Key key = (Key) entity.getProperty(name);
+                    if (key != null) {
+                        deleteKeys.add(key);
+                    }
+                }
+            }
+            if (putReq.entitySize() > 0) {
+                DatastoreUtil.put(putReq);
+            }
+            if (deleteKeys.size() > 0) {
+                Datastore.deleteWithoutTx(deleteKeys);
+            }
+            Datastore.deleteWithoutTx(entity.getKey());
+        }
     }
 
     /**
      * Puts the journals to the datastore.
      * 
-     * @param journals
-     *            the journals
+     * @param globalTransactionKey
+     *            the global transaction key
+     * @param journalMap
+     *            the map of journals
      * @throws NullPointerException
-     *             if the journals parameter is null
+     *             if the globalTransactionKey parameter is null or if the
+     *             journalMap parameter is null
      * 
      */
-    public static void put(Iterable<Journal> journals)
+    public static void put(Key globalTransactionKey, Map<Key, Entity> journalMap)
             throws NullPointerException {
-        if (journals == null) {
+        if (journalMap == null) {
             throw new NullPointerException(
-                "The journals parameter must not be null.");
+                "The journalMap parameter must not be null.");
         }
-        if (journals instanceof Collection<?>
-            && ((Collection<?>) journals).size() == 0) {
+        if (journalMap.size() == 0) {
             return;
         }
         int totalSize = 0;
-        List<Entity> entities = new ArrayList<Entity>();
-        for (Journal journal : journals) {
-            if (totalSize + journal.contentSize + EXTRA_SIZE > MAX_CONTENT_SIZE) {
-                Datastore.putWithoutTx(entities);
-                entities.clear();
+        Entity entity = createEntity(globalTransactionKey);
+        int propertyIndex = 0;
+        for (Iterator<Key> i = journalMap.keySet().iterator(); i.hasNext();) {
+            Key key = i.next();
+            Entity targetEntity = journalMap.get(key);
+            boolean put = targetEntity != null;
+            EntityProto targetProto =
+                put ? EntityTranslator.convertToPb(targetEntity) : null;
+            int size = put ? targetProto.encodingSize() : 0;
+            if (totalSize != 0
+                && totalSize + size + EXTRA_SIZE > MAX_ENTITY_SIZE) {
+                Datastore.putWithoutTx(entity);
+                entity = createEntity(globalTransactionKey);
                 totalSize = 0;
             }
-            totalSize += journal.contentSize + EXTRA_SIZE;
-            entities.add(journal.toEntity());
+            if (put) {
+                byte[] content = new byte[targetProto.encodingSize()];
+                targetProto.outputTo(content, 0);
+                entity.setUnindexedProperty(PUT_PROPERTY_PREFIX
+                    + propertyIndex++, new Blob(content));
+            } else {
+                entity.setUnindexedProperty(DELETE_PROPERTY_PREFIX
+                    + propertyIndex++, key);
+            }
+            totalSize += size + EXTRA_SIZE;
         }
-        if (entities.size() > 0) {
-            Datastore.putWithoutTx(entities);
-        }
+        Datastore.putWithoutTx(entity);
     }
 
     /**
@@ -244,29 +197,47 @@ public class Journal {
     }
 
     /**
-     * Deletes the journals in transaction.
+     * Returns the keys specified by the global transaction key.
      * 
      * @param globalTransactionKey
      *            the global transaction key
-     * @param journals
-     *            the journals
+     * @return a list of keys
      * @throws NullPointerException
-     *             if the globalTransactionKey parameter is null or if the
-     *             journals parameter is null
+     *             if the globalTransactionKey parameter is null
+     * 
      */
-    public static void deleteInTx(Key globalTransactionKey,
-            Iterable<Journal> journals) throws NullPointerException {
+    protected static List<Key> getKeys(Key globalTransactionKey)
+            throws NullPointerException {
         if (globalTransactionKey == null) {
             throw new NullPointerException(
                 "The globalTransactionKey parameter must not be null.");
         }
-        if (journals == null) {
+        return Datastore.query(KIND).filter(
+            GLOBAL_TRANSACTION_KEY_PROPERTY,
+            FilterOperator.EQUAL,
+            globalTransactionKey).asKeyList();
+    }
+
+    /**
+     * Creates an entity.
+     * 
+     * @param globalTransactionKey
+     *            the global transaction key
+     * @return an entity
+     * @throws NullPointerException
+     *             if the globalTransactionKey parameter is null
+     */
+    protected static Entity createEntity(Key globalTransactionKey)
+            throws NullPointerException {
+        if (globalTransactionKey == null) {
             throw new NullPointerException(
-                "The journals parameter must not be null.");
+                "The globalTransactionKey parameter must not be null.");
         }
-        for (Journal journal : journals) {
-            deleteInTx(globalTransactionKey, journal.key);
-        }
+        Entity entity = new Entity(Datastore.allocateId(KIND));
+        entity.setProperty(
+            GLOBAL_TRANSACTION_KEY_PROPERTY,
+            globalTransactionKey);
+        return entity;
     }
 
     /**
@@ -294,10 +265,10 @@ public class Journal {
         for (int i = 0; i < DatastoreUtil.MAX_RETRY; i++) {
             Transaction tx = Datastore.beginTransaction();
             try {
-                Journal journal = getOrNull(tx, key);
-                if (journal != null
-                    && globalTransactionKey
-                        .equals(journal.globalTransactionKey)) {
+                Entity entity = Datastore.getOrNull(tx, key);
+                if (entity != null
+                    && globalTransactionKey.equals(entity
+                        .getProperty(GLOBAL_TRANSACTION_KEY_PROPERTY))) {
                     Datastore.delete(tx, key);
                     tx.commit();
                 }
@@ -313,254 +284,9 @@ public class Journal {
     }
 
     /**
-     * Rolls forward the global transaction.
-     * 
-     * @param globalTransactionKey
-     *            the global transaction key
-     * @throws NullPointerException
-     *             if the globalTransactionKey parameter is null
-     */
-    public static void rollForward(Key globalTransactionKey)
-            throws NullPointerException {
-        if (globalTransactionKey == null) {
-            throw new NullPointerException(
-                "The globalTransactionKey parameter must not be null.");
-        }
-        List<Entity> entities =
-            Datastore.query(KIND).filter(
-                GLOBAL_TRANSACTION_KEY_PROPERTY,
-                FilterOperator.EQUAL,
-                globalTransactionKey).asList();
-        List<Journal> journals = new ArrayList<Journal>(entities.size());
-        for (Entity e : entities) {
-            journals.add(toJournal(e));
-        }
-        apply(journals);
-    }
-
-    /**
-     * Converts the entity to a {@link Journal}.
-     * 
-     * @param entity
-     *            the entity
-     * @return a {@link Journal}
-     * @throws NullPointerException
-     *             if the entity parameter is null
-     */
-    public static Journal toJournal(Entity entity) throws NullPointerException {
-        if (entity == null) {
-            throw new NullPointerException(
-                "The entity parameter must not be null.");
-        }
-        if (!KIND.equals(entity.getKind())) {
-            throw new IllegalArgumentException("The kind("
-                + entity.getKind()
-                + ") of the entity("
-                + entity.getKey()
-                + ") must be "
-                + KIND
-                + ".");
-        }
-        Key globalTransactionKey =
-            (Key) entity.getProperty(GLOBAL_TRANSACTION_KEY_PROPERTY);
-        byte[] content = null;
-        Blob blob = (Blob) entity.getProperty(CONTENT_PROPERTY);
-        if (blob != null) {
-            content = blob.getBytes();
-        }
-        return new Journal(entity.getKey(), globalTransactionKey, content);
-    }
-
-    /**
-     * Returns a {@link Journal} specified by the key. Returns null if no entity
-     * is found.
-     * 
-     * @param tx
-     *            the transaction
-     * @param key
-     *            the key
-     * @return a {@link Lock} specified by the key
-     */
-    public static Journal getOrNull(Transaction tx, Key key) {
-        Entity entity = Datastore.getOrNull(tx, key);
-        if (entity == null) {
-            return null;
-        }
-        return toJournal(entity);
-    }
-
-    /**
-     * Constructor for "put".
-     * 
-     * @param globalTransactionKey
-     *            the global transaction key
-     * @param targetEntity
-     *            the targetEntity
-     * @throws NullPointerException
-     *             if the globalTransactionKey parameter is null or if the
-     *             targetEntity parameter is null
-     * @throws IllegalArgumentException
-     *             if the size of target entity is more than 1,000,000 bytes
-     */
-    public Journal(Key globalTransactionKey, Entity targetEntity)
-            throws NullPointerException, IllegalArgumentException {
-        if (globalTransactionKey == null) {
-            throw new NullPointerException(
-                "The globalTransactionKey parameter must not be null.");
-        }
-        if (targetEntity == null) {
-            throw new NullPointerException(
-                "The targetEntity parameter must not be null.");
-        }
-        this.globalTransactionKey = globalTransactionKey;
-        this.targetEntity = targetEntity;
-        this.targetKey = targetEntity.getKey();
-        this.key = createKey(targetKey);
-        targetEntityProto = EntityTranslator.convertToPb(targetEntity);
-        contentSize = targetEntityProto.encodingSize();
-        if (contentSize > MAX_CONTENT_SIZE) {
-            throw new IllegalArgumentException(
-                "The size of target entity must be less than or equals to 1,000,000 bytes.");
-        }
-    }
-
-    /**
-     * Constructor for "delete".
-     * 
-     * @param globalTransactionKey
-     *            the global transaction key
-     * @param targetKey
-     *            the targetKey
-     * @throws NullPointerException
-     *             if the globalTransactionKey parameter is null or if the
-     *             targetKey parameter is null
-     */
-    public Journal(Key globalTransactionKey, Key targetKey)
-            throws NullPointerException {
-        if (globalTransactionKey == null) {
-            throw new NullPointerException(
-                "The globalTransactionKey parameter must not be null.");
-        }
-        if (targetKey == null) {
-            throw new NullPointerException(
-                "The targetKey parameter must not be null.");
-        }
-        this.globalTransactionKey = globalTransactionKey;
-        this.targetKey = targetKey;
-        this.key = createKey(targetKey);
-    }
-
-    /**
      * Constructor.
      * 
-     * @param key
-     *            the key
-     * @param globalTransactionKey
-     *            the global transaction key
-     * @param content
-     *            the content of target entity
-     * 
-     * @throws NullPointerException
-     *             if the key parameter is null
      */
-    public Journal(Key key, Key globalTransactionKey, byte[] content)
-            throws NullPointerException {
-        if (key == null) {
-            throw new NullPointerException(
-                "The key parameter must not be null.");
-        }
-        this.key = key;
-        this.targetKey = KeyFactory.stringToKey(key.getName());
-        this.globalTransactionKey = globalTransactionKey;
-        if (content != null) {
-            this.content = content;
-            targetEntityProto = new EntityProto();
-            targetEntityProto.mergeFrom(content);
-            contentSize = targetEntityProto.encodingSize();
-            targetEntity = EntityTranslator.createFromPb(targetEntityProto);
-        }
-    }
-
-    /**
-     * Converts this instance to an entity.
-     * 
-     * @return an entity
-     */
-    public Entity toEntity() {
-        Entity entity = new Entity(key);
-        entity.setProperty(
-            GLOBAL_TRANSACTION_KEY_PROPERTY,
-            globalTransactionKey);
-        if (contentSize > 0) {
-            entity.setUnindexedProperty(
-                CONTENT_PROPERTY,
-                new Blob(getContent()));
-        }
-        return entity;
-    }
-
-    /**
-     * Returns the global transaction key.
-     * 
-     * @return the global transactionKey
-     */
-    public Key getGlobalTransactionKey() {
-        return globalTransactionKey;
-    }
-
-    /**
-     * Returns the key.
-     * 
-     * @return the key
-     */
-    public Key getKey() {
-        return key;
-    }
-
-    /**
-     * Returns the target key.
-     * 
-     * @return the target key
-     */
-    public Key getTargetKey() {
-        return targetKey;
-    }
-
-    /**
-     * Returns the target entity.
-     * 
-     * @return the target entity
-     */
-    public Entity getTargetEntity() {
-        return targetEntity;
-    }
-
-    /**
-     * Returns the target entity as protocol buffer.
-     * 
-     * @return the target entity as protocol buffer
-     */
-    public EntityProto getTargetEntityProto() {
-        return targetEntityProto;
-    }
-
-    /**
-     * @return the contentSize
-     */
-    public int getContentSize() {
-        return contentSize;
-    }
-
-    /**
-     * Returns the content.
-     * 
-     * @return the content
-     */
-    public byte[] getContent() {
-        if (targetEntityProto != null && content == null) {
-            content = new byte[contentSize];
-            targetEntityProto.outputTo(content, 0);
-        }
-        return content;
+    private Journal() {
     }
 }

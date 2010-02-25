@@ -114,9 +114,9 @@ public class GlobalTransaction {
     protected Map<Key, Lock> lockMap;
 
     /**
-     * The map of {@link Journal}.
+     * The map of journals.
      */
-    protected Map<Key, Journal> journalMap;
+    protected Map<Key, Entity> journalMap;
 
     /**
      * Whether this global transaction is valid.
@@ -234,7 +234,7 @@ public class GlobalTransaction {
         if (Datastore.getAsMap(globalTransactionKey).size() == 0) {
             return;
         }
-        Journal.rollForward(globalTransactionKey);
+        Journal.apply(globalTransactionKey);
         Lock.deleteWithoutTx(globalTransactionKey);
         Datastore.deleteWithoutTx(globalTransactionKey);
     }
@@ -395,7 +395,7 @@ public class GlobalTransaction {
         localTransaction = Datastore.beginTransaction();
         timestamp = System.currentTimeMillis();
         lockMap = new HashMap<Key, Lock>();
-        journalMap = new HashMap<Key, Journal>();
+        journalMap = new HashMap<Key, Entity>();
     }
 
     /**
@@ -1101,7 +1101,7 @@ public class GlobalTransaction {
         }
         lock(rootKey);
         verifyJournalSize();
-        journalMap.put(key, new Journal(globalTransactionKey, entity));
+        journalMap.put(key, entity);
         return key;
     }
 
@@ -1213,7 +1213,7 @@ public class GlobalTransaction {
         } else {
             lock(rootKey);
             verifyJournalSize();
-            journalMap.put(key, new Journal(globalTransactionKey, key));
+            journalMap.put(key, null);
         }
     }
 
@@ -1291,7 +1291,7 @@ public class GlobalTransaction {
                     continue;
                 }
                 verifyJournalSize();
-                journalMap.put(key, new Journal(globalTransactionKey, key));
+                journalMap.put(key, null);
             }
         }
     }
@@ -1555,7 +1555,7 @@ public class GlobalTransaction {
      */
     protected void putJournals() {
         try {
-            Journal.put(journalMap.values());
+            Journal.put(globalTransactionKey, journalMap);
         } catch (Throwable cause) {
             try {
                 Journal.deleteInTx(globalTransactionKey);
@@ -1599,7 +1599,7 @@ public class GlobalTransaction {
                 logger.log(Level.WARNING, cause2.getMessage(), cause2);
             }
             try {
-                Journal.deleteInTx(globalTransactionKey, journalMap.values());
+                Journal.deleteInTx(globalTransactionKey);
             } catch (Throwable cause2) {
                 logger.log(Level.WARNING, cause2.getMessage(), cause2);
             }
@@ -1623,7 +1623,7 @@ public class GlobalTransaction {
      * Rolls back this transaction as global transaction.
      */
     protected void rollbackGlobalTransaction() {
-        Journal.deleteInTx(globalTransactionKey, journalMap.values());
+        Journal.deleteInTx(globalTransactionKey);
         unlock();
     }
 

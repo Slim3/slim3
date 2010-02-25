@@ -38,6 +38,7 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.EntityTranslator;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -46,7 +47,9 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.apphosting.api.DatastorePb.PutRequest;
 import com.google.apphosting.api.DatastorePb.Schema;
+import com.google.storage.onestore.v3.OnestoreEntity.EntityProto;
 import com.google.storage.onestore.v3.OnestoreEntity.Path;
 import com.google.storage.onestore.v3.OnestoreEntity.Reference;
 import com.google.storage.onestore.v3.OnestoreEntity.Path.Element;
@@ -353,6 +356,36 @@ public class DatastoreUtilTest extends AppEngineTestCase {
         assertThat(keys, is(notNullValue()));
         assertThat(keys.size(), is(2));
         assertThat(ds.get(keys).size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void putEntityProtos() throws Exception {
+        Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
+        Entity entity2 = new Entity(KeyFactory.createKey("Hoge", 2));
+        List<EntityProto> list = new ArrayList<EntityProto>();
+        list.add(EntityTranslator.convertToPb(entity));
+        list.add(EntityTranslator.convertToPb(entity2));
+        DatastoreUtil.put(list);
+        assertThat(ds.get(entity.getKey()), is(notNullValue()));
+        assertThat(ds.get(entity2.getKey()), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void putForPutRequest() throws Exception {
+        Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
+        Entity entity2 = new Entity(KeyFactory.createKey("Hoge", 2));
+        PutRequest req = new PutRequest();
+        req.addEntity(EntityTranslator.convertToPb(entity));
+        req.addEntity(EntityTranslator.convertToPb(entity2));
+        DatastoreUtil.put(req);
+        assertThat(ds.get(entity.getKey()), is(notNullValue()));
+        assertThat(ds.get(entity2.getKey()), is(notNullValue()));
     }
 
     /**
