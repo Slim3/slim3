@@ -680,8 +680,33 @@ public final class DatastoreUtil {
             throw new NullPointerException(
                 "The putRequest parameter must not be null.");
         }
-        ApiProxy.makeSyncCall(DATASTORE_SERVICE, PUT_METHOD, putRequest
-            .toByteArray());
+        byte[] requestBuf = putRequest.toByteArray();
+        ConcurrentModificationException cme = null;
+        for (int i = 0; i < MAX_RETRY; i++) {
+            try {
+                DatastoreTimeoutException dte = null;
+                for (int j = 0; j < MAX_RETRY; j++) {
+                    try {
+                        ApiProxy.makeSyncCall(
+                            DATASTORE_SERVICE,
+                            PUT_METHOD,
+                            requestBuf);
+                        return;
+                    } catch (DatastoreTimeoutException e) {
+                        dte = e;
+                        logger
+                            .info("This message is a just INFORMATION. Retry["
+                                + j
+                                + "]:"
+                                + e);
+                    }
+                }
+                throw dte;
+            } catch (ConcurrentModificationException e) {
+                cme = e;
+            }
+        }
+        throw cme;
     }
 
     /**
