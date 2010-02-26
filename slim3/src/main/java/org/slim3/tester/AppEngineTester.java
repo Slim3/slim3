@@ -45,6 +45,10 @@ import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.labs.taskqueue.TaskQueuePb.TaskQueueAddRequest;
 import com.google.appengine.api.labs.taskqueue.TaskQueuePb.TaskQueueAddResponse;
 import com.google.appengine.api.mail.MailServicePb.MailMessage;
+import com.google.appengine.api.memcache.MemcacheServicePb.MemcacheDeleteRequest;
+import com.google.appengine.api.memcache.MemcacheServicePb.MemcacheSetRequest;
+import com.google.appengine.api.memcache.MemcacheServicePb.MemcacheSetRequest.Builder;
+import com.google.appengine.api.memcache.MemcacheServicePb.MemcacheSetRequest.Item;
 import com.google.appengine.api.urlfetch.URLFetchServicePb.URLFetchRequest;
 import com.google.appengine.api.urlfetch.URLFetchServicePb.URLFetchResponse;
 import com.google.appengine.repackaged.com.google.protobuf.ByteString;
@@ -116,6 +120,11 @@ public class AppEngineTester implements Delegate<Environment> {
     protected static final String DATASTORE_SERVICE = "datastore_v3";
 
     /**
+     * The internal name of memcache service.
+     */
+    protected static final String MEMCACHE_SERVICE = "memcache";
+
+    /**
      * The internal name of mail service.
      */
     protected static final String MAIL_SERVICE = "mail";
@@ -134,6 +143,16 @@ public class AppEngineTester implements Delegate<Environment> {
      * The internal name of put method.
      */
     protected static final String PUT_METHOD = "Put";
+
+    /**
+     * The internal name of set method.
+     */
+    protected static final String SET_METHOD = "Set";
+
+    /**
+     * The internal name of delete method.
+     */
+    protected static final String DELETE_METHOD = "Delete";
 
     /**
      * The internal name of send method.
@@ -187,9 +206,14 @@ public class AppEngineTester implements Delegate<Environment> {
     protected Environment originalEnvironment;
 
     /**
-     * The set of put keys.
+     * The set of datastore keys for "put".
      */
     protected Set<Key> putKeys = new HashSet<Key>();
+
+    /**
+     * The set of memcache keys for "set".
+     */
+    protected Set<ByteString> setKeys = new HashSet<ByteString>();
 
     /**
      * The handler to fetch URL.
@@ -372,6 +396,22 @@ public class AppEngineTester implements Delegate<Environment> {
         for (Transaction tx : ds.getActiveTransactions()) {
             tx.rollback();
         }
+        if (!setKeys.isEmpty()) {
+            for (ByteString key : setKeys) {
+                com.google.appengine.api.memcache.MemcacheServicePb.MemcacheDeleteRequest.Builder newBuilder =
+                    MemcacheDeleteRequest.newBuilder();
+                newBuilder
+                    .addItem(com.google.appengine.api.memcache.MemcacheServicePb.MemcacheDeleteRequest.Item
+                        .newBuilder()
+                        .setKey(key));
+                ApiProxy.makeSyncCall(
+                    MEMCACHE_SERVICE,
+                    DELETE_METHOD,
+                    newBuilder.build().toByteArray());
+
+            }
+            setKeys.clear();
+        }
         if (!putKeys.isEmpty()) {
             ds.delete(putKeys);
             putKeys.clear();
@@ -409,6 +449,18 @@ public class AppEngineTester implements Delegate<Environment> {
             tasks.add(taskPb);
             TaskQueueAddResponse responsePb = new TaskQueueAddResponse();
             return responsePb.toByteArray();
+        } else if (MEMCACHE_SERVICE.equals(service)
+            && SET_METHOD.equals(method)) {
+            try {
+                Builder builder =
+                    MemcacheSetRequest.newBuilder().mergeFrom(requestBuf);
+                for (Item item : builder.getItemList()) {
+                    ByteString key = item.getKey();
+                    setKeys.add(key);
+                }
+            } catch (Exception e) {
+                ThrowableUtil.wrapAndThrow(e);
+            }
         }
         byte[] responseBuf =
             parentDelegate.makeSyncCall(env, service, method, requestBuf);

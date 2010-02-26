@@ -27,6 +27,8 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityTranslator;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.apphosting.api.ApiProxy;
 import com.google.apphosting.api.ApiProxy.ApiConfig;
 import com.google.apphosting.api.ApiProxy.Delegate;
@@ -37,7 +39,7 @@ import com.google.apphosting.api.DatastorePb.PutRequest;
  * @author higa
  * 
  */
-public class AppEngineTester2Test {
+public class AppEngineTesterTearDownTest {
 
     private AppEngineTester tester = new AppEngineTester();
 
@@ -90,5 +92,20 @@ public class AppEngineTester2Test {
         ApiProxy.setDelegate(AppEngineTester.apiProxyLocalImpl);
         ApiProxy.setEnvironmentForCurrentThread(new TestEnvironment());
         assertThat(tester.count("Hoge"), is(0));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void deleteMemcache() throws Exception {
+        tester.setUp();
+        MemcacheService ms = MemcacheServiceFactory.getMemcacheService();
+        ms.put("aaa", 1);
+        tester.tearDown();
+        ApiProxy.setDelegate(AppEngineTester.apiProxyLocalImpl);
+        ApiProxy.setEnvironmentForCurrentThread(new TestEnvironment());
+        assertThat(ms.contains("aaa"), is(false));
     }
 }
