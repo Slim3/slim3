@@ -16,16 +16,13 @@
 package org.slim3.controller;
 
 import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.BitSet;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -69,10 +66,6 @@ public abstract class Controller {
     private static final Logger logger =
         Logger.getLogger(Controller.class.getName());
 
-    private static final BitSet dontNeedEncoding;
-
-    private static final int caseDiff = ('a' - 'A');
-
     /**
      * The servlet context.
      */
@@ -97,28 +90,6 @@ public abstract class Controller {
      * The error messages.
      */
     protected Errors errors;
-
-    static {
-        dontNeedEncoding = new BitSet(256);
-        int i;
-        for (i = 'a'; i <= 'z'; i++) {
-            dontNeedEncoding.set(i);
-        }
-        for (i = 'A'; i <= 'Z'; i++) {
-            dontNeedEncoding.set(i);
-        }
-        for (i = '0'; i <= '9'; i++) {
-            dontNeedEncoding.set(i);
-        }
-        dontNeedEncoding.set(' ');
-        /*
-         * encoding a space to a + is done in the encode() method
-         */
-        dontNeedEncoding.set('-');
-        dontNeedEncoding.set('_');
-        dontNeedEncoding.set('.');
-        dontNeedEncoding.set('*');
-    }
 
     /**
      * Runs the bare controller process.
@@ -729,9 +700,8 @@ public abstract class Controller {
         }
         try {
             response.setContentType("application/octet-stream");
-            response.setHeader("Content-disposition", "attachment; filename=\""
-                + encode(fileName)
-                + "\"");
+            response.setHeader("Content-disposition", "attachment; "
+                + encodeFileName(fileName));
             OutputStream out =
                 new BufferedOutputStream(response.getOutputStream());
             try {
@@ -766,9 +736,8 @@ public abstract class Controller {
         }
         try {
             response.setContentType("application/octet-stream");
-            response.setHeader("Content-disposition", "attachment; filename=\""
-                + encode(fileName)
-                + "\"");
+            response.setHeader("Content-disposition", "attachment; "
+                + encodeFileName(fileName));
             OutputStream out =
                 new BufferedOutputStream(response.getOutputStream());
             try {
@@ -813,9 +782,8 @@ public abstract class Controller {
             if (contentType != null) {
                 response.setContentType(contentType);
             }
-            response.setHeader("Content-disposition", "inline; filename=\""
-                + encode(fileName)
-                + "\"");
+            response.setHeader("Content-disposition", "inline; "
+                + encodeFileName(fileName));
             OutputStream out =
                 new BufferedOutputStream(response.getOutputStream());
             try {
@@ -854,9 +822,8 @@ public abstract class Controller {
             if (contentType != null) {
                 response.setContentType(contentType);
             }
-            response.setHeader("Content-disposition", "inline; filename=\""
-                + encode(fileName)
-                + "\"");
+            response.setHeader("Content-disposition", "inline; "
+                + encodeFileName(fileName));
             OutputStream out =
                 new BufferedOutputStream(response.getOutputStream());
             try {
@@ -883,100 +850,18 @@ public abstract class Controller {
      * @throws IOException
      *             if {@link IOException} occurred
      */
-    protected String encode(String str) throws IOException {
+    protected String encodeFileName(String str) throws IOException {
         if (str == null) {
             return null;
         }
+        String encodedStr = URLEncoder.encode(str, "UTF-8");
         String userAgent = request.getHeader("User-Agent");
         if (userAgent != null
-            && userAgent.indexOf("MSIE") >= 0
+            && userAgent.indexOf("Firefox") >= 0
             && userAgent.indexOf("Opera") < 0) {
-            return encode(str, "UTF-8");
+            return "filename*=utf8'" + encodedStr;
         }
-        return new String(str.getBytes(), "ISO-8859-1");
-    }
-
-    /**
-     * Encodes the string as "application/x-www-form-urlencoded".
-     * 
-     * @param str
-     *            the target string
-     * @param enc
-     *            the encoding
-     * @return encoded string
-     * @throws IOException
-     *             if {@link IOException} occurred
-     */
-    protected String encode(String str, String enc) throws IOException {
-        boolean needToChange = false;
-        boolean wroteUnencodedChar = false;
-        int maxBytesPerChar = 10; // rather arbitrary limit, but safe for now
-        StringBuffer out = new StringBuffer(str.length());
-        ByteArrayOutputStream buf = new ByteArrayOutputStream(maxBytesPerChar);
-        BufferedWriter writer =
-            new BufferedWriter(new OutputStreamWriter(buf, enc));
-
-        for (int i = 0; i < str.length(); i++) {
-            int c = str.charAt(i);
-            if (dontNeedEncoding.get(c)) {
-                if (c == ' ') {
-                    c = '+';
-                    needToChange = true;
-                }
-                out.append((char) c);
-                wroteUnencodedChar = true;
-            } else {
-                // convert to external encoding before hex conversion
-                try {
-                    if (wroteUnencodedChar) { // Fix for 4407610
-                        writer =
-                            new BufferedWriter(new OutputStreamWriter(buf, enc));
-                        wroteUnencodedChar = false;
-                    }
-                    writer.write(c);
-                    /*
-                     * If this character represents the start of a Unicode
-                     * surrogate pair, then pass in two characters. It's not
-                     * clear what should be done if a bytes reserved in the
-                     * surrogate pairs range occurs outside of a legal surrogate
-                     * pair. For now, just treat it as if it were any other
-                     * character.
-                     */
-                    if (c >= 0xD800 && c <= 0xDBFF) {
-                        if ((i + 1) < str.length()) {
-                            int d = str.charAt(i + 1);
-                            if (d >= 0xDC00 && d <= 0xDFFF) {
-                                writer.write(d);
-                                i++;
-                            }
-                        }
-                    }
-                    writer.flush();
-                } catch (IOException e) {
-                    buf.reset();
-                    continue;
-                }
-                byte[] ba = buf.toByteArray();
-                for (int j = 0; j < ba.length; j++) {
-                    out.append('%');
-                    char ch = Character.forDigit((ba[j] >> 4) & 0xF, 16);
-                    // converting to use uppercase letter as part of
-                    // the hex value if ch is a letter.
-                    if (Character.isLetter(ch)) {
-                        ch -= caseDiff;
-                    }
-                    out.append(ch);
-                    ch = Character.forDigit(ba[j] & 0xF, 16);
-                    if (Character.isLetter(ch)) {
-                        ch -= caseDiff;
-                    }
-                    out.append(ch);
-                }
-                buf.reset();
-                needToChange = true;
-            }
-        }
-        return (needToChange ? out.toString() : str);
+        return "filename=" + encodedStr;
     }
 
     /**
