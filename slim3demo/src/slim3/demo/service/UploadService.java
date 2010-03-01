@@ -57,7 +57,7 @@ public class UploadService {
         for (Object model : models) {
             Datastore.put(tx, model);
         }
-        Datastore.commit(tx);
+        tx.commit();
         return data;
     }
 
