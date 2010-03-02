@@ -856,12 +856,21 @@ public abstract class Controller {
         }
         String encodedStr = URLEncoder.encode(str, "UTF-8");
         String userAgent = request.getHeader("User-Agent");
-        if (userAgent != null
-            && userAgent.indexOf("Firefox") >= 0
-            && userAgent.indexOf("Opera") < 0) {
-            return "filename*=utf8'" + encodedStr;
+        if (userAgent != null && userAgent.indexOf("Opera") < 0) {
+            if (userAgent.indexOf("Firefox") >= 0) {
+                return "filename*=utf8'" + encodedStr;
+            } else if (userAgent.indexOf("MSIE") >= 0
+                || userAgent.indexOf("Chrome") >= 0) {
+                return "filename=" + encodedStr;
+            }
         }
-        return "filename=" + encodedStr;
+        String encoding = response.getCharacterEncoding();
+        if (encoding == null) {
+            encoding = "UTF-8";
+        }
+        return "filename=\""
+            + new String(str.getBytes(encoding), "ISO-8859-1")
+            + "\"";
     }
 
     /**

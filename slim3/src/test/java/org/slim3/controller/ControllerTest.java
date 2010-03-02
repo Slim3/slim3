@@ -328,9 +328,16 @@ public class ControllerTest extends ControllerTestCase {
      */
     @Test
     public void encodeFileName() throws Exception {
+        tester.request.setHeader("User-Agent", "MSIE");
+        assertThat(controller.encodeFileName("abc"), is("filename=abc"));
+        tester.request.setHeader("User-Agent", "Chrome");
         assertThat(controller.encodeFileName("abc"), is("filename=abc"));
         tester.request.setHeader("User-Agent", "Firefox/3.6");
         assertThat(controller.encodeFileName("abc"), is("filename*=utf8'abc"));
+        tester.request.setHeader("User-Agent", "Safari");
+        assertThat(controller.encodeFileName("abc"), is("filename=\"abc\""));
+        tester.request.setHeader("User-Agent", "Opera");
+        assertThat(controller.encodeFileName("abc"), is("filename=\"abc\""));
     }
 
     private static class IndexController extends Controller {
