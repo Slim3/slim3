@@ -67,6 +67,10 @@ public final class DatastoreUtil {
      */
     public static final int MAX_RETRY = 10;
 
+    private static final long INITIAL_WAIT_MS = 100L;
+
+    private static final int WAIT_MULTIPLIER_FACTOR = 2;
+
     private static final int KEY_CACHE_SIZE = 50;
 
     private static final String DATASTORE_SERVICE = "datastore_v3";
@@ -114,15 +118,19 @@ public final class DatastoreUtil {
     public static Transaction beginTransaction() {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         DatastoreTimeoutException dte = null;
+        long wait = INITIAL_WAIT_MS;
         for (int i = 0; i < MAX_RETRY; i++) {
             try {
                 return ds.beginTransaction();
             } catch (DatastoreTimeoutException e) {
                 dte = e;
-                logger.info("This message is just INFORMATION. Retry["
+                logger.info("This message["
+                    + e
+                    + "] is just INFORMATION. Method[beginTransaction] Retry["
                     + i
-                    + "]:"
-                    + e);
+                    + "]");
+                sleep(wait);
+                wait *= WAIT_MULTIPLIER_FACTOR;
             }
         }
         throw dte;
@@ -220,15 +228,19 @@ public final class DatastoreUtil {
         }
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         DatastoreTimeoutException dte = null;
+        long wait = INITIAL_WAIT_MS;
         for (int i = 0; i < MAX_RETRY; i++) {
             try {
                 return ds.allocateIds(kind, num);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
-                logger.info("This message is a just INFORMATION. Retry["
+                logger.info("This message["
+                    + e
+                    + "] is just INFORMATION. Method[allocateIds] Retry["
                     + i
-                    + "]:"
-                    + e);
+                    + "]");
+                sleep(wait);
+                wait *= WAIT_MULTIPLIER_FACTOR;
             }
         }
         throw dte;
@@ -257,15 +269,19 @@ public final class DatastoreUtil {
         }
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         DatastoreTimeoutException dte = null;
+        long wait = INITIAL_WAIT_MS;
         for (int i = 0; i < MAX_RETRY; i++) {
             try {
                 return ds.allocateIds(parentKey, kind, num);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
-                logger.info("This message is a just INFORMATION. Retry["
+                logger.info("This message["
+                    + e
+                    + "] is just INFORMATION. Method[allocateIds] Retry["
                     + i
-                    + "]:"
-                    + e);
+                    + "]");
+                sleep(wait);
+                wait *= WAIT_MULTIPLIER_FACTOR;
             }
         }
         throw dte;
@@ -331,15 +347,20 @@ public final class DatastoreUtil {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         try {
             DatastoreTimeoutException dte = null;
+            long wait = INITIAL_WAIT_MS;
             for (int i = 0; i < MAX_RETRY; i++) {
                 try {
                     return ds.get(key);
                 } catch (DatastoreTimeoutException e) {
                     dte = e;
-                    logger.info("This message is a just INFORMATION. Retry["
-                        + i
-                        + "]:"
-                        + e);
+                    logger
+                        .info("This message["
+                            + e
+                            + "] is just INFORMATION. Method[beginTransaction] Retry["
+                            + i
+                            + "]");
+                    sleep(wait);
+                    wait *= WAIT_MULTIPLIER_FACTOR;
                 }
             }
             throw dte;
@@ -377,15 +398,20 @@ public final class DatastoreUtil {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         try {
             DatastoreTimeoutException dte = null;
+            long wait = INITIAL_WAIT_MS;
             for (int i = 0; i < MAX_RETRY; i++) {
                 try {
                     return ds.get(tx, key);
                 } catch (DatastoreTimeoutException e) {
                     dte = e;
-                    logger.info("This message is a just INFORMATION. Retry["
-                        + i
-                        + "]:"
-                        + e);
+                    logger
+                        .info("This message["
+                            + e
+                            + "] is just INFORMATION. Method[beginTransaction] Retry["
+                            + i
+                            + "]");
+                    sleep(wait);
+                    wait *= WAIT_MULTIPLIER_FACTOR;
                 }
             }
             throw dte;
@@ -415,15 +441,19 @@ public final class DatastoreUtil {
         }
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         DatastoreTimeoutException dte = null;
+        long wait = INITIAL_WAIT_MS;
         for (int i = 0; i < MAX_RETRY; i++) {
             try {
                 return ds.get(keys);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
-                logger.info("This message is a just INFORMATION. Retry["
+                logger.info("This message["
+                    + e
+                    + "] is just INFORMATION. Method[beginTransaction] Retry["
                     + i
-                    + "]:"
-                    + e);
+                    + "]");
+                sleep(wait);
+                wait *= WAIT_MULTIPLIER_FACTOR;
             }
         }
         throw dte;
@@ -458,15 +488,19 @@ public final class DatastoreUtil {
         }
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         DatastoreTimeoutException dte = null;
+        long wait = INITIAL_WAIT_MS;
         for (int i = 0; i < MAX_RETRY; i++) {
             try {
                 return ds.get(tx, keys);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
-                logger.info("This message is a just INFORMATION. Retry["
+                logger.info("This message["
+                    + e
+                    + "] is just INFORMATION. Method[beginTransaction] Retry["
                     + i
-                    + "]:"
-                    + e);
+                    + "]");
+                sleep(wait);
+                wait *= WAIT_MULTIPLIER_FACTOR;
             }
         }
         throw dte;
@@ -489,15 +523,19 @@ public final class DatastoreUtil {
             IllegalStateException {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         DatastoreTimeoutException dte = null;
+        long wait = INITIAL_WAIT_MS;
         for (int i = 0; i < MAX_RETRY; i++) {
             try {
                 return ds.put(entity);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
-                logger.info("This message is a just INFORMATION. Retry["
+                logger.info("This message["
+                    + e
+                    + "] is just INFORMATION. Method[beginTransaction] Retry["
                     + i
-                    + "]:"
-                    + e);
+                    + "]");
+                sleep(wait);
+                wait *= WAIT_MULTIPLIER_FACTOR;
             }
         }
         throw dte;
@@ -524,15 +562,19 @@ public final class DatastoreUtil {
         }
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         DatastoreTimeoutException dte = null;
+        long wait = INITIAL_WAIT_MS;
         for (int i = 0; i < MAX_RETRY; i++) {
             try {
                 return ds.put(tx, entity);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
-                logger.info("This message is a just INFORMATION. Retry["
+                logger.info("This message["
+                    + e
+                    + "] is just INFORMATION. Method[beginTransaction] Retry["
                     + i
-                    + "]:"
-                    + e);
+                    + "]");
+                sleep(wait);
+                wait *= WAIT_MULTIPLIER_FACTOR;
             }
         }
         throw dte;
@@ -581,16 +623,20 @@ public final class DatastoreUtil {
         for (int i = 0; i < MAX_RETRY; i++) {
             try {
                 DatastoreTimeoutException dte = null;
+                long wait = INITIAL_WAIT_MS;
                 for (int j = 0; j < MAX_RETRY; j++) {
                     try {
                         return ds.put(null, entities);
                     } catch (DatastoreTimeoutException e) {
                         dte = e;
                         logger
-                            .info("This message is a just INFORMATION. Retry["
-                                + j
-                                + "]:"
-                                + e);
+                            .info("This message["
+                                + e
+                                + "] is just INFORMATION. Method[beginTransaction] Retry["
+                                + i
+                                + "]");
+                        sleep(wait);
+                        wait *= WAIT_MULTIPLIER_FACTOR;
                     }
                 }
                 throw dte;
@@ -633,15 +679,19 @@ public final class DatastoreUtil {
         }
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         DatastoreTimeoutException dte = null;
+        long wait = INITIAL_WAIT_MS;
         for (int i = 0; i < MAX_RETRY; i++) {
             try {
                 return ds.put(tx, entities);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
-                logger.info("This message is a just INFORMATION. Retry["
+                logger.info("This message["
+                    + e
+                    + "] is just INFORMATION. Method[beginTransaction] Retry["
                     + i
-                    + "]:"
-                    + e);
+                    + "]");
+                sleep(wait);
+                wait *= WAIT_MULTIPLIER_FACTOR;
             }
         }
         throw dte;
@@ -685,6 +735,7 @@ public final class DatastoreUtil {
         for (int i = 0; i < MAX_RETRY; i++) {
             try {
                 DatastoreTimeoutException dte = null;
+                long wait = INITIAL_WAIT_MS;
                 for (int j = 0; j < MAX_RETRY; j++) {
                     try {
                         ApiProxy.makeSyncCall(
@@ -695,10 +746,13 @@ public final class DatastoreUtil {
                     } catch (DatastoreTimeoutException e) {
                         dte = e;
                         logger
-                            .info("This message is a just INFORMATION. Retry["
-                                + j
-                                + "]:"
-                                + e);
+                            .info("This message["
+                                + e
+                                + "] is just INFORMATION. Method[beginTransaction] Retry["
+                                + i
+                                + "]");
+                        sleep(wait);
+                        wait *= WAIT_MULTIPLIER_FACTOR;
                     }
                 }
                 throw dte;
@@ -756,6 +810,7 @@ public final class DatastoreUtil {
         for (int i = 0; i < MAX_RETRY; i++) {
             try {
                 DatastoreTimeoutException dte = null;
+                long wait = INITIAL_WAIT_MS;
                 for (int j = 0; j < MAX_RETRY; j++) {
                     try {
                         ds.delete(null, keys);
@@ -763,10 +818,13 @@ public final class DatastoreUtil {
                     } catch (DatastoreTimeoutException e) {
                         dte = e;
                         logger
-                            .info("This message is a just INFORMATION. Retry["
-                                + j
-                                + "]:"
-                                + e);
+                            .info("This message["
+                                + e
+                                + "] is just INFORMATION. Method[beginTransaction] Retry["
+                                + i
+                                + "]");
+                        sleep(wait);
+                        wait *= WAIT_MULTIPLIER_FACTOR;
                     }
                 }
                 throw dte;
@@ -804,16 +862,20 @@ public final class DatastoreUtil {
         }
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         DatastoreTimeoutException dte = null;
+        long wait = INITIAL_WAIT_MS;
         for (int i = 0; i < MAX_RETRY; i++) {
             try {
                 ds.delete(tx, keys);
                 return;
             } catch (DatastoreTimeoutException e) {
                 dte = e;
-                logger.info("This message is a just INFORMATION. Retry["
+                logger.info("This message["
+                    + e
+                    + "] is just INFORMATION. Method[beginTransaction] Retry["
                     + i
-                    + "]:"
-                    + e);
+                    + "]");
+                sleep(wait);
+                wait *= WAIT_MULTIPLIER_FACTOR;
             }
         }
         throw dte;
@@ -840,15 +902,19 @@ public final class DatastoreUtil {
                 "The query parameter must not be null.");
         }
         DatastoreTimeoutException dte = null;
+        long wait = INITIAL_WAIT_MS;
         for (int i = 0; i < MAX_RETRY; i++) {
             try {
                 return ds.prepare(query);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
-                logger.info("This message is a just INFORMATION. Retry["
+                logger.info("This message["
+                    + e
+                    + "] is just INFORMATION. Method[beginTransaction] Retry["
                     + i
-                    + "]:"
-                    + e);
+                    + "]");
+                sleep(wait);
+                wait *= WAIT_MULTIPLIER_FACTOR;
             }
         }
         throw dte;
@@ -878,15 +944,19 @@ public final class DatastoreUtil {
                 "The query parameter must not be null.");
         }
         DatastoreTimeoutException dte = null;
+        long wait = INITIAL_WAIT_MS;
         for (int i = 0; i < MAX_RETRY; i++) {
             try {
                 return ds.prepare(tx, query);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
-                logger.info("This message is a just INFORMATION. Retry["
+                logger.info("This message["
+                    + e
+                    + "] is just INFORMATION. Method[beginTransaction] Retry["
                     + i
-                    + "]:"
-                    + e);
+                    + "]");
+                sleep(wait);
+                wait *= WAIT_MULTIPLIER_FACTOR;
             }
         }
         throw dte;
@@ -915,15 +985,19 @@ public final class DatastoreUtil {
                 "The fetchOptions parameter must not be null.");
         }
         DatastoreTimeoutException dte = null;
+        long wait = INITIAL_WAIT_MS;
         for (int i = 0; i < MAX_RETRY; i++) {
             try {
                 return preparedQuery.asList(fetchOptions);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
-                logger.info("This message is a just INFORMATION. Retry["
+                logger.info("This message["
+                    + e
+                    + "] is just INFORMATION. Method[beginTransaction] Retry["
                     + i
-                    + "]:"
-                    + e);
+                    + "]");
+                sleep(wait);
+                wait *= WAIT_MULTIPLIER_FACTOR;
             }
         }
         throw dte;
@@ -945,15 +1019,19 @@ public final class DatastoreUtil {
                 "The preparedQuery parameter must not be null.");
         }
         DatastoreTimeoutException dte = null;
+        long wait = INITIAL_WAIT_MS;
         for (int i = 0; i < MAX_RETRY; i++) {
             try {
                 return preparedQuery.asSingleEntity();
             } catch (DatastoreTimeoutException e) {
                 dte = e;
-                logger.info("This message is a just INFORMATION. Retry["
+                logger.info("This message["
+                    + e
+                    + "] is just INFORMATION. Method[beginTransaction] Retry["
                     + i
-                    + "]:"
-                    + e);
+                    + "]");
+                sleep(wait);
+                wait *= WAIT_MULTIPLIER_FACTOR;
             }
         }
         throw dte;
@@ -982,15 +1060,19 @@ public final class DatastoreUtil {
                 "The fetchOptions parameter must not be null.");
         }
         DatastoreTimeoutException dte = null;
+        long wait = INITIAL_WAIT_MS;
         for (int i = 0; i < MAX_RETRY; i++) {
             try {
                 return preparedQuery.asIterable(fetchOptions);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
-                logger.info("This message is a just INFORMATION. Retry["
+                logger.info("This message["
+                    + e
+                    + "] is just INFORMATION. Method[beginTransaction] Retry["
                     + i
-                    + "]:"
-                    + e);
+                    + "]");
+                sleep(wait);
+                wait *= WAIT_MULTIPLIER_FACTOR;
             }
         }
         throw dte;
@@ -1012,15 +1094,19 @@ public final class DatastoreUtil {
                 "The preparedQuery parameter must not be null.");
         }
         DatastoreTimeoutException dte = null;
+        long wait = INITIAL_WAIT_MS;
         for (int i = 0; i < MAX_RETRY; i++) {
             try {
                 return preparedQuery.countEntities();
             } catch (DatastoreTimeoutException e) {
                 dte = e;
-                logger.info("This message is a just INFORMATION. Retry["
+                logger.info("This message["
+                    + e
+                    + "] is just INFORMATION. Method[beginTransaction] Retry["
                     + i
-                    + "]:"
-                    + e);
+                    + "]");
+                sleep(wait);
+                wait *= WAIT_MULTIPLIER_FACTOR;
             }
         }
         throw dte;
@@ -1564,6 +1650,13 @@ public final class DatastoreUtil {
     public static String getKind(Reference key) {
         List<Element> elements = key.getPath().elements();
         return elements.get(elements.size() - 1).getType();
+    }
+
+    private static void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException ignore) {
+        }
     }
 
     private DatastoreUtil() {
