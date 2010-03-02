@@ -224,11 +224,19 @@ public class SimpleDataTypeVisitor<R, P, TH extends Throwable> implements
         return visitListType(type, p);
     }
 
+    public R visitLinkedListType(LinkedListType type, P p) throws TH {
+        return visitListType(type, p);
+    }
+
     public R visitSetType(SetType type, P p) throws TH {
         return visitCollectionType(type, p);
     }
 
     public R visitHashSetType(HashSetType type, P p) throws TH {
+        return visitSetType(type, p);
+    }
+
+    public R visitLinkedHashSetType(LinkedHashSetType type, P p) throws TH {
         return visitSetType(type, p);
     }
 

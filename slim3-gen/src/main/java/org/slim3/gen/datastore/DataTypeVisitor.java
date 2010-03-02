@@ -590,6 +590,19 @@ public interface DataTypeVisitor<R, P, TH extends Throwable> {
     R visitArrayListType(ArrayListType type, P p) throws TH;
 
     /**
+     * Visits {@link LinkedListType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
+    R visitLinkedListType(LinkedListType type, P p) throws TH;
+
+    /**
      * Visits {@link SetType}.
      * 
      * @param type
@@ -614,6 +627,19 @@ public interface DataTypeVisitor<R, P, TH extends Throwable> {
      *             the throwable
      */
     R visitHashSetType(HashSetType type, P p) throws TH;
+
+    /**
+     * Visits {@link LinkedHashSetType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
+    R visitLinkedHashSetType(LinkedHashSetType type, P p) throws TH;
 
     /**
      * Visits {@link SortedSetType}.

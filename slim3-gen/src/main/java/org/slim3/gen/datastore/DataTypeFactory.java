@@ -31,6 +31,8 @@ import static org.slim3.gen.ClassConstants.InverseModelListRef;
 import static org.slim3.gen.ClassConstants.InverseModelRef;
 import static org.slim3.gen.ClassConstants.Key;
 import static org.slim3.gen.ClassConstants.Link;
+import static org.slim3.gen.ClassConstants.LinkedHashSet;
+import static org.slim3.gen.ClassConstants.LinkedList;
 import static org.slim3.gen.ClassConstants.List;
 import static org.slim3.gen.ClassConstants.Long;
 import static org.slim3.gen.ClassConstants.ModelRef;
@@ -517,11 +519,17 @@ public class DataTypeFactory {
             if (ArrayList.equals(className)) {
                 return new ArrayListType(className, typeName, elementType);
             }
+            if (LinkedList.equals(className)) {
+                return new LinkedListType(className, typeName, elementType);
+            }
             if (Set.equals(className)) {
                 return new SetType(className, typeName, elementType);
             }
             if (HashSet.equals(className)) {
                 return new HashSetType(className, typeName, elementType);
+            }
+            if (LinkedHashSet.equals(className)) {
+                return new LinkedHashSetType(className, typeName, elementType);
             }
             if (SortedSet.equals(className)) {
                 return new SortedSetType(className, typeName, elementType);
