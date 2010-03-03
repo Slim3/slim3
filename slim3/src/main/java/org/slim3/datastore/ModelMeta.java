@@ -16,11 +16,8 @@
 package org.slim3.datastore;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.TreeSet;
 
 import org.slim3.util.BeanDesc;
 import org.slim3.util.BeanUtil;
@@ -528,67 +525,6 @@ public abstract class ModelMeta<M> {
     }
 
     /**
-     * Converts the list to a hash set.
-     * 
-     * @param <T>
-     *            the type
-     * @param clazz
-     *            the class
-     * @param value
-     *            the list
-     * @return a hash set
-     */
-    @SuppressWarnings("unchecked")
-    protected <T> HashSet<T> toSet(Class<T> clazz, Object value) {
-        List<T> v = (List<T>) value;
-        if (v == null) {
-            return new HashSet<T>();
-        }
-        HashSet<T> set = new HashSet<T>(v.size(), 1.0f);
-        set.addAll(v);
-        return set;
-    }
-
-    /**
-     * Converts the list to a sorted set.
-     * 
-     * @param <T>
-     *            the type
-     * @param clazz
-     *            the class
-     * @param value
-     *            the list
-     * @return a sorted set
-     */
-    @SuppressWarnings("unchecked")
-    protected <T> TreeSet<T> toSortedSet(Class<T> clazz, Object value) {
-        List<T> v = (List<T>) value;
-        if (v == null) {
-            return new TreeSet<T>();
-        }
-        TreeSet<T> set = new TreeSet<T>();
-        set.addAll(v);
-        return set;
-    }
-
-    /**
-     * Copies the list of long to the collection of short.
-     * 
-     * @param value
-     *            the list of long
-     * @param collection
-     *            the collection of short
-     */
-    protected void copyLongListToShortCollection(List<Long> value,
-            Collection<Short> collection) {
-        int size = value.size();
-        for (int i = 0; i < size; i++) {
-            Long l = value.get(i);
-            collection.add(l != null ? l.shortValue() : null);
-        }
-    }
-
-    /**
      * Converts the list of long to a list of short.
      * 
      * @param value
@@ -602,61 +538,12 @@ public abstract class ModelMeta<M> {
             return new ArrayList<Short>();
         }
         ArrayList<Short> collection = new ArrayList<Short>(v.size());
-        copyLongListToShortCollection(v, collection);
-        return collection;
-    }
-
-    /**
-     * Converts the list of long to a set of short.
-     * 
-     * @param value
-     *            the list of long
-     * @return a set of short
-     */
-    @SuppressWarnings("unchecked")
-    protected HashSet<Short> longListToShortSet(Object value) {
-        List<Long> v = (List<Long>) value;
-        if (v == null) {
-            return new HashSet<Short>();
-        }
-        HashSet<Short> collection = new HashSet<Short>(v.size(), 1.0f);
-        copyLongListToShortCollection(v, collection);
-        return collection;
-    }
-
-    /**
-     * Converts the list of long to a sorted set of short.
-     * 
-     * @param value
-     *            the list of long
-     * @return a sorted set of short
-     */
-    @SuppressWarnings("unchecked")
-    protected TreeSet<Short> longListToShortSortedSet(Object value) {
-        List<Long> v = (List<Long>) value;
-        if (v == null) {
-            return new TreeSet<Short>();
-        }
-        TreeSet<Short> collection = new TreeSet<Short>();
-        copyLongListToShortCollection(v, collection);
-        return collection;
-    }
-
-    /**
-     * Copies the list of long to the collection of integer.
-     * 
-     * @param value
-     *            the list of long
-     * @param collection
-     *            the collection of integer
-     */
-    protected void copyLongListToIntegerCollection(List<Long> value,
-            Collection<Integer> collection) {
-        int size = value.size();
+        int size = v.size();
         for (int i = 0; i < size; i++) {
-            Long l = value.get(i);
-            collection.add(l != null ? l.intValue() : null);
+            Long l = v.get(i);
+            collection.add(l != null ? l.shortValue() : null);
         }
+        return collection;
     }
 
     /**
@@ -673,61 +560,12 @@ public abstract class ModelMeta<M> {
             return new ArrayList<Integer>();
         }
         ArrayList<Integer> collection = new ArrayList<Integer>(v.size());
-        copyLongListToIntegerCollection(v, collection);
-        return collection;
-    }
-
-    /**
-     * Converts the list of long to a set of integer.
-     * 
-     * @param value
-     *            the list of long
-     * @return a set of integer
-     */
-    @SuppressWarnings("unchecked")
-    protected HashSet<Integer> longListToIntegerSet(Object value) {
-        List<Long> v = (List<Long>) value;
-        if (v == null) {
-            return new HashSet<Integer>();
-        }
-        HashSet<Integer> collection = new HashSet<Integer>(v.size(), 1.0f);
-        copyLongListToIntegerCollection(v, collection);
-        return collection;
-    }
-
-    /**
-     * Converts the list of long to a sorted set of integer.
-     * 
-     * @param value
-     *            the list of long
-     * @return a sorted set of integer
-     */
-    @SuppressWarnings("unchecked")
-    protected TreeSet<Integer> longListToIntegerSortedSet(Object value) {
-        List<Long> v = (List<Long>) value;
-        if (v == null) {
-            return new TreeSet<Integer>();
-        }
-        TreeSet<Integer> collection = new TreeSet<Integer>();
-        copyLongListToIntegerCollection(v, collection);
-        return collection;
-    }
-
-    /**
-     * Copies the list of double to the collection of float.
-     * 
-     * @param value
-     *            the list of double
-     * @param collection
-     *            the collection of float
-     */
-    protected void copyDoubleListToFloatCollection(List<Double> value,
-            Collection<Float> collection) {
-        int size = value.size();
+        int size = v.size();
         for (int i = 0; i < size; i++) {
-            Double d = value.get(i);
-            collection.add(d != null ? d.floatValue() : null);
+            Long l = v.get(i);
+            collection.add(l != null ? l.intValue() : null);
         }
+        return collection;
     }
 
     /**
@@ -744,43 +582,11 @@ public abstract class ModelMeta<M> {
             return new ArrayList<Float>();
         }
         ArrayList<Float> collection = new ArrayList<Float>(v.size());
-        copyDoubleListToFloatCollection(v, collection);
-        return collection;
-    }
-
-    /**
-     * Converts the list of double to a set of float.
-     * 
-     * @param value
-     *            the list of double
-     * @return a set of float
-     */
-    @SuppressWarnings("unchecked")
-    protected HashSet<Float> doubleListToFloatSet(Object value) {
-        List<Double> v = (List<Double>) value;
-        if (v == null) {
-            return new HashSet<Float>();
+        int size = v.size();
+        for (int i = 0; i < size; i++) {
+            Double d = v.get(i);
+            collection.add(d != null ? d.floatValue() : null);
         }
-        HashSet<Float> collection = new HashSet<Float>(v.size(), 1.0f);
-        copyDoubleListToFloatCollection(v, collection);
-        return collection;
-    }
-
-    /**
-     * Converts the list of double to a sorted set of float.
-     * 
-     * @param value
-     *            the list of double
-     * @return a sorted set of float
-     */
-    @SuppressWarnings("unchecked")
-    protected TreeSet<Float> doubleListToFloatSortedSet(Object value) {
-        List<Double> v = (List<Double>) value;
-        if (v == null) {
-            return new TreeSet<Float>();
-        }
-        TreeSet<Float> collection = new TreeSet<Float>();
-        copyDoubleListToFloatCollection(v, collection);
         return collection;
     }
 

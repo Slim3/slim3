@@ -16,9 +16,11 @@
 package org.slim3.datastore.meta;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.slim3.datastore.CollectionAttributeMeta;
 import org.slim3.datastore.CoreAttributeMeta;
@@ -408,30 +410,31 @@ public class HogeMeta extends ModelMeta<Hoge> {
 
         model.setMyShortList(longListToShortList(entity
             .getProperty("myShortList")));
-        model
-            .setMyShortSet(longListToShortSet(entity.getProperty("myShortSet")));
-        model.setMyShortSortedSet(longListToShortSortedSet(entity
-            .getProperty("myShortSortedSet")));
+        model.setMyShortSet(new HashSet<Short>(longListToShortList(entity
+            .getProperty("myShortSet"))));
+        model.setMyShortSortedSet(new TreeSet<Short>(longListToShortList(entity
+            .getProperty("myShortSortedSet"))));
 
         model.setMyIntegerList(longListToIntegerList(entity
             .getProperty("myIntegerList")));
-        model.setMyIntegerSet(longListToIntegerSet(entity
-            .getProperty("myIntegerSet")));
-        model.setMyIntegerSortedSet(longListToIntegerSortedSet(entity
-            .getProperty("myIntegerSortedSet")));
+        model.setMyIntegerSet(new HashSet<Integer>(longListToIntegerList(entity
+            .getProperty("myIntegerSet"))));
+        model.setMyIntegerSortedSet(new TreeSet<Integer>(
+            longListToIntegerList(entity.getProperty("myIntegerSortedSet"))));
 
         model
             .setMyLongList(toList(Long.class, entity.getProperty("myLongList")));
-        model.setMyLongSet(toSet(Long.class, entity.getProperty("myLongSet")));
-        model.setMyLongSortedSet(toSortedSet(Long.class, entity
-            .getProperty("myLongSortedSet")));
+        model.setMyLongSet(new HashSet<Long>(toList(Long.class, entity
+            .getProperty("myLongSet"))));
+        model.setMyLongSortedSet(new TreeSet<Long>(toList(Long.class, entity
+            .getProperty("myLongSortedSet"))));
 
         model.setMyFloatList(doubleListToFloatList(entity
             .getProperty("myFloatList")));
-        model.setMyFloatSet(doubleListToFloatSet(entity
-            .getProperty("myFloatSet")));
-        model.setMyFloatSortedSet(doubleListToFloatSortedSet(entity
-            .getProperty("myFloatSortedSet")));
+        model.setMyFloatSet(new HashSet<Float>(doubleListToFloatList(entity
+            .getProperty("myFloatSet"))));
+        model.setMyFloatSortedSet(new TreeSet<Float>(
+            doubleListToFloatList(entity.getProperty("myFloatSortedSet"))));
         model.setMyEnumList(stringListToEnumList(SortDirection.class, entity
             .getProperty("myEnumList")));
         model.setMyStringList(toList(String.class, entity

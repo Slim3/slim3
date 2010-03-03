@@ -21,11 +21,7 @@ import static org.junit.matchers.JUnitMatchers.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
 
 import org.junit.Test;
 import org.slim3.datastore.meta.BbbMeta;
@@ -299,84 +295,12 @@ public class ModelMetaTest {
      * @throws Exception
      */
     @Test
-    public void toSet() throws Exception {
-        List<Long> value = new ArrayList<Long>(Arrays.asList(1L));
-        HashSet<Long> ret = meta.toSet(Long.class, value);
-        assertThat(ret.size(), is(1));
-        assertThat(ret.iterator().next(), is(1L));
-        assertThat(meta.toSet(Long.class, null).size(), is(0));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void toSortedSet() throws Exception {
-        List<Long> value = new ArrayList<Long>(Arrays.asList(1L));
-        SortedSet<Long> ret = meta.toSortedSet(Long.class, value);
-        assertThat(ret.size(), is(1));
-        assertThat(ret.iterator().next(), is(1L));
-        assertThat(meta.toSortedSet(Long.class, null).size(), is(0));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void copyLongListToShortCollection() throws Exception {
-        List<Long> value = Arrays.asList(1L);
-        Collection<Short> collection = new ArrayList<Short>();
-        meta.copyLongListToShortCollection(value, collection);
-        assertThat(collection.size(), is(1));
-        assertThat(collection.iterator().next(), is((short) 1));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
     public void longListToShortList() throws Exception {
         List<Long> value = Arrays.asList(1L);
         assertThat(
             meta.longListToShortList(value),
             is(Arrays.asList((short) 1)));
         assertThat(meta.longListToShortList(null).size(), is(0));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void longListToShortSet() throws Exception {
-        List<Long> value = Arrays.asList(1L);
-        Set<Short> ret = meta.longListToShortSet(value);
-        assertThat(ret.size(), is(1));
-        assertThat(ret.iterator().next(), is((short) 1));
-        assertThat(meta.longListToShortSet(null).size(), is(0));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void longListToShortSortedSet() throws Exception {
-        List<Long> value = Arrays.asList(1L);
-        SortedSet<Short> ret = meta.longListToShortSortedSet(value);
-        assertThat(ret.size(), is(1));
-        assertThat(ret.iterator().next(), is((short) 1));
-        assertThat(meta.longListToShortSortedSet(null).size(), is(0));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void copyLongListToIntegerCollection() throws Exception {
-        List<Long> value = Arrays.asList(1L);
-        Collection<Integer> collection = new ArrayList<Integer>();
-        meta.copyLongListToIntegerCollection(value, collection);
-        assertThat(collection.size(), is(1));
-        assertThat(collection.iterator().next(), is(1));
     }
 
     /**
@@ -395,72 +319,12 @@ public class ModelMetaTest {
      * @throws Exception
      */
     @Test
-    public void longListToIntegerSet() throws Exception {
-        List<Long> value = Arrays.asList(1L);
-        Set<Integer> ret = meta.longListToIntegerSet(value);
-        assertThat(ret.size(), is(1));
-        assertThat(ret.iterator().next(), is(1));
-        assertThat(meta.longListToIntegerSet(null).size(), is(0));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void longListToIntegerSortedSet() throws Exception {
-        List<Long> value = Arrays.asList(1L);
-        SortedSet<Integer> ret = meta.longListToIntegerSortedSet(value);
-        assertThat(ret.size(), is(1));
-        assertThat(ret.iterator().next(), is(1));
-        assertThat(meta.longListToIntegerSortedSet(null).size(), is(0));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void copyDoubleListToFloatCollection() throws Exception {
-        List<Double> value = Arrays.asList(1d);
-        Collection<Float> collection = new ArrayList<Float>();
-        meta.copyDoubleListToFloatCollection(value, collection);
-        assertThat(collection.size(), is(1));
-        assertThat(collection.iterator().next(), is(1f));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
     public void doubleListToFloatList() throws Exception {
         List<Double> value = Arrays.asList(1d);
         List<Float> ret = meta.doubleListToFloatList(value);
         assertThat(ret.size(), is(1));
         assertThat(ret.get(0), is(1f));
         assertThat(meta.doubleListToFloatList(null).size(), is(0));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void doubleListToFloatSet() throws Exception {
-        List<Double> value = Arrays.asList(1d);
-        Set<Float> ret = meta.doubleListToFloatSet(value);
-        assertThat(ret.size(), is(1));
-        assertThat(ret.iterator().next(), is(1f));
-        assertThat(meta.doubleListToFloatSet(null).size(), is(0));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void doubleListToFloatSortedSet() throws Exception {
-        List<Double> value = Arrays.asList(1d);
-        SortedSet<Float> ret = meta.doubleListToFloatSortedSet(value);
-        assertThat(ret.size(), is(1));
-        assertThat(ret.iterator().next(), is(1f));
-        assertThat(meta.doubleListToFloatSortedSet(null).size(), is(0));
     }
 
     /**
