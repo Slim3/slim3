@@ -51,6 +51,7 @@ import org.slim3.util.RequestUtil;
 import org.slim3.util.ResponseLocator;
 import org.slim3.util.ServletContextLocator;
 import org.slim3.util.StringUtil;
+import org.slim3.util.ThrowableUtil;
 import org.slim3.util.TimeZoneLocator;
 import org.slim3.util.WrapRuntimeException;
 
@@ -562,8 +563,18 @@ public class FrontController implements Filter {
             throws IOException, ServletException {
         RequestHandler requestHandler = createRequestHandler(request);
         requestHandler.handle();
-        Navigation navigation = controller.runBare();
-        handleNavigation(request, response, controller, navigation);
+        try {
+            Navigation navigation = controller.runBare();
+            handleNavigation(request, response, controller, navigation);
+        } catch (Throwable t) {
+            if (t instanceof IOException) {
+                throw (IOException) t;
+            }
+            if (t instanceof ServletException) {
+                throw (ServletException) t;
+            }
+            throw ThrowableUtil.wrap(t);
+        }
     }
 
     /**

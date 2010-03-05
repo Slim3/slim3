@@ -44,7 +44,6 @@ import org.slim3.util.NumberUtil;
 import org.slim3.util.ShortUtil;
 import org.slim3.util.StringUtil;
 import org.slim3.util.ThrowableUtil;
-import org.slim3.util.WrapRuntimeException;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -95,8 +94,10 @@ public abstract class Controller {
      * Runs the bare controller process.
      * 
      * @return the navigation
+     * @throws Throwable
+     *             if an {@link Throwable} occurred
      */
-    public Navigation runBare() {
+    public Navigation runBare() throws Throwable {
         Navigation navigation = null;
         Throwable error = null;
         navigation = setUp();
@@ -135,9 +136,11 @@ public abstract class Controller {
     /**
      * Override to run this controller
      * 
-     * @return the navigation.
+     * @return the navigation
+     * @throws Exception
+     *             if an {@link Exception} occurred
      */
-    protected abstract Navigation run();
+    protected abstract Navigation run() throws Exception;
 
     /**
      * Tears down this controller. This method is called after "run" method is
@@ -153,15 +156,11 @@ public abstract class Controller {
      * @param error
      *            the error
      * @return the navigation.
+     * @throws Throwable
+     *             if an {@link Throwable} occurred
      */
-    protected Navigation handleError(Throwable error) {
-        if (error instanceof Error) {
-            throw (Error) error;
-        }
-        if (error instanceof RuntimeException) {
-            throw (RuntimeException) error;
-        }
-        throw new WrapRuntimeException(error);
+    protected Navigation handleError(Throwable error) throws Throwable {
+        throw error;
     }
 
     /**
