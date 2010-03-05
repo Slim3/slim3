@@ -111,7 +111,6 @@ public final class PropertyDesc {
     }
 
     void setReadMethod(Method readMethod) {
-        readMethod.setAccessible(true);
         this.readMethod = readMethod;
     }
 
@@ -134,7 +133,6 @@ public final class PropertyDesc {
     }
 
     void setWriteMethod(Method writeMethod) {
-        writeMethod.setAccessible(true);
         this.writeMethod = writeMethod;
     }
 
@@ -159,7 +157,12 @@ public final class PropertyDesc {
                 + ") is not readable.");
         }
         try {
-            return readMethod.invoke(bean);
+            try {
+                return readMethod.invoke(bean);
+            } catch (IllegalAccessException e) {
+                readMethod.setAccessible(true);
+                return readMethod.invoke(bean);
+            }
         } catch (Throwable cause) {
             throw new WrapRuntimeException("Reading the property("
                 + name
@@ -193,7 +196,12 @@ public final class PropertyDesc {
         }
         try {
             value = ConversionUtil.convert(value, propertyClass);
-            writeMethod.invoke(bean, value);
+            try {
+                writeMethod.invoke(bean, value);
+            } catch (IllegalAccessException e) {
+                writeMethod.setAccessible(true);
+                writeMethod.invoke(bean, value);
+            }
         } catch (Throwable cause) {
             throw new WrapRuntimeException("Writing the value("
                 + value

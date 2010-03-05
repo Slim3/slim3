@@ -21,6 +21,8 @@ import static org.junit.Assert.*;
 import java.lang.reflect.Method;
 
 import org.junit.Test;
+import org.slim3.util.aaa.Aaa;
+import org.slim3.util.aaa.AaaFactory;
 
 /**
  * @author higa
@@ -91,12 +93,11 @@ public class PropertyDescTest {
      */
     @Test
     public void getValueForNonPublicClass() throws Exception {
-        Hoge hoge = new HogeImpl();
-        hoge.setAaa("111");
-        PropertyDesc pd = new PropertyDesc("aaa", String.class, HogeImpl.class);
-        Method m = hoge.getClass().getMethod("getAaa");
+        Aaa aaa = AaaFactory.newInstance();
+        PropertyDesc pd = new PropertyDesc("aaa", String.class, aaa.getClass());
+        Method m = aaa.getClass().getMethod("getAaa");
         pd.setReadMethod(m);
-        assertThat((String) pd.getValue(hoge), is("111"));
+        assertThat((String) pd.getValue(aaa), is("aaa"));
     }
 
     /**
@@ -150,45 +151,11 @@ public class PropertyDescTest {
      */
     @Test
     public void setValueForNonPublicClass() throws Exception {
-        Hoge hoge = new HogeImpl();
-        PropertyDesc pd = new PropertyDesc("aaa", String.class, HogeImpl.class);
-        Method m = hoge.getClass().getMethod("setAaa", String.class);
+        Aaa aaa = AaaFactory.newInstance();
+        PropertyDesc pd = new PropertyDesc("aaa", String.class, aaa.getClass());
+        Method m = aaa.getClass().getMethod("setAaa", String.class);
         pd.setWriteMethod(m);
-        pd.setValue(hoge, "111");
-        assertThat(hoge.getAaa(), is("111"));
-    }
-
-    /**
-     * 
-     */
-    public interface Hoge {
-        /**
-         * @return aaa
-         */
-        String getAaa();
-
-        /**
-         * @param aaa
-         */
-        void setAaa(String aaa);
-    }
-
-    private static class HogeImpl implements Hoge {
-        private String aaa;
-
-        /**
-         * @return the aaa
-         */
-        public String getAaa() {
-            return aaa;
-        }
-
-        /**
-         * @param aaa
-         *            the aaa to set
-         */
-        public void setAaa(String aaa) {
-            this.aaa = aaa;
-        }
+        pd.setValue(aaa, "111");
+        assertThat(aaa.getAaa(), is("111"));
     }
 }
