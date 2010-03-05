@@ -59,7 +59,7 @@ public class ControllerGenerator implements Generator {
             .getSuperclassName()));
         p.println();
         p.println("    @Override");
-        p.println("    public %s run() {", ClassUtil
+        p.println("    public %s run() throws Exception {", ClassUtil
             .getSimpleName(ClassConstants.Navigation));
         if (controllerDesc.isUseView()) {
             p.println("        return forward(\"%s\");", controllerDesc
