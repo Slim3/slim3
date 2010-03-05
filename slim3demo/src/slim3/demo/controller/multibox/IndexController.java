@@ -6,7 +6,7 @@ import org.slim3.controller.Navigation;
 public class IndexController extends Controller {
 
     @Override
-    public Navigation run() {
+    public Navigation run() throws Exception {
         if (isGet()) {
             requestScope("aaaArray", new String[] { "111" });
         }

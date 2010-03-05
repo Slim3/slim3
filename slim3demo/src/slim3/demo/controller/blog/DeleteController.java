@@ -13,7 +13,7 @@ public class DeleteController extends Controller {
     private BlogMeta meta = BlogMeta.get();
 
     @Override
-    public Navigation run() {
+    public Navigation run() throws Exception {
         service.delete(asKey(meta.key), asLong(meta.version));
         return redirect(basePath);
     }

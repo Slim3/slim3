@@ -10,7 +10,7 @@ public class IndexController extends Controller {
     private UploadService service = new UploadService();
 
     @Override
-    public Navigation run() {
+    public Navigation run() throws Exception {
         requestScope("dataList", service.getDataList());
         return forward("index.jsp");
     }

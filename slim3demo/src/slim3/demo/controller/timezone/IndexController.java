@@ -9,7 +9,7 @@ import org.slim3.util.TimeZoneLocator;
 public class IndexController extends Controller {
 
     @Override
-    public Navigation run() {
+    public Navigation run() throws Exception {
         requestScope("now", new Date());
         requestScope("timeZone", TimeZoneLocator.get().getID());
         return forward("index.jsp");

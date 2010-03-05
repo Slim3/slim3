@@ -13,7 +13,7 @@ public class DeleteController extends Controller {
     private UploadedDataMeta meta = UploadedDataMeta.get();
 
     @Override
-    public Navigation run() {
+    public Navigation run() throws Exception {
         service.delete(asKey(meta.key));
         return redirect(basePath);
     }

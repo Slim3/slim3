@@ -7,7 +7,7 @@ import org.slim3.controller.Navigation;
 public class ChangeController extends Controller {
 
     @Override
-    public Navigation run() {
+    public Navigation run() throws Exception {
         sessionScope(
             ControllerConstants.TIME_ZONE_KEY,
             requestScope("timeZone"));

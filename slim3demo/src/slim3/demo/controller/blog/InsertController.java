@@ -16,7 +16,7 @@ public class InsertController extends Controller {
     private BlogMeta meta = BlogMeta.get();
 
     @Override
-    public Navigation run() {
+    public Navigation run() throws Exception {
         if (!validate()) {
             return forward("create");
         }

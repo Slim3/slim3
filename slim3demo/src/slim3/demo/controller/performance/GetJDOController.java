@@ -10,7 +10,7 @@ public class GetJDOController extends Controller {
     private PerformanceService service = new PerformanceService();
 
     @Override
-    public Navigation run() {
+    public Navigation run() throws Exception {
         long start = System.currentTimeMillis();
         service.getBarListUsingJDO();
         sessionScope("getJDO", System.currentTimeMillis() - start);

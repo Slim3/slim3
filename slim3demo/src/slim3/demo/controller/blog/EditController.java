@@ -15,7 +15,7 @@ public class EditController extends Controller {
     private BlogMeta meta = BlogMeta.get();
 
     @Override
-    public Navigation run() {
+    public Navigation run() throws Exception {
         Blog blog = service.get(asKey(meta.key), asLong(meta.version));
         BeanUtil.copy(blog, request);
         return forward("/blog/edit.jsp");

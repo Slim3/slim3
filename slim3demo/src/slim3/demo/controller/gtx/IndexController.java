@@ -12,7 +12,7 @@ import com.google.appengine.api.datastore.Transaction;
 public class IndexController extends Controller {
 
     @Override
-    public Navigation run() {
+    public Navigation run() throws Exception {
         Datastore.delete(Datastore.query("Hoge").asKeyList());
         int count = 10;
         long start = System.currentTimeMillis();

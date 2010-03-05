@@ -14,7 +14,7 @@ public class DownloadController extends Controller {
     private UploadedDataMeta meta = UploadedDataMeta.get();
 
     @Override
-    public Navigation run() {
+    public Navigation run() throws Exception {
         UploadedData data =
             service.getData(asKey(meta.key), asLong(meta.version));
         byte[] bytes = service.getBytes(data);

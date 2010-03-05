@@ -6,7 +6,7 @@ import org.slim3.controller.Navigation;
 public class CreateController extends Controller {
 
     @Override
-    public Navigation run() {
+    public Navigation run() throws Exception {
         return forward("/blog/create.jsp");
     }
 }

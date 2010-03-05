@@ -7,7 +7,7 @@ import org.slim3.datastore.Datastore;
 public class IndexController extends Controller {
 
     @Override
-    public Navigation run() {
+    public Navigation run() throws Exception {
         requestScope("count", Datastore.query("Bar").count());
         return forward("index.jsp");
     }

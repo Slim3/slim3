@@ -10,7 +10,7 @@ public class IndexController extends Controller {
     private BlogService service = new BlogService();
 
     @Override
-    public Navigation run() {
+    public Navigation run() throws Exception {
         requestScope("blogList", service.getAll());
         return forward("/blog/index.jsp");
     }

@@ -10,7 +10,7 @@ public class GetSlim3Controller extends Controller {
     private PerformanceService service = new PerformanceService();
 
     @Override
-    public Navigation run() {
+    public Navigation run() throws Exception {
         long start = System.currentTimeMillis();
         service.getBarListUsingSlim3();
         sessionScope("getSlim3", System.currentTimeMillis() - start);

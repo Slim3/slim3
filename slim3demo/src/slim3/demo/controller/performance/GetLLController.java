@@ -10,7 +10,7 @@ public class GetLLController extends Controller {
     private PerformanceService service = new PerformanceService();
 
     @Override
-    public Navigation run() {
+    public Navigation run() throws Exception {
         long start = System.currentTimeMillis();
         service.getBarListUsingLL();
         sessionScope("getLL", System.currentTimeMillis() - start);

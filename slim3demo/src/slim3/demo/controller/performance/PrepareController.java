@@ -16,7 +16,7 @@ import com.google.appengine.api.datastore.KeyFactory;
 public class PrepareController extends Controller {
 
     @Override
-    public Navigation run() {
+    public Navigation run() throws Exception {
         for (int j = 0; j < 5; j++) {
             List<Entity> list = new ArrayList<Entity>();
             Iterator<Key> keys = Datastore.allocateIds("Bar", 500).iterator();
