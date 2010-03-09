@@ -7,10 +7,9 @@
             match="(ver=)(.+)"
             replace="\1${ver}" encoding="UTF-8">
             <fileset dir="../slim3-blank" includes="build.properties" />
+        	<fileset dir="../slim3demo" includes="build.properties" />
         	<fileset dir="../slim3-gen" includes="build.properties" />
-        	<fileset dir="../slim3-versionchecker" includes="build.properties" />
         	<fileset dir="../slim3gwt-demo" includes="build.properties" />
-        	<fileset dir="../slim3it" includes="build.properties" />
         </replaceregexp>
 	</target>
 
