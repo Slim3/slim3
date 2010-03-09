@@ -45,13 +45,13 @@ import com.google.apphosting.api.ApiProxy;
 import com.google.apphosting.api.ApiProxy.CapabilityDisabledException;
 
 /**
- * An internal class to access memcache service.
+ * A delegate to access memcache service.
  * 
  * @author higa
  * @since 3.0
  * 
  */
-public class MemcacheBody {
+public class MemcacheDelegate {
 
     /**
      * The maximum retry count.
@@ -69,7 +69,7 @@ public class MemcacheBody {
     protected static final int WAIT_MULTIPLIER_FACTOR = 2;
 
     private static final Logger logger =
-        Logger.getLogger(MemcacheBody.class.getName());
+        Logger.getLogger(MemcacheDelegate.class.getName());
 
     /**
      * The memcache service.
@@ -92,7 +92,7 @@ public class MemcacheBody {
     /**
      * Constructor.
      */
-    protected MemcacheBody() {
+    public MemcacheDelegate() {
         ms = MemcacheServiceFactory.getMemcacheService();
         ms.setErrorHandler(new StrictErrorHandler());
     }
@@ -586,9 +586,12 @@ public class MemcacheBody {
      *             if the key cannot be serialized
      * @throws InvalidValueException
      *             if the object incremented is not of a integral type
+     * @throws CapabilityDisabledException
+     *             if App Engine is read only
      */
     public Long increment(Object key, long delta)
-            throws IllegalArgumentException, InvalidValueException {
+            throws IllegalArgumentException, InvalidValueException,
+            CapabilityDisabledException {
         try {
             return ms.increment(key, delta);
         } catch (MemcacheServiceException e) {
@@ -617,9 +620,12 @@ public class MemcacheBody {
      *             if the key cannot be serialized
      * @throws InvalidValueException
      *             if the object incremented is not of a integral type
+     * @throws CapabilityDisabledException
+     *             if App Engine is read only
      */
     public Long increment(Object key, long delta, long initialValue)
-            throws IllegalArgumentException, InvalidValueException {
+            throws IllegalArgumentException, InvalidValueException,
+            CapabilityDisabledException {
         try {
             return ms.increment(key, delta, initialValue);
         } catch (MemcacheServiceException e) {
@@ -643,9 +649,11 @@ public class MemcacheBody {
      *         could not be incremented or were not present in the cache
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
+     * @throws CapabilityDisabledException
+     *             if App Engine is read only
      */
     public Map<Object, Long> incrementAll(Iterable<?> keys, long delta)
-            throws IllegalArgumentException {
+            throws IllegalArgumentException, CapabilityDisabledException {
         try {
             return ms.incrementAll(toCollection(keys), delta);
         } catch (MemcacheServiceException e) {
@@ -671,9 +679,12 @@ public class MemcacheBody {
      *         could not be incremented for whatever reason
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
+     * @throws CapabilityDisabledException
+     *             if App Engine is read only
      */
     public Map<Object, Long> incrementAll(Iterable<?> keys, long delta,
-            long initialValue) throws IllegalArgumentException {
+            long initialValue) throws IllegalArgumentException,
+            CapabilityDisabledException {
         try {
             return ms.incrementAll(toCollection(keys), delta, initialValue);
         } catch (MemcacheServiceException e) {
@@ -696,9 +707,11 @@ public class MemcacheBody {
      *         could not be incremented for whatever reason
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
+     * @throws CapabilityDisabledException
+     *             if App Engine is read only
      */
     public Map<Object, Long> incrementAll(Map<Object, Long> offsets)
-            throws IllegalArgumentException {
+            throws IllegalArgumentException, CapabilityDisabledException {
         try {
             return ms.incrementAll(offsets);
         } catch (MemcacheServiceException e) {
@@ -723,9 +736,12 @@ public class MemcacheBody {
      *         could not be incremented for whatever reason
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
+     * @throws CapabilityDisabledException
+     *             if App Engine is read only
      */
     public Map<Object, Long> incrementAll(Map<Object, Long> offsets,
-            long initialValue) throws IllegalArgumentException {
+            long initialValue) throws IllegalArgumentException,
+            CapabilityDisabledException {
         try {
             return ms.incrementAll(offsets);
         } catch (MemcacheServiceException e) {
@@ -747,8 +763,11 @@ public class MemcacheBody {
      *            the value
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
+     * @throws CapabilityDisabledException
+     *             if App Engine is read only
      */
-    public void put(Object key, Object value) throws IllegalArgumentException {
+    public void put(Object key, Object value) throws IllegalArgumentException,
+            CapabilityDisabledException {
         MemcacheServiceException mse = null;
         long wait = INITIAL_WAIT_MS;
         for (int i = 0; i < MAX_RETRY; i++) {
@@ -786,9 +805,11 @@ public class MemcacheBody {
      *            expiration
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
+     * @throws CapabilityDisabledException
+     *             if App Engine is read only
      */
     public void put(Object key, Object value, Expiration expires)
-            throws IllegalArgumentException {
+            throws IllegalArgumentException, CapabilityDisabledException {
         MemcacheServiceException mse = null;
         long wait = INITIAL_WAIT_MS;
         for (int i = 0; i < MAX_RETRY; i++) {
@@ -833,10 +854,12 @@ public class MemcacheBody {
      *             if the policy parameter is null
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
+     * @throws CapabilityDisabledException
+     *             if App Engine is read only
      */
     public boolean put(Object key, Object value, Expiration expires,
             SetPolicy policy) throws NullPointerException,
-            IllegalArgumentException {
+            IllegalArgumentException, CapabilityDisabledException {
         if (policy == null) {
             throw new NullPointerException(
                 "The policy parameter must not be null.");
@@ -874,9 +897,11 @@ public class MemcacheBody {
      *             if the values parameter is null
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
+     * @throws CapabilityDisabledException
+     *             if App Engine is read only
      */
     public void putAll(Map<Object, Object> values) throws NullPointerException,
-            IllegalArgumentException {
+            IllegalArgumentException, CapabilityDisabledException {
         if (values == null) {
             throw new NullPointerException(
                 "The values parameter must not be null.");
@@ -918,9 +943,12 @@ public class MemcacheBody {
      *             if the values parameter is null
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
+     * @throws CapabilityDisabledException
+     *             if App Engine is read only
      */
     public void putAll(Map<Object, Object> values, Expiration expires)
-            throws NullPointerException, IllegalArgumentException {
+            throws NullPointerException, IllegalArgumentException,
+            CapabilityDisabledException {
         if (values == null) {
             throw new NullPointerException(
                 "The values parameter must not be null.");
@@ -970,10 +998,12 @@ public class MemcacheBody {
      *             null
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
+     * @throws CapabilityDisabledException
+     *             if App Engine is read only
      */
     public Set<Object> putAll(Map<Object, Object> values, Expiration expires,
             SetPolicy policy) throws NullPointerException,
-            IllegalArgumentException {
+            IllegalArgumentException, CapabilityDisabledException {
         if (values == null) {
             throw new NullPointerException(
                 "The values parameter must not be null.");
@@ -1023,7 +1053,7 @@ public class MemcacheBody {
      * @throws NullPointerException
      *             if the errorHandler parameter is null
      */
-    public MemcacheBody errorHandler(ErrorHandler errorHandler)
+    public MemcacheDelegate errorHandler(ErrorHandler errorHandler)
             throws NullPointerException {
         if (errorHandler == null) {
             throw new NullPointerException(
@@ -1049,7 +1079,7 @@ public class MemcacheBody {
      *            the namespace
      * @return this instance
      */
-    public MemcacheBody namespace(String namespace) {
+    public MemcacheDelegate namespace(String namespace) {
         ms.setNamespace(namespace);
         return this;
     }

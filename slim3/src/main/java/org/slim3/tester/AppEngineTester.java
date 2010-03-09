@@ -435,8 +435,6 @@ public class AppEngineTester implements Delegate<Environment> {
 
     public byte[] makeSyncCall(Environment env, String service, String method,
             byte[] requestBuf) throws ApiProxyException {
-        System.out.println("service:" + service);
-        System.out.println("method:" + method);
         if (service.equals(URLFETCH_SERVICE)
             && method.equals(FETCH_METHOD)
             && urlFetchHandler != null) {
