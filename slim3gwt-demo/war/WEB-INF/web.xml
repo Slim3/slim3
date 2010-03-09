@@ -46,12 +46,23 @@
         <servlet-class>org.slim3.gwt.server.rpc.GWTServiceServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
+    
+    <servlet>
+        <servlet-name>GlobalTransactionServlet</servlet-name>
+        <servlet-class>org.slim3.datastore.GlobalTransactionServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
   
     <servlet-mapping>
         <servlet-name>GWTServiceServlet</servlet-name>
         <url-pattern>*.s3gwt</url-pattern>
     </servlet-mapping>
-  
+
+    <servlet-mapping>
+        <servlet-name>GlobalTransactionServlet</servlet-name>
+        <url-pattern>/slim3/gtx</url-pattern>
+    </servlet-mapping>
+      
     <welcome-file-list>
         <welcome-file>Slim3gwt_demo.html</welcome-file>
     </welcome-file-list>
@@ -61,6 +72,14 @@
             <url-pattern>*.jsp</url-pattern>
         </web-resource-collection>
         <auth-constraint>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <web-resource-collection>
+            <url-pattern>/slim3/gtx</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>admin</role-name>
         </auth-constraint>
     </security-constraint>
 </web-app>
