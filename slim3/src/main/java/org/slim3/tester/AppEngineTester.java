@@ -45,10 +45,10 @@ import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.labs.taskqueue.TaskQueuePb.TaskQueueAddRequest;
 import com.google.appengine.api.labs.taskqueue.TaskQueuePb.TaskQueueAddResponse;
 import com.google.appengine.api.mail.MailServicePb.MailMessage;
+import com.google.appengine.api.memcache.MemcacheServicePb.MemcacheBatchIncrementRequest;
 import com.google.appengine.api.memcache.MemcacheServicePb.MemcacheDeleteRequest;
+import com.google.appengine.api.memcache.MemcacheServicePb.MemcacheIncrementRequest;
 import com.google.appengine.api.memcache.MemcacheServicePb.MemcacheSetRequest;
-import com.google.appengine.api.memcache.MemcacheServicePb.MemcacheSetRequest.Builder;
-import com.google.appengine.api.memcache.MemcacheServicePb.MemcacheSetRequest.Item;
 import com.google.appengine.api.urlfetch.URLFetchServicePb.URLFetchRequest;
 import com.google.appengine.api.urlfetch.URLFetchServicePb.URLFetchResponse;
 import com.google.appengine.repackaged.com.google.protobuf.ByteString;
@@ -150,6 +150,16 @@ public class AppEngineTester implements Delegate<Environment> {
     protected static final String SET_METHOD = "Set";
 
     /**
+     * The internal name of increment method.
+     */
+    protected static final String INCREMENT_METHOD = "Increment";
+
+    /**
+     * The internal name of incrementAll method.
+     */
+    protected static final String BATCH_INCREMENT_METHOD = "BatchIncrement";
+
+    /**
      * The internal name of delete method.
      */
     protected static final String DELETE_METHOD = "Delete";
@@ -206,14 +216,14 @@ public class AppEngineTester implements Delegate<Environment> {
     protected Environment originalEnvironment;
 
     /**
-     * The set of datastore keys for "put".
+     * The set of datastore keys.
      */
-    protected Set<Key> putKeys = new HashSet<Key>();
+    protected Set<Key> datastoreKeys = new HashSet<Key>();
 
     /**
-     * The set of memcache keys for "set".
+     * The set of memcache keys.
      */
-    protected Set<ByteString> setKeys = new HashSet<ByteString>();
+    protected Set<ByteString> memcacheKeys = new HashSet<ByteString>();
 
     /**
      * The handler to fetch URL.
@@ -396,8 +406,8 @@ public class AppEngineTester implements Delegate<Environment> {
         for (Transaction tx : ds.getActiveTransactions()) {
             tx.rollback();
         }
-        if (!setKeys.isEmpty()) {
-            for (ByteString key : setKeys) {
+        if (!memcacheKeys.isEmpty()) {
+            for (ByteString key : memcacheKeys) {
                 com.google.appengine.api.memcache.MemcacheServicePb.MemcacheDeleteRequest.Builder newBuilder =
                     MemcacheDeleteRequest.newBuilder();
                 newBuilder
@@ -410,11 +420,11 @@ public class AppEngineTester implements Delegate<Environment> {
                     newBuilder.build().toByteArray());
 
             }
-            setKeys.clear();
+            memcacheKeys.clear();
         }
-        if (!putKeys.isEmpty()) {
-            ds.delete(putKeys);
-            putKeys.clear();
+        if (!datastoreKeys.isEmpty()) {
+            ds.delete(datastoreKeys);
+            datastoreKeys.clear();
         }
         mailMessages.clear();
         ApiProxy.setDelegate(originalDelegate);
@@ -425,6 +435,8 @@ public class AppEngineTester implements Delegate<Environment> {
 
     public byte[] makeSyncCall(Environment env, String service, String method,
             byte[] requestBuf) throws ApiProxyException {
+        System.out.println("service:" + service);
+        System.out.println("method:" + method);
         if (service.equals(URLFETCH_SERVICE)
             && method.equals(FETCH_METHOD)
             && urlFetchHandler != null) {
@@ -449,17 +461,40 @@ public class AppEngineTester implements Delegate<Environment> {
             tasks.add(taskPb);
             TaskQueueAddResponse responsePb = new TaskQueueAddResponse();
             return responsePb.toByteArray();
-        } else if (MEMCACHE_SERVICE.equals(service)
-            && SET_METHOD.equals(method)) {
-            try {
-                Builder builder =
-                    MemcacheSetRequest.newBuilder().mergeFrom(requestBuf);
-                for (Item item : builder.getItemList()) {
-                    ByteString key = item.getKey();
-                    setKeys.add(key);
+        } else if (MEMCACHE_SERVICE.equals(service)) {
+            if (SET_METHOD.equals(method)) {
+                try {
+                    MemcacheSetRequest.Builder builder =
+                        MemcacheSetRequest.newBuilder().mergeFrom(requestBuf);
+                    for (MemcacheSetRequest.Item item : builder.getItemList()) {
+                        ByteString key = item.getKey();
+                        memcacheKeys.add(key);
+                    }
+                } catch (Exception e) {
+                    ThrowableUtil.wrapAndThrow(e);
                 }
-            } catch (Exception e) {
-                ThrowableUtil.wrapAndThrow(e);
+            } else if (INCREMENT_METHOD.equals(method)) {
+                try {
+                    MemcacheIncrementRequest.Builder builder =
+                        MemcacheIncrementRequest.newBuilder().mergeFrom(
+                            requestBuf);
+                    ByteString key = builder.getKey();
+                    memcacheKeys.add(key);
+                } catch (Exception e) {
+                    ThrowableUtil.wrapAndThrow(e);
+                }
+            } else if (BATCH_INCREMENT_METHOD.equals(method)) {
+                try {
+                    MemcacheBatchIncrementRequest.Builder builder =
+                        MemcacheBatchIncrementRequest.newBuilder().mergeFrom(
+                            requestBuf);
+                    for (MemcacheIncrementRequest item : builder.getItemList()) {
+                        ByteString key = item.getKey();
+                        memcacheKeys.add(key);
+                    }
+                } catch (Exception e) {
+                    ThrowableUtil.wrapAndThrow(e);
+                }
             }
         }
         byte[] responseBuf =
@@ -468,7 +503,7 @@ public class AppEngineTester implements Delegate<Environment> {
             PutResponse response = new PutResponse();
             response.mergeFrom(responseBuf);
             for (Reference r : response.keys()) {
-                putKeys.add(DatastoreUtil.referenceToKey(r));
+                datastoreKeys.add(DatastoreUtil.referenceToKey(r));
             }
         } else if (service.equals(MAIL_SERVICE)
             && method.startsWith(SEND_METHOD)) { // Send[ToAdmins]
@@ -501,7 +536,7 @@ public class AppEngineTester implements Delegate<Environment> {
             PutResponse response = new PutResponse();
             response.mergeFrom(responseBuf);
             for (Reference r : response.keys()) {
-                putKeys.add(DatastoreUtil.referenceToKey(r));
+                datastoreKeys.add(DatastoreUtil.referenceToKey(r));
             }
         }
         return future;
