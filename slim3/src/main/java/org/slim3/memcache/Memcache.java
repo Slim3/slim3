@@ -154,14 +154,18 @@ public final class Memcache {
      * the set value in some cases, so we also have contains(Object) which
      * returns boolean.
      * 
+     * @param <T>
+     *            the return type
+     * 
      * @param key
      *            the key
      * @return a previously-stored value
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
      */
-    public static Object get(Object key) throws IllegalArgumentException {
-        return delegate().get(key);
+    @SuppressWarnings("unchecked")
+    public static <T> T get(Object key) throws IllegalArgumentException {
+        return (T) delegate().get(key);
     }
 
     /**
