@@ -36,14 +36,14 @@ import com.google.appengine.api.memcache.MemcacheService.SetPolicy;
  * @author higa
  * 
  */
-public class InternalMemcacheTest extends AppEngineTestCase {
+public class MemcacheBodyTest extends AppEngineTestCase {
 
     /**
      * @throws Exception
      */
     @Test
     public void clearAll() throws Exception {
-        InternalMemcache cache = new InternalMemcache();
+        MemcacheBody cache = new MemcacheBody();
         cache.ms.put("aaa", 1);
         cache.cleanAll();
         assertThat(cache.ms.contains("aaa"), is(false));
@@ -54,7 +54,7 @@ public class InternalMemcacheTest extends AppEngineTestCase {
      */
     @Test
     public void contains() throws Exception {
-        InternalMemcache cache = new InternalMemcache();
+        MemcacheBody cache = new MemcacheBody();
         assertThat(cache.contains("aaa"), is(false));
         cache.ms.put("aaa", 1);
         assertThat(cache.contains("aaa"), is(true));
@@ -65,7 +65,7 @@ public class InternalMemcacheTest extends AppEngineTestCase {
      */
     @Test
     public void delete() throws Exception {
-        InternalMemcache cache = new InternalMemcache();
+        MemcacheBody cache = new MemcacheBody();
         assertThat(cache.delete("aaa"), is(false));
         cache.ms.put("aaa", 1);
         assertThat(cache.delete("aaa"), is(true));
@@ -76,7 +76,7 @@ public class InternalMemcacheTest extends AppEngineTestCase {
      */
     @Test
     public void deleteUsingMillisNoReAdd() throws Exception {
-        InternalMemcache cache = new InternalMemcache();
+        MemcacheBody cache = new MemcacheBody();
         assertThat(cache.delete("aaa", 1000), is(false));
         cache.ms.put("aaa", 1);
         assertThat(cache.delete("aaa", 1000), is(true));
@@ -87,7 +87,7 @@ public class InternalMemcacheTest extends AppEngineTestCase {
      */
     @Test
     public void deleteAll() throws Exception {
-        InternalMemcache cache = new InternalMemcache();
+        MemcacheBody cache = new MemcacheBody();
         Iterable<?> keys = Arrays.asList("aaa");
         Set<Object> ret = cache.deleteAll(keys);
         assertThat(ret, is(notNullValue()));
@@ -103,7 +103,7 @@ public class InternalMemcacheTest extends AppEngineTestCase {
      */
     @Test
     public void deleteAllUsingMillisNoReAdd() throws Exception {
-        InternalMemcache cache = new InternalMemcache();
+        MemcacheBody cache = new MemcacheBody();
         Iterable<?> keys = Arrays.asList("aaa");
         Set<Object> ret = cache.deleteAll(keys, 1000);
         assertThat(ret, is(notNullValue()));
@@ -119,7 +119,7 @@ public class InternalMemcacheTest extends AppEngineTestCase {
      */
     @Test
     public void get() throws Exception {
-        InternalMemcache cache = new InternalMemcache();
+        MemcacheBody cache = new MemcacheBody();
         assertThat(cache.get(null), is(nullValue()));
         assertThat(cache.get("aaa"), is(nullValue()));
         cache.ms.put("aaa", 1);
@@ -131,7 +131,7 @@ public class InternalMemcacheTest extends AppEngineTestCase {
      */
     @Test
     public void getAll() throws Exception {
-        InternalMemcache cache = new InternalMemcache();
+        MemcacheBody cache = new MemcacheBody();
         assertThat(cache.getAll(Arrays.asList("aaa")).isEmpty(), is(true));
         cache.ms.put("aaa", 1);
         Map<?, ?> map = cache.getAll(Arrays.asList("aaa"));
@@ -144,7 +144,7 @@ public class InternalMemcacheTest extends AppEngineTestCase {
      */
     @Test
     public void increment() throws Exception {
-        InternalMemcache cache = new InternalMemcache();
+        MemcacheBody cache = new MemcacheBody();
         cache.ms.put("aaa", 1);
         assertThat(cache.increment("aaa", 2), is(3L));
     }
@@ -154,7 +154,7 @@ public class InternalMemcacheTest extends AppEngineTestCase {
      */
     @Test
     public void incrementUsingInitialValue() throws Exception {
-        InternalMemcache cache = new InternalMemcache();
+        MemcacheBody cache = new MemcacheBody();
         assertThat(cache.increment("aaa", 2, 1), is(3L));
     }
 
@@ -163,7 +163,7 @@ public class InternalMemcacheTest extends AppEngineTestCase {
      */
     @Test
     public void incrementAll() throws Exception {
-        InternalMemcache cache = new InternalMemcache();
+        MemcacheBody cache = new MemcacheBody();
         cache.ms.put("aaa", 1);
         cache.ms.put("bbb", "bbb");
         Map<Object, Long> map =
@@ -179,7 +179,7 @@ public class InternalMemcacheTest extends AppEngineTestCase {
      */
     @Test
     public void incrementAllUsingInitialValue() throws Exception {
-        InternalMemcache cache = new InternalMemcache();
+        MemcacheBody cache = new MemcacheBody();
         cache.ms.put("bbb", "bbb");
         Map<Object, Long> map =
             cache.incrementAll(Arrays.asList("aaa", "bbb"), 2, 1);
@@ -193,7 +193,7 @@ public class InternalMemcacheTest extends AppEngineTestCase {
      */
     @Test
     public void incrementAllUsingOffsets() throws Exception {
-        InternalMemcache cache = new InternalMemcache();
+        MemcacheBody cache = new MemcacheBody();
         cache.ms.put("bbb", 2);
         Map<Object, Long> offsets = new HashMap<Object, Long>();
         offsets.put("aaa", 1L);
@@ -209,7 +209,7 @@ public class InternalMemcacheTest extends AppEngineTestCase {
      */
     @Test
     public void incrementAllUsingOffsetsAndInitialValue() throws Exception {
-        InternalMemcache cache = new InternalMemcache();
+        MemcacheBody cache = new MemcacheBody();
         cache.ms.put("bbb", 2);
         Map<Object, Long> offsets = new HashMap<Object, Long>();
         offsets.put("aaa", 1L);
@@ -226,7 +226,7 @@ public class InternalMemcacheTest extends AppEngineTestCase {
      */
     @Test
     public void put() throws Exception {
-        InternalMemcache cache = new InternalMemcache();
+        MemcacheBody cache = new MemcacheBody();
         cache.put("aaa", 1);
         assertThat((Integer) cache.ms.get("aaa"), is(1));
     }
@@ -236,7 +236,7 @@ public class InternalMemcacheTest extends AppEngineTestCase {
      */
     @Test
     public void putUsingExpires() throws Exception {
-        InternalMemcache cache = new InternalMemcache();
+        MemcacheBody cache = new MemcacheBody();
         cache.put("aaa", 1, null);
         assertThat((Integer) cache.ms.get("aaa"), is(1));
     }
@@ -246,7 +246,7 @@ public class InternalMemcacheTest extends AppEngineTestCase {
      */
     @Test
     public void putUsingExpiresAndPolicy() throws Exception {
-        InternalMemcache cache = new InternalMemcache();
+        MemcacheBody cache = new MemcacheBody();
         cache.put("aaa", 1, null, SetPolicy.SET_ALWAYS);
         assertThat((Integer) cache.ms.get("aaa"), is(1));
     }
@@ -256,7 +256,7 @@ public class InternalMemcacheTest extends AppEngineTestCase {
      */
     @Test
     public void putAll() throws Exception {
-        InternalMemcache cache = new InternalMemcache();
+        MemcacheBody cache = new MemcacheBody();
         Map<Object, Object> values = new HashMap<Object, Object>();
         values.put("aaa", 1L);
         cache.putAll(values);
@@ -268,7 +268,7 @@ public class InternalMemcacheTest extends AppEngineTestCase {
      */
     @Test
     public void putAllUsingExpires() throws Exception {
-        InternalMemcache cache = new InternalMemcache();
+        MemcacheBody cache = new MemcacheBody();
         Map<Object, Object> values = new HashMap<Object, Object>();
         values.put("aaa", 1L);
         cache.putAll(values, null);
@@ -280,7 +280,7 @@ public class InternalMemcacheTest extends AppEngineTestCase {
      */
     @Test
     public void putAllUsingExpiresAndPolicy() throws Exception {
-        InternalMemcache cache = new InternalMemcache();
+        MemcacheBody cache = new MemcacheBody();
         Map<Object, Object> values = new HashMap<Object, Object>();
         values.put("aaa", 1L);
         Set<Object> set = cache.putAll(values, null, SetPolicy.SET_ALWAYS);
@@ -294,7 +294,7 @@ public class InternalMemcacheTest extends AppEngineTestCase {
      */
     @Test
     public void getErrorHandler() throws Exception {
-        InternalMemcache cache = new InternalMemcache();
+        MemcacheBody cache = new MemcacheBody();
         assertThat(cache.errorHandler(), is(cache.ms.getErrorHandler()));
     }
 
@@ -303,7 +303,7 @@ public class InternalMemcacheTest extends AppEngineTestCase {
      */
     @Test
     public void setErrorHandler() throws Exception {
-        InternalMemcache cache = new InternalMemcache();
+        MemcacheBody cache = new MemcacheBody();
         ErrorHandler errorHandler =
             new LogAndContinueErrorHandler(Level.WARNING);
         assertThat(cache.errorHandler(errorHandler), is(cache));
@@ -315,7 +315,7 @@ public class InternalMemcacheTest extends AppEngineTestCase {
      */
     @Test
     public void getNamespace() throws Exception {
-        InternalMemcache cache = new InternalMemcache();
+        MemcacheBody cache = new MemcacheBody();
         cache.ms.setNamespace("aaa");
         assertThat(cache.namespace(), is("aaa"));
     }
@@ -325,7 +325,7 @@ public class InternalMemcacheTest extends AppEngineTestCase {
      */
     @Test
     public void setNamespace() throws Exception {
-        InternalMemcache cache = new InternalMemcache();
+        MemcacheBody cache = new MemcacheBody();
         String namespace = "aaa";
         assertThat(cache.namespace(namespace), is(cache));
         assertThat(cache.namespace(), is(namespace));
@@ -338,7 +338,7 @@ public class InternalMemcacheTest extends AppEngineTestCase {
      */
     @Test
     public void getStatistics() throws Exception {
-        InternalMemcache cache = new InternalMemcache();
+        MemcacheBody cache = new MemcacheBody();
         assertThat(cache.statistics(), is(notNullValue()));
         cache.ms.put("aaa", 1);
         cache.ms.get("aaa");
@@ -350,7 +350,7 @@ public class InternalMemcacheTest extends AppEngineTestCase {
      */
     @Test
     public void toCollection() throws Exception {
-        InternalMemcache cache = new InternalMemcache();
+        MemcacheBody cache = new MemcacheBody();
         Iterable<?> ite = Arrays.asList("aaa");
         Collection<?> col = cache.toCollection(ite);
         assertThat(col, is(notNullValue()));

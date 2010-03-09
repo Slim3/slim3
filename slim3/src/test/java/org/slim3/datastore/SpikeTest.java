@@ -18,9 +18,9 @@ package org.slim3.datastore;
 import org.junit.Test;
 import org.slim3.tester.AppEngineTestCase;
 
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.EntityTranslator;
-import com.google.storage.onestore.v3.OnestoreEntity.EntityProto;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
+import com.google.appengine.api.memcache.MemcacheService.SetPolicy;
 
 /**
  * @author higa
@@ -33,12 +33,10 @@ public class SpikeTest extends AppEngineTestCase {
      */
     @Test
     public void spike() throws Exception {
-        Entity entity = new Entity(Datastore.createKey("Hoge", "AA01"));
-        EntityProto proto = EntityTranslator.convertToPb(entity);
-        long start = System.currentTimeMillis();
-        for (int i = 0; i < 10000; i++) {
-            proto.encodingSize();
-        }
-        System.out.println(System.currentTimeMillis() - start);
+        MemcacheService ms = MemcacheServiceFactory.getMemcacheService();
+        ms.put("aaa", null, null, SetPolicy.ADD_ONLY_IF_NOT_PRESENT);
+        System.out.println(ms.delete("aaa", 1000));
+        ms.put("aaa", null, null, SetPolicy.ADD_ONLY_IF_NOT_PRESENT);
+        System.out.println(ms.delete("aaa"));
     }
 }

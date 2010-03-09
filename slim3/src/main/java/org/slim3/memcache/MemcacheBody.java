@@ -51,7 +51,7 @@ import com.google.apphosting.api.ApiProxy.CapabilityDisabledException;
  * @since 3.0
  * 
  */
-public class InternalMemcache {
+public class MemcacheBody {
 
     /**
      * The maximum retry count.
@@ -69,7 +69,7 @@ public class InternalMemcache {
     protected static final int WAIT_MULTIPLIER_FACTOR = 2;
 
     private static final Logger logger =
-        Logger.getLogger(InternalMemcache.class.getName());
+        Logger.getLogger(MemcacheBody.class.getName());
 
     /**
      * The memcache service.
@@ -92,7 +92,7 @@ public class InternalMemcache {
     /**
      * Constructor.
      */
-    protected InternalMemcache() {
+    protected MemcacheBody() {
         ms = MemcacheServiceFactory.getMemcacheService();
         ms.setErrorHandler(new StrictErrorHandler());
     }
@@ -1023,7 +1023,7 @@ public class InternalMemcache {
      * @throws NullPointerException
      *             if the errorHandler parameter is null
      */
-    public InternalMemcache errorHandler(ErrorHandler errorHandler)
+    public MemcacheBody errorHandler(ErrorHandler errorHandler)
             throws NullPointerException {
         if (errorHandler == null) {
             throw new NullPointerException(
@@ -1049,7 +1049,7 @@ public class InternalMemcache {
      *            the namespace
      * @return this instance
      */
-    public InternalMemcache namespace(String namespace) {
+    public MemcacheBody namespace(String namespace) {
         ms.setNamespace(namespace);
         return this;
     }
