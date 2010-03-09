@@ -94,10 +94,11 @@ public class PropertyDescTest {
     @Test
     public void getValueForNonPublicClass() throws Exception {
         Aaa aaa = AaaFactory.newInstance();
+        aaa.setAaa("111");
         PropertyDesc pd = new PropertyDesc("aaa", String.class, aaa.getClass());
         Method m = aaa.getClass().getMethod("getAaa");
         pd.setReadMethod(m);
-        assertThat((String) pd.getValue(aaa), is("aaa"));
+        assertThat((String) pd.getValue(aaa), is("111"));
     }
 
     /**
