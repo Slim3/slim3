@@ -228,12 +228,7 @@ public class HotReloadingFilter implements Filter {
             }
             throw e;
         } catch (ClassCastException e) {
-            String msg = e.getMessage();
-            String[] msgs = StringUtil.split(msg, " ");
-            if (msgs.length > 2 && msgs[0].equals(msgs[msgs.length - 1])) {
-                throw createHotReloadingRuntimeException(e);
-            }
-            throw e;
+            throw createHotReloadingRuntimeException(e);
         } finally {
             Cleaner.cleanAll();
             Thread.currentThread().setContextClassLoader(previousLoader);
@@ -253,13 +248,21 @@ public class HotReloadingFilter implements Filter {
     protected HotReloadingRuntimeException createHotReloadingRuntimeException(
             Throwable cause) {
         return new HotReloadingRuntimeException(
-            "No HOT reloaded class can not access a HOT reloaded class. HOT reloaded class means the class is located on \""
+            "If you use MemcacheService or JCache, use org.slim3.memcache.Memcache instead of it.\n"
+                + "Or if a COOL class wants to access a HOT reloaded class, use CoolBridge.\n"
+                + "COOL classes means classes located on \""
+                + rootPackageName
+                + "."
+                + coolPackageName
+                + "\" package or classes which Servlet Container manages like Servlets.\n"
+                + "HOT reloaded classes means classes located on \""
                 + rootPackageName
                 + "\" package except \""
                 + rootPackageName
                 + "."
                 + coolPackageName
-                + "\" package.\nSee http://sites.google.com/site/slim3appengine/hot-reloading",
+                + "\" package.\n"
+                + "See http://sites.google.com/site/slim3appengine/hot-reloading",
             cause);
     }
 }
