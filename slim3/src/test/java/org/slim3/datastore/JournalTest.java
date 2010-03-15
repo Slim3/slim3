@@ -45,7 +45,7 @@ public class JournalTest extends AppEngineTestCase {
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
         Entity entity = Journal.createEntity(globalTransactionKey);
         assertThat(entity, is(notNullValue()));
-        assertThat(DatastoreUtil.isIncomplete(entity.getKey()), is(false));
+        assertThat(entity.getKey().isComplete(), is(true));
         assertThat(
             (Key) entity.getProperty(Journal.GLOBAL_TRANSACTION_KEY_PROPERTY),
             is(globalTransactionKey));

@@ -302,7 +302,7 @@ public final class DatastoreUtil {
             throw new NullPointerException(
                 "The entity parameter must not be null.");
         }
-        if (isIncomplete(entity.getKey())) {
+        if (!entity.getKey().isComplete()) {
             KeyUtil
                 .setId(entity.getKey(), allocateId(entity.getKind()).getId());
         }
@@ -1552,23 +1552,6 @@ public final class DatastoreUtil {
             modelMap.put(key, mm.entityToModel(entity));
         }
         return modelMap;
-    }
-
-    /**
-     * Determines if the key is incomplete.
-     * 
-     * @param key
-     *            the key
-     * @return whether the key is incomplete
-     * @throws NullPointerException
-     *             if the key parameter is null
-     */
-    public static boolean isIncomplete(Key key) throws NullPointerException {
-        if (key == null) {
-            throw new NullPointerException(
-                "The key parameter must not be null.");
-        }
-        return key.getName() == null && key.getId() <= 0;
     }
 
     /**

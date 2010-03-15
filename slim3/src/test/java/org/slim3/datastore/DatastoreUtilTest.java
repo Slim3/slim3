@@ -833,21 +833,6 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void isIncomplete() throws Exception {
-        assertThat(
-            DatastoreUtil.isIncomplete(Datastore.createKey("Hoge", 1)),
-            is(false));
-        assertThat(DatastoreUtil.isIncomplete(Datastore
-            .createKey("Hoge", "aaa")), is(false));
-        assertThat(
-            DatastoreUtil.isIncomplete(new Entity("Hoge").getKey()),
-            is(true));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
     public void refereceToKeyForId() throws Exception {
         Key key = KeyFactory.createKey("Hoge", 1);
         Reference reference = new Reference();
