@@ -41,6 +41,7 @@ import java.util.Arrays;
 import java.util.Date;
 
 import org.slim3.gen.ClassConstants;
+import org.slim3.gen.Constants;
 import org.slim3.gen.ProductInfo;
 import org.slim3.gen.datastore.ArrayType;
 import org.slim3.gen.datastore.BlobType;
@@ -178,7 +179,7 @@ public class ModelMetaGenerator implements Generator {
      */
     protected void printSingletonField(Printer printer) {
         printer.println(
-            "private static final %1$s singleton = new %1$s();",
+            "private static final %1$s s3_singleton = new %1$s();",
             modelMetaDesc.getSimpleName());
         printer.println();
     }
@@ -219,7 +220,7 @@ public class ModelMetaGenerator implements Generator {
         printer.println(" */");
         printer.println("public static %1$s get() {", modelMetaDesc
             .getSimpleName());
-        printer.println("   return singleton;");
+        printer.println("   return s3_singleton;");
         printer.println("}");
         printer.println();
     }
@@ -1285,10 +1286,6 @@ public class ModelMetaGenerator implements Generator {
                 printer.println("} else {");
                 printer.println("    entity = new %1$s(kind);", Entity);
                 printer.println("}");
-                if (!modelMetaDesc.getClassHierarchyList().isEmpty()) {
-                    printer
-                        .println("entity.setProperty(CLASS_HIERARCHY_LIST_RESERVED_PROPERTY, classHierarchyList);");
-                }
                 for (AttributeMetaDesc attr : modelMetaDesc
                     .getAttributeMetaDescList()) {
                     if (attr.isPrimaryKey()) {
@@ -1296,6 +1293,14 @@ public class ModelMetaGenerator implements Generator {
                     }
                     DataType dataType = attr.getDataType();
                     dataType.accept(this, attr);
+                }
+                printer.println(
+                    "entity.setProperty(\"%1$s\", %2$s);",
+                    Constants.SCHEMA_VERSION,
+                    modelMetaDesc.getSchemaVersion());
+                if (!modelMetaDesc.getClassHierarchyList().isEmpty()) {
+                    printer
+                        .println("entity.setProperty(CLASS_HIERARCHY_LIST_RESERVED_PROPERTY, classHierarchyList);");
                 }
                 printer.println("return entity;");
             }

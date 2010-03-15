@@ -116,6 +116,10 @@ public class ModelMetaDescFactory {
             classHierarchyList = polyModelDesc.getClassHierarchyList();
             validateKind(classDeclaration);
         }
+        Integer schemaVersion =
+            AnnotationMirrorUtil.getElementValue(
+                model,
+                AnnotationConstants.schemaVersion);
 
         ModelMetaDesc modelMetaDesc =
             new ModelMetaDesc(
@@ -124,6 +128,7 @@ public class ModelMetaDescFactory {
                 classDeclaration.getModifiers().contains(Modifier.ABSTRACT),
                 modelClassName,
                 kind,
+                schemaVersion.intValue(),
                 classHierarchyList);
         handleAttributes(classDeclaration, modelMetaDesc);
         return modelMetaDesc;

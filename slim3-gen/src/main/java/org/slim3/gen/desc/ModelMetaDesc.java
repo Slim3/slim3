@@ -45,6 +45,9 @@ public class ModelMetaDesc implements ClassDesc {
     /** the kind of entity */
     protected final String kind;
 
+    /** the schemaVersion of entity */
+    protected final int schemaVersion;
+
     /** the class hierarchy list */
     protected final List<String> classHierarchyList;
 
@@ -74,12 +77,14 @@ public class ModelMetaDesc implements ClassDesc {
      *            the modelClassName
      * @param kind
      *            the kind of entity
+     * @param schemaVersion
+     *            the schemaVersion of entity
      * @param classHierarchyList
      *            the class hierarchy list
      */
     public ModelMetaDesc(String packageName, String simpleName,
             boolean abstrct, String modelClassName, String kind,
-            List<String> classHierarchyList) {
+            int schemaVersion, List<String> classHierarchyList) {
         if (packageName == null) {
             throw new NullPointerException("The packageName parameter is null.");
         }
@@ -98,6 +103,7 @@ public class ModelMetaDesc implements ClassDesc {
         this.abstrct = abstrct;
         this.modelClassName = modelClassName;
         this.kind = kind;
+        this.schemaVersion = schemaVersion;
         this.classHierarchyList = classHierarchyList;
     }
 
@@ -148,6 +154,15 @@ public class ModelMetaDesc implements ClassDesc {
      */
     public String getKind() {
         return kind;
+    }
+
+    /**
+     * Returns the schemaVersion of entity.
+     * 
+     * @return the schemaVersion of entity.
+     */
+    public int getSchemaVersion() {
+        return schemaVersion;
     }
 
     /**

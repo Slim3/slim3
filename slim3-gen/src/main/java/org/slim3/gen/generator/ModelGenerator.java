@@ -82,8 +82,6 @@ public class ModelGenerator implements Generator {
             p.println("    @Attribute(version = true)");
             p.println("    private Long version;");
             p.println();
-            p.println("    private Integer schemaVersion = 1;");
-            p.println();
             p.println("    /**");
             p.println("     * Returns the key.");
             p.println("     *");
@@ -120,26 +118,6 @@ public class ModelGenerator implements Generator {
             p.println("     */");
             p.println("    public void setVersion(Long version) {");
             p.println("        this.version = version;");
-            p.println("    }");
-            p.println();
-            p.println("    /**");
-            p.println("     * Returns the schema version.");
-            p.println("     *");
-            p.println("     * @return the schema version");
-            p.println("     */");
-            p.println("    public Integer getSchemaVersion() {");
-            p.println("        return schemaVersion;");
-            p.println("    }");
-            p.println();
-            p.println("    /**");
-            p.println("     * Sets the schema version.");
-            p.println("     *");
-            p.println("     * @param schemaVersion");
-            p.println("     *            the schema version");
-            p.println("     */");
-            p
-                .println("    public void setSchemaVersion(Integer schemaVersion) {");
-            p.println("        this.schemaVersion = schemaVersion;");
             p.println("    }");
             p.println();
             p.println("    @Override");

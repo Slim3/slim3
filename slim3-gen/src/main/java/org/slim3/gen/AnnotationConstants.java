@@ -38,6 +38,9 @@ public final class AnnotationConstants {
     /** the name of kind element */
     public static final String kind = "kind";
 
+    /** the name of schemaVersion element */
+    public static final String schemaVersion = "schemaVersion";
+
     /** the name of name element */
     public static final String name = "name";
 

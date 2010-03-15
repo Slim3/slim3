@@ -15,12 +15,16 @@
  */
 package org.slim3.gen.util;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.sun.mirror.declaration.AnnotationMirror;
+import com.sun.mirror.declaration.AnnotationTypeDeclaration;
 import com.sun.mirror.declaration.AnnotationTypeElementDeclaration;
 import com.sun.mirror.declaration.AnnotationValue;
+import com.sun.mirror.type.AnnotationType;
 
 /**
  * A utility class for annotation mirror.
@@ -48,16 +52,52 @@ public final class AnnotationMirrorUtil {
         if (anno == null) {
             return null;
         }
-        Map<AnnotationTypeElementDeclaration, AnnotationValue> elementValues =
-            anno.getElementValues();
-        for (Iterator<AnnotationTypeElementDeclaration> i =
-            elementValues.keySet().iterator(); i.hasNext();) {
-            AnnotationTypeElementDeclaration element = i.next();
-            if (element.getSimpleName().equals(name)) {
-                AnnotationValue v = elementValues.get(element);
-                return (T) (v != null ? v.getValue() : null);
+        if (name == null) {
+            return null;
+        }
+        Map<String, AnnotationValue> elementValues = getElementValues(anno);
+        for (Iterator<Map.Entry<String, AnnotationValue>> i =
+            elementValues.entrySet().iterator(); i.hasNext();) {
+            Entry<String, AnnotationValue> entry = i.next();
+            String elementName = entry.getKey();
+            AnnotationValue value = entry.getValue();
+            if (elementName.equals(name)) {
+                return (T) (value != null ? value.getValue() : null);
             }
         }
         return null;
+    }
+
+    private static Map<String, AnnotationValue> getElementValues(
+            AnnotationMirror anno) {
+        Map<String, AnnotationValue> results =
+            new HashMap<String, AnnotationValue>(getElementDefaultValues(anno));
+        for (Iterator<Map.Entry<AnnotationTypeElementDeclaration, AnnotationValue>> i =
+            anno.getElementValues().entrySet().iterator(); i.hasNext();) {
+            Entry<AnnotationTypeElementDeclaration, AnnotationValue> entry =
+                i.next();
+            results.put(entry.getKey().getSimpleName(), entry.getValue());
+        }
+        return results;
+    }
+
+    private static Map<String, AnnotationValue> getElementDefaultValues(
+            AnnotationMirror anno) {
+        Map<String, AnnotationValue> results =
+            new HashMap<String, AnnotationValue>();
+        AnnotationType annoType = anno.getAnnotationType();
+        if (annoType == null) {
+            return results;
+        }
+        AnnotationTypeDeclaration annoTypeDeclaration =
+            annoType.getDeclaration();
+        if (annoTypeDeclaration == null) {
+            return results;
+        }
+        for (AnnotationTypeElementDeclaration element : annoTypeDeclaration
+            .getMethods()) {
+            results.put(element.getSimpleName(), element.getDefaultValue());
+        }
+        return results;
     }
 }

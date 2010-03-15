@@ -83,4 +83,7 @@ public final class Constants {
     /** the package name for shared */
     public static final String META_PACKAGE = "meta";
 
+    /** the schemaVersion property name */
+    public static final String SCHEMA_VERSION = "schemaVersion";
+
 }
