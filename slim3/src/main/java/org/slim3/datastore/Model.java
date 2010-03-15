@@ -37,4 +37,9 @@ public @interface Model {
      * The kind of entity.
      */
     String kind() default "";
+
+    /**
+     * The schema version.
+     */
+    int schemaVersion() default 1;
 }
