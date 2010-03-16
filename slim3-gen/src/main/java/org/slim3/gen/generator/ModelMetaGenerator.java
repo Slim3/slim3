@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the original author or authors.
+ * Copyright 2004-2010 the Seasar Foundation and the Others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ import org.slim3.gen.util.CollectionUtil;
  * Generates a model meta java file.
  * 
  * @author taedium
- * @since 3.0
+ * @since 1.0.0
  * 
  */
 public class ModelMetaGenerator implements Generator {
@@ -418,7 +418,7 @@ public class ModelMetaGenerator implements Generator {
      * Represents attribute meta fields generator.
      * 
      * @author taedium
-     * @since 3.0
+     * @since 1.0.0
      * 
      */
     protected class AttributeMetaFieldsGenerator extends
@@ -623,7 +623,7 @@ public class ModelMetaGenerator implements Generator {
      * Represents the {@code entityToModel} method generator.
      * 
      * @author taedium
-     * @since 3.0
+     * @since 1.0.0
      * 
      */
     protected class EntityToModelMethodGenerator extends
@@ -1235,7 +1235,7 @@ public class ModelMetaGenerator implements Generator {
      * Represents the {@code modelToMethod} method generator.
      * 
      * @author taedium
-     * @since 3.0
+     * @since 1.0.0
      * 
      */
     protected class ModelToEntityMethodGenerator extends
