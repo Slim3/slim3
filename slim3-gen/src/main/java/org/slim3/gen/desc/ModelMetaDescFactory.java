@@ -117,7 +117,7 @@ public class ModelMetaDescFactory {
             validateKind(classDeclaration);
         }
         Integer schemaVersion =
-            AnnotationMirrorUtil.getElementValue(
+            AnnotationMirrorUtil.getElementValueWithDefault(
                 model,
                 AnnotationConstants.schemaVersion);
 

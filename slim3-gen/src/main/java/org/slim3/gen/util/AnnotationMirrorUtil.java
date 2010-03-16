@@ -55,7 +55,42 @@ public final class AnnotationMirrorUtil {
         if (name == null) {
             return null;
         }
-        Map<String, AnnotationValue> elementValues = getElementValues(anno);
+        Map<AnnotationTypeElementDeclaration, AnnotationValue> elementValues =
+            anno.getElementValues();
+        for (Iterator<AnnotationTypeElementDeclaration> i =
+            elementValues.keySet().iterator(); i.hasNext();) {
+            AnnotationTypeElementDeclaration element = i.next();
+            if (element.getSimpleName().equals(name)) {
+                AnnotationValue v = elementValues.get(element);
+                return (T) (v != null ? v.getValue() : null);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns a value of the element including default.
+     * 
+     * @param <T>
+     *            the value type
+     * @param anno
+     *            the annotation mirror
+     * @param name
+     *            the element name
+     * 
+     * @return a value of the element
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T getElementValueWithDefault(AnnotationMirror anno,
+            String name) {
+        if (anno == null) {
+            return null;
+        }
+        if (name == null) {
+            return null;
+        }
+        Map<String, AnnotationValue> elementValues =
+            getElementValuesWithDefault(anno);
         for (Iterator<Map.Entry<String, AnnotationValue>> i =
             elementValues.entrySet().iterator(); i.hasNext();) {
             Entry<String, AnnotationValue> entry = i.next();
@@ -68,7 +103,7 @@ public final class AnnotationMirrorUtil {
         return null;
     }
 
-    private static Map<String, AnnotationValue> getElementValues(
+    private static Map<String, AnnotationValue> getElementValuesWithDefault(
             AnnotationMirror anno) {
         Map<String, AnnotationValue> results =
             new HashMap<String, AnnotationValue>(getElementDefaultValues(anno));
