@@ -18,10 +18,6 @@
 	    <fileset dir="lib">
             <include name="**/*.jar" />
         </fileset>
-	    <fileset dir="${sdk.dir}/lib">
-	      <include name="**/*.jar" />
-	    </fileset>
-    	<path path="${gwt.dir}/gwt-user.jar"/>
     </path>
 
 	<target name="create-lib" depends="clean">
@@ -47,16 +43,6 @@
     <target name="clean">
         <delete dir="target" failonerror="false"/>
         <mkdir dir="target"/>
-    </target>
-	
-    <target name="javadoc">
-        <javadoc access="protected" author="true" classpathref="project.classpath" destdir="javadoc" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" source="1.6" sourcepath="src/main/java" splitindex="true" use="true" version="true">
-            <link href="http://code.google.com/appengine/docs/java/javadoc/" />
-            <link href="http://google-web-toolkit.googlecode.com/svn/javadoc/1.6/" />
-            <link href="http://java.sun.com/javaee/5/docs/api/"/>
-            <link href="http://java.sun.com/javase/6/docs/api/"/>
-            <link href="http://junit.org/junit/javadoc/4.5/"/>
-        </javadoc>
     </target>
 	
 	<target name="copyJavadoc">

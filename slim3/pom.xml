@@ -9,7 +9,7 @@
   <!-- The Basics -->
   <groupId>org.slim3</groupId>
   <artifactId>slim3</artifactId>
-  <version>RC1</version>
+  <version>RC2-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <!-- More Project Information -->
