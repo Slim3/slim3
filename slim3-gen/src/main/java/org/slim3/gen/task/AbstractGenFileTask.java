@@ -19,9 +19,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URL;
+import java.util.Collections;
+import java.util.Enumeration;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
+import org.slim3.gen.ProductInfo;
 import org.slim3.gen.generator.Generator;
 import org.slim3.gen.message.MessageCode;
 import org.slim3.gen.message.MessageFormatter;
@@ -68,11 +72,33 @@ public abstract class AbstractGenFileTask extends Task {
     @Override
     public void execute() {
         try {
+            checkDuplicateClasses();
             doExecute();
         } catch (Exception e) {
             StringWriter writer = new StringWriter();
             e.printStackTrace(new PrintWriter(writer));
             throw new BuildException(writer.toString());
+        }
+    }
+
+    /**
+     * Validates slim3-gen-xxx.jar file is not duplicated.
+     * 
+     * @throws Exception
+     */
+    protected void checkDuplicateClasses() throws Exception {
+        String resourceName =
+            ProductInfo.class.getName().replace('.', '/') + ".class";
+        Enumeration<URL> resources =
+            getClass().getClassLoader().getResources(resourceName);
+        int resourceSize = Collections.list(resources).size();
+        if (resourceSize == 0) {
+            throw new IllegalStateException(MessageFormatter.getMessage(
+                MessageCode.SLIM3GEN0002,
+                resourceName));
+        } else if (resourceSize > 1) {
+            throw new IllegalStateException(MessageFormatter
+                .getMessage(MessageCode.SLIM3GEN0003));
         }
     }
 

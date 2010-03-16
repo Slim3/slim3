@@ -26,6 +26,10 @@ public enum MessageCode {
     /** */
     SLIM3GEN0001("Failed to process annotation[{0}]. Check a detail message displayed in the Error Log view(for Eclipse) or the console(for javac)."),
     /** */
+    SLIM3GEN0002("Resource[{0}] not found."),
+    /** */
+    SLIM3GEN0003("slim3-gen-xxx.jar files are duplicate in the classpath."),
+    /** */
     SLIM3GEN0004("Already exists. Generation Skipped. ({0}.java:0)"),
     /** */
     SLIM3GEN0005("Generated. ({0}.java:0)"),
