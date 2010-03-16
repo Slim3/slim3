@@ -1,4 +1,4 @@
-<project name="slim3" default="create-lib" basedir=".">
+<project name="slim3" default="dist" basedir=".">
 
 	<property file="build.properties" />
 	
@@ -20,7 +20,7 @@
         </fileset>
     </path>
 
-	<target name="create-lib" depends="clean">
+	<target name="dist" depends="clean">
 		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/Key_CustomFieldSerializer.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/Key_CustomFieldSerializer.java"/>
 		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/AppIdNamespace_CustomFieldSerializer.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/AppIdNamespace_CustomFieldSerializer.java"/>
 		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/Key.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/Key.java"/>
