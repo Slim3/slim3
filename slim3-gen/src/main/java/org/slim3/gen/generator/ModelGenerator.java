@@ -15,6 +15,7 @@
  */
 package org.slim3.gen.generator;
 
+import org.slim3.gen.AnnotationConstants;
 import org.slim3.gen.ClassConstants;
 import org.slim3.gen.desc.ModelDesc;
 import org.slim3.gen.printer.Printer;
@@ -62,7 +63,7 @@ public class ModelGenerator implements Generator {
             p.println("import %s;", modelDesc.getSuperclassName());
         }
         p.println();
-        p.println("@Model");
+        p.println("@Model(%1$s = 1)", AnnotationConstants.schemaVersion);
         if (ClassConstants.Object.equals(modelDesc.getSuperclassName())) {
             p.println("public class %s implements Serializable {", modelDesc
                 .getSimpleName());
