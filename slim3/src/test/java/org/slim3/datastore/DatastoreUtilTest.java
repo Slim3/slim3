@@ -15,8 +15,12 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -362,13 +366,13 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void putEntityProtos() throws Exception {
+    public void putInternallyEntityProtos() throws Exception {
         Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
         Entity entity2 = new Entity(KeyFactory.createKey("Hoge", 2));
         List<EntityProto> list = new ArrayList<EntityProto>();
         list.add(EntityTranslator.convertToPb(entity));
         list.add(EntityTranslator.convertToPb(entity2));
-        DatastoreUtil.put(list);
+        DatastoreUtil.putInternally(list);
         assertThat(ds.get(entity.getKey()), is(notNullValue()));
         assertThat(ds.get(entity2.getKey()), is(notNullValue()));
     }
@@ -377,13 +381,13 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void putForPutRequest() throws Exception {
+    public void putInternallyForPutRequest() throws Exception {
         Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
         Entity entity2 = new Entity(KeyFactory.createKey("Hoge", 2));
         PutRequest req = new PutRequest();
         req.addEntity(EntityTranslator.convertToPb(entity));
         req.addEntity(EntityTranslator.convertToPb(entity2));
-        DatastoreUtil.put(req);
+        DatastoreUtil.putInternally(req);
         assertThat(ds.get(entity.getKey()), is(notNullValue()));
         assertThat(ds.get(entity2.getKey()), is(notNullValue()));
     }

@@ -116,7 +116,7 @@ public class Journal {
                 }
             }
             if (putReq.entitySize() > 0) {
-                DatastoreUtil.put(putReq);
+                DatastoreUtil.putInternally(putReq);
             }
             if (deleteKeys.size() > 0) {
                 Datastore.deleteWithoutTx(deleteKeys);

@@ -696,12 +696,12 @@ public final class DatastoreUtil {
     }
 
     /**
-     * Puts the entities.
+     * Puts the entities internally.
      * 
      * @param entities
      *            the entities
      */
-    public static void put(Iterable<EntityProto> entities) {
+    public static void putInternally(Iterable<EntityProto> entities) {
         if (entities == null) {
             throw new NullPointerException(
                 "The entities parameter must not be null.");
@@ -714,16 +714,16 @@ public final class DatastoreUtil {
         for (EntityProto e : entities) {
             req.addEntity(e);
         }
-        put(req);
+        putInternally(req);
     }
 
     /**
-     * Puts the request for put.
+     * Puts the request for put internally.
      * 
      * @param putRequest
      *            the request for put
      */
-    public static void put(PutRequest putRequest) {
+    public static void putInternally(PutRequest putRequest) {
         if (putRequest == null) {
             throw new NullPointerException(
                 "The putRequest parameter must not be null.");
