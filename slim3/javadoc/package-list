@@ -6,5 +6,6 @@ org.slim3.controller.validator
 org.slim3.datastore
 org.slim3.gwt.server.rpc
 org.slim3.jsp
+org.slim3.memcache
 org.slim3.tester
 org.slim3.util
