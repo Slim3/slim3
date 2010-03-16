@@ -138,7 +138,7 @@ public class ModelRef<M> extends AbstractModelRef<M> {
         if (key == null) {
             return null;
         }
-        model = Datastore.get(getModelMeta(), key);
+        model = Datastore.getWithoutTx(getModelMeta(), key);
         return model;
     }
 
