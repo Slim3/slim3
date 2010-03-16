@@ -15,8 +15,9 @@
  */
 package org.slim3.util;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
@@ -76,7 +77,7 @@ public class ArrayUtilTest {
     @Test
     public void addForNestedArray() throws Exception {
         byte[][] array = new byte[][] { new byte[] { 1 } };
-        byte[][] ret = ArrayUtil.add(array, new byte[] { 2 });
+        byte[][] ret = ArrayUtil.<byte[]> add(array, new byte[] { 2 });
         assertThat(ret.length, is(2));
         assertThat(ret[0][0], is((byte) 1));
         assertThat(ret[1][0], is((byte) 2));
