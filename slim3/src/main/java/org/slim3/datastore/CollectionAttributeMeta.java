@@ -15,6 +15,8 @@
  */
 package org.slim3.datastore;
 
+import java.util.Arrays;
+
 /**
  * A meta data of collection attribute.
  * 
@@ -28,8 +30,12 @@ package org.slim3.datastore;
  * @since 1.0.0
  * 
  */
-public class CollectionAttributeMeta<M, A, E> extends
-        AttributeMeta<M, A> {
+public class CollectionAttributeMeta<M, A, E> extends AttributeMeta<M, A> {
+
+    /**
+     * The "is not null" filter.
+     */
+    protected IsNotNullCriterion isNotNull = new IsNotNullCriterion(this);
 
     /**
      * Constructor.
@@ -62,6 +68,17 @@ public class CollectionAttributeMeta<M, A, E> extends
      */
     public FilterCriterion equal(E value) {
         return new EqualCriterion(this, value);
+    }
+
+    /**
+     * Returns the "not equal" filter.
+     * 
+     * @param value
+     *            the value
+     * @return the "not equal" filter
+     */
+    public FilterCriterion notEqual(E value) {
+        return new NotEqualCriterion(this, value);
     }
 
     /**
@@ -106,5 +123,43 @@ public class CollectionAttributeMeta<M, A, E> extends
      */
     public FilterCriterion greaterThanOrEqual(E value) {
         return new GreaterThanOrEqualCriterion(this, value);
+    }
+
+    /**
+     * Returns the "in" filter.
+     * 
+     * @param value
+     *            the value
+     * @return the "in" filter
+     * @throws NullPointerException
+     *             if the value parameter is null
+     * @throws IllegalArgumentException
+     *             if the value parameter is empty
+     */
+    public FilterCriterion in(Iterable<E> value) throws NullPointerException,
+            IllegalArgumentException {
+        return new InCriterion(this, value);
+    }
+
+    /**
+     * Returns the "in" filter.
+     * 
+     * @param value
+     *            the value
+     * @return the "in" filter
+     * @throws IllegalArgumentException
+     *             if the value parameter is empty
+     */
+    public FilterCriterion in(E... value) throws IllegalArgumentException {
+        return new InCriterion(this, Arrays.asList(value));
+    }
+
+    /**
+     * Returns the "is not null" filter.
+     * 
+     * @return the "is not null" filter
+     */
+    public FilterCriterion isNotNull() {
+        return isNotNull;
     }
 }

@@ -15,8 +15,11 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
+import java.util.Arrays;
 
 import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
@@ -37,6 +40,16 @@ public class CollectionAttributeMetaTest {
     public void equal() throws Exception {
         assertThat(meta.myIntegerList.equal(1), is(EqualCriterion.class));
         assertThat(meta.myIntegerList.equal(null), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void notEqual() throws Exception {
+        assertThat(meta.myIntegerList.notEqual(1), is(NotEqualCriterion.class));
+        assertThat(meta.myIntegerList.notEqual(null), is(notNullValue()));
     }
 
     /**
@@ -85,5 +98,45 @@ public class CollectionAttributeMetaTest {
         assertThat(
             meta.myIntegerList.greaterThanOrEqual(null),
             is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void in() throws Exception {
+        assertThat(
+            meta.myIntegerList.in(Arrays.asList(1, 2)),
+            is(InCriterion.class));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void inForVarargs() throws Exception {
+        assertThat(meta.myIntegerList.in(1, 2), is(InCriterion.class));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test(expected = NullPointerException.class)
+    public void inForNull() throws Exception {
+        assertThat(
+            meta.myIntegerList.in((Iterable<Integer>) null),
+            is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void isNotNull() throws Exception {
+        assertThat(meta.myIntegerList.isNotNull(), is(IsNotNullCriterion.class));
     }
 }
