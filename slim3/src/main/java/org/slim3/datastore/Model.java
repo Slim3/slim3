@@ -41,5 +41,5 @@ public @interface Model {
     /**
      * The schema version.
      */
-    int schemaVersion() default 1;
+    int schemaVersion() default 0;
 }
