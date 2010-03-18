@@ -1306,8 +1306,7 @@ public class GlobalTransaction {
     }
 
     /**
-     * Commits this transaction. If multiple entity groups join this
-     * transaction, the roll-forward process is executed asynchronously.
+     * Commits this transaction.
      */
     public void commit() {
         assertActive();
