@@ -1293,10 +1293,13 @@ public class ModelMetaGenerator implements Generator {
                     DataType dataType = attr.getDataType();
                     dataType.accept(this, attr);
                 }
-                printer
-                    .println(
-                        "entity.setProperty(SCHEMA_VERSION_RESERVED_PROPERTY, %1$s);",
-                        modelMetaDesc.getSchemaVersion());
+                int schemaVersion = modelMetaDesc.getSchemaVersion();
+                if (schemaVersion > 0) {
+                    printer
+                        .println(
+                            "entity.setProperty(SCHEMA_VERSION_RESERVED_PROPERTY, %1$s);",
+                            modelMetaDesc.getSchemaVersion());
+                }
                 if (!modelMetaDesc.getClassHierarchyList().isEmpty()) {
                     printer
                         .println("entity.setProperty(CLASS_HIERARCHY_LIST_RESERVED_PROPERTY, classHierarchyList);");
