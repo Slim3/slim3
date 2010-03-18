@@ -39,7 +39,8 @@ public @interface Model {
     String kind() default "";
 
     /**
-     * The schema version.
+     * The schema version. If the value is greater than 0, the value is written
+     * to datastore as slim3.schemaVersion property.
      */
     int schemaVersion() default 0;
 }
