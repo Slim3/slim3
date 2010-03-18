@@ -13,8 +13,7 @@ public class IndexController extends Controller {
 
     @Override
     public Navigation run() throws Exception {
-        Datastore.delete(Datastore.query("Hoge").asKeyList());
-        int count = 10;
+        int count = 3;
         long start = System.currentTimeMillis();
         int index = 1;
         for (int i = 0; i < count; i++) {
@@ -38,6 +37,7 @@ public class IndexController extends Controller {
         time = System.currentTimeMillis() - start;
         System.out.println("time2:" + time);
         requestScope("time2", time);
+        Datastore.delete(Datastore.query("Hoge").asKeyList());
         return forward("index.jsp");
     }
 }
