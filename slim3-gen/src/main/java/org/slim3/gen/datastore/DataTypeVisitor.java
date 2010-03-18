@@ -28,7 +28,7 @@ package org.slim3.gen.datastore;
  * @since 1.0.0
  * 
  */
-public interface DataTypeVisitor<R, P, TH extends Throwable> {
+public interface DataTypeVisitor<R, P, TH extends RuntimeException> {
 
     /**
      * Visits {@link DataType}.

@@ -51,7 +51,7 @@ public abstract class PrimitiveType extends AbstractDataType {
         return wrapperClassName;
     }
 
-    public <R, P, TH extends Throwable> R accept(
+    public <R, P, TH extends RuntimeException> R accept(
             DataTypeVisitor<R, P, TH> visitor, P p) throws TH {
         return visitor.visitPrimitiveType(this, p);
     }

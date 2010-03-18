@@ -37,7 +37,7 @@ public class OtherReferenceType extends ReferenceType {
     }
 
     @Override
-    public <R, P, TH extends Throwable> R accept(
+    public <R, P, TH extends RuntimeException> R accept(
             DataTypeVisitor<R, P, TH> visitor, P p) throws TH {
         return visitor.visitOtherReferenceType(this, p);
     }

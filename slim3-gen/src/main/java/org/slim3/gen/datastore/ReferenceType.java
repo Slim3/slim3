@@ -36,7 +36,7 @@ public abstract class ReferenceType extends AbstractDataType {
         super(className, typeName);
     }
 
-    public <R, P, TH extends Throwable> R accept(
+    public <R, P, TH extends RuntimeException> R accept(
             DataTypeVisitor<R, P, TH> visitor, P p) throws TH {
         return visitor.visitReferenceType(this, p);
     }

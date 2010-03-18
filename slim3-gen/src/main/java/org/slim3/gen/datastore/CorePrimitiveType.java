@@ -37,7 +37,7 @@ public abstract class CorePrimitiveType extends PrimitiveType {
     }
 
     @Override
-    public <R, P, TH extends Throwable> R accept(
+    public <R, P, TH extends RuntimeException> R accept(
             DataTypeVisitor<R, P, TH> visitor, P p) throws TH {
         return visitor.visitCorePrimitiveType(this, p);
     }

@@ -55,6 +55,6 @@ public interface DataType {
      * @throws TH
      *             the throwable
      */
-    <R, P, TH extends Throwable> R accept(DataTypeVisitor<R, P, TH> visitor, P p)
-            throws TH;
+    <R, P, TH extends RuntimeException> R accept(
+            DataTypeVisitor<R, P, TH> visitor, P p) throws TH;
 }

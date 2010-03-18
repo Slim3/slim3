@@ -28,7 +28,7 @@ package org.slim3.gen.datastore;
  * @since 1.0.0
  * 
  */
-public class SimpleDataTypeVisitor<R, P, TH extends Throwable> implements
+public class SimpleDataTypeVisitor<R, P, TH extends RuntimeException> implements
         DataTypeVisitor<R, P, TH> {
 
     /** the default value */
