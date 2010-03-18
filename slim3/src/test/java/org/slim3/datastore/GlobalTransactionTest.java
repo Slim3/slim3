@@ -15,8 +15,12 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
@@ -1344,10 +1348,10 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         gtx.put(new Entity("Hoge2"));
         gtx.commitGlobalTransaction();
         assertThat(Datastore.query("Hoge").count(), is(1));
-        assertThat(Datastore.query("Hoge2").count(), is(0));
-        assertThat(Datastore.query(GlobalTransaction.KIND).count(), is(1));
-        assertThat(Datastore.query(Lock.KIND).count(), is(1));
-        assertThat(Datastore.query(Journal.KIND).count(), is(1));
+        assertThat(Datastore.query("Hoge2").count(), is(1));
+        assertThat(Datastore.query(GlobalTransaction.KIND).count(), is(0));
+        assertThat(Datastore.query(Lock.KIND).count(), is(0));
+        assertThat(Datastore.query(Journal.KIND).count(), is(0));
         assertThat(gtx.isActive(), is(false));
         assertThat(GlobalTransaction.getActiveTransactions().size(), is(0));
     }
@@ -1372,10 +1376,10 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         gtx.put(new Entity("Hoge2"));
         gtx.commit();
         assertThat(Datastore.query("Hoge").count(), is(1));
-        assertThat(Datastore.query("Hoge2").count(), is(0));
-        assertThat(Datastore.query(GlobalTransaction.KIND).count(), is(1));
-        assertThat(Datastore.query(Lock.KIND).count(), is(1));
-        assertThat(Datastore.query(Journal.KIND).count(), is(1));
+        assertThat(Datastore.query("Hoge2").count(), is(1));
+        assertThat(Datastore.query(GlobalTransaction.KIND).count(), is(0));
+        assertThat(Datastore.query(Lock.KIND).count(), is(0));
+        assertThat(Datastore.query(Journal.KIND).count(), is(0));
         assertThat(gtx.isActive(), is(false));
         assertThat(GlobalTransaction.getActiveTransactions().size(), is(0));
     }
@@ -1484,7 +1488,8 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         String encodedKey = Datastore.keyToString(gtx.globalTransactionKey);
         GlobalTransaction.submitRollForwardJob(
             gtx.localTransaction,
-            gtx.globalTransactionKey);
+            gtx.globalTransactionKey,
+            GlobalTransaction.ROLL_FORWARD_DELAY);
         assertThat(tester.tasks.size(), is(1));
         TaskQueueAddRequest task = tester.tasks.get(0);
         assertThat(task.getQueueName(), is(GlobalTransaction.QUEUE_NAME));

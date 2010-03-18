@@ -281,6 +281,30 @@ public class Lock {
     }
 
     /**
+     * Deletes the locks without transaction.
+     * 
+     * @param locks
+     *            the locks
+     * @throws NullPointerException
+     *             if the locks parameter is null
+     */
+    public static void deleteWithoutTx(Iterable<Lock> locks)
+            throws NullPointerException {
+        if (locks == null) {
+            throw new NullPointerException(
+                "The locks parameter must not be null.");
+        }
+        List<Key> keys = new ArrayList<Key>();
+        for (Lock lock : locks) {
+            keys.add(lock.key);
+        }
+        if (keys.isEmpty()) {
+            return;
+        }
+        Datastore.deleteWithoutTx(keys);
+    }
+
+    /**
      * Verifies lock specified by the root key and returns entities specified by
      * the keys as map.
      * 

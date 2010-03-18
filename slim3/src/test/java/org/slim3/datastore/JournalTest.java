@@ -15,8 +15,10 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -75,6 +77,31 @@ public class JournalTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void applyEntities() throws Exception {
+        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
+        Key key = Datastore.createKey("Hoge", 1);
+        Key key2 = Datastore.createKey("Hoge", 2);
+        Datastore.putWithoutTx(new Entity(key2));
+        Map<Key, Entity> journalMap = new LinkedHashMap<Key, Entity>();
+        Entity putEntity = new Entity(key);
+        journalMap.put(key, putEntity);
+        journalMap.put(key2, null);
+        Journal.put(globalTransactionKey, journalMap);
+        List<Entity> entities =
+            Datastore.query(Journal.KIND).filter(
+                Journal.GLOBAL_TRANSACTION_KEY_PROPERTY,
+                FilterOperator.EQUAL,
+                globalTransactionKey).asList();
+        Journal.apply(entities);
+        assertThat(Datastore.getOrNull(key), is(notNullValue()));
+        assertThat(Datastore.getOrNull(key2), is(nullValue()));
+        assertThat(Datastore.query(Journal.KIND).count(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getKeys() throws Exception {
         Key targetKey = Datastore.createKey("Hoge", 1);
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
@@ -97,7 +124,8 @@ public class JournalTest extends AppEngineTestCase {
         Entity putEntity = new Entity(key);
         journalMap.put(key, putEntity);
         journalMap.put(key2, null);
-        Journal.put(globalTransactionKey, journalMap);
+        List<Entity> entities = Journal.put(globalTransactionKey, journalMap);
+        assertThat(entities.size(), is(1));
         Entity entity =
             Datastore.query(Journal.KIND).filter(
                 Journal.GLOBAL_TRANSACTION_KEY_PROPERTY,
@@ -109,6 +137,14 @@ public class JournalTest extends AppEngineTestCase {
         assertThat(DatastoreUtil.bytesToEntity(blob.getBytes()), is(putEntity));
         assertThat(entity.hasProperty("delete1"), is(true));
         assertThat((Key) entity.getProperty("delete1"), is(key2));
+        entity = entities.get(0);
+        assertThat(entity, is(notNullValue()));
+        assertThat(entity.hasProperty("put0"), is(true));
+        blob = (Blob) entity.getProperty("put0");
+        assertThat(DatastoreUtil.bytesToEntity(blob.getBytes()), is(putEntity));
+        assertThat(entity.hasProperty("delete1"), is(true));
+        assertThat((Key) entity.getProperty("delete1"), is(key2));
+
     }
 
     /**

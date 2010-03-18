@@ -74,6 +74,12 @@ public class GlobalTransaction {
     protected static final int MAX_JOURNALS = 500;
 
     /**
+     * The number of milliseconds delay before execution of the roll-forward
+     * task.
+     */
+    protected static final long ROLL_FORWARD_DELAY = 60000;
+
+    /**
      * The active global transactions.
      */
     protected static final ThreadLocal<Stack<GlobalTransaction>> activeTransactions =
@@ -265,12 +271,15 @@ public class GlobalTransaction {
      *            the transaction
      * @param globalTransactionKey
      *            the global transaction key
+     * @param countdownMillis
+     *            the number of milliseconds delay before execution of the task
      * @throws NullPointerException
      *             if the tx parameter is null or if the globalTransactionKey
      *             parameter is null
      */
     protected static void submitRollForwardJob(Transaction tx,
-            Key globalTransactionKey) throws NullPointerException {
+            Key globalTransactionKey, long countdownMillis)
+            throws NullPointerException {
         if (tx == null) {
             throw new NullPointerException("The tx parameter must not be null.");
         }
@@ -285,7 +294,7 @@ public class GlobalTransaction {
             GlobalTransactionServlet.COMMAND_NAME,
             GlobalTransactionServlet.ROLLFORWARD_COMMAND).param(
             GlobalTransactionServlet.KEY_NAME,
-            encodedKey));
+            encodedKey).countdownMillis(countdownMillis));
     }
 
     /**
@@ -1546,16 +1555,21 @@ public class GlobalTransaction {
      * Commits this transaction as global transaction.
      */
     protected void commitGlobalTransaction() {
-        putJournals();
+        List<Entity> journals = putJournals();
         commitGlobalTransactionInternally();
+        Journal.apply(journals);
+        Lock.deleteWithoutTx(lockMap.values());
+        Datastore.deleteWithoutTx(globalTransactionKey);
     }
 
     /**
      * Puts the journals.
+     * 
+     * @return journal entities
      */
-    protected void putJournals() {
+    protected List<Entity> putJournals() {
         try {
-            Journal.put(globalTransactionKey, journalMap);
+            return Journal.put(globalTransactionKey, journalMap);
         } catch (Throwable cause) {
             try {
                 Journal.deleteInTx(globalTransactionKey);
@@ -1579,7 +1593,10 @@ public class GlobalTransaction {
         activeTransactions.get().remove(this);
         try {
             Datastore.put(localTransaction, toEntity());
-            submitRollForwardJob(localTransaction, globalTransactionKey);
+            submitRollForwardJob(
+                localTransaction,
+                globalTransactionKey,
+                ROLL_FORWARD_DELAY);
             localTransaction.commit();
         } catch (Throwable cause) {
             try {

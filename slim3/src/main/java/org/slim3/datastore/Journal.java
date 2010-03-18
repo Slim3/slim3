@@ -126,25 +126,71 @@ public class Journal {
     }
 
     /**
+     * Applies the journals.
+     * 
+     * @param entities
+     *            the entities
+     * @throws NullPointerException
+     *             if the entities parameter is null
+     * 
+     */
+    public static void apply(List<Entity> entities) throws NullPointerException {
+        if (entities == null) {
+            throw new NullPointerException(
+                "The entities parameter must not be null.");
+        }
+        for (Entity entity : entities) {
+            Map<String, Object> properties = entity.getProperties();
+            PutRequest putReq = new PutRequest();
+            List<Key> deleteKeys = new ArrayList<Key>();
+            for (Iterator<String> i = properties.keySet().iterator(); i
+                .hasNext();) {
+                String name = i.next();
+                if (name.startsWith(PUT_PROPERTY_PREFIX)) {
+                    Blob blob = (Blob) entity.getProperty(name);
+                    if (blob != null) {
+                        EntityProto proto = putReq.addEntity();
+                        proto.mergeFrom(blob.getBytes());
+                    }
+                } else if (name.startsWith(DELETE_PROPERTY_PREFIX)) {
+                    Key key = (Key) entity.getProperty(name);
+                    if (key != null) {
+                        deleteKeys.add(key);
+                    }
+                }
+            }
+            if (putReq.entitySize() > 0) {
+                DatastoreUtil.putInternally(putReq);
+            }
+            if (deleteKeys.size() > 0) {
+                Datastore.deleteWithoutTx(deleteKeys);
+            }
+            Datastore.deleteWithoutTx(entity.getKey());
+        }
+    }
+
+    /**
      * Puts the journals to the datastore.
      * 
      * @param globalTransactionKey
      *            the global transaction key
      * @param journalMap
      *            the map of journals
+     * @return journal entities
      * @throws NullPointerException
      *             if the globalTransactionKey parameter is null or if the
      *             journalMap parameter is null
      * 
      */
-    public static void put(Key globalTransactionKey, Map<Key, Entity> journalMap)
-            throws NullPointerException {
+    public static List<Entity> put(Key globalTransactionKey,
+            Map<Key, Entity> journalMap) throws NullPointerException {
         if (journalMap == null) {
             throw new NullPointerException(
                 "The journalMap parameter must not be null.");
         }
+        List<Entity> entities = new ArrayList<Entity>();
         if (journalMap.size() == 0) {
-            return;
+            return entities;
         }
         int totalSize = 0;
         Entity entity = createEntity(globalTransactionKey);
@@ -159,6 +205,7 @@ public class Journal {
             if (totalSize != 0
                 && totalSize + size + EXTRA_SIZE > MAX_ENTITY_SIZE) {
                 Datastore.putWithoutTx(entity);
+                entities.add(entity);
                 entity = createEntity(globalTransactionKey);
                 totalSize = 0;
             }
@@ -174,6 +221,8 @@ public class Journal {
             totalSize += size + EXTRA_SIZE;
         }
         Datastore.putWithoutTx(entity);
+        entities.add(entity);
+        return entities;
     }
 
     /**

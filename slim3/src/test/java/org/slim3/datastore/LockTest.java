@@ -15,8 +15,11 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
@@ -153,13 +156,27 @@ public class LockTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void deleteWithoutTx() throws Exception {
+    public void deleteWithoutTxByGlobalTransactionKey() throws Exception {
         Key rootKey = Datastore.createKey("Hoge", 1);
         long timestamp = System.currentTimeMillis();
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
         Lock lock = new Lock(globalTransactionKey, rootKey, timestamp);
         Datastore.put(lock.toEntity());
         Lock.deleteWithoutTx(globalTransactionKey);
+        assertThat(Datastore.query(Lock.KIND).count(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void deleteWithoutTxByLocks() throws Exception {
+        Key rootKey = Datastore.createKey("Hoge", 1);
+        long timestamp = System.currentTimeMillis();
+        Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
+        Lock lock = new Lock(globalTransactionKey, rootKey, timestamp);
+        Datastore.put(lock.toEntity());
+        Lock.deleteWithoutTx(Arrays.asList(lock));
         assertThat(Datastore.query(Lock.KIND).count(), is(0));
     }
 
