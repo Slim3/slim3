@@ -97,6 +97,9 @@ public abstract class AbstractCriterion {
         if (value instanceof Iterable<?>) {
             return convertValueForDatastore((Iterable<?>) value);
         }
+        if (value instanceof ModelRef<?>) {
+            return ((ModelRef<?>) value).getKey();
+        }
         return value;
     }
 

@@ -18,10 +18,6 @@ package org.slim3.datastore;
 import org.junit.Test;
 import org.slim3.tester.AppEngineTestCase;
 
-import com.google.appengine.api.memcache.MemcacheService;
-import com.google.appengine.api.memcache.MemcacheServiceFactory;
-import com.google.appengine.api.memcache.MemcacheService.SetPolicy;
-
 /**
  * @author higa
  * 
@@ -33,10 +29,5 @@ public class SpikeTest extends AppEngineTestCase {
      */
     @Test
     public void spike() throws Exception {
-        MemcacheService ms = MemcacheServiceFactory.getMemcacheService();
-        ms.put("aaa", null, null, SetPolicy.ADD_ONLY_IF_NOT_PRESENT);
-        System.out.println(ms.delete("aaa", 1000));
-        ms.put("aaa", null, null, SetPolicy.ADD_ONLY_IF_NOT_PRESENT);
-        System.out.println(ms.delete("aaa"));
     }
 }

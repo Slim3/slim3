@@ -15,24 +15,30 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import static org.junit.matchers.JUnitMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.junit.Assert.assertThat;
+import static org.junit.matchers.JUnitMatchers.hasItem;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
+import org.slim3.datastore.meta.BbbMeta;
 import org.slim3.datastore.meta.HogeMeta;
+import org.slim3.datastore.model.Bbb;
+import org.slim3.tester.AppEngineTestCase;
 
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
 /**
  * @author higa
  * 
  */
-public class AbstCriterionTest {
+public class AbstCriterionTest extends AppEngineTestCase {
 
     private HogeMeta meta = new HogeMeta();
 
@@ -122,6 +128,22 @@ public class AbstCriterionTest {
         assertThat(criterion
             .convertValueForDatastore(new ArrayList<String>())
             .size(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void convertValueForDatastoreForModelRef() throws Exception {
+        BbbMeta bbbMeta = BbbMeta.get();
+        MyCriterion criterion = new MyCriterion(bbbMeta.hogeRef);
+        Bbb bbb = new Bbb();
+        Key key = Datastore.createKey("Hoge", 1);
+        bbb.getHogeRef().setKey(key);
+        assertThat(
+            (Key) criterion.convertValueForDatastore(bbb.getHogeRef()),
+            is(key));
     }
 
     private static class MyCriterion extends AbstractCriterion {
