@@ -477,9 +477,6 @@ public class FrontController implements Filter {
         try {
             clazz = Class.forName(className, true, loader);
         } catch (Throwable t) {
-            if (AppEngineUtil.isDevelopment()) {
-                System.out.println(t);
-            }
             return null;
         }
         if (!Controller.class.isAssignableFrom(clazz)) {
