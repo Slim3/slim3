@@ -15,13 +15,14 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
-import org.slim3.datastore.meta.HogeMeta;
+import org.slim3.datastore.model.Hoge;
 
-import com.google.appengine.api.datastore.Text;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
 
 /**
  * @author higa
@@ -29,18 +30,64 @@ import com.google.appengine.api.datastore.Text;
  */
 public class UnindexedAttributeMetaTest {
 
-    private HogeMeta meta = new HogeMeta();
+    private ModelMeta<Hoge> meta = new ModelMeta<Hoge>("Hoge", Hoge.class) {
+
+        @Override
+        protected void setKey(Object model, Key key) {
+        }
+
+        @Override
+        public Entity modelToEntity(Object model) {
+            return null;
+        }
+
+        @Override
+        protected void incrementVersion(Object model) {
+        }
+
+        @Override
+        protected long getVersion(Object model) {
+            return 0;
+        }
+
+        @Override
+        protected Key getKey(Object model) {
+            return null;
+        }
+
+        @Override
+        public Hoge entityToModel(Entity entity) {
+            return null;
+        }
+    };
 
     /**
      * @throws Exception
      * 
      */
     @Test
-    public void constructor() throws Exception {
-        assertThat((HogeMeta) meta.myText.modelMeta, is(sameInstance(meta)));
-        assertThat(meta.myText.name, is("myText"));
-        assertThat(meta.myText.attributeClass.getName(), is(Text.class
-            .getName()));
+    public void asc() throws Exception {
+        UnindexedAttributeMeta<Hoge, String> attrMeta =
+            new UnindexedAttributeMeta<Hoge, String>(
+                meta,
+                "myString",
+                "myString",
+                String.class);
+        assertThat(attrMeta.asc, is(InMemoryAscCriterion.class));
     }
 
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void desc() throws Exception {
+        UnindexedAttributeMeta<Hoge, String> attrMeta =
+            new UnindexedAttributeMeta<Hoge, String>(
+                meta,
+                "myString",
+                "myString",
+                String.class);
+        assertThat(attrMeta.desc, is(InMemoryDescCriterion.class));
+    }
 }

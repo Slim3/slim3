@@ -15,14 +15,12 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-
-import java.util.Arrays;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
-import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.AppEngineTestCase;
 
 import com.google.appengine.api.datastore.Query.FilterOperator;
@@ -98,68 +96,5 @@ public class EqualCriterionTest extends AppEngineTestCase {
         assertThat(filters[0].getPropertyName(), is("myString"));
         assertThat(filters[0].getOperator(), is(FilterOperator.EQUAL));
         assertThat(filters[0].getValue(), is(nullValue()));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void accept() throws Exception {
-        Hoge hoge = new Hoge();
-        hoge.setMyString("aaa");
-        FilterCriterion c = new EqualCriterion(meta.myString, "aaa");
-        assertThat(c.accept(hoge), is(true));
-        hoge.setMyString("bbb");
-        assertThat(c.accept(hoge), is(false));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void acceptForEnum() throws Exception {
-        FilterCriterion c =
-            new EqualCriterion(meta.myEnum, SortDirection.ASCENDING);
-        Hoge hoge = new Hoge();
-        assertThat(c.accept(hoge), is(false));
-        hoge.setMyEnum(SortDirection.DESCENDING);
-        assertThat(c.accept(hoge), is(false));
-        hoge.setMyEnum(SortDirection.ASCENDING);
-        assertThat(c.accept(hoge), is(true));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void acceptForNull() throws Exception {
-        Hoge hoge = new Hoge();
-        hoge.setMyString("aaa");
-        FilterCriterion c = new EqualCriterion(meta.myString, null);
-        assertThat(c.accept(hoge), is(false));
-        hoge.setMyString(null);
-        assertThat(c.accept(hoge), is(true));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void acceptForCollection() throws Exception {
-        Hoge hoge = new Hoge();
-        hoge.setMyIntegerList(Arrays.asList(1));
-        FilterCriterion c = new EqualCriterion(meta.myIntegerList, 1);
-        assertThat(c.accept(hoge), is(true));
-        hoge.setMyIntegerList(Arrays.asList(2));
-        assertThat(c.accept(hoge), is(false));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void testToString() throws Exception {
-        EqualCriterion c = new EqualCriterion(meta.myString, "aaa");
-        assertThat(c.toString(), is("myString == aaa"));
     }
 }

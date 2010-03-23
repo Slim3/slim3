@@ -66,7 +66,7 @@ public class CollectionAttributeMeta<M, A, E> extends AttributeMeta<M, A> {
      *            the value
      * @return the "equal" filter
      */
-    public FilterCriterion equal(E value) {
+    public EqualCriterion equal(E value) {
         return new EqualCriterion(this, value);
     }
 
@@ -77,7 +77,7 @@ public class CollectionAttributeMeta<M, A, E> extends AttributeMeta<M, A> {
      *            the value
      * @return the "not equal" filter
      */
-    public FilterCriterion notEqual(E value) {
+    public NotEqualCriterion notEqual(E value) {
         return new NotEqualCriterion(this, value);
     }
 
@@ -88,7 +88,7 @@ public class CollectionAttributeMeta<M, A, E> extends AttributeMeta<M, A> {
      *            the value
      * @return the "less than" filter
      */
-    public FilterCriterion lessThan(E value) {
+    public LessThanCriterion lessThan(E value) {
         return new LessThanCriterion(this, value);
     }
 
@@ -99,7 +99,7 @@ public class CollectionAttributeMeta<M, A, E> extends AttributeMeta<M, A> {
      *            the value
      * @return the "less than or equal" filter
      */
-    public FilterCriterion lessThanOrEqual(E value) {
+    public LessThanOrEqualCriterion lessThanOrEqual(E value) {
         return new LessThanOrEqualCriterion(this, value);
     }
 
@@ -110,7 +110,7 @@ public class CollectionAttributeMeta<M, A, E> extends AttributeMeta<M, A> {
      *            the value
      * @return the "greater than" filter
      */
-    public FilterCriterion greaterThan(E value) {
+    public GreaterThanCriterion greaterThan(E value) {
         return new GreaterThanCriterion(this, value);
     }
 
@@ -121,7 +121,7 @@ public class CollectionAttributeMeta<M, A, E> extends AttributeMeta<M, A> {
      *            the value
      * @return the "greater than or equal" filter
      */
-    public FilterCriterion greaterThanOrEqual(E value) {
+    public GreaterThanOrEqualCriterion greaterThanOrEqual(E value) {
         return new GreaterThanOrEqualCriterion(this, value);
     }
 
@@ -136,7 +136,7 @@ public class CollectionAttributeMeta<M, A, E> extends AttributeMeta<M, A> {
      * @throws IllegalArgumentException
      *             if the value parameter is empty
      */
-    public FilterCriterion in(Iterable<E> value) throws NullPointerException,
+    public InCriterion in(Iterable<E> value) throws NullPointerException,
             IllegalArgumentException {
         return new InCriterion(this, value);
     }
@@ -150,7 +150,7 @@ public class CollectionAttributeMeta<M, A, E> extends AttributeMeta<M, A> {
      * @throws IllegalArgumentException
      *             if the value parameter is empty
      */
-    public FilterCriterion in(E... value) throws IllegalArgumentException {
+    public InCriterion in(E... value) throws IllegalArgumentException {
         return new InCriterion(this, Arrays.asList(value));
     }
 
@@ -159,7 +159,7 @@ public class CollectionAttributeMeta<M, A, E> extends AttributeMeta<M, A> {
      * 
      * @return the "is not null" filter
      */
-    public FilterCriterion isNotNull() {
+    public IsNotNullCriterion isNotNull() {
         return isNotNull;
     }
 }

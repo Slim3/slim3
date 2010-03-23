@@ -571,8 +571,8 @@ public class DatastoreUtilTest extends AppEngineTestCase {
         list.add(hoge);
 
         List<Hoge> sorted =
-            DatastoreUtil
-                .sortInMemory(list, Arrays.asList(meta.myInteger.desc));
+            DatastoreUtil.sortInMemory(list, Arrays
+                .asList((InMemorySortCriterion) meta.myInteger.desc));
         assertThat(sorted.size(), is(3));
         assertThat(sorted.get(0).getMyInteger(), is(3));
         assertThat(sorted.get(1).getMyInteger(), is(2));
@@ -593,7 +593,8 @@ public class DatastoreUtilTest extends AppEngineTestCase {
         list.add(hoge);
 
         List<Hoge> sorted =
-            DatastoreUtil.sortInMemory(list, Arrays.asList(meta.myEnum.asc));
+            DatastoreUtil.sortInMemory(list, Arrays
+                .asList((InMemorySortCriterion) meta.myEnum.asc));
         assertThat(sorted.size(), is(2));
         assertThat(sorted.get(0).getMyEnum(), is(SortDirection.ASCENDING));
         assertThat(sorted.get(1).getMyEnum(), is(SortDirection.DESCENDING));
@@ -613,7 +614,8 @@ public class DatastoreUtilTest extends AppEngineTestCase {
         list.add(hoge);
 
         List<Hoge> sorted =
-            DatastoreUtil.sortInMemory(list, Arrays.asList(meta.myEnum.desc));
+            DatastoreUtil.sortInMemory(list, Arrays
+                .asList((InMemorySortCriterion) meta.myEnum.desc));
         assertThat(sorted.size(), is(2));
         assertThat(sorted.get(0).getMyEnum(), is(SortDirection.DESCENDING));
         assertThat(sorted.get(1).getMyEnum(), is(SortDirection.ASCENDING));

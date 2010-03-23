@@ -15,8 +15,14 @@
  */
 package org.slim3.datastore;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
 import org.slim3.tester.AppEngineTestCase;
+
+import com.google.appengine.api.datastore.Blob;
+import com.google.appengine.api.datastore.Entity;
 
 /**
  * @author higa
@@ -29,5 +35,11 @@ public class SpikeTest extends AppEngineTestCase {
      */
     @Test
     public void spike() throws Exception {
+        List<Blob> blobList = new ArrayList<Blob>();
+        blobList.add(new Blob(new byte[] { 1 }));
+        blobList.add(new Blob(new byte[] { 1 }));
+        Entity entity = new Entity("Hoge");
+        entity.setProperty("blobList", blobList);
+        Datastore.put(entity);
     }
 }

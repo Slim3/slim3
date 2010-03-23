@@ -15,10 +15,8 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-
-import java.util.Arrays;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
@@ -36,11 +34,19 @@ public class AttributeComparatorTest {
      * @throws Exception
      */
     @Test
+    public void constructorForVarargs() throws Exception {
+        AttributeComparator comparator =
+            new AttributeComparator(meta.myInteger.asc, meta.myString.desc);
+        assertThat(comparator.sortCriteria.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void compare() throws Exception {
         AttributeComparator comparator =
-            new AttributeComparator(Arrays.asList(
-                meta.myInteger.asc,
-                meta.myString.desc));
+            new AttributeComparator(meta.myInteger.asc, meta.myString.desc);
         Hoge hoge = new Hoge();
         hoge.setMyInteger(1);
         hoge.setMyString("aaa");

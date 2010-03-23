@@ -172,7 +172,7 @@ public class InverseModelListRef<M, O> extends AbstractInverseModelRef<M, O> {
          *            the in-memory sort criteria
          * @return this instance
          */
-        public ModelListQuery sortInMemory(SortCriterion... criteria) {
+        public ModelListQuery sortInMemory(InMemorySortCriterion... criteria) {
             query.sortInMemory(criteria);
             return this;
         }

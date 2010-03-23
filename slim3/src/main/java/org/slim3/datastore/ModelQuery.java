@@ -53,8 +53,8 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
     /**
      * The in-memory sort orders.
      */
-    protected List<SortCriterion> inMemorySortCriteria =
-        new ArrayList<SortCriterion>();
+    protected List<InMemorySortCriterion> inMemorySortCriteria =
+        new ArrayList<InMemorySortCriterion>();
 
     /**
      * Constructor.
@@ -305,9 +305,9 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
      * @throws NullPointerException
      *             if the element of the criteria parameter is null
      */
-    public ModelQuery<M> sortInMemory(SortCriterion... criteria)
+    public ModelQuery<M> sortInMemory(InMemorySortCriterion... criteria)
             throws NullPointerException {
-        for (SortCriterion c : criteria) {
+        for (InMemorySortCriterion c : criteria) {
             if (c == null) {
                 throw new NullPointerException(
                     "The element of the criteria parameter must not be null.");
@@ -369,7 +369,7 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
         addFilterIfPolyModel();
         List<Key> keys = super.asKeyList();
         if (inMemorySortCriteria.size() > 0 && inMemorySortCriteria.size() == 1) {
-            SortCriterion c = inMemorySortCriteria.get(0);
+            InMemorySortCriterion c = inMemorySortCriteria.get(0);
             if (c instanceof AbstractCriterion) {
                 if (((AbstractCriterion) c).attributeMeta.name
                     .equals(Entity.KEY_RESERVED_PROPERTY)) {

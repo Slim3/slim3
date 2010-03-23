@@ -15,9 +15,6 @@
  */
 package org.slim3.datastore;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 import com.google.appengine.api.datastore.Query.SortDirection;
 
 /**
@@ -27,7 +24,12 @@ import com.google.appengine.api.datastore.Query.SortDirection;
  * @since 1.0.0
  * 
  */
-public class AscCriterion extends AbstractSortCriterion {
+public class AscCriterion extends InMemoryAscCriterion implements SortCriterion {
+
+    /**
+     * The {@link Sort}.
+     */
+    protected Sort sort;
 
     /**
      * Constructor.
@@ -43,39 +45,7 @@ public class AscCriterion extends AbstractSortCriterion {
         sort = new Sort(attributeMeta.getName(), SortDirection.ASCENDING);
     }
 
-    public int compare(Object model1, Object model2) {
-        Object v1 = convertValueForDatastore(attributeMeta.getValue(model1));
-        if (v1 instanceof Collection<?>) {
-            v1 = getSmallestValue((Collection<?>) v1);
-        }
-        Object v2 = convertValueForDatastore(attributeMeta.getValue(model2));
-        if (v2 instanceof Collection<?>) {
-            v2 = getSmallestValue((Collection<?>) v2);
-        }
-        return compareValue(v1, v2);
-    }
-
-    @Override
-    public String toString() {
-        return attributeMeta.getName() + " asc";
-    }
-
-    /**
-     * Returns the smallest value of the collection.
-     * 
-     * @param collection
-     *            the collection
-     * @return the smallest value of the collection
-     */
-    protected Object getSmallestValue(Collection<?> collection) {
-        if (collection.size() == 0) {
-            return null;
-        }
-        if (collection.size() == 1) {
-            return collection.iterator().next();
-        }
-        Object[] array = collection.toArray();
-        Arrays.sort(array);
-        return array[0];
+    public Sort getSort() {
+        return sort;
     }
 }

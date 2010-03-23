@@ -15,14 +15,14 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
-import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.AppEngineTestCase;
 
+import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 
 /**
@@ -31,18 +31,36 @@ import com.google.appengine.api.datastore.Key;
  */
 public class AttributeMetaTest extends AppEngineTestCase {
 
-    private HogeMeta meta = new HogeMeta();
+    private ModelMeta<Hoge> meta = new ModelMeta<Hoge>("Hoge", Hoge.class) {
 
-    /**
-     * @throws Exception
-     * 
-     */
-    @Test
-    public void constructor() throws Exception {
-        assertThat((HogeMeta) meta.key.modelMeta, is(sameInstance(meta)));
-        assertThat(meta.key.name, is("__key__"));
-        assertThat(meta.key.attributeClass.getName(), is(Key.class.getName()));
-    }
+        @Override
+        protected void setKey(Object model, Key key) {
+        }
+
+        @Override
+        public Entity modelToEntity(Object model) {
+            return null;
+        }
+
+        @Override
+        protected void incrementVersion(Object model) {
+        }
+
+        @Override
+        protected long getVersion(Object model) {
+            return 0;
+        }
+
+        @Override
+        protected Key getKey(Object model) {
+            return null;
+        }
+
+        @Override
+        public Hoge entityToModel(Entity entity) {
+            return null;
+        }
+    };
 
     /**
      * @throws Exception
@@ -50,7 +68,13 @@ public class AttributeMetaTest extends AppEngineTestCase {
      */
     @Test
     public void asc() throws Exception {
-        assertThat(meta.myString.asc, is(AscCriterion.class));
+        AttributeMeta<Hoge, String> attrMeta =
+            new AttributeMeta<Hoge, String>(
+                meta,
+                "myString",
+                "myString",
+                String.class);
+        assertThat(attrMeta.asc, is(AscCriterion.class));
     }
 
     /**
@@ -59,57 +83,12 @@ public class AttributeMetaTest extends AppEngineTestCase {
      */
     @Test
     public void desc() throws Exception {
-        assertThat(meta.myString.desc, is(DescCriterion.class));
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    @Test
-    public void getValue() throws Exception {
-        Hoge hoge = new Hoge();
-        hoge.setKey(Datastore.createKey(Hoge.class, 1));
-        hoge.setMyString("aaa");
-        assertThat((String) meta.myString.getValue(hoge), is("aaa"));
-        assertThat((Key) meta.key.getValue(hoge), is(hoge.getKey()));
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    @Test
-    public void charAt() throws Exception {
-        assertThat(meta.myString.charAt(3), is("myString".charAt(3)));
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    @Test
-    public void length() throws Exception {
-        assertThat(meta.myString.length(), is("myString".length()));
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    @Test
-    public void subSequence() throws Exception {
-        assertThat(meta.myString.subSequence(1, 3), is("myString".subSequence(
-            1,
-            3)));
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    @Test
-    public void testToString() throws Exception {
-        assertThat(meta.myString.toString(), is("myString"));
+        AttributeMeta<Hoge, String> attrMeta =
+            new AttributeMeta<Hoge, String>(
+                meta,
+                "myString",
+                "myString",
+                String.class);
+        assertThat(attrMeta.desc, is(DescCriterion.class));
     }
 }

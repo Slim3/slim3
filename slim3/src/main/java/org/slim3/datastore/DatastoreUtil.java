@@ -1177,7 +1177,7 @@ public final class DatastoreUtil {
      *             null
      */
     public static <M> List<M> sortInMemory(List<M> list,
-            List<SortCriterion> criteria) throws NullPointerException {
+            List<InMemorySortCriterion> criteria) throws NullPointerException {
         if (list == null) {
             throw new NullPointerException(
                 "The list parameter must not be null.");

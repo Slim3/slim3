@@ -15,7 +15,6 @@
  */
 package org.slim3.datastore;
 
-
 /**
  * A criterion interface for filter.
  * 

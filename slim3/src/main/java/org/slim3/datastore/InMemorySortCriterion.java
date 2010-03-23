@@ -15,36 +15,29 @@
  */
 package org.slim3.datastore;
 
-
 /**
- * An abstract class for filter.
+ * A criterion interface for in-memory sort.
  * 
  * @author higa
- * @since 1.0.0
+ * @since 1.0.1
  * 
  */
-public abstract class AbstractSortCriterion extends AbstractCriterion implements
-        SortCriterion {
+public interface InMemorySortCriterion {
 
     /**
-     * The {@link Sort}.
-     */
-    protected Sort sort;
-
-    /**
-     * Constructor.
+     * Compares its two arguments for order. Returns a negative integer, zero,
+     * or a positive integer as the first argument is less than, equal to, or
+     * greater than the second.
      * 
-     * @param attributeMeta
-     *            the meta data of attribute
-     * @throws NullPointerException
-     *             if the attributeMeta parameter is null
+     * @param model1
+     *            the first model
+     * @param model2
+     *            the second model
+     * @return the compared result
+     * @throws IllegalStateException
+     *             if the model is embedded or if the attribute is not
+     *             comparable
      */
-    public AbstractSortCriterion(AttributeMeta<?, ?> attributeMeta)
-            throws NullPointerException {
-        super(attributeMeta);
-    }
+    int compare(Object model1, Object model2) throws IllegalStateException;
 
-    public Sort getSort() {
-        return sort;
-    }
 }

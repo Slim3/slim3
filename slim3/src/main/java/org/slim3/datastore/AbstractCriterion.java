@@ -30,7 +30,7 @@ public abstract class AbstractCriterion {
     /**
      * The meta data of attribute.
      */
-    protected AttributeMeta<?, ?> attributeMeta;
+    protected AbstractAttributeMeta<?, ?> attributeMeta;
 
     /**
      * Constructor.
@@ -40,7 +40,7 @@ public abstract class AbstractCriterion {
      * @throws NullPointerException
      *             if the attributeMeta parameter is null
      */
-    public AbstractCriterion(AttributeMeta<?, ?> attributeMeta)
+    public AbstractCriterion(AbstractAttributeMeta<?, ?> attributeMeta)
             throws NullPointerException {
         if (attributeMeta == null) {
             throw new NullPointerException(

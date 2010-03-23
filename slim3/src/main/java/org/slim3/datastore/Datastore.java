@@ -2736,7 +2736,7 @@ public final class Datastore {
      *             null
      */
     public static <M> List<M> sortInMemory(List<M> list,
-            SortCriterion... criteria) throws NullPointerException {
+            InMemorySortCriterion... criteria) throws NullPointerException {
         return DatastoreUtil.sortInMemory(list, Arrays.asList(criteria));
     }
 

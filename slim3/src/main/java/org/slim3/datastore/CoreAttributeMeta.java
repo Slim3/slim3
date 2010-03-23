@@ -65,7 +65,7 @@ public class CoreAttributeMeta<M, A> extends AttributeMeta<M, A> {
      *            the value
      * @return the "equal" filter
      */
-    public FilterCriterion equal(A value) {
+    public EqualCriterion equal(A value) {
         return new EqualCriterion(this, value);
     }
 
@@ -76,7 +76,7 @@ public class CoreAttributeMeta<M, A> extends AttributeMeta<M, A> {
      *            the value
      * @return the "not equal" filter
      */
-    public FilterCriterion notEqual(A value) {
+    public NotEqualCriterion notEqual(A value) {
         return new NotEqualCriterion(this, value);
     }
 
@@ -87,7 +87,7 @@ public class CoreAttributeMeta<M, A> extends AttributeMeta<M, A> {
      *            the value
      * @return the "less than" filter
      */
-    public FilterCriterion lessThan(A value) {
+    public LessThanCriterion lessThan(A value) {
         return new LessThanCriterion(this, value);
     }
 
@@ -98,7 +98,7 @@ public class CoreAttributeMeta<M, A> extends AttributeMeta<M, A> {
      *            the value
      * @return the "less than or equal" filter
      */
-    public FilterCriterion lessThanOrEqual(A value) {
+    public LessThanOrEqualCriterion lessThanOrEqual(A value) {
         return new LessThanOrEqualCriterion(this, value);
     }
 
@@ -109,7 +109,7 @@ public class CoreAttributeMeta<M, A> extends AttributeMeta<M, A> {
      *            the value
      * @return the "greater than" filter
      */
-    public FilterCriterion greaterThan(A value) {
+    public GreaterThanCriterion greaterThan(A value) {
         return new GreaterThanCriterion(this, value);
     }
 
@@ -120,7 +120,7 @@ public class CoreAttributeMeta<M, A> extends AttributeMeta<M, A> {
      *            the value
      * @return the "greater than or equal" filter
      */
-    public FilterCriterion greaterThanOrEqual(A value) {
+    public GreaterThanOrEqualCriterion greaterThanOrEqual(A value) {
         return new GreaterThanOrEqualCriterion(this, value);
     }
 
@@ -135,7 +135,7 @@ public class CoreAttributeMeta<M, A> extends AttributeMeta<M, A> {
      * @throws IllegalArgumentException
      *             if the value parameter is empty
      */
-    public FilterCriterion in(Iterable<A> value) throws NullPointerException,
+    public InCriterion in(Iterable<A> value) throws NullPointerException,
             IllegalArgumentException {
         return new InCriterion(this, value);
     }
@@ -149,7 +149,7 @@ public class CoreAttributeMeta<M, A> extends AttributeMeta<M, A> {
      * @throws IllegalArgumentException
      *             if the value parameter is empty
      */
-    public FilterCriterion in(A... value) throws IllegalArgumentException {
+    public InCriterion in(A... value) throws IllegalArgumentException {
         return new InCriterion(this, Arrays.asList(value));
     }
 
@@ -158,7 +158,7 @@ public class CoreAttributeMeta<M, A> extends AttributeMeta<M, A> {
      * 
      * @return the "is not null" filter
      */
-    public FilterCriterion isNotNull() {
+    public IsNotNullCriterion isNotNull() {
         return isNotNull;
     }
 }

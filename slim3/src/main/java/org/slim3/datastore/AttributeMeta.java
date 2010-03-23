@@ -15,10 +15,8 @@
  */
 package org.slim3.datastore;
 
-import org.slim3.util.PropertyDesc;
-
 /**
- * An abstract meta data of attribute.
+ * An meta data of attribute.
  * 
  * @author higa
  * @param <M>
@@ -28,42 +26,17 @@ import org.slim3.util.PropertyDesc;
  * @since 1.0.0
  * 
  */
-public abstract class AttributeMeta<M, A> implements CharSequence {
+public class AttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
 
     /**
      * The "ascending" sort criterion
      */
-    public final SortCriterion asc;
+    public final AscCriterion asc;
 
     /**
      * The "descending" sort criterion
      */
-    public final SortCriterion desc;
-
-    /**
-     * The meta data of model.
-     */
-    protected ModelMeta<M> modelMeta;
-
-    /**
-     * The name.
-     */
-    protected String name;
-
-    /**
-     * The field name.
-     */
-    protected String fieldName;
-
-    /**
-     * The attribute class.
-     */
-    protected Class<? super A> attributeClass;
-
-    /**
-     * The property descriptor.
-     */
-    protected PropertyDesc propertyDesc;
+    public final DescCriterion desc;
 
     /**
      * Constructor.
@@ -84,94 +57,8 @@ public abstract class AttributeMeta<M, A> implements CharSequence {
      */
     public AttributeMeta(ModelMeta<M> modelMeta, String name, String fieldName,
             Class<? super A> attributeClass) {
-        if (modelMeta == null) {
-            throw new NullPointerException(
-                "The modelMeta parameter must not be null.");
-        }
-        if (name == null) {
-            throw new NullPointerException(
-                "The name parameter must not be null.");
-        }
-        if (fieldName == null) {
-            throw new NullPointerException(
-                "The fieldName parameter must not be null.");
-        }
-        if (attributeClass == null) {
-            throw new NullPointerException(
-                "The attributeClass parameter must not be null.");
-        }
-        this.modelMeta = modelMeta;
-        this.name = name;
-        this.fieldName = fieldName;
-        this.attributeClass = attributeClass;
+        super(modelMeta, name, fieldName, attributeClass);
         asc = new AscCriterion(this);
         desc = new DescCriterion(this);
-    }
-
-    /**
-     * Returns the name.
-     * 
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Returns the attribute class
-     * 
-     * @return the attribute class
-     */
-    public Class<? super A> getAttributeClass() {
-        return attributeClass;
-    }
-
-    /**
-     * Returns the field name.
-     * 
-     * @return the field name
-     */
-    public String getFieldName() {
-        return fieldName;
-    }
-
-    public char charAt(int index) {
-        return fieldName.charAt(index);
-    }
-
-    public int length() {
-        return fieldName.length();
-    }
-
-    public CharSequence subSequence(int start, int end) {
-        return fieldName.subSequence(start, end);
-    }
-
-    @Override
-    public String toString() {
-        return fieldName;
-    }
-
-    /**
-     * Returns the property value.
-     * 
-     * @param model
-     *            the model
-     * @return the property value
-     * @throws IllegalArgumentException
-     *             if the property is not found
-     */
-    protected Object getValue(Object model) throws IllegalArgumentException {
-        if (propertyDesc == null) {
-            propertyDesc = modelMeta.getBeanDesc().getPropertyDesc(fieldName);
-        }
-        if (propertyDesc == null) {
-            throw new IllegalArgumentException("The property("
-                + name
-                + ") of model("
-                + modelMeta.getModelClass().getName()
-                + ") is not found.");
-        }
-        return propertyDesc.getValue(model);
     }
 }

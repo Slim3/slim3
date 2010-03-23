@@ -15,6 +15,8 @@
  */
 package org.slim3.datastore;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -30,7 +32,7 @@ public class AttributeComparator implements Comparator<Object> {
     /**
      * The sort criteria.
      */
-    protected List<SortCriterion> sortCriteria;
+    protected List<InMemorySortCriterion> sortCriteria;
 
     /**
      * Constructor.
@@ -40,7 +42,7 @@ public class AttributeComparator implements Comparator<Object> {
      * @throws NullPointerException
      *             if the sortCriteria parameter is null
      */
-    public AttributeComparator(List<SortCriterion> sortCriteria)
+    public AttributeComparator(List<InMemorySortCriterion> sortCriteria)
             throws NullPointerException {
         if (sortCriteria == null) {
             throw new NullPointerException(
@@ -49,11 +51,25 @@ public class AttributeComparator implements Comparator<Object> {
         this.sortCriteria = sortCriteria;
     }
 
+    /**
+     * Constructor.
+     * 
+     * @param sortCriteria
+     *            the sort criteria
+     * @throws NullPointerException
+     *             if the sortCriteria parameter is null
+     */
+    public AttributeComparator(InMemorySortCriterion... sortCriteria)
+            throws NullPointerException {
+        this.sortCriteria =
+            new ArrayList<InMemorySortCriterion>(Arrays.asList(sortCriteria));
+    }
+
     public int compare(Object o1, Object o2) {
         if (o1 == null || o2 == null) {
             throw new NullPointerException("The model is null.");
         }
-        for (SortCriterion c : sortCriteria) {
+        for (InMemorySortCriterion c : sortCriteria) {
             int compared = c.compare(o1, o2);
             if (compared == 0) {
                 continue;

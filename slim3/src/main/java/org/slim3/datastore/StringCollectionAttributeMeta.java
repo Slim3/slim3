@@ -57,7 +57,7 @@ public class StringCollectionAttributeMeta<M, A> extends
      *            the value
      * @return the "startsWith" filter
      */
-    public FilterCriterion startsWith(String value) {
+    public StartsWithCriterion startsWith(String value) {
         return new StartsWithCriterion(this, value);
     }
 
@@ -68,7 +68,7 @@ public class StringCollectionAttributeMeta<M, A> extends
      *            the value
      * @return the "endsWith" filter
      */
-    public InMemoryFilterCriterion endsWith(String value) {
+    public EndsWithCriterion endsWith(String value) {
         return new EndsWithCriterion(this, value);
     }
 
@@ -79,7 +79,7 @@ public class StringCollectionAttributeMeta<M, A> extends
      *            the value
      * @return the "contains" filter
      */
-    public InMemoryFilterCriterion contains(String value) {
+    public ContainsCriterion contains(String value) {
         return new ContainsCriterion(this, value);
     }
 }

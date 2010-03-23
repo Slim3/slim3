@@ -15,7 +15,6 @@
  */
 package org.slim3.datastore;
 
-
 /**
  * A criterion interface for sort.
  * 
@@ -31,21 +30,4 @@ public interface SortCriterion {
      * @return {@link Sort}
      */
     Sort getSort();
-
-    /**
-     * Compares its two arguments for order. Returns a negative integer, zero,
-     * or a positive integer as the first argument is less than, equal to, or
-     * greater than the second.
-     * 
-     * @param model1
-     *            the first model
-     * @param model2
-     *            the second model
-     * @return the compared result
-     * @throws IllegalStateException
-     *             if the model is embedded or if the attribute is not
-     *             comparable
-     */
-    int compare(Object model1, Object model2) throws IllegalStateException;
-
 }
