@@ -17,7 +17,9 @@ package org.slim3.gen.generator;
 
 import static org.slim3.gen.ClassConstants.Blob;
 import static org.slim3.gen.ClassConstants.CollectionAttributeMeta;
+import static org.slim3.gen.ClassConstants.CollectionUnindexedAttributeMeta;
 import static org.slim3.gen.ClassConstants.CoreAttributeMeta;
+import static org.slim3.gen.ClassConstants.CoreUnindexedAttributeMeta;
 import static org.slim3.gen.ClassConstants.Double;
 import static org.slim3.gen.ClassConstants.Entity;
 import static org.slim3.gen.ClassConstants.Float;
@@ -33,6 +35,8 @@ import static org.slim3.gen.ClassConstants.Short;
 import static org.slim3.gen.ClassConstants.String;
 import static org.slim3.gen.ClassConstants.StringAttributeMeta;
 import static org.slim3.gen.ClassConstants.StringCollectionAttributeMeta;
+import static org.slim3.gen.ClassConstants.StringCollectionUnindexedAttributeMeta;
+import static org.slim3.gen.ClassConstants.StringUnindexedAttributeMeta;
 import static org.slim3.gen.ClassConstants.Text;
 import static org.slim3.gen.ClassConstants.TreeSet;
 import static org.slim3.gen.ClassConstants.UnindexedAttributeMeta;
@@ -443,22 +447,27 @@ public class ModelMetaGenerator implements Generator {
             for (AttributeMetaDesc attr : modelMetaDesc
                 .getAttributeMetaDescList()) {
                 DataType dataType = attr.getDataType();
-                if (attr.isLob() || attr.isUnindexed()) {
-                    printer.println("/** */");
-                    printer
-                        .println(
-                            "protected final %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", \"%4$s\", %6$s.class);",
-                            UnindexedAttributeMeta,
-                            modelMetaDesc.getModelClassName(),
-                            dataType.getTypeName(),
-                            attr.getFieldName(),
-                            attr.getName(),
-                            dataType.getClassName());
-                    printer.println();
-                } else {
-                    dataType.accept(this, attr);
-                }
+                dataType.accept(this, attr);
             }
+        }
+
+        @Override
+        protected Void defaultAction(DataType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            if (p.isLob() || p.isUnindexed()) {
+                printer.println("/** */");
+                printer
+                    .println(
+                        "public final %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", \"%4$s\", %6$s.class);",
+                        UnindexedAttributeMeta,
+                        modelMetaDesc.getModelClassName(),
+                        type.getTypeName(),
+                        p.getFieldName(),
+                        p.getName(),
+                        type.getClassName());
+                printer.println();
+            }
+            return null;
         }
 
         @Override
@@ -482,15 +491,27 @@ public class ModelMetaGenerator implements Generator {
         public Void visitCoreReferenceType(CoreReferenceType type,
                 AttributeMetaDesc p) throws RuntimeException {
             printer.println("/** */");
-            printer
-                .println(
-                    "public final %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", \"%4$s\", %6$s.class);",
-                    CoreAttributeMeta,
-                    modelMetaDesc.getModelClassName(),
-                    type.getTypeName(),
-                    p.getFieldName(),
-                    p.getName(),
-                    type.getClassName());
+            if (p.isLob() || p.isUnindexed()) {
+                printer
+                    .println(
+                        "public final %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", \"%4$s\", %6$s.class);",
+                        CoreUnindexedAttributeMeta,
+                        modelMetaDesc.getModelClassName(),
+                        type.getTypeName(),
+                        p.getFieldName(),
+                        p.getName(),
+                        type.getClassName());
+            } else {
+                printer
+                    .println(
+                        "public final %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", \"%4$s\", %6$s.class);",
+                        CoreAttributeMeta,
+                        modelMetaDesc.getModelClassName(),
+                        type.getTypeName(),
+                        p.getFieldName(),
+                        p.getName(),
+                        type.getClassName());
+            }
             printer.println();
             return null;
         }
@@ -517,7 +538,6 @@ public class ModelMetaGenerator implements Generator {
         @Override
         public Void visitKeyType(KeyType type, AttributeMetaDesc p)
                 throws RuntimeException {
-
             String propertyName = "__key__";
             if (!p.isPrimaryKey()) {
                 propertyName = p.getName();
@@ -540,13 +560,24 @@ public class ModelMetaGenerator implements Generator {
         public Void visitStringType(StringType type, AttributeMetaDesc p)
                 throws RuntimeException {
             printer.println("/** */");
-            printer
-                .println(
-                    "public final %1$s<%2$s> %3$s = new %1$s<%2$s>(this, \"%4$s\", \"%3$s\");",
-                    StringAttributeMeta,
-                    modelMetaDesc.getModelClassName(),
-                    p.getFieldName(),
-                    p.getName());
+            if (p.isLob() || p.isUnindexed()) {
+                printer
+                    .println(
+                        "public final %1$s<%2$s> %3$s = new %1$s<%2$s>(this, \"%4$s\", \"%3$s\");",
+                        StringUnindexedAttributeMeta,
+                        modelMetaDesc.getModelClassName(),
+                        p.getFieldName(),
+                        p.getName(),
+                        type.getClassName());
+            } else {
+                printer
+                    .println(
+                        "public final %1$s<%2$s> %3$s = new %1$s<%2$s>(this, \"%4$s\", \"%3$s\");",
+                        StringAttributeMeta,
+                        modelMetaDesc.getModelClassName(),
+                        p.getFieldName(),
+                        p.getName());
+            }
             printer.println();
             return null;
         }
@@ -580,15 +611,27 @@ public class ModelMetaGenerator implements Generator {
                     public Void visitStringType(StringType type, Void p)
                             throws RuntimeException {
                         printer.println("/** */");
-                        printer
-                            .println(
-                                "public final %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", \"%4$s\", %6$s.class);",
-                                StringCollectionAttributeMeta,
-                                modelMetaDesc.getModelClassName(),
-                                collectionType.getTypeName(),
-                                attr.getFieldName(),
-                                attr.getName(),
-                                collectionType.getClassName());
+                        if (attr.isLob() || attr.isUnindexed()) {
+                            printer
+                                .println(
+                                    "public final %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", \"%4$s\", %6$s.class);",
+                                    StringCollectionUnindexedAttributeMeta,
+                                    modelMetaDesc.getModelClassName(),
+                                    collectionType.getTypeName(),
+                                    attr.getFieldName(),
+                                    attr.getName(),
+                                    collectionType.getClassName());
+                        } else {
+                            printer
+                                .println(
+                                    "public final %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", \"%4$s\", %6$s.class);",
+                                    StringCollectionAttributeMeta,
+                                    modelMetaDesc.getModelClassName(),
+                                    collectionType.getTypeName(),
+                                    attr.getFieldName(),
+                                    attr.getName(),
+                                    collectionType.getClassName());
+                        }
                         printer.println();
                         return null;
                     }
@@ -598,16 +641,29 @@ public class ModelMetaGenerator implements Generator {
                             CoreReferenceType elementType, Void p)
                             throws RuntimeException {
                         printer.println("/** */");
-                        printer
-                            .println(
-                                "public final %1$s<%2$s, %3$s, %4$s> %5$s = new %1$s<%2$s, %3$s, %4$s>(this, \"%6$s\", \"%5$s\", %7$s.class);",
-                                CollectionAttributeMeta,
-                                modelMetaDesc.getModelClassName(),
-                                collectionType.getTypeName(),
-                                elementType.getTypeName(),
-                                attr.getFieldName(),
-                                attr.getName(),
-                                collectionType.getClassName());
+                        if (attr.isLob() || attr.isUnindexed()) {
+                            printer
+                                .println(
+                                    "public final %1$s<%2$s, %3$s, %4$s> %5$s = new %1$s<%2$s, %3$s, %4$s>(this, \"%6$s\", \"%5$s\", %7$s.class);",
+                                    CollectionUnindexedAttributeMeta,
+                                    modelMetaDesc.getModelClassName(),
+                                    collectionType.getTypeName(),
+                                    elementType.getTypeName(),
+                                    attr.getFieldName(),
+                                    attr.getName(),
+                                    collectionType.getClassName());
+                        } else {
+                            printer
+                                .println(
+                                    "public final %1$s<%2$s, %3$s, %4$s> %5$s = new %1$s<%2$s, %3$s, %4$s>(this, \"%6$s\", \"%5$s\", %7$s.class);",
+                                    CollectionAttributeMeta,
+                                    modelMetaDesc.getModelClassName(),
+                                    collectionType.getTypeName(),
+                                    elementType.getTypeName(),
+                                    attr.getFieldName(),
+                                    attr.getName(),
+                                    collectionType.getClassName());
+                        }
                         printer.println();
                         return null;
                     }
@@ -1319,7 +1375,6 @@ public class ModelMetaGenerator implements Generator {
                     "entity.setUnindexedProperty(\"%1$s\", serializableToBlob(m.%2$s()));",
                     p.getName(),
                     p.getReadMethodName());
-
             return null;
         }
 
