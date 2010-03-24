@@ -21,10 +21,11 @@ package org.slim3.datastore;
  * @author higa
  * @param <M>
  *            the model type
- * @since 1.0.0
+ * @since 1.0.1
  * 
  */
-public class StringAttributeMeta<M> extends CoreAttributeMeta<M, String> {
+public class StringUnindexedAttributeMeta<M> extends
+        CoreUnindexedAttributeMeta<M, String> {
 
     /**
      * Constructor.
@@ -39,20 +40,20 @@ public class StringAttributeMeta<M> extends CoreAttributeMeta<M, String> {
      *             if the modelMeta parameter is null or if the name parameter
      *             is null or if the fieldName parameter is null
      */
-    public StringAttributeMeta(ModelMeta<M> modelMeta, String name,
+    public StringUnindexedAttributeMeta(ModelMeta<M> modelMeta, String name,
             String fieldName) {
         super(modelMeta, name, fieldName, String.class);
     }
 
     /**
-     * Returns the "startsWith" filter.
+     * Returns the "startsWith" in-memory filter.
      * 
      * @param value
      *            the value
-     * @return the "startsWith" filter
+     * @return the "startsWith" in-memory filter
      */
-    public StartsWithCriterion startsWith(String value) {
-        return new StartsWithCriterion(this, value);
+    public InMemoryStartsWithCriterion startsWith(String value) {
+        return new InMemoryStartsWithCriterion(this, value);
     }
 
     /**

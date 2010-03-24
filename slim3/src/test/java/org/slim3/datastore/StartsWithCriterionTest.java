@@ -15,14 +15,11 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-
-import java.util.Arrays;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
-import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.AppEngineTestCase;
 
 import com.google.appengine.api.datastore.Query.FilterOperator;
@@ -34,16 +31,6 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 public class StartsWithCriterionTest extends AppEngineTestCase {
 
     private HogeMeta meta = new HogeMeta();
-
-    /**
-     * @throws Exception
-     * 
-     */
-    @Test
-    public void constructor() throws Exception {
-        StartsWithCriterion c = new StartsWithCriterion(meta.myString, "aaa");
-        assertThat(c.value, is("aaa"));
-    }
 
     /**
      * @throws Exception
@@ -62,44 +49,5 @@ public class StartsWithCriterionTest extends AppEngineTestCase {
         assertThat(filters[1].getPropertyName(), is("myString"));
         assertThat(filters[1].getOperator(), is(FilterOperator.LESS_THAN));
         assertThat((String) filters[1].getValue(), is("aaa" + "\ufffd"));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void accept() throws Exception {
-        Hoge hoge = new Hoge();
-        hoge.setMyString("abc");
-        FilterCriterion c = new StartsWithCriterion(meta.myString, "a");
-        assertThat(c.accept(hoge), is(true));
-        hoge.setMyString("b");
-        assertThat(c.accept(hoge), is(false));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void acceptForNull() throws Exception {
-        Hoge hoge = new Hoge();
-        hoge.setMyString("abc");
-        FilterCriterion c = new StartsWithCriterion(meta.myString, null);
-        assertThat(c.accept(hoge), is(true));
-        hoge.setMyString(null);
-        assertThat(c.accept(hoge), is(true));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void acceptForCollection() throws Exception {
-        Hoge hoge = new Hoge();
-        hoge.setMyStringList(Arrays.asList("aaa"));
-        FilterCriterion c = new StartsWithCriterion(meta.myStringList, "aaa");
-        assertThat(c.accept(hoge), is(true));
-        hoge.setMyStringList(Arrays.asList("bbb"));
-        assertThat(c.accept(hoge), is(false));
     }
 }

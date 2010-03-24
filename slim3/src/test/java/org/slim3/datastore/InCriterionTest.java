@@ -15,17 +15,17 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import static org.junit.matchers.JUnitMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.junit.matchers.JUnitMatchers.hasItem;
+import static org.junit.matchers.JUnitMatchers.hasItems;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
-import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.AppEngineTestCase;
 
 import com.google.appengine.api.datastore.Query.FilterOperator;
@@ -49,36 +49,6 @@ public class InCriterionTest extends AppEngineTestCase {
         InCriterion c = new InCriterion(meta.myString, Arrays.asList("aaa"));
         assertThat((List<String>) c.value, hasItem("aaa"));
         assertThat(c.filters, is(notNullValue()));
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    @SuppressWarnings("unchecked")
-    @Test
-    public void constructorForEnum() throws Exception {
-        InCriterion c =
-            new InCriterion(meta.myEnum, Arrays.asList(SortDirection.ASCENDING));
-        assertThat((List<String>) c.value, hasItem("ASCENDING"));
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    @Test(expected = NullPointerException.class)
-    public void constructorForNull() throws Exception {
-        new InCriterion(meta.myString, null);
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    @Test(expected = IllegalArgumentException.class)
-    public void constructorForEmptyParameter() throws Exception {
-        new InCriterion(meta.myString, new ArrayList<String>());
     }
 
     /**
@@ -111,58 +81,5 @@ public class InCriterionTest extends AppEngineTestCase {
         assertThat(filters[0].getPropertyName(), is("myEnum"));
         assertThat(filters[0].getOperator(), is(FilterOperator.IN));
         assertThat((List<String>) filters[0].getValue(), hasItem("ASCENDING"));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void accept() throws Exception {
-        Hoge hoge = new Hoge();
-        hoge.setMyString("aaa");
-        FilterCriterion c =
-            new InCriterion(meta.myString, Arrays.asList("aaa"));
-        assertThat(c.accept(hoge), is(true));
-        hoge.setMyString("bbb");
-        assertThat(c.accept(hoge), is(false));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void acceptForEnum() throws Exception {
-        FilterCriterion c =
-            new InCriterion(meta.myEnum, Arrays.asList(SortDirection.ASCENDING));
-        Hoge hoge = new Hoge();
-        hoge.setMyEnum(SortDirection.DESCENDING);
-        assertThat(c.accept(hoge), is(false));
-        hoge.setMyEnum(SortDirection.ASCENDING);
-        assertThat(c.accept(hoge), is(true));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test(expected = NullPointerException.class)
-    public void acceptForNull() throws Exception {
-        new InCriterion(meta.myString, null);
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test(expected = IllegalArgumentException.class)
-    public void acceptForEmptry() throws Exception {
-        new InCriterion(meta.myString, new ArrayList<String>());
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void testToString() throws Exception {
-        InCriterion c = new InCriterion(meta.myString, Arrays.asList("aaa"));
-        assertThat(c.toString(), is("myString in([aaa])"));
     }
 }

@@ -15,8 +15,8 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
 
@@ -25,11 +25,13 @@ import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.AppEngineTestCase;
 
+import com.google.appengine.api.datastore.Query.SortDirection;
+
 /**
  * @author higa
  * 
  */
-public class ContainsCriterionTest extends AppEngineTestCase {
+public class InMemoryNotEqualCriterionTest extends AppEngineTestCase {
 
     private HogeMeta meta = new HogeMeta();
 
@@ -39,28 +41,20 @@ public class ContainsCriterionTest extends AppEngineTestCase {
      */
     @Test
     public void constructor() throws Exception {
-        ContainsCriterion c = new ContainsCriterion(meta.myString, "aaa");
-        assertThat(c.value, is("aaa"));
+        InMemoryNotEqualCriterion c =
+            new InMemoryNotEqualCriterion(meta.myString, "aaa");
+        assertThat((String) c.value, is("aaa"));
     }
 
     /**
      * @throws Exception
+     * 
      */
     @Test
-    public void acceptInternal() throws Exception {
-        ContainsCriterion c = new ContainsCriterion(meta.myString, "bc");
-        assertThat(c.acceptInternal("abc"), is(true));
-        assertThat(c.acceptInternal(null), is(false));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void acceptInternalForNull() throws Exception {
-        ContainsCriterion c = new ContainsCriterion(meta.myString, null);
-        assertThat(c.acceptInternal("abc"), is(false));
-        assertThat(c.acceptInternal(null), is(true));
+    public void constructorForEnum() throws Exception {
+        InMemoryNotEqualCriterion c =
+            new InMemoryNotEqualCriterion(meta.myEnum, SortDirection.ASCENDING);
+        assertThat((String) c.value, is("ASCENDING"));
     }
 
     /**
@@ -69,12 +63,25 @@ public class ContainsCriterionTest extends AppEngineTestCase {
     @Test
     public void accept() throws Exception {
         Hoge hoge = new Hoge();
-        hoge.setMyString("abc");
-        InMemoryFilterCriterion c = new ContainsCriterion(meta.myString, "b");
+        hoge.setMyString("aaa");
+        InMemoryNotEqualCriterion c =
+            new InMemoryNotEqualCriterion(meta.myString, "bbb");
         assertThat(c.accept(hoge), is(true));
-        hoge.setMyString("aa");
+        hoge.setMyString("bbb");
         assertThat(c.accept(hoge), is(false));
-        hoge.setMyString(null);
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void acceptForEnum() throws Exception {
+        InMemoryNotEqualCriterion c =
+            new InMemoryNotEqualCriterion(meta.myEnum, SortDirection.ASCENDING);
+        Hoge hoge = new Hoge();
+        hoge.setMyEnum(SortDirection.DESCENDING);
+        assertThat(c.accept(hoge), is(true));
+        hoge.setMyEnum(SortDirection.ASCENDING);
         assertThat(c.accept(hoge), is(false));
     }
 
@@ -84,11 +91,9 @@ public class ContainsCriterionTest extends AppEngineTestCase {
     @Test
     public void acceptForNull() throws Exception {
         Hoge hoge = new Hoge();
-        hoge.setMyString("abc");
-        InMemoryFilterCriterion c = new ContainsCriterion(meta.myString, null);
+        InMemoryNotEqualCriterion c =
+            new InMemoryNotEqualCriterion(meta.myString, null);
         assertThat(c.accept(hoge), is(false));
-        hoge.setMyString(null);
-        assertThat(c.accept(hoge), is(true));
     }
 
     /**
@@ -97,12 +102,12 @@ public class ContainsCriterionTest extends AppEngineTestCase {
     @Test
     public void acceptForCollection() throws Exception {
         Hoge hoge = new Hoge();
-        hoge.setMyStringList(Arrays.asList("abc"));
-        InMemoryFilterCriterion c =
-            new ContainsCriterion(meta.myStringList, "b");
-        assertThat(c.accept(hoge), is(true));
-        hoge.setMyStringList(Arrays.asList("aaa"));
+        hoge.setMyIntegerList(Arrays.asList(1));
+        InMemoryNotEqualCriterion c =
+            new InMemoryNotEqualCriterion(meta.myIntegerList, 1);
         assertThat(c.accept(hoge), is(false));
+        hoge.setMyIntegerList(Arrays.asList(2));
+        assertThat(c.accept(hoge), is(true));
     }
 
     /**
@@ -110,7 +115,8 @@ public class ContainsCriterionTest extends AppEngineTestCase {
      */
     @Test
     public void testToString() throws Exception {
-        InMemoryFilterCriterion c = new ContainsCriterion(meta.myString, "aaa");
-        assertThat(c.toString(), is("myString.contains(aaa)"));
+        InMemoryNotEqualCriterion c =
+            new InMemoryNotEqualCriterion(meta.myString, "aaa");
+        assertThat(c.toString(), is("myString != aaa"));
     }
 }

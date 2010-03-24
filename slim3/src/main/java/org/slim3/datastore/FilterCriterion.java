@@ -22,7 +22,7 @@ package org.slim3.datastore;
  * @since 1.0.0
  * 
  */
-public interface FilterCriterion extends InMemoryFilterCriterion {
+public interface FilterCriterion {
 
     /**
      * Returns array of {@link Filter}s.

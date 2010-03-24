@@ -15,14 +15,12 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-
-import java.util.Arrays;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
-import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.AppEngineTestCase;
 
 import com.google.appengine.api.datastore.Query.FilterOperator;
@@ -35,30 +33,6 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 public class GreaterThanOrEqualCriterionTest extends AppEngineTestCase {
 
     private HogeMeta meta = new HogeMeta();
-
-    /**
-     * @throws Exception
-     * 
-     */
-    @Test
-    public void constructor() throws Exception {
-        GreaterThanOrEqualCriterion c =
-            new GreaterThanOrEqualCriterion(meta.myString, "aaa");
-        assertThat((String) c.value, is("aaa"));
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    @Test
-    public void constructorForEnum() throws Exception {
-        GreaterThanOrEqualCriterion c =
-            new GreaterThanOrEqualCriterion(
-                meta.myEnum,
-                SortDirection.ASCENDING);
-        assertThat((String) c.value, is("ASCENDING"));
-    }
 
     /**
      * @throws Exception
@@ -111,77 +85,5 @@ public class GreaterThanOrEqualCriterionTest extends AppEngineTestCase {
             filters[0].getOperator(),
             is(FilterOperator.GREATER_THAN_OR_EQUAL));
         assertThat(filters[0].getValue(), is(nullValue()));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void accept() throws Exception {
-        Hoge hoge = new Hoge();
-        hoge.setMyString("c");
-        FilterCriterion c = new GreaterThanOrEqualCriterion(meta.myString, "b");
-        assertThat(c.accept(hoge), is(true));
-        hoge.setMyString("b");
-        assertThat(c.accept(hoge), is(true));
-        hoge.setMyString("a");
-        assertThat(c.accept(hoge), is(false));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void acceptForEnum() throws Exception {
-        FilterCriterion c =
-            new GreaterThanOrEqualCriterion(
-                meta.myEnum,
-                SortDirection.ASCENDING);
-        Hoge hoge = new Hoge();
-        assertThat(c.accept(hoge), is(false));
-        hoge.setMyEnum(SortDirection.ASCENDING);
-        assertThat(c.accept(hoge), is(true));
-        hoge.setMyEnum(SortDirection.DESCENDING);
-        assertThat(c.accept(hoge), is(true));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void acceptForNull() throws Exception {
-        Hoge hoge = new Hoge();
-        hoge.setMyString("c");
-        FilterCriterion c =
-            new GreaterThanOrEqualCriterion(meta.myString, null);
-        assertThat(c.accept(hoge), is(true));
-        hoge.setMyString(null);
-        assertThat(c.accept(hoge), is(true));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void acceptForCollection() throws Exception {
-        Hoge hoge = new Hoge();
-        hoge.setMyIntegerList(Arrays.asList(1));
-        FilterCriterion c =
-            new GreaterThanOrEqualCriterion(meta.myIntegerList, 1);
-        assertThat(c.accept(hoge), is(true));
-        hoge.setMyIntegerList(Arrays.asList(2));
-        assertThat(c.accept(hoge), is(true));
-        hoge.setMyIntegerList(Arrays.asList(0));
-        assertThat(c.accept(hoge), is(false));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void testToString() throws Exception {
-        GreaterThanOrEqualCriterion c =
-            new GreaterThanOrEqualCriterion(meta.myString, "aaa");
-        assertThat(c.toString(), is("myString >= aaa"));
     }
 }

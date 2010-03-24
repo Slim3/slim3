@@ -16,19 +16,19 @@
 package org.slim3.datastore;
 
 /**
- * An implementation class for "endsWith" filter.
+ * An implementation class for "less than" in-memory filter.
  * 
  * @author higa
- * @since 1.0.0
+ * @since 1.0.1
  * 
  */
-public class EndsWithCriterion extends AbstractCriterion implements
+public class InMemoryLessThanCriterion extends AbstractCriterion implements
         InMemoryFilterCriterion {
 
     /**
      * The value;
      */
-    protected String value;
+    protected Object value;
 
     /**
      * Constructor.
@@ -40,46 +40,27 @@ public class EndsWithCriterion extends AbstractCriterion implements
      * @throws NullPointerException
      *             if the attributeMeta parameter is null
      */
-    public EndsWithCriterion(AttributeMeta<?, ?> attributeMeta,
-            String value) throws NullPointerException {
+    public InMemoryLessThanCriterion(AbstractAttributeMeta<?, ?> attributeMeta,
+            Object value) throws NullPointerException {
         super(attributeMeta);
-        this.value = value;
+        this.value = convertValueForDatastore(value);
     }
 
     public boolean accept(Object model) {
-        Object v = attributeMeta.getValue(model);
+        Object v = convertValueForDatastore(attributeMeta.getValue(model));
         if (v instanceof Iterable<?>) {
             for (Object o : (Iterable<?>) v) {
-                if (acceptInternal(o)) {
+                if (compareValue(o, value) < 0) {
                     return true;
                 }
             }
             return false;
         }
-        return acceptInternal(v);
-    }
-
-    /**
-     * Determines if the model is accepted internally.
-     * 
-     * @param propertyValue
-     *            the property value
-     * @return whether the model is accepted
-     */
-    protected boolean acceptInternal(Object propertyValue) {
-        if (propertyValue == null && value == null) {
-            return true;
-        }
-        if (propertyValue != null
-            && value != null
-            && ((String) propertyValue).endsWith(value)) {
-            return true;
-        }
-        return false;
+        return compareValue(v, value) < 0;
     }
 
     @Override
     public String toString() {
-        return attributeMeta.getName() + ".endsWith(" + value + ")";
+        return attributeMeta.getName() + " < " + value;
     }
 }

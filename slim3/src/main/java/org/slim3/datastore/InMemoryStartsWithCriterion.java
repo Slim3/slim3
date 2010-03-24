@@ -16,19 +16,24 @@
 package org.slim3.datastore;
 
 /**
- * An implementation class for "contains" filter.
+ * An implementation class for "startsWith" in-memory filter.
  * 
  * @author higa
- * @since 1.0.0
+ * @since 1.0.1
  * 
  */
-public class ContainsCriterion extends AbstractCriterion implements
+public class InMemoryStartsWithCriterion extends AbstractCriterion implements
         InMemoryFilterCriterion {
 
     /**
      * The value;
      */
     protected String value;
+
+    /**
+     * The high value.
+     */
+    protected String highValue = "\ufffd";
 
     /**
      * Constructor.
@@ -40,46 +45,38 @@ public class ContainsCriterion extends AbstractCriterion implements
      * @throws NullPointerException
      *             if the attributeMeta parameter is null
      */
-    public ContainsCriterion(AttributeMeta<?, ?> attributeMeta,
-            String value) throws NullPointerException {
+    public InMemoryStartsWithCriterion(
+            AbstractAttributeMeta<?, ?> attributeMeta, String value)
+            throws NullPointerException {
         super(attributeMeta);
         this.value = value;
+        if (value != null) {
+            highValue = value + highValue;
+        }
     }
 
     public boolean accept(Object model) {
         Object v = attributeMeta.getValue(model);
         if (v instanceof Iterable<?>) {
             for (Object o : (Iterable<?>) v) {
-                if (acceptInternal(o)) {
+                if (compareValue(o, value) >= 0
+                    && compareValue(o, highValue) < 0) {
                     return true;
                 }
             }
             return false;
         }
-        return acceptInternal(v);
-    }
-
-    /**
-     * Determines if the model is accepted internally.
-     * 
-     * @param propertyValue
-     *            the property value
-     * @return whether the model is accepted
-     */
-    protected boolean acceptInternal(Object propertyValue) {
-        if (propertyValue == null && value == null) {
-            return true;
-        }
-        if (propertyValue != null
-            && value != null
-            && ((String) propertyValue).contains(value)) {
-            return true;
-        }
-        return false;
+        return compareValue(v, value) >= 0 && compareValue(v, highValue) < 0;
     }
 
     @Override
     public String toString() {
-        return attributeMeta.getName() + ".contains(" + value + ")";
+        return attributeMeta.getName()
+            + " >= "
+            + value
+            + " && "
+            + attributeMeta.getName()
+            + " < "
+            + highValue;
     }
 }

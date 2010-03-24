@@ -15,22 +15,15 @@
  */
 package org.slim3.datastore;
 
-import com.google.appengine.api.datastore.Query.FilterOperator;
-
 /**
- * An implementation class for "is not null" filter.
+ * An implementation class for "is not null" in-memory filter.
  * 
  * @author higa
- * @since 1.0.0
+ * @since 1.0.1
  * 
  */
-public class IsNotNullCriterion extends InMemoryIsNotNullCriterion implements
-        FilterCriterion {
-
-    /**
-     * The array of {@link Filter}s.
-     */
-    protected Filter[] filters;
+public class InMemoryIsNotNullCriterion extends AbstractCriterion implements
+        InMemoryFilterCriterion {
 
     /**
      * Constructor.
@@ -40,17 +33,26 @@ public class IsNotNullCriterion extends InMemoryIsNotNullCriterion implements
      * @throws NullPointerException
      *             if the attributeMeta parameter is null
      */
-    public IsNotNullCriterion(AbstractAttributeMeta<?, ?> attributeMeta)
+    public InMemoryIsNotNullCriterion(AbstractAttributeMeta<?, ?> attributeMeta)
             throws NullPointerException {
         super(attributeMeta);
-        filters =
-            new Filter[] { new Filter(
-                attributeMeta.getName(),
-                FilterOperator.GREATER_THAN,
-                null) };
     }
 
-    public Filter[] getFilters() {
-        return filters;
+    public boolean accept(Object model) {
+        Object v = convertValueForDatastore(attributeMeta.getValue(model));
+        if (v instanceof Iterable<?>) {
+            for (Object o : (Iterable<?>) v) {
+                if (o != null) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return v != null;
+    }
+
+    @Override
+    public String toString() {
+        return attributeMeta.getName() + " != null";
     }
 }

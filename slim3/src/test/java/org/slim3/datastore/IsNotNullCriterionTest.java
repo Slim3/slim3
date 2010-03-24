@@ -15,12 +15,12 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
-import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.AppEngineTestCase;
 
 import com.google.appengine.api.datastore.Query.FilterOperator;
@@ -45,27 +45,5 @@ public class IsNotNullCriterionTest extends AppEngineTestCase {
         assertThat(filters[0].getPropertyName(), is("myString"));
         assertThat(filters[0].getOperator(), is(FilterOperator.GREATER_THAN));
         assertThat(filters[0].getValue(), is(nullValue()));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void accept() throws Exception {
-        Hoge hoge = new Hoge();
-        hoge.setMyString("aaa");
-        FilterCriterion c = meta.myString.isNotNull();
-        assertThat(c.accept(hoge), is(true));
-        hoge.setMyString(null);
-        assertThat(c.accept(hoge), is(false));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void testToString() throws Exception {
-        IsNotNullCriterion c = new IsNotNullCriterion(meta.myString);
-        assertThat(c.toString(), is("myString != null"));
     }
 }

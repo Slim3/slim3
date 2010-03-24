@@ -15,42 +15,53 @@
  */
 package org.slim3.datastore;
 
-import com.google.appengine.api.datastore.Query.FilterOperator;
-
 /**
- * An implementation class for "is not null" filter.
+ * An implementation class for "greater than or equal" filter.
  * 
  * @author higa
- * @since 1.0.0
+ * @since 1.0.1
  * 
  */
-public class IsNotNullCriterion extends InMemoryIsNotNullCriterion implements
-        FilterCriterion {
+public class InMemoryGreaterThanOrEqualCriterion extends AbstractCriterion
+        implements InMemoryFilterCriterion {
 
     /**
-     * The array of {@link Filter}s.
+     * The value;
      */
-    protected Filter[] filters;
+    protected Object value;
 
     /**
      * Constructor.
      * 
      * @param attributeMeta
      *            the meta data of attribute
+     * @param value
+     *            the value
      * @throws NullPointerException
      *             if the attributeMeta parameter is null
      */
-    public IsNotNullCriterion(AbstractAttributeMeta<?, ?> attributeMeta)
+    public InMemoryGreaterThanOrEqualCriterion(
+            AbstractAttributeMeta<?, ?> attributeMeta, Object value)
             throws NullPointerException {
         super(attributeMeta);
-        filters =
-            new Filter[] { new Filter(
-                attributeMeta.getName(),
-                FilterOperator.GREATER_THAN,
-                null) };
+        this.value = convertValueForDatastore(value);
     }
 
-    public Filter[] getFilters() {
-        return filters;
+    public boolean accept(Object model) {
+        Object v = convertValueForDatastore(attributeMeta.getValue(model));
+        if (v instanceof Iterable<?>) {
+            for (Object o : (Iterable<?>) v) {
+                if (compareValue(o, value) >= 0) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return compareValue(v, value) >= 0;
+    }
+
+    @Override
+    public String toString() {
+        return attributeMeta.getName() + " >= " + value;
     }
 }

@@ -528,8 +528,9 @@ public class DatastoreUtilTest extends AppEngineTestCase {
         list.add(hoge);
 
         List<Hoge> filtered =
-            DatastoreUtil.filterInMemory(list, Arrays.asList(meta.myInteger
-                .greaterThanOrEqual(2), meta.myInteger.lessThan(3)));
+            DatastoreUtil.filterInMemory(list, Arrays.asList(
+                (InMemoryFilterCriterion) meta.myInteger.greaterThanOrEqual(2),
+                (InMemoryFilterCriterion) meta.myInteger.lessThan(3)));
         assertThat(filtered.size(), is(1));
         assertThat(filtered.get(0).getMyInteger(), is(2));
     }

@@ -15,22 +15,20 @@
  */
 package org.slim3.datastore;
 
-import com.google.appengine.api.datastore.Query.FilterOperator;
-
 /**
- * An implementation class for "startsWith" filter.
+ * An implementation class for "not equal" in-memory filter.
  * 
  * @author higa
- * @since 1.0.0
+ * @since 1.0.1
  * 
  */
-public class StartsWithCriterion extends InMemoryStartsWithCriterion implements
-        FilterCriterion {
+public class InMemoryNotEqualCriterion extends AbstractCriterion implements
+        InMemoryFilterCriterion {
 
     /**
-     * The array of {@link Filter}s.
+     * The value;
      */
-    protected Filter[] filters;
+    protected Object value;
 
     /**
      * Constructor.
@@ -42,22 +40,27 @@ public class StartsWithCriterion extends InMemoryStartsWithCriterion implements
      * @throws NullPointerException
      *             if the attributeMeta parameter is null
      */
-    public StartsWithCriterion(AbstractAttributeMeta<?, ?> attributeMeta,
-            String value) throws NullPointerException {
-        super(attributeMeta, value);
-        filters =
-            new Filter[] {
-                new Filter(
-                    attributeMeta.getName(),
-                    FilterOperator.GREATER_THAN_OR_EQUAL,
-                    this.value),
-                new Filter(
-                    attributeMeta.getName(),
-                    FilterOperator.LESS_THAN,
-                    highValue) };
+    public InMemoryNotEqualCriterion(AbstractAttributeMeta<?, ?> attributeMeta,
+            Object value) throws NullPointerException {
+        super(attributeMeta);
+        this.value = convertValueForDatastore(value);
     }
 
-    public Filter[] getFilters() {
-        return filters;
+    public boolean accept(Object model) {
+        Object v = convertValueForDatastore(attributeMeta.getValue(model));
+        if (v instanceof Iterable<?>) {
+            for (Object o : (Iterable<?>) v) {
+                if (compareValue(o, value) != 0) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return compareValue(v, value) != 0;
+    }
+
+    @Override
+    public String toString() {
+        return attributeMeta.getName() + " != " + value;
     }
 }

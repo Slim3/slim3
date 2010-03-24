@@ -45,7 +45,7 @@ public class StringAttributeMetaTest {
     @Test
     public void endsWith() throws Exception {
         HogeMeta meta = new HogeMeta();
-        assertThat(meta.myString.endsWith("a"), is(EndsWithCriterion.class));
+        assertThat(meta.myString.endsWith("a"), is(InMemoryEndsWithCriterion.class));
         assertThat(meta.myString.endsWith(null), is(not(nullValue())));
     }
 
@@ -56,7 +56,7 @@ public class StringAttributeMetaTest {
     @Test
     public void contains() throws Exception {
         HogeMeta meta = new HogeMeta();
-        assertThat(meta.myString.contains("a"), is(ContainsCriterion.class));
+        assertThat(meta.myString.contains("a"), is(InMemoryContainsCriterion.class));
         assertThat(meta.myString.contains(null), is(not(nullValue())));
     }
 }

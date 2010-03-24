@@ -15,8 +15,8 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
 
@@ -29,7 +29,7 @@ import org.slim3.tester.AppEngineTestCase;
  * @author higa
  * 
  */
-public class EndsWithCriterionTest extends AppEngineTestCase {
+public class InMemoryStartsWithCriterionTest extends AppEngineTestCase {
 
     private HogeMeta meta = new HogeMeta();
 
@@ -39,28 +39,9 @@ public class EndsWithCriterionTest extends AppEngineTestCase {
      */
     @Test
     public void constructor() throws Exception {
-        EndsWithCriterion c = new EndsWithCriterion(meta.myString, "aaa");
+        InMemoryStartsWithCriterion c =
+            new InMemoryStartsWithCriterion(meta.myString, "aaa");
         assertThat(c.value, is("aaa"));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void acceptInternal() throws Exception {
-        EndsWithCriterion c = new EndsWithCriterion(meta.myString, "bc");
-        assertThat(c.acceptInternal("abc"), is(true));
-        assertThat(c.acceptInternal(null), is(false));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void acceptInternalForNull() throws Exception {
-        EndsWithCriterion c = new EndsWithCriterion(meta.myString, null);
-        assertThat(c.acceptInternal("abc"), is(false));
-        assertThat(c.acceptInternal(null), is(true));
     }
 
     /**
@@ -70,11 +51,10 @@ public class EndsWithCriterionTest extends AppEngineTestCase {
     public void accept() throws Exception {
         Hoge hoge = new Hoge();
         hoge.setMyString("abc");
-        InMemoryFilterCriterion c = new EndsWithCriterion(meta.myString, "bc");
+        InMemoryStartsWithCriterion c =
+            new InMemoryStartsWithCriterion(meta.myString, "a");
         assertThat(c.accept(hoge), is(true));
-        hoge.setMyString("ab");
-        assertThat(c.accept(hoge), is(false));
-        hoge.setMyString(null);
+        hoge.setMyString("b");
         assertThat(c.accept(hoge), is(false));
     }
 
@@ -85,8 +65,9 @@ public class EndsWithCriterionTest extends AppEngineTestCase {
     public void acceptForNull() throws Exception {
         Hoge hoge = new Hoge();
         hoge.setMyString("abc");
-        InMemoryFilterCriterion c = new EndsWithCriterion(meta.myString, null);
-        assertThat(c.accept(hoge), is(false));
+        InMemoryStartsWithCriterion c =
+            new InMemoryStartsWithCriterion(meta.myString, null);
+        assertThat(c.accept(hoge), is(true));
         hoge.setMyString(null);
         assertThat(c.accept(hoge), is(true));
     }
@@ -97,20 +78,11 @@ public class EndsWithCriterionTest extends AppEngineTestCase {
     @Test
     public void acceptForCollection() throws Exception {
         Hoge hoge = new Hoge();
-        hoge.setMyStringList(Arrays.asList("abc"));
-        InMemoryFilterCriterion c =
-            new EndsWithCriterion(meta.myStringList, "bc");
+        hoge.setMyStringList(Arrays.asList("aaa"));
+        InMemoryStartsWithCriterion c =
+            new InMemoryStartsWithCriterion(meta.myStringList, "aaa");
         assertThat(c.accept(hoge), is(true));
         hoge.setMyStringList(Arrays.asList("bbb"));
         assertThat(c.accept(hoge), is(false));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void testToString() throws Exception {
-        InMemoryFilterCriterion c = new EndsWithCriterion(meta.myString, "aaa");
-        assertThat(c.toString(), is("myString.endsWith(aaa)"));
     }
 }

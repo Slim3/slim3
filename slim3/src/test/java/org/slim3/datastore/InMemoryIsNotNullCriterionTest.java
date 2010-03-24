@@ -15,49 +15,43 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
+import org.slim3.datastore.model.Hoge;
+import org.slim3.tester.AppEngineTestCase;
 
 /**
  * @author higa
  * 
  */
-public class StringCollectionAttributeMetaTest {
+public class InMemoryIsNotNullCriterionTest extends AppEngineTestCase {
 
     private HogeMeta meta = new HogeMeta();
 
     /**
      * @throws Exception
-     * 
      */
     @Test
-    public void startsWith() throws Exception {
-        assertThat(
-            meta.myStringList.startsWith("a"),
-            is(StartsWithCriterion.class));
-        assertThat(meta.myStringList.startsWith(null), is(notNullValue()));
+    public void accept() throws Exception {
+        Hoge hoge = new Hoge();
+        hoge.setMyString("aaa");
+        InMemoryIsNotNullCriterion c =
+            new InMemoryIsNotNullCriterion(meta.myString);
+        assertThat(c.accept(hoge), is(true));
+        hoge.setMyString(null);
+        assertThat(c.accept(hoge), is(false));
     }
 
     /**
      * @throws Exception
-     * 
      */
     @Test
-    public void endsWith() throws Exception {
-        assertThat(meta.myStringList.endsWith("a"), is(InMemoryEndsWithCriterion.class));
-        assertThat(meta.myStringList.endsWith(null), is(notNullValue()));
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    @Test
-    public void contains() throws Exception {
-        assertThat(meta.myStringList.contains("a"), is(InMemoryContainsCriterion.class));
-        assertThat(meta.myStringList.contains(null), is(notNullValue()));
+    public void testToString() throws Exception {
+        InMemoryIsNotNullCriterion c =
+            new InMemoryIsNotNullCriterion(meta.myString);
+        assertThat(c.toString(), is("myString != null"));
     }
 }

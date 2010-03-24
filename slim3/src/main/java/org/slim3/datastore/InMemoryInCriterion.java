@@ -15,21 +15,22 @@
  */
 package org.slim3.datastore;
 
-import com.google.appengine.api.datastore.Query.FilterOperator;
+import java.util.List;
 
 /**
- * An implementation class for "in" filter.
+ * An implementation class for "in" in-memory filter.
  * 
  * @author higa
- * @since 1.0.0
+ * @since 1.0.1
  * 
  */
-public class InCriterion extends InMemoryInCriterion implements FilterCriterion {
+public class InMemoryInCriterion extends AbstractCriterion implements
+        InMemoryFilterCriterion {
 
     /**
-     * The array of {@link Filter}s.
+     * The value;
      */
-    protected Filter[] filters;
+    protected List<?> value;
 
     /**
      * Constructor.
@@ -44,17 +45,31 @@ public class InCriterion extends InMemoryInCriterion implements FilterCriterion 
      * @throws IllegalArgumentException
      *             if the IN(value) parameter is empty
      */
-    public InCriterion(AbstractAttributeMeta<?, ?> attributeMeta,
+    public InMemoryInCriterion(AbstractAttributeMeta<?, ?> attributeMeta,
             Iterable<?> value) throws NullPointerException {
-        super(attributeMeta, value);
-        filters =
-            new Filter[] { new Filter(
-                attributeMeta.getName(),
-                FilterOperator.IN,
-                this.value) };
+        super(attributeMeta);
+        if (value == null) {
+            throw new NullPointerException("The IN parameter must not be null.");
+        }
+        this.value = convertValueForDatastore(value);
+        if (this.value.isEmpty()) {
+            throw new IllegalArgumentException(
+                "The IN parameter must not be empty.");
+        }
     }
 
-    public Filter[] getFilters() {
-        return filters;
+    public boolean accept(Object model) {
+        Object v = convertValueForDatastore(attributeMeta.getValue(model));
+        for (Object o : value) {
+            if (compareValue(v, o) == 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return attributeMeta.getName() + " in(" + value + ")";
     }
 }

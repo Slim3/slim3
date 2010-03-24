@@ -24,12 +24,13 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
  * @since 1.0.0
  * 
  */
-public class NotEqualCriterion extends AbstractFilterCriterion {
+public class NotEqualCriterion extends InMemoryNotEqualCriterion implements
+        FilterCriterion {
 
     /**
-     * The value;
+     * The array of {@link Filter}s.
      */
-    protected Object value;
+    protected Filter[] filters;
 
     /**
      * Constructor.
@@ -41,10 +42,9 @@ public class NotEqualCriterion extends AbstractFilterCriterion {
      * @throws NullPointerException
      *             if the attributeMeta parameter is null
      */
-    public NotEqualCriterion(AttributeMeta<?, ?> attributeMeta, Object value)
-            throws NullPointerException {
-        super(attributeMeta);
-        this.value = convertValueForDatastore(value);
+    public NotEqualCriterion(AbstractAttributeMeta<?, ?> attributeMeta,
+            Object value) throws NullPointerException {
+        super(attributeMeta, value);
         filters =
             new Filter[] { new Filter(
                 attributeMeta.getName(),
@@ -52,21 +52,7 @@ public class NotEqualCriterion extends AbstractFilterCriterion {
                 this.value) };
     }
 
-    public boolean accept(Object model) {
-        Object v = convertValueForDatastore(attributeMeta.getValue(model));
-        if (v instanceof Iterable<?>) {
-            for (Object o : (Iterable<?>) v) {
-                if (compareValue(o, value) != 0) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        return compareValue(v, value) != 0;
-    }
-
-    @Override
-    public String toString() {
-        return attributeMeta.getName() + " != " + value;
+    public Filter[] getFilters() {
+        return filters;
     }
 }

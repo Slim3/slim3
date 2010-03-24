@@ -62,24 +62,24 @@ public class StringCollectionAttributeMeta<M, A> extends
     }
 
     /**
-     * Returns the "endsWith" filter.
+     * Returns the "endsWith" in-memory filter.
      * 
      * @param value
      *            the value
-     * @return the "endsWith" filter
+     * @return the "endsWith" in-memory filter
      */
-    public EndsWithCriterion endsWith(String value) {
-        return new EndsWithCriterion(this, value);
+    public InMemoryEndsWithCriterion endsWith(String value) {
+        return new InMemoryEndsWithCriterion(this, value);
     }
 
     /**
-     * Returns the "contains" filter.
+     * Returns the "contains" in-memory filter.
      * 
      * @param value
      *            the value
-     * @return the "contains" filter
+     * @return the "contains" in-memory filter
      */
-    public ContainsCriterion contains(String value) {
-        return new ContainsCriterion(this, value);
+    public InMemoryContainsCriterion contains(String value) {
+        return new InMemoryContainsCriterion(this, value);
     }
 }

@@ -15,14 +15,12 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-
-import java.util.Arrays;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
-import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.AppEngineTestCase;
 
 import com.google.appengine.api.datastore.Query.FilterOperator;
@@ -35,27 +33,6 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 public class NotEqualCriterionTest extends AppEngineTestCase {
 
     private HogeMeta meta = new HogeMeta();
-
-    /**
-     * @throws Exception
-     * 
-     */
-    @Test
-    public void constructor() throws Exception {
-        NotEqualCriterion c = new NotEqualCriterion(meta.myString, "aaa");
-        assertThat((String) c.value, is("aaa"));
-    }
-
-    /**
-     * @throws Exception
-     * 
-     */
-    @Test
-    public void constructorForEnum() throws Exception {
-        NotEqualCriterion c =
-            new NotEqualCriterion(meta.myEnum, SortDirection.ASCENDING);
-        assertThat((String) c.value, is("ASCENDING"));
-    }
 
     /**
      * @throws Exception
@@ -98,64 +75,5 @@ public class NotEqualCriterionTest extends AppEngineTestCase {
         assertThat(filters[0].getPropertyName(), is("myString"));
         assertThat(filters[0].getOperator(), is(FilterOperator.NOT_EQUAL));
         assertThat(filters[0].getValue(), is(nullValue()));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void accept() throws Exception {
-        Hoge hoge = new Hoge();
-        hoge.setMyString("aaa");
-        FilterCriterion c = new NotEqualCriterion(meta.myString, "bbb");
-        assertThat(c.accept(hoge), is(true));
-        hoge.setMyString("bbb");
-        assertThat(c.accept(hoge), is(false));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void acceptForEnum() throws Exception {
-        FilterCriterion c =
-            new NotEqualCriterion(meta.myEnum, SortDirection.ASCENDING);
-        Hoge hoge = new Hoge();
-        hoge.setMyEnum(SortDirection.DESCENDING);
-        assertThat(c.accept(hoge), is(true));
-        hoge.setMyEnum(SortDirection.ASCENDING);
-        assertThat(c.accept(hoge), is(false));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void acceptForNull() throws Exception {
-        Hoge hoge = new Hoge();
-        FilterCriterion c = new NotEqualCriterion(meta.myString, null);
-        assertThat(c.accept(hoge), is(false));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void acceptForCollection() throws Exception {
-        Hoge hoge = new Hoge();
-        hoge.setMyIntegerList(Arrays.asList(1));
-        FilterCriterion c = new NotEqualCriterion(meta.myIntegerList, 1);
-        assertThat(c.accept(hoge), is(false));
-        hoge.setMyIntegerList(Arrays.asList(2));
-        assertThat(c.accept(hoge), is(true));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void testToString() throws Exception {
-        NotEqualCriterion c = new NotEqualCriterion(meta.myString, "aaa");
-        assertThat(c.toString(), is("myString != aaa"));
     }
 }
