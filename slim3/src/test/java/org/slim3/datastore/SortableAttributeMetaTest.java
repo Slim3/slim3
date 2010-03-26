@@ -15,11 +15,12 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.slim3.datastore.model.Hoge;
+import org.slim3.tester.AppEngineTestCase;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
@@ -28,7 +29,7 @@ import com.google.appengine.api.datastore.Key;
  * @author higa
  * 
  */
-public class UnindexedAttributeMetaTest {
+public class SortableAttributeMetaTest extends AppEngineTestCase {
 
     private ModelMeta<Hoge> meta = new ModelMeta<Hoge>("Hoge", Hoge.class) {
 
@@ -67,13 +68,13 @@ public class UnindexedAttributeMetaTest {
      */
     @Test
     public void asc() throws Exception {
-        UnindexedAttributeMeta<Hoge, String> attrMeta =
-            new UnindexedAttributeMeta<Hoge, String>(
+        SortableAttributeMeta<Hoge, String> attrMeta =
+            new SortableAttributeMeta<Hoge, String>(
                 meta,
                 "myString",
                 "myString",
                 String.class);
-        assertThat(attrMeta.asc, is(InMemoryAscCriterion.class));
+        assertThat(attrMeta.asc, is(AscCriterion.class));
     }
 
     /**
@@ -82,12 +83,12 @@ public class UnindexedAttributeMetaTest {
      */
     @Test
     public void desc() throws Exception {
-        UnindexedAttributeMeta<Hoge, String> attrMeta =
-            new UnindexedAttributeMeta<Hoge, String>(
+        SortableAttributeMeta<Hoge, String> attrMeta =
+            new SortableAttributeMeta<Hoge, String>(
                 meta,
                 "myString",
                 "myString",
                 String.class);
-        assertThat(attrMeta.desc, is(InMemoryDescCriterion.class));
+        assertThat(attrMeta.desc, is(DescCriterion.class));
     }
 }

@@ -28,7 +28,7 @@ import java.util.Arrays;
  * @since 1.0.0
  * 
  */
-public class CoreAttributeMeta<M, A> extends AttributeMeta<M, A> {
+public class CoreAttributeMeta<M, A> extends SortableAttributeMeta<M, A> {
 
     /**
      * The "is not null" filter.

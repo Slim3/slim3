@@ -23,10 +23,20 @@ package org.slim3.datastore;
  *            the model type
  * @param <A>
  *            the attribute type
- * @since 1.0.0
+ * @since 1.0.1
  * 
  */
-public class AttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
+public class SortableAttributeMeta<M, A> extends AttributeMeta<M, A> {
+
+    /**
+     * The "ascending" sort criterion
+     */
+    public final AscCriterion asc;
+
+    /**
+     * The "descending" sort criterion
+     */
+    public final DescCriterion desc;
 
     /**
      * Constructor.
@@ -45,8 +55,10 @@ public class AttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
      *             is null or if the attributeClass parameter is null or if the
      *             fieldName parameter is null
      */
-    public AttributeMeta(ModelMeta<M> modelMeta, String name, String fieldName,
-            Class<? super A> attributeClass) {
+    public SortableAttributeMeta(ModelMeta<M> modelMeta, String name,
+            String fieldName, Class<? super A> attributeClass) {
         super(modelMeta, name, fieldName, attributeClass);
+        asc = new AscCriterion(this);
+        desc = new DescCriterion(this);
     }
 }

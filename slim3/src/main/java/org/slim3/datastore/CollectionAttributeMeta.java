@@ -30,7 +30,8 @@ import java.util.Arrays;
  * @since 1.0.0
  * 
  */
-public class CollectionAttributeMeta<M, A, E> extends AttributeMeta<M, A> {
+public class CollectionAttributeMeta<M, A, E> extends
+        SortableAttributeMeta<M, A> {
 
     /**
      * The "is not null" filter.

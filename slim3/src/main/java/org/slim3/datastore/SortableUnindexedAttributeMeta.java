@@ -16,17 +16,28 @@
 package org.slim3.datastore;
 
 /**
- * An meta data of attribute.
+ * A meta data of unindexed attribute.
  * 
  * @author higa
  * @param <M>
  *            the model type
  * @param <A>
  *            the attribute type
- * @since 1.0.0
+ * @since 1.0.1
  * 
  */
-public class AttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
+public class SortableUnindexedAttributeMeta<M, A> extends
+        UnindexedAttributeMeta<M, A> {
+
+    /**
+     * The "ascending" sort criterion
+     */
+    public final InMemoryAscCriterion asc;
+
+    /**
+     * The "descending" sort criterion
+     */
+    public final InMemoryDescCriterion desc;
 
     /**
      * Constructor.
@@ -45,8 +56,11 @@ public class AttributeMeta<M, A> extends AbstractAttributeMeta<M, A> {
      *             is null or if the attributeClass parameter is null or if the
      *             fieldName parameter is null
      */
-    public AttributeMeta(ModelMeta<M> modelMeta, String name, String fieldName,
-            Class<? super A> attributeClass) {
+    public SortableUnindexedAttributeMeta(ModelMeta<M> modelMeta, String name,
+            String fieldName, Class<? super A> attributeClass)
+            throws NullPointerException {
         super(modelMeta, name, fieldName, attributeClass);
+        asc = new InMemoryAscCriterion(this);
+        desc = new InMemoryDescCriterion(this);
     }
 }

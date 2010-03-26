@@ -29,7 +29,7 @@ import java.util.Arrays;
  * 
  */
 public class CoreUnindexedAttributeMeta<M, A> extends
-        UnindexedAttributeMeta<M, A> {
+        SortableUnindexedAttributeMeta<M, A> {
 
     /**
      * The "is not null" in-memory filter.
