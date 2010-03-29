@@ -64,16 +64,6 @@ public class GlobalTransaction {
     protected static final String QUEUE_NAME = "slim3-gtx-queue";
 
     /**
-     * The maximum number of locks.
-     */
-    protected static final int MAX_LOCKS = 100;
-
-    /**
-     * The maximum number of journals.
-     */
-    protected static final int MAX_JOURNALS = 500;
-
-    /**
      * The number of milliseconds delay before execution of the roll-forward
      * task.
      */
@@ -1087,14 +1077,9 @@ public class GlobalTransaction {
      *             if the size of the entity is more than 1,000,000 bytes
      * @throws ConcurrentModificationException
      *             if locking the entity specified by the key failed
-     * @throws IllegalStateException
-     *             if the number of locks in this global transaction exceeds 100
-     *             or if the number of journals in this global transaction
-     *             exceeds 500
      */
     public Key put(Entity entity) throws NullPointerException,
-            IllegalArgumentException, ConcurrentModificationException,
-            IllegalStateException {
+            IllegalArgumentException, ConcurrentModificationException {
         if (entity == null) {
             throw new NullPointerException(
                 "The entity parameter must not be null.");
@@ -1109,7 +1094,6 @@ public class GlobalTransaction {
             return Datastore.put(localTransaction, entity);
         }
         lock(rootKey);
-        verifyJournalSize();
         journalMap.put(key, entity);
         return key;
     }
@@ -1127,14 +1111,9 @@ public class GlobalTransaction {
      *             if the size of the entity is more than 1,000,000 bytes
      * @throws ConcurrentModificationException
      *             if locking the entity specified by the key failed
-     * @throws IllegalStateException
-     *             if the number of locks in this global transaction exceeds 100
-     *             or if the number of journals in this global transaction
-     *             exceeds 500
      */
     public Key put(Object model) throws NullPointerException,
-            IllegalArgumentException, ConcurrentModificationException,
-            IllegalStateException {
+            IllegalArgumentException, ConcurrentModificationException {
         Entity entity = DatastoreUtil.modelToEntity(model);
         return put(entity);
     }
@@ -1152,14 +1131,9 @@ public class GlobalTransaction {
      *             if the size of the entity is more than 1,000,000 bytes
      * @throws ConcurrentModificationException
      *             if locking the entity specified by the key failed
-     * @throws IllegalStateException
-     *             if the number of locks in this global transaction exceeds 100
-     *             or if the number of journals in this global transaction
-     *             exceeds 500
      */
     public List<Key> put(Iterable<?> models) throws NullPointerException,
-            IllegalArgumentException, ConcurrentModificationException,
-            IllegalStateException {
+            IllegalArgumentException, ConcurrentModificationException {
         if (models == null) {
             throw new NullPointerException(
                 "The models parameter must not be null.");
@@ -1186,13 +1160,9 @@ public class GlobalTransaction {
      *             if the size of the entity is more than 1,000,000 bytes
      * @throws ConcurrentModificationException
      *             if locking the entity specified by the key failed
-     * @throws IllegalStateException
-     *             if the number of locks in this global transaction exceeds 100
-     *             or if the number of journals in this global transaction
-     *             exceeds 500
      */
     public List<Key> put(Object... models) throws IllegalArgumentException,
-            ConcurrentModificationException, IllegalStateException {
+            ConcurrentModificationException {
         return put(Arrays.asList(models));
     }
 
@@ -1206,13 +1176,9 @@ public class GlobalTransaction {
      *             if the key parameter is null
      * @throws ConcurrentModificationException
      *             if locking the entity specified by the key failed
-     * @throws IllegalStateException
-     *             if the number of locks in this global transaction exceeds 100
-     *             or if the number of journals in this global transaction
-     *             exceeds 500
      */
     public void delete(Key key) throws NullPointerException,
-            ConcurrentModificationException, IllegalStateException {
+            ConcurrentModificationException {
         Key rootKey = DatastoreUtil.getRoot(key);
         if (localTransactionRootKey == null) {
             setLocalTransactionRootKey(rootKey);
@@ -1221,7 +1187,6 @@ public class GlobalTransaction {
             Datastore.delete(localTransaction, key);
         } else {
             lock(rootKey);
-            verifyJournalSize();
             journalMap.put(key, null);
         }
     }
@@ -1236,13 +1201,9 @@ public class GlobalTransaction {
      *             if the keys parameter is null
      * @throws ConcurrentModificationException
      *             if locking the entity specified by the key failed
-     * @throws IllegalStateException
-     *             if the number of locks in this global transaction exceeds 100
-     *             or if the number of journals in this global transaction
-     *             exceeds 500
      */
     public void delete(Iterable<Key> keys) throws NullPointerException,
-            ConcurrentModificationException, IllegalStateException {
+            ConcurrentModificationException {
         if (keys == null) {
             throw new NullPointerException(
                 "The keys parameter must not be null.");
@@ -1260,13 +1221,8 @@ public class GlobalTransaction {
      *            the keys
      * @throws ConcurrentModificationException
      *             if locking the entity specified by the key failed
-     * @throws IllegalStateException
-     *             if the number of locks in this global transaction exceeds 100
-     *             or if the number of journals in this global transaction
-     *             exceeds 500
      */
-    public void delete(Key... keys) throws ConcurrentModificationException,
-            IllegalStateException {
+    public void delete(Key... keys) throws ConcurrentModificationException {
         delete(Arrays.asList(keys));
     }
 
@@ -1280,13 +1236,9 @@ public class GlobalTransaction {
      *             if the key parameter is null
      * @throws ConcurrentModificationException
      *             if locking the entity specified by the key failed
-     * @throws IllegalStateException
-     *             if the number of locks in this global transaction exceeds 100
-     *             or if the number of journals in this global transaction
-     *             exceeds 500
      */
     public void deleteAll(Key ancestorKey) throws NullPointerException,
-            ConcurrentModificationException, IllegalStateException {
+            ConcurrentModificationException {
         Key rootKey = DatastoreUtil.getRoot(ancestorKey);
         if (localTransactionRootKey == null) {
             setLocalTransactionRootKey(rootKey);
@@ -1299,7 +1251,6 @@ public class GlobalTransaction {
                 if (key.getKind().equals(Lock.KIND)) {
                     continue;
                 }
-                verifyJournalSize();
                 journalMap.put(key, null);
             }
         }
@@ -1419,13 +1370,9 @@ public class GlobalTransaction {
      *             null
      * @throws ConcurrentModificationException
      *             if locking an entity specified by the key failed
-     * @throws IllegalStateException
-     *             if the number of entity groups that join global transaction
-     *             exceeds 100
      */
     protected Map<Key, Entity> lockAndGetAsMap(Key rootKey, Collection<Key> keys)
-            throws NullPointerException, ConcurrentModificationException,
-            IllegalStateException {
+            throws NullPointerException, ConcurrentModificationException {
         if (rootKey == null) {
             throw new NullPointerException(
                 "The rootKey parameter must not be null.");
@@ -1436,7 +1383,6 @@ public class GlobalTransaction {
         }
         assertActive();
         if (!lockMap.containsKey(rootKey)) {
-            verifyLockSize();
             Lock lock = new Lock(globalTransactionKey, rootKey, timestamp);
             try {
                 Map<Key, Entity> map = lock.lockAndGetAsMap(keys);
@@ -1460,19 +1406,15 @@ public class GlobalTransaction {
      *             if the key parameter is null
      * @throws ConcurrentModificationException
      *             if locking an entity specified by the key failed
-     * @throws IllegalStateException
-     *             if the number of entity groups that join global transaction
-     *             exceeds 100
      */
     protected void lock(Key rootKey) throws NullPointerException,
-            ConcurrentModificationException, IllegalStateException {
+            ConcurrentModificationException {
         if (rootKey == null) {
             throw new NullPointerException(
                 "The key parameter must not be null.");
         }
         assertActive();
         if (!lockMap.containsKey(rootKey)) {
-            verifyLockSize();
             Lock lock = new Lock(globalTransactionKey, rootKey, timestamp);
             try {
                 lock.lock();
@@ -1495,35 +1437,6 @@ public class GlobalTransaction {
         if (!lockMap.isEmpty()) {
             Lock.deleteInTx(globalTransactionKey, lockMap.values());
             lockMap.clear();
-        }
-    }
-
-    /**
-     * Verifies the size of locks.
-     * 
-     * @throws IllegalStateException
-     *             if the number of locks in this global transaction exceeds 100
-     */
-    protected void verifyLockSize() throws IllegalStateException {
-        if (lockMap.size() >= MAX_LOCKS) {
-            unlock();
-            throw new IllegalStateException(
-                "You cannot add more than 100 locks into this global transaction. NOTE: The lock of first entity group is not counted.");
-        }
-    }
-
-    /**
-     * Verifies the size of journals.
-     * 
-     * @throws IllegalStateException
-     *             if the number of journals in this global transaction exceeds
-     *             500
-     */
-    protected void verifyJournalSize() throws IllegalStateException {
-        if (journalMap.size() >= MAX_JOURNALS) {
-            unlock();
-            throw new IllegalStateException(
-                "You cannot add more than 500 journals into this global transaction. NOTE: The journals of first entity group are not counted.");
         }
     }
 

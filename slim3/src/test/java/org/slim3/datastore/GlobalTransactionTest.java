@@ -15,12 +15,8 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
@@ -1579,30 +1575,6 @@ public class GlobalTransactionTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
-    @Test(expected = IllegalStateException.class)
-    public void verifyLockSizeOver100ForPut() throws Exception {
-        Key key = Datastore.createKey("Hoge", 1);
-        gtx.getAsMap(key);
-        for (int i = 1; i <= 101; i++) {
-            gtx.put(new Entity("Hoge" + i));
-        }
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test(expected = IllegalStateException.class)
-    public void verifyLockSizeOver100ForGetAsMap() throws Exception {
-        Key key = Datastore.createKey("Hoge", 1);
-        gtx.getAsMap(key);
-        for (int i = 1; i <= 101; i++) {
-            gtx.getAsMap(Datastore.createKey("Hoge" + i, i));
-        }
-    }
-
-    /**
-     * @throws Exception
-     */
     @Test
     public void verifyJournalSizeWithin500ForPut() throws Exception {
         Key parentKey = Datastore.createKey("Parent", 1);
@@ -1622,32 +1594,6 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         Key parentKey2 = Datastore.createKey("Parent", 2);
         gtx.getAsMap(parentKey2);
         for (int i = 1; i <= 500; i++) {
-            gtx.delete(Datastore.createKey(parentKey, "Hoge", i));
-        }
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test(expected = IllegalStateException.class)
-    public void verifyJournalSizeOver500ForPut() throws Exception {
-        Key parentKey = Datastore.createKey("Parent", 1);
-        Key parentKey2 = Datastore.createKey("Parent", 2);
-        gtx.getAsMap(parentKey2);
-        for (int i = 1; i <= 501; i++) {
-            gtx.put(new Entity(Datastore.createKey(parentKey, "Hoge", i)));
-        }
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test(expected = IllegalStateException.class)
-    public void verifyJournalSizeOver500ForDelete() throws Exception {
-        Key parentKey = Datastore.createKey("Parent", 1);
-        Key parentKey2 = Datastore.createKey("Parent", 2);
-        gtx.getAsMap(parentKey2);
-        for (int i = 1; i <= 501; i++) {
             gtx.delete(Datastore.createKey(parentKey, "Hoge", i));
         }
     }
