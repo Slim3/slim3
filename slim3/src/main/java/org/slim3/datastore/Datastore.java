@@ -2165,7 +2165,6 @@ public final class Datastore {
      *             if the entity parameter is null
      */
     public static Key put(Entity entity) throws NullPointerException {
-        DatastoreUtil.assignKeyIfNecessary(entity);
         return DatastoreUtil.put(entity);
     }
 
@@ -2179,7 +2178,6 @@ public final class Datastore {
      *             if the entity parameter is null
      */
     public static Key putWithoutTx(Entity entity) throws NullPointerException {
-        DatastoreUtil.assignKeyIfNecessary(entity);
         return DatastoreUtil.put((Transaction) null, entity);
     }
 
@@ -2228,7 +2226,6 @@ public final class Datastore {
      */
     public static Key put(Transaction tx, Entity entity)
             throws NullPointerException, IllegalStateException {
-        DatastoreUtil.assignKeyIfNecessary(entity);
         return DatastoreUtil.put(tx, entity);
     }
 

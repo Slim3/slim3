@@ -56,14 +56,14 @@ public class Journal {
     public static final String CONTENT_PROPERTY = "content";
 
     /**
-     * The put property prefix.
+     * The putList property prefix.
      */
-    public static final String PUT_PROPERTY_PREFIX = "put";
+    public static final String PUT_LIST_PROPERTY = "putList";
 
     /**
-     * The delete property prefix.
+     * The deleteList property prefix.
      */
-    public static final String DELETE_PROPERTY_PREFIX = "delete";
+    public static final String DELETE_LIST_PROPERTY = "deleteList";
 
     /**
      * Applies the journals.
@@ -85,34 +85,7 @@ public class Journal {
                 GLOBAL_TRANSACTION_KEY_PROPERTY,
                 FilterOperator.EQUAL,
                 globalTransactionKey).asList();
-        for (Entity entity : entities) {
-            Map<String, Object> properties = entity.getProperties();
-            PutRequest putReq = new PutRequest();
-            List<Key> deleteKeys = new ArrayList<Key>();
-            for (Iterator<String> i = properties.keySet().iterator(); i
-                .hasNext();) {
-                String name = i.next();
-                if (name.startsWith(PUT_PROPERTY_PREFIX)) {
-                    Blob blob = (Blob) entity.getProperty(name);
-                    if (blob != null) {
-                        EntityProto proto = putReq.addEntity();
-                        proto.mergeFrom(blob.getBytes());
-                    }
-                } else if (name.startsWith(DELETE_PROPERTY_PREFIX)) {
-                    Key key = (Key) entity.getProperty(name);
-                    if (key != null) {
-                        deleteKeys.add(key);
-                    }
-                }
-            }
-            if (putReq.entitySize() > 0) {
-                DatastoreUtil.put(putReq);
-            }
-            if (deleteKeys.size() > 0) {
-                Datastore.deleteWithoutTx(deleteKeys);
-            }
-            Datastore.deleteWithoutTx(entity.getKey());
-        }
+        apply(entities);
     }
 
     /**
@@ -124,36 +97,29 @@ public class Journal {
      *             if the entities parameter is null
      * 
      */
+    @SuppressWarnings("unchecked")
     public static void apply(List<Entity> entities) throws NullPointerException {
         if (entities == null) {
             throw new NullPointerException(
                 "The entities parameter must not be null.");
         }
         for (Entity entity : entities) {
-            Map<String, Object> properties = entity.getProperties();
             PutRequest putReq = new PutRequest();
-            List<Key> deleteKeys = new ArrayList<Key>();
-            for (Iterator<String> i = properties.keySet().iterator(); i
-                .hasNext();) {
-                String name = i.next();
-                if (name.startsWith(PUT_PROPERTY_PREFIX)) {
-                    Blob blob = (Blob) entity.getProperty(name);
-                    if (blob != null) {
-                        EntityProto proto = putReq.addEntity();
-                        proto.mergeFrom(blob.getBytes());
-                    }
-                } else if (name.startsWith(DELETE_PROPERTY_PREFIX)) {
-                    Key key = (Key) entity.getProperty(name);
-                    if (key != null) {
-                        deleteKeys.add(key);
-                    }
+            List<Blob> putList =
+                (List<Blob>) entity.getProperty(PUT_LIST_PROPERTY);
+            List<Key> deleteList =
+                (List<Key>) entity.getProperty(DELETE_LIST_PROPERTY);
+            if (putList != null) {
+                for (Blob blob : putList) {
+                    EntityProto proto = putReq.addEntity();
+                    proto.mergeFrom(blob.getBytes());
                 }
             }
             if (putReq.entitySize() > 0) {
                 DatastoreUtil.put(putReq);
             }
-            if (deleteKeys.size() > 0) {
-                Datastore.deleteWithoutTx(deleteKeys);
+            if (deleteList != null) {
+                Datastore.deleteWithoutTx(deleteList);
             }
             Datastore.deleteWithoutTx(entity.getKey());
         }
@@ -184,7 +150,8 @@ public class Journal {
         }
         int totalSize = 0;
         Entity entity = createEntity(globalTransactionKey);
-        int propertyIndex = 0;
+        List<Blob> putList = new ArrayList<Blob>();
+        List<Key> deleteList = new ArrayList<Key>();
         for (Iterator<Key> i = journalMap.keySet().iterator(); i.hasNext();) {
             Key key = i.next();
             Entity targetEntity = journalMap.get(key);
@@ -194,22 +161,26 @@ public class Journal {
             int size = put ? targetProto.encodingSize() : 0;
             if (totalSize != 0
                 && totalSize + size + DatastoreUtil.EXTRA_SIZE > DatastoreUtil.MAX_ENTITY_SIZE) {
+                entity.setUnindexedProperty(PUT_LIST_PROPERTY, putList);
+                entity.setUnindexedProperty(DELETE_LIST_PROPERTY, deleteList);
                 Datastore.putWithoutTx(entity);
                 entities.add(entity);
                 entity = createEntity(globalTransactionKey);
+                putList = new ArrayList<Blob>();
+                deleteList = new ArrayList<Key>();
                 totalSize = 0;
             }
             if (put) {
                 byte[] content = new byte[targetProto.encodingSize()];
                 targetProto.outputTo(content, 0);
-                entity.setUnindexedProperty(PUT_PROPERTY_PREFIX
-                    + propertyIndex++, new Blob(content));
+                putList.add(new Blob(content));
             } else {
-                entity.setUnindexedProperty(DELETE_PROPERTY_PREFIX
-                    + propertyIndex++, key);
+                deleteList.add(key);
             }
             totalSize += size + DatastoreUtil.EXTRA_SIZE;
         }
+        entity.setUnindexedProperty(PUT_LIST_PROPERTY, putList);
+        entity.setUnindexedProperty(DELETE_LIST_PROPERTY, deleteList);
         Datastore.putWithoutTx(entity);
         entities.add(entity);
         return entities;

@@ -15,10 +15,8 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -115,6 +113,7 @@ public class JournalTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
+    @SuppressWarnings("unchecked")
     @Test
     public void put() throws Exception {
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
@@ -132,24 +131,22 @@ public class JournalTest extends AppEngineTestCase {
                 FilterOperator.EQUAL,
                 globalTransactionKey).asSingleEntity();
         assertThat(entity, is(notNullValue()));
-        assertThat(entity.hasProperty("put0"), is(true));
-        Blob blob = (Blob) entity.getProperty("put0");
-        assertThat(DatastoreUtil.bytesToEntity(blob.getBytes()), is(putEntity));
-        assertThat(entity.hasProperty("delete1"), is(true));
-        assertThat((Key) entity.getProperty("delete1"), is(key2));
-        entity = entities.get(0);
-        assertThat(entity, is(notNullValue()));
-        assertThat(entity.hasProperty("put0"), is(true));
-        blob = (Blob) entity.getProperty("put0");
-        assertThat(DatastoreUtil.bytesToEntity(blob.getBytes()), is(putEntity));
-        assertThat(entity.hasProperty("delete1"), is(true));
-        assertThat((Key) entity.getProperty("delete1"), is(key2));
-
+        List<Blob> putList =
+            (List<Blob>) entity.getProperty(Journal.PUT_LIST_PROPERTY);
+        assertThat(putList.size(), is(1));
+        assertThat(
+            DatastoreUtil.bytesToEntity(putList.get(0).getBytes()),
+            is(putEntity));
+        List<Key> deleteList =
+            (List<Key>) entity.getProperty(Journal.DELETE_LIST_PROPERTY);
+        assertThat(deleteList.size(), is(1));
+        assertThat(deleteList.get(0), is(key2));
     }
 
     /**
      * @throws Exception
      */
+    @SuppressWarnings("unchecked")
     @Test
     public void putBigEntities() throws Exception {
         Blob blob = new Blob(new byte[DatastoreUtil.MAX_ENTITY_SIZE]);
@@ -172,14 +169,19 @@ public class JournalTest extends AppEngineTestCase {
         assertThat(entities.size(), is(2));
         Entity entity = entities.get(0);
         assertThat(entity, is(notNullValue()));
-        assertThat(entity.hasProperty("put0"), is(true));
-        Blob blob2 = (Blob) entity.getProperty("put0");
-        assertThat(DatastoreUtil.bytesToEntity(blob2.getBytes()), is(e));
+        List<Blob> putList =
+            (List<Blob>) entity.getProperty(Journal.PUT_LIST_PROPERTY);
+        assertThat(putList.size(), is(1));
+        assertThat(
+            DatastoreUtil.bytesToEntity(putList.get(0).getBytes()),
+            is(e));
         entity = entities.get(1);
         assertThat(entity, is(notNullValue()));
-        assertThat(entity.hasProperty("put1"), is(true));
-        blob2 = (Blob) entity.getProperty("put1");
-        assertThat(DatastoreUtil.bytesToEntity(blob2.getBytes()), is(e2));
+        putList = (List<Blob>) entity.getProperty(Journal.PUT_LIST_PROPERTY);
+        assertThat(putList.size(), is(1));
+        assertThat(
+            DatastoreUtil.bytesToEntity(putList.get(0).getBytes()),
+            is(e2));
     }
 
     /**

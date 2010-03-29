@@ -363,6 +363,47 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void createPutRequest() throws Exception {
+        PutRequest req = DatastoreUtil.createPutRequest(-1);
+        assertThat(req, is(notNullValue()));
+        assertThat(req.getTransaction().getHandle(), is(0L));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void createPutRequestWithTx() throws Exception {
+        PutRequest req = DatastoreUtil.createPutRequest(1);
+        assertThat(req, is(notNullValue()));
+        assertThat(req.getTransaction().getHandle(), is(1L));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void toEntityProtoList() throws Exception {
+        List<EntityProto> list =
+            DatastoreUtil.toEntityProtoList(Arrays.asList(new Entity("Hoge")));
+        assertThat(list.size(), is(1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void toKeyList() throws Exception {
+        List<Key> list =
+            DatastoreUtil.toKeyList(Arrays.asList(new Entity(Datastore
+                .allocateId("Hoge"))));
+        assertThat(list.size(), is(1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void putEntityProtos() throws Exception {
         Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
         Entity entity2 = new Entity(KeyFactory.createKey("Hoge", 2));
@@ -484,6 +525,23 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void deleteManyEntities() throws Exception {
+        List<Key> keys = new ArrayList<Key>();
+        Key parentKey = Datastore.createKey("Parent", 1);
+        for (int i = 0; i < 510; i++) {
+            keys.add(ds
+                .put(new Entity(Datastore.allocateId(parentKey, "Hoge"))));
+        }
+        Transaction tx = ds.beginTransaction();
+        DatastoreUtil.delete(keys);
+        tx.commit();
+        assertThat(tester.count("Hoge"), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void deleteEntitiesInTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Transaction tx = ds.beginTransaction();
@@ -496,12 +554,44 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void deleteManyEntitiesWithTx() throws Exception {
+        List<Key> keys = new ArrayList<Key>();
+        Key parentKey = Datastore.createKey("Parent", 1);
+        for (int i = 0; i < 510; i++) {
+            keys.add(ds
+                .put(new Entity(Datastore.allocateId(parentKey, "Hoge"))));
+        }
+        Transaction tx = ds.beginTransaction();
+        DatastoreUtil.delete(tx, keys);
+        tx.commit();
+        assertThat(tester.count("Hoge"), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void deleteEntitiesWithoutTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Transaction tx = ds.beginTransaction();
         DatastoreUtil.deleteWithoutTx(Arrays.asList(key));
         tx.rollback();
         assertThat(ds.get(Arrays.asList(key)).size(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void deleteManyEntitiesWithoutTx() throws Exception {
+        List<Key> keys = new ArrayList<Key>();
+        Key parentKey = Datastore.createKey("Parent", 1);
+        for (int i = 0; i < 510; i++) {
+            keys.add(ds
+                .put(new Entity(Datastore.allocateId(parentKey, "Hoge"))));
+        }
+        DatastoreUtil.delete(keys);
+        assertThat(tester.count("Hoge"), is(0));
     }
 
     /**

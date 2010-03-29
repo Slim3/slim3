@@ -31,6 +31,7 @@ import org.slim3.util.AppEngineUtil;
 import org.slim3.util.ClassUtil;
 import org.slim3.util.Cleanable;
 import org.slim3.util.Cleaner;
+import org.slim3.util.IterableUtil;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -537,23 +538,7 @@ public final class DatastoreUtil {
     public static Key put(Entity entity) throws NullPointerException,
             IllegalStateException {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        DatastoreTimeoutException dte = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                return ds.put(entity);
-            } catch (DatastoreTimeoutException e) {
-                dte = e;
-                logger.log(Level.INFO, "This message["
-                    + e
-                    + "] is just INFORMATION. Retry["
-                    + i
-                    + "]", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw dte;
+        return put(ds.getCurrentTransaction(null), entity);
     }
 
     /**
@@ -575,24 +560,13 @@ public final class DatastoreUtil {
         if (tx != null && !tx.isActive()) {
             throw new IllegalStateException("The transaction must be active.");
         }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        DatastoreTimeoutException dte = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                return ds.put(tx, entity);
-            } catch (DatastoreTimeoutException e) {
-                dte = e;
-                logger.log(Level.INFO, "This message["
-                    + e
-                    + "] is just INFORMATION. Retry["
-                    + i
-                    + "]", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw dte;
+        assignKeyIfNecessary(entity);
+        EntityProto entityProto = EntityTranslator.convertToPb(entity);
+        PutRequest req =
+            createPutRequest(tx == null ? -1 : Long.valueOf(tx.getId()));
+        req.addEntity(entityProto);
+        put(req);
+        return entity.getKey();
     }
 
     /**
@@ -629,33 +603,24 @@ public final class DatastoreUtil {
             throw new NullPointerException(
                 "The entities parameter must not be null.");
         }
-        if (entities instanceof Collection<?>
-            && ((Collection<?>) entities).size() == 0) {
-            return new ArrayList<Key>();
-        }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         ConcurrentModificationException cme = null;
-        for (int i = 0; i < MAX_RETRY; i++) {
+        long wait = INITIAL_WAIT_MS;
+        for (int j = 0; j < MAX_RETRY; j++) {
             try {
-                DatastoreTimeoutException dte = null;
-                long wait = INITIAL_WAIT_MS;
-                for (int j = 0; j < MAX_RETRY; j++) {
-                    try {
-                        return ds.put(null, entities);
-                    } catch (DatastoreTimeoutException e) {
-                        dte = e;
-                        logger.log(Level.INFO, "This message["
-                            + e
-                            + "] is just INFORMATION. Retry["
-                            + j
-                            + "]", e);
-                        sleep(wait);
-                        wait *= WAIT_MULTIPLIER_FACTOR;
-                    }
-                }
-                throw dte;
+                assignKeyIfNecessary(entities);
+                List<Key> keyList = toKeyList(entities);
+                List<EntityProto> entityProtoList = toEntityProtoList(entities);
+                put(-1, entityProtoList);
+                return keyList;
             } catch (ConcurrentModificationException e) {
                 cme = e;
+                logger.log(Level.INFO, "This message["
+                    + e
+                    + "] is just INFORMATION. Retry["
+                    + j
+                    + "]", e);
+                sleep(wait);
+                wait *= WAIT_MULTIPLIER_FACTOR;
             }
         }
         throw cme;
@@ -684,31 +649,14 @@ public final class DatastoreUtil {
         if (tx != null && !tx.isActive()) {
             throw new IllegalStateException("The transaction must be active.");
         }
-        if (entities instanceof Collection<?>
-            && ((Collection<?>) entities).size() == 0) {
-            return new ArrayList<Key>();
-        }
         if (tx == null) {
             return putWithoutTx(entities);
         }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        DatastoreTimeoutException dte = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                return ds.put(tx, entities);
-            } catch (DatastoreTimeoutException e) {
-                dte = e;
-                logger.log(Level.INFO, "This message["
-                    + e
-                    + "] is just INFORMATION. Retry["
-                    + i
-                    + "]", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw dte;
+        assignKeyIfNecessary(entities);
+        List<Key> keyList = toKeyList(entities);
+        List<EntityProto> entityProtoList = toEntityProtoList(entities);
+        put(Long.valueOf(tx.getId()), entityProtoList);
+        return keyList;
     }
 
     /**
@@ -742,7 +690,14 @@ public final class DatastoreUtil {
         }
     }
 
-    private static PutRequest createPutRequest(long handle) {
+    /**
+     * Creates a request for put.
+     * 
+     * @param handle
+     *            the transaction handle
+     * @return a request for put
+     */
+    protected static PutRequest createPutRequest(long handle) {
         PutRequest req = new PutRequest();
         if (handle >= 0) {
             DatastorePb.Transaction tx = new DatastorePb.Transaction();
@@ -751,6 +706,51 @@ public final class DatastoreUtil {
             req.setTransaction(tx);
         }
         return req;
+    }
+
+    /**
+     * Converts the entities to a list of entities represented as protocol
+     * buffer.
+     * 
+     * @param entities
+     *            the entities
+     * @return a list of entities represented as protocol buffer
+     * @throws NullPointerException
+     *             if the entities parameter is null
+     */
+    protected static List<EntityProto> toEntityProtoList(
+            Iterable<Entity> entities) throws NullPointerException {
+        if (entities == null) {
+            throw new NullPointerException(
+                "The entities parameter must not be null.");
+        }
+        List<EntityProto> list = new ArrayList<EntityProto>();
+        for (Entity e : entities) {
+            list.add(EntityTranslator.convertToPb(e));
+        }
+        return list;
+    }
+
+    /**
+     * Converts the entities to a list of keys.
+     * 
+     * @param entities
+     *            the entities
+     * @return a list of keys
+     * @throws NullPointerException
+     *             if the entities parameter is null
+     */
+    protected static List<Key> toKeyList(Iterable<Entity> entities)
+            throws NullPointerException {
+        if (entities == null) {
+            throw new NullPointerException(
+                "The entities parameter must not be null.");
+        }
+        List<Key> list = new ArrayList<Key>();
+        for (Entity e : entities) {
+            list.add(e.getKey());
+        }
+        return list;
     }
 
     /**
@@ -846,7 +846,11 @@ public final class DatastoreUtil {
                 long wait = INITIAL_WAIT_MS;
                 for (int j = 0; j < MAX_RETRY; j++) {
                     try {
-                        ds.delete(null, keys);
+                        for (Iterable<Key> keys2 : IterableUtil.split(
+                            keys,
+                            MAX_NUMBER_OF_ENTITIES)) {
+                            ds.delete(null, keys2);
+                        }
                         return;
                     } catch (DatastoreTimeoutException e) {
                         dte = e;
@@ -897,7 +901,11 @@ public final class DatastoreUtil {
         long wait = INITIAL_WAIT_MS;
         for (int i = 0; i < MAX_RETRY; i++) {
             try {
-                ds.delete(tx, keys);
+                for (Iterable<Key> keys2 : IterableUtil.split(
+                    keys,
+                    MAX_NUMBER_OF_ENTITIES)) {
+                    ds.delete(tx, keys2);
+                }
                 return;
             } catch (DatastoreTimeoutException e) {
                 dte = e;
