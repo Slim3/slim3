@@ -25,6 +25,8 @@ import java.net.URL;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slim3.datastore.Datastore;
+import org.slim3.datastore.model.Bbb;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -122,6 +124,16 @@ public class AppEngineTesterTest {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         ds.put(new Entity("Hoge"));
         assertThat(tester.count("Hoge"), is(1));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void getCountForPolyModel() throws Exception {
+        Datastore.put(new Bbb());
+        assertThat(tester.count(Bbb.class), is(1));
     }
 
     /**

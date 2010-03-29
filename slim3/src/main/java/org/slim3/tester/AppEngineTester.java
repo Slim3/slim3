@@ -567,7 +567,7 @@ public class AppEngineTester implements Delegate<Environment> {
         if (modelClass == null) {
             throw new NullPointerException("The modelClass parameter is null.");
         }
-        return count(modelClass.getSimpleName());
+        return count(DatastoreUtil.getModelMeta(modelClass).getKind());
     }
 
     /**
