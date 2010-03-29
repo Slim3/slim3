@@ -15,12 +15,8 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,6 +34,7 @@ import org.slim3.datastore.model.Hoge;
 import org.slim3.datastore.shared.model.Ccc;
 import org.slim3.tester.AppEngineTestCase;
 
+import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -366,13 +363,13 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void putInternallyEntityProtos() throws Exception {
+    public void putEntityProtos() throws Exception {
         Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
         Entity entity2 = new Entity(KeyFactory.createKey("Hoge", 2));
         List<EntityProto> list = new ArrayList<EntityProto>();
         list.add(EntityTranslator.convertToPb(entity));
         list.add(EntityTranslator.convertToPb(entity2));
-        DatastoreUtil.putInternally(list);
+        DatastoreUtil.put(-1, list);
         assertThat(ds.get(entity.getKey()), is(notNullValue()));
         assertThat(ds.get(entity2.getKey()), is(notNullValue()));
     }
@@ -381,13 +378,92 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void putInternallyForPutRequest() throws Exception {
+    public void putEntityProtosWithTx() throws Exception {
+        Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
+        List<EntityProto> list = new ArrayList<EntityProto>();
+        list.add(EntityTranslator.convertToPb(entity));
+        Transaction tx = Datastore.beginTransaction();
+        DatastoreUtil.put(Long.valueOf(tx.getId()), list);
+        tx.rollback();
+        assertThat(tester.count("Hoge"), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void putEntityProtosForOneBigEntity() throws Exception {
+        Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
+        entity.setUnindexedProperty("aaa", new Blob(
+            new byte[DatastoreUtil.MAX_ENTITY_SIZE]));
+        List<EntityProto> list = new ArrayList<EntityProto>();
+        list.add(EntityTranslator.convertToPb(entity));
+        DatastoreUtil.put(-1, list);
+        assertThat(ds.get(entity.getKey()), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void putEntityProtosForBigEntities() throws Exception {
+        Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
+        entity.setUnindexedProperty("aaa", new Blob(
+            new byte[DatastoreUtil.MAX_ENTITY_SIZE]));
+        Entity entity2 = new Entity(KeyFactory.createKey("Hoge", 2));
+        entity2.setUnindexedProperty("aaa", new Blob(
+            new byte[DatastoreUtil.MAX_ENTITY_SIZE]));
+        List<EntityProto> list = new ArrayList<EntityProto>();
+        list.add(EntityTranslator.convertToPb(entity));
+        list.add(EntityTranslator.convertToPb(entity2));
+        DatastoreUtil.put(-1, list);
+        assertThat(ds.get(entity.getKey()), is(notNullValue()));
+        assertThat(ds.get(entity2.getKey()), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void putEntityProtosFor500Entities() throws Exception {
+        List<EntityProto> list = new ArrayList<EntityProto>();
+        for (int i = 0; i < DatastoreUtil.MAX_NUMBER_OF_ENTITIES; i++) {
+            Entity entity = new Entity(KeyFactory.createKey("Hoge", i + 1));
+            list.add(EntityTranslator.convertToPb(entity));
+        }
+        DatastoreUtil.put(-1, list);
+        assertThat(
+            tester.count("Hoge"),
+            is(DatastoreUtil.MAX_NUMBER_OF_ENTITIES));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void putEntityProtosFor501Entities() throws Exception {
+        List<EntityProto> list = new ArrayList<EntityProto>();
+        for (int i = 0; i < DatastoreUtil.MAX_NUMBER_OF_ENTITIES + 1; i++) {
+            Entity entity = new Entity(KeyFactory.createKey("Hoge", i + 1));
+            list.add(EntityTranslator.convertToPb(entity));
+        }
+        DatastoreUtil.put(-1, list);
+        assertThat(
+            tester.count("Hoge"),
+            is(DatastoreUtil.MAX_NUMBER_OF_ENTITIES + 1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void putForPutRequest() throws Exception {
         Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
         Entity entity2 = new Entity(KeyFactory.createKey("Hoge", 2));
         PutRequest req = new PutRequest();
         req.addEntity(EntityTranslator.convertToPb(entity));
         req.addEntity(EntityTranslator.convertToPb(entity2));
-        DatastoreUtil.putInternally(req);
+        DatastoreUtil.put(req);
         assertThat(ds.get(entity.getKey()), is(notNullValue()));
         assertThat(ds.get(entity2.getKey()), is(notNullValue()));
     }

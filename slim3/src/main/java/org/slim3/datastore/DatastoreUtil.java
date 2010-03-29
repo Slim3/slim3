@@ -47,6 +47,7 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.apphosting.api.ApiProxy;
+import com.google.apphosting.api.DatastorePb;
 import com.google.apphosting.api.DatastorePb.GetSchemaRequest;
 import com.google.apphosting.api.DatastorePb.PutRequest;
 import com.google.apphosting.api.DatastorePb.Schema;
@@ -67,6 +68,21 @@ public final class DatastoreUtil {
      * The maximum retry count.
      */
     public static final int MAX_RETRY = 10;
+
+    /**
+     * The maximum size(bytes) of entity.
+     */
+    public static final int MAX_ENTITY_SIZE = 1000000;
+
+    /**
+     * The maximum number of entities.
+     */
+    public static final int MAX_NUMBER_OF_ENTITIES = 500;
+
+    /**
+     * The extra size.
+     */
+    public static final int EXTRA_SIZE = 200;
 
     private static final long INITIAL_WAIT_MS = 100L;
 
@@ -696,34 +712,54 @@ public final class DatastoreUtil {
     }
 
     /**
-     * Puts the entities internally.
+     * Puts the entities using lower level API.
      * 
+     * @param handle
+     *            the transaction handle
      * @param entities
      *            the entities
      */
-    public static void putInternally(Iterable<EntityProto> entities) {
+    public static void put(long handle, Iterable<EntityProto> entities) {
         if (entities == null) {
             throw new NullPointerException(
                 "The entities parameter must not be null.");
         }
-        if (entities instanceof Collection<?>
-            && ((Collection<?>) entities).size() == 0) {
-            return;
-        }
-        PutRequest req = new PutRequest();
+        PutRequest req = createPutRequest(handle);
+        int totalSize = 0;
         for (EntityProto e : entities) {
+            int size = e.encodingSize();
+            if ((totalSize != 0 && totalSize + size + EXTRA_SIZE > MAX_ENTITY_SIZE)
+                || req.entitySize() >= MAX_NUMBER_OF_ENTITIES) {
+                put(req);
+                req = createPutRequest(handle);
+                totalSize = 0;
+            }
             req.addEntity(e);
+            totalSize += size + EXTRA_SIZE;
         }
-        putInternally(req);
+        if (req.entitySize() > 0) {
+            put(req);
+        }
+    }
+
+    private static PutRequest createPutRequest(long handle) {
+        PutRequest req = new PutRequest();
+        if (handle >= 0) {
+            DatastorePb.Transaction tx = new DatastorePb.Transaction();
+            tx.setHandle(handle);
+            tx.setApp(ApiProxy.getCurrentEnvironment().getAppId());
+            req.setTransaction(tx);
+        }
+        return req;
     }
 
     /**
-     * Puts the request for put internally.
+     * Puts the entities using lower level API.
      * 
      * @param putRequest
      *            the request for put
      */
-    public static void putInternally(PutRequest putRequest) {
+    public static void put(PutRequest putRequest) {
         if (putRequest == null) {
             throw new NullPointerException(
                 "The putRequest parameter must not be null.");

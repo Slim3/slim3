@@ -15,14 +15,13 @@
  */
 package org.slim3.datastore;
 
-import java.util.ArrayList;
-import java.util.List;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.slim3.datastore.model.Bbb;
+import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.AppEngineTestCase;
-
-import com.google.appengine.api.datastore.Blob;
-import com.google.appengine.api.datastore.Entity;
 
 /**
  * @author higa
@@ -35,11 +34,13 @@ public class SpikeTest extends AppEngineTestCase {
      */
     @Test
     public void spike() throws Exception {
-        List<Blob> blobList = new ArrayList<Blob>();
-        blobList.add(new Blob(new byte[] { 1 }));
-        blobList.add(new Blob(new byte[] { 1 }));
-        Entity entity = new Entity("Hoge");
-        entity.setProperty("blobList", blobList);
-        Datastore.put(entity);
+        GlobalTransaction gtx = Datastore.beginGlobalTransaction();
+        Bbb bbb = new Bbb();
+        Hoge hoge = new Hoge();
+        bbb.getHogeRef().setModel(hoge);
+        gtx.put(bbb, hoge);
+        gtx.commit();
+        assertThat(tester.count(Bbb.class), is(1));
+        assertThat(tester.count(Hoge.class), is(1));
     }
 }

@@ -152,7 +152,7 @@ public class JournalTest extends AppEngineTestCase {
      */
     @Test
     public void putBigEntities() throws Exception {
-        Blob blob = new Blob(new byte[Journal.MAX_ENTITY_SIZE]);
+        Blob blob = new Blob(new byte[DatastoreUtil.MAX_ENTITY_SIZE]);
         Key globalTransactionKey = Datastore.allocateId(GlobalTransaction.KIND);
         Key key = Datastore.createKey("Hoge", 1);
         Key key2 = Datastore.createKey("Hoge", 2);

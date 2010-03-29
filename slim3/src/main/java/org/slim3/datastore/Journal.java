@@ -66,16 +66,6 @@ public class Journal {
     public static final String DELETE_PROPERTY_PREFIX = "delete";
 
     /**
-     * The maximum size(bytes) of entity.
-     */
-    public static final int MAX_ENTITY_SIZE = 1000000;
-
-    /**
-     * The extra size.
-     */
-    public static final int EXTRA_SIZE = 200;
-
-    /**
      * Applies the journals.
      * 
      * @param globalTransactionKey
@@ -116,7 +106,7 @@ public class Journal {
                 }
             }
             if (putReq.entitySize() > 0) {
-                DatastoreUtil.putInternally(putReq);
+                DatastoreUtil.put(putReq);
             }
             if (deleteKeys.size() > 0) {
                 Datastore.deleteWithoutTx(deleteKeys);
@@ -160,7 +150,7 @@ public class Journal {
                 }
             }
             if (putReq.entitySize() > 0) {
-                DatastoreUtil.putInternally(putReq);
+                DatastoreUtil.put(putReq);
             }
             if (deleteKeys.size() > 0) {
                 Datastore.deleteWithoutTx(deleteKeys);
@@ -203,7 +193,7 @@ public class Journal {
                 put ? EntityTranslator.convertToPb(targetEntity) : null;
             int size = put ? targetProto.encodingSize() : 0;
             if (totalSize != 0
-                && totalSize + size + EXTRA_SIZE > MAX_ENTITY_SIZE) {
+                && totalSize + size + DatastoreUtil.EXTRA_SIZE > DatastoreUtil.MAX_ENTITY_SIZE) {
                 Datastore.putWithoutTx(entity);
                 entities.add(entity);
                 entity = createEntity(globalTransactionKey);
@@ -218,7 +208,7 @@ public class Journal {
                 entity.setUnindexedProperty(DELETE_PROPERTY_PREFIX
                     + propertyIndex++, key);
             }
-            totalSize += size + EXTRA_SIZE;
+            totalSize += size + DatastoreUtil.EXTRA_SIZE;
         }
         Datastore.putWithoutTx(entity);
         entities.add(entity);
