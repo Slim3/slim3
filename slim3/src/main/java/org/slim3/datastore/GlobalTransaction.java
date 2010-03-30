@@ -110,9 +110,14 @@ public class GlobalTransaction {
     protected Map<Key, Lock> lockMap;
 
     /**
-     * The map of journals.
+     * The map of journals for global transaction.
      */
-    protected Map<Key, Entity> journalMap;
+    protected Map<Key, Entity> globalJournalMap;
+
+    /**
+     * The map of journals for local transaction.
+     */
+    protected Map<Key, Entity> localJournalMap;
 
     /**
      * Whether this global transaction is valid.
@@ -394,7 +399,8 @@ public class GlobalTransaction {
         localTransaction = Datastore.beginTransaction();
         timestamp = System.currentTimeMillis();
         lockMap = new HashMap<Key, Lock>();
-        journalMap = new HashMap<Key, Entity>();
+        globalJournalMap = new HashMap<Key, Entity>();
+        localJournalMap = new HashMap<Key, Entity>();
     }
 
     /**
@@ -1089,12 +1095,13 @@ public class GlobalTransaction {
         Key rootKey = DatastoreUtil.getRoot(key);
         if (localTransactionRootKey == null) {
             setLocalTransactionRootKey(rootKey);
-            return Datastore.put(localTransaction, entity);
+            localJournalMap.put(key, entity);
         } else if (rootKey.equals(localTransactionRootKey)) {
-            return Datastore.put(localTransaction, entity);
+            localJournalMap.put(key, entity);
+        } else {
+            lock(rootKey);
+            globalJournalMap.put(key, entity);
         }
-        lock(rootKey);
-        journalMap.put(key, entity);
         return key;
     }
 
@@ -1182,12 +1189,12 @@ public class GlobalTransaction {
         Key rootKey = DatastoreUtil.getRoot(key);
         if (localTransactionRootKey == null) {
             setLocalTransactionRootKey(rootKey);
-            Datastore.delete(localTransaction, key);
+            localJournalMap.put(key, null);
         } else if (rootKey.equals(localTransactionRootKey)) {
-            Datastore.delete(localTransaction, key);
+            localJournalMap.put(key, null);
         } else {
             lock(rootKey);
-            journalMap.put(key, null);
+            globalJournalMap.put(key, null);
         }
     }
 
@@ -1242,16 +1249,20 @@ public class GlobalTransaction {
         Key rootKey = DatastoreUtil.getRoot(ancestorKey);
         if (localTransactionRootKey == null) {
             setLocalTransactionRootKey(rootKey);
-            Datastore.deleteAll(localTransaction, ancestorKey);
+            for (Key key : Datastore.query(ancestorKey).asKeyList()) {
+                localJournalMap.put(key, null);
+            }
         } else if (rootKey.equals(localTransactionRootKey)) {
-            Datastore.deleteAll(localTransaction, ancestorKey);
+            for (Key key : Datastore.query(ancestorKey).asKeyList()) {
+                localJournalMap.put(key, null);
+            }
         } else {
             lock(rootKey);
             for (Key key : Datastore.query(ancestorKey).asKeyList()) {
                 if (key.getKind().equals(Lock.KIND)) {
                     continue;
                 }
-                journalMap.put(key, null);
+                globalJournalMap.put(key, null);
             }
         }
     }
@@ -1261,6 +1272,7 @@ public class GlobalTransaction {
      */
     public void commit() {
         assertActive();
+        Journal.apply(localTransaction, localJournalMap);
         if (isLocalTransaction()) {
             commitLocalTransaction();
         } else {
@@ -1481,7 +1493,7 @@ public class GlobalTransaction {
      */
     protected List<Entity> putJournals() {
         try {
-            return Journal.put(globalTransactionKey, journalMap);
+            return Journal.put(globalTransactionKey, globalJournalMap);
         } catch (Throwable cause) {
             try {
                 Journal.deleteInTx(globalTransactionKey);

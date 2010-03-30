@@ -44,7 +44,9 @@ public class GlobalTransactionServletTest extends ServletTestCase {
     @Test
     public void rollForward() throws Exception {
         gtx.put(new Entity("Hoge"));
-        gtx.commitGlobalTransaction();
+        gtx.put(new Entity("Hoge"));
+        gtx.putJournals();
+        gtx.commitGlobalTransactionInternally();
         String encodedKey = Datastore.keyToString(gtx.globalTransactionKey);
         tester.request.setServletPath(GlobalTransactionServlet.SERVLET_PATH);
         tester.request.setParameter(

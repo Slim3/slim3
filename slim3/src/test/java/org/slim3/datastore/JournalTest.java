@@ -29,6 +29,7 @@ import org.slim3.tester.AppEngineTestCase;
 import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 
 /**
@@ -94,6 +95,25 @@ public class JournalTest extends AppEngineTestCase {
         assertThat(Datastore.getOrNull(key), is(notNullValue()));
         assertThat(Datastore.getOrNull(key2), is(nullValue()));
         assertThat(Datastore.query(Journal.KIND).count(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void applyWithLocalTransaction() throws Exception {
+        Key key = Datastore.createKey("Hoge", 1);
+        Key key2 = Datastore.createKey(key, "Hoge", 2);
+        Datastore.put(new Entity(key2));
+        Map<Key, Entity> journalMap = new LinkedHashMap<Key, Entity>();
+        Entity putEntity = new Entity(key);
+        journalMap.put(key, putEntity);
+        journalMap.put(key2, null);
+        Transaction tx = Datastore.beginTransaction();
+        Journal.apply(tx, journalMap);
+        tx.commit();
+        assertThat(Datastore.getOrNull(key), is(notNullValue()));
+        assertThat(Datastore.getOrNull(key2), is(nullValue()));
     }
 
     /**

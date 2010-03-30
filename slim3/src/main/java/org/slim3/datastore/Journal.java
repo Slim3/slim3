@@ -17,7 +17,6 @@ package org.slim3.datastore;
 
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -126,6 +125,41 @@ public class Journal {
     }
 
     /**
+     * Applies the journals.
+     * 
+     * @param tx
+     *            the transaction
+     * @param journals
+     *            the journals
+     * @throws NullPointerException
+     *             if the tx parameter is null or if the journals parameter is
+     *             null
+     * 
+     */
+    public static void apply(Transaction tx, Map<Key, Entity> journals)
+            throws NullPointerException {
+        if (tx == null) {
+            throw new NullPointerException("The tx parameter must not be null.");
+        }
+        if (journals == null) {
+            throw new NullPointerException(
+                "The journals parameter must not be null.");
+        }
+        List<Entity> putList = new ArrayList<Entity>();
+        List<Key> deleteList = new ArrayList<Key>();
+        for (Key key : journals.keySet()) {
+            Entity entity = journals.get(key);
+            if (entity != null) {
+                putList.add(entity);
+            } else {
+                deleteList.add(key);
+            }
+        }
+        DatastoreUtil.put(tx, putList);
+        DatastoreUtil.delete(tx, deleteList);
+    }
+
+    /**
      * Puts the journals to the datastore.
      * 
      * @param globalTransactionKey
@@ -152,8 +186,7 @@ public class Journal {
         Entity entity = createEntity(globalTransactionKey);
         List<Blob> putList = new ArrayList<Blob>();
         List<Key> deleteList = new ArrayList<Key>();
-        for (Iterator<Key> i = journalMap.keySet().iterator(); i.hasNext();) {
-            Key key = i.next();
+        for (Key key : journalMap.keySet()) {
             Entity targetEntity = journalMap.get(key);
             boolean put = targetEntity != null;
             EntityProto targetProto =

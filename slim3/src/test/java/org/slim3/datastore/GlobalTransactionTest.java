@@ -151,7 +151,7 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(gtx.isActive(), is(true));
         assertThat(gtx.timestamp, is(not(0L)));
         assertThat(gtx.lockMap, is(notNullValue()));
-        assertThat(gtx.journalMap, is(notNullValue()));
+        assertThat(gtx.globalJournalMap, is(notNullValue()));
         assertThat(GlobalTransaction.getCurrentTransaction(), is(gtx));
     }
 
@@ -1010,7 +1010,9 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(gtx.localTransactionRootKey, is(rootKey));
         assertThat(Datastore.query(key).count(), is(0));
         assertThat(gtx.lockMap.size(), is(0));
-        assertThat(gtx.journalMap.size(), is(0));
+        assertThat(gtx.globalJournalMap.size(), is(0));
+        assertThat(gtx.localJournalMap.size(), is(1));
+        assertThat(gtx.localJournalMap.get(entity.getKey()), is(entity));
     }
 
     /**
@@ -1028,7 +1030,9 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(gtx.localTransactionRootKey, is(rootKey));
         assertThat(Datastore.query(key).count(), is(0));
         assertThat(gtx.lockMap.size(), is(0));
-        assertThat(gtx.journalMap.size(), is(0));
+        assertThat(gtx.globalJournalMap.size(), is(0));
+        assertThat(gtx.localJournalMap.size(), is(1));
+        assertThat(gtx.localJournalMap.get(entity.getKey()), is(entity));
     }
 
     /**
@@ -1052,8 +1056,8 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(lock, is(notNullValue()));
         assertThat(lock.globalTransactionKey, is(gtx.globalTransactionKey));
         assertThat(lock.timestamp, is(not(0L)));
-        assertThat(gtx.journalMap.size(), is(1));
-        assertThat(gtx.journalMap.get(key), is(entity));
+        assertThat(gtx.globalJournalMap.size(), is(1));
+        assertThat(gtx.globalJournalMap.get(key), is(entity));
     }
 
     /**
@@ -1066,7 +1070,7 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(gtx.localTransactionRootKey, is(hoge.getKey()));
         assertThat(Datastore.query(hoge.getKey()).count(), is(0));
         assertThat(gtx.lockMap.size(), is(0));
-        assertThat(gtx.journalMap.size(), is(0));
+        assertThat(gtx.globalJournalMap.size(), is(0));
     }
 
     /**
@@ -1081,8 +1085,10 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(keys.size(), is(2));
         assertThat(gtx.lockMap.size(), is(1));
         assertThat(gtx.lockMap.get(entity.getKey()), is(notNullValue()));
-        assertThat(gtx.journalMap.size(), is(1));
-        assertThat(gtx.journalMap.get(entity.getKey()), is(notNullValue()));
+        assertThat(gtx.globalJournalMap.size(), is(1));
+        assertThat(
+            gtx.globalJournalMap.get(entity.getKey()),
+            is(notNullValue()));
     }
 
     /**
@@ -1097,8 +1103,10 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(keys.size(), is(2));
         assertThat(gtx.lockMap.size(), is(1));
         assertThat(gtx.lockMap.get(entity.getKey()), is(notNullValue()));
-        assertThat(gtx.journalMap.size(), is(1));
-        assertThat(gtx.journalMap.get(entity.getKey()), is(notNullValue()));
+        assertThat(gtx.globalJournalMap.size(), is(1));
+        assertThat(
+            gtx.globalJournalMap.get(entity.getKey()),
+            is(notNullValue()));
     }
 
     /**
@@ -1109,12 +1117,15 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         Key rootKey = Datastore.createKey("Parent", 1);
         Key key = Datastore.createKey(rootKey, "Child", 1);
         Datastore.putWithoutTx(new Entity(key));
+        Transaction tx = Datastore.beginTransaction();
         gtx.delete(key);
+        tx.commit();
         assertThat(Datastore.query("Child").count(), is(1));
-        gtx.localTransaction.commit();
-        assertThat(Datastore.query("Child").count(), is(0));
         assertThat(gtx.lockMap.size(), is(0));
-        assertThat(gtx.journalMap.size(), is(0));
+        assertThat(gtx.globalJournalMap.size(), is(0));
+        assertThat(gtx.localJournalMap.size(), is(1));
+        assertThat(gtx.localJournalMap.containsKey(key), is(true));
+        assertThat(gtx.localJournalMap.get(key), is(nullValue()));
     }
 
     /**
@@ -1126,10 +1137,15 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         Key key = Datastore.createKey(rootKey, "Child", 1);
         Datastore.putWithoutTx(new Entity(key));
         gtx.getAsMap(key);
+        Transaction tx = Datastore.beginTransaction();
         gtx.delete(key);
+        tx.commit();
         assertThat(Datastore.query("Child").count(), is(1));
         assertThat(gtx.lockMap.size(), is(0));
-        assertThat(gtx.journalMap.size(), is(0));
+        assertThat(gtx.globalJournalMap.size(), is(0));
+        assertThat(gtx.localJournalMap.size(), is(1));
+        assertThat(gtx.localJournalMap.containsKey(key), is(true));
+        assertThat(gtx.localJournalMap.get(key), is(nullValue()));
     }
 
     /**
@@ -1141,14 +1157,16 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         Key key = Datastore.createKey(rootKey, "Child", 1);
         Key key2 = Datastore.createKey("Hoge", 1);
         gtx.put(new Entity(key2));
+        Transaction tx = Datastore.beginTransaction();
         gtx.delete(key);
+        tx.commit();
         assertThat(gtx.lockMap.size(), is(1));
         Lock lock = gtx.lockMap.get(rootKey);
         assertThat(lock, is(notNullValue()));
         assertThat(lock.globalTransactionKey, is(gtx.globalTransactionKey));
         assertThat(lock.timestamp, is(not(0L)));
-        assertThat(gtx.journalMap.size(), is(1));
-        assertThat(gtx.journalMap.get(key), is(nullValue()));
+        assertThat(gtx.globalJournalMap.size(), is(1));
+        assertThat(gtx.globalJournalMap.get(key), is(nullValue()));
     }
 
     /**
@@ -1166,9 +1184,9 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(lock, is(notNullValue()));
         assertThat(lock.globalTransactionKey, is(gtx.globalTransactionKey));
         assertThat(lock.timestamp, is(not(0L)));
-        assertThat(gtx.journalMap.size(), is(1));
-        assertThat(gtx.journalMap.containsKey(key2), is(true));
-        assertThat(gtx.journalMap.get(key2), is(nullValue()));
+        assertThat(gtx.globalJournalMap.size(), is(1));
+        assertThat(gtx.globalJournalMap.containsKey(key2), is(true));
+        assertThat(gtx.globalJournalMap.get(key2), is(nullValue()));
     }
 
     /**
@@ -1186,9 +1204,9 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(lock, is(notNullValue()));
         assertThat(lock.globalTransactionKey, is(gtx.globalTransactionKey));
         assertThat(lock.timestamp, is(not(0L)));
-        assertThat(gtx.journalMap.size(), is(1));
-        assertThat(gtx.journalMap.containsKey(key2), is(true));
-        assertThat(gtx.journalMap.get(key2), is(nullValue()));
+        assertThat(gtx.globalJournalMap.size(), is(1));
+        assertThat(gtx.globalJournalMap.containsKey(key2), is(true));
+        assertThat(gtx.globalJournalMap.get(key2), is(nullValue()));
     }
 
     /**
@@ -1201,14 +1219,18 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         Key key2 = Datastore.createKey(key, "Grandchild", 1);
         Datastore.putWithoutTx(new Entity(key));
         Datastore.putWithoutTx(new Entity(key2));
+        Transaction tx = Datastore.beginTransaction();
         gtx.deleteAll(key);
+        tx.commit();
         assertThat(Datastore.query("Child").count(), is(1));
         assertThat(Datastore.query("Grandchild").count(), is(1));
-        gtx.localTransaction.commit();
-        assertThat(Datastore.query("Child").count(), is(0));
-        assertThat(Datastore.query("Grandchild").count(), is(0));
         assertThat(gtx.lockMap.size(), is(0));
-        assertThat(gtx.journalMap.size(), is(0));
+        assertThat(gtx.globalJournalMap.size(), is(0));
+        assertThat(gtx.localJournalMap.size(), is(2));
+        assertThat(gtx.localJournalMap.containsKey(key), is(true));
+        assertThat(gtx.localJournalMap.containsKey(key2), is(true));
+        assertThat(gtx.localJournalMap.get(key), is(nullValue()));
+        assertThat(gtx.localJournalMap.get(key2), is(nullValue()));
     }
 
     /**
@@ -1222,14 +1244,18 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         Datastore.putWithoutTx(new Entity(key));
         Datastore.putWithoutTx(new Entity(key2));
         gtx.getAsMap(rootKey);
+        Transaction tx = Datastore.beginTransaction();
         gtx.deleteAll(key);
+        tx.commit();
         assertThat(Datastore.query("Child").count(), is(1));
         assertThat(Datastore.query("Grandchild").count(), is(1));
-        gtx.localTransaction.commit();
-        assertThat(Datastore.query("Child").count(), is(0));
-        assertThat(Datastore.query("Grandchild").count(), is(0));
         assertThat(gtx.lockMap.size(), is(0));
-        assertThat(gtx.journalMap.size(), is(0));
+        assertThat(gtx.globalJournalMap.size(), is(0));
+        assertThat(gtx.localJournalMap.size(), is(2));
+        assertThat(gtx.localJournalMap.containsKey(key), is(true));
+        assertThat(gtx.localJournalMap.containsKey(key2), is(true));
+        assertThat(gtx.localJournalMap.get(key), is(nullValue()));
+        assertThat(gtx.localJournalMap.get(key2), is(nullValue()));
     }
 
     /**
@@ -1250,11 +1276,11 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         assertThat(lock, is(notNullValue()));
         assertThat(lock.globalTransactionKey, is(gtx.globalTransactionKey));
         assertThat(lock.timestamp, is(not(0L)));
-        assertThat(gtx.journalMap.size(), is(2));
-        assertThat(gtx.journalMap.containsKey(key), is(true));
-        assertThat(gtx.journalMap.get(key), is(nullValue()));
-        assertThat(gtx.journalMap.containsKey(key2), is(true));
-        assertThat(gtx.journalMap.get(key2), is(nullValue()));
+        assertThat(gtx.globalJournalMap.size(), is(2));
+        assertThat(gtx.globalJournalMap.containsKey(key), is(true));
+        assertThat(gtx.globalJournalMap.get(key), is(nullValue()));
+        assertThat(gtx.globalJournalMap.containsKey(key2), is(true));
+        assertThat(gtx.globalJournalMap.get(key2), is(nullValue()));
     }
 
     /**
@@ -1275,6 +1301,7 @@ public class GlobalTransactionTest extends AppEngineTestCase {
     @Test
     public void commitLocalTransaction() throws Exception {
         gtx.put(new Entity("Hoge"));
+        Journal.apply(gtx.localTransaction, gtx.localJournalMap);
         gtx.commitLocalTransaction();
         assertThat(Datastore.query("Hoge").count(), is(1));
         assertThat(Datastore.query(GlobalTransaction.KIND).count(), is(0));
@@ -1290,6 +1317,7 @@ public class GlobalTransactionTest extends AppEngineTestCase {
     @Test
     public void commitGlobalTransactionInternally() throws Exception {
         gtx.put(new Entity("Hoge"));
+        Journal.apply(gtx.localTransaction, gtx.localJournalMap);
         gtx.commitGlobalTransactionInternally();
         Entity entity = Datastore.get(gtx.globalTransactionKey);
         assertThat(entity, is(notNullValue()));
@@ -1342,6 +1370,7 @@ public class GlobalTransactionTest extends AppEngineTestCase {
     public void commitGlobalTransaction() throws Exception {
         gtx.put(new Entity("Hoge"));
         gtx.put(new Entity("Hoge2"));
+        Journal.apply(gtx.localTransaction, gtx.localJournalMap);
         gtx.commitGlobalTransaction();
         assertThat(Datastore.query("Hoge").count(), is(1));
         assertThat(Datastore.query("Hoge2").count(), is(1));
@@ -1401,7 +1430,7 @@ public class GlobalTransactionTest extends AppEngineTestCase {
     @Test
     public void rollbackGlobalTransaction() throws Exception {
         gtx.put(new Entity("Hoge"));
-        Journal.put(gtx.globalTransactionKey, gtx.journalMap);
+        Journal.put(gtx.globalTransactionKey, gtx.globalJournalMap);
         gtx.rollbackGlobalTransaction();
         assertThat(Datastore.query("Hoge").count(), is(0));
         assertThat(Datastore.query(GlobalTransaction.KIND).count(), is(0));
@@ -1418,7 +1447,7 @@ public class GlobalTransactionTest extends AppEngineTestCase {
     public void rollback() throws Exception {
         gtx.put(new Entity("Hoge"));
         gtx.put(new Entity("Hoge"));
-        Journal.put(gtx.globalTransactionKey, gtx.journalMap);
+        Journal.put(gtx.globalTransactionKey, gtx.globalJournalMap);
         gtx.rollback();
         assertThat(Datastore.query("Hoge").count(), is(0));
         assertThat(Datastore.query(GlobalTransaction.KIND).count(), is(0));
@@ -1525,8 +1554,9 @@ public class GlobalTransactionTest extends AppEngineTestCase {
      */
     @Test
     public void rollForward() throws Exception {
+        gtx.getAsMap(Datastore.createKey("Hoge2", 1));
         gtx.put(new Entity("Hoge"));
-        Journal.put(gtx.globalTransactionKey, gtx.journalMap);
+        Journal.put(gtx.globalTransactionKey, gtx.globalJournalMap);
         gtx.commitGlobalTransactionInternally();
         GlobalTransaction.rollForward(gtx.globalTransactionKey);
         assertThat(Datastore.query("Hoge").count(), is(1));
@@ -1541,7 +1571,7 @@ public class GlobalTransactionTest extends AppEngineTestCase {
     @Test
     public void rollbackByGlobalTransactionKey() throws Exception {
         gtx.put(new Entity("Hoge"));
-        Journal.put(gtx.globalTransactionKey, gtx.journalMap);
+        Journal.put(gtx.globalTransactionKey, gtx.globalJournalMap);
         GlobalTransaction.rollback(gtx.globalTransactionKey);
         assertThat(Datastore.query("Hoge").count(), is(0));
         assertThat(Datastore.query(Lock.KIND).count(), is(0));
