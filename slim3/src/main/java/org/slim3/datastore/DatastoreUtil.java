@@ -143,9 +143,9 @@ public final class DatastoreUtil {
                 return ds.beginTransaction();
             } catch (DatastoreTimeoutException e) {
                 dte = e;
-                logger.log(Level.INFO, "This message["
+                logger.log(Level.INFO, "This message is just INFORMATION["
                     + e
-                    + "] is just INFORMATION. Retry["
+                    + "]. Retry["
                     + i
                     + "]", e);
                 sleep(wait);
@@ -253,9 +253,9 @@ public final class DatastoreUtil {
                 return ds.allocateIds(kind, num);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
-                logger.log(Level.INFO, "This message["
+                logger.log(Level.INFO, "This message is just INFORMATION["
                     + e
-                    + "] is just INFORMATION. Retry["
+                    + "]. Retry["
                     + i
                     + "]", e);
                 sleep(wait);
@@ -294,9 +294,9 @@ public final class DatastoreUtil {
                 return ds.allocateIds(parentKey, kind, num);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
-                logger.log(Level.INFO, "This message["
+                logger.log(Level.INFO, "This message is just INFORMATION["
                     + e
-                    + "] is just INFORMATION. Retry["
+                    + "]. Retry["
                     + i
                     + "]", e);
                 sleep(wait);
@@ -372,9 +372,9 @@ public final class DatastoreUtil {
                     return ds.get(key);
                 } catch (DatastoreTimeoutException e) {
                     dte = e;
-                    logger.log(Level.INFO, "This message["
+                    logger.log(Level.INFO, "This message is just INFORMATION["
                         + e
-                        + "] is just INFORMATION. Retry["
+                        + "]. Retry["
                         + i
                         + "]", e);
                     sleep(wait);
@@ -422,9 +422,9 @@ public final class DatastoreUtil {
                     return ds.get(tx, key);
                 } catch (DatastoreTimeoutException e) {
                     dte = e;
-                    logger.log(Level.INFO, "This message["
+                    logger.log(Level.INFO, "This message is just INFORMATION["
                         + e
-                        + "] is just INFORMATION. Retry["
+                        + "]. Retry["
                         + i
                         + "]", e);
                     sleep(wait);
@@ -464,9 +464,9 @@ public final class DatastoreUtil {
                 return ds.get(keys);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
-                logger.log(Level.INFO, "This message["
+                logger.log(Level.INFO, "This message is just INFORMATION["
                     + e
-                    + "] is just INFORMATION. Retry["
+                    + "]. Retry["
                     + i
                     + "]", e);
                 sleep(wait);
@@ -511,9 +511,9 @@ public final class DatastoreUtil {
                 return ds.get(tx, keys);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
-                logger.log(Level.INFO, "This message["
+                logger.log(Level.INFO, "This message is just INFORMATION["
                     + e
-                    + "] is just INFORMATION. Retry["
+                    + "]. Retry["
                     + i
                     + "]", e);
                 sleep(wait);
@@ -606,7 +606,7 @@ public final class DatastoreUtil {
         }
         ConcurrentModificationException cme = null;
         long wait = INITIAL_WAIT_MS;
-        for (int j = 0; j < MAX_RETRY; j++) {
+        for (int i = 0; i < MAX_RETRY; i++) {
             try {
                 assignKeyIfNecessary(entities);
                 List<Key> keyList = toKeyList(entities);
@@ -615,10 +615,10 @@ public final class DatastoreUtil {
                 return keyList;
             } catch (ConcurrentModificationException e) {
                 cme = e;
-                logger.log(Level.INFO, "This message["
+                logger.log(Level.INFO, "This message is just INFORMATION["
                     + e
-                    + "] is just INFORMATION. Retry["
-                    + j
+                    + "]. Retry["
+                    + i
                     + "]", e);
                 sleep(wait);
                 wait *= WAIT_MULTIPLIER_FACTOR;
@@ -780,11 +780,14 @@ public final class DatastoreUtil {
                         return;
                     } catch (DatastoreTimeoutException e) {
                         dte = e;
-                        logger.log(Level.INFO, "This message["
-                            + e
-                            + "] is just INFORMATION. Retry["
-                            + j
-                            + "]", e);
+                        logger.log(
+                            Level.INFO,
+                            "This message is just INFORMATION["
+                                + e
+                                + "]. Retry["
+                                + j
+                                + "]",
+                            e);
                         sleep(wait);
                         wait *= WAIT_MULTIPLIER_FACTOR;
                     }
@@ -855,11 +858,14 @@ public final class DatastoreUtil {
                         return;
                     } catch (DatastoreTimeoutException e) {
                         dte = e;
-                        logger.log(Level.INFO, "This message["
-                            + e
-                            + "] is just INFORMATION. Retry["
-                            + j
-                            + "]", e);
+                        logger.log(
+                            Level.INFO,
+                            "This message is just INFORMATION["
+                                + e
+                                + "]. Retry["
+                                + j
+                                + "]",
+                            e);
                         sleep(wait);
                         wait *= WAIT_MULTIPLIER_FACTOR;
                     }
@@ -910,9 +916,9 @@ public final class DatastoreUtil {
                 return;
             } catch (DatastoreTimeoutException e) {
                 dte = e;
-                logger.log(Level.INFO, "This message["
+                logger.log(Level.INFO, "This message is just INFORMATION["
                     + e
-                    + "] is just INFORMATION. Retry["
+                    + "]. Retry["
                     + i
                     + "]", e);
                 sleep(wait);
@@ -949,9 +955,9 @@ public final class DatastoreUtil {
                 return ds.prepare(query);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
-                logger.log(Level.INFO, "This message["
+                logger.log(Level.INFO, "This message is just INFORMATION["
                     + e
-                    + "] is just INFORMATION. Retry["
+                    + "]. Retry["
                     + i
                     + "]", e);
                 sleep(wait);
@@ -991,9 +997,9 @@ public final class DatastoreUtil {
                 return ds.prepare(tx, query);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
-                logger.log(Level.INFO, "This message["
+                logger.log(Level.INFO, "This message is just INFORMATION["
                     + e
-                    + "] is just INFORMATION. Retry["
+                    + "]. Retry["
                     + i
                     + "]", e);
                 sleep(wait);
@@ -1032,9 +1038,9 @@ public final class DatastoreUtil {
                 return preparedQuery.asList(fetchOptions);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
-                logger.log(Level.INFO, "This message["
+                logger.log(Level.INFO, "This message is just INFORMATION["
                     + e
-                    + "] is just INFORMATION. Retry["
+                    + "]. Retry["
                     + i
                     + "]", e);
                 sleep(wait);
@@ -1074,9 +1080,9 @@ public final class DatastoreUtil {
                 return preparedQuery.asQueryResultList(fetchOptions);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
-                logger.log(Level.INFO, "This message["
+                logger.log(Level.INFO, "This message is just INFORMATION["
                     + e
-                    + "] is just INFORMATION. Retry["
+                    + "]. Retry["
                     + i
                     + "]", e);
                 sleep(wait);
@@ -1108,9 +1114,9 @@ public final class DatastoreUtil {
                 return preparedQuery.asSingleEntity();
             } catch (DatastoreTimeoutException e) {
                 dte = e;
-                logger.log(Level.INFO, "This message["
+                logger.log(Level.INFO, "This message is just INFORMATION["
                     + e
-                    + "] is just INFORMATION. Retry["
+                    + "]. Retry["
                     + i
                     + "]", e);
                 sleep(wait);
@@ -1149,9 +1155,9 @@ public final class DatastoreUtil {
                 return preparedQuery.asIterable(fetchOptions);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
-                logger.log(Level.INFO, "This message["
+                logger.log(Level.INFO, "This message is just INFORMATION["
                     + e
-                    + "] is just INFORMATION. Retry["
+                    + "]. Retry["
                     + i
                     + "]", e);
                 sleep(wait);
@@ -1183,9 +1189,9 @@ public final class DatastoreUtil {
                 return preparedQuery.countEntities();
             } catch (DatastoreTimeoutException e) {
                 dte = e;
-                logger.log(Level.INFO, "This message["
+                logger.log(Level.INFO, "This message is just INFORMATION["
                     + e
-                    + "] is just INFORMATION. Retry["
+                    + "]. Retry["
                     + i
                     + "]", e);
                 sleep(wait);
