@@ -649,6 +649,17 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void asQueryResultList() throws Exception {
+        Query query = new Query("Hoge");
+        PreparedQuery pq = DatastoreUtil.prepare(ds, query);
+        assertThat(DatastoreUtil.asQueryResultList(pq, FetchOptions.Builder
+            .withLimit(10)), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void asSingleEntity() throws Exception {
         ds.put(new Entity("Hoge"));
         Query query = new Query("Hoge");

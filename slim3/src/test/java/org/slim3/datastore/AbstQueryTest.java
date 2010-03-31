@@ -31,6 +31,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.datastore.Transaction;
 
 /**
@@ -212,6 +213,20 @@ public class AbstQueryTest extends AppEngineTestCase {
             assertThat(entity.getKind(), is("Hoge"));
         }
         assertThat(found, is(true));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asQueryResultList() throws Exception {
+        ds.put(new Entity("Hoge"));
+        ds.put(new Entity("Hoge"));
+        MyQuery query = new MyQuery("Hoge");
+        QueryResultList<Entity> list = query.limit(1).asQueryResultEntityList();
+        assertThat(list, is(notNullValue()));
+        assertThat(list.size(), is(1));
+        assertThat(list.getCursor(), is(notNullValue()));
     }
 
     /**

@@ -46,6 +46,7 @@ import com.google.appengine.api.datastore.KeyRange;
 import com.google.appengine.api.datastore.KeyUtil;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.apphosting.api.ApiProxy;
 import com.google.apphosting.api.DatastorePb;
@@ -1029,6 +1030,48 @@ public final class DatastoreUtil {
         for (int i = 0; i < MAX_RETRY; i++) {
             try {
                 return preparedQuery.asList(fetchOptions);
+            } catch (DatastoreTimeoutException e) {
+                dte = e;
+                logger.log(Level.INFO, "This message["
+                    + e
+                    + "] is just INFORMATION. Retry["
+                    + i
+                    + "]", e);
+                sleep(wait);
+                wait *= WAIT_MULTIPLIER_FACTOR;
+            }
+        }
+        throw dte;
+    }
+
+    /**
+     * Returns a query result list of entities.
+     * 
+     * @param preparedQuery
+     *            the prepared query
+     * @param fetchOptions
+     *            the fetch options
+     * @return a query result list of entities
+     * @throws NullPointerException
+     *             if the preparedQuery parameter is null or if the fetchOptions
+     *             parameter is null
+     */
+    public static QueryResultList<Entity> asQueryResultList(
+            PreparedQuery preparedQuery, FetchOptions fetchOptions)
+            throws NullPointerException {
+        if (preparedQuery == null) {
+            throw new NullPointerException(
+                "The preparedQuery parameter must not be null.");
+        }
+        if (fetchOptions == null) {
+            throw new NullPointerException(
+                "The fetchOptions parameter must not be null.");
+        }
+        DatastoreTimeoutException dte = null;
+        long wait = INITIAL_WAIT_MS;
+        for (int i = 0; i < MAX_RETRY; i++) {
+            try {
+                return preparedQuery.asQueryResultList(fetchOptions);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
                 logger.log(Level.INFO, "This message["

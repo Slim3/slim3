@@ -27,6 +27,7 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
@@ -290,6 +291,19 @@ public abstract class AbstractQuery<SUB> {
                 ds,
                 qry);
         return DatastoreUtil.asList(pq, fetchOptions);
+    }
+
+    /**
+     * Returns entities as query result list.
+     * 
+     * @return entities as query result list
+     */
+    protected QueryResultList<Entity> asQueryResultEntityList() {
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        PreparedQuery pq =
+            txSet ? DatastoreUtil.prepare(ds, tx, query) : DatastoreUtil
+                .prepare(ds, query);
+        return DatastoreUtil.asQueryResultList(pq, fetchOptions);
     }
 
     /**
