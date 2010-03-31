@@ -118,9 +118,9 @@ public class MemcacheDelegate {
                 if (cause instanceof CapabilityDisabledException) {
                     throw (CapabilityDisabledException) cause;
                 }
-                logger.log(Level.INFO, "This message["
+                logger.log(Level.INFO, "This message is just INFORMATION["
                     + e
-                    + "] is just INFORMATION. Retry["
+                    + "]. Retry["
                     + i
                     + "]", e);
                 sleep(wait);
@@ -151,9 +151,9 @@ public class MemcacheDelegate {
                 if (cause instanceof CapabilityDisabledException) {
                     throw (CapabilityDisabledException) cause;
                 }
-                logger.log(Level.INFO, "This message["
+                logger.log(Level.INFO, "This message is just INFORMATION["
                     + e
-                    + "] is just INFORMATION. Retry["
+                    + "]. Retry["
                     + i
                     + "]", e);
                 sleep(wait);
@@ -187,9 +187,9 @@ public class MemcacheDelegate {
                 if (cause instanceof CapabilityDisabledException) {
                     throw (CapabilityDisabledException) cause;
                 }
-                logger.log(Level.INFO, "This message["
+                logger.log(Level.INFO, "This message is just INFORMATION["
                     + e
-                    + "] is just INFORMATION. Retry["
+                    + "]. Retry["
                     + i
                     + "]", e);
                 sleep(wait);
@@ -231,9 +231,9 @@ public class MemcacheDelegate {
                 if (cause instanceof CapabilityDisabledException) {
                     throw (CapabilityDisabledException) cause;
                 }
-                logger.log(Level.INFO, "This message["
+                logger.log(Level.INFO, "This message is just INFORMATION["
                     + e
-                    + "] is just INFORMATION. Retry["
+                    + "]. Retry["
                     + i
                     + "]", e);
                 sleep(wait);
@@ -272,9 +272,9 @@ public class MemcacheDelegate {
                 if (cause instanceof CapabilityDisabledException) {
                     throw (CapabilityDisabledException) cause;
                 }
-                logger.log(Level.INFO, "This message["
+                logger.log(Level.INFO, "This message is just INFORMATION["
                     + e
-                    + "] is just INFORMATION. Retry["
+                    + "]. Retry["
                     + i
                     + "]", e);
                 sleep(wait);
@@ -317,9 +317,9 @@ public class MemcacheDelegate {
                 if (cause instanceof CapabilityDisabledException) {
                     throw (CapabilityDisabledException) cause;
                 }
-                logger.log(Level.INFO, "This message["
+                logger.log(Level.INFO, "This message is just INFORMATION["
                     + e
-                    + "] is just INFORMATION. Retry["
+                    + "]. Retry["
                     + i
                     + "]", e);
                 sleep(wait);
@@ -352,9 +352,9 @@ public class MemcacheDelegate {
                 if (cause instanceof CapabilityDisabledException) {
                     throw (CapabilityDisabledException) cause;
                 }
-                logger.log(Level.INFO, "This message["
+                logger.log(Level.INFO, "This message is just INFORMATION["
                     + e
-                    + "] is just INFORMATION. Retry["
+                    + "]. Retry["
                     + i
                     + "]", e);
                 sleep(wait);
@@ -451,9 +451,9 @@ public class MemcacheDelegate {
                 if (cause instanceof CapabilityDisabledException) {
                     throw (CapabilityDisabledException) cause;
                 }
-                logger.log(Level.INFO, "This message["
+                logger.log(Level.INFO, "This message is just INFORMATION["
                     + e
-                    + "] is just INFORMATION. Retry["
+                    + "]. Retry["
                     + i
                     + "]", e);
                 sleep(wait);
@@ -780,9 +780,9 @@ public class MemcacheDelegate {
                 if (cause instanceof CapabilityDisabledException) {
                     throw (CapabilityDisabledException) cause;
                 }
-                logger.log(Level.INFO, "This message["
+                logger.log(Level.INFO, "This message is just INFORMATION["
                     + e
-                    + "] is just INFORMATION. Retry["
+                    + "]. Retry["
                     + i
                     + "]", e);
                 sleep(wait);
@@ -822,9 +822,9 @@ public class MemcacheDelegate {
                 if (cause instanceof CapabilityDisabledException) {
                     throw (CapabilityDisabledException) cause;
                 }
-                logger.log(Level.INFO, "This message["
+                logger.log(Level.INFO, "This message is just INFORMATION["
                     + e
-                    + "] is just INFORMATION. Retry["
+                    + "]. Retry["
                     + i
                     + "]", e);
                 sleep(wait);
@@ -875,9 +875,9 @@ public class MemcacheDelegate {
                 if (cause instanceof CapabilityDisabledException) {
                     throw (CapabilityDisabledException) cause;
                 }
-                logger.log(Level.INFO, "This message["
+                logger.log(Level.INFO, "This message is just INFORMATION["
                     + e
-                    + "] is just INFORMATION. Retry["
+                    + "]. Retry["
                     + i
                     + "]", e);
                 sleep(wait);
@@ -918,9 +918,9 @@ public class MemcacheDelegate {
                 if (cause instanceof CapabilityDisabledException) {
                     throw (CapabilityDisabledException) cause;
                 }
-                logger.log(Level.INFO, "This message["
+                logger.log(Level.INFO, "This message is just INFORMATION["
                     + e
-                    + "] is just INFORMATION. Retry["
+                    + "]. Retry["
                     + i
                     + "]", e);
                 sleep(wait);
@@ -965,9 +965,9 @@ public class MemcacheDelegate {
                 if (cause instanceof CapabilityDisabledException) {
                     throw (CapabilityDisabledException) cause;
                 }
-                logger.log(Level.INFO, "This message["
+                logger.log(Level.INFO, "This message is just INFORMATION["
                     + e
-                    + "] is just INFORMATION. Retry["
+                    + "]. Retry["
                     + i
                     + "]", e);
                 sleep(wait);
@@ -1023,9 +1023,9 @@ public class MemcacheDelegate {
                 if (cause instanceof CapabilityDisabledException) {
                     throw (CapabilityDisabledException) cause;
                 }
-                logger.log(Level.INFO, "This message["
+                logger.log(Level.INFO, "This message is just INFORMATION["
                     + e
-                    + "] is just INFORMATION. Retry["
+                    + "]. Retry["
                     + i
                     + "]", e);
                 sleep(wait);
