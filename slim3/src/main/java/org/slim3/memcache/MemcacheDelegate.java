@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.appengine.api.memcache.ErrorHandler;
@@ -36,7 +35,6 @@ import com.google.appengine.api.memcache.MemcacheServiceException;
 import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.memcache.MemcacheServicePb;
 import com.google.appengine.api.memcache.Stats;
-import com.google.appengine.api.memcache.StrictErrorHandler;
 import com.google.appengine.api.memcache.MemcacheService.SetPolicy;
 import com.google.appengine.repackaged.com.google.protobuf.ByteString;
 import com.google.appengine.repackaged.com.google.protobuf.InvalidProtocolBufferException;
@@ -53,21 +51,6 @@ import com.google.apphosting.api.ApiProxy.CapabilityDisabledException;
  */
 public class MemcacheDelegate {
 
-    /**
-     * The maximum retry count.
-     */
-    protected static final int MAX_RETRY = 10;
-
-    /**
-     * The initial wait time.
-     */
-    protected static final long INITIAL_WAIT_MS = 100L;
-
-    /**
-     * The multiplier factor for waiting.
-     */
-    protected static final int WAIT_MULTIPLIER_FACTOR = 2;
-
     private static final Logger logger =
         Logger.getLogger(MemcacheDelegate.class.getName());
 
@@ -77,24 +60,11 @@ public class MemcacheDelegate {
     protected MemcacheService ms;
 
     /**
-     * Sleeps.
-     * 
-     * @param millis
-     *            the time to sleep
-     */
-    protected static void sleep(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException ignore) {
-        }
-    }
-
-    /**
      * Constructor.
      */
     public MemcacheDelegate() {
         ms = MemcacheServiceFactory.getMemcacheService();
-        ms.setErrorHandler(new StrictErrorHandler());
+        ms.setErrorHandler(new S3ErrorHandler());
     }
 
     /**
@@ -103,31 +73,10 @@ public class MemcacheDelegate {
      * namespace.
      * 
      * @throws CapabilityDisabledException
-     *             if App Engine is read only
+     *             if memcache service is disable
      */
     public void cleanAll() throws CapabilityDisabledException {
-        MemcacheServiceException mse = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                ms.clearAll();
-                return;
-            } catch (MemcacheServiceException e) {
-                mse = e;
-                Throwable cause = e.getCause();
-                if (cause instanceof CapabilityDisabledException) {
-                    throw (CapabilityDisabledException) cause;
-                }
-                logger.log(Level.INFO, "This message is just INFORMATION["
-                    + e
-                    + "]. Retry["
-                    + i
-                    + "]", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw mse;
+        ms.clearAll();
     }
 
     /**
@@ -138,29 +87,12 @@ public class MemcacheDelegate {
      * @return whether a given value is in cache
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
+     * @throws CapabilityDisabledException
+     *             if memcache service is disable
      */
-    public boolean contains(Object key) throws IllegalArgumentException {
-        MemcacheServiceException mse = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                return ms.contains(key);
-            } catch (MemcacheServiceException e) {
-                mse = e;
-                Throwable cause = e.getCause();
-                if (cause instanceof CapabilityDisabledException) {
-                    throw (CapabilityDisabledException) cause;
-                }
-                logger.log(Level.INFO, "This message is just INFORMATION["
-                    + e
-                    + "]. Retry["
-                    + i
-                    + "]", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw mse;
+    public boolean contains(Object key) throws IllegalArgumentException,
+            CapabilityDisabledException {
+        return ms.contains(key);
     }
 
     /**
@@ -172,31 +104,11 @@ public class MemcacheDelegate {
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
      * @throws CapabilityDisabledException
-     *             if App Engine is read only
+     *             if memcache service is disable
      */
     public boolean delete(Object key) throws IllegalArgumentException,
             CapabilityDisabledException {
-        MemcacheServiceException mse = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                return ms.delete(key);
-            } catch (MemcacheServiceException e) {
-                mse = e;
-                Throwable cause = e.getCause();
-                if (cause instanceof CapabilityDisabledException) {
-                    throw (CapabilityDisabledException) cause;
-                }
-                logger.log(Level.INFO, "This message is just INFORMATION["
-                    + e
-                    + "]. Retry["
-                    + i
-                    + "]", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw mse;
+        return ms.delete(key);
     }
 
     /**
@@ -216,31 +128,11 @@ public class MemcacheDelegate {
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
      * @throws CapabilityDisabledException
-     *             if App Engine is read only
+     *             if memcache service is disable
      */
     public boolean delete(Object key, long millisNoReAdd)
             throws IllegalArgumentException, CapabilityDisabledException {
-        MemcacheServiceException mse = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                return ms.delete(key, millisNoReAdd);
-            } catch (MemcacheServiceException e) {
-                mse = e;
-                Throwable cause = e.getCause();
-                if (cause instanceof CapabilityDisabledException) {
-                    throw (CapabilityDisabledException) cause;
-                }
-                logger.log(Level.INFO, "This message is just INFORMATION["
-                    + e
-                    + "]. Retry["
-                    + i
-                    + "]", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw mse;
+        return ms.delete(key, millisNoReAdd);
     }
 
     /**
@@ -255,33 +147,13 @@ public class MemcacheDelegate {
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
      * @throws CapabilityDisabledException
-     *             if App Engine is read only
+     *             if memcache service is disable
      * 
      */
     public Set<Object> deleteAll(Iterable<?> keys) throws NullPointerException,
             IllegalArgumentException, CapabilityDisabledException {
         Collection<Object> keys2 = toCollection(keys);
-        MemcacheServiceException mse = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                return ms.deleteAll(keys2);
-            } catch (MemcacheServiceException e) {
-                mse = e;
-                Throwable cause = e.getCause();
-                if (cause instanceof CapabilityDisabledException) {
-                    throw (CapabilityDisabledException) cause;
-                }
-                logger.log(Level.INFO, "This message is just INFORMATION["
-                    + e
-                    + "]. Retry["
-                    + i
-                    + "]", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw mse;
+        return ms.deleteAll(keys2);
     }
 
     /**
@@ -299,34 +171,14 @@ public class MemcacheDelegate {
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
      * @throws CapabilityDisabledException
-     *             if App Engine is read only
+     *             if memcache service is disable
      * 
      */
     public Set<Object> deleteAll(Iterable<?> keys, long millisNoReAdd)
             throws NullPointerException, IllegalArgumentException,
             CapabilityDisabledException {
         Collection<Object> keys2 = toCollection(keys);
-        MemcacheServiceException mse = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                return ms.deleteAll(keys2, millisNoReAdd);
-            } catch (MemcacheServiceException e) {
-                mse = e;
-                Throwable cause = e.getCause();
-                if (cause instanceof CapabilityDisabledException) {
-                    throw (CapabilityDisabledException) cause;
-                }
-                logger.log(Level.INFO, "This message is just INFORMATION["
-                    + e
-                    + "]. Retry["
-                    + i
-                    + "]", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw mse;
+        return ms.deleteAll(keys2, millisNoReAdd);
     }
 
     /**
@@ -339,29 +191,12 @@ public class MemcacheDelegate {
      * @return a previously-stored value
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
+     * @throws CapabilityDisabledException
+     *             if memcache service is disable
      */
-    public Object get(Object key) throws IllegalArgumentException {
-        MemcacheServiceException mse = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                return getInternal(key);
-            } catch (MemcacheServiceException e) {
-                mse = e;
-                Throwable cause = e.getCause();
-                if (cause instanceof CapabilityDisabledException) {
-                    throw (CapabilityDisabledException) cause;
-                }
-                logger.log(Level.INFO, "This message is just INFORMATION["
-                    + e
-                    + "]. Retry["
-                    + i
-                    + "]", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw mse;
+    public Object get(Object key) throws IllegalArgumentException,
+            CapabilityDisabledException {
+        return getInternal(key);
     }
 
     /**
@@ -437,30 +272,13 @@ public class MemcacheDelegate {
      *             if the keys parameter is null
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
+     * @throws CapabilityDisabledException
+     *             if memcache service is disable
      */
     public Map<Object, Object> getAll(Iterable<?> keys)
-            throws NullPointerException, IllegalArgumentException {
-        MemcacheServiceException mse = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                return getAllInternal(keys);
-            } catch (MemcacheServiceException e) {
-                mse = e;
-                Throwable cause = e.getCause();
-                if (cause instanceof CapabilityDisabledException) {
-                    throw (CapabilityDisabledException) cause;
-                }
-                logger.log(Level.INFO, "This message is just INFORMATION["
-                    + e
-                    + "]. Retry["
-                    + i
-                    + "]", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw mse;
+            throws NullPointerException, IllegalArgumentException,
+            CapabilityDisabledException {
+        return getAllInternal(keys);
     }
 
     /**
@@ -506,7 +324,6 @@ public class MemcacheDelegate {
                     .toString(), ex);
             }
         }
-
         if (!makeSyncCall(
             "Get",
             requestBuilder.build(),
@@ -587,20 +404,12 @@ public class MemcacheDelegate {
      * @throws InvalidValueException
      *             if the object incremented is not of a integral type
      * @throws CapabilityDisabledException
-     *             if App Engine is read only
+     *             if memcache service is disable
      */
     public Long increment(Object key, long delta)
             throws IllegalArgumentException, InvalidValueException,
             CapabilityDisabledException {
-        try {
-            return ms.increment(key, delta);
-        } catch (MemcacheServiceException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof CapabilityDisabledException) {
-                throw (CapabilityDisabledException) cause;
-            }
-            throw e;
-        }
+        return ms.increment(key, delta);
     }
 
     /**
@@ -621,20 +430,12 @@ public class MemcacheDelegate {
      * @throws InvalidValueException
      *             if the object incremented is not of a integral type
      * @throws CapabilityDisabledException
-     *             if App Engine is read only
+     *             if memcache service is disable
      */
     public Long increment(Object key, long delta, long initialValue)
             throws IllegalArgumentException, InvalidValueException,
             CapabilityDisabledException {
-        try {
-            return ms.increment(key, delta, initialValue);
-        } catch (MemcacheServiceException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof CapabilityDisabledException) {
-                throw (CapabilityDisabledException) cause;
-            }
-            throw e;
-        }
+        return ms.increment(key, delta, initialValue);
     }
 
     /**
@@ -650,19 +451,11 @@ public class MemcacheDelegate {
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
      * @throws CapabilityDisabledException
-     *             if App Engine is read only
+     *             if memcache service is disable
      */
     public Map<Object, Long> incrementAll(Iterable<?> keys, long delta)
             throws IllegalArgumentException, CapabilityDisabledException {
-        try {
-            return ms.incrementAll(toCollection(keys), delta);
-        } catch (MemcacheServiceException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof CapabilityDisabledException) {
-                throw (CapabilityDisabledException) cause;
-            }
-            throw e;
-        }
+        return ms.incrementAll(toCollection(keys), delta);
     }
 
     /**
@@ -680,20 +473,12 @@ public class MemcacheDelegate {
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
      * @throws CapabilityDisabledException
-     *             if App Engine is read only
+     *             if memcache service is disable
      */
     public Map<Object, Long> incrementAll(Iterable<?> keys, long delta,
             long initialValue) throws IllegalArgumentException,
             CapabilityDisabledException {
-        try {
-            return ms.incrementAll(toCollection(keys), delta, initialValue);
-        } catch (MemcacheServiceException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof CapabilityDisabledException) {
-                throw (CapabilityDisabledException) cause;
-            }
-            throw e;
-        }
+        return ms.incrementAll(toCollection(keys), delta, initialValue);
     }
 
     /**
@@ -708,19 +493,11 @@ public class MemcacheDelegate {
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
      * @throws CapabilityDisabledException
-     *             if App Engine is read only
+     *             if memcache service is disable
      */
     public Map<Object, Long> incrementAll(Map<Object, Long> offsets)
             throws IllegalArgumentException, CapabilityDisabledException {
-        try {
-            return ms.incrementAll(offsets);
-        } catch (MemcacheServiceException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof CapabilityDisabledException) {
-                throw (CapabilityDisabledException) cause;
-            }
-            throw e;
-        }
+        return ms.incrementAll(offsets);
     }
 
     /**
@@ -737,20 +514,12 @@ public class MemcacheDelegate {
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
      * @throws CapabilityDisabledException
-     *             if App Engine is read only
+     *             if memcache service is disable
      */
     public Map<Object, Long> incrementAll(Map<Object, Long> offsets,
             long initialValue) throws IllegalArgumentException,
             CapabilityDisabledException {
-        try {
-            return ms.incrementAll(offsets);
-        } catch (MemcacheServiceException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof CapabilityDisabledException) {
-                throw (CapabilityDisabledException) cause;
-            }
-            throw e;
-        }
+        return ms.incrementAll(offsets);
     }
 
     /**
@@ -764,32 +533,11 @@ public class MemcacheDelegate {
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
      * @throws CapabilityDisabledException
-     *             if App Engine is read only
+     *             if memcache service is disable
      */
     public void put(Object key, Object value) throws IllegalArgumentException,
             CapabilityDisabledException {
-        MemcacheServiceException mse = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                ms.put(key, value);
-                return;
-            } catch (MemcacheServiceException e) {
-                mse = e;
-                Throwable cause = e.getCause();
-                if (cause instanceof CapabilityDisabledException) {
-                    throw (CapabilityDisabledException) cause;
-                }
-                logger.log(Level.INFO, "This message is just INFORMATION["
-                    + e
-                    + "]. Retry["
-                    + i
-                    + "]", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw mse;
+        ms.put(key, value);
     }
 
     /**
@@ -806,32 +554,11 @@ public class MemcacheDelegate {
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
      * @throws CapabilityDisabledException
-     *             if App Engine is read only
+     *             if memcache service is disable
      */
     public void put(Object key, Object value, Expiration expires)
             throws IllegalArgumentException, CapabilityDisabledException {
-        MemcacheServiceException mse = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                ms.put(key, value, expires);
-                return;
-            } catch (MemcacheServiceException e) {
-                mse = e;
-                Throwable cause = e.getCause();
-                if (cause instanceof CapabilityDisabledException) {
-                    throw (CapabilityDisabledException) cause;
-                }
-                logger.log(Level.INFO, "This message is just INFORMATION["
-                    + e
-                    + "]. Retry["
-                    + i
-                    + "]", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw mse;
+        ms.put(key, value, expires);
     }
 
     /**
@@ -855,7 +582,7 @@ public class MemcacheDelegate {
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
      * @throws CapabilityDisabledException
-     *             if App Engine is read only
+     *             if memcache service is disable
      */
     public boolean put(Object key, Object value, Expiration expires,
             SetPolicy policy) throws NullPointerException,
@@ -864,27 +591,7 @@ public class MemcacheDelegate {
             throw new NullPointerException(
                 "The policy parameter must not be null.");
         }
-        MemcacheServiceException mse = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                return ms.put(key, value, expires, policy);
-            } catch (MemcacheServiceException e) {
-                mse = e;
-                Throwable cause = e.getCause();
-                if (cause instanceof CapabilityDisabledException) {
-                    throw (CapabilityDisabledException) cause;
-                }
-                logger.log(Level.INFO, "This message is just INFORMATION["
-                    + e
-                    + "]. Retry["
-                    + i
-                    + "]", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw mse;
+        return ms.put(key, value, expires, policy);
     }
 
     /**
@@ -898,7 +605,7 @@ public class MemcacheDelegate {
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
      * @throws CapabilityDisabledException
-     *             if App Engine is read only
+     *             if memcache service is disable
      */
     public void putAll(Map<Object, Object> values) throws NullPointerException,
             IllegalArgumentException, CapabilityDisabledException {
@@ -906,28 +613,7 @@ public class MemcacheDelegate {
             throw new NullPointerException(
                 "The values parameter must not be null.");
         }
-        MemcacheServiceException mse = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                ms.putAll(values);
-                return;
-            } catch (MemcacheServiceException e) {
-                mse = e;
-                Throwable cause = e.getCause();
-                if (cause instanceof CapabilityDisabledException) {
-                    throw (CapabilityDisabledException) cause;
-                }
-                logger.log(Level.INFO, "This message is just INFORMATION["
-                    + e
-                    + "]. Retry["
-                    + i
-                    + "]", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw mse;
+        ms.putAll(values);
     }
 
     /**
@@ -944,7 +630,7 @@ public class MemcacheDelegate {
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
      * @throws CapabilityDisabledException
-     *             if App Engine is read only
+     *             if memcache service is disable
      */
     public void putAll(Map<Object, Object> values, Expiration expires)
             throws NullPointerException, IllegalArgumentException,
@@ -953,28 +639,7 @@ public class MemcacheDelegate {
             throw new NullPointerException(
                 "The values parameter must not be null.");
         }
-        MemcacheServiceException mse = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                ms.putAll(values, expires);
-                return;
-            } catch (MemcacheServiceException e) {
-                mse = e;
-                Throwable cause = e.getCause();
-                if (cause instanceof CapabilityDisabledException) {
-                    throw (CapabilityDisabledException) cause;
-                }
-                logger.log(Level.INFO, "This message is just INFORMATION["
-                    + e
-                    + "]. Retry["
-                    + i
-                    + "]", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw mse;
+        ms.putAll(values, expires);
     }
 
     /**
@@ -999,7 +664,7 @@ public class MemcacheDelegate {
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
      * @throws CapabilityDisabledException
-     *             if App Engine is read only
+     *             if memcache service is disable
      */
     public Set<Object> putAll(Map<Object, Object> values, Expiration expires,
             SetPolicy policy) throws NullPointerException,
@@ -1012,27 +677,7 @@ public class MemcacheDelegate {
             throw new NullPointerException(
                 "The policy parameter must not be null.");
         }
-        MemcacheServiceException mse = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                return ms.putAll(values, expires, policy);
-            } catch (MemcacheServiceException e) {
-                mse = e;
-                Throwable cause = e.getCause();
-                if (cause instanceof CapabilityDisabledException) {
-                    throw (CapabilityDisabledException) cause;
-                }
-                logger.log(Level.INFO, "This message is just INFORMATION["
-                    + e
-                    + "]. Retry["
-                    + i
-                    + "]", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw mse;
+        return ms.putAll(values, expires, policy);
     }
 
     /**

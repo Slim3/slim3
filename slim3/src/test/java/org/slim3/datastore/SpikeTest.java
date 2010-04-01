@@ -15,13 +15,15 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-
 import org.junit.Test;
-import org.slim3.datastore.model.Bbb;
-import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.AppEngineTestCase;
+
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.QueryResultList;
 
 /**
  * @author higa
@@ -34,13 +36,17 @@ public class SpikeTest extends AppEngineTestCase {
      */
     @Test
     public void spike() throws Exception {
-        GlobalTransaction gtx = Datastore.beginGlobalTransaction();
-        Bbb bbb = new Bbb();
-        Hoge hoge = new Hoge();
-        bbb.getHogeRef().setModel(hoge);
-        gtx.put(bbb, hoge);
-        gtx.commit();
-        assertThat(tester.count(Bbb.class), is(1));
-        assertThat(tester.count(Hoge.class), is(1));
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        ds.put(new Entity("Hoge"));
+        ds.put(new Entity("Hoge"));
+        ds.put(new Entity("Hoge"));
+        Query query = new Query("Hoge");
+        QueryResultList<Entity> list =
+            ds.prepare(query).asQueryResultList(
+                FetchOptions.Builder.withLimit(1));
+        QueryResultList<Entity> list2 =
+            ds.prepare(query).asQueryResultList(
+                FetchOptions.Builder.withCursor(list.getCursor()));
+        System.out.println(list2.size());
     }
 }
