@@ -308,12 +308,12 @@ public class GlobalTransaction {
         }
         String encodedKey = Datastore.keyToString(globalTransactionKey);
         Queue queue = QueueFactory.getQueue(QUEUE_NAME);
-        queue.add(TaskOptions.Builder
-            .url(GlobalTransactionServlet.SERVLET_PATH)
-            .param(
-                GlobalTransactionServlet.COMMAND_NAME,
-                GlobalTransactionServlet.ROLLBACK_COMMAND)
-            .param(GlobalTransactionServlet.KEY_NAME, encodedKey));
+        queue.add(null, TaskOptions.Builder.url(
+            GlobalTransactionServlet.SERVLET_PATH).param(
+            GlobalTransactionServlet.COMMAND_NAME,
+            GlobalTransactionServlet.ROLLBACK_COMMAND).param(
+            GlobalTransactionServlet.KEY_NAME,
+            encodedKey));
     }
 
     /**

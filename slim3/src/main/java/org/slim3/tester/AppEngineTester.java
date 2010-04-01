@@ -43,7 +43,8 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.labs.taskqueue.TaskQueuePb.TaskQueueAddRequest;
-import com.google.appengine.api.labs.taskqueue.TaskQueuePb.TaskQueueAddResponse;
+import com.google.appengine.api.labs.taskqueue.TaskQueuePb.TaskQueueBulkAddRequest;
+import com.google.appengine.api.labs.taskqueue.TaskQueuePb.TaskQueueBulkAddResponse;
 import com.google.appengine.api.mail.MailServicePb.MailMessage;
 import com.google.appengine.api.memcache.MemcacheServicePb.MemcacheBatchIncrementRequest;
 import com.google.appengine.api.memcache.MemcacheServicePb.MemcacheDeleteRequest;
@@ -172,7 +173,7 @@ public class AppEngineTester implements Delegate<Environment> {
     /**
      * The internal name of add method.
      */
-    protected static final String ADD_METHOD = "Add";
+    protected static final String BULK_ADD_METHOD = "BulkAdd";
 
     /**
      * The internal name of fetch method.
@@ -453,11 +454,16 @@ public class AppEngineTester implements Delegate<Environment> {
                 ThrowableUtil.wrapAndThrow(e);
             }
         } else if (service.equals(TASKQUEUE_SERVICE)
-            && method.startsWith(ADD_METHOD)) {
-            TaskQueueAddRequest taskPb = new TaskQueueAddRequest();
+            && method.equals(BULK_ADD_METHOD)) {
+            TaskQueueBulkAddRequest taskPb = new TaskQueueBulkAddRequest();
             taskPb.mergeFrom(requestBuf);
-            tasks.add(taskPb);
-            TaskQueueAddResponse responsePb = new TaskQueueAddResponse();
+            TaskQueueBulkAddResponse responsePb =
+                new TaskQueueBulkAddResponse();
+            System.out.println(taskPb.addRequestSize());
+            for (int i = 0; i < taskPb.addRequestSize(); i++) {
+                tasks.add(taskPb.getAddRequest(i));
+                responsePb.addTaskResult();
+            }
             return responsePb.toByteArray();
         } else if (MEMCACHE_SERVICE.equals(service)) {
             if (SET_METHOD.equals(method)) {
