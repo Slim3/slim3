@@ -96,8 +96,7 @@ public final class Functions {
             sb.append(contextPath);
         }
         String path =
-            (String) request
-                .getAttribute(ControllerConstants.FORWARD_SERVLET_PATH_KEY);
+            (String) request.getAttribute(ControllerConstants.BASE_PATH_KEY);
         if (path == null) {
             path = RequestUtil.getPath(request);
         }

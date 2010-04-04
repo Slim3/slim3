@@ -92,6 +92,11 @@ public final class ControllerConstants {
     public static String CONTROLLER_KEY = "slim3.controller";
 
     /**
+     * The key of base path.
+     */
+    public static String BASE_PATH_KEY = "slim3.basePath";
+
+    /**
      * The key of errors.
      */
     public static String ERRORS_KEY = "errors";

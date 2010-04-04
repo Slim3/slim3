@@ -207,6 +207,8 @@ public class FrontControllerTest extends ControllerTestCase {
         assertThat(controller.basePath, is("/"));
         assertThat(controller, is(sameInstance(tester
             .requestScope(ControllerConstants.CONTROLLER_KEY))));
+        assertThat(controller.basePath, is(tester
+            .requestScope(ControllerConstants.BASE_PATH_KEY)));
         Errors errors = controller.errors;
         assertThat(errors, is(not(nullValue())));
         assertThat(errors, is(sameInstance(tester

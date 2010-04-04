@@ -124,8 +124,17 @@ public class FunctionsTest {
      * @throws Exception
      */
     @Test
-    public void urlForControllerRelativePath() throws Exception {
+    public void urlForControllerRelativePathWithServletPath() throws Exception {
         request.setServletPath("/bbb/hoge");
+        assertThat(Functions.url("foo"), is("/bbb/foo"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void urlForControllerRelativePathWithBasePath() throws Exception {
+        request.setAttribute(ControllerConstants.BASE_PATH_KEY, "/bbb/");
         assertThat(Functions.url("foo"), is("/bbb/foo"));
     }
 
