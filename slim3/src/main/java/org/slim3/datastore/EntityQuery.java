@@ -20,6 +20,8 @@ import java.util.List;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.QueryResultIterator;
+import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
@@ -164,6 +166,24 @@ public class EntityQuery extends AbstractQuery<EntityQuery> {
      */
     public List<Entity> asList() {
         return super.asEntityList();
+    }
+
+    /**
+     * Returns a query result list.
+     * 
+     * @return a query result list
+     */
+    public QueryResultList<Entity> asQueryResultList() {
+        return super.asQueryResultEntityList();
+    }
+
+    /**
+     * Returns a query result iterator.
+     * 
+     * @return a query result iterator
+     */
+    public QueryResultIterator<Entity> asQueryResultIterator() {
+        return super.asQueryResultEntityIterator();
     }
 
     @Override

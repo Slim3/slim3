@@ -32,6 +32,7 @@ import org.slim3.datastore.model.Ccc;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.AppEngineTestCase;
 
+import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -249,6 +250,108 @@ public class ModelQueryTest extends AppEngineTestCase {
         List<Ccc> list3 = query3.asList();
         assertThat(list3.size(), is(1));
         assertThat(list3.get(0).getClass().getName(), is(Ccc.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asQueryResultList() throws Exception {
+        Hoge hoge = new Hoge();
+        hoge.setMyInteger(1);
+        Datastore.put(hoge);
+        hoge = new Hoge();
+        hoge.setMyInteger(2);
+        Datastore.put(hoge);
+        hoge = new Hoge();
+        hoge.setMyInteger(3);
+        Datastore.put(hoge);
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        S3QueryResultList<Hoge> list =
+            query.limit(1).sort(meta.myInteger.asc).asQueryResultList();
+        assertThat(list.size(), is(1));
+        assertThat(list.get(0).getMyInteger(), is(1));
+        assertThat(list.hasNext(), is(true));
+        Cursor cursor = list.getCursor();
+        assertThat(cursor, is(notNullValue()));
+        assertThat(list.getFilters(), is(notNullValue()));
+        assertThat(list.getFilters().length, is(0));
+        assertThat(list.getSorts(), is(notNullValue()));
+        assertThat(list.getSorts().length, is(1));
+
+        ModelQuery<Hoge> query2 = new ModelQuery<Hoge>(meta);
+        S3QueryResultList<Hoge> list2 =
+            query2
+                .limit(1)
+                .cursor(list.getCursor())
+                .filter(list.getFilters())
+                .sort(list.getSorts())
+                .asQueryResultList();
+        assertThat(list2.size(), is(1));
+        assertThat(list2.get(0).getMyInteger(), is(2));
+        assertThat(list2.hasNext(), is(true));
+        assertThat(list2.getCursor(), is(notNullValue()));
+        assertThat(list2.getFilters(), is(notNullValue()));
+        assertThat(list2.getFilters().length, is(0));
+        assertThat(list2.getSorts(), is(notNullValue()));
+        assertThat(list2.getSorts().length, is(1));
+
+        ModelQuery<Hoge> query3 = new ModelQuery<Hoge>(meta);
+        S3QueryResultList<Hoge> list3 =
+            query3
+                .limit(1)
+                .cursor(list2.getCursor())
+                .filter(list2.getFilters())
+                .sort(list2.getSorts())
+                .asQueryResultList();
+        assertThat(list3.size(), is(1));
+        assertThat(list3.get(0).getMyInteger(), is(3));
+        assertThat(list3.hasNext(), is(false));
+        assertThat(list3.getCursor(), is(notNullValue()));
+        assertThat(list3.getFilters(), is(notNullValue()));
+        assertThat(list3.getFilters().length, is(0));
+        assertThat(list3.getSorts(), is(notNullValue()));
+        assertThat(list3.getSorts().length, is(1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asQueryResultListWithNoLimit() throws Exception {
+        Hoge hoge = new Hoge();
+        hoge.setMyInteger(1);
+        Datastore.put(hoge);
+        hoge = new Hoge();
+        hoge.setMyInteger(2);
+        Datastore.put(hoge);
+        hoge = new Hoge();
+        hoge.setMyInteger(3);
+        Datastore.put(hoge);
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        S3QueryResultList<Hoge> list =
+            query.sort(meta.myInteger.asc).asQueryResultList();
+        assertThat(list.size(), is(3));
+        assertThat(list.hasNext(), is(false));
+        assertThat(list.getCursor(), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalStateException.class)
+    public void asQueryResultListWithFilterInMemory() throws Exception {
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        query.filterInMemory(meta.myInteger.equal(1)).asQueryResultList();
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalStateException.class)
+    public void asQueryResultListWithSortInMemory() throws Exception {
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        query.sortInMemory(meta.myInteger.asc).asQueryResultList();
     }
 
     /**

@@ -21,9 +21,12 @@ import java.util.List;
 
 import org.slim3.util.ConversionUtil;
 
+import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.QueryResultIterator;
+import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
@@ -335,6 +338,56 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
     }
 
     /**
+     * Returns a query result list.
+     * 
+     * @return a query result list
+     */
+    public S3QueryResultList<M> asQueryResultList() {
+        if (inMemoryFilterCriteria.size() > 0) {
+            throw new IllegalStateException(
+                "In case of asQueryResultList(), you cannot specify filterInMemory().");
+        }
+        if (inMemorySortCriteria.size() > 0) {
+            throw new IllegalStateException(
+                "In case of asQueryResultList(), you cannot specify sortInMemory().");
+        }
+        addFilterIfPolyModel();
+        List<M> modelList = null;
+        boolean hasNext = false;
+        Cursor cursor = null;
+        int limit = fetchOptions.getLimit();
+        if (limit == Integer.MAX_VALUE) {
+            QueryResultList<Entity> entityList = asQueryResultEntityList();
+            modelList = new ArrayList<M>(entityList.size());
+            for (Entity e : entityList) {
+                ModelMeta<M> mm = DatastoreUtil.getModelMeta(modelMeta, e);
+                modelList.add(mm.entityToModel(e));
+            }
+            cursor = entityList.getCursor();
+        } else {
+            fetchOptions.limit(limit + 1);
+            modelList = new ArrayList<M>();
+            QueryResultIterator<Entity> ite = asQueryResultEntityIterator();
+            while (true) {
+                hasNext = ite.hasNext();
+                if (!hasNext || modelList.size() == limit) {
+                    cursor = ite.getCursor();
+                    break;
+                }
+                Entity e = ite.next();
+                ModelMeta<M> mm = DatastoreUtil.getModelMeta(modelMeta, e);
+                modelList.add(mm.entityToModel(e));
+            }
+        }
+        return new S3QueryResultList<M>(
+            modelList,
+            cursor,
+            getFilters(),
+            getSorts(),
+            hasNext);
+    }
+
+    /**
      * Returns the single result or null if no entities match.
      * 
      * @return the single result
@@ -410,11 +463,11 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
         }
         if (inMemoryFilterCriteria.size() > 0) {
             throw new IllegalStateException(
-                "In the case of min(), you cannot specify filterInMemory().");
+                "In case of min(), you cannot specify filterInMemory().");
         }
         if (inMemorySortCriteria.size() > 0) {
             throw new IllegalStateException(
-                "In the case of min(), you cannot specify sortInMemory().");
+                "In case of min(), you cannot specify sortInMemory().");
         }
         addFilterIfPolyModel();
         Object value = super.min(attributeMeta.getName());
@@ -445,11 +498,11 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
         }
         if (inMemoryFilterCriteria.size() > 0) {
             throw new IllegalStateException(
-                "In the case of max(), you cannot specify filterInMemory().");
+                "In case of max(), you cannot specify filterInMemory().");
         }
         if (inMemorySortCriteria.size() > 0) {
             throw new IllegalStateException(
-                "In the case of max(), you cannot specify sortInMemory().");
+                "In case of max(), you cannot specify sortInMemory().");
         }
         addFilterIfPolyModel();
         Object value = super.max(attributeMeta.getName());

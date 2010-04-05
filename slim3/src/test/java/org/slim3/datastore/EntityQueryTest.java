@@ -103,6 +103,26 @@ public class EntityQueryTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void asQueryResultList() throws Exception {
+        ds.put(new Entity("Hoge"));
+        EntityQuery q = new EntityQuery("Hoge");
+        assertThat(q.asQueryResultList().size(), is(1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asQueryResultIterator() throws Exception {
+        ds.put(new Entity("Hoge"));
+        EntityQuery q = new EntityQuery("Hoge");
+        assertThat(q.asQueryResultIterator(), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void asSingleEntity() throws Exception {
         ds.put(new Entity("Hoge"));
         EntityQuery q = new EntityQuery("Hoge");

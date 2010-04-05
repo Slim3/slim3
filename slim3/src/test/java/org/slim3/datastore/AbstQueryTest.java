@@ -18,21 +18,24 @@ package org.slim3.datastore;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
 import org.slim3.tester.AppEngineTestCase;
 
+import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.QueryResultIterable;
+import com.google.appengine.api.datastore.QueryResultIterator;
 import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.SortDirection;
 
 /**
  * @author higa
@@ -219,7 +222,7 @@ public class AbstQueryTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void asQueryResultList() throws Exception {
+    public void asQueryResultEntityList() throws Exception {
         ds.put(new Entity("Hoge"));
         ds.put(new Entity("Hoge"));
         MyQuery query = new MyQuery("Hoge");
@@ -227,6 +230,33 @@ public class AbstQueryTest extends AppEngineTestCase {
         assertThat(list, is(notNullValue()));
         assertThat(list.size(), is(1));
         assertThat(list.getCursor(), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asQueryResultEntityIterator() throws Exception {
+        ds.put(new Entity("Hoge"));
+        ds.put(new Entity("Hoge"));
+        MyQuery query = new MyQuery("Hoge");
+        QueryResultIterator<Entity> ite =
+            query.limit(1).asQueryResultEntityIterator();
+        assertThat(ite, is(notNullValue()));
+        assertThat(ite.getCursor(), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asQueryResultEntityIterable() throws Exception {
+        ds.put(new Entity("Hoge"));
+        ds.put(new Entity("Hoge"));
+        MyQuery query = new MyQuery("Hoge");
+        QueryResultIterable<Entity> iterable =
+            query.limit(1).asQueryResultEntityIterable();
+        assertThat(iterable, is(notNullValue()));
     }
 
     /**
@@ -291,9 +321,7 @@ public class AbstQueryTest extends AppEngineTestCase {
     public void offset() throws Exception {
         MyQuery q = new MyQuery("Hoge");
         assertThat(q.offset(10), is(sameInstance(q)));
-        Field f = FetchOptions.class.getDeclaredField("offset");
-        f.setAccessible(true);
-        assertThat((Integer) f.get(q.fetchOptions), is(10));
+        assertThat(q.fetchOptions.getOffset(), is(10));
     }
 
     /**
@@ -303,9 +331,7 @@ public class AbstQueryTest extends AppEngineTestCase {
     public void limit() throws Exception {
         MyQuery q = new MyQuery("Hoge");
         assertThat(q.limit(100), is(sameInstance(q)));
-        Field f = FetchOptions.class.getDeclaredField("limit");
-        f.setAccessible(true);
-        assertThat((Integer) f.get(q.fetchOptions), is(100));
+        assertThat(q.fetchOptions.getLimit(), is(100));
     }
 
     /**
@@ -315,9 +341,7 @@ public class AbstQueryTest extends AppEngineTestCase {
     public void prefetchSize() throws Exception {
         MyQuery q = new MyQuery("Hoge");
         assertThat(q.prefetchSize(15), is(sameInstance(q)));
-        Field f = FetchOptions.class.getDeclaredField("prefetchSize");
-        f.setAccessible(true);
-        assertThat((Integer) f.get(q.fetchOptions), is(15));
+        assertThat(q.fetchOptions.getPrefetchSize(), is(15));
     }
 
     /**
@@ -327,9 +351,55 @@ public class AbstQueryTest extends AppEngineTestCase {
     public void chunkSize() throws Exception {
         MyQuery q = new MyQuery("Hoge");
         assertThat(q.chunkSize(20), is(sameInstance(q)));
-        Field f = FetchOptions.class.getDeclaredField("chunkSize");
-        f.setAccessible(true);
-        assertThat((Integer) f.get(q.fetchOptions), is(20));
+        assertThat(q.fetchOptions.getChunkSize(), is(20));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void cursor() throws Exception {
+        ds.put(new Entity("Hoge"));
+        MyQuery query = new MyQuery("Hoge");
+        QueryResultList<Entity> list = query.limit(1).asQueryResultEntityList();
+        Cursor cursor = list.getCursor();
+        query = new MyQuery("Hoge");
+        assertThat(query.cursor(cursor), is(sameInstance(query)));
+        assertThat(query.fetchOptions.getCursor(), is(cursor));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getFilters() throws Exception {
+        MyQuery query = new MyQuery("Hoge");
+        query.query.addFilter("aaa", FilterOperator.EQUAL, "111");
+        query.query.addFilter("bbb", FilterOperator.EQUAL, "222");
+        Filter[] filters = query.getFilters();
+        assertThat(filters.length, is(2));
+        assertThat(filters[0].getPropertyName(), is("aaa"));
+        assertThat(filters[0].getOperator(), is(FilterOperator.EQUAL));
+        assertThat((String) filters[0].getValue(), is("111"));
+        assertThat(filters[1].getPropertyName(), is("bbb"));
+        assertThat(filters[1].getOperator(), is(FilterOperator.EQUAL));
+        assertThat((String) filters[1].getValue(), is("222"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSorts() throws Exception {
+        MyQuery query = new MyQuery("Hoge");
+        query.query.addSort("aaa", SortDirection.ASCENDING);
+        query.query.addSort("bbb", SortDirection.DESCENDING);
+        Sort[] sorts = query.getSorts();
+        assertThat(sorts.length, is(2));
+        assertThat(sorts[0].getPropertyName(), is("aaa"));
+        assertThat(sorts[0].getDirection(), is(SortDirection.ASCENDING));
+        assertThat(sorts[1].getPropertyName(), is("bbb"));
+        assertThat(sorts[1].getDirection(), is(SortDirection.DESCENDING));
     }
 
     private static class MyQuery extends AbstractQuery<MyQuery> {

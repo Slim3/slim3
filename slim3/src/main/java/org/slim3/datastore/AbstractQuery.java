@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.slim3.util.AppEngineUtil;
 
+import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -27,10 +28,14 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.QueryResultIterable;
+import com.google.appengine.api.datastore.QueryResultIterator;
 import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.datastore.Query.SortPredicate;
 
 /**
  * An abstract query.
@@ -250,6 +255,56 @@ public abstract class AbstractQuery<SUB> {
     }
 
     /**
+     * Specifies the cursor.
+     * 
+     * @param cursor
+     *            the cursor
+     * @return this instance
+     * @throws NullPointerException
+     *             if the cursor parameter is null
+     */
+    @SuppressWarnings("unchecked")
+    public SUB cursor(Cursor cursor) throws NullPointerException {
+        if (cursor == null) {
+            throw new NullPointerException(
+                "The cursor parameter must not be null.");
+        }
+        fetchOptions.cursor(cursor);
+        return (SUB) this;
+    }
+
+    /**
+     * Returns the filters.
+     * 
+     * @return the filters
+     */
+    public Filter[] getFilters() {
+        List<FilterPredicate> list = query.getFilterPredicates();
+        Filter[] filters = new Filter[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            FilterPredicate f = list.get(i);
+            filters[i] =
+                new Filter(f.getPropertyName(), f.getOperator(), f.getValue());
+        }
+        return filters;
+    }
+
+    /**
+     * Returns the sorts.
+     * 
+     * @return the sorts
+     */
+    public Sort[] getSorts() {
+        List<SortPredicate> list = query.getSortPredicates();
+        Sort[] sorts = new Sort[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            SortPredicate s = list.get(i);
+            sorts[i] = new Sort(s.getPropertyName(), s.getDirection());
+        }
+        return sorts;
+    }
+
+    /**
      * Returns entities as list.
      * 
      * @return entities as list
@@ -304,6 +359,32 @@ public abstract class AbstractQuery<SUB> {
             txSet ? DatastoreUtil.prepare(ds, tx, query) : DatastoreUtil
                 .prepare(ds, query);
         return DatastoreUtil.asQueryResultList(pq, fetchOptions);
+    }
+
+    /**
+     * Returns entities as query result iterator.
+     * 
+     * @return entities as query result iterator
+     */
+    protected QueryResultIterator<Entity> asQueryResultEntityIterator() {
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        PreparedQuery pq =
+            txSet ? DatastoreUtil.prepare(ds, tx, query) : DatastoreUtil
+                .prepare(ds, query);
+        return DatastoreUtil.asQueryResultIterator(pq, fetchOptions);
+    }
+
+    /**
+     * Returns entities as query result iterable.
+     * 
+     * @return entities as query result iterable
+     */
+    protected QueryResultIterable<Entity> asQueryResultEntityIterable() {
+        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        PreparedQuery pq =
+            txSet ? DatastoreUtil.prepare(ds, tx, query) : DatastoreUtil
+                .prepare(ds, query);
+        return DatastoreUtil.asQueryResultIterable(pq, fetchOptions);
     }
 
     /**
