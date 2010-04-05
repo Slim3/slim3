@@ -21,68 +21,23 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-/**
- * @author higa
- * @param <T>
- *            the element type
- * @since 1.0.1
- */
 public class S3QueryResultList<T> implements List<T>, Serializable {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
-
-    /**
-     * The delegate.
-     */
+    
     protected List<T> delegate;
 
-    /**
-     * The cursor as encoded string.
-     */
     protected String encodedCursor;
 
-    /**
-     * The array of filters as encoded string.
-     */
     protected String encodedFilters;
 
-    /**
-     * The array of sorts as encoded string.
-     */
     protected String encodedSorts;
 
-    /**
-     * Whether a next entry exists.
-     */
     protected boolean hasNext;
 
-    /**
-     * Constructor for GWT.
-     */
     protected S3QueryResultList() {
     }
 
-    /**
-     * Constructor.
-     * 
-     * @param delegate
-     *            the delegate
-     * @param encodedCursor
-     *            the cursor
-     * @param encodedFilters
-     *            the array of filters
-     * @param encodedSorts
-     *            the array of sorts
-     * @param hasNext
-     *            whether a next element exists
-     * @throws NullPointerException
-     *             if the delegate parameter is null or if the encodedCursor
-     *             parameter is null or if the encodedFilters parameter is null
-     *             or if the encodedSorts parameter is null
-     */
     public S3QueryResultList(List<T> delegate, String encodedCursor,
             String encodedFilters, String encodedSorts, boolean hasNext)
             throws NullPointerException {
