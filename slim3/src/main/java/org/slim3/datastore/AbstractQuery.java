@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.slim3.util.AppEngineUtil;
+import org.slim3.util.ByteUtil;
+import org.slim3.util.ThrowableUtil;
 
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.DatastoreService;
@@ -36,6 +38,8 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.Query.SortPredicate;
+import com.google.appengine.repackaged.com.google.common.util.Base64;
+import com.google.appengine.repackaged.com.google.common.util.Base64DecoderException;
 
 /**
  * An abstract query.
@@ -274,6 +278,184 @@ public abstract class AbstractQuery<SUB> {
     }
 
     /**
+     * Specifies the cursor.
+     * 
+     * @param encodedCursor
+     *            the cursor as encoded string
+     * @return this instance
+     * @throws NullPointerException
+     *             if the encodedCursor parameter is null
+     */
+    @SuppressWarnings("unchecked")
+    public SUB encodedCursor(String encodedCursor) throws NullPointerException {
+        if (encodedCursor == null) {
+            throw new NullPointerException(
+                "The encodedCursor parameter must not be null.");
+        }
+        fetchOptions.cursor(Cursor.fromWebSafeString(encodedCursor));
+        return (SUB) this;
+    }
+
+    /**
+     * Adds the filter.
+     * 
+     * @param propertyName
+     *            the property name
+     * @param operator
+     *            the {@link FilterOperator}
+     * @param value
+     *            the value
+     * 
+     * @return this instance
+     * @throws NullPointerException
+     *             if the propertyName parameter is null or if the operator
+     *             parameter is null
+     */
+    @SuppressWarnings("unchecked")
+    public SUB filter(String propertyName, FilterOperator operator, Object value)
+            throws NullPointerException {
+        if (propertyName == null) {
+            throw new NullPointerException(
+                "The propertyName parameter must not be null.");
+        }
+        if (operator == null) {
+            throw new NullPointerException(
+                "The operator parameter must not be null.");
+        }
+        query.addFilter(propertyName, operator, value);
+        return (SUB) this;
+    }
+
+    /**
+     * Adds the filters.
+     * 
+     * @param filters
+     *            the filters
+     * @return this instance
+     * @throws NullPointerException
+     *             if the element of the filters parameter is null
+     */
+    @SuppressWarnings("unchecked")
+    public SUB filter(Filter... filters) throws NullPointerException {
+        for (Filter f : filters) {
+            if (f == null) {
+                throw new NullPointerException(
+                    "The element of the filters parameter must not be null.");
+            }
+            query.addFilter(f.getPropertyName(), f.getOperator(), f.getValue());
+        }
+        return (SUB) this;
+    }
+
+    /**
+     * Specifies the encoded filters.
+     * 
+     * @param encodedFilters
+     *            the encoded filters
+     * @return this instance
+     * @throws NullPointerException
+     *             if the encodedFilters parameter is null
+     */
+    public SUB encodedFilters(String encodedFilters)
+            throws NullPointerException {
+        if (encodedFilters == null) {
+            throw new NullPointerException(
+                "The encodedFilters parameter must not be null.");
+        }
+        try {
+            Filter[] filters =
+                (Filter[]) ByteUtil.toObject(Base64.decode(encodedFilters));
+            return filter(filters);
+        } catch (Base64DecoderException e) {
+            throw ThrowableUtil.wrap(e);
+        }
+    }
+
+    /**
+     * Adds the sorts.
+     * 
+     * @param sorts
+     *            the array of sorts
+     * @return this instance
+     * @throws NullPointerException
+     *             if the element of the sorts parameter is null
+     */
+    @SuppressWarnings("unchecked")
+    public SUB sort(Sort... sorts) throws NullPointerException {
+        for (Sort s : sorts) {
+            if (s == null) {
+                throw new NullPointerException(
+                    "The element of the sorts parameter must not be null.");
+            }
+            query.addSort(s.getPropertyName(), s.getDirection());
+        }
+        return (SUB) this;
+    }
+
+    /**
+     * Adds the sort.
+     * 
+     * @param propertyName
+     *            the property name
+     * @return this instance
+     * @throws NullPointerException
+     *             if the propertyName parameter is null
+     */
+    public SUB sort(String propertyName) throws NullPointerException {
+        return sort(propertyName, SortDirection.ASCENDING);
+    }
+
+    /**
+     * Adds the sort.
+     * 
+     * @param propertyName
+     *            the property name
+     * @param direction
+     *            the sort direction
+     * @return this instance
+     * @throws NullPointerException
+     *             if the propertyName parameter is null or if the direction
+     *             parameter is null
+     */
+    @SuppressWarnings("unchecked")
+    public SUB sort(String propertyName, SortDirection direction)
+            throws NullPointerException {
+        if (propertyName == null) {
+            throw new NullPointerException(
+                "The propertyName parameter must not be null.");
+        }
+        if (direction == null) {
+            throw new NullPointerException(
+                "The direction parameter must not be null.");
+        }
+        query.addSort(propertyName, direction);
+        return (SUB) this;
+    }
+
+    /**
+     * Specifies the encoded sorts.
+     * 
+     * @param encodedSorts
+     *            the encoded sorts
+     * @return this instance
+     * @throws NullPointerException
+     *             if the encodedSorts parameter is null
+     */
+    public SUB encodedSorts(String encodedSorts) throws NullPointerException {
+        if (encodedSorts == null) {
+            throw new NullPointerException(
+                "The encodedSorts parameter must not be null.");
+        }
+        try {
+            Sort[] sorts =
+                (Sort[]) ByteUtil.toObject(Base64.decode(encodedSorts));
+            return sort(sorts);
+        } catch (Base64DecoderException e) {
+            throw ThrowableUtil.wrap(e);
+        }
+    }
+
+    /**
      * Returns the filters.
      * 
      * @return the filters
@@ -290,6 +472,15 @@ public abstract class AbstractQuery<SUB> {
     }
 
     /**
+     * Returns the encoded filters.
+     * 
+     * @return the encoded filters
+     */
+    public String getEncodedFilters() {
+        return Base64.encode(ByteUtil.toByteArray(getFilters()));
+    }
+
+    /**
      * Returns the sorts.
      * 
      * @return the sorts
@@ -302,6 +493,15 @@ public abstract class AbstractQuery<SUB> {
             sorts[i] = new Sort(s.getPropertyName(), s.getDirection());
         }
         return sorts;
+    }
+
+    /**
+     * Returns the encoded sorts.
+     * 
+     * @return the encoded sorts
+     */
+    public String getEncodedSorts() {
+        return Base64.encode(ByteUtil.toByteArray(getSorts()));
     }
 
     /**

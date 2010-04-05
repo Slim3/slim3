@@ -32,15 +32,12 @@ import org.slim3.datastore.model.Ccc;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.AppEngineTestCase;
 
-import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery.TooManyResultsException;
-import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.SortDirection;
 
 /**
  * @author higa
@@ -109,69 +106,9 @@ public class ModelQueryTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void filterForFilter() throws Exception {
-        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
-        assertThat(query, is(sameInstance(query.filter(new Filter(
-            "myString",
-            FilterOperator.EQUAL,
-            "aaa")))));
-        assertThat(query.query.getFilterPredicates().size(), is(1));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void filterWithPropertyNameAndOperatorAndValue() throws Exception {
-        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
-        assertThat(query, is(sameInstance(query.filter(
-            "myString",
-            FilterOperator.EQUAL,
-            "aaa"))));
-        assertThat(query.query.getFilterPredicates().size(), is(1));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
     public void sort() throws Exception {
         ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
         assertThat(query.sort(meta.myString.asc), is(sameInstance(query)));
-        assertThat(query.query.getSortPredicates().size(), is(1));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void sortForSort() throws Exception {
-        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
-        assertThat(
-            query.sort(new Sort("myString", SortDirection.ASCENDING)),
-            is(sameInstance(query)));
-        assertThat(query.query.getSortPredicates().size(), is(1));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void sortWithPropertyName() throws Exception {
-        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
-        assertThat(query.sort("myString"), is(sameInstance(query)));
-        assertThat(query.query.getSortPredicates().size(), is(1));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void sortForWithPropertyNameAndDirection() throws Exception {
-        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
-        assertThat(
-            query.sort("myString", SortDirection.ASCENDING),
-            is(sameInstance(query)));
         assertThat(query.query.getSortPredicates().size(), is(1));
     }
 
@@ -272,46 +209,39 @@ public class ModelQueryTest extends AppEngineTestCase {
         assertThat(list.size(), is(1));
         assertThat(list.get(0).getMyInteger(), is(1));
         assertThat(list.hasNext(), is(true));
-        Cursor cursor = list.getCursor();
-        assertThat(cursor, is(notNullValue()));
-        assertThat(list.getFilters(), is(notNullValue()));
-        assertThat(list.getFilters().length, is(0));
-        assertThat(list.getSorts(), is(notNullValue()));
-        assertThat(list.getSorts().length, is(1));
+        assertThat(list.getEncodedCursor(), is(notNullValue()));
+        assertThat(list.getEncodedFilters(), is(notNullValue()));
+        assertThat(list.getEncodedSorts(), is(notNullValue()));
 
         ModelQuery<Hoge> query2 = new ModelQuery<Hoge>(meta);
         S3QueryResultList<Hoge> list2 =
             query2
                 .limit(1)
-                .cursor(list.getCursor())
-                .filter(list.getFilters())
-                .sort(list.getSorts())
+                .encodedCursor(list.getEncodedCursor())
+                .encodedFilters(list.getEncodedFilters())
+                .encodedSorts(list.getEncodedSorts())
                 .asQueryResultList();
         assertThat(list2.size(), is(1));
         assertThat(list2.get(0).getMyInteger(), is(2));
         assertThat(list2.hasNext(), is(true));
-        assertThat(list2.getCursor(), is(notNullValue()));
-        assertThat(list2.getFilters(), is(notNullValue()));
-        assertThat(list2.getFilters().length, is(0));
-        assertThat(list2.getSorts(), is(notNullValue()));
-        assertThat(list2.getSorts().length, is(1));
+        assertThat(list2.getEncodedCursor(), is(notNullValue()));
+        assertThat(list2.getEncodedFilters(), is(notNullValue()));
+        assertThat(list2.getEncodedSorts(), is(notNullValue()));
 
         ModelQuery<Hoge> query3 = new ModelQuery<Hoge>(meta);
         S3QueryResultList<Hoge> list3 =
             query3
                 .limit(1)
-                .cursor(list2.getCursor())
-                .filter(list2.getFilters())
-                .sort(list2.getSorts())
+                .encodedCursor(list2.getEncodedCursor())
+                .encodedFilters(list2.getEncodedFilters())
+                .encodedSorts(list2.getEncodedSorts())
                 .asQueryResultList();
         assertThat(list3.size(), is(1));
         assertThat(list3.get(0).getMyInteger(), is(3));
         assertThat(list3.hasNext(), is(false));
-        assertThat(list3.getCursor(), is(notNullValue()));
-        assertThat(list3.getFilters(), is(notNullValue()));
-        assertThat(list3.getFilters().length, is(0));
-        assertThat(list3.getSorts(), is(notNullValue()));
-        assertThat(list3.getSorts().length, is(1));
+        assertThat(list3.getEncodedCursor(), is(notNullValue()));
+        assertThat(list3.getEncodedFilters(), is(notNullValue()));
+        assertThat(list3.getEncodedSorts(), is(notNullValue()));
     }
 
     /**
@@ -333,7 +263,7 @@ public class ModelQueryTest extends AppEngineTestCase {
             query.sort(meta.myInteger.asc).asQueryResultList();
         assertThat(list.size(), is(3));
         assertThat(list.hasNext(), is(false));
-        assertThat(list.getCursor(), is(notNullValue()));
+        assertThat(list.getEncodedCursor(), is(notNullValue()));
     }
 
     /**

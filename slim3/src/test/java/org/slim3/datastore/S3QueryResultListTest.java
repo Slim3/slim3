@@ -45,11 +45,11 @@ public class S3QueryResultListTest extends AppEngineTestCase {
         QueryResultList<Entity> qrList = q.asQueryResultList();
         Cursor cursor = qrList.getCursor();
         S3QueryResultList<Entity> list =
-            new S3QueryResultList<Entity>(qrList, cursor, q.getFilters(), q
-                .getSorts(), true);
-        assertThat(list.getCursor(), is(cursor));
-        assertThat(list.getFilters(), is(q.getFilters()));
-        assertThat(list.getSorts(), is(q.getSorts()));
+            new S3QueryResultList<Entity>(qrList, cursor.toWebSafeString(), q
+                .getEncodedFilters(), q.getEncodedSorts(), true);
+        assertThat(list.getEncodedCursor(), is(cursor.toWebSafeString()));
+        assertThat(list.getEncodedFilters(), is(q.getEncodedFilters()));
+        assertThat(list.getEncodedSorts(), is(q.getEncodedSorts()));
         assertThat(list.hasNext(), is(true));
     }
 }

@@ -15,15 +15,19 @@
  */
 package org.slim3.datastore;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
 import org.slim3.tester.AppEngineTestCase;
+import org.slim3.util.ByteUtil;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.QueryResultList;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.repackaged.com.google.common.util.Base64;
 
 /**
  * @author higa
@@ -36,17 +40,14 @@ public class SpikeTest extends AppEngineTestCase {
      */
     @Test
     public void spike() throws Exception {
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        ds.put(new Entity("Hoge"));
-        ds.put(new Entity("Hoge"));
-        ds.put(new Entity("Hoge"));
-        Query query = new Query("Hoge");
-        QueryResultList<Entity> list =
-            ds.prepare(query).asQueryResultList(
-                FetchOptions.Builder.withLimit(1));
-        QueryResultList<Entity> list2 =
-            ds.prepare(query).asQueryResultList(
-                FetchOptions.Builder.withCursor(list.getCursor()));
-        System.out.println(list2.size());
+        List<FilterPredicate> list = new ArrayList<FilterPredicate>();
+        list.add(new FilterPredicate("aaa", FilterOperator.EQUAL, "111"));
+        String encodedString = Base64.encode(ByteUtil.toByteArray(list));
+        List<FilterPredicate> list2 =
+            ByteUtil.toObject(Base64.decode(encodedString));
+        assertThat(list2.size(), is(1));
+        assertThat(list2.get(0).getPropertyName(), is("aaa"));
+        assertThat(list2.get(0).getOperator(), is(FilterOperator.EQUAL));
+        assertThat((String) list2.get(0).getValue(), is("111"));
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2009 the original author or authors.
+ * Copyright 2004-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,16 +20,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import com.google.appengine.api.datastore.Cursor;
-import com.google.appengine.api.datastore.QueryResultList;
-
 /**
  * @author higa
  * @param <T>
  *            the element type
  * @since 1.0.1
  */
-public class S3QueryResultList<T> implements QueryResultList<T> {
+public class S3QueryResultList<T> implements List<T> {
 
     /**
      * The delegate.
@@ -37,19 +34,19 @@ public class S3QueryResultList<T> implements QueryResultList<T> {
     protected List<T> delegate;
 
     /**
-     * The cursor.
+     * The cursor as encoded string.
      */
-    protected Cursor cursor;
+    protected String encodedCursor;
 
     /**
-     * The array of filters.
+     * The array of filters as encoded string.
      */
-    protected Filter[] filters;
+    protected String encodedFilters;
 
     /**
-     * The array of sorts.
+     * The array of sorts as encoded string.
      */
-    protected Sort[] sorts;
+    protected String encodedSorts;
 
     /**
      * Whether a next entry exists.
@@ -57,68 +54,80 @@ public class S3QueryResultList<T> implements QueryResultList<T> {
     protected boolean hasNext;
 
     /**
+     * Constructor for GWT.
+     */
+    protected S3QueryResultList() {
+    }
+
+    /**
      * Constructor.
      * 
      * @param delegate
      *            the delegate
-     * @param cursor
+     * @param encodedCursor
      *            the cursor
-     * @param filters
+     * @param encodedFilters
      *            the array of filters
-     * @param sorts
+     * @param encodedSorts
      *            the array of sorts
      * @param hasNext
      *            whether a next element exists
      * @throws NullPointerException
-     *             if the delegate parameter is null or if the cursor parameter
-     *             is null or if the filters parameter is null or if the sorts
-     *             parameter is null
+     *             if the delegate parameter is null or if the encodedCursor
+     *             parameter is null or if the encodedFilters parameter is null
+     *             or if the encodedSorts parameter is null
      */
-    public S3QueryResultList(List<T> delegate, Cursor cursor, Filter[] filters,
-            Sort[] sorts, boolean hasNext) throws NullPointerException {
+    public S3QueryResultList(List<T> delegate, String encodedCursor,
+            String encodedFilters, String encodedSorts, boolean hasNext)
+            throws NullPointerException {
         if (delegate == null) {
             throw new NullPointerException(
                 "The delegate parameter must not be null.");
         }
-        if (cursor == null) {
+        if (encodedCursor == null) {
             throw new NullPointerException(
-                "The cursor parameter must not be null.");
+                "The encodedCursor parameter must not be null.");
         }
-        if (filters == null) {
+        if (encodedFilters == null) {
             throw new NullPointerException(
-                "The filters parameter must not be null.");
+                "The encodedFilters parameter must not be null.");
         }
-        if (sorts == null) {
+        if (encodedSorts == null) {
             throw new NullPointerException(
-                "The sorts parameter must not be null.");
+                "The encodedSorts parameter must not be null.");
         }
         this.delegate = delegate;
-        this.cursor = cursor;
-        this.filters = filters;
-        this.sorts = sorts;
+        this.encodedCursor = encodedCursor;
+        this.encodedFilters = encodedFilters;
+        this.encodedSorts = encodedSorts;
         this.hasNext = hasNext;
     }
 
-    public Cursor getCursor() {
-        return cursor;
+    /**
+     * Returns the cursor as encoded string.
+     * 
+     * @return the cursor as encoded string
+     */
+    public String getEncodedCursor() {
+        return encodedCursor;
     }
 
     /**
-     * Returns the array of filters.
+     * Returns the array of filters as encoded string.
      * 
-     * @return the array of filters
+     * @return the array of filters as encoded string
      */
-    public Filter[] getFilters() {
-        return filters;
+    public String getEncodedFilters() {
+        return encodedFilters;
     }
 
     /**
-     * Returns the array of sorts
+     * Returns the array of sorts as encoded string.
      * 
-     * @return the array of sorts
+     * @return the array of sorts as encoded string
      */
-    public Sort[] getSorts() {
-        return sorts;
+    public String getEncodedSorts() {
+        return encodedSorts;
     }
 
     /**

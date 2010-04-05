@@ -23,8 +23,6 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.QueryResultIterator;
 import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.datastore.Transaction;
-import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.SortDirection;
 
 /**
  * A query for datastore entity.
@@ -83,80 +81,6 @@ public class EntityQuery extends AbstractQuery<EntityQuery> {
             throws NullPointerException {
         super(kind, ancestorKey);
         setTx(tx);
-    }
-
-    /**
-     * Adds the filter criterion.
-     * 
-     * @param propertyName
-     *            the property name
-     * @param operator
-     *            the filter operator
-     * @param value
-     *            the value
-     * 
-     * @return this instance
-     * @throws NullPointerException
-     *             if the propertyName parameter is null of if the operator
-     *             parameter is null
-     */
-    public EntityQuery filter(String propertyName, FilterOperator operator,
-            Object value) throws NullPointerException {
-        if (propertyName == null) {
-            throw new NullPointerException(
-                "The propertyName parameter must not be null.");
-        }
-        if (operator == null) {
-            throw new NullPointerException(
-                "The operator parameter must not be null.");
-        }
-        query.addFilter(propertyName, operator, value);
-        return this;
-    }
-
-    /**
-     * Adds the sort criterion.
-     * 
-     * @param propertyName
-     *            the property name
-     * 
-     * @return this instance
-     * @throws NullPointerException
-     *             if the propertyName parameter is null
-     */
-    public EntityQuery sort(String propertyName) throws NullPointerException {
-        if (propertyName == null) {
-            throw new NullPointerException(
-                "The propertyName parameter must not be null.");
-        }
-        return sort(propertyName, SortDirection.ASCENDING);
-    }
-
-    /**
-     * Adds the sort criterion.
-     * 
-     * @param propertyName
-     *            the property name
-     * @param direction
-     *            the sort direction
-     * 
-     * @return this instance
-     * @throws NullPointerException
-     *             if the propertyName parameter is null of if the direction
-     *             parameter is null
-     */
-    public EntityQuery sort(String propertyName, SortDirection direction)
-            throws NullPointerException {
-        if (propertyName == null) {
-            throw new NullPointerException(
-                "The propertyName parameter must not be null.");
-        }
-        if (direction == null) {
-            throw new NullPointerException(
-                "The direction parameter must not be null.");
-        }
-        query.addSort(propertyName, direction);
-        return this;
     }
 
     /**

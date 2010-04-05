@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.slim3.tester.AppEngineTestCase;
+import org.slim3.util.ByteUtil;
 
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.DatastoreService;
@@ -36,6 +37,7 @@ import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.repackaged.com.google.common.util.Base64;
 
 /**
  * @author higa
@@ -263,6 +265,93 @@ public class AbstQueryTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void filterWithPropertyNameAndOperatorAndValue() throws Exception {
+        MyQuery query = new MyQuery("Hoge");
+        assertThat(
+            query.filter("myString", FilterOperator.EQUAL, "aaa"),
+            is(sameInstance(query)));
+        assertThat(query.query.getFilterPredicates().size(), is(1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void filterWithFilter() throws Exception {
+        MyQuery query = new MyQuery("Hoge");
+        assertThat(query.filter(new Filter(
+            "myString",
+            FilterOperator.EQUAL,
+            "aaa")), is(sameInstance(query)));
+        assertThat(query.query.getFilterPredicates().size(), is(1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void encodedFilters() throws Exception {
+        MyQuery query = new MyQuery("Hoge");
+        query.filter(new Filter("myString", FilterOperator.EQUAL, "aaa"));
+        MyQuery query2 = new MyQuery("Hoge");
+        assertThat(
+            query2.encodedFilters(query.getEncodedFilters()),
+            is(sameInstance(query2)));
+        assertThat(query2.query.getFilterPredicates().size(), is(1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void sortForSort() throws Exception {
+        MyQuery query = new MyQuery("Hoge");
+        assertThat(
+            query.sort(new Sort("myString", SortDirection.ASCENDING)),
+            is(sameInstance(query)));
+        assertThat(query.query.getSortPredicates().size(), is(1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void sortWithPropertyName() throws Exception {
+        MyQuery query = new MyQuery("Hoge");
+        assertThat(query.sort("myString"), is(sameInstance(query)));
+        assertThat(query.query.getSortPredicates().size(), is(1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void sortForWithPropertyNameAndDirection() throws Exception {
+        MyQuery query = new MyQuery("Hoge");
+        assertThat(
+            query.sort("myString", SortDirection.ASCENDING),
+            is(sameInstance(query)));
+        assertThat(query.query.getSortPredicates().size(), is(1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void encodedSorts() throws Exception {
+        MyQuery query = new MyQuery("Hoge");
+        query.sort("myString");
+        MyQuery query2 = new MyQuery("Hoge");
+        assertThat(
+            query2.encodedSorts(query.getEncodedSorts()),
+            is(sameInstance(query2)));
+        assertThat(query2.query.getSortPredicates().size(), is(1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void count() throws Exception {
         ds.put(new Entity("Hoge"));
         MyQuery query = new MyQuery("Hoge");
@@ -372,6 +461,21 @@ public class AbstQueryTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void encodedCursor() throws Exception {
+        ds.put(new Entity("Hoge"));
+        MyQuery query = new MyQuery("Hoge");
+        QueryResultList<Entity> list = query.limit(1).asQueryResultEntityList();
+        Cursor cursor = list.getCursor();
+        String encodedCursor = cursor.toWebSafeString();
+        query = new MyQuery("Hoge");
+        assertThat(query.encodedCursor(encodedCursor), is(sameInstance(query)));
+        assertThat(query.fetchOptions.getCursor(), is(cursor));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getFilters() throws Exception {
         MyQuery query = new MyQuery("Hoge");
         query.query.addFilter("aaa", FilterOperator.EQUAL, "111");
@@ -390,11 +494,47 @@ public class AbstQueryTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getEncodedFilters() throws Exception {
+        MyQuery query = new MyQuery("Hoge");
+        query.query.addFilter("aaa", FilterOperator.EQUAL, "111");
+        query.query.addFilter("bbb", FilterOperator.EQUAL, "222");
+        String encodedFilters = query.getEncodedFilters();
+        Filter[] filters = ByteUtil.toObject(Base64.decode(encodedFilters));
+        assertThat(filters.length, is(2));
+        assertThat(filters[0].getPropertyName(), is("aaa"));
+        assertThat(filters[0].getOperator(), is(FilterOperator.EQUAL));
+        assertThat((String) filters[0].getValue(), is("111"));
+        assertThat(filters[1].getPropertyName(), is("bbb"));
+        assertThat(filters[1].getOperator(), is(FilterOperator.EQUAL));
+        assertThat((String) filters[1].getValue(), is("222"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getSorts() throws Exception {
         MyQuery query = new MyQuery("Hoge");
         query.query.addSort("aaa", SortDirection.ASCENDING);
         query.query.addSort("bbb", SortDirection.DESCENDING);
         Sort[] sorts = query.getSorts();
+        assertThat(sorts.length, is(2));
+        assertThat(sorts[0].getPropertyName(), is("aaa"));
+        assertThat(sorts[0].getDirection(), is(SortDirection.ASCENDING));
+        assertThat(sorts[1].getPropertyName(), is("bbb"));
+        assertThat(sorts[1].getDirection(), is(SortDirection.DESCENDING));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getEncodedSorts() throws Exception {
+        MyQuery query = new MyQuery("Hoge");
+        query.query.addSort("aaa", SortDirection.ASCENDING);
+        query.query.addSort("bbb", SortDirection.DESCENDING);
+        String encodedSorts = query.getEncodedSorts();
+        Sort[] sorts = ByteUtil.toObject(Base64.decode(encodedSorts));
         assertThat(sorts.length, is(2));
         assertThat(sorts[0].getPropertyName(), is("aaa"));
         assertThat(sorts[0].getDirection(), is(SortDirection.ASCENDING));

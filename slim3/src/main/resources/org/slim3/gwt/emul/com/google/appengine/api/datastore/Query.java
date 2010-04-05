@@ -17,11 +17,23 @@ package com.google.appengine.api.datastore;
 
 import java.io.Serializable;
 
+import com.google.appengine.api.datastore.Query.FilterOperator;
+
 public class Query {
     
     protected Query() {
     }
 
+    public static enum FilterOperator {
+        LESS_THAN,
+        LESS_THAN_OR_EQUAL,
+        GREATER_THAN,
+        GREATER_THAN_OR_EQUAL,
+        EQUAL,
+        NOT_EQUAL,
+        IN;
+    }
+    
     public static enum SortDirection {
         ASCENDING,
         DESCENDING;

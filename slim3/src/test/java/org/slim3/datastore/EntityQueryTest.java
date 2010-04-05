@@ -28,7 +28,6 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
 /**
@@ -50,27 +49,6 @@ public class EntityQueryTest extends AppEngineTestCase {
         assertThat(query.query.getKind(), is("Hoge"));
         assertThat(query.query.getAncestor(), is(ancestorKey));
         assertThat(query.tx, is(notNullValue()));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void filter() throws Exception {
-        EntityQuery q = new EntityQuery("Hoge");
-        assertThat(
-            q.filter("aaa", FilterOperator.EQUAL, "111"),
-            is(sameInstance(q)));
-        assertThat(q.query.getFilterPredicates().size(), is(1));
-        assertThat(
-            q.query.getFilterPredicates().get(0).getPropertyName(),
-            is("aaa"));
-        assertThat(
-            q.query.getFilterPredicates().get(0).getOperator(),
-            is(FilterOperator.EQUAL));
-        assertThat(
-            (String) q.query.getFilterPredicates().get(0).getValue(),
-            is("111"));
     }
 
     /**

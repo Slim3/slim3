@@ -29,7 +29,6 @@ import com.google.appengine.api.datastore.QueryResultIterator;
 import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.SortDirection;
 
 /**
  * A query class for select.
@@ -149,55 +148,6 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
     }
 
     /**
-     * Adds the filters.
-     * 
-     * @param filters
-     *            the filters
-     * @return this instance
-     * @throws NullPointerException
-     *             if the element of the filters parameter is null
-     */
-    public ModelQuery<M> filter(Filter... filters) throws NullPointerException {
-        for (Filter f : filters) {
-            if (f == null) {
-                throw new NullPointerException(
-                    "The element of the filters parameter must not be null.");
-            }
-            query.addFilter(f.getPropertyName(), f.getOperator(), f.getValue());
-        }
-        return this;
-    }
-
-    /**
-     * Adds the filter.
-     * 
-     * @param propertyName
-     *            the property name
-     * @param operator
-     *            the {@link FilterOperator}
-     * @param value
-     *            the value
-     * 
-     * @return this instance
-     * @throws NullPointerException
-     *             if the propertyName parameter is null or if the operator
-     *             parameter is null
-     */
-    public ModelQuery<M> filter(String propertyName, FilterOperator operator,
-            Object value) throws NullPointerException {
-        if (propertyName == null) {
-            throw new NullPointerException(
-                "The propertyName parameter must not be null.");
-        }
-        if (operator == null) {
-            throw new NullPointerException(
-                "The operator parameter must not be null.");
-        }
-        query.addFilter(propertyName, operator, value);
-        return this;
-    }
-
-    /**
      * Adds the in-memory filter criteria.
      * 
      * @param criteria
@@ -237,65 +187,6 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
             Sort s = c.getSort();
             query.addSort(s.getPropertyName(), s.getDirection());
         }
-        return this;
-    }
-
-    /**
-     * Adds the sorts.
-     * 
-     * @param sorts
-     *            the array of sorts
-     * @return this instance
-     * @throws NullPointerException
-     *             if the element of the sorts parameter is null
-     */
-    public ModelQuery<M> sort(Sort... sorts) throws NullPointerException {
-        for (Sort s : sorts) {
-            if (s == null) {
-                throw new NullPointerException(
-                    "The element of the sorts parameter must not be null.");
-            }
-            query.addSort(s.getPropertyName(), s.getDirection());
-        }
-        return this;
-    }
-
-    /**
-     * Adds the sort.
-     * 
-     * @param propertyName
-     *            the property name
-     * @return this instance
-     * @throws NullPointerException
-     *             if the propertyName parameter is null
-     */
-    public ModelQuery<M> sort(String propertyName) throws NullPointerException {
-        return sort(propertyName, SortDirection.ASCENDING);
-    }
-
-    /**
-     * Adds the sort.
-     * 
-     * @param propertyName
-     *            the property name
-     * @param direction
-     *            the sort direction
-     * @return this instance
-     * @throws NullPointerException
-     *             if the propertyName parameter is null or if the direction
-     *             parameter is null
-     */
-    public ModelQuery<M> sort(String propertyName, SortDirection direction)
-            throws NullPointerException {
-        if (propertyName == null) {
-            throw new NullPointerException(
-                "The propertyName parameter must not be null.");
-        }
-        if (direction == null) {
-            throw new NullPointerException(
-                "The direction parameter must not be null.");
-        }
-        query.addSort(propertyName, direction);
         return this;
     }
 
@@ -381,9 +272,9 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
         }
         return new S3QueryResultList<M>(
             modelList,
-            cursor,
-            getFilters(),
-            getSorts(),
+            cursor.toWebSafeString(),
+            getEncodedFilters(),
+            getEncodedSorts(),
             hasNext);
     }
 
