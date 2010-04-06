@@ -41,9 +41,9 @@ public abstract class AbstractAttributeMeta<M, A> implements CharSequence {
     protected String name;
 
     /**
-     * The field name.
+     * The attribute name.
      */
-    protected String fieldName;
+    protected String attributeName;
 
     /**
      * The attribute class.
@@ -62,18 +62,18 @@ public abstract class AbstractAttributeMeta<M, A> implements CharSequence {
      *            the meta data of model
      * @param name
      *            the name
-     * @param fieldName
-     *            the field name
+     * @param attributeName
+     *            the attribute name
      * @param attributeClass
      *            the attribute class
      * 
      * @throws NullPointerException
      *             if the modelMeta parameter is null or if the name parameter
-     *             is null or if the attributeClass parameter is null or if the
-     *             fieldName parameter is null
+     *             is null or if the attributeName parameter is null or if the
+     *             attributeClass parameter is null
      */
     public AbstractAttributeMeta(ModelMeta<M> modelMeta, String name,
-            String fieldName, Class<? super A> attributeClass) {
+            String attributeName, Class<? super A> attributeClass) {
         if (modelMeta == null) {
             throw new NullPointerException(
                 "The modelMeta parameter must not be null.");
@@ -82,9 +82,9 @@ public abstract class AbstractAttributeMeta<M, A> implements CharSequence {
             throw new NullPointerException(
                 "The name parameter must not be null.");
         }
-        if (fieldName == null) {
+        if (attributeName == null) {
             throw new NullPointerException(
-                "The fieldName parameter must not be null.");
+                "The attributeName parameter must not be null.");
         }
         if (attributeClass == null) {
             throw new NullPointerException(
@@ -92,7 +92,7 @@ public abstract class AbstractAttributeMeta<M, A> implements CharSequence {
         }
         this.modelMeta = modelMeta;
         this.name = name;
-        this.fieldName = fieldName;
+        this.attributeName = attributeName;
         this.attributeClass = attributeClass;
     }
 
@@ -106,6 +106,16 @@ public abstract class AbstractAttributeMeta<M, A> implements CharSequence {
     }
 
     /**
+     * Use {@link #getAttributeName()} instead of this method.
+     * 
+     * @return the field name
+     */
+    @Deprecated
+    public String getFieldName() {
+        return getAttributeName();
+    }
+
+    /**
      * Returns the attribute class
      * 
      * @return the attribute class
@@ -115,29 +125,29 @@ public abstract class AbstractAttributeMeta<M, A> implements CharSequence {
     }
 
     /**
-     * Returns the field name.
+     * Returns the attribute name.
      * 
-     * @return the field name
+     * @return the attribute name
      */
-    public String getFieldName() {
-        return fieldName;
+    public String getAttributeName() {
+        return attributeName;
     }
 
     public char charAt(int index) {
-        return fieldName.charAt(index);
+        return attributeName.charAt(index);
     }
 
     public int length() {
-        return fieldName.length();
+        return attributeName.length();
     }
 
     public CharSequence subSequence(int start, int end) {
-        return fieldName.subSequence(start, end);
+        return attributeName.subSequence(start, end);
     }
 
     @Override
     public String toString() {
-        return fieldName;
+        return attributeName;
     }
 
     /**
@@ -151,7 +161,8 @@ public abstract class AbstractAttributeMeta<M, A> implements CharSequence {
      */
     protected Object getValue(Object model) throws IllegalArgumentException {
         if (propertyDesc == null) {
-            propertyDesc = modelMeta.getBeanDesc().getPropertyDesc(fieldName);
+            propertyDesc =
+                modelMeta.getBeanDesc().getPropertyDesc(attributeName);
         }
         if (propertyDesc == null) {
             throw new IllegalArgumentException("The property("

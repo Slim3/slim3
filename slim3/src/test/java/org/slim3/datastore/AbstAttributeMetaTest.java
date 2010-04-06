@@ -78,7 +78,7 @@ public class AbstAttributeMetaTest extends AppEngineTestCase {
             };
         assertThat(attrMeta.modelMeta, is(sameInstance(meta)));
         assertThat(attrMeta.name, is("aaa"));
-        assertThat(attrMeta.fieldName, is("aaa2"));
+        assertThat(attrMeta.attributeName, is("aaa2"));
         assertThat(
             attrMeta.attributeClass.getName(),
             is(String.class.getName()));
