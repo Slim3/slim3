@@ -62,9 +62,9 @@ public enum MessageCode {
     /** */
     SLIM3GEN1009("The type annotated with @Attribute(lob = true) is not supported."),
     /** */
-    SLIM3GEN1011("The getter method is not found."),
+    SLIM3GEN1011("The getter method[{0}] is not found."),
     /** */
-    SLIM3GEN1012("The setter method is not found."),
+    SLIM3GEN1012("The setter method[{0}] is not found."),
     /** */
     SLIM3GEN1013("Multiple primary keys are not allowed."),
     /** */
@@ -86,9 +86,9 @@ public enum MessageCode {
     /** */
     SLIM3GEN1022("The kind element is not supported for a sub model, because the kind of sub model is identical to the super model."),
     /** */
-    SLIM3GEN1024("The getter method is not found. (the property[{0}] of the class[{1}])."),
+    SLIM3GEN1024("The getter method[{0}] is not found. (the property[{1}] of the class[{2}])."),
     /** */
-    SLIM3GEN1025("The setter method is not found. (the property[{0}] of the class[{1}])."),
+    SLIM3GEN1025("The setter method[{0}] is not found. (the property[{1}] of the class[{2}])."),
     /** */
     SLIM3GEN1026("Specify @Attribute(lob = true) or @Attribute(persistent = false). (the property[{0}] of the class[{1}])."),
     /** */

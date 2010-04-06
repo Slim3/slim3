@@ -32,6 +32,7 @@ import org.slim3.gen.message.MessageCode;
 import org.slim3.gen.processor.ValidationException;
 import org.slim3.gen.util.AnnotationMirrorUtil;
 import org.slim3.gen.util.DeclarationUtil;
+import org.slim3.gen.util.FieldDeclarationUtil;
 import org.slim3.gen.util.StringUtil;
 import org.slim3.gen.util.TypeUtil;
 
@@ -620,30 +621,38 @@ public class AttributeMetaDescFactory {
             MethodDeclaration readMethodDeclaration,
             MethodDeclaration writeMethodDeclaration) {
         if (readMethodDeclaration == null) {
+            String expectedReadMethodName =
+                FieldDeclarationUtil.getReadMethodName(fieldDeclaration);
             if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
                 throw new ValidationException(
                     MessageCode.SLIM3GEN1011,
                     env,
-                    fieldDeclaration.getPosition());
+                    fieldDeclaration.getPosition(),
+                    expectedReadMethodName);
             }
             throw new ValidationException(
                 MessageCode.SLIM3GEN1024,
                 env,
                 classDeclaration.getPosition(),
+                expectedReadMethodName,
                 fieldDeclaration.getSimpleName(),
                 fieldDeclaration.getDeclaringType().getQualifiedName());
         }
         if (writeMethodDeclaration == null) {
+            String expectedWriteMethodName =
+                FieldDeclarationUtil.getWriteMethodName(fieldDeclaration);
             if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
                 throw new ValidationException(
                     MessageCode.SLIM3GEN1012,
                     env,
-                    fieldDeclaration.getPosition());
+                    fieldDeclaration.getPosition(),
+                    expectedWriteMethodName);
             }
             throw new ValidationException(
                 MessageCode.SLIM3GEN1025,
                 env,
                 classDeclaration.getPosition(),
+                expectedWriteMethodName,
                 fieldDeclaration.getSimpleName(),
                 fieldDeclaration.getDeclaringType().getQualifiedName());
         }
@@ -672,16 +681,20 @@ public class AttributeMetaDescFactory {
             MethodDeclaration readMethodDeclaration,
             MethodDeclaration writeMethodDeclaration) {
         if (readMethodDeclaration == null) {
+            String expectedReadMethodName =
+                FieldDeclarationUtil.getReadMethodName(fieldDeclaration);
             if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
                 throw new ValidationException(
                     MessageCode.SLIM3GEN1011,
                     env,
-                    fieldDeclaration.getPosition());
+                    fieldDeclaration.getPosition(),
+                    expectedReadMethodName);
             }
             throw new ValidationException(
                 MessageCode.SLIM3GEN1024,
                 env,
                 classDeclaration.getPosition(),
+                expectedReadMethodName,
                 fieldDeclaration.getSimpleName(),
                 fieldDeclaration.getDeclaringType().getQualifiedName());
         }
@@ -734,16 +747,20 @@ public class AttributeMetaDescFactory {
             MethodDeclaration readMethodDeclaration,
             MethodDeclaration writeMethodDeclaration) {
         if (readMethodDeclaration == null) {
+            String expectedReadMethodName =
+                FieldDeclarationUtil.getReadMethodName(fieldDeclaration);
             if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
                 throw new ValidationException(
                     MessageCode.SLIM3GEN1011,
                     env,
-                    fieldDeclaration.getPosition());
+                    fieldDeclaration.getPosition(),
+                    expectedReadMethodName);
             }
             throw new ValidationException(
                 MessageCode.SLIM3GEN1024,
                 env,
                 classDeclaration.getPosition(),
+                expectedReadMethodName,
                 fieldDeclaration.getSimpleName(),
                 fieldDeclaration.getDeclaringType().getQualifiedName());
         }
@@ -790,25 +807,30 @@ public class AttributeMetaDescFactory {
     protected boolean isReadMethod(MethodDeclaration m,
             AttributeMetaDesc attributeMetaDesc,
             FieldDeclaration fieldDeclaration) {
-        String propertyName = null;
-        if (m.getSimpleName().startsWith("get")) {
-            propertyName =
-                StringUtil.decapitalize(m.getSimpleName().substring(3));
-        } else if (m.getSimpleName().startsWith("is")) {
+        if (TypeUtil.isVoid(m.getReturnType())
+            || m.getParameters().size() != 0
+            || !m.getReturnType().equals(fieldDeclaration.getType())) {
+            return false;
+        }
+        String methodName = m.getSimpleName();
+        String fieldName = fieldDeclaration.getSimpleName();
+        if (methodName.startsWith("get")) {
+            String propertyName =
+                StringUtil.decapitalize(methodName.substring(3));
+            return propertyName.equals(fieldName);
+        } else if (methodName.startsWith("is")) {
             if (!TypeUtil.isPrimitive(m.getReturnType(), Kind.BOOLEAN)) {
                 return false;
             }
-            propertyName =
-                StringUtil.decapitalize(m.getSimpleName().substring(2));
-        } else {
-            return false;
+            String propertyName =
+                StringUtil.decapitalize(methodName.substring(2));
+            if (fieldName.startsWith("is")) {
+                return propertyName.equals(StringUtil.decapitalize(fieldName
+                    .substring(2)));
+            }
+            return propertyName.equals(fieldName);
         }
-        if (!propertyName.equals(fieldDeclaration.getSimpleName())
-            || TypeUtil.isVoid(m.getReturnType())
-            || m.getParameters().size() != 0) {
-            return false;
-        }
-        return m.getReturnType().equals(fieldDeclaration.getType());
+        return false;
     }
 
     /**
@@ -825,19 +847,24 @@ public class AttributeMetaDescFactory {
     protected boolean isWriteMethod(MethodDeclaration m,
             AttributeMetaDesc attributeMetaDesc,
             FieldDeclaration fieldDeclaration) {
-        if (!m.getSimpleName().startsWith("set")) {
-            return false;
-        }
-        String propertyName =
-            StringUtil.decapitalize(m.getSimpleName().substring(3));
-        if (!propertyName.equals(fieldDeclaration.getSimpleName())
+        String methodName = m.getSimpleName();
+        if (!methodName.startsWith("set")
             || !TypeUtil.isVoid(m.getReturnType())
             || m.getParameters().size() != 1) {
             return false;
         }
         TypeMirror parameterTypeMirror =
             m.getParameters().iterator().next().getType();
-        return parameterTypeMirror.equals(fieldDeclaration.getType());
+        if (!parameterTypeMirror.equals(fieldDeclaration.getType())) {
+            return false;
+        }
+        String fieldName = fieldDeclaration.getSimpleName();
+        String propertyName = StringUtil.decapitalize(methodName.substring(3));
+        if (fieldName.startsWith("is")) {
+            return propertyName.equals(StringUtil.decapitalize(fieldName
+                .substring(2)));
+        }
+        return propertyName.equals(fieldName);
     }
 
     /**
