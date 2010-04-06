@@ -35,7 +35,7 @@ public final class FieldDeclarationUtil {
      * Get the read method name.
      * 
      * @param fieldDeclaration
-     *            the field type
+     *            the field declaration
      * @return the read method name
      */
     public static String getReadMethodName(FieldDeclaration fieldDeclaration) {
@@ -57,7 +57,7 @@ public final class FieldDeclarationUtil {
      * Get the write method name.
      * 
      * @param fieldDeclaration
-     *            the field type
+     *            the field declaration
      * @return the write method name
      */
     public static String getWriteMethodName(FieldDeclaration fieldDeclaration) {
@@ -73,4 +73,26 @@ public final class FieldDeclarationUtil {
         }
         return "set" + StringUtil.capitalize(fieldName);
     }
+
+    /**
+     * Returns JavaBeans property name.
+     * 
+     * @param fieldDeclaration
+     *            the field declaration
+     * @return JavaBeans property name
+     */
+    public static String getPropertyName(FieldDeclaration fieldDeclaration) {
+        if (fieldDeclaration == null) {
+            throw new NullPointerException(
+                "The fieldDeclaration parameter is null.");
+        }
+        String fieldName = fieldDeclaration.getSimpleName();
+        if (TypeUtil.isPrimitive(fieldDeclaration.getType(), Kind.BOOLEAN)) {
+            if (isPrefixedFieldPattern.matcher(fieldName).matches()) {
+                return StringUtil.decapitalize(fieldName.substring(2));
+            }
+        }
+        return fieldName;
+    }
+
 }

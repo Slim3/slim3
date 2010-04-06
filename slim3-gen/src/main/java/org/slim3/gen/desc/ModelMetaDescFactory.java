@@ -17,11 +17,14 @@ package org.slim3.gen.desc;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.slim3.gen.AnnotationConstants;
+import org.slim3.gen.datastore.PrimitiveBooleanType;
 import org.slim3.gen.message.MessageCode;
 import org.slim3.gen.processor.AptException;
 import org.slim3.gen.processor.Options;
@@ -293,6 +296,8 @@ public class ModelMetaDescFactory {
      */
     protected void handleAttributes(ClassDeclaration classDeclaration,
             ModelMetaDesc modelMetaDesc) {
+        BooleanAttributeUniquenessValidator validator =
+            new BooleanAttributeUniquenessValidator(env, classDeclaration);
         List<MethodDeclaration> methodDeclarations =
             getMethodDeclarations(classDeclaration);
         for (FieldDeclaration fieldDeclaration : getFieldDeclarations(classDeclaration)) {
@@ -308,6 +313,7 @@ public class ModelMetaDescFactory {
             if (!attributeMetaDesc.isPersistent()) {
                 continue;
             }
+            validator.validate(attributeMetaDesc, fieldDeclaration);
             if (attributeMetaDesc.isPrimaryKey()
                 && modelMetaDesc.getKeyAttributeMetaDesc() != null) {
                 throw new ValidationException(
@@ -498,6 +504,8 @@ public class ModelMetaDescFactory {
         protected final List<String> classHierarchyList;
 
         /**
+         * Creates a new {@link PolyModelDesc}.
+         * 
          * @param kind
          *            the kind
          * @param classHierarchyList
@@ -533,5 +541,84 @@ public class ModelMetaDescFactory {
             return classHierarchyList;
         }
 
+    }
+
+    /**
+     * The validator for boolean attribute uniqueness.
+     * 
+     * @author taedium
+     * 
+     */
+    public static class BooleanAttributeUniquenessValidator {
+
+        /** the environment */
+        protected final AnnotationProcessorEnvironment env;
+
+        /** the class declaration */
+        protected final ClassDeclaration classDeclaration;
+
+        /**
+         * the name map, whose key is the attribute name and whose value is the
+         * field name.
+         */
+        protected final Map<String, String> nameMap =
+            new HashMap<String, String>();
+
+        /**
+         * Creates a new {@link BooleanAttributeUniquenessValidator}.
+         * 
+         * @param env
+         *            the environment
+         * @param classDeclaration
+         *            the class declaration
+         */
+        public BooleanAttributeUniquenessValidator(
+                AnnotationProcessorEnvironment env,
+                ClassDeclaration classDeclaration) {
+            if (env == null) {
+                throw new NullPointerException("The env parameter is null.");
+            }
+            if (classDeclaration == null) {
+                throw new NullPointerException(
+                    "The classDeclaration parameter is null.");
+            }
+            this.env = env;
+            this.classDeclaration = classDeclaration;
+        }
+
+        /**
+         * Validates.
+         * 
+         * @param attributeMetaDesc
+         *            the attribute meta description
+         * @param fieldDeclaration
+         *            the field declaration
+         */
+        public void validate(AttributeMetaDesc attributeMetaDesc,
+                FieldDeclaration fieldDeclaration) {
+            if (!attributeMetaDesc.isPersistent()
+                || !(attributeMetaDesc.getDataType() instanceof PrimitiveBooleanType)) {
+                return;
+            }
+            String fieldName = fieldDeclaration.getSimpleName();
+            String attributeName = attributeMetaDesc.getAttributeName();
+            if (nameMap.containsKey(attributeName)) {
+                if (classDeclaration
+                    .equals(fieldDeclaration.getDeclaringType())) {
+                    throw new ValidationException(
+                        MessageCode.SLIM3GEN1043,
+                        env,
+                        fieldDeclaration.getPosition(),
+                        fieldName);
+                }
+                throw new ValidationException(
+                    MessageCode.SLIM3GEN1044,
+                    env,
+                    classDeclaration.getPosition(),
+                    fieldName,
+                    fieldDeclaration.getDeclaringType().getQualifiedName());
+            }
+            nameMap.put(attributeName, fieldName);
+        }
     }
 }

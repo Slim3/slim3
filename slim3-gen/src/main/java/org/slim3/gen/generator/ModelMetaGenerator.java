@@ -462,7 +462,7 @@ public class ModelMetaGenerator implements Generator {
                         UnindexedAttributeMeta,
                         modelMetaDesc.getModelClassName(),
                         type.getTypeName(),
-                        p.getFieldName(),
+                        p.getAttributeName(),
                         p.getName(),
                         type.getClassName());
                 printer.println();
@@ -480,7 +480,7 @@ public class ModelMetaGenerator implements Generator {
                     CoreAttributeMeta,
                     modelMetaDesc.getModelClassName(),
                     type.getWrapperClassName(),
-                    p.getFieldName(),
+                    p.getAttributeName(),
                     p.getName(),
                     type.getClassName());
             printer.println();
@@ -498,7 +498,7 @@ public class ModelMetaGenerator implements Generator {
                         CoreUnindexedAttributeMeta,
                         modelMetaDesc.getModelClassName(),
                         type.getTypeName(),
-                        p.getFieldName(),
+                        p.getAttributeName(),
                         p.getName(),
                         type.getClassName());
             } else {
@@ -508,7 +508,7 @@ public class ModelMetaGenerator implements Generator {
                         CoreAttributeMeta,
                         modelMetaDesc.getModelClassName(),
                         type.getTypeName(),
-                        p.getFieldName(),
+                        p.getAttributeName(),
                         p.getName(),
                         type.getClassName());
             }
@@ -527,7 +527,7 @@ public class ModelMetaGenerator implements Generator {
                     modelMetaDesc.getModelClassName(),
                     type.getTypeName(),
                     type.getReferenceModelTypeName(),
-                    p.getFieldName(),
+                    p.getAttributeName(),
                     p.getName(),
                     type.getClassName(),
                     type.getReferenceModelTypeName());
@@ -549,7 +549,7 @@ public class ModelMetaGenerator implements Generator {
                     CoreAttributeMeta,
                     modelMetaDesc.getModelClassName(),
                     type.getTypeName(),
-                    p.getFieldName(),
+                    p.getAttributeName(),
                     propertyName,
                     type.getClassName());
             printer.println();
@@ -566,7 +566,7 @@ public class ModelMetaGenerator implements Generator {
                         "public final %1$s<%2$s> %3$s = new %1$s<%2$s>(this, \"%4$s\", \"%3$s\");",
                         StringUnindexedAttributeMeta,
                         modelMetaDesc.getModelClassName(),
-                        p.getFieldName(),
+                        p.getAttributeName(),
                         p.getName(),
                         type.getClassName());
             } else {
@@ -575,7 +575,7 @@ public class ModelMetaGenerator implements Generator {
                         "public final %1$s<%2$s> %3$s = new %1$s<%2$s>(this, \"%4$s\", \"%3$s\");",
                         StringAttributeMeta,
                         modelMetaDesc.getModelClassName(),
-                        p.getFieldName(),
+                        p.getAttributeName(),
                         p.getName());
             }
             printer.println();
@@ -618,7 +618,7 @@ public class ModelMetaGenerator implements Generator {
                                     StringCollectionUnindexedAttributeMeta,
                                     modelMetaDesc.getModelClassName(),
                                     collectionType.getTypeName(),
-                                    attr.getFieldName(),
+                                    attr.getAttributeName(),
                                     attr.getName(),
                                     collectionType.getClassName());
                         } else {
@@ -628,7 +628,7 @@ public class ModelMetaGenerator implements Generator {
                                     StringCollectionAttributeMeta,
                                     modelMetaDesc.getModelClassName(),
                                     collectionType.getTypeName(),
-                                    attr.getFieldName(),
+                                    attr.getAttributeName(),
                                     attr.getName(),
                                     collectionType.getClassName());
                         }
@@ -649,7 +649,7 @@ public class ModelMetaGenerator implements Generator {
                                     modelMetaDesc.getModelClassName(),
                                     collectionType.getTypeName(),
                                     elementType.getTypeName(),
-                                    attr.getFieldName(),
+                                    attr.getAttributeName(),
                                     attr.getName(),
                                     collectionType.getClassName());
                         } else {
@@ -660,7 +660,7 @@ public class ModelMetaGenerator implements Generator {
                                     modelMetaDesc.getModelClassName(),
                                     collectionType.getTypeName(),
                                     elementType.getTypeName(),
-                                    attr.getFieldName(),
+                                    attr.getAttributeName(),
                                     attr.getName(),
                                     collectionType.getClassName());
                         }
@@ -734,11 +734,11 @@ public class ModelMetaGenerator implements Generator {
                 .println(
                     "%1$s _%2$s = blobToSerializable((%3$s) entity.getProperty(\"%4$s\"));",
                     type.getTypeName(),
-                    p.getFieldName(),
+                    p.getAttributeName(),
                     Blob,
                     p.getName());
             printer.println("model.%1$s(_%2$s);", p.getWriteMethodName(), p
-                .getFieldName());
+                .getAttributeName());
             return null;
         }
 
@@ -913,7 +913,7 @@ public class ModelMetaGenerator implements Generator {
             printer
                 .println(
                     "    throw new NullPointerException(\"The property(%1$s) is null.\");",
-                    p.getFieldName());
+                    p.getAttributeName());
             printer.println("}");
             printer.println(
                 "model.%1$s().setKey((%2$s) entity.getProperty(\"%3$s\"));",
@@ -1457,7 +1457,7 @@ public class ModelMetaGenerator implements Generator {
             printer
                 .println(
                     "    throw new NullPointerException(\"The property(%1$s) must not be null.\");",
-                    p.getFieldName());
+                    p.getAttributeName());
             printer.println("}");
             if (p.isUnindexed()) {
                 printer

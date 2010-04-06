@@ -118,7 +118,11 @@ public enum MessageCode {
     /** */
     SLIM3GEN1041("The setter method for the field[{0}] is not allowed. Define the field as follows:\n{1}"),
     /** */
-    SLIM3GEN1042("The setter method for the field[{0}] of the class[{1}] is not allowed. Define the field as follows:\n{2}"), ;
+    SLIM3GEN1042("The setter method for the field[{0}] of the class[{1}] is not allowed. Define the field as follows:\n{2}"),
+    /** */
+    SLIM3GEN1043("The property[{0}] is duplicated."),
+    /** */
+    SLIM3GEN1044("The property is duplicated. (the property[{0}] of the class[{1}])"), ;
 
     /** the message */
     public final String message;

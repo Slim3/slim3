@@ -96,7 +96,9 @@ public class AttributeMetaDescFactory {
             throw new NullPointerException(
                 "The methodDeclarations parameter is null.");
         }
-        String name = fieldDeclaration.getSimpleName();
+        String attributeName =
+            FieldDeclarationUtil.getPropertyName(fieldDeclaration);
+        String name = attributeName;
         AnnotationMirror attribute =
             DeclarationUtil.getAnnotationMirror(
                 env,
@@ -116,10 +118,7 @@ public class AttributeMetaDescFactory {
             dataTypeFactory.createDataType(fieldDeclaration, fieldDeclaration
                 .getType());
         AttributeMetaDesc attributeMetaDesc =
-            new AttributeMetaDesc(
-                name,
-                fieldDeclaration.getSimpleName(),
-                dataType);
+            new AttributeMetaDesc(name, attributeName, dataType);
         handleField(
             attributeMetaDesc,
             classDeclaration,
@@ -825,8 +824,11 @@ public class AttributeMetaDescFactory {
             String propertyName =
                 StringUtil.decapitalize(methodName.substring(2));
             if (fieldName.startsWith("is")) {
-                return propertyName.equals(StringUtil.decapitalize(fieldName
-                    .substring(2)));
+                String maybePropertyName = fieldName.substring(2);
+                if (maybePropertyName.length() == 0 || Character.isLowerCase(maybePropertyName.charAt(0))) {
+                    return false;
+                }
+                return propertyName.equals(StringUtil.decapitalize(maybePropertyName));
             }
             return propertyName.equals(fieldName);
         }

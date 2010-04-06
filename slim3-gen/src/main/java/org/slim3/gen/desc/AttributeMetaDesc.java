@@ -28,8 +28,8 @@ public class AttributeMetaDesc {
     /** the name */
     protected final String name;
 
-    /** the fieldName */
-    protected final String fieldName;
+    /** the attributeName */
+    protected final String attributeName;
 
     /** the datastore data type */
     protected final DataType dataType;
@@ -60,23 +60,25 @@ public class AttributeMetaDesc {
      * 
      * @param name
      *            the name
-     * @param fieldName
-     *            the fieldName
+     * @param attributeName
+     *            the attributeName
      * @param dataType
      *            the data Type
      */
-    public AttributeMetaDesc(String name, String fieldName, DataType dataType) {
+    public AttributeMetaDesc(String name, String attributeName,
+            DataType dataType) {
         if (name == null) {
             throw new NullPointerException("The name parameter is null.");
         }
-        if (fieldName == null) {
-            throw new NullPointerException("The fieldName parameter is null.");
+        if (attributeName == null) {
+            throw new NullPointerException(
+                "The attributeName parameter is null.");
         }
         if (dataType == null) {
             throw new NullPointerException("The dataType parameter is null.");
         }
         this.name = name;
-        this.fieldName = fieldName;
+        this.attributeName = attributeName;
         this.dataType = dataType;
     }
 
@@ -182,10 +184,10 @@ public class AttributeMetaDesc {
     }
 
     /**
-     * @return the field name
+     * @return the attributeName
      */
-    public String getFieldName() {
-        return fieldName;
+    public String getAttributeName() {
+        return attributeName;
     }
 
     /**
