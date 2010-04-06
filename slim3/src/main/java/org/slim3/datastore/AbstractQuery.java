@@ -278,10 +278,10 @@ public abstract class AbstractQuery<SUB> {
     }
 
     /**
-     * Specifies the cursor.
+     * Specifies the encoded cursor.
      * 
      * @param encodedCursor
-     *            the cursor as encoded string
+     *            the encoded cursor
      * @return this instance
      * @throws NullPointerException
      *             if the encodedCursor parameter is null

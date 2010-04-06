@@ -110,27 +110,27 @@ public class S3QueryResultList<T> implements List<T>, Serializable {
     }
 
     /**
-     * Returns the cursor as encoded string.
+     * Returns the encoded cursor.
      * 
-     * @return the cursor as encoded string
+     * @return the encoded cursor
      */
     public String getEncodedCursor() {
         return encodedCursor;
     }
 
     /**
-     * Returns the array of filters as encoded string.
+     * Returns the encoded filters.
      * 
-     * @return the array of filters as encoded string
+     * @return the encoded filters
      */
     public String getEncodedFilters() {
         return encodedFilters;
     }
 
     /**
-     * Returns the array of sorts as encoded string.
+     * Returns the encoded sorts.
      * 
-     * @return the array of sorts as encoded string
+     * @return the encoded sorts
      */
     public String getEncodedSorts() {
         return encodedSorts;
