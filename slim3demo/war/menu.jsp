@@ -4,6 +4,7 @@
 <div id="menu">
 <ul>
 <li><a href="${f:url('/performance/')}">Performance<br />Slim3 vs JDO</a></li>
+<li><a href="${f:url('/gtx/')}">Global<br />Transaction</a></li>
 <li><a href="${f:url('/blog/')}">CRUD</a></li>
 <li><a href="${f:url('/checkbox/')}">Checkbox</a></li>
 <li><a href="${f:url('/multibox/')}">Multibox</a></li>
