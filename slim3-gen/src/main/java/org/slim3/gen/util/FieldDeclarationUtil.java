@@ -43,14 +43,30 @@ public final class FieldDeclarationUtil {
             throw new NullPointerException(
                 "The fieldDeclaration parameter is null.");
         }
+        return getReadMethodNames(fieldDeclaration)[0];
+    }
+
+    /**
+     * Get the read method names.
+     * 
+     * @param fieldDeclaration
+     *            the field declaration
+     * @return the read method names
+     */
+    public static String[] getReadMethodNames(FieldDeclaration fieldDeclaration) {
+        if (fieldDeclaration == null) {
+            throw new NullPointerException(
+                "The fieldDeclaration parameter is null.");
+        }
         String fieldName = fieldDeclaration.getSimpleName();
         if (TypeUtil.isPrimitive(fieldDeclaration.getType(), Kind.BOOLEAN)) {
             if (isPrefixedFieldPattern.matcher(fieldName).matches()) {
-                return fieldName;
+                return new String[] { fieldName };
             }
-            return "is" + StringUtil.capitalize(fieldName);
+            String capitalized = StringUtil.capitalize(fieldName);
+            return new String[] { "is" + capitalized, "get" + capitalized };
         }
-        return "get" + StringUtil.capitalize(fieldName);
+        return new String[] { "get" + StringUtil.capitalize(fieldName) };
     }
 
     /**

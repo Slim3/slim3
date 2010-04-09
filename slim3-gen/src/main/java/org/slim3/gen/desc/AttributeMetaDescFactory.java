@@ -33,7 +33,6 @@ import org.slim3.gen.processor.ValidationException;
 import org.slim3.gen.util.AnnotationMirrorUtil;
 import org.slim3.gen.util.DeclarationUtil;
 import org.slim3.gen.util.FieldDeclarationUtil;
-import org.slim3.gen.util.StringUtil;
 import org.slim3.gen.util.TypeUtil;
 
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
@@ -45,7 +44,6 @@ import com.sun.mirror.declaration.TypeDeclaration;
 import com.sun.mirror.type.ClassType;
 import com.sun.mirror.type.DeclaredType;
 import com.sun.mirror.type.TypeMirror;
-import com.sun.mirror.type.PrimitiveType.Kind;
 import com.sun.mirror.util.SimpleTypeVisitor;
 
 /**
@@ -812,25 +810,11 @@ public class AttributeMetaDescFactory {
             return false;
         }
         String methodName = m.getSimpleName();
-        String fieldName = fieldDeclaration.getSimpleName();
-        if (methodName.startsWith("get")) {
-            String propertyName =
-                StringUtil.decapitalize(methodName.substring(3));
-            return propertyName.equals(fieldName);
-        } else if (methodName.startsWith("is")) {
-            if (!TypeUtil.isPrimitive(m.getReturnType(), Kind.BOOLEAN)) {
-                return false;
+        for (String candidateReadMethodName : FieldDeclarationUtil
+            .getReadMethodNames(fieldDeclaration)) {
+            if (methodName.equals(candidateReadMethodName)) {
+                return true;
             }
-            String propertyName =
-                StringUtil.decapitalize(methodName.substring(2));
-            if (fieldName.startsWith("is")) {
-                String maybePropertyName = fieldName.substring(2);
-                if (maybePropertyName.length() == 0 || Character.isLowerCase(maybePropertyName.charAt(0))) {
-                    return false;
-                }
-                return propertyName.equals(StringUtil.decapitalize(maybePropertyName));
-            }
-            return propertyName.equals(fieldName);
         }
         return false;
     }
@@ -860,13 +844,8 @@ public class AttributeMetaDescFactory {
         if (!parameterTypeMirror.equals(fieldDeclaration.getType())) {
             return false;
         }
-        String fieldName = fieldDeclaration.getSimpleName();
-        String propertyName = StringUtil.decapitalize(methodName.substring(3));
-        if (fieldName.startsWith("is")) {
-            return propertyName.equals(StringUtil.decapitalize(fieldName
-                .substring(2)));
-        }
-        return propertyName.equals(fieldName);
+        return methodName.equals(FieldDeclarationUtil
+            .getWriteMethodName(fieldDeclaration));
     }
 
     /**
