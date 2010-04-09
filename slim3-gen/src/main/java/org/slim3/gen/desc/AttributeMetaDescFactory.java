@@ -417,18 +417,26 @@ public class AttributeMetaDescFactory {
                 fieldDeclaration,
                 attribute);
         }
-        if (dataType instanceof ModelRefType) {
-            throwExceptionForLobUnsupportedType(
-                classDeclaration,
-                fieldDeclaration,
-                attribute);
-        }
         if (dataType instanceof CollectionType
             && CollectionType.class.cast(dataType).getElementType() instanceof CoreReferenceType) {
             throwExceptionForLobUnsupportedType(
                 classDeclaration,
                 fieldDeclaration,
                 attribute);
+        }
+        if (dataType instanceof ModelRefType) {
+            if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
+                throw new ValidationException(
+                    MessageCode.SLIM3GEN1009,
+                    env,
+                    fieldDeclaration.getPosition());
+            }
+            throw new ValidationException(
+                MessageCode.SLIM3GEN1028,
+                env,
+                classDeclaration.getPosition(),
+                fieldDeclaration.getSimpleName(),
+                fieldDeclaration.getDeclaringType().getQualifiedName());
         }
         attributeMetaDesc.setLob(true);
     }
@@ -935,12 +943,12 @@ public class AttributeMetaDescFactory {
             FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
         if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
             throw new ValidationException(
-                MessageCode.SLIM3GEN1009,
+                MessageCode.SLIM3GEN1045,
                 env,
                 fieldDeclaration.getPosition());
         }
         throw new ValidationException(
-            MessageCode.SLIM3GEN1028,
+            MessageCode.SLIM3GEN1046,
             env,
             classDeclaration.getPosition(),
             fieldDeclaration.getSimpleName(),

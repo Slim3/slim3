@@ -122,7 +122,11 @@ public enum MessageCode {
     /** */
     SLIM3GEN1043("The property[{0}] is duplicated."),
     /** */
-    SLIM3GEN1044("The property is duplicated. (the property[{0}] of the class[{1}])"), ;
+    SLIM3GEN1044("The property is duplicated. (the property[{0}] of the class[{1}])"),
+    /** */
+    SLIM3GEN1045("Specify @Attribute(unindexed = true) instead of @Attribute(lob = true)."),
+    /** */
+    SLIM3GEN1046("Specify @Attribute(unindexed = true) instead of @Attribute(lob = true). (the property[{0}] of the class[{1}])."), ;
 
     /** the message */
     public final String message;
