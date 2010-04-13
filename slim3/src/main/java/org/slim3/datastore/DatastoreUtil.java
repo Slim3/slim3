@@ -1533,13 +1533,13 @@ public final class DatastoreUtil {
             long id = e.getId();
             String name = e.getName();
             if (key == null) {
-                if (id > 0) {
+                if (id != 0) {
                     key = KeyFactory.createKey(kind, id);
                 } else {
                     key = KeyFactory.createKey(kind, name);
                 }
             } else {
-                if (id > 0) {
+                if (id != 0) {
                     key = KeyFactory.createKey(key, kind, id);
                 } else {
                     key = KeyFactory.createKey(key, kind, name);

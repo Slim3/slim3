@@ -1054,6 +1054,21 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void refereceToKeyForMinusId() throws Exception {
+        Key key = KeyFactory.createKey("Hoge", -1);
+        Reference reference = new Reference();
+        Path path = new Path();
+        reference.setPath(path);
+        Element element = path.addElement();
+        element.setType("Hoge");
+        element.setId(-1);
+        assertThat(DatastoreUtil.referenceToKey(reference), is(key));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void refereceToKeyForName() throws Exception {
         Key key = KeyFactory.createKey("Hoge", "aaa");
         Reference reference = new Reference();
