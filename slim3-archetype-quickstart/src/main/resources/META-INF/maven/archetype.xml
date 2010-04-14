@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<archetype>
+  <id>slim3-archetype-quickstart</id>
+  <sources>
+	  <source>src/main/java/model/Slim3Model.java</source>
+	  <source>src/main/java/service/Slim3Service.java</source>
+	  <source>src/main/java/controller/IndexController.java</source>
+  </sources>
+  <resources>
+    <resource>src/main/resources/logging.properties</resource>
+    <resource>war/WEB-INF/appengine-web.xml</resource>
+    <resource>war/WEB-INF/web.xml</resource>
+    <resource>war/WEB-INF/queue.xml</resource>
+  </resources>
+  <testSources>
+	  <source>src/test/java/service/Slim3ServiceTest.java</source>
+	  <source>src/test/java/controller/IndexControllerTest.java</source>
+  </testSources>
+  <testResources>
+  </testResources>
+</archetype>

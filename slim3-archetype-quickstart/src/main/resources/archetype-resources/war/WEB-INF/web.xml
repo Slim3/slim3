@@ -1,0 +1,91 @@
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+    <display-name>Archetype Created Web Application</display-name>
+  
+    <context-param>
+        <param-name>slim3.rootPackage</param-name>
+        <param-value>${package}</param-value>
+    </context-param>
+    <context-param>
+        <param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
+        <param-value>application</param-value>
+    </context-param>
+    <context-param>
+        <param-name>javax.servlet.jsp.jstl.fmt.request.charset</param-name>
+        <param-value>UTF-8</param-value>
+    </context-param>
+
+    <filter>
+        <filter-name>HotReloadingFilter</filter-name>
+        <filter-class>org.slim3.controller.HotReloadingFilter</filter-class>
+    </filter>
+    <filter>
+        <filter-name>DatastoreFilter</filter-name>
+        <filter-class>org.slim3.datastore.DatastoreFilter</filter-class>
+    </filter>   
+    <filter>
+        <filter-name>FrontController</filter-name>
+        <filter-class>org.slim3.controller.FrontController</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>HotReloadingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>    
+    <filter-mapping>
+        <filter-name>DatastoreFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>FrontController</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+        <dispatcher>INCLUDE</dispatcher>
+        <dispatcher>ERROR</dispatcher>
+    </filter-mapping>
+    
+    <servlet>
+        <servlet-name>GlobalTransactionServlet</servlet-name>
+        <servlet-class>org.slim3.datastore.GlobalTransactionServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    
+    <!--
+    <servlet>
+        <servlet-name>GWTServiceServlet</servlet-name>
+        <servlet-class>org.slim3.gwt.server.rpc.GWTServiceServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    -->
+      
+    <servlet-mapping>
+        <servlet-name>GlobalTransactionServlet</servlet-name>
+        <url-pattern>/slim3/gtx</url-pattern>
+    </servlet-mapping>
+    
+    <!--
+    <servlet-mapping>
+        <servlet-name>GWTServiceServlet</servlet-name>
+        <url-pattern>*.s3gwt</url-pattern>
+    </servlet-mapping>
+    -->
+    
+    <security-constraint>
+        <web-resource-collection>
+            <url-pattern>*.jsp</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <web-resource-collection>
+            <url-pattern>/slim3/gtx</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>admin</role-name>
+        </auth-constraint>
+    </security-constraint>
+</web-app>
