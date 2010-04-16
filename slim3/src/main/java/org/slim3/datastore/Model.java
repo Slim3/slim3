@@ -43,4 +43,9 @@ public @interface Model {
      * to datastore as slim3.schemaVersion property.
      */
     int schemaVersion() default 0;
+
+    /**
+     * The name of schemaVersion property.
+     */
+    String schemaVersionName() default "slim3.schemaVersion";
 }
