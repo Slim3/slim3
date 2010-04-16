@@ -45,6 +45,9 @@ public class ModelMetaDesc implements ClassDesc {
     /** the kind of entity */
     protected final String kind;
 
+    /** the schemaVersionName of entity */
+    protected final String schemaVersionName;
+
     /** the schemaVersion of entity */
     protected final int schemaVersion;
 
@@ -77,6 +80,8 @@ public class ModelMetaDesc implements ClassDesc {
      *            the modelClassName
      * @param kind
      *            the kind of entity
+     * @param schemaVersionName
+     *            the schemaVersionName of entity
      * @param schemaVersion
      *            the schemaVersion of entity
      * @param classHierarchyList
@@ -84,7 +89,8 @@ public class ModelMetaDesc implements ClassDesc {
      */
     public ModelMetaDesc(String packageName, String simpleName,
             boolean abstrct, String modelClassName, String kind,
-            int schemaVersion, List<String> classHierarchyList) {
+            String schemaVersionName, int schemaVersion,
+            List<String> classHierarchyList) {
         if (packageName == null) {
             throw new NullPointerException("The packageName parameter is null.");
         }
@@ -95,6 +101,10 @@ public class ModelMetaDesc implements ClassDesc {
             throw new NullPointerException(
                 "The modelClassName parameter is null.");
         }
+        if (schemaVersionName == null) {
+            throw new NullPointerException(
+                "The schemaVersionName parameter is null.");
+        }
         if (kind == null) {
             throw new NullPointerException("The kind parameter is null.");
         }
@@ -103,6 +113,7 @@ public class ModelMetaDesc implements ClassDesc {
         this.abstrct = abstrct;
         this.modelClassName = modelClassName;
         this.kind = kind;
+        this.schemaVersionName = schemaVersionName;
         this.schemaVersion = schemaVersion;
         this.classHierarchyList = classHierarchyList;
     }
@@ -154,6 +165,15 @@ public class ModelMetaDesc implements ClassDesc {
      */
     public String getKind() {
         return kind;
+    }
+
+    /**
+     * Returns the schemaVersionName of entity.
+     * 
+     * @return the schemaVersionName of entity
+     */
+    public String getSchemaVersionName() {
+        return schemaVersionName;
     }
 
     /**

@@ -86,6 +86,8 @@ public enum MessageCode {
     /** */
     SLIM3GEN1022("The kind element is not supported for a sub model, because the kind of sub model is identical to the super model."),
     /** */
+    SLIM3GEN1023("The schemaVersionName element must not be empty."),
+    /** */
     SLIM3GEN1024("The getter method[{0}] is not found. (the property[{1}] of the class[{2}])."),
     /** */
     SLIM3GEN1025("The setter method[{0}] is not found. (the property[{1}] of the class[{2}])."),
@@ -126,7 +128,13 @@ public enum MessageCode {
     /** */
     SLIM3GEN1045("Specify @Attribute(unindexed = true) instead of @Attribute(lob = true)."),
     /** */
-    SLIM3GEN1046("Specify @Attribute(unindexed = true) instead of @Attribute(lob = true). (the property[{0}] of the class[{1}])."), ;
+    SLIM3GEN1046("Specify @Attribute(unindexed = true) instead of @Attribute(lob = true). (the property[{0}] of the class[{1}])."),
+    /** */
+    SLIM3GEN1047("The property[{0}] of entity is duplicated."),
+    /** */
+    SLIM3GEN1048("The property[{0}] of entity is duplicated. (the property[{1}] of the class[{2}])"),
+
+    ;
 
     /** the message */
     public final String message;

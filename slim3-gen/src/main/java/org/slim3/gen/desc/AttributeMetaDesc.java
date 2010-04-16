@@ -26,7 +26,7 @@ import org.slim3.gen.datastore.DataType;
 public class AttributeMetaDesc {
 
     /** the name */
-    protected final String name;
+    protected String name;
 
     /** the attributeName */
     protected final String attributeName;
@@ -102,6 +102,7 @@ public class AttributeMetaDesc {
      */
     public void setPrimaryKey(boolean primaryKey) {
         this.primaryKey = primaryKey;
+        this.name = "__key__";
     }
 
     /**

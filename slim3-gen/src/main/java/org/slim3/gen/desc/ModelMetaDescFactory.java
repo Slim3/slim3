@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.slim3.gen.AnnotationConstants;
+import org.slim3.gen.Constants;
 import org.slim3.gen.datastore.PrimitiveBooleanType;
 import org.slim3.gen.message.MessageCode;
 import org.slim3.gen.processor.AptException;
@@ -32,6 +33,7 @@ import org.slim3.gen.processor.UnknownDeclarationException;
 import org.slim3.gen.processor.ValidationException;
 import org.slim3.gen.util.AnnotationMirrorUtil;
 import org.slim3.gen.util.DeclarationUtil;
+import org.slim3.gen.util.StringUtil;
 
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.declaration.AnnotationMirror;
@@ -119,6 +121,13 @@ public class ModelMetaDescFactory {
             classHierarchyList = polyModelDesc.getClassHierarchyList();
             validateKind(classDeclaration);
         }
+
+        String schemaVersionName =
+            AnnotationMirrorUtil.getElementValueWithDefault(
+                model,
+                AnnotationConstants.schemaVersionName);
+        validateSchemaVersionName(classDeclaration, schemaVersionName);
+
         Integer schemaVersion =
             AnnotationMirrorUtil.getElementValueWithDefault(
                 model,
@@ -131,6 +140,7 @@ public class ModelMetaDescFactory {
                 classDeclaration.getModifiers().contains(Modifier.ABSTRACT),
                 modelClassName,
                 kind,
+                schemaVersionName,
                 schemaVersion.intValue(),
                 classHierarchyList);
         handleAttributes(classDeclaration, modelMetaDesc);
@@ -274,6 +284,22 @@ public class ModelMetaDescFactory {
     }
 
     /**
+     * Validates that the schemaVersionName is not empty.
+     * 
+     * @param classDeclaration
+     * @param schemaVersionName
+     */
+    protected void validateSchemaVersionName(ClassDeclaration classDeclaration,
+            String schemaVersionName) {
+        if (StringUtil.isEmpty(schemaVersionName)) {
+            throw new ValidationException(
+                MessageCode.SLIM3GEN1023,
+                env,
+                classDeclaration.getPosition());
+        }
+    }
+
+    /**
      * Creates a model meta class name.
      * 
      * @param modelClassName
@@ -298,6 +324,7 @@ public class ModelMetaDescFactory {
             ModelMetaDesc modelMetaDesc) {
         List<MethodDeclaration> methodDeclarations =
             getMethodDeclarations(classDeclaration);
+        Set<String> propertyNames = createPropertyNames(modelMetaDesc);
         Set<String> booleanAttributeNames = new HashSet<String>();
         for (FieldDeclaration fieldDeclaration : getFieldDeclarations(classDeclaration)) {
             AttributeMetaDesc attributeMetaDesc =
@@ -312,40 +339,24 @@ public class ModelMetaDescFactory {
             if (!attributeMetaDesc.isPersistent()) {
                 continue;
             }
-            if (attributeMetaDesc.isPrimaryKey()
-                && modelMetaDesc.getKeyAttributeMetaDesc() != null) {
-                throw new ValidationException(
-                    MessageCode.SLIM3GEN1013,
-                    env,
-                    classDeclaration.getPosition());
-            }
-            if (attributeMetaDesc.isVersion()
-                && modelMetaDesc.getVersionAttributeMetaDesc() != null) {
-                throw new ValidationException(
-                    MessageCode.SLIM3GEN1014,
-                    env,
-                    classDeclaration.getPosition());
-            }
-            if (attributeMetaDesc.getDataType() instanceof PrimitiveBooleanType) {
-                String attributeName = attributeMetaDesc.getAttributeName();
-                if (booleanAttributeNames.contains(attributeName)) {
-                    if (classDeclaration.equals(fieldDeclaration
-                        .getDeclaringType())) {
-                        throw new ValidationException(
-                            MessageCode.SLIM3GEN1043,
-                            env,
-                            fieldDeclaration.getPosition(),
-                            fieldDeclaration.getSimpleName());
-                    }
-                    throw new ValidationException(
-                        MessageCode.SLIM3GEN1044,
-                        env,
-                        classDeclaration.getPosition(),
-                        fieldDeclaration.getSimpleName(),
-                        fieldDeclaration.getDeclaringType().getQualifiedName());
-                }
-                booleanAttributeNames.add(attributeName);
-            }
+            validatePrimaryKeyUniqueness(
+                attributeMetaDesc,
+                classDeclaration,
+                modelMetaDesc);
+            validateVersionUniqueness(
+                attributeMetaDesc,
+                classDeclaration,
+                modelMetaDesc);
+            validatePropertyNameUniqueness(
+                propertyNames,
+                attributeMetaDesc,
+                classDeclaration,
+                fieldDeclaration);
+            validateBooleanAttributeNameUniqueness(
+                booleanAttributeNames,
+                attributeMetaDesc,
+                classDeclaration,
+                fieldDeclaration);
             modelMetaDesc.addAttributeMetaDesc(attributeMetaDesc);
         }
         if (!modelMetaDesc.isError()
@@ -354,6 +365,122 @@ public class ModelMetaDescFactory {
                 MessageCode.SLIM3GEN1015,
                 env,
                 classDeclaration.getPosition());
+        }
+    }
+
+    /**
+     * Creates property name set which contains reserved property names.
+     * 
+     * @param modelMetaDesc
+     * @return property name set
+     */
+    protected Set<String> createPropertyNames(ModelMetaDesc modelMetaDesc) {
+        Set<String> results = new HashSet<String>();
+        results.add(Constants.CLASS_HIERARCHY_LIST_RESERVED_PROPERTY);
+        results.add(modelMetaDesc.getSchemaVersionName());
+        return results;
+    }
+
+    /**
+     * Validates primary key uniqueness.
+     * 
+     * @param attributeMetaDesc
+     * @param classDeclaration
+     * @param modelMetaDesc
+     */
+    protected void validatePrimaryKeyUniqueness(
+            AttributeMetaDesc attributeMetaDesc,
+            ClassDeclaration classDeclaration, ModelMetaDesc modelMetaDesc) {
+        if (attributeMetaDesc.isPrimaryKey()
+            && modelMetaDesc.getKeyAttributeMetaDesc() != null) {
+            throw new ValidationException(
+                MessageCode.SLIM3GEN1013,
+                env,
+                classDeclaration.getPosition());
+        }
+    }
+
+    /**
+     * Validates version uniqueness.
+     * 
+     * @param attributeMetaDesc
+     * @param classDeclaration
+     * @param modelMetaDesc
+     */
+    protected void validateVersionUniqueness(
+            AttributeMetaDesc attributeMetaDesc,
+            ClassDeclaration classDeclaration, ModelMetaDesc modelMetaDesc) {
+        if (attributeMetaDesc.isVersion()
+            && modelMetaDesc.getVersionAttributeMetaDesc() != null) {
+            throw new ValidationException(
+                MessageCode.SLIM3GEN1014,
+                env,
+                classDeclaration.getPosition());
+        }
+    }
+
+    /**
+     * Validates property name uniqueness.
+     * 
+     * @param propertyNames
+     * @param attributeMetaDesc
+     * @param classDeclaration
+     * @param fieldDeclaration
+     */
+    protected void validatePropertyNameUniqueness(Set<String> propertyNames,
+            AttributeMetaDesc attributeMetaDesc,
+            ClassDeclaration classDeclaration, FieldDeclaration fieldDeclaration) {
+        String propertyName = attributeMetaDesc.getName();
+        if (propertyNames.contains(propertyName)) {
+            if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
+                throw new ValidationException(
+                    MessageCode.SLIM3GEN1047,
+                    env,
+                    fieldDeclaration.getPosition(),
+                    propertyName);
+            }
+            throw new ValidationException(
+                MessageCode.SLIM3GEN1048,
+                env,
+                classDeclaration.getPosition(),
+                propertyName,
+                fieldDeclaration.getSimpleName(),
+                fieldDeclaration.getDeclaringType().getQualifiedName());
+        }
+        propertyNames.add(propertyName);
+    }
+
+    /**
+     * Validates boolean attribute name uniqueness.
+     * 
+     * @param booleanAttributeNames
+     * @param attributeMetaDesc
+     * @param classDeclaration
+     * @param fieldDeclaration
+     */
+    protected void validateBooleanAttributeNameUniqueness(
+            Set<String> booleanAttributeNames,
+            AttributeMetaDesc attributeMetaDesc,
+            ClassDeclaration classDeclaration, FieldDeclaration fieldDeclaration) {
+        if (attributeMetaDesc.getDataType() instanceof PrimitiveBooleanType) {
+            String attributeName = attributeMetaDesc.getAttributeName();
+            if (booleanAttributeNames.contains(attributeName)) {
+                if (classDeclaration
+                    .equals(fieldDeclaration.getDeclaringType())) {
+                    throw new ValidationException(
+                        MessageCode.SLIM3GEN1043,
+                        env,
+                        fieldDeclaration.getPosition(),
+                        fieldDeclaration.getSimpleName());
+                }
+                throw new ValidationException(
+                    MessageCode.SLIM3GEN1044,
+                    env,
+                    classDeclaration.getPosition(),
+                    fieldDeclaration.getSimpleName(),
+                    fieldDeclaration.getDeclaringType().getQualifiedName());
+            }
+            booleanAttributeNames.add(attributeName);
         }
     }
 

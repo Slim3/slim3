@@ -538,10 +538,6 @@ public class ModelMetaGenerator implements Generator {
         @Override
         public Void visitKeyType(KeyType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            String propertyName = "__key__";
-            if (!p.isPrimaryKey()) {
-                propertyName = p.getName();
-            }
             printer.println("/** */");
             printer
                 .println(
@@ -550,7 +546,7 @@ public class ModelMetaGenerator implements Generator {
                     modelMetaDesc.getModelClassName(),
                     type.getTypeName(),
                     p.getAttributeName(),
-                    propertyName,
+                    p.getName(),
                     type.getClassName());
             printer.println();
             return null;
@@ -1351,10 +1347,10 @@ public class ModelMetaGenerator implements Generator {
                 }
                 int schemaVersion = modelMetaDesc.getSchemaVersion();
                 if (schemaVersion > 0) {
-                    printer
-                        .println(
-                            "entity.setProperty(SCHEMA_VERSION_RESERVED_PROPERTY, %1$s);",
-                            modelMetaDesc.getSchemaVersion());
+                    printer.println(
+                        "entity.setProperty(\"%1$s\", %2$s);",
+                        modelMetaDesc.getSchemaVersionName(),
+                        modelMetaDesc.getSchemaVersion());
                 }
                 if (!modelMetaDesc.getClassHierarchyList().isEmpty()) {
                     printer
