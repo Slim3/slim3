@@ -1427,8 +1427,8 @@ public final class DatastoreUtil {
                 "The entity parameter must not be null.");
         }
         List<String> classHierarchyList =
-            (List<String>) entity
-                .getProperty(ModelMeta.CLASS_HIERARCHY_LIST_RESERVED_PROPERTY);
+            (List<String>) entity.getProperty(modelMeta
+                .getClassHierarchyListName());
         if (classHierarchyList == null) {
             return modelMeta;
         }

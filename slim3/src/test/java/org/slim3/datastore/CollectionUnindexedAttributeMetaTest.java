@@ -15,9 +15,8 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -61,6 +60,16 @@ public class CollectionUnindexedAttributeMetaTest {
 
         @Override
         public Hoge entityToModel(Entity entity) {
+            return null;
+        }
+
+        @Override
+        public String getClassHierarchyListName() {
+            return null;
+        }
+
+        @Override
+        public String getSchemaVersionName() {
             return null;
         }
     };

@@ -60,6 +60,16 @@ public class SortableAttributeMetaTest extends AppEngineTestCase {
         public Hoge entityToModel(Entity entity) {
             return null;
         }
+
+        @Override
+        public String getClassHierarchyListName() {
+            return null;
+        }
+
+        @Override
+        public String getSchemaVersionName() {
+            return null;
+        }
     };
 
     /**

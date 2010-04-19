@@ -15,9 +15,8 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.slim3.datastore.model.Hoge;
@@ -59,6 +58,16 @@ public class AbstAttributeMetaTest extends AppEngineTestCase {
 
         @Override
         public Hoge entityToModel(Entity entity) {
+            return null;
+        }
+
+        @Override
+        public String getClassHierarchyListName() {
+            return null;
+        }
+
+        @Override
+        public String getSchemaVersionName() {
             return null;
         }
     };

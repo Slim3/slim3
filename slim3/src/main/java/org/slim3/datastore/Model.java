@@ -45,7 +45,12 @@ public @interface Model {
     int schemaVersion() default 0;
 
     /**
-     * The name of schemaVersion property.
+     * The name of schemaVersionName property.
      */
     String schemaVersionName() default "slim3.schemaVersion";
+
+    /**
+     * The name of classHierarchyListName property.
+     */
+    String classHierarchyListName() default "slim3.classHierarchyList";
 }

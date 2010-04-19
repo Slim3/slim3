@@ -123,4 +123,14 @@ public final class AaaMeta extends
         entity.setProperty("version", m.getVersion());
         return entity;
     }
+
+    @Override
+    public String getClassHierarchyListName() {
+        return "slim3.classHierarchyList";
+    }
+
+    @Override
+    public String getSchemaVersionName() {
+        return "slim3.schemaVersion";
+    }
 }

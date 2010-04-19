@@ -41,12 +41,6 @@ import com.google.appengine.api.datastore.Text;
 public abstract class ModelMeta<M> {
 
     /**
-     * The reserved property name for the list of class hierarchies.
-     */
-    public static final String CLASS_HIERARCHY_LIST_RESERVED_PROPERTY =
-        "slim3.classHierarchyList";
-
-    /**
      * The kind of entity.
      */
     protected String kind;
@@ -166,6 +160,20 @@ public abstract class ModelMeta<M> {
     public List<String> getClassHierarchyList() {
         return classHierarchyList;
     }
+
+    /**
+     * Returns the schemaVersion property name.
+     * 
+     * @return the schemaVersion property name
+     */
+    public abstract String getSchemaVersionName();
+
+    /**
+     * Returns the classHierarchyList property name.
+     * 
+     * @return the classHierarchyList property name
+     */
+    public abstract String getClassHierarchyListName();
 
     /**
      * Converts the entity to a model.

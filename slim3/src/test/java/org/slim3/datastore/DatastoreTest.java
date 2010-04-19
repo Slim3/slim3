@@ -1449,10 +1449,8 @@ public class DatastoreTest extends AppEngineTestCase {
         assertThat(Datastore.put(bbb), is(notNullValue()));
         assertThat(bbb.getKey().getKind(), is("Aaa"));
         Entity entity = Datastore.get(bbb.getKey());
-        assertThat(
-            (List<String>) entity
-                .getProperty(ModelMeta.CLASS_HIERARCHY_LIST_RESERVED_PROPERTY),
-            hasItem(Bbb.class.getName()));
+        assertThat((List<String>) entity.getProperty(meta
+            .getClassHierarchyListName()), hasItem(Bbb.class.getName()));
     }
 
     /**

@@ -838,12 +838,11 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      */
     @Test
     public void getModelMetaWithEntity() throws Exception {
+        AaaMeta aaaMeta = new AaaMeta();
         Entity entity = new Entity("Aaa");
-        entity.setProperty(
-            ModelMeta.CLASS_HIERARCHY_LIST_RESERVED_PROPERTY,
-            Arrays.asList(Bbb.class.getName()));
-        ModelMeta<Aaa> modelMeta =
-            DatastoreUtil.getModelMeta(new AaaMeta(), entity);
+        entity.setProperty(aaaMeta.getClassHierarchyListName(), Arrays
+            .asList(Bbb.class.getName()));
+        ModelMeta<Aaa> modelMeta = DatastoreUtil.getModelMeta(aaaMeta, entity);
         assertThat(modelMeta, is(notNullValue()));
         assertThat(modelMeta.getModelClass().getName(), is(Bbb.class.getName()));
     }
@@ -853,10 +852,10 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      */
     @Test(expected = IllegalArgumentException.class)
     public void getModelMetaWithEntityForIllegalClass() throws Exception {
+        AaaMeta aaaMeta = new AaaMeta();
         Entity entity = new Entity("Aaa");
-        entity.setProperty(
-            ModelMeta.CLASS_HIERARCHY_LIST_RESERVED_PROPERTY,
-            Arrays.asList(Bbb.class.getName()));
+        entity.setProperty(aaaMeta.getClassHierarchyListName(), Arrays
+            .asList(Bbb.class.getName()));
         DatastoreUtil.getModelMeta(meta, entity);
     }
 

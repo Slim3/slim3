@@ -161,9 +161,7 @@ public final class BbbMeta extends
         }
         entity.setProperty("schemaVersion", m.getSchemaVersion());
         entity.setProperty("version", m.getVersion());
-        entity.setProperty(
-            CLASS_HIERARCHY_LIST_RESERVED_PROPERTY,
-            classHierarchyList);
+        entity.setProperty(getClassHierarchyListName(), classHierarchyList);
         if (m.getHogeRef() == null) {
             throw new NullPointerException("The property(hogeRef) is null.");
         }
@@ -173,5 +171,15 @@ public final class BbbMeta extends
         }
         entity.setProperty("hoge2Ref", m.getHoge2Ref().getKey());
         return entity;
+    }
+
+    @Override
+    public String getClassHierarchyListName() {
+        return "slim3.classHierarchyList";
+    }
+
+    @Override
+    public String getSchemaVersionName() {
+        return "slim3.schemaVersion";
     }
 }

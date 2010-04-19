@@ -527,4 +527,14 @@ public class HogeMeta extends ModelMeta<Hoge> {
         long version = m.getVersion() != null ? m.getVersion().longValue() : 0L;
         m.setVersion(version + 1);
     }
+
+    @Override
+    public String getClassHierarchyListName() {
+        return "slim3.classHierarchyList";
+    }
+
+    @Override
+    public String getSchemaVersionName() {
+        return "slim3.schemaVersion";
+    }
 }

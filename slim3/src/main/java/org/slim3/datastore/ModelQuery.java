@@ -424,7 +424,7 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
             return;
         }
         query.addFilter(
-            ModelMeta.CLASS_HIERARCHY_LIST_RESERVED_PROPERTY,
+            modelMeta.getClassHierarchyListName(),
             FilterOperator.EQUAL,
             modelMeta.getModelClass().getName());
     }
