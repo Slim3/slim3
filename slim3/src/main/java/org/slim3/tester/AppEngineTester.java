@@ -459,7 +459,6 @@ public class AppEngineTester implements Delegate<Environment> {
             taskPb.mergeFrom(requestBuf);
             TaskQueueBulkAddResponse responsePb =
                 new TaskQueueBulkAddResponse();
-            System.out.println(taskPb.addRequestSize());
             for (int i = 0; i < taskPb.addRequestSize(); i++) {
                 tasks.add(taskPb.getAddRequest(i));
                 responsePb.addTaskResult();
