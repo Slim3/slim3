@@ -85,11 +85,11 @@ public final class RouterFactory {
                 ControllerConstants.DEFAULT_CONTROLLER_PACKAGE;
         }
         try {
-            return ClassUtil.newInstance(rootPackageName
-                + "."
-                + contollerPackageName
-                + ".AppRouter");
-        } catch (Throwable ignore) {
+            String className =
+                rootPackageName + "." + contollerPackageName + ".AppRouter";
+            Class<?> clazz = Class.forName(className);
+            return ClassUtil.newInstance(clazz);
+        } catch (ClassNotFoundException e) {
             return defaultRouter;
         }
     }
