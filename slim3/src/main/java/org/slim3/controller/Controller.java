@@ -555,7 +555,10 @@ public abstract class Controller {
         if (session == null) {
             return null;
         }
-        return (T) session.getAttribute(name.toString());
+        String n = name.toString();
+        T value = (T) session.getAttribute(n);
+        session.setAttribute(n, value);
+        return value;
     }
 
     /**
