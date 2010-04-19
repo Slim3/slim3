@@ -47,12 +47,6 @@ public abstract class ModelMeta<M> {
         "slim3.classHierarchyList";
 
     /**
-     * The reserved property name for the schema version.
-     */
-    public static final String SCHEMA_VERSION_RESERVED_PROPERTY =
-        "slim3.schemaVersion";
-
-    /**
      * The kind of entity.
      */
     protected String kind;
