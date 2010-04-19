@@ -19,53 +19,13 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 
 /**
- * A class to get the application message.
+ * An delegate interface to get the application message.
  * 
  * @author higa
- * @since 1.0.0
+ * @since 1.0.2
  * 
  */
-public final class ApplicationMessage {
-
-    private static ApplicationMessageDelegate delegate;
-
-    static {
-        setDelegateClass(ResourceBundleApplicationMessageDelegate.class);
-    }
-
-    /**
-     * Sets the delegate class.
-     * 
-     * @param clazz
-     *            the delegate class
-     */
-    public static void setDelegateClass(
-            Class<? extends ApplicationMessageDelegate> clazz) {
-        delegate = ClassUtil.newInstance(clazz);
-    }
-
-    /**
-     * Sets the resource bundle to the current thread.
-     * 
-     * @param bundleName
-     *            the resource bundle name
-     * @param locale
-     *            the locale
-     * @throws NullPointerException
-     *             if the bundleName parameter is null or if the locale
-     *             parameter is null
-     */
-    public static void setBundle(String bundleName, Locale locale)
-            throws NullPointerException {
-        delegate.setBundle(bundleName, locale);
-    }
-
-    /**
-     * Clears the resource bundle attached to the current thread.
-     */
-    public static void clearBundle() {
-        delegate.clearBundle();
-    }
+public interface ApplicationMessageDelegate {
 
     /**
      * Returns the message.
@@ -78,11 +38,24 @@ public final class ApplicationMessage {
      * @throws MissingResourceException
      *             if the message is missing
      */
-    public static String get(String key, Object... args)
-            throws MissingResourceException {
-        return delegate.get(key, args);
-    }
+    String get(String key, Object... args) throws MissingResourceException;
 
-    private ApplicationMessage() {
-    }
+    /**
+     * Sets the resource bundle to the current thread.
+     * 
+     * @param bundleName
+     *            the resource bundle name
+     * @param locale
+     *            the locale
+     * @throws NullPointerException
+     *             if the bundleName parameter is null or if the locale
+     *             parameter is null
+     */
+    void setBundle(String bundleName, Locale locale)
+            throws NullPointerException;
+
+    /**
+     * Clears the resource bundle attached to the current thread.
+     */
+    void clearBundle();
 }
