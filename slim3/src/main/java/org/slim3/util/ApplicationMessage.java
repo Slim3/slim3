@@ -27,7 +27,10 @@ import java.util.MissingResourceException;
  */
 public final class ApplicationMessage {
 
-    private static ApplicationMessageDelegate delegate;
+    /**
+     * The delegate.
+     */
+    protected static ApplicationMessageDelegate delegate;
 
     static {
         setDelegateClass(ResourceBundleApplicationMessageDelegate.class);
