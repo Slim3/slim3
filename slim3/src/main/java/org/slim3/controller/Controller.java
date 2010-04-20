@@ -557,7 +557,9 @@ public abstract class Controller {
         }
         String n = name.toString();
         T value = (T) session.getAttribute(n);
-        session.setAttribute(n, value);
+        if (value != null) {
+            session.setAttribute(n, value);
+        }
         return value;
     }
 
