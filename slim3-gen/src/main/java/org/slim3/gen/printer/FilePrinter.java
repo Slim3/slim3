@@ -75,11 +75,20 @@ public class FilePrinter implements Printer {
     }
 
     public void print(String format, Object... args) {
-        formatter.format(indent + format, args);
+        formatter.format(indent + format, escapse(args));
+    }
+
+    public void printWithoutIndent(String format, Object... args) {
+        formatter.format(format, escapse(args));
     }
 
     public void println(String format, Object... args) {
-        formatter.format(indent + format, args);
+        formatter.format(indent + format, escapse(args));
+        formatter.format("%n");
+    }
+
+    public void printlnWithoutIndent(String format, Object... args) {
+        formatter.format(format, escapse(args));
         formatter.format("%n");
     }
 
@@ -99,5 +108,28 @@ public class FilePrinter implements Printer {
 
     public void close() {
         formatter.close();
+    }
+
+    /**
+     * Escapes arguments.
+     * 
+     * @param args
+     *            arguments
+     * @return the escaped arguments
+     */
+    protected Object[] escapse(Object... args) {
+        if (args.length == 0) {
+            return args;
+        }
+        Object[] results = new Object[args.length];
+        for (int i = 0; i < args.length; i++) {
+            if (args[i] instanceof String) {
+                String text = (String) args[i];
+                results[i] = text.replaceAll("\"", "\\\\\"");
+            } else {
+                results[i] = args[i];
+            }
+        }
+        return results;
     }
 }

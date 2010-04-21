@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.slim3.gen.AnnotationConstants;
-import org.slim3.gen.Constants;
 import org.slim3.gen.datastore.PrimitiveBooleanType;
 import org.slim3.gen.message.MessageCode;
 import org.slim3.gen.processor.AptException;
@@ -133,6 +132,12 @@ public class ModelMetaDescFactory {
                 model,
                 AnnotationConstants.schemaVersion);
 
+        String classHierarchyListName =
+            AnnotationMirrorUtil.getElementValueWithDefault(
+                model,
+                AnnotationConstants.classHierarchyListName);
+        validateClassHierarchyListName(classDeclaration, classHierarchyListName);
+
         ModelMetaDesc modelMetaDesc =
             new ModelMetaDesc(
                 modelMetaClassName.getPackageName(),
@@ -142,6 +147,7 @@ public class ModelMetaDescFactory {
                 kind,
                 schemaVersionName,
                 schemaVersion.intValue(),
+                classHierarchyListName,
                 classHierarchyList);
         handleAttributes(classDeclaration, modelMetaDesc);
         return modelMetaDesc;
@@ -300,6 +306,22 @@ public class ModelMetaDescFactory {
     }
 
     /**
+     * Validates that the classHierarchyListName is not empty.
+     * 
+     * @param classDeclaration
+     * @param classHierarchyListName
+     */
+    protected void validateClassHierarchyListName(
+            ClassDeclaration classDeclaration, String classHierarchyListName) {
+        if (StringUtil.isEmpty(classHierarchyListName)) {
+            throw new ValidationException(
+                MessageCode.SLIM3GEN1049,
+                env,
+                classDeclaration.getPosition());
+        }
+    }
+
+    /**
      * Creates a model meta class name.
      * 
      * @param modelClassName
@@ -376,7 +398,7 @@ public class ModelMetaDescFactory {
      */
     protected Set<String> createPropertyNames(ModelMetaDesc modelMetaDesc) {
         Set<String> results = new HashSet<String>();
-        results.add(Constants.CLASS_HIERARCHY_LIST_RESERVED_PROPERTY);
+        results.add(modelMetaDesc.getClassHierarchyListName());
         results.add(modelMetaDesc.getSchemaVersionName());
         return results;
     }

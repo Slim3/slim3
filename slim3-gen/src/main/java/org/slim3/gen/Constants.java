@@ -83,8 +83,4 @@ public final class Constants {
     /** the package name for shared */
     public static final String META_PACKAGE = "meta";
 
-    /** The reserved property name for the list of class hierarchies. */
-    public static final String CLASS_HIERARCHY_LIST_RESERVED_PROPERTY =
-        "slim3.classHierarchyList";
-
 }

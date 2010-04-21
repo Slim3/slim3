@@ -43,6 +43,7 @@ import static org.slim3.gen.ClassConstants.UnindexedAttributeMeta;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
 
 import org.slim3.gen.ClassConstants;
 import org.slim3.gen.ProductInfo;
@@ -78,7 +79,6 @@ import org.slim3.gen.datastore.TextType;
 import org.slim3.gen.desc.AttributeMetaDesc;
 import org.slim3.gen.desc.ModelMetaDesc;
 import org.slim3.gen.printer.Printer;
-import org.slim3.gen.util.CollectionUtil;
 
 /**
  * Generates a model meta java file.
@@ -156,8 +156,10 @@ public class ModelMetaGenerator implements Generator {
         printModelToEntityMethod(printer);
         printGetKeyMethod(printer);
         printSetKeyMethod(printer);
-        printGetVersion(printer);
+        printGetVersionMethod(printer);
         printIncrementVersionMethod(printer);
+        printGetSchemaVersionName(printer);
+        printGetClassHierarchyListName(printer);
         printer.unindent();
         printer.print("}");
     }
@@ -200,13 +202,19 @@ public class ModelMetaGenerator implements Generator {
             printer.println("    super(\"%1$s\", %2$s.class);", modelMetaDesc
                 .getKind(), modelMetaDesc.getModelClassName());
         } else {
-            printer.println(
-                "    super(\"%1$s\", %2$s.class, %3$s.asList(%4$s));",
+            printer.print(
+                "    super(\"%1$s\", %2$s.class, %3$s.asList(",
                 modelMetaDesc.getKind(),
                 modelMetaDesc.getModelClassName(),
-                Arrays.class.getName(),
-                CollectionUtil
-                    .join(modelMetaDesc.getClassHierarchyList(), ", "));
+                Arrays.class.getName());
+            for (Iterator<String> it =
+                modelMetaDesc.getClassHierarchyList().iterator(); it.hasNext();) {
+                printer.printWithoutIndent("\"%s\"", it.next());
+                if (it.hasNext()) {
+                    printer.printWithoutIndent(", ");
+                }
+            }
+            printer.printlnWithoutIndent("));");
         }
         printer.println("}");
     }
@@ -258,7 +266,7 @@ public class ModelMetaGenerator implements Generator {
      * @param printer
      *            the prnter
      */
-    protected void printGetVersion(final Printer printer) {
+    protected void printGetVersionMethod(final Printer printer) {
         printer.println("@Override");
         printer.println("protected long getVersion(Object model) {");
         final AttributeMetaDesc attr =
@@ -362,6 +370,36 @@ public class ModelMetaGenerator implements Generator {
                 },
                 null);
         }
+        printer.println("}");
+        printer.println();
+    }
+
+    /**
+     * Generates the {@code getSchemaVersionName} method.
+     * 
+     * @param printer
+     *            the prnter
+     */
+    protected void printGetSchemaVersionName(final Printer printer) {
+        printer.println("@Override");
+        printer.println("public String getSchemaVersionName() {");
+        printer.println("    return \"%1$s\";", modelMetaDesc
+            .getSchemaVersionName());
+        printer.println("}");
+        printer.println();
+    }
+
+    /**
+     * Generates the {@code getClassHierarchyListName} method.
+     * 
+     * @param printer
+     *            the prnter
+     */
+    protected void printGetClassHierarchyListName(final Printer printer) {
+        printer.println("@Override");
+        printer.println("public String getClassHierarchyListName() {");
+        printer.println("    return \"%1$s\";", modelMetaDesc
+            .getClassHierarchyListName());
         printer.println("}");
         printer.println();
     }
@@ -1353,8 +1391,9 @@ public class ModelMetaGenerator implements Generator {
                         modelMetaDesc.getSchemaVersion());
                 }
                 if (!modelMetaDesc.getClassHierarchyList().isEmpty()) {
-                    printer
-                        .println("entity.setProperty(CLASS_HIERARCHY_LIST_RESERVED_PROPERTY, classHierarchyList);");
+                    printer.println(
+                        "entity.setProperty(\"%1$s\", classHierarchyList);",
+                        modelMetaDesc.getClassHierarchyListName());
                 }
                 printer.println("return entity;");
             }

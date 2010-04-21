@@ -51,6 +51,9 @@ public class ModelMetaDesc implements ClassDesc {
     /** the schemaVersion of entity */
     protected final int schemaVersion;
 
+    /** the classHierarchyListName of entity */
+    protected final String classHierarchyListName;
+
     /** the class hierarchy list */
     protected final List<String> classHierarchyList;
 
@@ -84,13 +87,15 @@ public class ModelMetaDesc implements ClassDesc {
      *            the schemaVersionName of entity
      * @param schemaVersion
      *            the schemaVersion of entity
+     * @param classHierarchyListName
+     *            the classHierarchyListName
      * @param classHierarchyList
      *            the class hierarchy list
      */
     public ModelMetaDesc(String packageName, String simpleName,
             boolean abstrct, String modelClassName, String kind,
             String schemaVersionName, int schemaVersion,
-            List<String> classHierarchyList) {
+            String classHierarchyListName, List<String> classHierarchyList) {
         if (packageName == null) {
             throw new NullPointerException("The packageName parameter is null.");
         }
@@ -105,6 +110,10 @@ public class ModelMetaDesc implements ClassDesc {
             throw new NullPointerException(
                 "The schemaVersionName parameter is null.");
         }
+        if (classHierarchyListName == null) {
+            throw new NullPointerException(
+                "The classHierarchyListName parameter is null.");
+        }
         if (kind == null) {
             throw new NullPointerException("The kind parameter is null.");
         }
@@ -115,6 +124,7 @@ public class ModelMetaDesc implements ClassDesc {
         this.kind = kind;
         this.schemaVersionName = schemaVersionName;
         this.schemaVersion = schemaVersion;
+        this.classHierarchyListName = classHierarchyListName;
         this.classHierarchyList = classHierarchyList;
     }
 
@@ -183,6 +193,15 @@ public class ModelMetaDesc implements ClassDesc {
      */
     public int getSchemaVersion() {
         return schemaVersion;
+    }
+
+    /**
+     * Returns the classHierarchyListName.
+     * 
+     * @return the classHierarchyListName
+     */
+    public String getClassHierarchyListName() {
+        return classHierarchyListName;
     }
 
     /**

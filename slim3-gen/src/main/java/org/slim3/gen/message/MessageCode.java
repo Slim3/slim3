@@ -133,8 +133,8 @@ public enum MessageCode {
     SLIM3GEN1047("The property[{0}] of entity is duplicated."),
     /** */
     SLIM3GEN1048("The property[{0}] of entity is duplicated. (the property[{1}] of the class[{2}])"),
-
-    ;
+    /** */
+    SLIM3GEN1049("The schemaVersionName element must not be empty."), ;
 
     /** the message */
     public final String message;

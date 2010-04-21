@@ -38,6 +38,17 @@ public interface Printer extends Closeable {
     void print(String format, Object... args);
 
     /**
+     * Prints a format string without indent.
+     * 
+     * @param format
+     *            the format string.
+     * @param args
+     *            arguments referenced by the format specifiers in the format
+     *            string.
+     */
+    void printWithoutIndent(String format, Object... args);
+
+    /**
      * Prints a format string and terminates the line.
      * 
      * @param format
@@ -47,6 +58,17 @@ public interface Printer extends Closeable {
      *            string.
      */
     void println(String format, Object... args);
+
+    /**
+     * Prints a format string without indent and terminates the line.
+     * 
+     * @param format
+     *            the format string.
+     * @param args
+     *            arguments referenced by the format specifiers in the format
+     *            string.
+     */
+    void printlnWithoutIndent(String format, Object... args);
 
     /**
      * Terminates the current line by writing the line separator string.

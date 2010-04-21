@@ -44,6 +44,10 @@ public final class AnnotationConstants {
     /** the name of schemaVersion element */
     public static final String schemaVersion = "schemaVersion";
 
+    /** the name of classHierarchyListName element */
+    public static final String classHierarchyListName =
+        "classHierarchyListName";
+
     /** the name of name element */
     public static final String name = "name";
 
