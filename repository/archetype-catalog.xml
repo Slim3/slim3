@@ -5,7 +5,7 @@
     <archetype>
       <groupId>org.slim3</groupId>
       <artifactId>slim3-archetype-quickstart</artifactId>
-      <version>1.0.1</version>
+      <version>1.0.2</version>
       <repository>http://slim3.googlecode.com/svn/trunk/repository/</repository>
       <description>Archetype - slim3-archetype-quickstart</description>
     </archetype>
