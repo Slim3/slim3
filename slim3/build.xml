@@ -9,7 +9,6 @@
             <fileset dir="../slim3-blank" includes="build.properties" />
         	<fileset dir="../slim3demo" includes="build.properties" />
         	<fileset dir="../slim3-gen" includes="build.properties" />
-        	<fileset dir="../slim3gwt-demo" includes="build.properties" />
         </replaceregexp>
 	</target>
 
