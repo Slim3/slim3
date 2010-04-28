@@ -363,8 +363,8 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void createPutRequest() throws Exception {
-        PutRequest req = DatastoreUtil.createPutRequest(-1);
+    public void createPutRequestWithoutTx() throws Exception {
+        PutRequest req = DatastoreUtil.createPutRequest(null);
         assertThat(req, is(notNullValue()));
         assertThat(req.getTransaction().getHandle(), is(0L));
     }
@@ -374,9 +374,11 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      */
     @Test
     public void createPutRequestWithTx() throws Exception {
-        PutRequest req = DatastoreUtil.createPutRequest(1);
+        Transaction tx = Datastore.beginTransaction();
+        PutRequest req = DatastoreUtil.createPutRequest(tx);
         assertThat(req, is(notNullValue()));
-        assertThat(req.getTransaction().getHandle(), is(1L));
+        assertThat(req.getTransaction().getHandle(), is(Long
+            .valueOf(tx.getId())));
     }
 
     /**
@@ -404,13 +406,13 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void putEntityProtos() throws Exception {
+    public void putUsingLowerApi() throws Exception {
         Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
         Entity entity2 = new Entity(KeyFactory.createKey("Hoge", 2));
         List<EntityProto> list = new ArrayList<EntityProto>();
         list.add(EntityTranslator.convertToPb(entity));
         list.add(EntityTranslator.convertToPb(entity2));
-        DatastoreUtil.put(-1, list);
+        DatastoreUtil.putUsingLowerApi(null, list);
         assertThat(ds.get(entity.getKey()), is(notNullValue()));
         assertThat(ds.get(entity2.getKey()), is(notNullValue()));
     }
@@ -419,12 +421,12 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void putEntityProtosWithTx() throws Exception {
+    public void putUsingLowerApiWithTx() throws Exception {
         Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
         List<EntityProto> list = new ArrayList<EntityProto>();
         list.add(EntityTranslator.convertToPb(entity));
         Transaction tx = Datastore.beginTransaction();
-        DatastoreUtil.put(Long.valueOf(tx.getId()), list);
+        DatastoreUtil.putUsingLowerApi(tx, list);
         tx.rollback();
         assertThat(tester.count("Hoge"), is(0));
     }
@@ -433,13 +435,13 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void putEntityProtosForOneBigEntity() throws Exception {
+    public void putUsingLowerApiForOneBigEntity() throws Exception {
         Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
         entity.setUnindexedProperty("aaa", new Blob(
             new byte[DatastoreUtil.MAX_ENTITY_SIZE]));
         List<EntityProto> list = new ArrayList<EntityProto>();
         list.add(EntityTranslator.convertToPb(entity));
-        DatastoreUtil.put(-1, list);
+        DatastoreUtil.putUsingLowerApi(null, list);
         assertThat(ds.get(entity.getKey()), is(notNullValue()));
     }
 
@@ -447,7 +449,7 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void putEntityProtosForBigEntities() throws Exception {
+    public void putUsingLowerApiForBigEntities() throws Exception {
         Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
         entity.setUnindexedProperty("aaa", new Blob(
             new byte[DatastoreUtil.MAX_ENTITY_SIZE]));
@@ -457,7 +459,7 @@ public class DatastoreUtilTest extends AppEngineTestCase {
         List<EntityProto> list = new ArrayList<EntityProto>();
         list.add(EntityTranslator.convertToPb(entity));
         list.add(EntityTranslator.convertToPb(entity2));
-        DatastoreUtil.put(-1, list);
+        DatastoreUtil.putUsingLowerApi(null, list);
         assertThat(ds.get(entity.getKey()), is(notNullValue()));
         assertThat(ds.get(entity2.getKey()), is(notNullValue()));
     }
@@ -466,13 +468,13 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void putEntityProtosFor500Entities() throws Exception {
+    public void putUsingLowerApiFor500Entities() throws Exception {
         List<EntityProto> list = new ArrayList<EntityProto>();
         for (int i = 0; i < DatastoreUtil.MAX_NUMBER_OF_ENTITIES; i++) {
             Entity entity = new Entity(KeyFactory.createKey("Hoge", i + 1));
             list.add(EntityTranslator.convertToPb(entity));
         }
-        DatastoreUtil.put(-1, list);
+        DatastoreUtil.putUsingLowerApi(null, list);
         assertThat(
             tester.count("Hoge"),
             is(DatastoreUtil.MAX_NUMBER_OF_ENTITIES));
@@ -482,13 +484,13 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void putEntityProtosFor501Entities() throws Exception {
+    public void putUsingLowerApiFor501Entities() throws Exception {
         List<EntityProto> list = new ArrayList<EntityProto>();
         for (int i = 0; i < DatastoreUtil.MAX_NUMBER_OF_ENTITIES + 1; i++) {
             Entity entity = new Entity(KeyFactory.createKey("Hoge", i + 1));
             list.add(EntityTranslator.convertToPb(entity));
         }
-        DatastoreUtil.put(-1, list);
+        DatastoreUtil.putUsingLowerApi(null, list);
         assertThat(
             tester.count("Hoge"),
             is(DatastoreUtil.MAX_NUMBER_OF_ENTITIES + 1));
@@ -498,13 +500,13 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void putForPutRequest() throws Exception {
+    public void putUsingLowerApiForPutRequest() throws Exception {
         Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
         Entity entity2 = new Entity(KeyFactory.createKey("Hoge", 2));
         PutRequest req = new PutRequest();
         req.addEntity(EntityTranslator.convertToPb(entity));
         req.addEntity(EntityTranslator.convertToPb(entity2));
-        DatastoreUtil.put(req);
+        DatastoreUtil.putUsingLowerApi(req);
         assertThat(ds.get(entity.getKey()), is(notNullValue()));
         assertThat(ds.get(entity2.getKey()), is(notNullValue()));
     }

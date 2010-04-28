@@ -115,7 +115,7 @@ public class Journal {
                 }
             }
             if (putReq.entitySize() > 0) {
-                DatastoreUtil.put(putReq);
+                DatastoreUtil.putUsingLowerApi(putReq);
             }
             if (deleteList != null) {
                 Datastore.deleteWithoutTx(deleteList);

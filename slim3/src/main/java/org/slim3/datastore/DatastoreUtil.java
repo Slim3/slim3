@@ -565,10 +565,9 @@ public final class DatastoreUtil {
         }
         assignKeyIfNecessary(entity);
         EntityProto entityProto = EntityTranslator.convertToPb(entity);
-        PutRequest req =
-            createPutRequest(tx == null ? -1 : Long.valueOf(tx.getId()));
+        PutRequest req = createPutRequest(tx);
         req.addEntity(entityProto);
-        put(req);
+        putUsingLowerApi(req);
         return entity.getKey();
     }
 
@@ -613,7 +612,7 @@ public final class DatastoreUtil {
                 assignKeyIfNecessary(entities);
                 List<Key> keyList = toKeyList(entities);
                 List<EntityProto> entityProtoList = toEntityProtoList(entities);
-                put(-1, entityProtoList);
+                putUsingLowerApi(null, entityProtoList);
                 return keyList;
             } catch (ConcurrentModificationException e) {
                 cme = e;
@@ -658,55 +657,56 @@ public final class DatastoreUtil {
         assignKeyIfNecessary(entities);
         List<Key> keyList = toKeyList(entities);
         List<EntityProto> entityProtoList = toEntityProtoList(entities);
-        put(Long.valueOf(tx.getId()), entityProtoList);
+        putUsingLowerApi(tx, entityProtoList);
         return keyList;
     }
 
     /**
      * Puts the entities using lower level API.
      * 
-     * @param handle
-     *            the transaction handle
+     * @param tx
+     *            the transaction
      * @param entities
      *            the entities
      */
-    public static void put(long handle, Iterable<EntityProto> entities) {
+    public static void putUsingLowerApi(Transaction tx,
+            Iterable<EntityProto> entities) {
         if (entities == null) {
             throw new NullPointerException(
                 "The entities parameter must not be null.");
         }
-        PutRequest req = createPutRequest(handle);
+        PutRequest req = createPutRequest(tx);
         int totalSize = 0;
         for (EntityProto e : entities) {
             int size = e.encodingSize();
             if ((totalSize != 0 && totalSize + size + EXTRA_SIZE > MAX_ENTITY_SIZE)
                 || req.entitySize() >= MAX_NUMBER_OF_ENTITIES) {
-                put(req);
-                req = createPutRequest(handle);
+                putUsingLowerApi(req);
+                req = createPutRequest(tx);
                 totalSize = 0;
             }
             req.addEntity(e);
             totalSize += size + EXTRA_SIZE;
         }
         if (req.entitySize() > 0) {
-            put(req);
+            putUsingLowerApi(req);
         }
     }
 
     /**
      * Creates a request for put.
      * 
-     * @param handle
-     *            the transaction handle
+     * @param tx
+     *            the transaction
      * @return a request for put
      */
-    protected static PutRequest createPutRequest(long handle) {
+    protected static PutRequest createPutRequest(Transaction tx) {
         PutRequest req = new PutRequest();
-        if (handle >= 0) {
-            DatastorePb.Transaction tx = new DatastorePb.Transaction();
-            tx.setHandle(handle);
-            tx.setApp(ApiProxy.getCurrentEnvironment().getAppId());
-            req.setTransaction(tx);
+        if (tx != null) {
+            DatastorePb.Transaction tx2 = new DatastorePb.Transaction();
+            tx2.setHandle(Long.valueOf(tx.getId()));
+            tx2.setApp(ApiProxy.getCurrentEnvironment().getAppId());
+            req.setTransaction(tx2);
         }
         return req;
     }
@@ -762,7 +762,7 @@ public final class DatastoreUtil {
      * @param putRequest
      *            the request for put
      */
-    public static void put(PutRequest putRequest) {
+    public static void putUsingLowerApi(PutRequest putRequest) {
         if (putRequest == null) {
             throw new NullPointerException(
                 "The putRequest parameter must not be null.");
