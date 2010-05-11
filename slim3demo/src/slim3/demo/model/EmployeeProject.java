@@ -3,13 +3,13 @@ package slim3.demo.model;
 import java.io.Serializable;
 
 import org.slim3.datastore.Attribute;
-import org.slim3.datastore.InverseModelListRef;
 import org.slim3.datastore.Model;
+import org.slim3.datastore.ModelRef;
 
 import com.google.appengine.api.datastore.Key;
 
 @Model
-public class Employee implements Serializable {
+public class EmployeeProject implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -21,20 +21,13 @@ public class Employee implements Serializable {
 
     private Integer schemaVersion = 1;
 
-    private org.slim3.datastore.ModelRef<slim3.demo.model.Address> addressRef =
-        new org.slim3.datastore.ModelRef<slim3.demo.model.Address>(
-            slim3.demo.model.Address.class);
+    private org.slim3.datastore.ModelRef<slim3.demo.model.Employee> employeeRef =
+        new org.slim3.datastore.ModelRef<slim3.demo.model.Employee>(
+            slim3.demo.model.Employee.class);
 
-    private org.slim3.datastore.ModelRef<slim3.demo.model.Department> departmentRef =
-        new org.slim3.datastore.ModelRef<slim3.demo.model.Department>(
-            slim3.demo.model.Department.class);
-
-    @Attribute(persistent = false)
-    private org.slim3.datastore.InverseModelListRef<slim3.demo.model.EmployeeProject, slim3.demo.model.Employee> employeeProjectListRef =
-        new org.slim3.datastore.InverseModelListRef<slim3.demo.model.EmployeeProject, slim3.demo.model.Employee>(
-            slim3.demo.model.EmployeeProject.class,
-            "employeeRef",
-            this);
+    private org.slim3.datastore.ModelRef<slim3.demo.model.Project> projectRef =
+        new org.slim3.datastore.ModelRef<slim3.demo.model.Project>(
+            slim3.demo.model.Project.class);
 
     /**
      * Returns the key.
@@ -112,7 +105,7 @@ public class Employee implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        Employee other = (Employee) obj;
+        EmployeeProject other = (EmployeeProject) obj;
         if (key == null) {
             if (other.key != null) {
                 return false;
@@ -124,23 +117,16 @@ public class Employee implements Serializable {
     }
 
     /**
-     * @return the addressRef
+     * @return the employeeRef
      */
-    public org.slim3.datastore.ModelRef<slim3.demo.model.Address> getAddressRef() {
-        return addressRef;
+    public ModelRef<Employee> getEmployeeRef() {
+        return employeeRef;
     }
 
     /**
-     * @return the departmentRef
+     * @return the projectRef
      */
-    public org.slim3.datastore.ModelRef<slim3.demo.model.Department> getDepartmentRef() {
-        return departmentRef;
-    }
-
-    /**
-     * @return the employeeProjectListRef
-     */
-    public InverseModelListRef<EmployeeProject, Employee> getEmployeeProjectListRef() {
-        return employeeProjectListRef;
+    public ModelRef<Project> getProjectRef() {
+        return projectRef;
     }
 }

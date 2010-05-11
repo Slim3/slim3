@@ -9,7 +9,7 @@ import org.slim3.datastore.Model;
 import com.google.appengine.api.datastore.Key;
 
 @Model
-public class Employee implements Serializable {
+public class Project implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -21,19 +21,11 @@ public class Employee implements Serializable {
 
     private Integer schemaVersion = 1;
 
-    private org.slim3.datastore.ModelRef<slim3.demo.model.Address> addressRef =
-        new org.slim3.datastore.ModelRef<slim3.demo.model.Address>(
-            slim3.demo.model.Address.class);
-
-    private org.slim3.datastore.ModelRef<slim3.demo.model.Department> departmentRef =
-        new org.slim3.datastore.ModelRef<slim3.demo.model.Department>(
-            slim3.demo.model.Department.class);
-
     @Attribute(persistent = false)
-    private org.slim3.datastore.InverseModelListRef<slim3.demo.model.EmployeeProject, slim3.demo.model.Employee> employeeProjectListRef =
-        new org.slim3.datastore.InverseModelListRef<slim3.demo.model.EmployeeProject, slim3.demo.model.Employee>(
+    private org.slim3.datastore.InverseModelListRef<slim3.demo.model.EmployeeProject, slim3.demo.model.Project> employeeProjectListRef =
+        new org.slim3.datastore.InverseModelListRef<slim3.demo.model.EmployeeProject, slim3.demo.model.Project>(
             slim3.demo.model.EmployeeProject.class,
-            "employeeRef",
+            "projectRef",
             this);
 
     /**
@@ -112,7 +104,7 @@ public class Employee implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        Employee other = (Employee) obj;
+        Project other = (Project) obj;
         if (key == null) {
             if (other.key != null) {
                 return false;
@@ -124,23 +116,9 @@ public class Employee implements Serializable {
     }
 
     /**
-     * @return the addressRef
-     */
-    public org.slim3.datastore.ModelRef<slim3.demo.model.Address> getAddressRef() {
-        return addressRef;
-    }
-
-    /**
-     * @return the departmentRef
-     */
-    public org.slim3.datastore.ModelRef<slim3.demo.model.Department> getDepartmentRef() {
-        return departmentRef;
-    }
-
-    /**
      * @return the employeeProjectListRef
      */
-    public InverseModelListRef<EmployeeProject, Employee> getEmployeeProjectListRef() {
+    public InverseModelListRef<EmployeeProject, Project> getEmployeeProjectListRef() {
         return employeeProjectListRef;
     }
 }
