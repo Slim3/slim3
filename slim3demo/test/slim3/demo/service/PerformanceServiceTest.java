@@ -20,22 +20,25 @@ public class PerformanceServiceTest extends AppEngineTestCase {
 
     @Test
     public void getBarListUsingLL() throws Exception {
+        int count = Datastore.query("Bar").count();
         Datastore.put(new Entity("Bar"));
         List<Entity> list = service.getBarListUsingLL();
-        assertThat(list.size(), is(1));
+        assertThat(list.size(), is(count + 1));
     }
 
     @Test
     public void getBarListUsingSlim3() throws Exception {
+        int count = Datastore.query("Bar").count();
         Datastore.put(new Entity("Bar"));
         List<Bar> list = service.getBarListUsingSlim3();
-        assertThat(list.size(), is(1));
+        assertThat(list.size(), is(count + 1));
     }
 
     @Test
     public void getBarListUsingJDO() throws Exception {
+        int count = Datastore.query("Bar").count();
         Datastore.put(new Entity("Bar"));
         List<BarJDO> list = service.getBarListUsingJDO();
-        assertThat(list.size(), is(1));
+        assertThat(list.size(), is(count + 1));
     }
 }

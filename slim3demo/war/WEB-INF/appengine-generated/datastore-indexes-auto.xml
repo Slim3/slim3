@@ -1,4 +1,11 @@
-<!-- Indices written at Wed, 28 Apr 2010 10:55:29 UTC -->
+<!-- Indices written at Tue, 11 May 2010 09:05:42 UTC -->
 
-<datastore-indexes/>
+<datastore-indexes>
 
+    <!-- Used 4 times in query history -->
+    <datastore-index kind="UploadedDataFragment" ancestor="false" source="auto">
+        <property name="uploadDataRef" direction="asc"/>
+        <property name="index" direction="asc"/>
+    </datastore-index>
+
+</datastore-indexes>
