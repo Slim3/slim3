@@ -22,9 +22,10 @@ public class UploadServiceTest extends AppEngineTestCase {
 
     @Test
     public void getDataList() throws Exception {
+        int count = Datastore.query(UploadedData.class).count();
         UploadedData data = new UploadedData();
         Datastore.put(data);
-        assertThat(service.getDataList().size(), is(1));
+        assertThat(service.getDataList().size(), is(count + 1));
     }
 
     @Test
@@ -61,11 +62,15 @@ public class UploadServiceTest extends AppEngineTestCase {
 
     @Test
     public void delete() throws Exception {
+        int count = Datastore.query(UploadedData.class).count();
+        int count2 = Datastore.query(UploadedDataFragment.class).count();
         FileItem formFile =
             new FileItem("aaa.txt", "text/html", new byte[] { 'a' });
         UploadedData data = service.upload(formFile);
         service.delete(data.getKey());
-        assertThat(tester.count(UploadedData.class), is(0));
-        assertThat(tester.count(UploadedDataFragment.class), is(0));
+        assertThat(Datastore.query(UploadedData.class).count(), is(count));
+        assertThat(
+            Datastore.query(UploadedDataFragment.class).count(),
+            is(count2));
     }
 }

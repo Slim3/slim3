@@ -13,6 +13,7 @@ public class DeleteControllerTest extends ControllerTestCase {
 
     @Test
     public void run() throws Exception {
+        int count = Datastore.query(UploadedData.class).count();
         tester.param("key", Datastore.keyToString(Datastore
             .put(new UploadedData())));
         tester.start("/upload/delete");
@@ -20,6 +21,6 @@ public class DeleteControllerTest extends ControllerTestCase {
         assertThat(controller, is(notNullValue()));
         assertThat(tester.isRedirect(), is(true));
         assertThat(tester.getDestinationPath(), is("/upload/"));
-        assertThat(tester.count(UploadedData.class), is(0));
+        assertThat(Datastore.query(UploadedData.class).count(), is(count));
     }
 }

@@ -28,6 +28,5 @@ public class EditControllerTest extends ControllerTestCase {
         assertThat(tester.asString("title"), is(blog.getTitle()));
         assertThat(tester.asString("content"), is(blog.getContent()));
         assertThat(tester.asLong("version"), is(blog.getVersion()));
-        assertEquals(1, tester.count(Blog.class));
     }
 }

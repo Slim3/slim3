@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.slim3.controller.upload.FileItem;
+import org.slim3.datastore.Datastore;
 import org.slim3.tester.ControllerTestCase;
 
 import slim3.demo.model.UploadedData;
@@ -14,6 +15,8 @@ public class UploadControllerTest extends ControllerTestCase {
 
     @Test
     public void run() throws Exception {
+        int count = Datastore.query(UploadedData.class).count();
+        int count2 = Datastore.query(UploadedDataFragment.class).count();
         FileItem fileItem =
             new FileItem("aaa.txt", "text/plain", new byte[] { 1 });
         tester.requestScope("formFile", fileItem);
@@ -22,7 +25,9 @@ public class UploadControllerTest extends ControllerTestCase {
         assertThat(controller, is(notNullValue()));
         assertThat(tester.isRedirect(), is(true));
         assertThat(tester.getDestinationPath(), is("/upload/"));
-        assertThat(tester.count(UploadedData.class), is(1));
-        assertThat(tester.count(UploadedDataFragment.class), is(1));
+        assertThat(Datastore.query(UploadedData.class).count(), is(count + 1));
+        assertThat(
+            Datastore.query(UploadedDataFragment.class).count(),
+            is(count2 + 1));
     }
 }

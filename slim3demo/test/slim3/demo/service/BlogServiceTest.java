@@ -46,9 +46,10 @@ public class BlogServiceTest extends AppEngineTestCase {
 
     @Test
     public void getAll() throws Exception {
+        int count = Datastore.query(Blog.class).count();
         Blog blog = new Blog();
         Datastore.put(blog);
-        assertThat(service.getAll().size(), is(1));
+        assertThat(service.getAll().size(), is(count + 1));
     }
 
     @Test
