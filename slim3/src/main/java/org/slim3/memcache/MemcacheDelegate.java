@@ -307,7 +307,6 @@ public class MemcacheDelegate {
             MemcacheServicePb.MemcacheGetResponse.newBuilder();
         MemcacheServicePb.MemcacheGetRequest.Builder requestBuilder =
             MemcacheServicePb.MemcacheGetRequest.newBuilder();
-        requestBuilder.setNameSpace(ms.getNamespace());
         Map<CacheKey, Object> cacheKeyToObjectKey =
             new HashMap<CacheKey, Object>();
         for (Object key : keys) {
