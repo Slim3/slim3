@@ -21,8 +21,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import com.google.appengine.api.datastore.QueryResultList;
+
 /**
- * QueryResultList for Slim3.
+ * {@link QueryResultList} for Slim3.
  * 
  * @author higa
  * @param <T>
