@@ -2,8 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/slim3-1.0.3.jar" sourcepath="libsrc/slim3-1.0.3-sources.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/junit-4.7.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/slim3-1.0.4.jar" sourcepath="libsrc/slim3-1.0.4-sources.jar"/>
 	<classpathentry kind="src" path=".apt_generated">
 		<attributes>
 			<attribute name="optional" value="true"/>
