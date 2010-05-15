@@ -314,29 +314,6 @@ public class MemcacheDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void getNamespace() throws Exception {
-        MemcacheDelegate cache = new MemcacheDelegate();
-        cache.ms.setNamespace("aaa");
-        assertThat(cache.namespace(), is("aaa"));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void setNamespace() throws Exception {
-        MemcacheDelegate cache = new MemcacheDelegate();
-        String namespace = "aaa";
-        assertThat(cache.namespace(namespace), is(cache));
-        assertThat(cache.namespace(), is(namespace));
-        assertThat(cache.namespace(null), is(cache));
-        assertThat(cache.namespace(), is(""));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
     public void getStatistics() throws Exception {
         MemcacheDelegate cache = new MemcacheDelegate();
         assertThat(cache.statistics(), is(notNullValue()));

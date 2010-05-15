@@ -300,17 +300,6 @@ public class MemcacheTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void namespace() throws Exception {
-        String namespace = "aaa";
-        MemcacheDelegate cache = Memcache.namespace(namespace);
-        assertThat(cache, is(notNullValue()));
-        assertThat(cache.namespace(), is(namespace));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
     public void statistics() throws Exception {
         assertThat(Memcache.statistics(), is(notNullValue()));
     }

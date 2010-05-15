@@ -18,6 +18,10 @@ package org.slim3.datastore;
 import org.junit.Test;
 import org.slim3.tester.AppEngineTestCase;
 
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.ShortBlob;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+
 /**
  * @author higa
  * 
@@ -29,5 +33,13 @@ public class SpikeTest extends AppEngineTestCase {
      */
     @Test
     public void spike() throws Exception {
+        Entity entity = new Entity("Hoge");
+        ShortBlob sb = new ShortBlob(new byte[] { 1 });
+        entity.setProperty("aaa", sb);
+        Datastore.put(entity);
+        System.out.println(Datastore.query("Hoge").filter(
+            "aaa",
+            FilterOperator.EQUAL,
+            sb).count());
     }
 }

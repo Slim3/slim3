@@ -218,7 +218,6 @@ public class MemcacheDelegate {
             request =
                 MemcacheServicePb.MemcacheGetRequest
                     .newBuilder()
-                    .setNameSpace(ms.getNamespace())
                     .addKey(
                         ByteString.copyFrom(MemcacheSerialization
                             .makePbKey(key)))
@@ -705,27 +704,6 @@ public class MemcacheDelegate {
                 "The errorHandler parameter must not be null.");
         }
         ms.setErrorHandler(errorHandler);
-        return this;
-    }
-
-    /**
-     * Returns the namespace that will be used in API calls.
-     * 
-     * @return the namespace.
-     */
-    public String namespace() {
-        return ms.getNamespace();
-    }
-
-    /**
-     * Sets the current namespace.
-     * 
-     * @param namespace
-     *            the namespace
-     * @return this instance
-     */
-    public MemcacheDelegate namespace(String namespace) {
-        ms.setNamespace(namespace);
         return this;
     }
 

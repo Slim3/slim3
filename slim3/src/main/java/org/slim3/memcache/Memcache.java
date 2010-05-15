@@ -497,17 +497,6 @@ public final class Memcache {
     }
 
     /**
-     * Sets the current namespace.
-     * 
-     * @param namespace
-     *            the namespace
-     * @return {@link MemcacheDelegate}
-     */
-    public static MemcacheDelegate namespace(String namespace) {
-        return delegate().namespace(namespace);
-    }
-
-    /**
      * Returns some statistics about the cache and its usage. Note that
      * statistics() does not respect namespaces - this will return stats for
      * every namespace. The response will never be null.
