@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.ListIterator;
 
 /**
+ * QueryResultList for Slim3.
+ * 
  * @author higa
  * @param <T>
  *            the element type
