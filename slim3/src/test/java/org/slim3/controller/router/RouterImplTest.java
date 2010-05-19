@@ -59,6 +59,8 @@ public class RouterImplTest {
             is("/mail?address=hoge"));
         assertThat(router.route(request, "/blog/edit/1"), is("/blog/edit?id=1"));
         assertThat(router.route(request, "/abc"), is(nullValue()));
+        assertThat(router.route(request, "/xxx/"), is("/yyy/"));
+        assertThat(router.route(request, "/1/xxx/"), is("/1/yyy/"));
     }
 
     private static class MyRouter extends RouterImpl {
@@ -69,6 +71,8 @@ public class RouterImplTest {
         public MyRouter() {
             addRouting("/_ah/mail/{address}", "/mail?address={address}");
             addRouting("/{app}/edit/{id}", "/{app}/edit?id={id}");
+            addRouting("/xxx/", "/yyy/");
+            addRouting("/{id}/xxx/", "/{id}/yyy/");
         }
     }
 }

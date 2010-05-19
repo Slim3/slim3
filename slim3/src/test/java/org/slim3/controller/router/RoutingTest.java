@@ -169,8 +169,8 @@ public class RoutingTest {
      */
     @Test
     public void routeForNoPlaceHolder() throws Exception {
-        Routing routing = new Routing("/abc/", "/xyz");
-        assertThat(routing.route(request, "/abc/"), is("/abc/"));
+        Routing routing = new Routing("/abc/", "/xyz/");
+        assertThat(routing.route(request, "/abc/"), is("/xyz/"));
         assertThat(routing.route(request, "/abc/xxx"), is(nullValue()));
     }
 }

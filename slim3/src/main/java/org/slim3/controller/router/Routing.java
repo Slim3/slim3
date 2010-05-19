@@ -144,8 +144,7 @@ public class Routing {
         for (int i = 0; i < length; i++) {
             if (chars[i] == '{') {
                 if (index < 0) {
-                    String name = sb.toString();
-                    toFragmentList.add(new StringFragment(name));
+                    toFragmentList.add(new StringFragment(sb.toString()));
                     sb.setLength(0);
                     index = i;
                 } else {
@@ -181,6 +180,9 @@ public class Routing {
                 + to
                 + ") is invalid, because \"}\" is missing.");
         }
+        if (sb.length() > 0) {
+            toFragmentList.add(new StringFragment(sb.toString()));
+        }
     }
 
     /**
@@ -202,12 +204,6 @@ public class Routing {
         }
         if (path == null) {
             throw new NullPointerException("The path parameter is null.");
-        }
-        if (placeHolderList.size() == 0) {
-            if (from.equalsIgnoreCase(path)) {
-                return path;
-            }
-            return null;
         }
         Matcher matcher = fromPattern.matcher(path);
         if (!matcher.find()) {
