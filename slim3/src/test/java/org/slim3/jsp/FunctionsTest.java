@@ -467,4 +467,21 @@ public class FunctionsTest {
         request.setAttribute("aaaArray", aaaArray);
         Functions.multiselect("aaaArray", "111");
     }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void request() throws Exception {
+        assertThat(Functions.request(), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalStateException.class)
+    public void requestForCurrentRequestIsNull() throws Exception {
+        RequestLocator.set(null);
+        assertThat(Functions.request(), is(notNullValue()));
+    }
 }

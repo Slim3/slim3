@@ -89,7 +89,7 @@ public final class Functions {
         if (!empty && input.indexOf(':') >= 0) {
             return input;
         }
-        HttpServletRequest request = RequestLocator.get();
+        HttpServletRequest request = request();
         String contextPath = request.getContextPath();
         StringBuilder sb = new StringBuilder(50);
         if (contextPath.length() > 1) {
@@ -175,7 +175,7 @@ public final class Functions {
                 + name
                 + ") must not end with \"Array\".");
         }
-        HttpServletRequest request = RequestLocator.get();
+        HttpServletRequest request = request();
         return "name=\""
             + name
             + "\" value=\""
@@ -211,7 +211,7 @@ public final class Functions {
                 + name
                 + ") must not end with \"Array\".");
         }
-        HttpServletRequest request = RequestLocator.get();
+        HttpServletRequest request = request();
         return "name=\""
             + name
             + "\""
@@ -241,7 +241,7 @@ public final class Functions {
                 + name
                 + ") must end with \"Array\".");
         }
-        HttpServletRequest request = RequestLocator.get();
+        HttpServletRequest request = request();
         Object o = request.getAttribute(name);
         List<String> list = null;
         if (o != null) {
@@ -285,7 +285,7 @@ public final class Functions {
                 + name
                 + ") must not end with \"Array\".");
         }
-        HttpServletRequest request = RequestLocator.get();
+        HttpServletRequest request = request();
         String s = StringUtil.toString(request.getAttribute(name));
         return "name=\""
             + name
@@ -315,7 +315,7 @@ public final class Functions {
                 + name
                 + ") must not end with \"Array\".");
         }
-        HttpServletRequest request = RequestLocator.get();
+        HttpServletRequest request = request();
         String s = StringUtil.toString(request.getAttribute(name));
         return "value=\""
             + h(value)
@@ -346,7 +346,7 @@ public final class Functions {
                 + name
                 + ") must end with \"Array\".");
         }
-        HttpServletRequest request = RequestLocator.get();
+        HttpServletRequest request = request();
         Object o = request.getAttribute(name);
         List<String> list = null;
         if (o != null) {
@@ -381,7 +381,7 @@ public final class Functions {
      */
     @SuppressWarnings("unchecked")
     public static String errorClass(String name, String styleClass) {
-        HttpServletRequest request = RequestLocator.get();
+        HttpServletRequest request = request();
         Map<String, String> errors =
             (Map<String, String>) request
                 .getAttribute(ControllerConstants.ERRORS_KEY);
@@ -398,7 +398,7 @@ public final class Functions {
      */
     @SuppressWarnings("unchecked")
     public static Iterator<String> errors() {
-        HttpServletRequest request = RequestLocator.get();
+        HttpServletRequest request = request();
         Map<String, String> errors =
             (Map<String, String>) request
                 .getAttribute(ControllerConstants.ERRORS_KEY);
@@ -439,7 +439,7 @@ public final class Functions {
                 + name
                 + ") must not end with \"Array\".");
         }
-        HttpServletRequest request = RequestLocator.get();
+        HttpServletRequest request = request();
         Object value = request.getAttribute(name);
         String s = "";
         if (value != null) {
@@ -450,6 +450,22 @@ public final class Functions {
             }
         }
         return "name=\"" + name + "\" value=\"" + s + "\"";
+    }
+
+    /**
+     * Returns the current request.
+     * 
+     * @return the current request
+     * @throws IllegalStateException
+     *             if the current request does not exists
+     */
+    protected static HttpServletRequest request() throws IllegalStateException {
+        HttpServletRequest request = RequestLocator.get();
+        if (request == null) {
+            throw new IllegalStateException(
+                "JSP should be called via FrontController.");
+        }
+        return request;
     }
 
     private Functions() {
