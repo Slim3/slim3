@@ -1,0 +1,73 @@
+<project name="slim3-blank" default="gen-controller" basedir=".">
+    <property file="build.properties" />
+
+    <path id="classpath">
+        <fileset dir="war/WEB-INF/classes">
+            <include name="**/*.class" />
+        </fileset>
+        <fileset dir="war/WEB-INF/lib">
+            <include name="**/*.jar" />
+        </fileset>
+        <fileset dir="eclipse.lib">
+            <include name="**/*.jar" />
+        </fileset>
+    </path>
+
+    <taskdef name="gen-model" classname="org.slim3.gen.task.GenModelTask" classpathref="classpath"/>
+    <taskdef name="gen-view" classname="org.slim3.gen.task.GenViewTask" classpathref="classpath"/>
+	<taskdef name="gen-service" classname="org.slim3.gen.task.GenServiceTask" classpathref="classpath"/>
+	<taskdef name="gen-controller" classname="org.slim3.gen.task.GenControllerTask" classpathref="classpath"/>
+    <taskdef name="gen-gwt-service" classname="org.slim3.gen.task.GenGWTServiceTask" classpathref="classpath"/>
+    <taskdef name="gen-gwt-service-impl" classname="org.slim3.gen.task.GenGWTServiceImplTask" classpathref="classpath"/>
+    
+    <target name="gen-controller">
+        <input message="Input a controller path." addproperty="controllerPath"/>
+        <gen-controller srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" controllerpath="${controllerPath}"
+             useView="true"/>
+        <gen-view wardir="${warDir}" controllerPath="${controllerPath}"/>
+    </target>
+
+    <target name="gen-controller-without-view">
+        <input message="Input a controller path." addproperty="controllerPath"/>
+        <gen-controller srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" controllerpath="${controllerPath}"
+            useView="false"/>
+    </target>
+
+    <target name="gen-model">
+        <input message="Input a model name. (ex.  Foo -> root.model.Foo,  bar.Foo -> root.model.bar.Foo). Sub-model extends Super-model." addproperty="modelDefinition"/>
+        <gen-model srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" modelDefinition="${modelDefinition}" modelClassNameProperty="modelClassName"/>
+    </target>
+
+    <target name="gen-service">
+        <input message="Input a service name. (ex.  FooService -> root.service.FooService,  bar.FooService -> root.service.bar.FooService)" addproperty="serviceDefinition"/>
+        <gen-service srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" serviceDefinition="${serviceDefinition}"/>
+    </target>
+   
+	<target name="gen-gwt-service">
+        <input message="Input a GWT service name. (ex.  FooService -> root.client.service.FooService,  bar.FooService -> root.client.service.bar.FooService)" addproperty="serviceDefinition"/>
+        <gen-gwt-service srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" serviceDefinition="${serviceDefinition}" serviceClassNameProperty="serviceClassName"/>
+        <gen-gwt-service-impl srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" serviceDefinition="${serviceDefinition}" serviceClassName="${serviceClassName}"/>
+    </target>
+    
+    <target name="copy">
+        <copy todir="war/WEB-INF/lib" file="../slim3/target/slim3-${ver}.jar"/>
+        <copy todir="libsrc" file="../slim3/target/slim3-${ver}-sources.jar"/>
+        <copy todir="lib" file="../slim3-gen/target/slim3-gen-${ver}.jar"/>
+        <copy todir="libsrc" file="../slim3-gen/target/slim3-gen-${ver}-sources.jar"/>
+        <copy todir="src" file="../slim3/src/main/resources/application_en.properties"/>
+        <copy todir="src" file="../slim3/src/main/resources/application_ja.properties"/>
+    </target>
+
+    <target name="dist">
+        <delete includeemptydirs="true" failonerror="false">
+            <fileset dir="target"/>
+        </delete>
+        <mkdir dir="target"/>
+        <zip zipfile="target/slim3-blank-${ver}.zip">
+            <zipfileset prefix="slim3-blank" dir=".">
+                <exclude name="target/**"/>
+                <exclude name="war/WEB-INF/classes/**"/>
+            </zipfileset>
+        </zip>
+    </target>
+</project>
