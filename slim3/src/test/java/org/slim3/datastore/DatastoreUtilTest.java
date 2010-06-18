@@ -906,6 +906,23 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void replacePackageName() throws Exception {
+        assertThat(DatastoreUtil.replacePackageName(
+            "abc.model.Hoge",
+            "model",
+            "meta"), is("abc.meta.Hoge"));
+        assertThat(DatastoreUtil.replacePackageName(
+            "abc.model.xxx.model.Hoge",
+            "model",
+            "meta"), is("abc.meta.xxx.model.Hoge"));
+        assertThat(DatastoreUtil
+            .replacePackageName("abc.Hoge", "model", "meta"), is("abc.Hoge"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void entityToBytes() throws Exception {
         assertThat(
             DatastoreUtil.entityToBytes(new Entity("Hoge")),

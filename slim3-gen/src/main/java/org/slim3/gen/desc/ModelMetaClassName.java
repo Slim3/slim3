@@ -15,9 +15,6 @@
  */
 package org.slim3.gen.desc;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.slim3.gen.Constants;
 import org.slim3.gen.util.ClassUtil;
 import org.slim3.gen.util.StringUtil;
@@ -95,13 +92,11 @@ public class ModelMetaClassName {
         this.metaPackage = metaPackage;
         this.sharedPackage = sharedPackage;
         this.serverPackage = serverPackage;
-        String packageName =
-            replacePackageName(
-                ClassUtil.getPackageName(modelClassName),
-                modelPackage,
-                metaPackage);
-        this.packageName =
-            replacePackageName(packageName, sharedPackage, serverPackage);
+        modelClassName =
+            replacePackageName(modelClassName, modelPackage, metaPackage);
+        modelClassName =
+            replacePackageName(modelClassName, sharedPackage, serverPackage);
+        this.packageName = ClassUtil.getPackageName(modelClassName);
         this.simpleName =
             ClassUtil.getSimpleName(modelClassName) + Constants.META_SUFFIX;
         this.kind = ClassUtil.getSimpleName(modelClassName);
@@ -123,22 +118,15 @@ public class ModelMetaClassName {
         if (StringUtil.isEmpty(originalPackageName)) {
             return originalPackageName;
         }
-        String regex = String.format("(.*)(\\.%s)(\\..*|$)", from);
-        String replacement = String.format("$1.%s$3", to);
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(originalPackageName);
-        if (!matcher.matches()) {
+        int index = originalPackageName.indexOf("." + from + ".");
+        if (index < 0) {
             return originalPackageName;
         }
-        StringBuffer buf = new StringBuffer();
-        for (matcher.reset(); matcher.find();) {
-            matcher.appendReplacement(buf, replacement);
-            if (matcher.hitEnd()) {
-                break;
-            }
-        }
-        matcher.appendTail(buf);
-        return buf.toString();
+        return originalPackageName.substring(0, index)
+            + "."
+            + to
+            + "."
+            + originalPackageName.substring(index + from.length() + 2);
     }
 
     /**

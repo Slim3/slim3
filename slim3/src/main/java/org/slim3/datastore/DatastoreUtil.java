@@ -1487,12 +1487,11 @@ public final class DatastoreUtil {
      */
     public static <M> ModelMeta<M> createModelMeta(Class<M> modelClass) {
         try {
-            String metaClassName =
-                modelClass.getName().replace(".model.", ".meta.").replace(
-                    ".shared.",
-                    ".server.")
-                    + "Meta";
-            return ClassUtil.newInstance(metaClassName, Thread
+            String className = modelClass.getName();
+            className = replacePackageName(className, "model", "meta");
+            className =
+                replacePackageName(className, "shared", "server") + "Meta";
+            return ClassUtil.newInstance(className, Thread
                 .currentThread()
                 .getContextClassLoader());
         } catch (Throwable cause) {
@@ -1500,6 +1499,46 @@ public final class DatastoreUtil {
                 + modelClass.getName()
                 + ") is not found.");
         }
+    }
+
+    /**
+     * Replaces a package name with another one.
+     * 
+     * @param className
+     *            the class name
+     * @param fromPackageName
+     *            the "from" package name
+     * @param toPackageName
+     *            the "to" package name
+     * @return the converted class name
+     * @throws NullPointerException
+     *             if the className parameter is null or if the fromPackageName
+     *             is null or if the toPackageName parameter is null
+     */
+    protected static String replacePackageName(String className,
+            String fromPackageName, String toPackageName)
+            throws NullPointerException {
+        if (className == null) {
+            throw new NullPointerException(
+                "The className parameter must not be null.");
+        }
+        if (fromPackageName == null) {
+            throw new NullPointerException(
+                "The fromPackageName parameter must not be null.");
+        }
+        if (toPackageName == null) {
+            throw new NullPointerException(
+                "The toPackageName parameter must not be null.");
+        }
+        int index = className.indexOf("." + fromPackageName + ".");
+        if (index < 0) {
+            return className;
+        }
+        return className.substring(0, index)
+            + "."
+            + toPackageName
+            + "."
+            + className.substring(index + fromPackageName.length() + 2);
     }
 
     /**
