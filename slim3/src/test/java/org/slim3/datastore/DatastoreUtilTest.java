@@ -149,10 +149,34 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void allocateIdWithParentKey() throws Exception {
+        Key parentKey = KeyFactory.createKey("Parent", 1);
+        Key key = DatastoreUtil.allocateId(parentKey, "Child");
+        assertThat(key, is(notNullValue()));
+        assertThat(key.isComplete(), is(true));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void assignKeyIfNecessary() throws Exception {
         Entity entity = new Entity("Hoge");
         DatastoreUtil.assignKeyIfNecessary(entity);
         assertThat(entity.getKey().getId(), is(not(0L)));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void assignKeyIfNecessaryWhenParentExists() throws Exception {
+        Datastore.allocateId("Child");
+        Key dummyKey2 = Datastore.allocateId("Child");
+        Key parentKey = Datastore.allocateId("Parent");
+        Entity entity = new Entity("Child", parentKey);
+        DatastoreUtil.assignKeyIfNecessary(entity);
+        assertThat(entity.getKey().getId(), is(not(dummyKey2.getId() + 1)));
     }
 
     /**

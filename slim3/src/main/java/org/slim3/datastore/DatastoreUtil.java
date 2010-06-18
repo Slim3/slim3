@@ -232,6 +232,34 @@ public final class DatastoreUtil {
     }
 
     /**
+     * Allocates a key within a namespace defined by the parent key and the
+     * kind.
+     * 
+     * @param parentKey
+     *            the parent key
+     * @param kind
+     *            the kind
+     * 
+     * @return a key within a namespace defined by the kind and the parent key
+     * @throws NullPointerException
+     *             if the parentKey parameter is null or if the kind parameter
+     *             is null
+     */
+    public static Key allocateId(Key parentKey, String kind)
+            throws NullPointerException {
+        if (parentKey == null) {
+            throw new NullPointerException(
+                "The parentKey parameter must not be null.");
+        }
+        if (kind == null) {
+            throw new NullPointerException(
+                "The kind parameter must not be null.");
+        }
+        Iterator<Key> keys = allocateIds(parentKey, kind, 1).iterator();
+        return keys.next();
+    }
+
+    /**
      * Allocates keys within a namespace defined by the kind.
      * 
      * @param kind
@@ -280,7 +308,7 @@ public final class DatastoreUtil {
      *             if the parentKey parameter is null or if the kind parameter
      *             is null
      */
-    public static KeyRange allocateIds(Key parentKey, String kind, int num)
+    public static KeyRange allocateIds(Key parentKey, String kind, long num)
             throws NullPointerException {
         if (parentKey == null) {
             throw new NullPointerException("The parentKey parameter is null.");
@@ -323,8 +351,11 @@ public final class DatastoreUtil {
                 "The entity parameter must not be null.");
         }
         if (!entity.getKey().isComplete()) {
-            KeyUtil
-                .setId(entity.getKey(), allocateId(entity.getKind()).getId());
+            long id =
+                entity.getParent() == null ? allocateId(entity.getKind())
+                    .getId() : allocateId(entity.getParent(), entity.getKind())
+                    .getId();
+            KeyUtil.setId(entity.getKey(), id);
         }
     }
 
