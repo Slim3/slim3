@@ -15,8 +15,8 @@
  */
 package org.slim3.gen.desc;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
@@ -40,6 +40,22 @@ public class ModelMetaClassNameTest {
                 "shared",
                 "server");
         assertThat(name.getQualifiedName(), is("aaa.bbb.server.meta.CccMeta"));
+    }
+
+    /**
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void test_multipleModelPackage() throws Exception {
+        ModelMetaClassName name =
+            new ModelMetaClassName(
+                "aaa.model.bbb.model.Ccc",
+                "model",
+                "meta",
+                "shared",
+                "server");
+        assertThat(name.getQualifiedName(), is("aaa.model.bbb.meta.CccMeta"));
     }
 
     /**

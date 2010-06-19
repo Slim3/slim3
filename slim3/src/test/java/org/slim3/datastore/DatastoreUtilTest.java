@@ -914,7 +914,7 @@ public class DatastoreUtilTest extends AppEngineTestCase {
         assertThat(DatastoreUtil.replacePackageName(
             "abc.model.xxx.model.Hoge",
             "model",
-            "meta"), is("abc.meta.xxx.model.Hoge"));
+            "meta"), is("abc.model.xxx.meta.Hoge"));
         assertThat(DatastoreUtil
             .replacePackageName("abc.Hoge", "model", "meta"), is("abc.Hoge"));
     }

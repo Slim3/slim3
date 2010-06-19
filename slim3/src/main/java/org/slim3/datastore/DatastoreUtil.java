@@ -1530,7 +1530,7 @@ public final class DatastoreUtil {
             throw new NullPointerException(
                 "The toPackageName parameter must not be null.");
         }
-        int index = className.indexOf("." + fromPackageName + ".");
+        int index = className.lastIndexOf("." + fromPackageName + ".");
         if (index < 0) {
             return className;
         }

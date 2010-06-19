@@ -118,7 +118,7 @@ public class ModelMetaClassName {
         if (StringUtil.isEmpty(originalPackageName)) {
             return originalPackageName;
         }
-        int index = originalPackageName.indexOf("." + from + ".");
+        int index = originalPackageName.lastIndexOf("." + from + ".");
         if (index < 0) {
             return originalPackageName;
         }
