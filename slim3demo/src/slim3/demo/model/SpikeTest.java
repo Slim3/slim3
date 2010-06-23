@@ -13,11 +13,12 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.datastore;
+package slim3.demo.model;
 
 import java.util.Arrays;
 
 import org.junit.Test;
+import org.slim3.datastore.Datastore;
 import org.slim3.tester.AppEngineTestCase;
 
 import com.google.appengine.api.datastore.Entity;
@@ -37,9 +38,9 @@ public class SpikeTest extends AppEngineTestCase {
         Entity entity = new Entity("Hoge");
         entity.setProperty("aaa", "aaa");
         Datastore.put(entity);
-        System.out.println(Datastore.query("Hoge").filter(
+        Datastore.query("Hoge").filter(
             "aaa",
             FilterOperator.IN,
-            Arrays.asList("aaa", "bb bb")).count());
+            Arrays.asList("aaa", "bbbb")).count();
     }
 }

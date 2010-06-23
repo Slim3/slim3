@@ -246,8 +246,7 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
         List<M> modelList = null;
         boolean hasNext = false;
         Cursor cursor = null;
-        int limit = fetchOptions.getLimit();
-        if (limit == Integer.MAX_VALUE) {
+        if (fetchOptions.getLimit() == null) {
             QueryResultList<Entity> entityList = asQueryResultEntityList();
             modelList = new ArrayList<M>(entityList.size());
             for (Entity e : entityList) {
@@ -256,6 +255,7 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
             }
             cursor = entityList.getCursor();
         } else {
+            int limit = fetchOptions.getLimit();
             fetchOptions.limit(limit + 1);
             modelList = new ArrayList<M>();
             QueryResultIterator<Entity> ite = asQueryResultEntityIterator();
