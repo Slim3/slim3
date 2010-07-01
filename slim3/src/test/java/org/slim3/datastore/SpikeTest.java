@@ -15,13 +15,8 @@
  */
 package org.slim3.datastore;
 
-import java.util.Arrays;
-
 import org.junit.Test;
 import org.slim3.tester.AppEngineTestCase;
-
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Query.FilterOperator;
 
 /**
  * @author higa
@@ -34,12 +29,5 @@ public class SpikeTest extends AppEngineTestCase {
      */
     @Test
     public void spike() throws Exception {
-        Entity entity = new Entity("Hoge");
-        entity.setProperty("aaa", "aaa");
-        Datastore.put(entity);
-        System.out.println(Datastore.query("Hoge").filter(
-            "aaa",
-            FilterOperator.IN,
-            Arrays.asList("aaa", "bb bb")).count());
     }
 }

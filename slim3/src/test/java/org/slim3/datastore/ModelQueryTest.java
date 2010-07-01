@@ -217,7 +217,7 @@ public class ModelQueryTest extends AppEngineTestCase {
         S3QueryResultList<Hoge> list2 =
             query2
                 .limit(1)
-                .encodedCursor(list.getEncodedCursor())
+                .encodedStartCursor(list.getEncodedCursor())
                 .encodedFilters(list.getEncodedFilters())
                 .encodedSorts(list.getEncodedSorts())
                 .asQueryResultList();
@@ -232,7 +232,7 @@ public class ModelQueryTest extends AppEngineTestCase {
         S3QueryResultList<Hoge> list3 =
             query3
                 .limit(1)
-                .encodedCursor(list2.getEncodedCursor())
+                .encodedStartCursor(list2.getEncodedCursor())
                 .encodedFilters(list2.getEncodedFilters())
                 .encodedSorts(list2.getEncodedSorts())
                 .asQueryResultList();

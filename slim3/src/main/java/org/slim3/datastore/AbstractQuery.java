@@ -258,7 +258,22 @@ public abstract class AbstractQuery<SUB> {
     }
 
     /**
-     * Specifies the cursor.
+     * Use {@link #startCursor(Cursor)}.
+     * 
+     * @param cursor
+     *            the cursor
+     * @return this instance
+     * @throws NullPointerException
+     *             if the cursor parameter is null
+     */
+    @SuppressWarnings("cast")
+    @Deprecated
+    public SUB cursor(Cursor cursor) throws NullPointerException {
+        return (SUB) startCursor(cursor);
+    }
+
+    /**
+     * Specifies the start cursor.
      * 
      * @param cursor
      *            the cursor
@@ -267,12 +282,31 @@ public abstract class AbstractQuery<SUB> {
      *             if the cursor parameter is null
      */
     @SuppressWarnings("unchecked")
-    public SUB cursor(Cursor cursor) throws NullPointerException {
+    public SUB startCursor(Cursor cursor) throws NullPointerException {
         if (cursor == null) {
             throw new NullPointerException(
                 "The cursor parameter must not be null.");
         }
-        fetchOptions.cursor(cursor);
+        fetchOptions.startCursor(cursor);
+        return (SUB) this;
+    }
+
+    /**
+     * Specifies the end cursor.
+     * 
+     * @param cursor
+     *            the cursor
+     * @return this instance
+     * @throws NullPointerException
+     *             if the cursor parameter is null
+     */
+    @SuppressWarnings("unchecked")
+    public SUB endCursor(Cursor cursor) throws NullPointerException {
+        if (cursor == null) {
+            throw new NullPointerException(
+                "The cursor parameter must not be null.");
+        }
+        fetchOptions.endCursor(cursor);
         return (SUB) this;
     }
 
@@ -285,13 +319,49 @@ public abstract class AbstractQuery<SUB> {
      * @throws NullPointerException
      *             if the encodedCursor parameter is null
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("cast")
+    @Deprecated
     public SUB encodedCursor(String encodedCursor) throws NullPointerException {
+        return (SUB) encodedStartCursor(encodedCursor);
+    }
+
+    /**
+     * Specifies the encoded start cursor.
+     * 
+     * @param encodedCursor
+     *            the encoded cursor
+     * @return this instance
+     * @throws NullPointerException
+     *             if the encodedCursor parameter is null
+     */
+    @SuppressWarnings("unchecked")
+    public SUB encodedStartCursor(String encodedCursor)
+            throws NullPointerException {
         if (encodedCursor == null) {
             throw new NullPointerException(
                 "The encodedCursor parameter must not be null.");
         }
-        fetchOptions.cursor(Cursor.fromWebSafeString(encodedCursor));
+        fetchOptions.startCursor(Cursor.fromWebSafeString(encodedCursor));
+        return (SUB) this;
+    }
+
+    /**
+     * Specifies the encoded end cursor.
+     * 
+     * @param encodedCursor
+     *            the encoded cursor
+     * @return this instance
+     * @throws NullPointerException
+     *             if the encodedCursor parameter is null
+     */
+    @SuppressWarnings("unchecked")
+    public SUB encodedEndCursor(String encodedCursor)
+            throws NullPointerException {
+        if (encodedCursor == null) {
+            throw new NullPointerException(
+                "The encodedCursor parameter must not be null.");
+        }
+        fetchOptions.endCursor(Cursor.fromWebSafeString(encodedCursor));
         return (SUB) this;
     }
 

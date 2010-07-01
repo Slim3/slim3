@@ -447,29 +447,62 @@ public class AbstQueryTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void cursor() throws Exception {
+    public void startCursor() throws Exception {
         ds.put(new Entity("Hoge"));
         MyQuery query = new MyQuery("Hoge");
         QueryResultList<Entity> list = query.limit(1).asQueryResultEntityList();
         Cursor cursor = list.getCursor();
         query = new MyQuery("Hoge");
-        assertThat(query.cursor(cursor), is(sameInstance(query)));
-        assertThat(query.fetchOptions.getCursor(), is(cursor));
+        assertThat(query.startCursor(cursor), is(sameInstance(query)));
+        assertThat(query.fetchOptions.getStartCursor(), is(cursor));
     }
 
     /**
      * @throws Exception
      */
     @Test
-    public void encodedCursor() throws Exception {
+    public void endCursor() throws Exception {
+        ds.put(new Entity("Hoge"));
+        MyQuery query = new MyQuery("Hoge");
+        QueryResultList<Entity> list = query.limit(1).asQueryResultEntityList();
+        Cursor cursor = list.getCursor();
+        query = new MyQuery("Hoge");
+        assertThat(query.endCursor(cursor), is(sameInstance(query)));
+        assertThat(query.fetchOptions.getEndCursor(), is(cursor));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void encodedStartCursor() throws Exception {
         ds.put(new Entity("Hoge"));
         MyQuery query = new MyQuery("Hoge");
         QueryResultList<Entity> list = query.limit(1).asQueryResultEntityList();
         Cursor cursor = list.getCursor();
         String encodedCursor = cursor.toWebSafeString();
         query = new MyQuery("Hoge");
-        assertThat(query.encodedCursor(encodedCursor), is(sameInstance(query)));
-        assertThat(query.fetchOptions.getCursor(), is(cursor));
+        assertThat(
+            query.encodedStartCursor(encodedCursor),
+            is(sameInstance(query)));
+        assertThat(query.fetchOptions.getStartCursor(), is(cursor));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void encodedEndCursor() throws Exception {
+        ds.put(new Entity("Hoge"));
+        MyQuery query = new MyQuery("Hoge");
+        QueryResultList<Entity> list = query.limit(1).asQueryResultEntityList();
+        Cursor cursor = list.getCursor();
+        String encodedCursor = cursor.toWebSafeString();
+        query = new MyQuery("Hoge");
+        assertThat(
+            query.encodedEndCursor(encodedCursor),
+            is(sameInstance(query)));
+        assertThat(query.fetchOptions.getEndCursor(), is(cursor));
     }
 
     /**
