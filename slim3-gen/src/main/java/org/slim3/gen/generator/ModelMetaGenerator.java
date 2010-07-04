@@ -15,31 +15,7 @@
  */
 package org.slim3.gen.generator;
 
-import static org.slim3.gen.ClassConstants.Blob;
-import static org.slim3.gen.ClassConstants.CollectionAttributeMeta;
-import static org.slim3.gen.ClassConstants.CollectionUnindexedAttributeMeta;
-import static org.slim3.gen.ClassConstants.CoreAttributeMeta;
-import static org.slim3.gen.ClassConstants.CoreUnindexedAttributeMeta;
-import static org.slim3.gen.ClassConstants.Double;
-import static org.slim3.gen.ClassConstants.Entity;
-import static org.slim3.gen.ClassConstants.Float;
-import static org.slim3.gen.ClassConstants.HashSet;
-import static org.slim3.gen.ClassConstants.Integer;
-import static org.slim3.gen.ClassConstants.Key;
-import static org.slim3.gen.ClassConstants.LinkedHashSet;
-import static org.slim3.gen.ClassConstants.LinkedList;
-import static org.slim3.gen.ClassConstants.Long;
-import static org.slim3.gen.ClassConstants.ModelRefAttributeMeta;
-import static org.slim3.gen.ClassConstants.Object;
-import static org.slim3.gen.ClassConstants.Short;
-import static org.slim3.gen.ClassConstants.String;
-import static org.slim3.gen.ClassConstants.StringAttributeMeta;
-import static org.slim3.gen.ClassConstants.StringCollectionAttributeMeta;
-import static org.slim3.gen.ClassConstants.StringCollectionUnindexedAttributeMeta;
-import static org.slim3.gen.ClassConstants.StringUnindexedAttributeMeta;
-import static org.slim3.gen.ClassConstants.Text;
-import static org.slim3.gen.ClassConstants.TreeSet;
-import static org.slim3.gen.ClassConstants.UnindexedAttributeMeta;
+import static org.slim3.gen.ClassConstants.*;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -70,7 +46,6 @@ import org.slim3.gen.datastore.PrimitiveIntType;
 import org.slim3.gen.datastore.PrimitiveLongType;
 import org.slim3.gen.datastore.PrimitiveShortType;
 import org.slim3.gen.datastore.SetType;
-import org.slim3.gen.datastore.ShortBlobType;
 import org.slim3.gen.datastore.ShortType;
 import org.slim3.gen.datastore.SimpleDataTypeVisitor;
 import org.slim3.gen.datastore.SortedSetType;
@@ -617,12 +592,6 @@ public class ModelMetaGenerator implements Generator {
         }
 
         @Override
-        public Void visitShortBlobType(ShortBlobType type, AttributeMetaDesc p)
-                throws RuntimeException {
-            return null;
-        }
-
-        @Override
         public Void visitBlobType(BlobType type, AttributeMetaDesc p)
                 throws RuntimeException {
             return null;
@@ -704,6 +673,35 @@ public class ModelMetaGenerator implements Generator {
 
                 },
                 null);
+            return null;
+        }
+
+        @Override
+        public Void visitArrayType(ArrayType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            printer.println("/** */");
+            if (p.isLob() || p.isUnindexed()) {
+                printer
+                    .println(
+                        "public final %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", \"%4$s\", %6$s.class);",
+                        CoreUnindexedAttributeMeta,
+                        modelMetaDesc.getModelClassName(),
+                        type.getTypeName(),
+                        p.getAttributeName(),
+                        p.getName(),
+                        type.getClassName());
+            } else {
+                printer
+                    .println(
+                        "public final %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", \"%4$s\", %6$s.class);",
+                        CoreAttributeMeta,
+                        modelMetaDesc.getModelClassName(),
+                        type.getTypeName(),
+                        p.getAttributeName(),
+                        p.getName(),
+                        type.getClassName());
+            }
+            printer.println();
             return null;
         }
     }
@@ -970,13 +968,21 @@ public class ModelMetaGenerator implements Generator {
                         public Boolean visitPrimitiveByteType(
                                 PrimitiveByteType type, Void p)
                                 throws RuntimeException {
-                            printer
-                                .println(
-                                    "model.%1$s(blobToBytes((%2$s) entity.getProperty(\"%3$s\")));",
-                                    attr.getWriteMethodName(),
-                                    Blob,
-                                    attr.getName());
-
+                            if (attr.isLob()) {
+                                printer
+                                    .println(
+                                        "model.%1$s(blobToBytes((%2$s) entity.getProperty(\"%3$s\")));",
+                                        attr.getWriteMethodName(),
+                                        Blob,
+                                        attr.getName());
+                            } else {
+                                printer
+                                    .println(
+                                        "model.%1$s(shortBlobToBytes((%2$s) entity.getProperty(\"%3$s\")));",
+                                        attr.getWriteMethodName(),
+                                        ShortBlob,
+                                        attr.getName());
+                            }
                             return true;
                         }
 
@@ -1525,11 +1531,27 @@ public class ModelMetaGenerator implements Generator {
                         public Boolean visitPrimitiveByteType(
                                 PrimitiveByteType type, Void p)
                                 throws RuntimeException {
-                            printer
-                                .println(
-                                    "entity.setUnindexedProperty(\"%1$s\", bytesToBlob(m.%2$s()));",
-                                    attr.getName(),
-                                    attr.getReadMethodName());
+                            if (attr.isLob()) {
+                                printer
+                                    .println(
+                                        "entity.setUnindexedProperty(\"%1$s\", bytesToBlob(m.%2$s()));",
+                                        attr.getName(),
+                                        attr.getReadMethodName());
+                            } else {
+                                if (attr.isUnindexed()) {
+                                    printer
+                                        .println(
+                                            "entity.setUnindexedProperty(\"%1$s\", bytesToShortBlob(m.%2$s()));",
+                                            attr.getName(),
+                                            attr.getReadMethodName());
+                                } else {
+                                    printer
+                                        .println(
+                                            "entity.setProperty(\"%1$s\", bytesToShortBlob(m.%2$s()));",
+                                            attr.getName(),
+                                            attr.getReadMethodName());
+                                }
+                            }
                             return true;
                         }
                     },
