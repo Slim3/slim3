@@ -29,6 +29,7 @@ import org.slim3.gen.datastore.InverseModelRefType;
 import org.slim3.gen.datastore.ModelRefType;
 import org.slim3.gen.datastore.OtherReferenceType;
 import org.slim3.gen.message.MessageCode;
+import org.slim3.gen.processor.UnknownDeclarationException;
 import org.slim3.gen.processor.ValidationException;
 import org.slim3.gen.util.AnnotationMirrorUtil;
 import org.slim3.gen.util.DeclarationUtil;
@@ -39,10 +40,13 @@ import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.declaration.AnnotationMirror;
 import com.sun.mirror.declaration.ClassDeclaration;
 import com.sun.mirror.declaration.FieldDeclaration;
+import com.sun.mirror.declaration.InterfaceDeclaration;
 import com.sun.mirror.declaration.MethodDeclaration;
+import com.sun.mirror.declaration.Modifier;
 import com.sun.mirror.declaration.TypeDeclaration;
 import com.sun.mirror.type.ClassType;
 import com.sun.mirror.type.DeclaredType;
+import com.sun.mirror.type.InterfaceType;
 import com.sun.mirror.type.TypeMirror;
 import com.sun.mirror.util.SimpleTypeVisitor;
 
@@ -186,6 +190,11 @@ public class AttributeMetaDescFactory {
             AnnotationConstants.persistent) == Boolean.FALSE) {
             handleNotPersistent(attributeMetaDesc, fieldDeclaration);
         }
+        handleAttributeListener(
+            attributeMetaDesc,
+            classDeclaration,
+            fieldDeclaration,
+            attribute);
         if (attributeMetaDesc.isPersistent()) {
             DataType dataType = attributeMetaDesc.getDataType();
             if (dataType instanceof InverseModelRefType) {
@@ -217,7 +226,12 @@ public class AttributeMetaDescFactory {
                         fieldDeclaration,
                         attribute);
                 }
-                if (dataType instanceof ArrayType) {
+                if (dataType instanceof ArrayType
+                    && !ArrayType.class
+                        .cast(dataType)
+                        .getComponentType()
+                        .getClassName()
+                        .equals(ClassConstants.primitive_byte)) {
                     throwExceptionForNonCoreType(
                         classDeclaration,
                         fieldDeclaration,
@@ -467,6 +481,165 @@ public class AttributeMetaDescFactory {
                 AnnotationConstants.persistent + " = false");
         }
         attributeMetaDesc.setUnindexed(true);
+    }
+
+    /**
+     * Handles the attribute listener.
+     * 
+     * @param attributeMetaDesc
+     *            the attribute meta description
+     * @param classDeclaration
+     *            the model class declaration
+     * @param fieldDeclaration
+     *            the field declaration
+     * @param attribute
+     *            the annotation mirror for Attribute
+     */
+    protected void handleAttributeListener(AttributeMetaDesc attributeMetaDesc,
+            ClassDeclaration classDeclaration,
+            FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
+        TypeDeclaration listener =
+            AnnotationMirrorUtil.getElementValue(
+                attribute,
+                AnnotationConstants.listener);
+        if (listener == null) {
+            return;
+        }
+        if (listener instanceof InterfaceDeclaration
+            || listener.getModifiers().contains(Modifier.ABSTRACT)) {
+            throw new ValidationException(
+                MessageCode.SLIM3GEN1052,
+                env,
+                fieldDeclaration.getPosition(),
+                listener.getQualifiedName(),
+                fieldDeclaration.getSimpleName());
+        }
+        ClassType listenerClassType =
+            TypeUtil.toClassType((TypeMirror) listener);
+        if (listenerClassType == null) {
+            return;
+        }
+        if (!validateAttributeListenerParameter(
+            attributeMetaDesc,
+            classDeclaration,
+            fieldDeclaration,
+            listenerClassType)) {
+            throw new ValidationException(
+                MessageCode.SLIM3GEN1051,
+                env,
+                fieldDeclaration.getPosition(),
+                listener.getQualifiedName(),
+                TypeUtil
+                    .toClassType(fieldDeclaration.getType())
+                    .getDeclaration()
+                    .getQualifiedName());
+        }
+        ClassDeclaration listenerClassDeclaration =
+            listenerClassType.getDeclaration();
+        if (listenerClassDeclaration == null) {
+            throw new UnknownDeclarationException(
+                env,
+                listenerClassDeclaration,
+                listenerClassType);
+        }
+        if (!DeclarationUtil
+            .hasPublicDefaultConstructor(listenerClassDeclaration)) {
+            if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
+                throw new ValidationException(
+                    MessageCode.SLIM3GEN1050,
+                    env,
+                    fieldDeclaration.getPosition(),
+                    listenerClassDeclaration.getQualifiedName());
+            }
+            throw new ValidationException(
+                MessageCode.SLIM3GEN1045,
+                env,
+                classDeclaration.getPosition(),
+                listenerClassDeclaration.getQualifiedName());
+        }
+        attributeMetaDesc
+            .setAttributeListenerClassName(listenerClassDeclaration
+                .getQualifiedName());
+    }
+
+    /**
+     * Handles the attribute listener generics parameter.
+     * 
+     * @param attributeMetaDesc
+     *            the attribute meta description
+     * @param classDeclaration
+     *            the model class declaration
+     * @param fieldDeclaration
+     *            the field declaration
+     * @param classType
+     *            the class type
+     * @return whether the validation is OK
+     */
+    protected boolean validateAttributeListenerParameter(
+            AttributeMetaDesc attributeMetaDesc,
+            ClassDeclaration classDeclaration,
+            FieldDeclaration fieldDeclaration, ClassType classType) {
+        if (classType.getActualTypeArguments().size() == 1
+            && classType.getActualTypeArguments().contains(
+                fieldDeclaration.getType())) {
+            return true;
+        }
+        ClassType superclass = classType.getSuperclass();
+        if (superclass != null) {
+            if (validateAttributeListenerParameter(
+                attributeMetaDesc,
+                classDeclaration,
+                fieldDeclaration,
+                superclass)) {
+                return true;
+            }
+        }
+        for (InterfaceType superInterfaceType : classType.getSuperinterfaces()) {
+            if (validateAttributeListenerParameter(
+                attributeMetaDesc,
+                classDeclaration,
+                fieldDeclaration,
+                superInterfaceType)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Handles the attribute listener generics parameter.
+     * 
+     * @param attributeMetaDesc
+     *            the attribute meta description
+     * @param classDeclaration
+     *            the model class declaration
+     * @param fieldDeclaration
+     *            the field declaration
+     * @param interfaceType
+     *            the interface type
+     * @return whether the validation is OK
+     */
+    protected boolean validateAttributeListenerParameter(
+            AttributeMetaDesc attributeMetaDesc,
+            ClassDeclaration classDeclaration,
+            FieldDeclaration fieldDeclaration, InterfaceType interfaceType) {
+        if (interfaceType.getActualTypeArguments().size() == 1
+            && interfaceType.getActualTypeArguments().contains(
+                fieldDeclaration.getType())) {
+            return true;
+        }
+        for (InterfaceType superInterfaceType : interfaceType
+            .getSuperinterfaces()) {
+            if (validateAttributeListenerParameter(
+                attributeMetaDesc,
+                classDeclaration,
+                fieldDeclaration,
+                superInterfaceType)) {
+                return true;
+            }
+        }
+        return false;
+
     }
 
     /**

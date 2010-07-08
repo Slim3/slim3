@@ -211,6 +211,14 @@ public abstract class ModelMeta<M> {
     protected abstract void incrementVersion(Object model);
 
     /**
+     * This method is called before a model is put to datastore.
+     * 
+     * @param model
+     *            the model
+     */
+    protected abstract void prePut(Object model);
+
+    /**
      * Returns a key of the model.
      * 
      * @param model

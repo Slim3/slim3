@@ -529,6 +529,12 @@ public class HogeMeta extends ModelMeta<Hoge> {
     }
 
     @Override
+    protected void prePut(Object model) {
+        assignKeyIfNecessary(model);
+        incrementVersion(model);
+    }
+
+    @Override
     public String getClassHierarchyListName() {
         return "slim3.classHierarchyList";
     }

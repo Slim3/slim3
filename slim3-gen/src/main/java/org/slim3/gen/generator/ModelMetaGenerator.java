@@ -121,6 +121,7 @@ public class ModelMetaGenerator implements Generator {
         printer.println();
         printer.indent();
         printAttributeMetaFields(printer);
+        printAttributeListenerFields(printer);
         printSingletonField(printer);
         printGetMethod(printer);
         printConstructor(printer);
@@ -133,6 +134,7 @@ public class ModelMetaGenerator implements Generator {
         printSetKeyMethod(printer);
         printGetVersionMethod(printer);
         printIncrementVersionMethod(printer);
+        printPrePutMethod(printer);
         printGetSchemaVersionName(printer);
         printGetClassHierarchyListName(printer);
         printer.unindent();
@@ -149,6 +151,27 @@ public class ModelMetaGenerator implements Generator {
         AttributeMetaFieldsGenerator generator =
             new AttributeMetaFieldsGenerator(printer);
         generator.generate();
+    }
+
+    /**
+     * Generates attribute listener fields.
+     * 
+     * @param printer
+     *            the printer
+     */
+    protected void printAttributeListenerFields(Printer printer) {
+        for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
+            if (attr.getAttributeListenerClassName() != null
+                && !attr.getAttributeListenerClassName().equals(
+                    AttributeListener)) {
+                printer
+                    .println(
+                        "private static final %1$s slim3_%2$sAttributeListener = new %1$s();",
+                        attr.getAttributeListenerClassName(),
+                        attr.getAttributeName());
+                printer.println();
+            }
+        }
     }
 
     /**
@@ -425,6 +448,39 @@ public class ModelMetaGenerator implements Generator {
             printer.println("    %1$s m = (%1$s) model;", modelMetaDesc
                 .getModelClassName());
             printer.println("    m.%1$s(key);", attr.getWriteMethodName());
+        }
+        printer.println("}");
+        printer.println();
+    }
+
+    /**
+     * Generates the {@code setKey} method.
+     * 
+     * @param printer
+     *            the printer
+     */
+    protected void printPrePutMethod(final Printer printer) {
+        printer.println("@Override");
+        printer.println("protected void prePut(Object model) {");
+        printer.println("    assignKeyIfNecessary(model);");
+        printer.println("    incrementVersion(model);");
+        boolean first = true;
+        for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
+            if (attr.getAttributeListenerClassName() != null
+                && !attr.getAttributeListenerClassName().equals(
+                    AttributeListener)) {
+                if (first) {
+                    printer.println("    %1$s m = (%1$s) model;", modelMetaDesc
+                        .getModelClassName());
+                    first = false;
+                }
+                printer
+                    .println(
+                        "    m.%1$s(slim3_%2$sAttributeListener.prePut(m.%3$s()));",
+                        attr.getWriteMethodName(),
+                        attr.getAttributeName(),
+                        attr.getReadMethodName());
+            }
         }
         printer.println("}");
         printer.println();

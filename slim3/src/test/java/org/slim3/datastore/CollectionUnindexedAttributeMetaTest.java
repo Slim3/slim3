@@ -49,6 +49,10 @@ public class CollectionUnindexedAttributeMetaTest {
         }
 
         @Override
+        protected void prePut(Object model) {
+        }
+
+        @Override
         protected long getVersion(Object model) {
             return 0;
         }

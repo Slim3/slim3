@@ -126,6 +126,12 @@ public final class BbbMeta extends
     }
 
     @Override
+    protected void prePut(Object model) {
+        assignKeyIfNecessary(model);
+        incrementVersion(model);
+    }
+
+    @Override
     public org.slim3.datastore.model.Bbb entityToModel(
             com.google.appengine.api.datastore.Entity entity) {
         org.slim3.datastore.model.Bbb model =

@@ -47,6 +47,10 @@ public class SortableAttributeMetaTest extends AppEngineTestCase {
         }
 
         @Override
+        protected void prePut(Object model) {
+        }
+
+        @Override
         protected long getVersion(Object model) {
             return 0;
         }

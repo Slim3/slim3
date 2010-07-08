@@ -62,4 +62,10 @@ public @interface Attribute {
      * Whether this property is unindexed.
      */
     boolean unindexed() default false;
+
+    /**
+     * The attribute listener.
+     */
+    @SuppressWarnings("unchecked")
+    Class<? extends AttributeListener> listener() default AttributeListener.class;
 }

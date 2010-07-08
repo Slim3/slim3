@@ -1639,8 +1639,7 @@ public final class DatastoreUtil {
             throw new NullPointerException("The model parameter is null.");
         }
         ModelMeta<?> modelMeta = getModelMeta(model.getClass());
-        modelMeta.assignKeyIfNecessary(model);
-        modelMeta.incrementVersion(model);
+        modelMeta.prePut(model);
         return modelMeta.modelToEntity(model);
     }
 

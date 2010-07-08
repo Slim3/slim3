@@ -104,6 +104,12 @@ public final class CccMeta extends
     }
 
     @Override
+    protected void prePut(Object model) {
+        assignKeyIfNecessary(model);
+        incrementVersion(model);
+    }
+
+    @Override
     public org.slim3.datastore.model.Ccc entityToModel(
             com.google.appengine.api.datastore.Entity entity) {
         org.slim3.datastore.model.Ccc model =

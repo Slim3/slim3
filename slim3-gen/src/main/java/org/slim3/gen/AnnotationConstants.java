@@ -66,6 +66,9 @@ public final class AnnotationConstants {
     /** the name of persistent element */
     public static final String persistent = "persistent";
 
+    /** the name of listener element */
+    public static final String listener = "listener";
+
     /** {@code org.junit.Test} */
     public static final String Test = "org.junit.Test";
 }

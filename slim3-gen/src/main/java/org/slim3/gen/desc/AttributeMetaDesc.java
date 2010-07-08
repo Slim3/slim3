@@ -55,6 +55,9 @@ public class AttributeMetaDesc {
     /** the writeMethodName */
     protected String writeMethodName;
 
+    /** the attributeListenerClassName */
+    protected String attributeListenerClassName;
+
     /**
      * Creates a new {@code AttributeMetaDesc}.
      * 
@@ -215,4 +218,22 @@ public class AttributeMetaDesc {
         this.unindexed = unindexed;
     }
 
+    /**
+     * Returns the attribute listener class name
+     * 
+     * @return the attribute listener class name
+     */
+    public String getAttributeListenerClassName() {
+        return attributeListenerClassName;
+    }
+
+    /**
+     * Sets the attribute listener class name
+     * 
+     * @param attributeListenerClassName
+     *            the attribute listener class name
+     */
+    public void setAttributeListenerClassName(String attributeListenerClassName) {
+        this.attributeListenerClassName = attributeListenerClassName;
+    }
 }
