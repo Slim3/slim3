@@ -134,7 +134,7 @@ public enum MessageCode {
     /** */
     SLIM3GEN1048("The property[{0}] of entity is duplicated. (the property[{1}] of the class[{2}])"),
     /** */
-    SLIM3GEN1049("The schemaVersionName element must not be empty."),
+    SLIM3GEN1049("The classHierarchyListName element must not be empty."),
     /** */
     SLIM3GEN1050("The listener[{0}] does not have a default constructor."),
     /** */
