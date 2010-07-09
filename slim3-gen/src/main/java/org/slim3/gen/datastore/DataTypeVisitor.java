@@ -395,6 +395,19 @@ public interface DataTypeVisitor<R, P, TH extends RuntimeException> {
     R visitTextType(TextType type, P p) throws TH;
 
     /**
+     * Visits {@link BlobKeyType}.
+     * 
+     * @param type
+     *            the data type
+     * @param p
+     *            the parameter
+     * @return a result
+     * @throws TH
+     *             the throwable
+     */
+    R visitBlobKeyType(BlobKeyType type, P p) throws TH;
+
+    /**
      * Visits {@link EnumType}.
      * 
      * @param type

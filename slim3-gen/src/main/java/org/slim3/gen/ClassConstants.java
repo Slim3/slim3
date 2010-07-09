@@ -213,6 +213,10 @@ public final class ClassConstants {
     /** {@code com.google.appengine.api.datastore.Text} */
     public static final String Text = "com.google.appengine.api.datastore.Text";
 
+    /** {@code com.google.appengine.api.blobstore.BlobKey} */
+    public static final String BlobKey =
+        "com.google.appengine.api.blobstore.BlobKey";
+
     /** {@code java.util.Collection} */
     public static final String Collection = "java.util.Collection";
 

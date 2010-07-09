@@ -28,8 +28,8 @@ package org.slim3.gen.datastore;
  * @since 1.0.0
  * 
  */
-public class SimpleDataTypeVisitor<R, P, TH extends RuntimeException> implements
-        DataTypeVisitor<R, P, TH> {
+public class SimpleDataTypeVisitor<R, P, TH extends RuntimeException>
+        implements DataTypeVisitor<R, P, TH> {
 
     /** the default value */
     protected final R defaultValue;
@@ -160,6 +160,10 @@ public class SimpleDataTypeVisitor<R, P, TH extends RuntimeException> implements
     }
 
     public R visitTextType(TextType type, P p) throws TH {
+        return visitCoreReferenceType(type, p);
+    }
+
+    public R visitBlobKeyType(BlobKeyType type, P p) throws TH {
         return visitCoreReferenceType(type, p);
     }
 
