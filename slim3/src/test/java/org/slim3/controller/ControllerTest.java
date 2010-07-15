@@ -184,6 +184,16 @@ public class ControllerTest extends ControllerTestCase {
      * 
      */
     @Test
+    public void asString() throws Exception {
+        tester.request.setAttribute("aaa", "1");
+        assertThat(controller.asString("aaa"), is("1"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
     public void asShort() throws Exception {
         tester.request.setAttribute("aaa", "1");
         assertThat(controller.asShort("aaa"), is((short) 1));
@@ -338,6 +348,18 @@ public class ControllerTest extends ControllerTestCase {
         assertThat(controller.encodeFileName("abc"), is("filename=\"abc\""));
         tester.request.setHeader("User-Agent", "Opera");
         assertThat(controller.encodeFileName("abc"), is("filename=\"abc\""));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void getForwardServletPath() throws Exception {
+        tester.request.setAttribute(
+            ControllerConstants.FORWARD_SERVLET_PATH_KEY,
+            "/abc");
+        assertThat(controller.getForwardServletPath(), is("/abc"));
     }
 
     private static class IndexController extends Controller {

@@ -878,6 +878,15 @@ public abstract class Controller {
     }
 
     /**
+     * Returns the path before forwarding.
+     * 
+     * @return the path before forwarding
+     */
+    protected String getForwardServletPath() {
+        return asString(ControllerConstants.FORWARD_SERVLET_PATH_KEY);
+    }
+
+    /**
      * Determines if this request is get method.
      * 
      * @return whether this request is get method

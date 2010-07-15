@@ -77,6 +77,8 @@ public class ControllerTesterTest {
         tester.start("/");
         assertThat(tester.isRedirect(), is(false));
         assertThat(tester.getDestinationPath(), is("/index.jsp"));
+        assertThat(tester
+            .asString(ControllerConstants.FORWARD_SERVLET_PATH_KEY), is("/"));
     }
 
     /**

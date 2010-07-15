@@ -112,6 +112,8 @@ public class ControllerTester extends ServletTester {
                 + ") must start with \"/\".");
         }
         request.setServletPath(path);
+        request
+            .setAttribute(ControllerConstants.FORWARD_SERVLET_PATH_KEY, path);
         frontController.doFilter(request, response, filterChain);
     }
 
