@@ -151,4 +151,16 @@ public class MockHttpServletRequestTest {
     public void defaultMethod() throws Exception {
         assertThat(request.getMethod(), is("get"));
     }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void setQueryString() throws Exception {
+        request.setQueryString("aaa=1&bbb=&ccc");
+        assertThat(request.getParameter("aaa"), is("1"));
+        assertThat(request.getParameter("bbb"), is(""));
+        assertThat(request.getParameter("ccc"), is(""));
+    }
 }

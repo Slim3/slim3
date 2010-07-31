@@ -118,7 +118,13 @@ public class ControllerTester extends ServletTester {
         Router router = RouterFactory.getRouter();
         String routingPath = router.route(request, path);
         if (routingPath != null) {
-            path = routingPath;
+            int index = routingPath.lastIndexOf('?');
+            if (index < 0) {
+                path = routingPath;
+            } else {
+                path = routingPath.substring(0, index);
+                request.setQueryString(routingPath.substring(index + 1));
+            }
         }
         request.setServletPath(path);
         frontController.doFilter(request, response, filterChain);

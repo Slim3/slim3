@@ -65,12 +65,13 @@ public class ControllerTesterTest {
      */
     @Test
     public void startForRouting() throws Exception {
-        tester.start("/hello2");
+        tester.start("/hello2/1");
         assertThat(tester.request.getServletPath(), is("/hello"));
         assertThat(
             (String) tester.request
                 .getAttribute(ControllerConstants.FORWARD_SERVLET_PATH_KEY),
-            is("/hello2"));
+            is("/hello2/1"));
+        assertThat(tester.request.getParameter("test"), is("1"));
     }
 
     /**

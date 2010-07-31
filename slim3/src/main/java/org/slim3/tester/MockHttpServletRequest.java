@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.slim3.util.ArrayMap;
+import org.slim3.util.StringUtil;
 
 /**
  * A mock implementation for {@link HttpServletRequest}.
@@ -430,6 +431,16 @@ public class MockHttpServletRequest implements HttpServletRequest {
      */
     public void setQueryString(String queryString) {
         this.queryString = queryString;
+        if (queryString != null) {
+            for (String param : StringUtil.split(queryString, "&")) {
+                String[] keyValue = StringUtil.split(param, "=");
+                if (keyValue.length == 1) {
+                    addParameter(keyValue[0], "");
+                } else {
+                    addParameter(keyValue[0], keyValue[1]);
+                }
+            }
+        }
     }
 
     public String getRemoteUser() {
