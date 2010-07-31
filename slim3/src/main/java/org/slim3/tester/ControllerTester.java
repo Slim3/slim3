@@ -24,6 +24,8 @@ import javax.servlet.ServletException;
 import org.slim3.controller.Controller;
 import org.slim3.controller.ControllerConstants;
 import org.slim3.controller.FrontController;
+import org.slim3.controller.router.Router;
+import org.slim3.controller.router.RouterFactory;
 import org.slim3.controller.validator.Errors;
 
 /**
@@ -111,9 +113,14 @@ public class ControllerTester extends ServletTester {
                 + path
                 + ") must start with \"/\".");
         }
-        request.setServletPath(path);
         request
             .setAttribute(ControllerConstants.FORWARD_SERVLET_PATH_KEY, path);
+        Router router = RouterFactory.getRouter();
+        String routingPath = router.route(request, path);
+        if (routingPath != null) {
+            path = routingPath;
+        }
+        request.setServletPath(path);
         frontController.doFilter(request, response, filterChain);
     }
 

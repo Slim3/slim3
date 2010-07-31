@@ -63,6 +63,20 @@ public class ControllerTesterTest {
      * @throws Exception
      * 
      */
+    @Test
+    public void startForRouting() throws Exception {
+        tester.start("/hello2");
+        assertThat(tester.request.getServletPath(), is("/hello"));
+        assertThat(
+            (String) tester.request
+                .getAttribute(ControllerConstants.FORWARD_SERVLET_PATH_KEY),
+            is("/hello2"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
     @Test(expected = IllegalArgumentException.class)
     public void startForBadPath() throws Exception {
         tester.start("xxx");
