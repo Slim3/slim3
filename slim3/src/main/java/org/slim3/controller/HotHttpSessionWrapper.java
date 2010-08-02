@@ -178,6 +178,9 @@ public class HotHttpSessionWrapper implements HttpSession, Cleanable {
         for (Enumeration<String> e = originalSession.getAttributeNames(); e
             .hasMoreElements();) {
             String name = e.nextElement();
+            if (name.startsWith("__")) {
+                continue;
+            }
             Object value = originalSession.getAttribute(name);
             if (value == null || value instanceof BytesHolder) {
                 continue;

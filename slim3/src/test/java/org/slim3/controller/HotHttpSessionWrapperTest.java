@@ -47,10 +47,12 @@ public class HotHttpSessionWrapperTest {
         HotHttpSessionWrapper sessionWrapper =
             (HotHttpSessionWrapper) requestWrapper.getSession();
         sessionWrapper.setAttribute("aaa", "111");
+        sessionWrapper.setAttribute("__aaa", "111");
         Cleaner.cleanAll();
         assertThat(
             request.getSession().getAttribute("aaa"),
             is(BytesHolder.class));
+        assertThat(request.getSession().getAttribute("__aaa"), is(String.class));
     }
 
     /**
