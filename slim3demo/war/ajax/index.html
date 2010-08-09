@@ -3,6 +3,11 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>ajax Index</title>
 <script src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
+<script type="text/javascript">
+$(function() {
+	$('#ready').load('ready');
+});
+</script>
 </head>
 <body>
 
@@ -14,6 +19,7 @@ Source:
 <li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/war/ajax/index.html">index.html</a></li>
 </ul>
 <hr />
+<span id="ready"></span><br />
 <span id="message"></span><br />
 <input type="button" value="hello"
     onclick="$('#message').load('hello');"/>
