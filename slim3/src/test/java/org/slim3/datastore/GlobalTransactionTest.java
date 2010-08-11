@@ -167,6 +167,15 @@ public class GlobalTransactionTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getIdAndRollback() throws Exception {
+        gtx.rollback();
+        assertThat(gtx.getId(), is(not(nullValue())));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void verifyLockAndGetAsMap() throws Exception {
         Key rootKey = Datastore.createKey("Root", 1);
         Key key = Datastore.createKey(rootKey, "Hoge", 1);

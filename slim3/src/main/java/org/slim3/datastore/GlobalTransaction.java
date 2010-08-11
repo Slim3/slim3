@@ -385,10 +385,14 @@ public class GlobalTransaction {
      * Returns the transaction identifier.
      * 
      * @return the transaction identifier
+     * @throws IllegalStateException
+     *             if the transaction does not begin
      */
-    public String getId() {
-        assertActive();
-        return localTransaction.getId();
+    public String getId() throws IllegalStateException {
+        if (localTransaction != null) {
+            return localTransaction.getId();
+        }
+        throw new IllegalStateException("This transaction must begin.");
     }
 
     /**
