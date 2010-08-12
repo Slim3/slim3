@@ -140,7 +140,7 @@ public enum MessageCode {
     /** */
     SLIM3GEN1051("The generics parameter type of the listener[{0}] does not match the type[{1}] of the field."),
     /** */
-    SLIM3GEN1052("The abstract class[{0}] is not supported.");
+    SLIM3GEN1052("The listener must not be an interface.");
 
     /** the message */
     public final String message;

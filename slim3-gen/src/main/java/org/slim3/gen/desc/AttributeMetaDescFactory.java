@@ -42,7 +42,6 @@ import com.sun.mirror.declaration.ClassDeclaration;
 import com.sun.mirror.declaration.FieldDeclaration;
 import com.sun.mirror.declaration.InterfaceDeclaration;
 import com.sun.mirror.declaration.MethodDeclaration;
-import com.sun.mirror.declaration.Modifier;
 import com.sun.mirror.declaration.TypeDeclaration;
 import com.sun.mirror.type.ClassType;
 import com.sun.mirror.type.DeclaredType;
@@ -498,26 +497,31 @@ public class AttributeMetaDescFactory {
     protected void handleAttributeListener(AttributeMetaDesc attributeMetaDesc,
             ClassDeclaration classDeclaration,
             FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
-        TypeDeclaration listener =
+        Object listener =
             AnnotationMirrorUtil.getElementValue(
                 attribute,
                 AnnotationConstants.listener);
         if (listener == null) {
             return;
         }
-        if (listener instanceof InterfaceDeclaration
-            || listener.getModifiers().contains(Modifier.ABSTRACT)) {
+        if (listener instanceof InterfaceDeclaration) {
             throw new ValidationException(
                 MessageCode.SLIM3GEN1052,
                 env,
-                fieldDeclaration.getPosition(),
-                listener.getQualifiedName(),
-                fieldDeclaration.getSimpleName());
+                fieldDeclaration.getPosition());
         }
         ClassType listenerClassType =
             TypeUtil.toClassType((TypeMirror) listener);
         if (listenerClassType == null) {
             return;
+        }
+        ClassDeclaration listenerClassDeclaration =
+            listenerClassType.getDeclaration();
+        if (listenerClassDeclaration == null) {
+            throw new UnknownDeclarationException(
+                env,
+                listenerClassDeclaration,
+                listenerClassType);
         }
         if (!validateAttributeListenerParameter(
             attributeMetaDesc,
@@ -528,19 +532,11 @@ public class AttributeMetaDescFactory {
                 MessageCode.SLIM3GEN1051,
                 env,
                 fieldDeclaration.getPosition(),
-                listener.getQualifiedName(),
+                listenerClassDeclaration.getQualifiedName(),
                 TypeUtil
                     .toClassType(fieldDeclaration.getType())
                     .getDeclaration()
                     .getQualifiedName());
-        }
-        ClassDeclaration listenerClassDeclaration =
-            listenerClassType.getDeclaration();
-        if (listenerClassDeclaration == null) {
-            throw new UnknownDeclarationException(
-                env,
-                listenerClassDeclaration,
-                listenerClassType);
         }
         if (!DeclarationUtil
             .hasPublicDefaultConstructor(listenerClassDeclaration)) {
