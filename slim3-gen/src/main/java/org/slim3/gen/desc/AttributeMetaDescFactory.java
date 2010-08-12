@@ -40,7 +40,6 @@ import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.declaration.AnnotationMirror;
 import com.sun.mirror.declaration.ClassDeclaration;
 import com.sun.mirror.declaration.FieldDeclaration;
-import com.sun.mirror.declaration.InterfaceDeclaration;
 import com.sun.mirror.declaration.MethodDeclaration;
 import com.sun.mirror.declaration.TypeDeclaration;
 import com.sun.mirror.type.ClassType;
@@ -504,7 +503,7 @@ public class AttributeMetaDescFactory {
         if (listener == null) {
             return;
         }
-        if (listener instanceof InterfaceDeclaration) {
+        if (listener instanceof InterfaceType) {
             throw new ValidationException(
                 MessageCode.SLIM3GEN1052,
                 env,
