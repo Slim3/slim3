@@ -7,6 +7,8 @@
 	  <source>src/main/java/controller/IndexController.java</source>
   </sources>
   <resources>
+    <resource>build.properties</resource>
+    <resource>build.xml</resource>
     <resource>src/main/resources/logging.properties</resource>
     <resource>war/WEB-INF/appengine-web.xml</resource>
     <resource>war/WEB-INF/web.xml</resource>
