@@ -21,6 +21,7 @@ import java.util.Map;
 import org.slim3.util.AppEngineUtil;
 import org.slim3.util.StringUtil;
 
+import com.google.appengine.api.NamespaceManager;
 import com.google.apphosting.api.ApiProxy;
 import com.google.apphosting.api.ApiProxy.Environment;
 
@@ -42,11 +43,6 @@ public class TestEnvironment implements ApiProxy.Environment {
      * The version identifier.
      */
     protected String versionId = "1.0";
-
-    /**
-     * The request namespace.
-     */
-    protected String requestNamespace = "";
 
     /**
      * The authority domain.
@@ -90,7 +86,6 @@ public class TestEnvironment implements ApiProxy.Environment {
         }
         appId = other.getAppId();
         versionId = other.getVersionId();
-        requestNamespace = other.getRequestNamespace();
         authDomain = other.getAuthDomain();
         email = other.getEmail();
         admin = other.isAdmin();
@@ -151,19 +146,9 @@ public class TestEnvironment implements ApiProxy.Environment {
         this.versionId = versionId;
     }
 
+    @SuppressWarnings("deprecation")
     public String getRequestNamespace() {
-        return requestNamespace;
-    }
-
-    /**
-     * Sets the request namespace.
-     * 
-     * @param requestNamespace
-     *            the request namespace
-     */
-    public void setRequestNamespace(String requestNamespace) {
-        assertNotProduction();
-        this.requestNamespace = requestNamespace;
+        return NamespaceManager.get();
     }
 
     public String getAuthDomain() {
