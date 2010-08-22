@@ -16,26 +16,28 @@
 package com.google.appengine.api.datastore;
 
 /**
- * A utility for key.
+ * A utility for QueryTranslator.
  * 
  * @author higa
- * @since 1.0.0
+ * @since 1.0.6
  * 
  */
-public final class KeyUtil {
+public final class QueryTranslatorUtil {
 
     /**
-     * Sets the identifier to the key.
+     * Converts the query to a protocol buffer query.
      * 
-     * @param key
-     *            the key
-     * @param id
-     *            the identifier
+     * @param query
+     *            the query
+     * @param fetchOptions
+     *            the fetch options
+     * @return a protocol buffer query
      */
-    public static void setId(Key key, long id) {
-        key.setId(id);
+    public static com.google.apphosting.api.DatastorePb.Query convertToPb(
+            Query query, FetchOptions fetchOptions) {
+        return QueryTranslator.convertToPb(query, fetchOptions);
     }
 
-    private KeyUtil() {
+    private QueryTranslatorUtil() {
     }
 }

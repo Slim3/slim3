@@ -50,14 +50,12 @@ public class TestEnvironmentTest {
         TestEnvironment other = new TestEnvironment();
         String appId = "aaa";
         String versionId = "bbb";
-        String requestNamespace = "ccc";
         String authDomain = "ddd";
         String email = "eee";
         boolean admin = false;
         Map<String, Object> attributes = new HashMap<String, Object>();
         other.setAppId(appId);
         other.setVersionId(versionId);
-        other.setRequestNamespace(requestNamespace);
         other.setAuthDomain(authDomain);
         other.setEmail(email);
         other.setAdmin(admin);
@@ -65,7 +63,6 @@ public class TestEnvironmentTest {
         TestEnvironment env = new TestEnvironment(other);
         assertThat(env.getAppId(), is(appId));
         assertThat(env.getVersionId(), is(versionId));
-        assertThat(env.getRequestNamespace(), is(requestNamespace));
         assertThat(env.getAuthDomain(), is(authDomain));
         assertThat(env.getEmail(), is(email));
         assertThat(env.isAdmin(), is(admin));
