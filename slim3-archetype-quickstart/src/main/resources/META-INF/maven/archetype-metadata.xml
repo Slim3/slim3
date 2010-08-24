@@ -20,16 +20,15 @@
       </includes>
     </fileSet>
     <fileSet filtered="true" encoding="UTF-8">
-      <directory>war</directory>
+      <directory>war/WEB-INF</directory>
       <includes>
         <include>**/*.xml</include>
-        <include>**/build.*</include>
       </includes>
     </fileSet>
     <fileSet filtered="true" encoding="UTF-8">
       <directory></directory>
       <includes>
-        <include>**/*.xml</include>
+        <include>**/pom.xml</include>
         <include>**/build.*</include>
       </includes>
     </fileSet>
