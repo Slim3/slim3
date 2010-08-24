@@ -10,7 +10,7 @@
         <fileset dir="war/WEB-INF/lib">
             <include name="**/*.jar" />
         </fileset>
-        <fileset dir="lib">
+        <fileset dir="eclipse.lib">
             <include name="**/*.jar" />
         </fileset>
     </path>
