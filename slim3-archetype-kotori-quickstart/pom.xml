@@ -3,7 +3,7 @@
   <packaging>maven-archetype</packaging>
   <groupId>org.slim3</groupId>
   <artifactId>slim3-archetype-kotori-quickstart</artifactId>
-  <version>1.0.6</version>
+  <version>1.0.5.1</version>
   <name>Archetype - slim3-archetype-kotori-quickstart</name>
   <build>
     <extensions>
