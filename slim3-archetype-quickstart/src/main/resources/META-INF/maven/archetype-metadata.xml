@@ -23,6 +23,7 @@
       <directory>war</directory>
       <includes>
         <include>**/*.xml</include>
+        <include>**/build.*</include>
       </includes>
     </fileSet>
   </fileSets>
