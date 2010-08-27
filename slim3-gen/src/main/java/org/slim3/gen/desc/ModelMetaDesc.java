@@ -17,7 +17,9 @@ package org.slim3.gen.desc;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slim3.gen.util.ClassUtil;
 
@@ -66,6 +68,9 @@ public class ModelMetaDesc implements ClassDesc {
     /** the list of attribute meta descriptions */
     protected final List<AttributeMetaDesc> attributeMetaDescList =
         new ArrayList<AttributeMetaDesc>();
+
+    /** the map of additional data */
+    protected final Map<String, Object> dataMap = new HashMap<String, Object>();
 
     /** {@code true} if this instance state is error */
     protected boolean error;
@@ -275,4 +280,29 @@ public class ModelMetaDesc implements ClassDesc {
         this.error = error;
     }
 
+    /**
+     * Returns an additional data.
+     * 
+     * @param <T>
+     *            the value type
+     * @param key
+     *            the data key
+     * @return the data value
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T getData(String key) {
+        return (T) dataMap.get(key);
+    }
+
+    /**
+     * Sets the additional data.
+     * 
+     * @param key
+     *            the data key
+     * @param value
+     *            the data value
+     */
+    public void setData(String key, Object value) {
+        dataMap.put(key, value);
+    }
 }
