@@ -28,5 +28,6 @@ public class AppRouter extends RouterImpl {
      */
     public AppRouter() {
         addRouting("/hello2/{p1}", "/hello?test={p1}");
+        addRouting("/hello", "/hello");
     }
 }

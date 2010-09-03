@@ -125,6 +125,7 @@ public class ControllerTester extends ServletTester {
                 path = routingPath.substring(0, index);
                 request.setQueryString(routingPath.substring(index + 1));
             }
+            request.setAttribute(ControllerConstants.ROUTED_KEY, true);
         }
         request.setServletPath(path);
         frontController.doFilter(request, response, filterChain);
