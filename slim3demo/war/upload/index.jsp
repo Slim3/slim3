@@ -28,6 +28,7 @@ Source:
 <input type="file" name="formFile" /><br />
 <input type="submit" value="Upload"/>
 </form>
+${f:h(data)}
 <table>
 <c:if test="${fn:length(dataList) > 0}">
 <thead>
