@@ -5,6 +5,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/junit-4.7.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/slim3-1.0.5.jar" sourcepath="libsrc/slim3-1.0.5-sources.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
+	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER/App Engine (7)"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
