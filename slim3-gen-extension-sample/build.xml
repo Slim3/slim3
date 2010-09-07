@@ -1,0 +1,27 @@
+<project name="slim3-gen-extension-example" default="dist" basedir=".">
+
+    <property file="build.properties" />
+
+    <target name="dist" depends="clean,copy">
+        <jar jarfile="target/slim3-gen-${ver}.jar" basedir="${build}" />
+        <jar jarfile="target/slim3-gen-${ver}-sources.jar" basedir="${src}" />
+    </target>
+
+    <target name="clean">
+        <delete dir="target" failonerror="false"/>
+        <mkdir dir="target"/>
+        <mkdir dir="${build}"/>
+    </target>
+
+    <target name="copy">
+        <copy todir="${build}">
+            <fileset dir="../slim3-gen/build/classes">
+                <exclude name="META-INF/services/**" />
+            </fileset>
+        </copy>
+    	<copy todir="${build}">
+    	    <fileset dir="build/classes">
+    	    </fileset>
+    	</copy>
+    </target>
+</project>
