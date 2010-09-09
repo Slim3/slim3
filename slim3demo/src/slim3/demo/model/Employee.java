@@ -14,6 +14,7 @@ public class Employee implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Attribute(primaryKey = true)
+    @Sync(true)
     private Key key;
 
     @Attribute(version = true)
