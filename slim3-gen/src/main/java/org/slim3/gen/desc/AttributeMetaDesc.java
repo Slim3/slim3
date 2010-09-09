@@ -15,6 +15,9 @@
  */
 package org.slim3.gen.desc;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.slim3.gen.datastore.DataType;
 
 /**
@@ -57,6 +60,9 @@ public class AttributeMetaDesc {
 
     /** the attributeListenerClassName */
     protected String attributeListenerClassName;
+
+    /** the map of additional data */
+    protected final Map<String, Object> dataMap = new HashMap<String, Object>();
 
     /**
      * Creates a new {@code AttributeMetaDesc}.
@@ -235,5 +241,31 @@ public class AttributeMetaDesc {
      */
     public void setAttributeListenerClassName(String attributeListenerClassName) {
         this.attributeListenerClassName = attributeListenerClassName;
+    }
+
+    /**
+     * Returns an additional data.
+     * 
+     * @param <T>
+     *            the value type
+     * @param key
+     *            the data key
+     * @return the data value
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T getData(String key) {
+        return (T) dataMap.get(key);
+    }
+
+    /**
+     * Sets the additional data.
+     * 
+     * @param key
+     *            the data key
+     * @param value
+     *            the data value
+     */
+    public void setData(String key, Object value) {
+        dataMap.put(key, value);
     }
 }
