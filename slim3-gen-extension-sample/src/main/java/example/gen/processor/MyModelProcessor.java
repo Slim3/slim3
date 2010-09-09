@@ -26,6 +26,7 @@ import org.slim3.gen.processor.ModelProcessor;
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.declaration.AnnotationTypeDeclaration;
 
+import example.gen.desc.MyAttributeMetaDescFactory;
 import example.gen.desc.MyModelMetaDescFactory;
 import example.gen.generator.MyModelMetaGenerator;
 
@@ -55,5 +56,10 @@ public class MyModelProcessor extends ModelProcessor {
 	protected ModelMetaGenerator createModelMetaGenerator(
 			ModelMetaDesc modelMetaDesc) {
 		return new MyModelMetaGenerator(modelMetaDesc);
+	}
+
+	@Override
+	protected AttributeMetaDescFactory createAttributeMetaDescFactory() {
+		return new MyAttributeMetaDescFactory(env);
 	}
 }

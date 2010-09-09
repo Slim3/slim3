@@ -15,9 +15,13 @@
  */
 package example.gen.generator;
 
+import org.slim3.gen.datastore.DataType;
+import org.slim3.gen.desc.AttributeMetaDesc;
 import org.slim3.gen.desc.ModelMetaDesc;
 import org.slim3.gen.generator.ModelMetaGenerator;
 import org.slim3.gen.printer.Printer;
+
+import example.gen.MyConstants;
 
 /**
  * @author higayasuo
@@ -38,4 +42,36 @@ public class MyModelMetaGenerator extends ModelMetaGenerator {
 		super.printClass(printer);
 	}
 
+	@Override
+	protected void printAttributeMetaFields(Printer printer) {
+		AttributeMetaFieldsGenerator generator = new MyAttributeMetaFieldsGenerator(
+				printer);
+		generator.generate();
+	}
+
+	protected class MyAttributeMetaFieldsGenerator extends
+			AttributeMetaFieldsGenerator {
+
+		/**
+		 * @param printer
+		 */
+		public MyAttributeMetaFieldsGenerator(Printer printer) {
+			super(printer);
+		}
+
+		@Override
+		public void generate() {
+			for (AttributeMetaDesc attr : modelMetaDesc
+					.getAttributeMetaDescList()) {
+				if (Boolean.TRUE.equals(attr.getData(MyConstants.Sync))) {
+					printer.println("// Sync:true");
+				} else {
+					printer.println("// Sync:false");
+				}
+				DataType dataType = attr.getDataType();
+				dataType.accept(this, attr);
+			}
+		}
+
+	}
 }
