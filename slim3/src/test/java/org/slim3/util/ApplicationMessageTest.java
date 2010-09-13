@@ -64,4 +64,15 @@ public class ApplicationMessageTest {
     public void getWhenMessageIsNotFound() throws Exception {
         ApplicationMessage.get("xxx");
     }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getDelegate() throws Exception {
+        ResourceBundleApplicationMessageDelegate delegate =
+            ApplicationMessage.getDelegate();
+        assertThat(delegate, is(notNullValue()));
+    }
+
 }

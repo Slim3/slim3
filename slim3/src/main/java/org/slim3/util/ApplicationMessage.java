@@ -86,6 +86,18 @@ public final class ApplicationMessage {
         return delegate.get(key, args);
     }
 
+    /**
+     * Returns the delegate.
+     * 
+     * @param <T>
+     *            the delegate type
+     * @return the delegate
+     */
+    @SuppressWarnings("unchecked")
+    public static <T extends ApplicationMessageDelegate> T getDelegate() {
+        return (T) delegate;
+    }
+
     private ApplicationMessage() {
     }
 }
