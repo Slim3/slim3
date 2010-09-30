@@ -28,6 +28,7 @@ import java.util.logging.Level;
 import org.junit.Test;
 import org.slim3.tester.AppEngineTestCase;
 
+import com.google.appengine.api.NamespaceManager;
 import com.google.appengine.api.memcache.ErrorHandler;
 import com.google.appengine.api.memcache.LogAndContinueErrorHandler;
 import com.google.appengine.api.memcache.MemcacheService.SetPolicy;
@@ -118,12 +119,36 @@ public class MemcacheDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getInternal() throws Exception {
+        MemcacheDelegate cache = new MemcacheDelegate();
+        NamespaceManager.set("hoge");
+        cache.put("aaa", "1");
+        assertThat((String) cache.get("aaa"), is("1"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void get() throws Exception {
         MemcacheDelegate cache = new MemcacheDelegate();
         assertThat(cache.get(null), is(nullValue()));
         assertThat(cache.get("aaa"), is(nullValue()));
         cache.ms.put("aaa", 1);
         assertThat((Integer) cache.get("aaa"), is(1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getAllInternal() throws Exception {
+        MemcacheDelegate cache = new MemcacheDelegate();
+        NamespaceManager.set("hoge");
+        cache.put("aaa", "1");
+        Map<?, ?> map = cache.getAll(Arrays.asList("aaa"));
+        assertThat(map.size(), is(1));
+        assertThat((String) cache.get("aaa"), is("1"));
     }
 
     /**
@@ -137,6 +162,17 @@ public class MemcacheDelegateTest extends AppEngineTestCase {
         Map<?, ?> map = cache.getAll(Arrays.asList("aaa"));
         assertThat(map.size(), is(1));
         assertThat((Integer) map.get("aaa"), is(1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getNamespace() throws Exception {
+        MemcacheDelegate cache = new MemcacheDelegate();
+        assertThat(cache.getNamespace(), is(""));
+        NamespaceManager.set("hoge");
+        assertThat(cache.getNamespace(), is("hoge"));
     }
 
     /**

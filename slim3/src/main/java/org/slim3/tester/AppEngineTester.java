@@ -37,6 +37,7 @@ import org.slim3.util.AppEngineUtil;
 import org.slim3.util.ThrowableUtil;
 import org.slim3.util.WrapRuntimeException;
 
+import com.google.appengine.api.NamespaceManager;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Key;
@@ -428,10 +429,8 @@ public class AppEngineTester implements Delegate<Environment> {
             datastoreKeys.clear();
         }
         mailMessages.clear();
+        NamespaceManager.set(null);
         ApiProxy.setDelegate(originalDelegate);
-        if (!AppEngineUtil.isProduction()) {
-            ApiProxy.setEnvironmentForCurrentThread(originalEnvironment);
-        }
     }
 
     public byte[] makeSyncCall(Environment env, String service, String method,

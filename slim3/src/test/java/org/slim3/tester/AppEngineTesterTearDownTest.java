@@ -25,6 +25,7 @@ import java.util.concurrent.Future;
 import org.junit.After;
 import org.junit.Test;
 
+import com.google.appengine.api.NamespaceManager;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -141,5 +142,17 @@ public class AppEngineTesterTearDownTest {
         ApiProxy.setDelegate(AppEngineTester.apiProxyLocalImpl);
         ApiProxy.setEnvironmentForCurrentThread(new TestEnvironment());
         assertThat(ms.contains("aaa"), is(false));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void namespace() throws Exception {
+        tester.setUp();
+        NamespaceManager.set("aaa");
+        tester.tearDown();
+        assertThat(NamespaceManager.get(), is(nullValue()));
     }
 }

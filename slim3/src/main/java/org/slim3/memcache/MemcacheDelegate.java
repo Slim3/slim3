@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import com.google.appengine.api.NamespaceManager;
 import com.google.appengine.api.memcache.ErrorHandler;
 import com.google.appengine.api.memcache.Expiration;
 import com.google.appengine.api.memcache.InvalidValueException;
@@ -218,6 +219,7 @@ public class MemcacheDelegate {
             request =
                 MemcacheServicePb.MemcacheGetRequest
                     .newBuilder()
+                    .setNameSpace(getNamespace())
                     .addKey(
                         ByteString.copyFrom(MemcacheSerialization
                             .makePbKey(key)))
@@ -254,6 +256,16 @@ public class MemcacheDelegate {
                 .toString(), ex);
         }
         return null;
+    }
+
+    /**
+     * Returns the namespace.
+     * 
+     * @return the namespace
+     */
+    protected String getNamespace() {
+        String namespace = NamespaceManager.get();
+        return namespace != null ? namespace : "";
     }
 
     /**
@@ -306,7 +318,8 @@ public class MemcacheDelegate {
         MemcacheServicePb.MemcacheGetResponse.Builder response =
             MemcacheServicePb.MemcacheGetResponse.newBuilder();
         MemcacheServicePb.MemcacheGetRequest.Builder requestBuilder =
-            MemcacheServicePb.MemcacheGetRequest.newBuilder();
+            MemcacheServicePb.MemcacheGetRequest.newBuilder().setNameSpace(
+                getNamespace());
         Map<CacheKey, Object> cacheKeyToObjectKey =
             new HashMap<CacheKey, Object>();
         for (Object key : keys) {
