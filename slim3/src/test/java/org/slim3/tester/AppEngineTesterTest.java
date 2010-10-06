@@ -21,6 +21,7 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.concurrent.Future;
 
 import org.junit.After;
 import org.junit.Before;
@@ -220,6 +221,34 @@ public class AppEngineTesterTest {
             }
         });
         HTTPResponse httpResponse = service.fetch(httpRequest);
+        assertThat(httpResponse.getResponseCode(), is(200));
+        assertThat(new String(httpResponse.getContent()), is("hello"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void urlFetchAsync() throws Exception {
+        URLFetchService service = URLFetchServiceFactory.getURLFetchService();
+        HTTPRequest httpRequest = new HTTPRequest(new URL("http://hoge"));
+        String queryString = "aaa=111";
+        httpRequest.setPayload(queryString.getBytes("utf-8"));
+        tester.setUrlFetchHandler(new URLFetchHandler() {
+
+            public int getStatusCode(URLFetchRequest request)
+                    throws IOException {
+                return 200;
+            }
+
+            public byte[] getContent(URLFetchRequest request)
+                    throws IOException {
+                return "hello".getBytes();
+            }
+        });
+        Future<HTTPResponse> future = service.fetchAsync(httpRequest);
+        HTTPResponse httpResponse = future.get();
         assertThat(httpResponse.getResponseCode(), is(200));
         assertThat(new String(httpResponse.getContent()), is("hello"));
     }

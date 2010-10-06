@@ -16,6 +16,7 @@
 package org.slim3.tester;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
@@ -31,6 +32,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.slim3.datastore.DatastoreUtil;
 import org.slim3.util.AppEngineUtil;
@@ -518,6 +521,53 @@ public class AppEngineTester implements Delegate<Environment> {
 
     public Future<byte[]> makeAsyncCall(Environment env, String service,
             String method, byte[] requestBuf, ApiConfig config) {
+        if (service.equals(URLFETCH_SERVICE)
+            && method.equals(FETCH_METHOD)
+            && urlFetchHandler != null) {
+            try {
+                final URLFetchRequest requestPb =
+                    URLFetchRequest.parseFrom(requestBuf);
+                return new Future<byte[]>() {
+
+                    public boolean cancel(boolean mayInterruptIfRunning) {
+                        return false;
+                    }
+
+                    public byte[] get() throws InterruptedException,
+                            ExecutionException {
+                        try {
+                            return URLFetchResponse
+                                .newBuilder()
+                                .setContent(
+                                    ByteString.copyFrom(urlFetchHandler
+                                        .getContent(requestPb)))
+                                .setStatusCode(
+                                    urlFetchHandler.getStatusCode(requestPb))
+                                .build()
+                                .toByteArray();
+                        } catch (IOException cause) {
+                            throw new ExecutionException(cause);
+                        }
+                    }
+
+                    public byte[] get(long timeout, TimeUnit unit)
+                            throws InterruptedException, ExecutionException,
+                            TimeoutException {
+                        return get();
+                    }
+
+                    public boolean isCancelled() {
+                        return false;
+                    }
+
+                    public boolean isDone() {
+                        return true;
+                    }
+                };
+            } catch (Exception e) {
+                ThrowableUtil.wrapAndThrow(e);
+            }
+        }
         Future<byte[]> future =
             parentDelegate.makeAsyncCall(
                 env,
