@@ -81,6 +81,7 @@ public class Hoge {
     @Attribute(lob = true)
     private byte[] myBytesBlob;
 
+    @Attribute(lob = true)
     private MySerializable mySerializable;
 
     @Attribute(lob = true)
