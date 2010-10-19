@@ -15,12 +15,8 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.slim3.datastore.model.Hoge;
@@ -152,5 +148,31 @@ public class ModelRefTest extends AppEngineTestCase {
         ref.clear();
         assertThat(ref.model, is(nullValue()));
         assertThat(ref.key, is(nullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void testHashCode() throws Exception {
+        ref.hashCode();
+        Key key = Datastore.allocateId(Hoge.class);
+        ref.setKey(key);
+        ref.hashCode();
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void testEquals() throws Exception {
+        ModelRef<Hoge> other = new ModelRef<Hoge>(Hoge.class);
+        Key key = Datastore.allocateId(Hoge.class);
+        assertThat(ref.equals(ref), is(true));
+        assertThat(ref.equals(null), is(false));
+        assertThat(ref.equals(other), is(false));
+        ref.setKey(key);
+        other.setKey(key);
+        assertThat(ref.equals(other), is(true));
     }
 }
