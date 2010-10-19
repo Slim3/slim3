@@ -43,6 +43,7 @@ import org.slim3.util.WrapRuntimeException;
 import com.google.appengine.api.NamespaceManager;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Transaction;
@@ -638,6 +639,7 @@ public class AppEngineTester implements Delegate<Environment> {
             throw new NullPointerException("The kind parameter is null.");
         }
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        return ds.prepare(new Query(kind)).countEntities();
+        return ds.prepare(new Query(kind)).countEntities(
+            FetchOptions.Builder.withLimit(Integer.MAX_VALUE));
     }
 }

@@ -695,28 +695,29 @@ public abstract class AbstractQuery<SUB> {
     }
 
     /**
-     * Returns a number of entities.
+     * Returns the number of entities.
      * 
-     * @return a number of entities
+     * @return the number of entities
      */
     public int count() {
-        query.setKeysOnly();
-        List<Entity> entityList = asEntityList();
-        return entityList.size();
-    }
-
-    /**
-     * Returns a number of entities. This method can only return up to 1,000
-     * results, but this method can return the results quickly.
-     * 
-     * @return a number of entities
-     */
-    public int countQuickly() {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         PreparedQuery pq =
             txSet ? DatastoreUtil.prepare(ds, tx, query) : DatastoreUtil
                 .prepare(ds, query);
-        return DatastoreUtil.countEntities(pq);
+        if (fetchOptions.getLimit() == null) {
+            fetchOptions.limit(Integer.MAX_VALUE);
+        }
+        return DatastoreUtil.countEntities(pq, fetchOptions);
+    }
+
+    /**
+     * Use {@link #count()} instead of this method.
+     * 
+     * @return the number of entities
+     */
+    @Deprecated
+    public int countQuickly() {
+        return count();
     }
 
     /**

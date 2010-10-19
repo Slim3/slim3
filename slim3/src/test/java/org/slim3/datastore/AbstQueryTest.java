@@ -362,16 +362,6 @@ public class AbstQueryTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void countQuickly() throws Exception {
-        ds.put(new Entity("Hoge"));
-        MyQuery query = new MyQuery("Hoge");
-        assertThat(query.countQuickly(), is(1));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
     public void min() throws Exception {
         Entity entity = new Entity("Hoge");
         entity.setProperty("age", 10);

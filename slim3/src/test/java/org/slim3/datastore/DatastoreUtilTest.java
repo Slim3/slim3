@@ -733,7 +733,8 @@ public class DatastoreUtilTest extends AppEngineTestCase {
     public void countEntities() throws Exception {
         Query query = new Query("Hoge");
         PreparedQuery pq = DatastoreUtil.prepare(ds, query);
-        assertThat(DatastoreUtil.countEntities(pq), is(0));
+        assertThat(DatastoreUtil.countEntities(pq, FetchOptions.Builder
+            .withDefaults()), is(0));
     }
 
     /**

@@ -1283,21 +1283,28 @@ public final class DatastoreUtil {
      * 
      * @param preparedQuery
      *            the prepared query
+     * @param fetchOptions
+     *            the fetch options
      * @return a number of entities
      * @throws NullPointerException
-     *             if the preparedQuery parameter is null
+     *             if the preparedQuery parameter is null or if the fetchOptions
+     *             parameter is null
      */
-    public static int countEntities(PreparedQuery preparedQuery)
-            throws NullPointerException {
+    public static int countEntities(PreparedQuery preparedQuery,
+            FetchOptions fetchOptions) throws NullPointerException {
         if (preparedQuery == null) {
             throw new NullPointerException(
                 "The preparedQuery parameter must not be null.");
+        }
+        if (fetchOptions == null) {
+            throw new NullPointerException(
+                "The fetchOptions parameter must not be null.");
         }
         DatastoreTimeoutException dte = null;
         long wait = INITIAL_WAIT_MS;
         for (int i = 0; i < MAX_RETRY; i++) {
             try {
-                return preparedQuery.countEntities();
+                return preparedQuery.countEntities(fetchOptions);
             } catch (DatastoreTimeoutException e) {
                 dte = e;
                 logger.log(Level.INFO, "RETRY["
