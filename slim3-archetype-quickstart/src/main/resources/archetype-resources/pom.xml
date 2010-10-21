@@ -8,7 +8,7 @@
   <version>${version}</version>
   <properties>
     <slim3.version>1.0.5</slim3.version>
-    <appengine.version>1.3.6</appengine.version>
+    <appengine.version>1.3.8</appengine.version>
     <generated.src>.apt_generated</generated.src>
     <generated.war>war</generated.war>
     <eclipse.lib>eclipse.lib</eclipse.lib>
@@ -213,12 +213,14 @@
                 <include>**/*.*</include>
               </includes>
             </fileset>
+	    <!--
             <fileset>
               <directory>${dollar}${lcurly}eclipse.lib}</directory>
               <includes>
                 <include>slim3-gen-*.jar</include>
               </includes>
             </fileset>
+	    -->
           </filesets>
         </configuration>
       </plugin>
