@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            name="Slim3"
+            id="org.slim3.eclipse.core">
+      </category>
+      <wizard
+            category="org.slim3.eclipse.core"
+            class="org.slim3.eclipse.core.wizards.NewS3ProjectWizard"
+            icon="icons/sample.gif"
+            id="org.slim3.eclipse.core.wizards.NewS3ProjectWizard"
+            name="Slim3 Project"
+            project="true">
+      </wizard>
+      <wizard
+            category="org.slim3.eclipse.core"
+            class="org.slim3.eclipse.core.wizards.NewGwtModuleWizard"
+            icon="icons/sample.gif"
+            id="org.slim3.eclipse.core.wizard1"
+            name="GWT Module">
+      </wizard>
+   </extension>
+
+</plugin>
