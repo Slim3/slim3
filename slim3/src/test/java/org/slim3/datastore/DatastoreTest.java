@@ -33,6 +33,7 @@ import org.slim3.datastore.model.Aaa;
 import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.AppEngineTestCase;
+import org.slim3.util.CipherFactory;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -41,6 +42,7 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.KeyRange;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Transaction;
 
 /**
@@ -2076,5 +2078,64 @@ public class DatastoreTest extends AppEngineTestCase {
         assertThat(sorted.get(0).getMyInteger(), is(3));
         assertThat(sorted.get(1).getMyInteger(), is(2));
         assertThat(sorted.get(2).getMyInteger(), is(1));
+    }
+    
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void setGlobalCipherKey() throws Exception {
+        CipherFactory.getFactory().clearLimitedKey();
+        Datastore.setGlobalCipherKey("1234567890ABCDEF");
+        Hoge hoge = new Hoge();
+        hoge.setMyCipherString("hoge.");
+        hoge.setMyCipherLobString("hogehoge.");
+        hoge.setMyCipherText(new Text("hogehogehoge."));
+        Key key = Datastore.put(hoge);
+        assertThat(Datastore.get(meta, key).getMyCipherString(), is("hoge."));
+        assertThat(
+            Datastore.get(meta, key).getMyCipherLobString(),
+            is("hogehoge."));
+        assertThat(
+            Datastore.get(meta, key).getMyCipherText().getValue(),
+            is("hogehogehoge."));
+        assertThat(
+            (String) Datastore.get(key).getProperty("myCipherString"),
+            not("hoge."));
+        assertThat(
+            ((Text) Datastore.get(key).getProperty("myCipherLobString")).getValue(),
+            not("hogehoge."));
+        assertThat(
+            ((Text) Datastore.get(key).getProperty("myCipherText")).getValue(),
+            not("hogehogehoge."));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void setLimitedCipherKey() throws Exception {
+        Datastore.setLimitedCipherKey("1234567890ABCDEF");
+        Hoge hoge = new Hoge();
+        hoge.setMyCipherString("hoge.");
+        hoge.setMyCipherLobString("hogehoge.");
+        hoge.setMyCipherText(new Text("hogehogehoge."));
+        Key key = Datastore.put(hoge);
+        assertThat(Datastore.get(meta, key).getMyCipherString(), is("hoge."));
+        assertThat(
+            Datastore.get(meta, key).getMyCipherLobString(),
+            is("hogehoge."));
+        assertThat(
+            Datastore.get(meta, key).getMyCipherText().getValue(),
+            is("hogehogehoge."));
+        assertThat(
+            (String) Datastore.get(key).getProperty("myCipherString"),
+            not("hoge."));
+        assertThat(
+            ((Text) Datastore.get(key).getProperty("myCipherLobString")).getValue(),
+            not("hogehoge."));
+        assertThat(
+            ((Text) Datastore.get(key).getProperty("myCipherText")).getValue(),
+            not("hogehogehoge."));
     }
 }

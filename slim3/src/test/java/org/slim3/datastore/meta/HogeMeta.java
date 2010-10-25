@@ -27,6 +27,7 @@ import org.slim3.datastore.CoreAttributeMeta;
 import org.slim3.datastore.ModelMeta;
 import org.slim3.datastore.StringAttributeMeta;
 import org.slim3.datastore.StringCollectionAttributeMeta;
+import org.slim3.datastore.StringUnindexedAttributeMeta;
 import org.slim3.datastore.UnindexedAttributeMeta;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.datastore.model.MySerializable;
@@ -34,9 +35,9 @@ import org.slim3.datastore.model.MySerializable;
 import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.ShortBlob;
 import com.google.appengine.api.datastore.Text;
-import com.google.appengine.api.datastore.Query.SortDirection;
 
 /**
  * @author higa
@@ -360,6 +361,41 @@ public class HogeMeta extends ModelMeta<Hoge> {
     /**
      * 
      */
+    public UnindexedAttributeMeta<Hoge, Blob> myBlob =
+        new UnindexedAttributeMeta<Hoge, Blob>(
+            this,
+            "myBlob",
+            "myBlob",
+            Blob.class);
+
+    /**
+     * 
+     */
+    public final StringUnindexedAttributeMeta<Hoge> myCipherLobString =
+        new StringUnindexedAttributeMeta<Hoge>(
+            this,
+            "myCipherLobString",
+            "myCipherLobString");
+
+    /**
+     * 
+     */
+    public final StringAttributeMeta<Hoge> myCipherString =
+        new StringAttributeMeta<Hoge>(this, "myCipherString", "myCipherString");
+
+    /**
+     * 
+     */
+    public UnindexedAttributeMeta<Hoge, Text> myCipherText =
+        new UnindexedAttributeMeta<Hoge, Text>(
+            this,
+            "myCipherText",
+            "myCipherText",
+            Text.class);
+    
+    /**
+     * 
+     */
     public HogeMeta() {
         super("Hoge", Hoge.class);
     }
@@ -440,6 +476,12 @@ public class HogeMeta extends ModelMeta<Hoge> {
         model.setMyStringList(toList(String.class, entity
             .getProperty("myStringList")));
         model.setVersion((Long) entity.getProperty("version"));
+        model.setMyCipherLobString(decrypt(textToString((Text) entity
+            .getProperty("myCipherLobString"))));
+        model.setMyCipherString(decrypt((java.lang.String) entity
+            .getProperty("myCipherString")));
+        model
+            .setMyCipherText(decrypt((Text) entity.getProperty("myCipherText")));
         return model;
     }
 
@@ -478,7 +520,7 @@ public class HogeMeta extends ModelMeta<Hoge> {
             .getMySerializable()));
         e.setUnindexedProperty("mySerializableBlob", serializableToBlob(m
             .getMySerializableBlob()));
-
+        e.setProperty("myBlob", m.getMyBlob());
         e.setProperty("myShortList", m.getMyShortList());
         e.setProperty("myShortSet", m.getMyShortSet());
         e.setProperty("myShortSortedSet", m.getMyShortSortedSet());
@@ -499,6 +541,11 @@ public class HogeMeta extends ModelMeta<Hoge> {
         e.setProperty("myStringList", m.getMyStringList());
 
         e.setProperty("version", m.getVersion());
+        e.setUnindexedProperty(
+            "myCipherLobString",
+            stringToText(encrypt(m.getMyCipherLobString())));
+        e.setProperty("myCipherString", encrypt(m.getMyCipherString()));
+        e.setUnindexedProperty("myCipherText", encrypt(m.getMyCipherText()));
         return e;
     }
 
@@ -542,5 +589,13 @@ public class HogeMeta extends ModelMeta<Hoge> {
     @Override
     public String getSchemaVersionName() {
         return "slim3.schemaVersion";
+    }
+    
+    @Override
+    protected boolean isCipherProperty(String propertyName) {
+        if ("myCipherLobString".equals(propertyName)) return true;
+        if ("myCipherString".equals(propertyName)) return true;
+        if ("myCipherText".equals(propertyName)) return true;
+        return false;
     }
 }

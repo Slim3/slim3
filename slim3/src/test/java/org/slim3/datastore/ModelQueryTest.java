@@ -15,8 +15,12 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,6 +42,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery.TooManyResultsException;
+import com.google.appengine.api.datastore.Text;
 
 /**
  * @author higa
@@ -45,6 +50,8 @@ import com.google.appengine.api.datastore.PreparedQuery.TooManyResultsException;
  */
 public class ModelQueryTest extends AppEngineTestCase {
 
+    private static final String KEY128BIT = "1234567890ABCDEF";
+    
     private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
     private HogeMeta meta = new HogeMeta();
@@ -601,5 +608,1348 @@ public class ModelQueryTest extends AppEngineTestCase {
 
         ModelQuery<Bbb> query2 = new ModelQuery<Bbb>(bbbMeta);
         assertThat(query2.count(), is(1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterByEqualCriterionOfCipherString()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherString("1102");
+        hoge2.setMyCipherString("1103");
+        hoge3.setMyCipherString("1104");
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filter(new EqualCriterion(meta.myCipherString, "1102"))
+                .sortInMemory(meta.myCipherString.asc)
+                .asList();
+        assertThat(list.size(), is(1));
+        assertThat(list.get(0).getMyCipherString(), is("1102"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterByInCriterionOfCipherString() throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherString("1102");
+        hoge2.setMyCipherString("1103");
+        hoge3.setMyCipherString("1104");
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filter(
+                    new InCriterion(meta.myCipherString, Arrays.asList(
+                        "1102",
+                        "1104")))
+                .sortInMemory(meta.myCipherString.asc)
+                .asList();
+        assertThat(list.size(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterByIsNotNullCriterionOfCipherString()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherString("1102");
+        hoge2.setMyCipherString("1103");
+        hoge3.setMyCipherString("1104");
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filter(new IsNotNullCriterion(meta.myCipherString))
+                .sortInMemory(meta.myCipherString.asc)
+                .asList();
+        assertThat(list.size(), is(3));
+        assertThat(list.get(0).getMyCipherString(), is("1102"));
+        assertThat(list.get(1).getMyCipherString(), is("1103"));
+        assertThat(list.get(2).getMyCipherString(), is("1104"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterByNotEqualCriterionOfCipherString()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherString("1102");
+        hoge2.setMyCipherString("1103");
+        hoge3.setMyCipherString("1104");
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filter(new NotEqualCriterion(meta.myCipherString, "1103"))
+                .sortInMemory(meta.myCipherString.asc)
+                .asList();
+        assertThat(list.size(), is(2));
+        assertThat(list.get(0).getMyCipherString(), is("1102"));
+        assertThat(list.get(1).getMyCipherString(), is("1104"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListOfCipherLobString() throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherLobString("1102");
+        hoge2.setMyCipherLobString("1103");
+        hoge3.setMyCipherLobString("1104");
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .sortInMemory(meta.myCipherLobString.asc)
+                .asList();
+        assertThat(list.size(), is(3));
+        assertThat(list.get(0).getMyCipherLobString(), is("1102"));
+        assertThat(list.get(1).getMyCipherLobString(), is("1103"));
+        assertThat(list.get(2).getMyCipherLobString(), is("1104"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListOfCipherText() throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherText(new Text("1102"));
+        hoge2.setMyCipherText(new Text("1103"));
+        hoge3.setMyCipherText(new Text("1104"));
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore.query(meta).sortInMemory(meta.key.asc).asList();
+        assertThat(list.size(), is(3));
+        assertThat(list.get(0).getMyCipherText().getValue(), is("1102"));
+        assertThat(list.get(1).getMyCipherText().getValue(), is("1103"));
+        assertThat(list.get(2).getMyCipherText().getValue(), is("1104"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByEqualCriterionOfCipherString()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherString("1102");
+        hoge2.setMyCipherString("1103");
+        hoge3.setMyCipherString("1104");
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(new EqualCriterion(meta.myCipherString, "1102"))
+                .sortInMemory(meta.myCipherString.asc)
+                .asList();
+        assertThat(list.size(), is(1));
+        assertThat(list.get(0).getMyCipherString(), is("1102"));
+        list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new InMemoryEqualCriterion(meta.myCipherString, "1102"))
+                .sortInMemory(meta.myCipherString.asc)
+                .asList();
+        assertThat(list.size(), is(1));
+        assertThat(list.get(0).getMyCipherString(), is("1102"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByGreaterThanCriterionOfCipherString()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherString("1102");
+        hoge2.setMyCipherString("1103");
+        hoge3.setMyCipherString("1104");
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new GreaterThanCriterion(meta.myCipherString, "1103"))
+                .sortInMemory(meta.myCipherString.asc)
+                .asList();
+        assertThat(list.size(), is(1));
+        assertThat(list.get(0).getMyCipherString(), is("1104"));
+        list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new InMemoryGreaterThanCriterion(
+                        meta.myCipherString,
+                        "1103"))
+                .sortInMemory(meta.myCipherString.asc)
+                .asList();
+        assertThat(list.size(), is(1));
+        assertThat(list.get(0).getMyCipherString(), is("1104"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByGreaterThanOrEqualCriterionOfCipherString()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherString("1102");
+        hoge2.setMyCipherString("1103");
+        hoge3.setMyCipherString("1104");
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new GreaterThanOrEqualCriterion(meta.myCipherString, "1103"))
+                .sortInMemory(meta.myCipherString.asc)
+                .asList();
+        assertThat(list.size(), is(2));
+        assertThat(list.get(0).getMyCipherString(), is("1103"));
+        assertThat(list.get(1).getMyCipherString(), is("1104"));
+        list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new InMemoryGreaterThanOrEqualCriterion(
+                        meta.myCipherString,
+                        "1103"))
+                .sortInMemory(meta.myCipherString.asc)
+                .asList();
+        assertThat(list.size(), is(2));
+        assertThat(list.get(0).getMyCipherString(), is("1103"));
+        assertThat(list.get(1).getMyCipherString(), is("1104"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByInCriterionOfCipherString()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherString("1102");
+        hoge2.setMyCipherString("1103");
+        hoge3.setMyCipherString("1104");
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new InCriterion(meta.myCipherString, Arrays.asList(
+                        "1102",
+                        "1104")))
+                .sortInMemory(meta.myCipherString.asc)
+                .asList();
+        assertThat(list.size(), is(2));
+        assertThat(list.get(0).getMyCipherString(), is("1102"));
+        assertThat(list.get(1).getMyCipherString(), is("1104"));
+        list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new InMemoryInCriterion(meta.myCipherString, Arrays.asList(
+                        "1102",
+                        "1104")))
+                .sortInMemory(meta.myCipherString.asc)
+                .asList();
+        assertThat(list.size(), is(2));
+        assertThat(list.get(0).getMyCipherString(), is("1102"));
+        assertThat(list.get(1).getMyCipherString(), is("1104"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByContainsCriterionOfCipherString()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherString("1102");
+        hoge2.setMyCipherString("1103");
+        hoge3.setMyCipherString("1104");
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new InMemoryContainsCriterion(meta.myCipherString, "110"))
+                .sortInMemory(meta.myCipherString.asc)
+                .asList();
+        assertThat(list.size(), is(3));
+        assertThat(list.get(0).getMyCipherString(), is("1102"));
+        assertThat(list.get(1).getMyCipherString(), is("1103"));
+        assertThat(list.get(2).getMyCipherString(), is("1104"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByEndsWithCriterionOfCipherString()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherString("1102");
+        hoge2.setMyCipherString("1103");
+        hoge3.setMyCipherString("1104");
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new InMemoryEndsWithCriterion(meta.myCipherString, "103"))
+                .sortInMemory(meta.myCipherString.asc)
+                .asList();
+        assertThat(list.size(), is(1));
+        assertThat(list.get(0).getMyCipherString(), is("1103"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByIsNotNullCriterionOfCipherString()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherString("1102");
+        hoge2.setMyCipherString("1103");
+        hoge3.setMyCipherString("1104");
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(new IsNotNullCriterion(meta.myCipherString))
+                .sortInMemory(meta.myCipherString.asc)
+                .asList();
+        assertThat(list.size(), is(3));
+        assertThat(list.get(0).getMyCipherString(), is("1102"));
+        assertThat(list.get(1).getMyCipherString(), is("1103"));
+        assertThat(list.get(2).getMyCipherString(), is("1104"));
+        list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new InMemoryIsNotNullCriterion(meta.myCipherString))
+                .sortInMemory(meta.myCipherString.asc)
+                .asList();
+        assertThat(list.size(), is(3));
+        assertThat(list.get(0).getMyCipherString(), is("1102"));
+        assertThat(list.get(1).getMyCipherString(), is("1103"));
+        assertThat(list.get(2).getMyCipherString(), is("1104"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByLessThanCriterionOfCipherString()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherString("1102");
+        hoge2.setMyCipherString("1103");
+        hoge3.setMyCipherString("1104");
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new LessThanCriterion(meta.myCipherString, "1103"))
+                .sortInMemory(meta.myCipherString.asc)
+                .asList();
+        assertThat(list.size(), is(1));
+        assertThat(list.get(0).getMyCipherString(), is("1102"));
+        list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new InMemoryLessThanCriterion(meta.myCipherString, "1103"))
+                .sortInMemory(meta.myCipherString.asc)
+                .asList();
+        assertThat(list.size(), is(1));
+        assertThat(list.get(0).getMyCipherString(), is("1102"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByLessThanOrEqualCriterionOfCipherString()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherString("1102");
+        hoge2.setMyCipherString("1103");
+        hoge3.setMyCipherString("1104");
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new LessThanOrEqualCriterion(meta.myCipherString, "1103"))
+                .sortInMemory(meta.myCipherString.asc)
+                .asList();
+        assertThat(list.size(), is(2));
+        assertThat(list.get(0).getMyCipherString(), is("1102"));
+        assertThat(list.get(1).getMyCipherString(), is("1103"));
+        list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new InMemoryLessThanOrEqualCriterion(
+                        meta.myCipherString,
+                        "1103"))
+                .sortInMemory(meta.myCipherString.asc)
+                .asList();
+        assertThat(list.size(), is(2));
+        assertThat(list.get(0).getMyCipherString(), is("1102"));
+        assertThat(list.get(1).getMyCipherString(), is("1103"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByNotEqualCriterionOfCipherString()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherString("1102");
+        hoge2.setMyCipherString("1103");
+        hoge3.setMyCipherString("1104");
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new NotEqualCriterion(meta.myCipherString, "1103"))
+                .sortInMemory(meta.myCipherString.asc)
+                .asList();
+        assertThat(list.size(), is(2));
+        assertThat(list.get(0).getMyCipherString(), is("1102"));
+        assertThat(list.get(1).getMyCipherString(), is("1104"));
+        list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new InMemoryNotEqualCriterion(meta.myCipherString, "1103"))
+                .sortInMemory(meta.myCipherString.asc)
+                .asList();
+        assertThat(list.size(), is(2));
+        assertThat(list.get(0).getMyCipherString(), is("1102"));
+        assertThat(list.get(1).getMyCipherString(), is("1104"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByStartsWithCriterionOfCipherString()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherString("1102");
+        hoge2.setMyCipherString("1103");
+        hoge3.setMyCipherString("1104");
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new StartsWithCriterion(meta.myCipherString, "110"))
+                .sortInMemory(meta.myCipherString.asc)
+                .asList();
+        assertThat(list.size(), is(3));
+        assertThat(list.get(0).getMyCipherString(), is("1102"));
+        assertThat(list.get(1).getMyCipherString(), is("1103"));
+        assertThat(list.get(2).getMyCipherString(), is("1104"));
+        list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new InMemoryStartsWithCriterion(meta.myCipherString, "110"))
+                .sortInMemory(meta.myCipherString.asc)
+                .asList();
+        assertThat(list.size(), is(3));
+        assertThat(list.get(0).getMyCipherString(), is("1102"));
+        assertThat(list.get(1).getMyCipherString(), is("1103"));
+        assertThat(list.get(2).getMyCipherString(), is("1104"));
+    }
+    
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByEqualCriterionOfCipherLobString()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherLobString("1102");
+        hoge2.setMyCipherLobString("1103");
+        hoge3.setMyCipherLobString("1104");
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(new EqualCriterion(meta.myCipherLobString, "1102"))
+                .sortInMemory(meta.myCipherLobString.asc)
+                .asList();
+        assertThat(list.size(), is(1));
+        assertThat(list.get(0).getMyCipherLobString(), is("1102"));
+        list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new InMemoryEqualCriterion(meta.myCipherLobString, "1102"))
+                .sortInMemory(meta.myCipherLobString.asc)
+                .asList();
+        assertThat(list.size(), is(1));
+        assertThat(list.get(0).getMyCipherLobString(), is("1102"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByGreaterThanCriterionOfCipherLobString()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherLobString("1102");
+        hoge2.setMyCipherLobString("1103");
+        hoge3.setMyCipherLobString("1104");
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new GreaterThanCriterion(meta.myCipherLobString, "1103"))
+                .sortInMemory(meta.myCipherLobString.asc)
+                .asList();
+        assertThat(list.size(), is(1));
+        assertThat(list.get(0).getMyCipherLobString(), is("1104"));
+        list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new InMemoryGreaterThanCriterion(
+                        meta.myCipherLobString,
+                        "1103"))
+                .sortInMemory(meta.myCipherLobString.asc)
+                .asList();
+        assertThat(list.size(), is(1));
+        assertThat(list.get(0).getMyCipherLobString(), is("1104"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByGreaterThanOrEqualCriterionOfCipherLobString()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherLobString("1102");
+        hoge2.setMyCipherLobString("1103");
+        hoge3.setMyCipherLobString("1104");
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new GreaterThanOrEqualCriterion(meta.myCipherLobString, "1103"))
+                .sortInMemory(meta.myCipherLobString.asc)
+                .asList();
+        assertThat(list.size(), is(2));
+        assertThat(list.get(0).getMyCipherLobString(), is("1103"));
+        assertThat(list.get(1).getMyCipherLobString(), is("1104"));
+        list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new InMemoryGreaterThanOrEqualCriterion(
+                        meta.myCipherLobString,
+                        "1103"))
+                .sortInMemory(meta.myCipherLobString.asc)
+                .asList();
+        assertThat(list.size(), is(2));
+        assertThat(list.get(0).getMyCipherLobString(), is("1103"));
+        assertThat(list.get(1).getMyCipherLobString(), is("1104"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByInCriterionOfCipherLobString()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherLobString("1102");
+        hoge2.setMyCipherLobString("1103");
+        hoge3.setMyCipherLobString("1104");
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new InCriterion(meta.myCipherLobString, Arrays.asList(
+                        "1102",
+                        "1104")))
+                .sortInMemory(meta.myCipherLobString.asc)
+                .asList();
+        assertThat(list.size(), is(2));
+        assertThat(list.get(0).getMyCipherLobString(), is("1102"));
+        assertThat(list.get(1).getMyCipherLobString(), is("1104"));
+        list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new InMemoryInCriterion(meta.myCipherLobString, Arrays.asList(
+                        "1102",
+                        "1104")))
+                .sortInMemory(meta.myCipherLobString.asc)
+                .asList();
+        assertThat(list.size(), is(2));
+        assertThat(list.get(0).getMyCipherLobString(), is("1102"));
+        assertThat(list.get(1).getMyCipherLobString(), is("1104"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByContainsCriterionOfCipherLobString()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherLobString("1102");
+        hoge2.setMyCipherLobString("1103");
+        hoge3.setMyCipherLobString("1104");
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new InMemoryContainsCriterion(meta.myCipherLobString, "110"))
+                .sortInMemory(meta.myCipherLobString.asc)
+                .asList();
+        assertThat(list.size(), is(3));
+        assertThat(list.get(0).getMyCipherLobString(), is("1102"));
+        assertThat(list.get(1).getMyCipherLobString(), is("1103"));
+        assertThat(list.get(2).getMyCipherLobString(), is("1104"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByEndsWithCriterionOfCipherLobString()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherLobString("1102");
+        hoge2.setMyCipherLobString("1103");
+        hoge3.setMyCipherLobString("1104");
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new InMemoryEndsWithCriterion(meta.myCipherLobString, "103"))
+                .sortInMemory(meta.myCipherLobString.asc)
+                .asList();
+        assertThat(list.size(), is(1));
+        assertThat(list.get(0).getMyCipherLobString(), is("1103"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByIsNotNullCriterionOfCipherLobString()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherLobString("1102");
+        hoge2.setMyCipherLobString("1103");
+        hoge3.setMyCipherLobString("1104");
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(new IsNotNullCriterion(meta.myCipherLobString))
+                .sortInMemory(meta.myCipherLobString.asc)
+                .asList();
+        assertThat(list.size(), is(3));
+        assertThat(list.get(0).getMyCipherLobString(), is("1102"));
+        assertThat(list.get(1).getMyCipherLobString(), is("1103"));
+        assertThat(list.get(2).getMyCipherLobString(), is("1104"));
+        list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new InMemoryIsNotNullCriterion(meta.myCipherLobString))
+                .sortInMemory(meta.myCipherLobString.asc)
+                .asList();
+        assertThat(list.size(), is(3));
+        assertThat(list.get(0).getMyCipherLobString(), is("1102"));
+        assertThat(list.get(1).getMyCipherLobString(), is("1103"));
+        assertThat(list.get(2).getMyCipherLobString(), is("1104"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByLessThanCriterionOfCipherLobString()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherLobString("1102");
+        hoge2.setMyCipherLobString("1103");
+        hoge3.setMyCipherLobString("1104");
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new LessThanCriterion(meta.myCipherLobString, "1103"))
+                .sortInMemory(meta.myCipherLobString.asc)
+                .asList();
+        assertThat(list.size(), is(1));
+        assertThat(list.get(0).getMyCipherLobString(), is("1102"));
+        list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new InMemoryLessThanCriterion(meta.myCipherLobString, "1103"))
+                .sortInMemory(meta.myCipherLobString.asc)
+                .asList();
+        assertThat(list.size(), is(1));
+        assertThat(list.get(0).getMyCipherLobString(), is("1102"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByLessThanOrEqualCriterionOfCipherLobString()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherLobString("1102");
+        hoge2.setMyCipherLobString("1103");
+        hoge3.setMyCipherLobString("1104");
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new LessThanOrEqualCriterion(meta.myCipherLobString, "1103"))
+                .sortInMemory(meta.myCipherLobString.asc)
+                .asList();
+        assertThat(list.size(), is(2));
+        assertThat(list.get(0).getMyCipherLobString(), is("1102"));
+        assertThat(list.get(1).getMyCipherLobString(), is("1103"));
+        list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new InMemoryLessThanOrEqualCriterion(
+                        meta.myCipherLobString,
+                        "1103"))
+                .sortInMemory(meta.myCipherLobString.asc)
+                .asList();
+        assertThat(list.size(), is(2));
+        assertThat(list.get(0).getMyCipherLobString(), is("1102"));
+        assertThat(list.get(1).getMyCipherLobString(), is("1103"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByNotEqualCriterionOfCipherLobString()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherLobString("1102");
+        hoge2.setMyCipherLobString("1103");
+        hoge3.setMyCipherLobString("1104");
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new NotEqualCriterion(meta.myCipherLobString, "1103"))
+                .sortInMemory(meta.myCipherLobString.asc)
+                .asList();
+        assertThat(list.size(), is(2));
+        assertThat(list.get(0).getMyCipherLobString(), is("1102"));
+        assertThat(list.get(1).getMyCipherLobString(), is("1104"));
+        list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new InMemoryNotEqualCriterion(meta.myCipherLobString, "1103"))
+                .sortInMemory(meta.myCipherLobString.asc)
+                .asList();
+        assertThat(list.size(), is(2));
+        assertThat(list.get(0).getMyCipherLobString(), is("1102"));
+        assertThat(list.get(1).getMyCipherLobString(), is("1104"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByStartsWithCriterionOfCipherLobString()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherLobString("1102");
+        hoge2.setMyCipherLobString("1103");
+        hoge3.setMyCipherLobString("1104");
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new StartsWithCriterion(meta.myCipherLobString, "110"))
+                .sortInMemory(meta.myCipherLobString.asc)
+                .asList();
+        assertThat(list.size(), is(3));
+        assertThat(list.get(0).getMyCipherLobString(), is("1102"));
+        assertThat(list.get(1).getMyCipherLobString(), is("1103"));
+        assertThat(list.get(2).getMyCipherLobString(), is("1104"));
+        list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new InMemoryStartsWithCriterion(meta.myCipherLobString, "110"))
+                .sortInMemory(meta.myCipherLobString.asc)
+                .asList();
+        assertThat(list.size(), is(3));
+        assertThat(list.get(0).getMyCipherLobString(), is("1102"));
+        assertThat(list.get(1).getMyCipherLobString(), is("1103"));
+        assertThat(list.get(2).getMyCipherLobString(), is("1104"));
+    }
+    
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByEqualCriterionOfCipherText()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherText(new Text("1102"));
+        hoge2.setMyCipherText(new Text("1103"));
+        hoge3.setMyCipherText(new Text("1104"));
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(new EqualCriterion(meta.myCipherText, "1102"))
+                .filterInMemory(
+                    new EqualCriterion(meta.myCipherText, new Text("1102")))
+                .filterInMemory(
+                    new InMemoryEqualCriterion(meta.myCipherText, "1102"))
+                .filterInMemory(
+                    new InMemoryEqualCriterion(meta.myCipherText, new Text(
+                        "1102")))
+                .sortInMemory(meta.key.asc)
+                .asList();
+        assertThat(list.size(), is(1));
+        assertThat(list.get(0).getMyCipherText().getValue(), is("1102"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByGreaterThanCriterionOfCipherText()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherText(new Text("1102"));
+        hoge2.setMyCipherText(new Text("1103"));
+        hoge3.setMyCipherText(new Text("1104"));
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new GreaterThanCriterion(meta.myCipherText, "1103"))
+                .filterInMemory(
+                    new GreaterThanCriterion(
+                        meta.myCipherText,
+                        new Text("1103")))
+                .filterInMemory(
+                    new InMemoryGreaterThanCriterion(meta.myCipherText, "1103"))
+                .filterInMemory(
+                    new InMemoryGreaterThanCriterion(
+                        meta.myCipherText,
+                        new Text("1103")))
+                .sortInMemory(meta.key.asc)
+                .asList();
+        assertThat(list.size(), is(1));
+        assertThat(list.get(0).getMyCipherText().getValue(), is("1104"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByGreaterThanOrEqualCriterionOfCipherText()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherText(new Text("1102"));
+        hoge2.setMyCipherText(new Text("1103"));
+        hoge3.setMyCipherText(new Text("1104"));
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new GreaterThanOrEqualCriterion(meta.myCipherText, "1103"))
+                .filterInMemory(
+                    new GreaterThanOrEqualCriterion(
+                        meta.myCipherText,
+                        new Text("1103")))
+                .filterInMemory(
+                    new InMemoryGreaterThanOrEqualCriterion(
+                        meta.myCipherText,
+                        "1103"))
+                .filterInMemory(
+                    new InMemoryGreaterThanOrEqualCriterion(
+                        meta.myCipherText,
+                        new Text("1103")))
+                .sortInMemory(meta.key.asc)
+                .asList();
+        assertThat(list.size(), is(2));
+        assertThat(list.get(0).getMyCipherText().getValue(), is("1103"));
+        assertThat(list.get(1).getMyCipherText().getValue(), is("1104"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByInCriterionOfCipherText()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherText(new Text("1102"));
+        hoge2.setMyCipherText(new Text("1103"));
+        hoge3.setMyCipherText(new Text("1104"));
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new InCriterion(meta.myCipherText, Arrays.asList(
+                        "1102",
+                        "1104")))
+                .filterInMemory(
+                    new InCriterion(meta.myCipherText, Arrays.asList(new Text(
+                        "1102"), new Text("1104"))))
+                .filterInMemory(
+                    new InMemoryInCriterion(meta.myCipherText, Arrays.asList(
+                        "1102",
+                        "1104")))
+                .filterInMemory(
+                    new InMemoryInCriterion(meta.myCipherText, Arrays.asList(
+                        new Text("1102"),
+                        new Text("1104"))))
+                .sortInMemory(meta.key.asc)
+                .asList();
+        assertThat(list.size(), is(2));
+        assertThat(list.get(0).getMyCipherText().getValue(), is("1102"));
+        assertThat(list.get(1).getMyCipherText().getValue(), is("1104"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByContainsCriterionOfCipherText()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherText(new Text("1102"));
+        hoge2.setMyCipherText(new Text("1103"));
+        hoge3.setMyCipherText(new Text("1104"));
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new InMemoryContainsCriterion(meta.myCipherText, "110"))
+                .sortInMemory(meta.key.asc)
+                .asList();
+        assertThat(list.size(), is(3));
+        assertThat(list.get(0).getMyCipherText().getValue(), is("1102"));
+        assertThat(list.get(1).getMyCipherText().getValue(), is("1103"));
+        assertThat(list.get(2).getMyCipherText().getValue(), is("1104"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByEndsWithCriterionOfCipherText()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherText(new Text("1102"));
+        hoge2.setMyCipherText(new Text("1103"));
+        hoge3.setMyCipherText(new Text("1104"));
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new InMemoryEndsWithCriterion(meta.myCipherText, "103"))
+                .sortInMemory(meta.key.asc)
+                .asList();
+        assertThat(list.size(), is(1));
+        assertThat(list.get(0).getMyCipherText().getValue(), is("1103"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByIsNotNullCriterionOfCipherText()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherText(new Text("1102"));
+        hoge2.setMyCipherText(new Text("1103"));
+        hoge3.setMyCipherText(new Text("1104"));
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(new IsNotNullCriterion(meta.myCipherText))
+                .filterInMemory(
+                    new InMemoryIsNotNullCriterion(meta.myCipherText))
+                .sortInMemory(meta.key.asc)
+                .asList();
+        assertThat(list.size(), is(3));
+        assertThat(list.get(0).getMyCipherText().getValue(), is("1102"));
+        assertThat(list.get(1).getMyCipherText().getValue(), is("1103"));
+        assertThat(list.get(2).getMyCipherText().getValue(), is("1104"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByLessThanCriterionOfCipherText()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherText(new Text("1102"));
+        hoge2.setMyCipherText(new Text("1103"));
+        hoge3.setMyCipherText(new Text("1104"));
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new LessThanCriterion(meta.myCipherText, "1103"))
+                .filterInMemory(
+                    new LessThanCriterion(meta.myCipherText, new Text("1103")))
+                .filterInMemory(
+                    new InMemoryLessThanCriterion(meta.myCipherText, "1103"))
+                .filterInMemory(
+                    new InMemoryLessThanCriterion(meta.myCipherText, new Text(
+                        "1103")))
+                .sortInMemory(meta.key.asc)
+                .asList();
+        assertThat(list.size(), is(1));
+        assertThat(list.get(0).getMyCipherText().getValue(), is("1102"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByLessThanOrEqualCriterionOfCipherText()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherText(new Text("1102"));
+        hoge2.setMyCipherText(new Text("1103"));
+        hoge3.setMyCipherText(new Text("1104"));
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new LessThanOrEqualCriterion(meta.myCipherText, "1103"))
+                .filterInMemory(
+                    new LessThanOrEqualCriterion(meta.myCipherText, new Text(
+                        "1103")))
+                .filterInMemory(
+                    new InMemoryLessThanOrEqualCriterion(
+                        meta.myCipherText,
+                        "1103"))
+                .filterInMemory(
+                    new InMemoryLessThanOrEqualCriterion(
+                        meta.myCipherText,
+                        new Text("1103")))
+                .sortInMemory(meta.key.asc)
+                .asList();
+        assertThat(list.size(), is(2));
+        assertThat(list.get(0).getMyCipherText().getValue(), is("1102"));
+        assertThat(list.get(1).getMyCipherText().getValue(), is("1103"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByNotEqualCriterionOfCipherText()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherText(new Text("1102"));
+        hoge2.setMyCipherText(new Text("1103"));
+        hoge3.setMyCipherText(new Text("1104"));
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new NotEqualCriterion(meta.myCipherText, "1103"))
+                .filterInMemory(
+                    new NotEqualCriterion(meta.myCipherText, new Text("1103")))
+                .filterInMemory(
+                    new InMemoryNotEqualCriterion(meta.myCipherText, "1103"))
+                .filterInMemory(
+                    new InMemoryNotEqualCriterion(meta.myCipherText, new Text(
+                        "1103")))
+                .sortInMemory(meta.key.asc)
+                .asList();
+        assertThat(list.size(), is(2));
+        assertThat(list.get(0).getMyCipherText().getValue(), is("1102"));
+        assertThat(list.get(1).getMyCipherText().getValue(), is("1104"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asListAndFilterInMemoryByStartsWithCriterionOfCipherText()
+            throws Exception {
+        Datastore.setLimitedCipherKey(KEY128BIT);
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyCipherText(new Text("1102"));
+        hoge2.setMyCipherText(new Text("1103"));
+        hoge3.setMyCipherText(new Text("1104"));
+        Datastore.put(hoge1);
+        Datastore.put(hoge2);
+        Datastore.put(hoge3);
+        List<Hoge> list =
+            Datastore
+                .query(meta)
+                .filterInMemory(
+                    new StartsWithCriterion(meta.myCipherText, "110"))
+                .filterInMemory(
+                    new InMemoryStartsWithCriterion(meta.myCipherText, "110"))
+                .sortInMemory(meta.key.asc)
+                .asList();
+        assertThat(list.size(), is(3));
+        assertThat(list.get(0).getMyCipherText().getValue(), is("1102"));
+        assertThat(list.get(1).getMyCipherText().getValue(), is("1103"));
+        assertThat(list.get(2).getMyCipherText().getValue(), is("1104"));
     }
 }

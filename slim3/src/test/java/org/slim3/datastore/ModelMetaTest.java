@@ -15,9 +15,13 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import static org.junit.matchers.JUnitMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.junit.Assert.assertThat;
+import static org.junit.matchers.JUnitMatchers.hasItem;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,11 +35,12 @@ import org.slim3.datastore.model.Hoge;
 import org.slim3.datastore.model.MySerializable;
 import org.slim3.util.BeanDesc;
 import org.slim3.util.ByteUtil;
+import org.slim3.util.CipherFactory;
 
 import com.google.appengine.api.datastore.Blob;
+import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.ShortBlob;
 import com.google.appengine.api.datastore.Text;
-import com.google.appengine.api.datastore.Query.SortDirection;
 
 /**
  * @author higa
@@ -362,5 +367,27 @@ public class ModelMetaTest {
         BeanDesc beanDesc = meta.getBeanDesc();
         assertThat(beanDesc, is(not(nullValue())));
         assertThat(beanDesc, is(sameInstance(meta.getBeanDesc())));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void encrypt() throws Exception {
+        CipherFactory.getFactory().setLimitedKey("1234567890abcdef");
+        String text = "hoge";
+        assertThat(meta.encrypt(text), not(text));
+        assertThat(meta.decrypt(meta.encrypt(text)), is(text));
+    }
+    
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void encryptForText() throws Exception {
+        CipherFactory.getFactory().setLimitedKey("1234567890abcdef");
+        Text text = new Text("hoge");
+        assertThat(meta.encrypt(text), not(text));
+        assertThat(meta.decrypt(meta.encrypt(text)), is(text));
     }
 }

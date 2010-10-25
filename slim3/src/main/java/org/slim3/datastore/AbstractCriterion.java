@@ -18,6 +18,8 @@ package org.slim3.datastore;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.appengine.api.datastore.Text;
+
 /**
  * An abstract class for criterion.
  * 
@@ -99,6 +101,9 @@ public abstract class AbstractCriterion {
         }
         if (value instanceof ModelRef<?>) {
             return ((ModelRef<?>) value).getKey();
+        }
+        if (value instanceof Text) {
+            return ((Text) value).getValue();
         }
         return value;
     }

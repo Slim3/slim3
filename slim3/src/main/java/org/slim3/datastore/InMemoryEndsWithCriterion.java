@@ -15,6 +15,8 @@
  */
 package org.slim3.datastore;
 
+import com.google.appengine.api.datastore.Text;
+
 /**
  * An implementation class for "endsWith" in-memory filter.
  * 
@@ -43,7 +45,12 @@ public class InMemoryEndsWithCriterion extends AbstractCriterion implements
     public InMemoryEndsWithCriterion(AbstractAttributeMeta<?, ?> attributeMeta,
             String value) throws NullPointerException {
         super(attributeMeta);
-        this.value = value;
+        Object o = convertValueForDatastore(value);
+        if (o instanceof String) {
+            this.value = (String) o;
+        } else {
+            this.value = value;
+        }
     }
 
     public boolean accept(Object model) {
@@ -55,6 +62,9 @@ public class InMemoryEndsWithCriterion extends AbstractCriterion implements
                 }
             }
             return false;
+        }
+        if (v instanceof Text) {
+            return acceptInternal(((Text) v).getValue());
         }
         return acceptInternal(v);
     }

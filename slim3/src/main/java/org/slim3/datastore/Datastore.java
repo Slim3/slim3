@@ -21,6 +21,8 @@ import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Map;
 
+import org.slim3.util.CipherFactory;
+
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
@@ -2737,6 +2739,28 @@ public final class Datastore {
         return DatastoreUtil.sortInMemory(list, Arrays.asList(criteria));
     }
 
+    /**
+     * Sets the limited key for cipher to the current thread.
+     * 
+     * @param key
+     *            the key
+     * @since 1.0.6
+     */
+    public static void setLimitedCipherKey(String key) {
+        CipherFactory.getFactory().setLimitedKey(key);
+    }
+    
+    /**
+     * Sets the global key for cipher.
+     * 
+     * @param key
+     *            the key
+     * @since 1.0.6
+     */
+    public static void setGlobalCipherKey(String key) {
+        CipherFactory.getFactory().setGlobalKey(key);
+    }
+    
     private Datastore() {
     }
 }

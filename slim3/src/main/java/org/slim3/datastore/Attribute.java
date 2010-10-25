@@ -64,6 +64,13 @@ public @interface Attribute {
     boolean unindexed() default false;
 
     /**
+     * Whether this property is cipher.
+     * 
+     * @since 1.0.6
+     */
+    boolean cipher() default false;
+
+    /**
      * The attribute listener.
      */
     @SuppressWarnings("unchecked")

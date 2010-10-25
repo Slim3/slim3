@@ -43,6 +43,7 @@ import org.slim3.controller.upload.FileUpload;
 import org.slim3.controller.validator.Errors;
 import org.slim3.util.AppEngineUtil;
 import org.slim3.util.ApplicationMessage;
+import org.slim3.util.CipherFactory;
 import org.slim3.util.ClassUtil;
 import org.slim3.util.LocaleLocator;
 import org.slim3.util.LocaleUtil;
@@ -341,6 +342,7 @@ public class FrontController implements Filter {
         TimeZone previousTimeZone = TimeZoneLocator.get();
         TimeZoneLocator.set(processTimeZone(request));
         ApplicationMessage.setBundle(bundleName, LocaleLocator.get());
+        CipherFactory.getFactory().clearLimitedKey();
         try {
             Controller controller = getController(request, response, path);
             if (controller != null) {

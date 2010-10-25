@@ -22,6 +22,8 @@ import java.util.List;
 import org.slim3.util.BeanDesc;
 import org.slim3.util.BeanUtil;
 import org.slim3.util.ByteUtil;
+import org.slim3.util.Cipher;
+import org.slim3.util.CipherFactory;
 
 import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Entity;
@@ -662,5 +664,69 @@ public abstract class ModelMeta<M> {
         }
         beanDesc = BeanUtil.getBeanDesc(modelClass);
         return beanDesc;
+    }
+    
+    /**
+     * Determines if the property is cipher.
+     * 
+     * @param propertyName
+     *            the property name
+     * @return whether property is cipher
+     * @since 1.0.6
+     */
+    protected boolean isCipherProperty(String propertyName) {
+        return false;
+    }
+    
+    /**
+     * Encrypt the text.
+     * 
+     * @param text
+     *            the text
+     * @return the encrypted text
+     * @since 1.0.6
+     */
+    protected String encrypt(String text) {
+        Cipher c = CipherFactory.getFactory().createCipher();
+        return c.encrypt(text);
+    }
+    
+    /**
+     * Encrypt the text.
+     * 
+     * @param text
+     *            the text
+     * @return the encrypted text
+     * @since 1.0.6
+     */
+    protected Text encrypt(Text text) {
+        if (text == null) return null;
+        return new Text(encrypt(text.getValue()));
+    }
+
+    /**
+     * Decrypt the encrypted text.
+     * 
+     * @param encryptedText
+     *            the encrypted text
+     * @return the decrypted text
+     * @since 1.0.6
+     */
+    protected String decrypt(String encryptedText) {
+        Cipher c = CipherFactory.getFactory().createCipher();
+        return c.decrypt(encryptedText);
+    }
+    
+    /**
+     * Decrypt the encrypted text.
+     * 
+     * @param encryptedText
+     *            the encrypted text
+     * @return the decrypted text
+     * @since 1.0.6
+     */
+    protected Text decrypt(Text encryptedText) {
+        if (encryptedText == null) return null;
+        return new Text(decrypt(encryptedText.getValue()));
     }
 }

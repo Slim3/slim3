@@ -15,6 +15,8 @@
  */
 package org.slim3.datastore;
 
+import com.google.appengine.api.datastore.Text;
+
 /**
  * An implementation class for "equal" in-memory filter.
  * 
@@ -55,6 +57,9 @@ public class InMemoryEqualCriterion extends AbstractCriterion implements
                 }
             }
             return false;
+        }
+        if (v instanceof Text) {
+            return compareValue(((Text) v).getValue(), value) == 0;
         }
         return compareValue(v, value) == 0;
     }

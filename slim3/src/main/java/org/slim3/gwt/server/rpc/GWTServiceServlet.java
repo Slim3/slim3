@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slim3.controller.HotReloadingClassLoader;
+import org.slim3.util.CipherFactory;
 import org.slim3.util.ClassUtil;
 import org.slim3.util.RequestLocator;
 import org.slim3.util.ResponseLocator;
@@ -211,6 +212,7 @@ public class GWTServiceServlet extends RemoteServiceServlet {
         S3RPCRequest request = null;
         RPCRequest rpcRequest = null;
         try {
+            CipherFactory.getFactory().clearLimitedKey();
             request = decodeRequest(payload);
             rpcRequest = request.getOriginalRequest();
             onAfterRequestDeserialized(rpcRequest);

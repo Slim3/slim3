@@ -15,6 +15,8 @@
  */
 package org.slim3.datastore;
 
+import com.google.appengine.api.datastore.Text;
+
 /**
  * An implementation class for "contains" in-memory filter.
  * 
@@ -43,7 +45,12 @@ public class InMemoryContainsCriterion extends AbstractCriterion implements
     public InMemoryContainsCriterion(AbstractAttributeMeta<?, ?> attributeMeta,
             String value) throws NullPointerException {
         super(attributeMeta);
-        this.value = value;
+        Object o = convertValueForDatastore(value);
+        if (o instanceof String) {
+            this.value = (String) o;
+        } else {
+            this.value = value;
+        }
     }
 
     public boolean accept(Object model) {
@@ -55,6 +62,9 @@ public class InMemoryContainsCriterion extends AbstractCriterion implements
                 }
             }
             return false;
+        }
+        if (v instanceof Text) {
+            return acceptInternal(((Text) v).getValue());
         }
         return acceptInternal(v);
     }

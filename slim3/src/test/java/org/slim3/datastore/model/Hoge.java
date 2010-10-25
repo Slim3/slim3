@@ -119,6 +119,15 @@ public class Hoge {
 
     private List<String> myStringList;
 
+    @Attribute(cipher = true)
+    private String myCipherString;
+
+    @Attribute(cipher = true)
+    private Text myCipherText;
+
+    @Attribute(cipher = true, lob = true)
+    private String myCipherLobString;
+    
     @Attribute(version = true)
     private Long version;
 
@@ -699,7 +708,7 @@ public class Hoge {
     public void setMyStringList(List<String> myStringList) {
         this.myStringList = myStringList;
     }
-
+    
     /**
      * @return the version
      */
@@ -727,5 +736,50 @@ public class Hoge {
      */
     public InverseModelListRef<Bbb, Hoge> getBbbListRef() {
         return bbbListRef;
+    }
+
+    /**
+     * @return the myCipherString
+     */
+    public String getMyCipherString() {
+        return myCipherString;
+    }
+
+    /**
+     * @param myCipherString
+     *            the myCipherString to set
+     */
+    public void setMyCipherString(String myCipherString) {
+        this.myCipherString = myCipherString;
+    }
+
+    /**
+     * @return the myCipherText
+     */
+    public Text getMyCipherText() {
+        return myCipherText;
+    }
+
+    /**
+     * @param myCipherText
+     *            the myCipherText to set
+     */
+    public void setMyCipherText(Text myCipherText) {
+        this.myCipherText = myCipherText;
+    }
+
+    /**
+     * @return the myCipherLobString
+     */
+    public String getMyCipherLobString() {
+        return myCipherLobString;
+    }
+
+    /**
+     * @param myCipherLobString
+     *            the myCipherLobString to set
+     */
+    public void setMyCipherLobString(String myCipherLobString) {
+        this.myCipherLobString = myCipherLobString;
     }
 }

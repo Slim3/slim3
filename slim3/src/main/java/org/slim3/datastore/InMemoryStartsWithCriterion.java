@@ -15,6 +15,8 @@
  */
 package org.slim3.datastore;
 
+import com.google.appengine.api.datastore.Text;
+
 /**
  * An implementation class for "startsWith" in-memory filter.
  * 
@@ -49,9 +51,14 @@ public class InMemoryStartsWithCriterion extends AbstractCriterion implements
             AbstractAttributeMeta<?, ?> attributeMeta, String value)
             throws NullPointerException {
         super(attributeMeta);
-        this.value = value;
-        if (value != null) {
-            highValue = value + highValue;
+        Object o = convertValueForDatastore(value);
+        if (o instanceof String) {
+            this.value = (String) o;
+        } else {
+            this.value = value;
+        }
+        if (this.value != null) {
+            highValue = this.value + highValue;
         }
     }
 
@@ -65,6 +72,9 @@ public class InMemoryStartsWithCriterion extends AbstractCriterion implements
                 }
             }
             return false;
+        }
+        if (v instanceof Text) {
+            v = ((Text) v).getValue();
         }
         return compareValue(v, value) >= 0 && compareValue(v, highValue) < 0;
     }

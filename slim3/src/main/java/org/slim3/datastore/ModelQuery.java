@@ -25,10 +25,11 @@ import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.QueryResultIterator;
 import com.google.appengine.api.datastore.QueryResultList;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Transaction;
-import com.google.appengine.api.datastore.Query.FilterOperator;
 
 /**
  * A query class for select.
@@ -140,8 +141,15 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
                     "The element of the criteria parameter must not be null.");
             }
             for (Filter f : c.getFilters()) {
-                query.addFilter(f.getPropertyName(), f.getOperator(), f
-                    .getValue());
+                Object value = f.getValue();
+                if (modelMeta.isCipherProperty(f.getPropertyName())) {
+                    if (value instanceof String) {
+                        value = modelMeta.encrypt((String) value);
+                    } else if (value instanceof Text) {
+                        value = modelMeta.encrypt((Text) value);
+                    }
+                }
+                query.addFilter(f.getPropertyName(), f.getOperator(), value);
             }
         }
         return this;
