@@ -137,6 +137,7 @@ public class ModelMetaGenerator implements Generator {
         printPrePutMethod(printer);
         printGetSchemaVersionName(printer);
         printGetClassHierarchyListName(printer);
+        printIsCipherProperty(printer);
         printer.unindent();
         printer.print("}");
     }
@@ -403,6 +404,28 @@ public class ModelMetaGenerator implements Generator {
     }
 
     /**
+     * Generates the {@code isCipherProperty} method.
+     * 
+     * @param printer
+     *            the printer
+     */
+    protected void printIsCipherProperty(final Printer printer) {
+        printer.println("@Override");
+        printer
+            .println("protected boolean isCipherProperty(String propertyName) {");
+        for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
+            if (attr.isCipher()) {
+                printer.println(
+                    "    if (\"%1$s\".equals(propertyName)) return true;",
+                    attr.getName());
+            }
+        }
+        printer.println("    return false;");
+        printer.println("}");
+        printer.println();
+    }
+    
+    /**
      * Generates the {@code getKey} method.
      * 
      * @param printer
@@ -650,12 +673,34 @@ public class ModelMetaGenerator implements Generator {
         @Override
         public Void visitBlobType(BlobType type, AttributeMetaDesc p)
                 throws RuntimeException {
+            printer.println("/** */");
+            printer
+                .println(
+                    "public final %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", \"%4$s\", %6$s.class);",
+                    UnindexedAttributeMeta,
+                    modelMetaDesc.getModelClassName(),
+                    type.getClassName(),
+                    p.getAttributeName(),
+                    p.getName(),
+                    type.getClassName());
+            printer.println();
             return null;
         }
 
         @Override
         public Void visitTextType(TextType type, AttributeMetaDesc p)
                 throws RuntimeException {
+            printer.println("/** */");
+            printer
+                .println(
+                    "public final %1$s<%2$s, %3$s> %4$s = new %1$s<%2$s, %3$s>(this, \"%5$s\", \"%4$s\", %6$s.class);",
+                    UnindexedAttributeMeta,
+                    modelMetaDesc.getModelClassName(),
+                    type.getClassName(),
+                    p.getAttributeName(),
+                    p.getName(),
+                    type.getClassName());
+            printer.println();
             return null;
         }
 
@@ -952,6 +997,15 @@ public class ModelMetaGenerator implements Generator {
         @Override
         public Void visitStringType(StringType type, AttributeMetaDesc p)
                 throws RuntimeException {
+            if (p.isLob() && p.isCipher()) {
+                printer
+                    .println(
+                        "model.%1$s(decrypt(textToString((%2$s) entity.getProperty(\"%3$s\"))));",
+                        p.getWriteMethodName(),
+                        Text,
+                        p.getName());
+                return null;
+            }
             if (p.isLob()) {
                 printer
                     .println(
@@ -959,6 +1013,14 @@ public class ModelMetaGenerator implements Generator {
                         p.getWriteMethodName(),
                         Text,
                         p.getName());
+                return null;
+            }
+            if (p.isCipher()) {
+                printer.println(
+                    "model.%1$s(decrypt((%2$s)entity.getProperty(\"%3$s\")));",
+                    p.getWriteMethodName(),
+                    type.getTypeName(),
+                    p.getName());
                 return null;
             }
             return super.visitStringType(type, p);
@@ -977,6 +1039,21 @@ public class ModelMetaGenerator implements Generator {
             return null;
         }
 
+        @Override
+        public Void visitTextType(TextType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            if (p.isCipher()) {
+                printer
+                    .println(
+                        "model.%1$s(decrypt((%2$s) entity.getProperty(\"%3$s\")));",
+                        p.getWriteMethodName(),
+                        type.getTypeName(),
+                        p.getName());
+                return null;
+            }
+            return super.visitTextType(type, p);
+        }
+        
         @Override
         public Void visitKeyType(KeyType type, AttributeMetaDesc p)
                 throws RuntimeException {
@@ -1508,10 +1585,26 @@ public class ModelMetaGenerator implements Generator {
         @Override
         public Void visitStringType(StringType type, AttributeMetaDesc p)
                 throws RuntimeException {
+            if (p.isLob() && p.isCipher()) {
+                printer
+                    .println(
+                        "entity.setUnindexedProperty(\"%1$s\", stringToText(encrypt(m.%2$s())));",
+                        p.getName(),
+                        p.getReadMethodName());
+                return null;
+            }
             if (p.isLob()) {
                 printer
                     .println(
                         "entity.setUnindexedProperty(\"%1$s\", stringToText(m.%2$s()));",
+                        p.getName(),
+                        p.getReadMethodName());
+                return null;
+            }
+            if (p.isCipher()) {
+                printer
+                    .println(
+                        "entity.setProperty(\"%1$s\", encrypt(m.%2$s()));",
                         p.getName(),
                         p.getReadMethodName());
                 return null;
@@ -1540,6 +1633,13 @@ public class ModelMetaGenerator implements Generator {
         @Override
         public Void visitTextType(TextType type, AttributeMetaDesc p)
                 throws RuntimeException {
+            if (p.isCipher()) {
+                printer.println(
+                    "entity.setUnindexedProperty(\"%1$s\", encrypt(m.%2$s()));",
+                    p.getName(),
+                    p.getReadMethodName());
+                return null;
+            }
             printer.println(
                 "entity.setUnindexedProperty(\"%1$s\", m.%2$s());",
                 p.getName(),

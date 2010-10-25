@@ -140,7 +140,9 @@ public enum MessageCode {
     /** */
     SLIM3GEN1051("The generics parameter type of the listener[{0}] does not match the type[{1}] of the field."),
     /** */
-    SLIM3GEN1052("The listener must not be an interface.");
+    SLIM3GEN1052("The listener must not be an interface."),
+    /** */
+    SLIM3GEN1053("The type annotated with @Attribute(cipher = true) must be com.google.appengine.api.datastore.Text or java.lang.String.");
 
     /** the message */
     public final String message;

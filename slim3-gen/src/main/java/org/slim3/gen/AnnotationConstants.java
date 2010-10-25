@@ -69,6 +69,9 @@ public final class AnnotationConstants {
     /** the name of listener element */
     public static final String listener = "listener";
 
+    /** the name of cipher element */
+    public static final String cipher = "cipher";
+    
     /** {@code org.junit.Test} */
     public static final String Test = "org.junit.Test";
 }

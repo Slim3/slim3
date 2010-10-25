@@ -52,6 +52,9 @@ public class AttributeMetaDesc {
     /** the unindexed */
     protected boolean unindexed;
 
+    /** the cipher */
+    protected boolean cipher;
+    
     /** the readMethodName */
     protected String readMethodName;
 
@@ -163,6 +166,25 @@ public class AttributeMetaDesc {
         this.persistent = persistent;
     }
 
+    /**
+     * Determines if this attribute is cipher.
+     * 
+     * @return whether this attribute is cipher
+     */
+    public boolean isCipher() {
+        return cipher;
+    }
+
+    /**
+     * Sets whether this attribute is cipher.
+     * 
+     * @param cipher
+     *            whether this attribute is cipher
+     */
+    public void setCipher(boolean cipher) {
+        this.cipher = cipher;
+    }
+    
     /**
      * @return the readMethodName
      */

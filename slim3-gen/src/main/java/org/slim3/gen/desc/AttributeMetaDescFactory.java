@@ -188,6 +188,15 @@ public class AttributeMetaDescFactory {
             AnnotationConstants.persistent) == Boolean.FALSE) {
             handleNotPersistent(attributeMetaDesc, fieldDeclaration);
         }
+        if (AnnotationMirrorUtil.getElementValue(
+                attribute,
+                AnnotationConstants.cipher) == Boolean.TRUE) {
+                handleCipher(
+                    attributeMetaDesc,
+                    classDeclaration,
+                    fieldDeclaration,
+                    attribute);
+            }
         handleAttributeListener(
             attributeMetaDesc,
             classDeclaration,
@@ -481,6 +490,41 @@ public class AttributeMetaDescFactory {
         attributeMetaDesc.setUnindexed(true);
     }
 
+    /**
+     * Handles cipher.
+     * 
+     * @param attributeMetaDesc
+     *            the attribute meta description
+     * @param classDeclaration
+     *            the model class declaration
+     * @param fieldDeclaration
+     *            the field declaration
+     * @param attribute
+     *            the annotation mirror for Attribute
+     */
+    protected void handleCipher(AttributeMetaDesc attributeMetaDesc,
+            ClassDeclaration classDeclaration,
+            FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
+        if (AnnotationMirrorUtil.getElementValue(
+            attribute,
+            AnnotationConstants.persistent) == Boolean.FALSE) {
+            throwExceptionForConflictedElements(
+                classDeclaration,
+                fieldDeclaration,
+                attribute,
+                AnnotationConstants.cipher,
+                AnnotationConstants.persistent + " = false");
+        }
+        String type = attributeMetaDesc.getDataType().getTypeName();
+        if (!type.equals(ClassConstants.String) && !type.equals(ClassConstants.Text)) {
+            throw new ValidationException(
+                MessageCode.SLIM3GEN1053,
+                env,
+                attribute.getPosition());
+        }
+        attributeMetaDesc.setCipher(true);
+    }
+    
     /**
      * Handles the attribute listener.
      * 
