@@ -99,6 +99,15 @@ public class ValidatorsTest {
      * @throws Exception
      */
     @Test
+    public void validateWhenErrorsIsNotEmpty() throws Exception {
+        v.errors.put("aaa", "xxx");
+        assertThat(v.validate(), is(true));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void required() throws Exception {
         assertThat(v.required(), is(RequiredValidator.class));
         assertThat(v.required("hoge"), is(RequiredValidator.class));

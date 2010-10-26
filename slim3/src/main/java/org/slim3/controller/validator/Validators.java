@@ -113,17 +113,19 @@ public class Validators {
      *         valid.
      */
     public boolean validate() {
+        boolean valid = true;
         for (int i = 0; i < validatorsMap.size(); i++) {
             String name = validatorsMap.getKey(i);
             for (Validator v : validatorsMap.get(i)) {
                 String message = v.validate(parameters, name);
                 if (message != null) {
+                    valid = false;
                     errors.put(name, message);
                     break;
                 }
             }
         }
-        return errors.isEmpty();
+        return valid;
     }
 
     /**
