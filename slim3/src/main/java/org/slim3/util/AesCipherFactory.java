@@ -24,9 +24,20 @@ package org.slim3.util;
  */
 public class AesCipherFactory extends CipherFactory {
 
-    private static ThreadLocal<String> keys = new ThreadLocal<String>();
+    /**
+     * The key of global key.
+     */
+    public static final String GLOBAL_KEY_KEY = "slim3.cipherGlobalKey";
 
-    private static String globalKey;
+    /**
+     * The limited keys.
+     */
+    protected static ThreadLocal<String> keys = new ThreadLocal<String>();
+
+    /**
+     * The global key.
+     */
+    protected static String globalKey;
 
     @Override
     /**
@@ -38,11 +49,12 @@ public class AesCipherFactory extends CipherFactory {
         Cipher c = new AesCipher();
         String key = keys.get();
         if (key == null) {
+            if (globalKey == null) {
+                setUpGlobalKey();
+            }
             key = globalKey;
         }
-        if (key != null) {
-            c.setKey(key);
-        }
+        c.setKey(key);
         return c;
     }
 
@@ -80,5 +92,15 @@ public class AesCipherFactory extends CipherFactory {
     public void setGlobalKey(String key) {
         AesCipher.validateAesKey(key);
         globalKey = key;
+    }
+
+    /**
+     * Sets up a default global key.
+     */
+    protected void setUpGlobalKey() {
+        String key = System.getProperty(GLOBAL_KEY_KEY);
+        if (!StringUtil.isEmpty(key)) {
+            setGlobalKey(key);
+        }
     }
 }

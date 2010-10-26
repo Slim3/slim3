@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import com.google.appengine.repackaged.com.google.common.util.Base64;
 import com.google.gwt.user.server.Base64Utils;
 
 /**
@@ -31,34 +32,47 @@ import com.google.gwt.user.server.Base64Utils;
  */
 public class AesCipher implements Cipher {
 
-    private static final String ALGORITHM = "AES/CBC/PKCS5Padding";
+    /**
+     * The algorithm.
+     */
+    protected static final String ALGORITHM = "AES/CBC/PKCS5Padding";
 
-    private static final String ALGORITHM_KEY = "AES";
+    /**
+     * The key of algorithm.
+     */
+    protected static final String ALGORITHM_KEY = "AES";
 
-    private static final byte[] CBC_IV = {
-        0x01,
-        0x09,
-        0x07,
-        0x08,
-        0x01,
-        0x01,
-        0x00,
-        0x02,
-        0x01,
-        0x09,
-        0x08,
-        0x03,
-        0x00,
-        0x06,
-        0x02,
-        0x07, };
+    /**
+     * CBC IV.
+     */
+    protected static final byte[] CBC_IV =
+        {
+            0x01,
+            0x09,
+            0x07,
+            0x08,
+            0x01,
+            0x01,
+            0x00,
+            0x02,
+            0x01,
+            0x09,
+            0x08,
+            0x03,
+            0x00,
+            0x06,
+            0x02,
+            0x07, };
 
     private static final String ENCODING = "UTF-8";
 
-    private static final Logger logger = Logger.getLogger(AesCipher.class
-        .getName());
+    private static final Logger logger =
+        Logger.getLogger(AesCipher.class.getName());
 
-    private String key;
+    /**
+     * The key.
+     */
+    protected String key;
 
     /**
      * Encrypt the text.
@@ -76,8 +90,7 @@ public class AesCipher implements Cipher {
             return text;
         }
         if (key == null) {
-            throw new IllegalStateException(
-                "The key for cipher is not set.");
+            throw new IllegalStateException("The key for cipher is not set.");
         }
         return encrypt(key, text);
     }
@@ -109,7 +122,7 @@ public class AesCipher implements Cipher {
                 spec,
                 new IvParameterSpec(CBC_IV));
             byte[] encText = cipher.doFinal(text.getBytes(ENCODING));
-            result = Base64Utils.toBase64(encText);
+            result = Base64.encode(encText);
         } catch (Exception e) {
             logger.log(Level.WARNING, e.getMessage(), e);
         }
@@ -132,8 +145,7 @@ public class AesCipher implements Cipher {
             return encryptedText;
         }
         if (key == null) {
-            throw new IllegalStateException(
-                "The key for cipher is not set.");
+            throw new IllegalStateException("The key for cipher is not set.");
         }
         return decrypt(key, encryptedText);
     }
@@ -177,8 +189,13 @@ public class AesCipher implements Cipher {
      * 
      * @param key
      *            the key
+     * @throws NullPointerException
+     *             if the key parameter is null
+     * @throws IllegalArgumentException
+     *             if the key parameter is not 128 bits
      */
-    public void setKey(String key) {
+    public void setKey(String key) throws NullPointerException,
+            IllegalArgumentException {
         validateAesKey(key);
         this.key = key;
     }
@@ -188,12 +205,19 @@ public class AesCipher implements Cipher {
      * 
      * @param key
      *            the AES key
-     * @exception IllegalArgumentException
-     *                if the key parameter is not 128 bits
+     * @throws NullPointerException
+     *             if the key parameter is null
+     * @throws IllegalArgumentException
+     *             if the key parameter is not 128 bits
      */
-    public static void validateAesKey(String key) {
+    public static void validateAesKey(String key) throws NullPointerException,
+            IllegalArgumentException {
+        if (key == null) {
+            throw new NullPointerException(
+                "The key parameter must not be null.");
+        }
         int len = key.getBytes().length;
-        if (key == null || len != 16) {
+        if (len != 16) {
             throw new IllegalArgumentException(
                 "The key for cipher must be 128 bits.");
         }

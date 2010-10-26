@@ -25,6 +25,11 @@ package org.slim3.util;
 public abstract class CipherFactory {
 
     /**
+     * The key of CipherFactory.
+     */
+    public static final String CIPHER_FACTORY_KEY = "slim3.cipherFactory";
+
+    /**
      * Create the cipher. If the global key or the limited key of the current
      * thread is set, The key is set to the cipher. The key of the current
      * thread is given to priority more than a global key.
@@ -32,8 +37,10 @@ public abstract class CipherFactory {
      * @return the cipher
      */
     public static CipherFactory getFactory() {
-        CipherFactory factory = new AesCipherFactory();
-        return factory;
+        String className =
+            System.getProperty(CIPHER_FACTORY_KEY, AesCipherFactory.class
+                .getName());
+        return ClassUtil.newInstance(className);
     }
 
     /**
