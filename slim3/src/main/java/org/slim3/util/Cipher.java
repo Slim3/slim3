@@ -16,7 +16,7 @@
 package org.slim3.util;
 
 /**
- * A intaferce for the cipher.
+ * A interface for the cipher.
  * 
  * @author oyama1102
  * @since 1.0.6
