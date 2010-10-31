@@ -3,7 +3,6 @@ package org.slim3.eclipse.core.wizards;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +49,6 @@ public class RelativityFileSystemStructureProvider implements
 	}
 
 	private String stripPath(String path) {
-		String pathOrig = new String(path);
 		int index = path.indexOf(root.getName());
 		path = path.substring(index + root.getName().length());
 		return path;

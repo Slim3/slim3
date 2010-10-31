@@ -2,7 +2,6 @@ package org.slim3.eclipse.core.wizards;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
@@ -45,7 +44,7 @@ public class NewGwtModuleWizard extends Wizard implements INewWizard {
 		IWorkbenchPage page = window.getActivePage();
 
 		try {
-			IEditorPart editorPart = IDE.openEditor(page, page1.getModuleFile());
+			IDE.openEditor(page, page1.getModuleFile());
 		} catch (PartInitException e) {
 			e.printStackTrace();
 		}

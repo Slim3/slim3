@@ -24,7 +24,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaConventions;
 import org.eclipse.jdt.core.JavaCore;
@@ -120,11 +119,11 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 
 		cbIsAutoGen = new Button(localComposite, SWT.CHECK);
 		cbIsAutoGen.setText("Generate a Module, an Entry Point and a Host Page.");
-		//cbIsAutoGen.setSelection(true);
+		cbIsAutoGen.setSelection(true);
 		cbIsAutoGen.setEnabled(false);
 		
-		cbIsAutoGen.setSelection(false);
-		cbIsAutoGen.setVisible(false);
+		//cbIsAutoGen.setSelection(false);
+		//cbIsAutoGen.setVisible(false);
 
 		setControl(composite);
 	}
@@ -275,9 +274,9 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 			copyAppEngineJarToWebInfLib(projectHandle, monitor);
 			
 			if(isAutoGen) {
-				generateModule(projectHandle, rootPackage, monitor);
+				generateModule(projectHandle, rootPackage, monitor);			
 				generateEntryPoint(projectHandle, rootPackage, monitor);
-				generateHostPage(projectHandle, rootPackage, monitor);
+				generateHostPage(projectHandle, monitor);
 			}
 		} catch(Exception ex) {
 			throw new InvocationTargetException(ex);
@@ -490,7 +489,14 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 	private void generateEntryPoint(IProject projectHandle, String rootPackage,
 			IProgressMonitor monitor) throws CoreException, InterruptedException {
 		NewEntryPointWizardPage page = new NewEntryPointWizardPage();
-		page.createEntryPoint(projectHandle, rootPackage, DEFAULT_ENTRY_POINT_NAME, monitor);
+		page.createEntryPoint(projectHandle, rootPackage + ".client", DEFAULT_ENTRY_POINT_NAME, monitor);
+		page.dispose();
+		page = null;
+	}
+
+	private void generateHostPage(IProject projectHandle, IProgressMonitor monitor) throws CoreException {
+		NewHostPageWizardPage page = new NewHostPageWizardPage();
+		page.createHostPage(projectHandle, DEFAULT_MODULE_NAME, monitor);
 		page.dispose();
 		page = null;
 	}
@@ -498,10 +504,6 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 	public IProject getProjectHandle(String prjname) {
         return ResourcesPlugin.getWorkspace().getRoot().getProject(prjname);
     }
-
-	private void generateHostPage(IProject projectHandle, String rootPackage,
-			IProgressMonitor monitor) {
-	}
 
     public String queryOverwrite(String pathString) {
 		return ALL;
