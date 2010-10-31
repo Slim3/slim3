@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.slim3.eclipse_1.0.5.201010311714.jar" id="org.slim3.eclipse" version="1.0.5.201010311714">
+      <category name="org.slim3.eclipse.updatesite"/>
+   </feature>
+   <category-def name="org.slim3.eclipse.updatesite" label="Slim3"/>
+</site>
