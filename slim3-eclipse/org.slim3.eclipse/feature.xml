@@ -218,11 +218,15 @@
    limitations under the License.
    </license>
 
+   <url>
+      <update label="Slim3 Update Site" url="http://localhost/"/>
+   </url>
+
    <plugin
          id="org.slim3.eclipse.core"
          download-size="0"
          install-size="0"
-         version="1.0.5"
+         version="0.0.0"
          unpack="false"/>
 
 </feature>
