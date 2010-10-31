@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaConventions;
 import org.eclipse.jdt.core.JavaCore;
@@ -35,6 +36,8 @@ import org.eclipse.jdt.internal.ui.viewsupport.BasicElementLabels;
 import org.eclipse.jdt.internal.ui.wizards.NewWizardMessages;
 import org.eclipse.jdt.ui.wizards.NewContainerWizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -57,6 +60,9 @@ import org.slim3.eclipse.core.Activator;
 
 @SuppressWarnings("restriction")
 public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements IOverwriteQuery {
+	private static String DEFAULT_MODULE_NAME = "Main";
+	private static String DEFAULT_ENTRY_POINT_NAME = "Main";
+	
 	public NewS3ProjectWizardPage() {
 		this("Slim3 New Project");
 	}
@@ -69,6 +75,8 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 	private Text txtProjectName;
     private Text txtRootPackage;
 	private Button cbIsGWT;
+	private Button cbIsAutoGen;
+	
     private Listener nameModifyListener = new Listener() {
         public void handleEvent(Event e) {
             boolean valid = validatePage();
@@ -100,10 +108,35 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 		cbIsGWT = new Button(localComposite, SWT.CHECK);
 		cbIsGWT.setText("Use Google Web Toolkit");
 		
+		cbIsGWT.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+
+			public void widgetSelected(SelectionEvent e) {
+		        Button bChk = (Button)e.widget;
+		        cbIsAutoGen.setEnabled(bChk.getSelection());
+			}
+		});
+
+		cbIsAutoGen = new Button(localComposite, SWT.CHECK);
+		cbIsAutoGen.setText("Generate a Module, an Entry Point and a Host Page.");
+		//cbIsAutoGen.setSelection(true);
+		cbIsAutoGen.setEnabled(false);
+		
+		cbIsAutoGen.setSelection(false);
+		cbIsAutoGen.setVisible(false);
+
 		setControl(composite);
-		setPageComplete(false);
 	}
 
+	@Override
+	public void setVisible(boolean visible) {
+		super.setVisible(visible);
+		if(visible) {
+			setPageComplete(validatePage());
+		}
+	}
+	
 	protected boolean validatePage() {
         String projectName = txtProjectName.getText();
         if(! validateProjectName(projectName)) {
@@ -186,6 +219,7 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
     	final String projectName = txtProjectName.getText();
     	final String rootPackage = txtRootPackage.getText();
     	final boolean isGwtProject = cbIsGWT.getSelection();
+    	final boolean isAutoGen = cbIsAutoGen.getSelection();
     	
 		try {
 			WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
@@ -196,7 +230,7 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 					if(! isGwtProject) {
 						createExistingProject(projectName, rootPackage, monitor);
 					} else {
-						createExistingGwtProject(projectName, rootPackage, monitor);
+						createExistingGwtProject(projectName, rootPackage, isAutoGen, monitor);
 					}
 				}
 			};
@@ -230,7 +264,7 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 	}
 
 	protected void createExistingGwtProject(String projectName, String rootPackage, 
-    		IProgressMonitor monitor) throws InvocationTargetException {
+    		boolean isAutoGen, IProgressMonitor monitor) throws InvocationTargetException {
 		try {
 			IProject projectHandle = createProjectHandle(projectName, monitor);
 			importBlankProject(projectHandle, monitor);
@@ -239,6 +273,12 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 			changeGenSrcDir(projectHandle, monitor);
 			changeRootPackage(projectHandle, rootPackage, monitor);
 			copyAppEngineJarToWebInfLib(projectHandle, monitor);
+			
+			if(isAutoGen) {
+				generateModule(projectHandle, rootPackage, monitor);
+				generateEntryPoint(projectHandle, rootPackage, monitor);
+				generateHostPage(projectHandle, rootPackage, monitor);
+			}
 		} catch(Exception ex) {
 			throw new InvocationTargetException(ex);
 		}
@@ -297,6 +337,7 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 		} else {
 			factoryPath.create(source, true, monitor);
 		}
+		source = null;
 	}
 
 	private String getGenJarFileName(IProject projectHandle, IProgressMonitor monitor) throws CoreException {
@@ -337,6 +378,16 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 				aptCorePref.setContents(source, true, true, monitor);
 			} catch (IOException e) {
 				throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Cannot read .settings/org.eclipse.jdt.apt.core.prefs"));
+			} finally {
+				try {
+					is.close();
+					ir.close();
+					br.close();
+				} catch (IOException e) {
+				}
+				is = null;
+				ir = null;
+				br = null;
 			}
 		} else {
 			throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Not found .settings/org.eclipse.jdt.apt.core.prefs"));
@@ -369,19 +420,39 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 				webConfig.setContents(source, true, true, monitor);
 			} catch (IOException e) {
 				throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Cannot read .settings/org.eclipse.jdt.apt.core.prefs"));
+			} finally {
+				try {
+					is.close();
+					ir.close();
+					br.close();
+				} catch (IOException e) {
+				}
+				is = null;
+				ir = null;
+				br = null;
 			}
 		} else {
 			throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Not found war/WEB-INF/web.xml"));
 		}
+		createPackage(projectHandle, rootPackage, monitor);
 	}
 
+	private void createPackage(IProject projectHandle, String rootPackage, IProgressMonitor monitor) throws CoreException {
+		IJavaProject project = JavaCore.create(projectHandle);
+		IPackageFragmentRoot[] roots = project.getPackageFragmentRoots();
+		for(IPackageFragmentRoot root : roots) {
+			if(root.getKind() == IPackageFragmentRoot.K_SOURCE) {
+				root.createPackageFragment(rootPackage, true, monitor);
+			}
+		}
+	}
+	
 	private void copyAppEngineJarToWebInfLib(IProject projectHandle, IProgressMonitor monitor) throws CoreException {
 		
 		Path dest = new Path(projectHandle.getFullPath().toPortableString() + "/war/WEB-INF/lib");
 		IJavaProject project = JavaCore.create(projectHandle);
 		IPackageFragmentRoot[] roots = project.getPackageFragmentRoots();
 		for(IPackageFragmentRoot root : roots) {
-			System.out.println(root.getKind() + ":" + root.getElementName());
 			if(root.getElementName().startsWith("appengine-api")) {
 				copy(((JavaElement) root).getPath(), dest.append(root.getElementName()), monitor);
 			}
@@ -401,14 +472,36 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 	
 	        PlatformUI.getWorkbench().getOperationSupport().getOperationHistory().execute(
 	            op, monitor, WorkspaceUndoUtil.getUIInfoAdapter(getShell()));
+	        
 	    } catch (Exception ex) {
 			throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Failed to create module", ex));
 	    }	    
 	}
 	
+	private void generateModule(IProject projectHandle, String rootPackage,
+			IProgressMonitor monitor) throws CoreException {
+		NewGwtModuleWizardPage page = new NewGwtModuleWizardPage();
+		page.createModule(projectHandle, rootPackage, DEFAULT_MODULE_NAME, 
+				DEFAULT_ENTRY_POINT_NAME, monitor);
+		page.dispose();
+		page = null;
+	}
+	
+	private void generateEntryPoint(IProject projectHandle, String rootPackage,
+			IProgressMonitor monitor) throws CoreException, InterruptedException {
+		NewEntryPointWizardPage page = new NewEntryPointWizardPage();
+		page.createEntryPoint(projectHandle, rootPackage, DEFAULT_ENTRY_POINT_NAME, monitor);
+		page.dispose();
+		page = null;
+	}
+
 	public IProject getProjectHandle(String prjname) {
         return ResourcesPlugin.getWorkspace().getRoot().getProject(prjname);
     }
+
+	private void generateHostPage(IProject projectHandle, String rootPackage,
+			IProgressMonitor monitor) {
+	}
 
     public String queryOverwrite(String pathString) {
 		return ALL;
