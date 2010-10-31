@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/org.slim3.eclipse_1.0.5.201010311714.jar" id="org.slim3.eclipse" version="1.0.5.201010311714">
+   <description name="Slim3 Update Site">
+      Slim3 is a full-stack MVC framework optimized for Google App Engine/Java, and you can use Slim3 as just a datastore framework, too.
+
+
+Our main concept is &quot;Simple&quot; and &quot;Less Is More&quot;. &quot;Less is more&quot; means simplicity and clarity lead to good design. 
+
+80% of the effects come from 20% of the causes. This is known as The Pareto Principle. We concentrate all our energies into 20% of the causes. Programmers can resolve the other issues without framework constraints. 
+
+We want to get rid of complex and bloated features from your applications and our framework. As a result, we will slim down.
+   </description>
+   <feature url="features/org.slim3.eclipse_1.0.5.201010311836.jar" id="org.slim3.eclipse" version="1.0.5.201010311836">
       <category name="org.slim3.eclipse.updatesite"/>
    </feature>
    <category-def name="org.slim3.eclipse.updatesite" label="Slim3"/>
