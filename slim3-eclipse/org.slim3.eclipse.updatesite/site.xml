@@ -10,12 +10,8 @@ Our main concept is &quot;Simple&quot; and &quot;Less Is More&quot;. &quot;Less 
 
 We want to get rid of complex and bloated features from your applications and our framework. As a result, we will slim down.
    </description>
-   <feature url="features/org.slim3.eclipse_1.0.5.201010311858.jar" id="org.slim3.eclipse" version="1.0.5.201010311858">
+   <feature url="features/org.slim3.eclipse_1.0.5.201010311917.jar" id="org.slim3.eclipse" version="1.0.5.201010311917">
       <category name="new_category_1"/>
    </feature>
-   <category-def name="new_category_1" label="Slim3">
-      <description>
-         Slim3
-      </description>
-   </category-def>
+   <category-def name="new_category_1" label="Slim3"/>
 </site>
