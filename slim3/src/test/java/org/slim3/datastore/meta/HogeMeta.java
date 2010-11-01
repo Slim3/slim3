@@ -35,9 +35,9 @@ import org.slim3.datastore.model.MySerializable;
 import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.ShortBlob;
 import com.google.appengine.api.datastore.Text;
+import com.google.appengine.api.datastore.Query.SortDirection;
 
 /**
  * @author higa
@@ -392,7 +392,7 @@ public class HogeMeta extends ModelMeta<Hoge> {
             "myCipherText",
             "myCipherText",
             Text.class);
-    
+
     /**
      * 
      */
@@ -541,9 +541,8 @@ public class HogeMeta extends ModelMeta<Hoge> {
         e.setProperty("myStringList", m.getMyStringList());
 
         e.setProperty("version", m.getVersion());
-        e.setUnindexedProperty(
-            "myCipherLobString",
-            stringToText(encrypt(m.getMyCipherLobString())));
+        e.setUnindexedProperty("myCipherLobString", stringToText(encrypt(m
+            .getMyCipherLobString())));
         e.setProperty("myCipherString", encrypt(m.getMyCipherString()));
         e.setUnindexedProperty("myCipherText", encrypt(m.getMyCipherText()));
         return e;
@@ -577,8 +576,6 @@ public class HogeMeta extends ModelMeta<Hoge> {
 
     @Override
     protected void prePut(Object model) {
-        assignKeyIfNecessary(model);
-        incrementVersion(model);
     }
 
     @Override
@@ -590,12 +587,15 @@ public class HogeMeta extends ModelMeta<Hoge> {
     public String getSchemaVersionName() {
         return "slim3.schemaVersion";
     }
-    
+
     @Override
     protected boolean isCipherProperty(String propertyName) {
-        if ("myCipherLobString".equals(propertyName)) return true;
-        if ("myCipherString".equals(propertyName)) return true;
-        if ("myCipherText".equals(propertyName)) return true;
+        if ("myCipherLobString".equals(propertyName))
+            return true;
+        if ("myCipherString".equals(propertyName))
+            return true;
+        if ("myCipherText".equals(propertyName))
+            return true;
         return false;
     }
 }

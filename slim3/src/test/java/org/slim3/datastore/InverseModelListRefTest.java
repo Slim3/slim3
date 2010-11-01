@@ -25,6 +25,7 @@ import org.slim3.datastore.meta.BbbMeta;
 import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.AppEngineTestCase;
+import org.slim3.util.CipherFactory;
 
 import com.google.appengine.api.datastore.Query.SortDirection;
 
@@ -42,6 +43,18 @@ public class InverseModelListRefTest extends AppEngineTestCase {
             "hoge2Ref",
             hoge,
             new Sort("hoge2Ref", SortDirection.ASCENDING));
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        CipherFactory.getFactory().setGlobalKey("xxxxxxxxxxxxxxxx");
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        super.tearDown();
+        CipherFactory.getFactory().clearGlobalKey();
+    }
 
     /**
      * @throws Exception

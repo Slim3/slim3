@@ -16,17 +16,20 @@
 package org.slim3.datastore;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Map;
 
+import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreTimeoutException;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.apphosting.api.ApiProxy.ApiConfig;
 
 /**
  * A class to lock a target entity.
@@ -57,6 +60,16 @@ public class Lock {
      * The timeout.
      */
     protected static final long TIMEOUT = 30 * 1000;
+
+    /**
+     * The datastore service.
+     */
+    protected DatastoreService ds;
+
+    /**
+     * The AppEngine API configuration.
+     */
+    protected ApiConfig apiConfig;
 
     /**
      * The key.
@@ -102,15 +115,22 @@ public class Lock {
     /**
      * Converts the entity to a {@link Lock}.
      * 
+     * @param ds
+     *            the datastore service
+     * @param apiConfig
+     *            the AppEngine API configuration
      * @param entity
      *            an entity
+     * 
      * @return a {@link Lock}
      * @throws NullPointerException
-     *             if the entity property is null
+     *             if the ds parameter is null or if the apiConfig parameter is
+     *             null or if the entity property is null
      * @throws IllegalArgumentException
      *             if the kind of the entity is not slim3.Lock
      */
-    public static Lock toLock(Entity entity) throws NullPointerException,
+    public static Lock toLock(DatastoreService ds, ApiConfig apiConfig,
+            Entity entity) throws NullPointerException,
             IllegalArgumentException {
         if (entity == null) {
             throw new NullPointerException(
@@ -128,46 +148,61 @@ public class Lock {
         Key globalTransactionKey =
             (Key) entity.getProperty(GLOBAL_TRANSACTION_KEY_PROPERTY);
         Long timestamp = (Long) entity.getProperty(TIMESTAMP_PROPERTY);
-        return new Lock(
-            globalTransactionKey,
-            entity.getKey().getParent(),
-            timestamp);
+        return new Lock(ds, apiConfig, globalTransactionKey, entity
+            .getKey()
+            .getParent(), timestamp);
     }
 
     /**
      * Returns a {@link Lock} specified by the key. Returns null if no entity is
      * found.
      * 
+     * @param ds
+     *            the datastore service
+     * @param apiConfig
+     *            the AppEngine API configuration
      * @param tx
      *            the transaction
      * @param key
      *            the key
+     * 
      * @return a {@link Lock} specified by the key
+     * @throws NullPointerException
+     *             if the ds parameter is null or if the apiConfig parameter is
+     *             null
      */
-    public static Lock getOrNull(Transaction tx, Key key) {
-        Entity entity = Datastore.getOrNull(tx, key);
+    public static Lock getOrNull(DatastoreService ds, ApiConfig apiConfig,
+            Transaction tx, Key key) throws NullPointerException {
+        Entity entity =
+            DatastoreUtil.getAsMap(ds, tx, Arrays.asList(key)).get(key);
         if (entity == null) {
             return null;
         }
-        return toLock(entity);
+        return toLock(ds, apiConfig, entity);
     }
 
     /**
      * Returns keys specified by the global transaction key.
      * 
+     * @param ds
+     *            the datastore service
      * @param globalTransactionKey
      *            the global transaction key
      * @return a list of keys
      * @throws NullPointerException
-     *             if the globalTransactionKey parameter is null
+     *             if the ds parameter is null or if the globalTransactionKey
+     *             parameter is null
      */
-    public static List<Key> getKeys(Key globalTransactionKey)
-            throws NullPointerException {
+    public static List<Key> getKeys(DatastoreService ds,
+            Key globalTransactionKey) throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
         if (globalTransactionKey == null) {
             throw new NullPointerException(
                 "The globalTransactionKey parameter must not be null.");
         }
-        return Datastore.query(KIND).filter(
+        return new EntityQuery(ds, KIND).filter(
             GLOBAL_TRANSACTION_KEY_PROPERTY,
             FilterOperator.EQUAL,
             globalTransactionKey).asKeyList();
@@ -176,37 +211,62 @@ public class Lock {
     /**
      * Deletes entities specified by the global transaction key in transaction.
      * 
+     * @param ds
+     *            the datastore service
+     * @param apiConfig
+     *            the AppEngine API configuration
      * @param globalTransactionKey
      *            the global transaction key
      * @throws NullPointerException
-     *             if the globalTransactionKey parameter is null
+     *             if the ds parameter is null or if the globalTransactionKey
+     *             parameter is null
      * 
      */
-    public static void deleteInTx(Key globalTransactionKey)
-            throws NullPointerException {
+    public static void deleteInTx(DatastoreService ds, ApiConfig apiConfig,
+            Key globalTransactionKey) throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        if (apiConfig == null) {
+            throw new NullPointerException(
+                "The apiConfig parameter must not be null.");
+        }
         if (globalTransactionKey == null) {
             throw new NullPointerException(
                 "The globalTransactionKey parameter must not be null.");
         }
-        for (Key key : getKeys(globalTransactionKey)) {
-            deleteInTx(globalTransactionKey, key);
+        for (Key key : getKeys(ds, globalTransactionKey)) {
+            deleteInTx(ds, apiConfig, globalTransactionKey, key);
         }
     }
 
     /**
      * Deletes the locks from the datastore in transaction.
      * 
+     * @param ds
+     *            the datastore service
+     * @param apiConfig
+     *            the AppEngine API configuration
      * @param globalTransactionKey
      *            the global transaction key
      * @param locks
      *            the locks
      * @throws NullPointerException
-     *             if the globalTransactionKey parameter is null or if the locks
-     *             parameter is null
+     *             if the ds parameter is null or if the apiConfig parameter is
+     *             null or if the globalTransactionKey parameter is null or if
+     *             the locks parameter is null
      * 
      */
-    public static void deleteInTx(Key globalTransactionKey, Iterable<Lock> locks)
+    public static void deleteInTx(DatastoreService ds, ApiConfig apiConfig,
+            Key globalTransactionKey, Iterable<Lock> locks)
             throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        if (apiConfig == null) {
+            throw new NullPointerException(
+                "The apiConfig parameter must not be null.");
+        }
         if (globalTransactionKey == null) {
             throw new NullPointerException(
                 "The globalTransactionKey parameter must not be null.");
@@ -220,24 +280,36 @@ public class Lock {
             return;
         }
         for (Lock lock : locks) {
-            deleteInTx(globalTransactionKey, lock.key);
+            deleteInTx(ds, apiConfig, globalTransactionKey, lock.key);
         }
     }
 
     /**
      * Deletes an entity specified by the key in transaction.
      * 
+     * @param ds
+     *            the datastore service
+     * @param apiConfig
+     *            the AppEngine API configuration
      * @param globalTransactionKey
      *            the global transaction key
      * @param key
      *            the key
      * 
      * @throws NullPointerException
-     *             if the globalTransactionKey parameter is null or if the key
-     *             parameter is null
+     *             if the ds parameter is null or if the apiConfig parameter is
+     *             null or if the globalTransactionKey parameter is null or if
+     *             the key parameter is null
      */
-    protected static void deleteInTx(Key globalTransactionKey, Key key)
-            throws NullPointerException {
+    protected static void deleteInTx(DatastoreService ds, ApiConfig apiConfig,
+            Key globalTransactionKey, Key key) throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        if (apiConfig == null) {
+            throw new NullPointerException(
+                "The apiConfig parameter must not be null.");
+        }
         if (globalTransactionKey == null) {
             throw new NullPointerException(
                 "The globalTransactionKey parameter must not be null.");
@@ -246,13 +318,14 @@ public class Lock {
             throw new NullPointerException(
                 "The key parameter must not be null.");
         }
+
         for (int i = 0; i < DatastoreUtil.MAX_RETRY; i++) {
-            Transaction tx = Datastore.beginTransaction();
+            Transaction tx = ds.beginTransaction();
             try {
-                Lock lock = getOrNull(tx, key);
+                Lock lock = getOrNull(ds, apiConfig, tx, key);
                 if (lock != null
                     && globalTransactionKey.equals(lock.globalTransactionKey)) {
-                    Datastore.delete(tx, key);
+                    ds.delete(tx, key);
                     tx.commit();
                 }
                 return;
@@ -270,26 +343,34 @@ public class Lock {
      * Deletes entities specified by the global transaction key without
      * transaction.
      * 
+     * @param ds
+     *            the datastore service
      * @param globalTransactionKey
      *            the global transaction key
      * @throws NullPointerException
-     *             if the globalTransactionKey parameter is null
+     *             if the ds parameter is null or if the globalTransactionKey
+     *             parameter is null
      */
-    public static void deleteWithoutTx(Key globalTransactionKey)
-            throws NullPointerException {
-        Datastore.deleteWithoutTx(getKeys(globalTransactionKey));
+    public static void deleteWithoutTx(DatastoreService ds,
+            Key globalTransactionKey) throws NullPointerException {
+        DatastoreUtil.delete(ds, null, getKeys(ds, globalTransactionKey));
     }
 
     /**
      * Deletes the locks without transaction.
      * 
+     * @param ds
+     *            the datastore service
      * @param locks
      *            the locks
      * @throws NullPointerException
-     *             if the locks parameter is null
+     *             if the ds parameter is null or if the locks parameter is null
      */
-    public static void deleteWithoutTx(Iterable<Lock> locks)
+    public static void deleteWithoutTx(DatastoreService ds, Iterable<Lock> locks)
             throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
         if (locks == null) {
             throw new NullPointerException(
                 "The locks parameter must not be null.");
@@ -301,13 +382,15 @@ public class Lock {
         if (keys.isEmpty()) {
             return;
         }
-        Datastore.deleteWithoutTx(keys);
+        DatastoreUtil.delete(ds, null, keys);
     }
 
     /**
      * Verifies lock specified by the root key and returns entities specified by
      * the keys as map.
      * 
+     * @param ds
+     *            the datastore service
      * @param tx
      *            the transaction
      * @param rootKey
@@ -316,15 +399,19 @@ public class Lock {
      *            the keys
      * @return an entity
      * @throws NullPointerException
-     *             if the tx parameter is null or if the rootKey parameter is
-     *             null or if the keys parameter is null
+     *             if the ds parameter is null or if the tx parameter is null or
+     *             if the rootKey parameter is null or if the keys parameter is
+     *             null
      * 
      * @throws ConcurrentModificationException
      *             if locking the entity group failed
      */
-    public static Map<Key, Entity> verifyAndGetAsMap(Transaction tx,
-            Key rootKey, Collection<Key> keys) throws NullPointerException,
-            ConcurrentModificationException {
+    public static Map<Key, Entity> verifyAndGetAsMap(DatastoreService ds,
+            Transaction tx, Key rootKey, Collection<Key> keys)
+            throws NullPointerException, ConcurrentModificationException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
         if (tx == null) {
             throw new NullPointerException("The tx parameter must not be null.");
         }
@@ -340,7 +427,7 @@ public class Lock {
         List<Key> keyList = new ArrayList<Key>(keys.size() + 1);
         keyList.addAll(keys);
         keyList.add(lockKey);
-        Map<Key, Entity> map = Datastore.getAsMap(tx, keyList);
+        Map<Key, Entity> map = DatastoreUtil.getAsMap(ds, tx, keyList);
         if (map.containsKey(lockKey)) {
             throw createConcurrentModificationException(rootKey);
         }
@@ -402,6 +489,10 @@ public class Lock {
     /**
      * Constructor.
      * 
+     * @param ds
+     *            the datastore service
+     * @param apiConfig
+     *            the AppEngine API configuration
      * @param globalTransactionKey
      *            the global transaction key
      * @param rootKey
@@ -410,12 +501,21 @@ public class Lock {
      *            the time-stamp
      * 
      * @throws NullPointerException
-     *             if the rootKey parameter is null or if the timestamp
+     *             if the ds parameter is null or if the apiConfig parameter is
+     *             null or if the rootKey parameter is null or if the timestamp
      *             parameter is null or if the globalTransactionKey parameter is
      *             null
      */
-    public Lock(Key globalTransactionKey, Key rootKey, Long timestamp)
+    public Lock(DatastoreService ds, ApiConfig apiConfig,
+            Key globalTransactionKey, Key rootKey, Long timestamp)
             throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        if (apiConfig == null) {
+            throw new NullPointerException(
+                "The apiConfig parameter must not be null.");
+        }
         if (globalTransactionKey == null) {
             throw new NullPointerException(
                 "The globalTranactionKey parameter must not be null.");
@@ -428,6 +528,8 @@ public class Lock {
             throw new NullPointerException(
                 "The timestamp parameter must not be null.");
         }
+        this.ds = ds;
+        this.apiConfig = apiConfig;
         this.globalTransactionKey = globalTransactionKey;
         this.key = createKey(rootKey);
         this.rootKey = rootKey;
@@ -457,17 +559,17 @@ public class Lock {
     public void lock() throws ConcurrentModificationException {
         DatastoreTimeoutException dte = null;
         for (int i = 0; i < DatastoreUtil.MAX_RETRY; i++) {
-            Transaction tx = Datastore.beginTransaction();
+            Transaction tx = ds.beginTransaction();
             try {
-                Lock other = getOrNull(tx, key);
+                Lock other = getOrNull(ds, apiConfig, tx, key);
                 if (other != null) {
                     verify(other);
                 }
-                Datastore.put(tx, toEntity());
+                DatastoreUtil.put(ds, apiConfig, tx, toEntity());
                 tx.commit();
                 return;
             } catch (DatastoreTimeoutException e) {
-                Lock lock = getOrNull(null, key);
+                Lock lock = getOrNull(ds, apiConfig, null, key);
                 if (lock != null
                     && lock.globalTransactionKey.equals(globalTransactionKey)) {
                     return;
@@ -502,22 +604,22 @@ public class Lock {
         DatastoreTimeoutException dte = null;
         for (int i = 0; i < DatastoreUtil.MAX_RETRY; i++) {
             Map<Key, Entity> map = null;
-            Transaction tx = Datastore.beginTransaction();
+            Transaction tx = ds.beginTransaction();
             try {
                 List<Key> keyList = new ArrayList<Key>(targetKeys.size() + 1);
                 keyList.addAll(targetKeys);
                 keyList.add(key);
-                map = Datastore.getAsMap(tx, keyList);
+                map = DatastoreUtil.getAsMap(ds, tx, keyList);
                 Entity otherEntity = map.remove(key);
                 if (otherEntity != null) {
-                    Lock other = toLock(otherEntity);
+                    Lock other = toLock(ds, apiConfig, otherEntity);
                     verify(other);
                 }
-                Datastore.put(tx, toEntity());
+                DatastoreUtil.put(ds, apiConfig, tx, toEntity());
                 tx.commit();
                 return map;
             } catch (DatastoreTimeoutException e) {
-                Lock lock = getOrNull(null, key);
+                Lock lock = getOrNull(ds, apiConfig, null, key);
                 if (lock != null
                     && lock.globalTransactionKey.equals(globalTransactionKey)) {
                     return map;
@@ -556,18 +658,27 @@ public class Lock {
         }
         DatastoreTimeoutException dte = null;
         for (int i = 0; i < DatastoreUtil.MAX_RETRY; i++) {
-            Transaction tx = Datastore.beginTransaction();
+            Transaction tx = ds.beginTransaction();
             try {
                 GlobalTransaction gtx =
-                    GlobalTransaction.getOrNull(tx, other.globalTransactionKey);
+                    GlobalTransaction.getOrNull(
+                        ds,
+                        apiConfig,
+                        tx,
+                        other.globalTransactionKey);
                 if (gtx != null) {
                     if (gtx.valid) {
                         throw createConcurrentModificationException(rootKey);
                     }
                     return;
                 }
-                gtx = new GlobalTransaction(other.globalTransactionKey, false);
-                GlobalTransaction.put(tx, gtx);
+                gtx =
+                    new GlobalTransaction(
+                        ds,
+                        apiConfig,
+                        other.globalTransactionKey,
+                        false);
+                GlobalTransaction.put(ds, apiConfig, tx, gtx);
                 tx.commit();
                 return;
             } catch (DatastoreTimeoutException e) {

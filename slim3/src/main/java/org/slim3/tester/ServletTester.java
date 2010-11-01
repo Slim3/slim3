@@ -135,9 +135,15 @@ public class ServletTester extends AppEngineTester {
      * @param name
      *            the parameter name
      * @return the parameter value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    public String param(String name) {
-        return request.getParameter(name);
+    public String param(CharSequence name) throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        return request.getParameter(name.toString());
     }
 
     /**
@@ -147,9 +153,16 @@ public class ServletTester extends AppEngineTester {
      *            the parameter name
      * @param value
      *            the parameter value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    public void param(String name, Object value) {
-        request.setParameter(name, StringUtil.toString(value));
+    public void param(CharSequence name, Object value)
+            throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        request.setParameter(name.toString(), StringUtil.toString(value));
     }
 
     /**
@@ -158,9 +171,15 @@ public class ServletTester extends AppEngineTester {
      * @param name
      *            the parameter name
      * @return the parameter value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    public String[] paramValues(String name) {
-        return request.getParameterValues(name);
+    public String[] paramValues(CharSequence name) throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        return request.getParameterValues(name.toString());
     }
 
     /**
@@ -169,9 +188,15 @@ public class ServletTester extends AppEngineTester {
      * @param name
      *            the attribute name
      * @return the short attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    public Short asShort(String name) {
-        return ShortUtil.toShort(request.getAttribute(name));
+    public Short asShort(CharSequence name) throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        return ShortUtil.toShort(request.getAttribute(name.toString()));
     }
 
     /**
@@ -182,8 +207,15 @@ public class ServletTester extends AppEngineTester {
      * @param pattern
      *            the pattern for {@link DecimalFormat}
      * @return the short attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    public Short asShort(String name, String pattern) {
+    public Short asShort(CharSequence name, String pattern)
+            throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
         return ShortUtil.toShort(NumberUtil.toNumber(asString(name), pattern));
     }
 
@@ -193,9 +225,15 @@ public class ServletTester extends AppEngineTester {
      * @param name
      *            the attribute name
      * @return the integer attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    public Integer asInteger(String name) {
-        return IntegerUtil.toInteger(request.getAttribute(name));
+    public Integer asInteger(CharSequence name) throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        return IntegerUtil.toInteger(request.getAttribute(name.toString()));
     }
 
     /**
@@ -206,8 +244,15 @@ public class ServletTester extends AppEngineTester {
      * @param pattern
      *            the pattern for {@link DecimalFormat}
      * @return the integer attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    public Integer asInteger(String name, String pattern) {
+    public Integer asInteger(CharSequence name, String pattern)
+            throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
         return IntegerUtil.toInteger(NumberUtil.toNumber(
             asString(name),
             pattern));
@@ -219,9 +264,15 @@ public class ServletTester extends AppEngineTester {
      * @param name
      *            the attribute name
      * @return the long attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    public Long asLong(String name) {
-        return LongUtil.toLong(request.getAttribute(name));
+    public Long asLong(CharSequence name) throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        return LongUtil.toLong(request.getAttribute(name.toString()));
     }
 
     /**
@@ -232,8 +283,15 @@ public class ServletTester extends AppEngineTester {
      * @param pattern
      *            the pattern for {@link DecimalFormat}
      * @return the long attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    public Long asLong(String name, String pattern) {
+    public Long asLong(CharSequence name, String pattern)
+            throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
         return LongUtil.toLong(NumberUtil.toNumber(asString(name), pattern));
     }
 
@@ -243,9 +301,15 @@ public class ServletTester extends AppEngineTester {
      * @param name
      *            the attribute name
      * @return the float attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    public Float asFloat(String name) {
-        return FloatUtil.toFloat(request.getAttribute(name));
+    public Float asFloat(CharSequence name) throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        return FloatUtil.toFloat(request.getAttribute(name.toString()));
     }
 
     /**
@@ -256,8 +320,15 @@ public class ServletTester extends AppEngineTester {
      * @param pattern
      *            the pattern for {@link DecimalFormat}
      * @return the float attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    public Float asFloat(String name, String pattern) {
+    public Float asFloat(CharSequence name, String pattern)
+            throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
         return FloatUtil.toFloat(NumberUtil.toNumber(asString(name), pattern));
     }
 
@@ -267,9 +338,15 @@ public class ServletTester extends AppEngineTester {
      * @param name
      *            the attribute name
      * @return the double attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    public Double asDouble(String name) {
-        return DoubleUtil.toDouble(request.getAttribute(name));
+    public Double asDouble(CharSequence name) throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        return DoubleUtil.toDouble(request.getAttribute(name.toString()));
     }
 
     /**
@@ -280,8 +357,15 @@ public class ServletTester extends AppEngineTester {
      * @param pattern
      *            the pattern for {@link DecimalFormat}
      * @return the double attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    public Double asDouble(String name, String pattern) {
+    public Double asDouble(CharSequence name, String pattern)
+            throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
         return DoubleUtil
             .toDouble(NumberUtil.toNumber(asString(name), pattern));
     }
@@ -292,9 +376,15 @@ public class ServletTester extends AppEngineTester {
      * @param name
      *            the attribute name
      * @return the string attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    public String asString(String name) {
-        return StringUtil.toString(request.getAttribute(name));
+    public String asString(CharSequence name) throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        return StringUtil.toString(request.getAttribute(name.toString()));
     }
 
     /**
@@ -303,9 +393,15 @@ public class ServletTester extends AppEngineTester {
      * @param name
      *            the attribute name
      * @return the boolean attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    public Boolean asBoolean(String name) {
-        return BooleanUtil.toBoolean(request.getAttribute(name));
+    public Boolean asBoolean(CharSequence name) throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        return BooleanUtil.toBoolean(request.getAttribute(name.toString()));
     }
 
     /**
@@ -316,8 +412,15 @@ public class ServletTester extends AppEngineTester {
      * @param pattern
      *            the pattern for {@link SimpleDateFormat}
      * @return the date attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    public Date asDate(String name, String pattern) {
+    public Date asDate(CharSequence name, String pattern)
+            throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
         return DateUtil.toDate(asString(name), pattern);
     }
 
@@ -327,9 +430,15 @@ public class ServletTester extends AppEngineTester {
      * @param name
      *            the attribute name
      * @return the request attribute value as {@link Key}
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    public Key asKey(String name) {
-        Object key = request.getAttribute(name);
+    public Key asKey(CharSequence name) throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        Object key = request.getAttribute(name.toString());
         if (key == null) {
             return null;
         }
@@ -346,9 +455,16 @@ public class ServletTester extends AppEngineTester {
      *            the parameter name
      * @param value
      *            the parameter value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    public void paramValues(String name, String[] value) {
-        request.setParameter(name, value);
+    public void paramValues(CharSequence name, String[] value)
+            throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        request.setParameter(name.toString(), value);
     }
 
     /**
@@ -359,10 +475,16 @@ public class ServletTester extends AppEngineTester {
      * @param name
      *            the attribute name
      * @return the request attribute
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
     @SuppressWarnings("unchecked")
-    public <T> T requestScope(String name) {
-        return (T) request.getAttribute(name);
+    public <T> T requestScope(CharSequence name) throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        return (T) request.getAttribute(name.toString());
     }
 
     /**
@@ -372,9 +494,16 @@ public class ServletTester extends AppEngineTester {
      *            the attribute name
      * @param value
      *            the attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    public void requestScope(String name, Object value) {
-        request.setAttribute(name, value);
+    public void requestScope(CharSequence name, Object value)
+            throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        request.setAttribute(name.toString(), value);
     }
 
     /**
@@ -385,14 +514,20 @@ public class ServletTester extends AppEngineTester {
      * @param name
      *            the attribute name
      * @return the attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
     @SuppressWarnings("unchecked")
-    public <T> T sessionScope(String name) {
+    public <T> T sessionScope(CharSequence name) throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
         HttpSession session = request.getSession(false);
         if (session == null) {
             return null;
         }
-        return (T) session.getAttribute(name);
+        return (T) session.getAttribute(name.toString());
     }
 
     /**
@@ -402,9 +537,16 @@ public class ServletTester extends AppEngineTester {
      *            the attribute name
      * @param value
      *            the attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    public void sessionScope(String name, Object value) {
-        request.getSession().setAttribute(name, value);
+    public void sessionScope(CharSequence name, Object value)
+            throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        request.getSession().setAttribute(name.toString(), value);
     }
 
     /**
@@ -415,10 +557,17 @@ public class ServletTester extends AppEngineTester {
      * @param name
      *            the attribute name
      * @return the attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
     @SuppressWarnings("unchecked")
-    public <T> T applicationScope(String name) {
-        return (T) servletContext.getAttribute(name);
+    public <T> T applicationScope(CharSequence name)
+            throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        return (T) servletContext.getAttribute(name.toString());
     }
 
     /**
@@ -428,9 +577,16 @@ public class ServletTester extends AppEngineTester {
      *            the attribute name
      * @param value
      *            the attribute value
+     * @throws NullPointerException
+     *             if the name parameter is null
      */
-    public void applicationScope(String name, Object value) {
-        servletContext.setAttribute(name, value);
+    public void applicationScope(CharSequence name, Object value)
+            throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        servletContext.setAttribute(name.toString(), value);
     }
 
     /**

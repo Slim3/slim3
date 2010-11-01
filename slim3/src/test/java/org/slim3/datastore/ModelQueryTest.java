@@ -15,12 +15,8 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,14 +31,16 @@ import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Ccc;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.AppEngineTestCase;
+import org.slim3.util.CipherFactory;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.PreparedQuery.TooManyResultsException;
 import com.google.appengine.api.datastore.Text;
+import com.google.appengine.api.datastore.PreparedQuery.TooManyResultsException;
+import com.google.apphosting.api.ApiProxy.ApiConfig;
 
 /**
  * @author higa
@@ -50,9 +48,9 @@ import com.google.appengine.api.datastore.Text;
  */
 public class ModelQueryTest extends AppEngineTestCase {
 
-    private static final String KEY128BIT = "1234567890ABCDEF";
-    
     private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+
+    private ApiConfig apiConfig = new ApiConfig();
 
     private HogeMeta meta = new HogeMeta();
 
@@ -62,13 +60,25 @@ public class ModelQueryTest extends AppEngineTestCase {
 
     private CccMeta cccMeta = new CccMeta();
 
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        CipherFactory.getFactory().setGlobalKey("xxxxxxxxxxxxxxxx");
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        CipherFactory.getFactory().clearGlobalKey();
+        super.tearDown();
+    }
+
     /**
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
     @Test
     public void constructor() throws Exception {
-        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(ds, meta);
         assertThat(query.modelMeta, is(sameInstance((ModelMeta) meta)));
     }
 
@@ -79,7 +89,7 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void constructorUsingModelMetaAndAncestorKey() throws Exception {
         Key ancestorKey = KeyFactory.createKey("Ancestor", 1);
-        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta, ancestorKey);
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(ds, meta, ancestorKey);
         assertThat(query.modelMeta, is(sameInstance((ModelMeta) meta)));
         assertThat(query.query.getAncestor(), is(ancestorKey));
     }
@@ -92,7 +102,7 @@ public class ModelQueryTest extends AppEngineTestCase {
     public void constructorUsingTxAndModelMetaAndAncestorKey() throws Exception {
         Key ancestorKey = KeyFactory.createKey("Ancestor", 1);
         ModelQuery<Hoge> query =
-            new ModelQuery<Hoge>(ds.beginTransaction(), meta, ancestorKey);
+            new ModelQuery<Hoge>(ds, ds.beginTransaction(), meta, ancestorKey);
         assertThat(query.modelMeta, is(sameInstance((ModelMeta) meta)));
         assertThat(query.query.getAncestor(), is(ancestorKey));
         assertThat(query.tx, is(notNullValue()));
@@ -103,7 +113,7 @@ public class ModelQueryTest extends AppEngineTestCase {
      */
     @Test
     public void filter() throws Exception {
-        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(ds, meta);
         assertThat(query, is(sameInstance(query.filter(meta.myString
             .equal("aaa")))));
         assertThat(query.query.getFilterPredicates().size(), is(1));
@@ -114,7 +124,7 @@ public class ModelQueryTest extends AppEngineTestCase {
      */
     @Test
     public void sort() throws Exception {
-        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(ds, meta);
         assertThat(query.sort(meta.myString.asc), is(sameInstance(query)));
         assertThat(query.query.getSortPredicates().size(), is(1));
     }
@@ -124,8 +134,8 @@ public class ModelQueryTest extends AppEngineTestCase {
      */
     @Test
     public void asList() throws Exception {
-        Datastore.put(new Entity("Hoge"));
-        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        DatastoreUtil.put(ds, apiConfig, new Entity("Hoge"));
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(ds, meta);
         List<Hoge> list = query.asList();
         assertThat(list.size(), is(1));
     }
@@ -137,12 +147,12 @@ public class ModelQueryTest extends AppEngineTestCase {
     public void asListAndFilterInMemory() throws Exception {
         Hoge hoge = new Hoge();
         hoge.setMyString("aaa");
-        Datastore.put(hoge);
+        DatastoreUtil.put(ds, apiConfig, meta.modelToEntity(hoge));
         Hoge hoge2 = new Hoge();
         hoge2.setMyString("bbb");
-        Datastore.put(hoge2);
+        DatastoreUtil.put(ds, apiConfig, meta.modelToEntity(hoge2));
         List<Hoge> list =
-            new ModelQuery<Hoge>(meta).filterInMemory(
+            new ModelQuery<Hoge>(ds, meta).filterInMemory(
                 meta.myString.equal("aaa")).asList();
         assertThat(list.size(), is(1));
         assertThat(list.get(0).getMyString(), is("aaa"));
@@ -155,12 +165,12 @@ public class ModelQueryTest extends AppEngineTestCase {
     public void asListAndSortInMemory() throws Exception {
         Hoge hoge = new Hoge();
         hoge.setMyString("aaa");
-        Datastore.put(hoge);
+        DatastoreUtil.put(ds, apiConfig, meta.modelToEntity(hoge));
         Hoge hoge2 = new Hoge();
         hoge2.setMyString("bbb");
-        Datastore.put(hoge2);
+        DatastoreUtil.put(ds, apiConfig, meta.modelToEntity(hoge2));
         List<Hoge> list =
-            new ModelQuery<Hoge>(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .sortInMemory(meta.myString.desc)
                 .asList();
         assertThat(list.size(), is(2));
@@ -173,24 +183,27 @@ public class ModelQueryTest extends AppEngineTestCase {
      */
     @Test
     public void asListForPolyModel() throws Exception {
-        Datastore.put(new Aaa());
-        Datastore.put(new Bbb());
-        Datastore.put(new Ccc());
+        DatastoreUtil
+            .put(ds, apiConfig, AaaMeta.get().modelToEntity(new Aaa()));
+        DatastoreUtil
+            .put(ds, apiConfig, BbbMeta.get().modelToEntity(new Bbb()));
+        DatastoreUtil
+            .put(ds, apiConfig, CccMeta.get().modelToEntity(new Ccc()));
 
-        ModelQuery<Aaa> query = new ModelQuery<Aaa>(aaaMeta);
+        ModelQuery<Aaa> query = new ModelQuery<Aaa>(ds, aaaMeta);
         List<Aaa> list = query.asList();
         assertThat(list.size(), is(3));
         assertThat(list.get(0).getClass().getName(), is(Aaa.class.getName()));
         assertThat(list.get(1).getClass().getName(), is(Bbb.class.getName()));
         assertThat(list.get(2).getClass().getName(), is(Ccc.class.getName()));
 
-        ModelQuery<Bbb> query2 = new ModelQuery<Bbb>(bbbMeta);
+        ModelQuery<Bbb> query2 = new ModelQuery<Bbb>(ds, bbbMeta);
         List<Bbb> list2 = query2.asList();
         assertThat(list2.size(), is(2));
         assertThat(list2.get(0).getClass().getName(), is(Bbb.class.getName()));
         assertThat(list2.get(1).getClass().getName(), is(Ccc.class.getName()));
 
-        ModelQuery<Ccc> query3 = new ModelQuery<Ccc>(cccMeta);
+        ModelQuery<Ccc> query3 = new ModelQuery<Ccc>(ds, cccMeta);
         List<Ccc> list3 = query3.asList();
         assertThat(list3.size(), is(1));
         assertThat(list3.get(0).getClass().getName(), is(Ccc.class.getName()));
@@ -203,14 +216,14 @@ public class ModelQueryTest extends AppEngineTestCase {
     public void asQueryResultList() throws Exception {
         Hoge hoge = new Hoge();
         hoge.setMyInteger(1);
-        Datastore.put(hoge);
+        DatastoreUtil.put(ds, apiConfig, meta.modelToEntity(hoge));
         hoge = new Hoge();
         hoge.setMyInteger(2);
-        Datastore.put(hoge);
+        DatastoreUtil.put(ds, apiConfig, meta.modelToEntity(hoge));
         hoge = new Hoge();
         hoge.setMyInteger(3);
-        Datastore.put(hoge);
-        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        DatastoreUtil.put(ds, apiConfig, meta.modelToEntity(hoge));
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(ds, meta);
         S3QueryResultList<Hoge> list =
             query.limit(1).sort(meta.myInteger.asc).asQueryResultList();
         assertThat(list.size(), is(1));
@@ -220,7 +233,7 @@ public class ModelQueryTest extends AppEngineTestCase {
         assertThat(list.getEncodedFilters(), is(notNullValue()));
         assertThat(list.getEncodedSorts(), is(notNullValue()));
 
-        ModelQuery<Hoge> query2 = new ModelQuery<Hoge>(meta);
+        ModelQuery<Hoge> query2 = new ModelQuery<Hoge>(ds, meta);
         S3QueryResultList<Hoge> list2 =
             query2
                 .limit(1)
@@ -235,7 +248,7 @@ public class ModelQueryTest extends AppEngineTestCase {
         assertThat(list2.getEncodedFilters(), is(notNullValue()));
         assertThat(list2.getEncodedSorts(), is(notNullValue()));
 
-        ModelQuery<Hoge> query3 = new ModelQuery<Hoge>(meta);
+        ModelQuery<Hoge> query3 = new ModelQuery<Hoge>(ds, meta);
         S3QueryResultList<Hoge> list3 =
             query3
                 .limit(1)
@@ -258,14 +271,14 @@ public class ModelQueryTest extends AppEngineTestCase {
     public void asQueryResultListWithNoLimit() throws Exception {
         Hoge hoge = new Hoge();
         hoge.setMyInteger(1);
-        Datastore.put(hoge);
+        DatastoreUtil.put(ds, apiConfig, meta.modelToEntity(hoge));
         hoge = new Hoge();
         hoge.setMyInteger(2);
-        Datastore.put(hoge);
+        DatastoreUtil.put(ds, apiConfig, meta.modelToEntity(hoge));
         hoge = new Hoge();
         hoge.setMyInteger(3);
-        Datastore.put(hoge);
-        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        DatastoreUtil.put(ds, apiConfig, meta.modelToEntity(hoge));
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(ds, meta);
         S3QueryResultList<Hoge> list =
             query.sort(meta.myInteger.asc).asQueryResultList();
         assertThat(list.size(), is(3));
@@ -278,7 +291,7 @@ public class ModelQueryTest extends AppEngineTestCase {
      */
     @Test(expected = IllegalStateException.class)
     public void asQueryResultListWithFilterInMemory() throws Exception {
-        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(ds, meta);
         query.filterInMemory(meta.myInteger.equal(1)).asQueryResultList();
     }
 
@@ -287,7 +300,7 @@ public class ModelQueryTest extends AppEngineTestCase {
      */
     @Test(expected = IllegalStateException.class)
     public void asQueryResultListWithSortInMemory() throws Exception {
-        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(ds, meta);
         query.sortInMemory(meta.myInteger.asc).asQueryResultList();
     }
 
@@ -296,8 +309,8 @@ public class ModelQueryTest extends AppEngineTestCase {
      */
     @Test
     public void asSingle() throws Exception {
-        Datastore.put(new Entity("Hoge"));
-        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        DatastoreUtil.put(ds, apiConfig, new Entity("Hoge"));
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(ds, meta);
         Hoge hoge = query.asSingle();
         assertThat(hoge, is(not(nullValue())));
     }
@@ -307,9 +320,9 @@ public class ModelQueryTest extends AppEngineTestCase {
      */
     @Test(expected = TooManyResultsException.class)
     public void asSingleWhenTooManyResults() throws Exception {
-        Datastore.put(new Entity("Hoge"));
-        Datastore.put(new Entity("Hoge"));
-        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        DatastoreUtil.put(ds, apiConfig, new Entity("Hoge"));
+        DatastoreUtil.put(ds, apiConfig, new Entity("Hoge"));
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(ds, meta);
         query.asSingle();
     }
 
@@ -320,11 +333,11 @@ public class ModelQueryTest extends AppEngineTestCase {
     public void asSingleAndFilterInMemory() throws Exception {
         Hoge hoge = new Hoge();
         hoge.setMyString("aaa");
-        Datastore.put(hoge);
+        DatastoreUtil.put(ds, apiConfig, meta.modelToEntity(hoge));
         Hoge hoge2 = new Hoge();
         hoge2.setMyString("bbb");
-        Datastore.put(hoge2);
-        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        DatastoreUtil.put(ds, apiConfig, meta.modelToEntity(hoge2));
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(ds, meta);
         Hoge ret = query.filterInMemory(meta.myString.equal("aaa")).asSingle();
         assertThat(ret, is(notNullValue()));
     }
@@ -336,8 +349,8 @@ public class ModelQueryTest extends AppEngineTestCase {
     public void asSingleAndSortInMemory() throws Exception {
         Hoge hoge = new Hoge();
         hoge.setMyString("aaa");
-        Datastore.put(hoge);
-        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        DatastoreUtil.put(ds, apiConfig, meta.modelToEntity(hoge));
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(ds, meta);
         Hoge ret = query.sortInMemory(meta.myString.asc).asSingle();
         assertThat(ret, is(notNullValue()));
     }
@@ -347,7 +360,7 @@ public class ModelQueryTest extends AppEngineTestCase {
      */
     @Test
     public void asSingleWhenNoEntity() throws Exception {
-        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(ds, meta);
         Hoge ret = query.filterInMemory(meta.myString.equal("aaa")).asSingle();
         assertThat(ret, is(nullValue()));
     }
@@ -357,8 +370,8 @@ public class ModelQueryTest extends AppEngineTestCase {
      */
     @Test
     public void asKeyList() throws Exception {
-        Key key = Datastore.put(new Entity("Hoge"));
-        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        Key key = DatastoreUtil.put(ds, apiConfig, new Entity("Hoge"));
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(ds, meta);
         assertThat(query.asKeyList(), is(Arrays.asList(key)));
     }
 
@@ -367,8 +380,8 @@ public class ModelQueryTest extends AppEngineTestCase {
      */
     @Test(expected = IllegalStateException.class)
     public void asKeyListAndFilterInMemory() throws Exception {
-        Datastore.put(new Entity("Hoge"));
-        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        DatastoreUtil.put(ds, apiConfig, new Entity("Hoge"));
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(ds, meta);
         query.filterInMemory(meta.myString.equal("aaa")).asKeyList();
     }
 
@@ -377,11 +390,11 @@ public class ModelQueryTest extends AppEngineTestCase {
      */
     @Test
     public void asKeyListAndAscSortInMemory() throws Exception {
-        Key key = Datastore.createKey(meta, 1);
-        Key key2 = Datastore.createKey(meta, 2);
-        Datastore.put(new Entity(key2));
-        Datastore.put(new Entity(key));
-        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        Key key = KeyFactory.createKey(meta.getKind(), 1);
+        Key key2 = KeyFactory.createKey(meta.getKind(), 2);
+        DatastoreUtil.put(ds, apiConfig, new Entity(key2));
+        DatastoreUtil.put(ds, apiConfig, new Entity(key));
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(ds, meta);
         List<Key> keys = query.sortInMemory(meta.key.asc).asKeyList();
         assertThat(keys.size(), is(2));
         assertThat(keys.get(0), is(key));
@@ -393,11 +406,11 @@ public class ModelQueryTest extends AppEngineTestCase {
      */
     @Test
     public void asKeyListAndDescSortInMemory() throws Exception {
-        Key key = Datastore.createKey(meta, 1);
-        Key key2 = Datastore.createKey(meta, 2);
-        Datastore.put(new Entity(key));
-        Datastore.put(new Entity(key2));
-        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        Key key = KeyFactory.createKey(meta.getKind(), 1);
+        Key key2 = KeyFactory.createKey(meta.getKind(), 2);
+        DatastoreUtil.put(ds, apiConfig, new Entity(key));
+        DatastoreUtil.put(ds, apiConfig, new Entity(key2));
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(ds, meta);
         List<Key> keys = query.sortInMemory(meta.key.desc).asKeyList();
         assertThat(keys.size(), is(2));
         assertThat(keys.get(0), is(key2));
@@ -409,8 +422,8 @@ public class ModelQueryTest extends AppEngineTestCase {
      */
     @Test(expected = IllegalStateException.class)
     public void asKeyListAndSortInMemory() throws Exception {
-        Datastore.put(new Entity("Hoge"));
-        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        DatastoreUtil.put(ds, apiConfig, new Entity("Hoge"));
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(ds, meta);
         query.sortInMemory(meta.myString.asc).asKeyList();
     }
 
@@ -419,14 +432,16 @@ public class ModelQueryTest extends AppEngineTestCase {
      */
     @Test
     public void asKeyListForPolyModel() throws Exception {
-        Datastore.put(new Aaa());
-        Datastore.put(new Bbb());
+        DatastoreUtil
+            .put(ds, apiConfig, AaaMeta.get().modelToEntity(new Aaa()));
+        DatastoreUtil
+            .put(ds, apiConfig, BbbMeta.get().modelToEntity(new Bbb()));
 
-        ModelQuery<Aaa> query = new ModelQuery<Aaa>(aaaMeta);
+        ModelQuery<Aaa> query = new ModelQuery<Aaa>(ds, aaaMeta);
         List<Key> list = query.asKeyList();
         assertThat(list.size(), is(2));
 
-        ModelQuery<Bbb> query2 = new ModelQuery<Bbb>(bbbMeta);
+        ModelQuery<Bbb> query2 = new ModelQuery<Bbb>(ds, bbbMeta);
         List<Key> list2 = query2.asKeyList();
         assertThat(list2.size(), is(1));
     }
@@ -436,9 +451,9 @@ public class ModelQueryTest extends AppEngineTestCase {
      */
     @Test
     public void ancestor() throws Exception {
-        Key key = Datastore.put(new Entity("Parent"));
-        Datastore.put(new Entity("Hoge", key));
-        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta, key);
+        Key key = DatastoreUtil.put(ds, apiConfig, new Entity("Parent"));
+        DatastoreUtil.put(ds, apiConfig, new Entity("Hoge", key));
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(ds, meta, key);
         List<Hoge> list = query.asList();
         assertThat(list.size(), is(1));
     }
@@ -453,8 +468,11 @@ public class ModelQueryTest extends AppEngineTestCase {
         Hoge hoge2 = new Hoge();
         hoge2.setMyInteger(2);
         Hoge hoge3 = new Hoge();
-        Datastore.put(hoge, hoge2, hoge3);
-        assertThat(Datastore.query(meta).min(meta.myInteger), is(1));
+        DatastoreUtil.put(ds, apiConfig, Arrays.asList(
+            meta.modelToEntity(hoge),
+            meta.modelToEntity(hoge2),
+            meta.modelToEntity(hoge3)));
+        assertThat(new ModelQuery<Hoge>(ds, meta).min(meta.myInteger), is(1));
     }
 
     /**
@@ -467,9 +485,13 @@ public class ModelQueryTest extends AppEngineTestCase {
         Hoge hoge2 = new Hoge();
         hoge2.setMyInteger(2);
         Hoge hoge3 = new Hoge();
-        Datastore.put(hoge, hoge2, hoge3);
-        Datastore.query(meta).filterInMemory(meta.myInteger.equal(1)).min(
-            meta.myInteger);
+        DatastoreUtil.put(ds, apiConfig, Arrays.asList(
+            meta.modelToEntity(hoge),
+            meta.modelToEntity(hoge2),
+            meta.modelToEntity(hoge3)));
+        new ModelQuery<Hoge>(ds, meta)
+            .filterInMemory(meta.myInteger.equal(1))
+            .min(meta.myInteger);
     }
 
     /**
@@ -482,8 +504,11 @@ public class ModelQueryTest extends AppEngineTestCase {
         Hoge hoge2 = new Hoge();
         hoge2.setMyInteger(2);
         Hoge hoge3 = new Hoge();
-        Datastore.put(hoge, hoge2, hoge3);
-        Datastore.query(meta).sortInMemory(meta.myInteger.asc).min(
+        DatastoreUtil.put(ds, apiConfig, Arrays.asList(
+            meta.modelToEntity(hoge),
+            meta.modelToEntity(hoge2),
+            meta.modelToEntity(hoge3)));
+        new ModelQuery<Hoge>(ds, meta).sortInMemory(meta.myInteger.asc).min(
             meta.myInteger);
     }
 
@@ -496,13 +521,13 @@ public class ModelQueryTest extends AppEngineTestCase {
         aaa.setVersion(1L);
         Bbb bbb = new Bbb();
         bbb.setVersion(2L);
-        Datastore.put(aaa);
-        Datastore.put(bbb);
+        DatastoreUtil.put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, aaa));
+        DatastoreUtil.put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, bbb));
 
-        ModelQuery<Aaa> query = new ModelQuery<Aaa>(aaaMeta);
+        ModelQuery<Aaa> query = new ModelQuery<Aaa>(ds, aaaMeta);
         assertThat(query.min(aaaMeta.version), is(2L));
 
-        ModelQuery<Bbb> query2 = new ModelQuery<Bbb>(bbbMeta);
+        ModelQuery<Bbb> query2 = new ModelQuery<Bbb>(ds, bbbMeta);
         assertThat(query2.min(bbbMeta.version), is(3L));
     }
 
@@ -516,8 +541,11 @@ public class ModelQueryTest extends AppEngineTestCase {
         Hoge hoge2 = new Hoge();
         hoge2.setMyInteger(2);
         Hoge hoge3 = new Hoge();
-        Datastore.put(hoge, hoge2, hoge3);
-        assertThat(Datastore.query(meta).max(meta.myInteger), is(2));
+        DatastoreUtil.put(ds, apiConfig, Arrays.asList(
+            meta.modelToEntity(hoge),
+            meta.modelToEntity(hoge2),
+            meta.modelToEntity(hoge3)));
+        assertThat(new ModelQuery<Hoge>(ds, meta).max(meta.myInteger), is(2));
     }
 
     /**
@@ -530,9 +558,13 @@ public class ModelQueryTest extends AppEngineTestCase {
         Hoge hoge2 = new Hoge();
         hoge2.setMyInteger(2);
         Hoge hoge3 = new Hoge();
-        Datastore.put(hoge, hoge2, hoge3);
-        Datastore.query(meta).filterInMemory(meta.myInteger.equal(1)).max(
-            meta.myInteger);
+        DatastoreUtil.put(ds, apiConfig, Arrays.asList(
+            meta.modelToEntity(hoge),
+            meta.modelToEntity(hoge2),
+            meta.modelToEntity(hoge3)));
+        new ModelQuery<Hoge>(ds, meta)
+            .filterInMemory(meta.myInteger.equal(1))
+            .max(meta.myInteger);
     }
 
     /**
@@ -545,8 +577,11 @@ public class ModelQueryTest extends AppEngineTestCase {
         Hoge hoge2 = new Hoge();
         hoge2.setMyInteger(2);
         Hoge hoge3 = new Hoge();
-        Datastore.put(hoge, hoge2, hoge3);
-        Datastore.query(meta).sortInMemory(meta.myInteger.asc).max(
+        DatastoreUtil.put(ds, apiConfig, Arrays.asList(
+            meta.modelToEntity(hoge),
+            meta.modelToEntity(hoge2),
+            meta.modelToEntity(hoge3)));
+        new ModelQuery<Hoge>(ds, meta).sortInMemory(meta.myInteger.asc).max(
             meta.myInteger);
     }
 
@@ -559,13 +594,13 @@ public class ModelQueryTest extends AppEngineTestCase {
         aaa.setVersion(2L);
         Bbb bbb = new Bbb();
         bbb.setVersion(1L);
-        Datastore.put(aaa);
-        Datastore.put(bbb);
+        DatastoreUtil.put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, aaa));
+        DatastoreUtil.put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, bbb));
 
-        ModelQuery<Aaa> query = new ModelQuery<Aaa>(aaaMeta);
+        ModelQuery<Aaa> query = new ModelQuery<Aaa>(ds, aaaMeta);
         assertThat(query.max(aaaMeta.version), is(3L));
 
-        ModelQuery<Bbb> query2 = new ModelQuery<Bbb>(bbbMeta);
+        ModelQuery<Bbb> query2 = new ModelQuery<Bbb>(ds, bbbMeta);
         assertThat(query2.max(bbbMeta.version), is(2L));
     }
 
@@ -576,8 +611,8 @@ public class ModelQueryTest extends AppEngineTestCase {
     public void countAndFilterInMemory() throws Exception {
         Hoge hoge = new Hoge();
         hoge.setMyString("aaa");
-        Datastore.put(hoge);
-        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        DatastoreUtil.put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge));
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(ds, meta);
         assertThat(
             query.filterInMemory(meta.myString.equal("aaa")).count(),
             is(1));
@@ -590,8 +625,8 @@ public class ModelQueryTest extends AppEngineTestCase {
     public void countAndSortInMemory() throws Exception {
         Hoge hoge = new Hoge();
         hoge.setMyString("aaa");
-        Datastore.put(hoge);
-        ModelQuery<Hoge> query = new ModelQuery<Hoge>(meta);
+        DatastoreUtil.put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge));
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(ds, meta);
         assertThat(query.sortInMemory(meta.myString.asc).count(), is(1));
     }
 
@@ -600,13 +635,17 @@ public class ModelQueryTest extends AppEngineTestCase {
      */
     @Test
     public void countForPolyModel() throws Exception {
-        Datastore.put(new Aaa());
-        Datastore.put(new Bbb());
+        DatastoreUtil.put(ds, apiConfig, DatastoreUtil.modelToEntity(
+            ds,
+            new Aaa()));
+        DatastoreUtil.put(ds, apiConfig, DatastoreUtil.modelToEntity(
+            ds,
+            new Bbb()));
 
-        ModelQuery<Aaa> query = new ModelQuery<Aaa>(aaaMeta);
+        ModelQuery<Aaa> query = new ModelQuery<Aaa>(ds, aaaMeta);
         assertThat(query.count(), is(2));
 
-        ModelQuery<Bbb> query2 = new ModelQuery<Bbb>(bbbMeta);
+        ModelQuery<Bbb> query2 = new ModelQuery<Bbb>(ds, bbbMeta);
         assertThat(query2.count(), is(1));
     }
 
@@ -616,22 +655,22 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterByEqualCriterionOfCipherString()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherString("1102");
         hoge2.setMyCipherString("1103");
         hoge3.setMyCipherString("1104");
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
-                .filter(new EqualCriterion(meta.myCipherString, "1102"))
-                .sortInMemory(meta.myCipherString.asc)
-                .asList();
+            new ModelQuery<Hoge>(ds, meta).filter(
+                new EqualCriterion(meta.myCipherString, "1102")).sortInMemory(
+                meta.myCipherString.asc).asList();
         assertThat(list.size(), is(1));
         assertThat(list.get(0).getMyCipherString(), is("1102"));
     }
@@ -641,25 +680,23 @@ public class ModelQueryTest extends AppEngineTestCase {
      */
     @Test
     public void asListAndFilterByInCriterionOfCipherString() throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherString("1102");
         hoge2.setMyCipherString("1103");
         hoge3.setMyCipherString("1104");
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
-                .filter(
-                    new InCriterion(meta.myCipherString, Arrays.asList(
-                        "1102",
-                        "1104")))
-                .sortInMemory(meta.myCipherString.asc)
-                .asList();
+            new ModelQuery<Hoge>(ds, meta).filter(
+                new InCriterion(meta.myCipherString, Arrays.asList(
+                    "1102",
+                    "1104"))).sortInMemory(meta.myCipherString.asc).asList();
         assertThat(list.size(), is(0));
     }
 
@@ -669,22 +706,22 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterByIsNotNullCriterionOfCipherString()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherString("1102");
         hoge2.setMyCipherString("1103");
         hoge3.setMyCipherString("1104");
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
-                .filter(new IsNotNullCriterion(meta.myCipherString))
-                .sortInMemory(meta.myCipherString.asc)
-                .asList();
+            new ModelQuery<Hoge>(ds, meta).filter(
+                new IsNotNullCriterion(meta.myCipherString)).sortInMemory(
+                meta.myCipherString.asc).asList();
         assertThat(list.size(), is(3));
         assertThat(list.get(0).getMyCipherString(), is("1102"));
         assertThat(list.get(1).getMyCipherString(), is("1103"));
@@ -697,19 +734,20 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterByNotEqualCriterionOfCipherString()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherString("1102");
         hoge2.setMyCipherString("1103");
         hoge3.setMyCipherString("1104");
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filter(new NotEqualCriterion(meta.myCipherString, "1103"))
                 .sortInMemory(meta.myCipherString.asc)
                 .asList();
@@ -723,21 +761,21 @@ public class ModelQueryTest extends AppEngineTestCase {
      */
     @Test
     public void asListOfCipherLobString() throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherLobString("1102");
         hoge2.setMyCipherLobString("1103");
         hoge3.setMyCipherLobString("1104");
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
-                .sortInMemory(meta.myCipherLobString.asc)
-                .asList();
+            new ModelQuery<Hoge>(ds, meta).sortInMemory(
+                meta.myCipherLobString.asc).asList();
         assertThat(list.size(), is(3));
         assertThat(list.get(0).getMyCipherLobString(), is("1102"));
         assertThat(list.get(1).getMyCipherLobString(), is("1103"));
@@ -749,18 +787,20 @@ public class ModelQueryTest extends AppEngineTestCase {
      */
     @Test
     public void asListOfCipherText() throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherText(new Text("1102"));
         hoge2.setMyCipherText(new Text("1103"));
         hoge3.setMyCipherText(new Text("1104"));
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore.query(meta).sortInMemory(meta.key.asc).asList();
+            new ModelQuery<Hoge>(ds, meta).sortInMemory(meta.key.asc).asList();
         assertThat(list.size(), is(3));
         assertThat(list.get(0).getMyCipherText().getValue(), is("1102"));
         assertThat(list.get(1).getMyCipherText().getValue(), is("1103"));
@@ -773,27 +813,26 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByEqualCriterionOfCipherString()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherString("1102");
         hoge2.setMyCipherString("1103");
         hoge3.setMyCipherString("1104");
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
-                .filterInMemory(new EqualCriterion(meta.myCipherString, "1102"))
-                .sortInMemory(meta.myCipherString.asc)
-                .asList();
+            new ModelQuery<Hoge>(ds, meta).filterInMemory(
+                new EqualCriterion(meta.myCipherString, "1102")).sortInMemory(
+                meta.myCipherString.asc).asList();
         assertThat(list.size(), is(1));
         assertThat(list.get(0).getMyCipherString(), is("1102"));
         list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new InMemoryEqualCriterion(meta.myCipherString, "1102"))
                 .sortInMemory(meta.myCipherString.asc)
@@ -808,19 +847,20 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByGreaterThanCriterionOfCipherString()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherString("1102");
         hoge2.setMyCipherString("1103");
         hoge3.setMyCipherString("1104");
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new GreaterThanCriterion(meta.myCipherString, "1103"))
                 .sortInMemory(meta.myCipherString.asc)
@@ -828,8 +868,7 @@ public class ModelQueryTest extends AppEngineTestCase {
         assertThat(list.size(), is(1));
         assertThat(list.get(0).getMyCipherString(), is("1104"));
         list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new InMemoryGreaterThanCriterion(
                         meta.myCipherString,
@@ -846,19 +885,20 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByGreaterThanOrEqualCriterionOfCipherString()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherString("1102");
         hoge2.setMyCipherString("1103");
         hoge3.setMyCipherString("1104");
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new GreaterThanOrEqualCriterion(meta.myCipherString, "1103"))
                 .sortInMemory(meta.myCipherString.asc)
@@ -867,14 +907,10 @@ public class ModelQueryTest extends AppEngineTestCase {
         assertThat(list.get(0).getMyCipherString(), is("1103"));
         assertThat(list.get(1).getMyCipherString(), is("1104"));
         list =
-            Datastore
-                .query(meta)
-                .filterInMemory(
-                    new InMemoryGreaterThanOrEqualCriterion(
-                        meta.myCipherString,
-                        "1103"))
-                .sortInMemory(meta.myCipherString.asc)
-                .asList();
+            new ModelQuery<Hoge>(ds, meta).filterInMemory(
+                new InMemoryGreaterThanOrEqualCriterion(
+                    meta.myCipherString,
+                    "1103")).sortInMemory(meta.myCipherString.asc).asList();
         assertThat(list.size(), is(2));
         assertThat(list.get(0).getMyCipherString(), is("1103"));
         assertThat(list.get(1).getMyCipherString(), is("1104"));
@@ -886,37 +922,31 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByInCriterionOfCipherString()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherString("1102");
         hoge2.setMyCipherString("1103");
         hoge3.setMyCipherString("1104");
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
-                .filterInMemory(
-                    new InCriterion(meta.myCipherString, Arrays.asList(
-                        "1102",
-                        "1104")))
-                .sortInMemory(meta.myCipherString.asc)
-                .asList();
+            new ModelQuery<Hoge>(ds, meta).filterInMemory(
+                new InCriterion(meta.myCipherString, Arrays.asList(
+                    "1102",
+                    "1104"))).sortInMemory(meta.myCipherString.asc).asList();
         assertThat(list.size(), is(2));
         assertThat(list.get(0).getMyCipherString(), is("1102"));
         assertThat(list.get(1).getMyCipherString(), is("1104"));
         list =
-            Datastore
-                .query(meta)
-                .filterInMemory(
-                    new InMemoryInCriterion(meta.myCipherString, Arrays.asList(
-                        "1102",
-                        "1104")))
-                .sortInMemory(meta.myCipherString.asc)
-                .asList();
+            new ModelQuery<Hoge>(ds, meta).filterInMemory(
+                new InMemoryInCriterion(meta.myCipherString, Arrays.asList(
+                    "1102",
+                    "1104"))).sortInMemory(meta.myCipherString.asc).asList();
         assertThat(list.size(), is(2));
         assertThat(list.get(0).getMyCipherString(), is("1102"));
         assertThat(list.get(1).getMyCipherString(), is("1104"));
@@ -928,19 +958,20 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByContainsCriterionOfCipherString()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherString("1102");
         hoge2.setMyCipherString("1103");
         hoge3.setMyCipherString("1104");
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new InMemoryContainsCriterion(meta.myCipherString, "110"))
                 .sortInMemory(meta.myCipherString.asc)
@@ -957,19 +988,20 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByEndsWithCriterionOfCipherString()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherString("1102");
         hoge2.setMyCipherString("1103");
         hoge3.setMyCipherString("1104");
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new InMemoryEndsWithCriterion(meta.myCipherString, "103"))
                 .sortInMemory(meta.myCipherString.asc)
@@ -984,29 +1016,28 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByIsNotNullCriterionOfCipherString()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherString("1102");
         hoge2.setMyCipherString("1103");
         hoge3.setMyCipherString("1104");
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
-                .filterInMemory(new IsNotNullCriterion(meta.myCipherString))
-                .sortInMemory(meta.myCipherString.asc)
-                .asList();
+            new ModelQuery<Hoge>(ds, meta).filterInMemory(
+                new IsNotNullCriterion(meta.myCipherString)).sortInMemory(
+                meta.myCipherString.asc).asList();
         assertThat(list.size(), is(3));
         assertThat(list.get(0).getMyCipherString(), is("1102"));
         assertThat(list.get(1).getMyCipherString(), is("1103"));
         assertThat(list.get(2).getMyCipherString(), is("1104"));
         list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new InMemoryIsNotNullCriterion(meta.myCipherString))
                 .sortInMemory(meta.myCipherString.asc)
@@ -1023,19 +1054,20 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByLessThanCriterionOfCipherString()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherString("1102");
         hoge2.setMyCipherString("1103");
         hoge3.setMyCipherString("1104");
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new LessThanCriterion(meta.myCipherString, "1103"))
                 .sortInMemory(meta.myCipherString.asc)
@@ -1043,8 +1075,7 @@ public class ModelQueryTest extends AppEngineTestCase {
         assertThat(list.size(), is(1));
         assertThat(list.get(0).getMyCipherString(), is("1102"));
         list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new InMemoryLessThanCriterion(meta.myCipherString, "1103"))
                 .sortInMemory(meta.myCipherString.asc)
@@ -1059,19 +1090,20 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByLessThanOrEqualCriterionOfCipherString()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherString("1102");
         hoge2.setMyCipherString("1103");
         hoge3.setMyCipherString("1104");
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new LessThanOrEqualCriterion(meta.myCipherString, "1103"))
                 .sortInMemory(meta.myCipherString.asc)
@@ -1080,14 +1112,10 @@ public class ModelQueryTest extends AppEngineTestCase {
         assertThat(list.get(0).getMyCipherString(), is("1102"));
         assertThat(list.get(1).getMyCipherString(), is("1103"));
         list =
-            Datastore
-                .query(meta)
-                .filterInMemory(
-                    new InMemoryLessThanOrEqualCriterion(
-                        meta.myCipherString,
-                        "1103"))
-                .sortInMemory(meta.myCipherString.asc)
-                .asList();
+            new ModelQuery<Hoge>(ds, meta).filterInMemory(
+                new InMemoryLessThanOrEqualCriterion(
+                    meta.myCipherString,
+                    "1103")).sortInMemory(meta.myCipherString.asc).asList();
         assertThat(list.size(), is(2));
         assertThat(list.get(0).getMyCipherString(), is("1102"));
         assertThat(list.get(1).getMyCipherString(), is("1103"));
@@ -1099,19 +1127,20 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByNotEqualCriterionOfCipherString()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherString("1102");
         hoge2.setMyCipherString("1103");
         hoge3.setMyCipherString("1104");
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new NotEqualCriterion(meta.myCipherString, "1103"))
                 .sortInMemory(meta.myCipherString.asc)
@@ -1120,8 +1149,7 @@ public class ModelQueryTest extends AppEngineTestCase {
         assertThat(list.get(0).getMyCipherString(), is("1102"));
         assertThat(list.get(1).getMyCipherString(), is("1104"));
         list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new InMemoryNotEqualCriterion(meta.myCipherString, "1103"))
                 .sortInMemory(meta.myCipherString.asc)
@@ -1137,19 +1165,20 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByStartsWithCriterionOfCipherString()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherString("1102");
         hoge2.setMyCipherString("1103");
         hoge3.setMyCipherString("1104");
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new StartsWithCriterion(meta.myCipherString, "110"))
                 .sortInMemory(meta.myCipherString.asc)
@@ -1159,8 +1188,7 @@ public class ModelQueryTest extends AppEngineTestCase {
         assertThat(list.get(1).getMyCipherString(), is("1103"));
         assertThat(list.get(2).getMyCipherString(), is("1104"));
         list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new InMemoryStartsWithCriterion(meta.myCipherString, "110"))
                 .sortInMemory(meta.myCipherString.asc)
@@ -1170,7 +1198,6 @@ public class ModelQueryTest extends AppEngineTestCase {
         assertThat(list.get(1).getMyCipherString(), is("1103"));
         assertThat(list.get(2).getMyCipherString(), is("1104"));
     }
-    
 
     /**
      * @throws Exception
@@ -1178,27 +1205,28 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByEqualCriterionOfCipherLobString()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherLobString("1102");
         hoge2.setMyCipherLobString("1103");
         hoge3.setMyCipherLobString("1104");
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
-                .filterInMemory(new EqualCriterion(meta.myCipherLobString, "1102"))
+            new ModelQuery<Hoge>(ds, meta)
+                .filterInMemory(
+                    new EqualCriterion(meta.myCipherLobString, "1102"))
                 .sortInMemory(meta.myCipherLobString.asc)
                 .asList();
         assertThat(list.size(), is(1));
         assertThat(list.get(0).getMyCipherLobString(), is("1102"));
         list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new InMemoryEqualCriterion(meta.myCipherLobString, "1102"))
                 .sortInMemory(meta.myCipherLobString.asc)
@@ -1213,19 +1241,20 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByGreaterThanCriterionOfCipherLobString()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherLobString("1102");
         hoge2.setMyCipherLobString("1103");
         hoge3.setMyCipherLobString("1104");
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new GreaterThanCriterion(meta.myCipherLobString, "1103"))
                 .sortInMemory(meta.myCipherLobString.asc)
@@ -1233,8 +1262,7 @@ public class ModelQueryTest extends AppEngineTestCase {
         assertThat(list.size(), is(1));
         assertThat(list.get(0).getMyCipherLobString(), is("1104"));
         list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new InMemoryGreaterThanCriterion(
                         meta.myCipherLobString,
@@ -1251,35 +1279,34 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByGreaterThanOrEqualCriterionOfCipherLobString()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherLobString("1102");
         hoge2.setMyCipherLobString("1103");
         hoge3.setMyCipherLobString("1104");
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
-                    new GreaterThanOrEqualCriterion(meta.myCipherLobString, "1103"))
+                    new GreaterThanOrEqualCriterion(
+                        meta.myCipherLobString,
+                        "1103"))
                 .sortInMemory(meta.myCipherLobString.asc)
                 .asList();
         assertThat(list.size(), is(2));
         assertThat(list.get(0).getMyCipherLobString(), is("1103"));
         assertThat(list.get(1).getMyCipherLobString(), is("1104"));
         list =
-            Datastore
-                .query(meta)
-                .filterInMemory(
-                    new InMemoryGreaterThanOrEqualCriterion(
-                        meta.myCipherLobString,
-                        "1103"))
-                .sortInMemory(meta.myCipherLobString.asc)
-                .asList();
+            new ModelQuery<Hoge>(ds, meta).filterInMemory(
+                new InMemoryGreaterThanOrEqualCriterion(
+                    meta.myCipherLobString,
+                    "1103")).sortInMemory(meta.myCipherLobString.asc).asList();
         assertThat(list.size(), is(2));
         assertThat(list.get(0).getMyCipherLobString(), is("1103"));
         assertThat(list.get(1).getMyCipherLobString(), is("1104"));
@@ -1291,37 +1318,31 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByInCriterionOfCipherLobString()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherLobString("1102");
         hoge2.setMyCipherLobString("1103");
         hoge3.setMyCipherLobString("1104");
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
-                .filterInMemory(
-                    new InCriterion(meta.myCipherLobString, Arrays.asList(
-                        "1102",
-                        "1104")))
-                .sortInMemory(meta.myCipherLobString.asc)
-                .asList();
+            new ModelQuery<Hoge>(ds, meta).filterInMemory(
+                new InCriterion(meta.myCipherLobString, Arrays.asList(
+                    "1102",
+                    "1104"))).sortInMemory(meta.myCipherLobString.asc).asList();
         assertThat(list.size(), is(2));
         assertThat(list.get(0).getMyCipherLobString(), is("1102"));
         assertThat(list.get(1).getMyCipherLobString(), is("1104"));
         list =
-            Datastore
-                .query(meta)
-                .filterInMemory(
-                    new InMemoryInCriterion(meta.myCipherLobString, Arrays.asList(
-                        "1102",
-                        "1104")))
-                .sortInMemory(meta.myCipherLobString.asc)
-                .asList();
+            new ModelQuery<Hoge>(ds, meta).filterInMemory(
+                new InMemoryInCriterion(meta.myCipherLobString, Arrays.asList(
+                    "1102",
+                    "1104"))).sortInMemory(meta.myCipherLobString.asc).asList();
         assertThat(list.size(), is(2));
         assertThat(list.get(0).getMyCipherLobString(), is("1102"));
         assertThat(list.get(1).getMyCipherLobString(), is("1104"));
@@ -1333,19 +1354,20 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByContainsCriterionOfCipherLobString()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherLobString("1102");
         hoge2.setMyCipherLobString("1103");
         hoge3.setMyCipherLobString("1104");
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new InMemoryContainsCriterion(meta.myCipherLobString, "110"))
                 .sortInMemory(meta.myCipherLobString.asc)
@@ -1362,19 +1384,20 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByEndsWithCriterionOfCipherLobString()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherLobString("1102");
         hoge2.setMyCipherLobString("1103");
         hoge3.setMyCipherLobString("1104");
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new InMemoryEndsWithCriterion(meta.myCipherLobString, "103"))
                 .sortInMemory(meta.myCipherLobString.asc)
@@ -1389,29 +1412,28 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByIsNotNullCriterionOfCipherLobString()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherLobString("1102");
         hoge2.setMyCipherLobString("1103");
         hoge3.setMyCipherLobString("1104");
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
-                .filterInMemory(new IsNotNullCriterion(meta.myCipherLobString))
-                .sortInMemory(meta.myCipherLobString.asc)
-                .asList();
+            new ModelQuery<Hoge>(ds, meta).filterInMemory(
+                new IsNotNullCriterion(meta.myCipherLobString)).sortInMemory(
+                meta.myCipherLobString.asc).asList();
         assertThat(list.size(), is(3));
         assertThat(list.get(0).getMyCipherLobString(), is("1102"));
         assertThat(list.get(1).getMyCipherLobString(), is("1103"));
         assertThat(list.get(2).getMyCipherLobString(), is("1104"));
         list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new InMemoryIsNotNullCriterion(meta.myCipherLobString))
                 .sortInMemory(meta.myCipherLobString.asc)
@@ -1428,19 +1450,20 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByLessThanCriterionOfCipherLobString()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherLobString("1102");
         hoge2.setMyCipherLobString("1103");
         hoge3.setMyCipherLobString("1104");
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new LessThanCriterion(meta.myCipherLobString, "1103"))
                 .sortInMemory(meta.myCipherLobString.asc)
@@ -1448,10 +1471,11 @@ public class ModelQueryTest extends AppEngineTestCase {
         assertThat(list.size(), is(1));
         assertThat(list.get(0).getMyCipherLobString(), is("1102"));
         list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
-                    new InMemoryLessThanCriterion(meta.myCipherLobString, "1103"))
+                    new InMemoryLessThanCriterion(
+                        meta.myCipherLobString,
+                        "1103"))
                 .sortInMemory(meta.myCipherLobString.asc)
                 .asList();
         assertThat(list.size(), is(1));
@@ -1464,19 +1488,20 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByLessThanOrEqualCriterionOfCipherLobString()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherLobString("1102");
         hoge2.setMyCipherLobString("1103");
         hoge3.setMyCipherLobString("1104");
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new LessThanOrEqualCriterion(meta.myCipherLobString, "1103"))
                 .sortInMemory(meta.myCipherLobString.asc)
@@ -1485,14 +1510,10 @@ public class ModelQueryTest extends AppEngineTestCase {
         assertThat(list.get(0).getMyCipherLobString(), is("1102"));
         assertThat(list.get(1).getMyCipherLobString(), is("1103"));
         list =
-            Datastore
-                .query(meta)
-                .filterInMemory(
-                    new InMemoryLessThanOrEqualCriterion(
-                        meta.myCipherLobString,
-                        "1103"))
-                .sortInMemory(meta.myCipherLobString.asc)
-                .asList();
+            new ModelQuery<Hoge>(ds, meta).filterInMemory(
+                new InMemoryLessThanOrEqualCriterion(
+                    meta.myCipherLobString,
+                    "1103")).sortInMemory(meta.myCipherLobString.asc).asList();
         assertThat(list.size(), is(2));
         assertThat(list.get(0).getMyCipherLobString(), is("1102"));
         assertThat(list.get(1).getMyCipherLobString(), is("1103"));
@@ -1504,19 +1525,20 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByNotEqualCriterionOfCipherLobString()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherLobString("1102");
         hoge2.setMyCipherLobString("1103");
         hoge3.setMyCipherLobString("1104");
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new NotEqualCriterion(meta.myCipherLobString, "1103"))
                 .sortInMemory(meta.myCipherLobString.asc)
@@ -1525,10 +1547,11 @@ public class ModelQueryTest extends AppEngineTestCase {
         assertThat(list.get(0).getMyCipherLobString(), is("1102"));
         assertThat(list.get(1).getMyCipherLobString(), is("1104"));
         list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
-                    new InMemoryNotEqualCriterion(meta.myCipherLobString, "1103"))
+                    new InMemoryNotEqualCriterion(
+                        meta.myCipherLobString,
+                        "1103"))
                 .sortInMemory(meta.myCipherLobString.asc)
                 .asList();
         assertThat(list.size(), is(2));
@@ -1542,19 +1565,20 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByStartsWithCriterionOfCipherLobString()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherLobString("1102");
         hoge2.setMyCipherLobString("1103");
         hoge3.setMyCipherLobString("1104");
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new StartsWithCriterion(meta.myCipherLobString, "110"))
                 .sortInMemory(meta.myCipherLobString.asc)
@@ -1564,10 +1588,11 @@ public class ModelQueryTest extends AppEngineTestCase {
         assertThat(list.get(1).getMyCipherLobString(), is("1103"));
         assertThat(list.get(2).getMyCipherLobString(), is("1104"));
         list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
-                    new InMemoryStartsWithCriterion(meta.myCipherLobString, "110"))
+                    new InMemoryStartsWithCriterion(
+                        meta.myCipherLobString,
+                        "110"))
                 .sortInMemory(meta.myCipherLobString.asc)
                 .asList();
         assertThat(list.size(), is(3));
@@ -1575,7 +1600,6 @@ public class ModelQueryTest extends AppEngineTestCase {
         assertThat(list.get(1).getMyCipherLobString(), is("1103"));
         assertThat(list.get(2).getMyCipherLobString(), is("1104"));
     }
-    
 
     /**
      * @throws Exception
@@ -1583,19 +1607,20 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByEqualCriterionOfCipherText()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherText(new Text("1102"));
         hoge2.setMyCipherText(new Text("1103"));
         hoge3.setMyCipherText(new Text("1104"));
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(new EqualCriterion(meta.myCipherText, "1102"))
                 .filterInMemory(
                     new EqualCriterion(meta.myCipherText, new Text("1102")))
@@ -1616,19 +1641,20 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByGreaterThanCriterionOfCipherText()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherText(new Text("1102"));
         hoge2.setMyCipherText(new Text("1103"));
         hoge3.setMyCipherText(new Text("1104"));
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new GreaterThanCriterion(meta.myCipherText, "1103"))
                 .filterInMemory(
@@ -1653,19 +1679,20 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByGreaterThanOrEqualCriterionOfCipherText()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherText(new Text("1102"));
         hoge2.setMyCipherText(new Text("1103"));
         hoge3.setMyCipherText(new Text("1104"));
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new GreaterThanOrEqualCriterion(meta.myCipherText, "1103"))
                 .filterInMemory(
@@ -1693,36 +1720,30 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByInCriterionOfCipherText()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherText(new Text("1102"));
         hoge2.setMyCipherText(new Text("1103"));
         hoge3.setMyCipherText(new Text("1104"));
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
-                .filterInMemory(
-                    new InCriterion(meta.myCipherText, Arrays.asList(
-                        "1102",
-                        "1104")))
-                .filterInMemory(
-                    new InCriterion(meta.myCipherText, Arrays.asList(new Text(
-                        "1102"), new Text("1104"))))
-                .filterInMemory(
-                    new InMemoryInCriterion(meta.myCipherText, Arrays.asList(
-                        "1102",
-                        "1104")))
-                .filterInMemory(
-                    new InMemoryInCriterion(meta.myCipherText, Arrays.asList(
-                        new Text("1102"),
-                        new Text("1104"))))
-                .sortInMemory(meta.key.asc)
-                .asList();
+            new ModelQuery<Hoge>(ds, meta).filterInMemory(
+                new InCriterion(meta.myCipherText, Arrays
+                    .asList("1102", "1104"))).filterInMemory(
+                new InCriterion(meta.myCipherText, Arrays.asList(new Text(
+                    "1102"), new Text("1104")))).filterInMemory(
+                new InMemoryInCriterion(meta.myCipherText, Arrays.asList(
+                    "1102",
+                    "1104"))).filterInMemory(
+                new InMemoryInCriterion(meta.myCipherText, Arrays.asList(
+                    new Text("1102"),
+                    new Text("1104")))).sortInMemory(meta.key.asc).asList();
         assertThat(list.size(), is(2));
         assertThat(list.get(0).getMyCipherText().getValue(), is("1102"));
         assertThat(list.get(1).getMyCipherText().getValue(), is("1104"));
@@ -1734,19 +1755,20 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByContainsCriterionOfCipherText()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherText(new Text("1102"));
         hoge2.setMyCipherText(new Text("1103"));
         hoge3.setMyCipherText(new Text("1104"));
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new InMemoryContainsCriterion(meta.myCipherText, "110"))
                 .sortInMemory(meta.key.asc)
@@ -1763,19 +1785,20 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByEndsWithCriterionOfCipherText()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherText(new Text("1102"));
         hoge2.setMyCipherText(new Text("1103"));
         hoge3.setMyCipherText(new Text("1104"));
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new InMemoryEndsWithCriterion(meta.myCipherText, "103"))
                 .sortInMemory(meta.key.asc)
@@ -1790,19 +1813,20 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByIsNotNullCriterionOfCipherText()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherText(new Text("1102"));
         hoge2.setMyCipherText(new Text("1103"));
         hoge3.setMyCipherText(new Text("1104"));
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(new IsNotNullCriterion(meta.myCipherText))
                 .filterInMemory(
                     new InMemoryIsNotNullCriterion(meta.myCipherText))
@@ -1820,19 +1844,20 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByLessThanCriterionOfCipherText()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherText(new Text("1102"));
         hoge2.setMyCipherText(new Text("1103"));
         hoge3.setMyCipherText(new Text("1104"));
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new LessThanCriterion(meta.myCipherText, "1103"))
                 .filterInMemory(
@@ -1854,19 +1879,20 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByLessThanOrEqualCriterionOfCipherText()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherText(new Text("1102"));
         hoge2.setMyCipherText(new Text("1103"));
         hoge3.setMyCipherText(new Text("1104"));
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new LessThanOrEqualCriterion(meta.myCipherText, "1103"))
                 .filterInMemory(
@@ -1893,19 +1919,20 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByNotEqualCriterionOfCipherText()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherText(new Text("1102"));
         hoge2.setMyCipherText(new Text("1103"));
         hoge3.setMyCipherText(new Text("1104"));
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new NotEqualCriterion(meta.myCipherText, "1103"))
                 .filterInMemory(
@@ -1928,19 +1955,20 @@ public class ModelQueryTest extends AppEngineTestCase {
     @Test
     public void asListAndFilterInMemoryByStartsWithCriterionOfCipherText()
             throws Exception {
-        Datastore.setLimitedCipherKey(KEY128BIT);
         Hoge hoge1 = new Hoge();
         Hoge hoge2 = new Hoge();
         Hoge hoge3 = new Hoge();
         hoge1.setMyCipherText(new Text("1102"));
         hoge2.setMyCipherText(new Text("1103"));
         hoge3.setMyCipherText(new Text("1104"));
-        Datastore.put(hoge1);
-        Datastore.put(hoge2);
-        Datastore.put(hoge3);
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil
+            .put(ds, apiConfig, DatastoreUtil.modelToEntity(ds, hoge3));
         List<Hoge> list =
-            Datastore
-                .query(meta)
+            new ModelQuery<Hoge>(ds, meta)
                 .filterInMemory(
                     new StartsWithCriterion(meta.myCipherText, "110"))
                 .filterInMemory(

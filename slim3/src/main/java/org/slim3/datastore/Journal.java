@@ -16,16 +16,19 @@
 package org.slim3.datastore;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Map;
 
 import com.google.appengine.api.datastore.Blob;
+import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityTranslator;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.apphosting.api.ApiProxy.ApiConfig;
 import com.google.apphosting.api.DatastorePb.PutRequest;
 import com.google.storage.onestore.v3.OnestoreEntity.EntityProto;
 
@@ -67,37 +70,54 @@ public class Journal {
     /**
      * Applies the journals.
      * 
+     * @param ds
+     *            the datastore service
+     * @param apiConfig
+     *            the AppEngine API configuration
      * @param globalTransactionKey
      *            the global transaction key
      * @throws NullPointerException
      *             if the globalTransactionKey parameter is null
      * 
      */
-    public static void apply(Key globalTransactionKey)
-            throws NullPointerException {
+    public static void apply(DatastoreService ds, ApiConfig apiConfig,
+            Key globalTransactionKey) throws NullPointerException {
         if (globalTransactionKey == null) {
             throw new NullPointerException(
                 "The globalTransactionKey parameter must not be null.");
         }
         List<Entity> entities =
-            Datastore.query(KIND).filter(
+            new EntityQuery(ds, KIND).filter(
                 GLOBAL_TRANSACTION_KEY_PROPERTY,
                 FilterOperator.EQUAL,
                 globalTransactionKey).asList();
-        apply(entities);
+        apply(ds, apiConfig, entities);
     }
 
     /**
      * Applies the journals.
      * 
+     * @param ds
+     *            the datastore service
+     * @param apiConfig
+     *            the AppEngine API configuration
      * @param entities
      *            the entities
      * @throws NullPointerException
-     *             if the entities parameter is null
+     *             if the ds parameter is null or if the apiConfig parameter is
+     *             null or if the entities parameter is null
      * 
      */
     @SuppressWarnings("unchecked")
-    public static void apply(List<Entity> entities) throws NullPointerException {
+    public static void apply(DatastoreService ds, ApiConfig apiConfig,
+            List<Entity> entities) throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        if (apiConfig == null) {
+            throw new NullPointerException(
+                "The apiConfig parameter must not be null.");
+        }
         if (entities == null) {
             throw new NullPointerException(
                 "The entities parameter must not be null.");
@@ -115,29 +135,42 @@ public class Journal {
                 }
             }
             if (putReq.entitySize() > 0) {
-                DatastoreUtil.putUsingLowerApi(putReq);
+                DatastoreUtil.putUsingLowerApi(apiConfig, putReq);
             }
             if (deleteList != null) {
-                Datastore.deleteWithoutTx(deleteList);
+                DatastoreUtil.delete(ds, null, deleteList);
             }
-            Datastore.deleteWithoutTx(entity.getKey());
+            DatastoreUtil.delete(ds, null, Arrays.asList(entity.getKey()));
         }
     }
 
     /**
      * Applies the journals.
      * 
+     * @param ds
+     *            the datastore service
+     * @param apiConfig
+     *            the AppEngine API configuration
      * @param tx
      *            the transaction
      * @param journals
      *            the journals
      * @throws NullPointerException
-     *             if the tx parameter is null or if the journals parameter is
-     *             null
+     *             if the ds parameter is null or if the apiConfig parameter is
+     *             null or if the tx parameter is null or if the journals
+     *             parameter is null
      * 
      */
-    public static void apply(Transaction tx, Map<Key, Entity> journals)
+    public static void apply(DatastoreService ds, ApiConfig apiConfig,
+            Transaction tx, Map<Key, Entity> journals)
             throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        if (apiConfig == null) {
+            throw new NullPointerException(
+                "The apiConfig parameter must not be null.");
+        }
         if (tx == null) {
             throw new NullPointerException("The tx parameter must not be null.");
         }
@@ -155,25 +188,38 @@ public class Journal {
                 deleteList.add(key);
             }
         }
-        DatastoreUtil.put(tx, putList);
-        DatastoreUtil.delete(tx, deleteList);
+        DatastoreUtil.put(ds, apiConfig, tx, putList);
+        DatastoreUtil.delete(ds, tx, deleteList);
     }
 
     /**
      * Puts the journals to the datastore.
      * 
+     * @param ds
+     *            the datastore service
+     * @param apiConfig
+     *            the AppEngine API configuration
      * @param globalTransactionKey
      *            the global transaction key
      * @param journalMap
      *            the map of journals
      * @return journal entities
      * @throws NullPointerException
-     *             if the globalTransactionKey parameter is null or if the
-     *             journalMap parameter is null
+     *             if the ds parameter is null or if the apiConfig parameter is
+     *             null or if the globalTransactionKey parameter is null or if
+     *             the journalMap parameter is null
      * 
      */
-    public static List<Entity> put(Key globalTransactionKey,
-            Map<Key, Entity> journalMap) throws NullPointerException {
+    public static List<Entity> put(DatastoreService ds, ApiConfig apiConfig,
+            Key globalTransactionKey, Map<Key, Entity> journalMap)
+            throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        if (apiConfig == null) {
+            throw new NullPointerException(
+                "The apiConfig parameter must not be null.");
+        }
         if (journalMap == null) {
             throw new NullPointerException(
                 "The journalMap parameter must not be null.");
@@ -183,7 +229,7 @@ public class Journal {
             return entities;
         }
         int totalSize = 0;
-        Entity entity = createEntity(globalTransactionKey);
+        Entity entity = createEntity(ds, globalTransactionKey);
         List<Blob> putList = new ArrayList<Blob>();
         List<Key> deleteList = new ArrayList<Key>();
         for (Key key : journalMap.keySet()) {
@@ -196,9 +242,9 @@ public class Journal {
                 && totalSize + size + DatastoreUtil.EXTRA_SIZE > DatastoreUtil.MAX_ENTITY_SIZE) {
                 entity.setUnindexedProperty(PUT_LIST_PROPERTY, putList);
                 entity.setUnindexedProperty(DELETE_LIST_PROPERTY, deleteList);
-                Datastore.putWithoutTx(entity);
+                DatastoreUtil.put(ds, apiConfig, null, entity);
                 entities.add(entity);
-                entity = createEntity(globalTransactionKey);
+                entity = createEntity(ds, globalTransactionKey);
                 putList = new ArrayList<Blob>();
                 deleteList = new ArrayList<Key>();
                 totalSize = 0;
@@ -214,7 +260,7 @@ public class Journal {
         }
         entity.setUnindexedProperty(PUT_LIST_PROPERTY, putList);
         entity.setUnindexedProperty(DELETE_LIST_PROPERTY, deleteList);
-        Datastore.putWithoutTx(entity);
+        DatastoreUtil.put(ds, apiConfig, null, entity);
         entities.add(entity);
         return entities;
     }
@@ -222,40 +268,52 @@ public class Journal {
     /**
      * Deletes entities specified by the global transaction key in transaction.
      * 
+     * @param ds
+     *            the datastore service
      * @param globalTransactionKey
      *            the global transaction key
      * @throws NullPointerException
-     *             if the globalTransactionKey parameter is null
+     *             if the ds parameter is null or if the globalTransactionKey
+     *             parameter is null
      */
-    public static void deleteInTx(Key globalTransactionKey)
+    public static void deleteInTx(DatastoreService ds, Key globalTransactionKey)
             throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
         if (globalTransactionKey == null) {
             throw new NullPointerException(
                 "The globalTransactionKey parameter must not be null.");
         }
-        List<Key> keys = getKeys(globalTransactionKey);
+        List<Key> keys = getKeys(ds, globalTransactionKey);
         for (Key key : keys) {
-            deleteInTx(globalTransactionKey, key);
+            deleteInTx(ds, globalTransactionKey, key);
         }
     }
 
     /**
      * Returns the keys specified by the global transaction key.
      * 
+     * @param ds
+     *            the datastore service
      * @param globalTransactionKey
      *            the global transaction key
      * @return a list of keys
      * @throws NullPointerException
-     *             if the globalTransactionKey parameter is null
+     *             if the ds parameter is null or if the globalTransactionKey
+     *             parameter is null
      * 
      */
-    protected static List<Key> getKeys(Key globalTransactionKey)
-            throws NullPointerException {
+    protected static List<Key> getKeys(DatastoreService ds,
+            Key globalTransactionKey) throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
         if (globalTransactionKey == null) {
             throw new NullPointerException(
                 "The globalTransactionKey parameter must not be null.");
         }
-        return Datastore.query(KIND).filter(
+        return new EntityQuery(ds, KIND).filter(
             GLOBAL_TRANSACTION_KEY_PROPERTY,
             FilterOperator.EQUAL,
             globalTransactionKey).asKeyList();
@@ -264,19 +322,25 @@ public class Journal {
     /**
      * Creates an entity.
      * 
+     * @param ds
+     *            the datastore service
      * @param globalTransactionKey
      *            the global transaction key
      * @return an entity
      * @throws NullPointerException
-     *             if the globalTransactionKey parameter is null
+     *             if the ds parameter is null or if the globalTransactionKey
+     *             parameter is null
      */
-    protected static Entity createEntity(Key globalTransactionKey)
-            throws NullPointerException {
+    protected static Entity createEntity(DatastoreService ds,
+            Key globalTransactionKey) throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
         if (globalTransactionKey == null) {
             throw new NullPointerException(
                 "The globalTransactionKey parameter must not be null.");
         }
-        Entity entity = new Entity(Datastore.allocateId(KIND));
+        Entity entity = new Entity(DatastoreUtil.allocateId(ds, KIND));
         entity.setProperty(
             GLOBAL_TRANSACTION_KEY_PROPERTY,
             globalTransactionKey);
@@ -286,17 +350,22 @@ public class Journal {
     /**
      * Deletes an entity specified by the key in transaction.
      * 
+     * @param ds
+     *            the datastore service
      * @param globalTransactionKey
      *            the global transaction key
      * @param key
      *            the key
      * 
      * @throws NullPointerException
-     *             if the globalTransactionKey parameter is null or if the key
-     *             parameter is null
+     *             if the ds parameter is null or if the globalTransactionKey
+     *             parameter is null or if the key parameter is null
      */
-    protected static void deleteInTx(Key globalTransactionKey, Key key)
-            throws NullPointerException {
+    protected static void deleteInTx(DatastoreService ds,
+            Key globalTransactionKey, Key key) throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
         if (globalTransactionKey == null) {
             throw new NullPointerException(
                 "The globalTransactionKey parameter must not be null.");
@@ -306,13 +375,14 @@ public class Journal {
                 "The key parameter must not be null.");
         }
         for (int i = 0; i < DatastoreUtil.MAX_RETRY; i++) {
-            Transaction tx = Datastore.beginTransaction();
+            Transaction tx = ds.beginTransaction();
             try {
-                Entity entity = Datastore.getOrNull(tx, key);
+                Entity entity =
+                    DatastoreUtil.getAsMap(ds, tx, Arrays.asList(key)).get(key);
                 if (entity != null
                     && globalTransactionKey.equals(entity
                         .getProperty(GLOBAL_TRANSACTION_KEY_PROPERTY))) {
-                    Datastore.delete(tx, key);
+                    DatastoreUtil.delete(ds, tx, Arrays.asList(key));
                     tx.commit();
                 }
                 return;

@@ -424,7 +424,7 @@ public class ModelMetaGenerator implements Generator {
         printer.println("}");
         printer.println();
     }
-    
+
     /**
      * Generates the {@code getKey} method.
      * 
@@ -485,8 +485,6 @@ public class ModelMetaGenerator implements Generator {
     protected void printPrePutMethod(final Printer printer) {
         printer.println("@Override");
         printer.println("protected void prePut(Object model) {");
-        printer.println("    assignKeyIfNecessary(model);");
-        printer.println("    incrementVersion(model);");
         boolean first = true;
         for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
             if (attr.getAttributeListenerClassName() != null
@@ -1053,7 +1051,7 @@ public class ModelMetaGenerator implements Generator {
             }
             return super.visitTextType(type, p);
         }
-        
+
         @Override
         public Void visitKeyType(KeyType type, AttributeMetaDesc p)
                 throws RuntimeException {
@@ -1602,11 +1600,10 @@ public class ModelMetaGenerator implements Generator {
                 return null;
             }
             if (p.isCipher()) {
-                printer
-                    .println(
-                        "entity.setProperty(\"%1$s\", encrypt(m.%2$s()));",
-                        p.getName(),
-                        p.getReadMethodName());
+                printer.println(
+                    "entity.setProperty(\"%1$s\", encrypt(m.%2$s()));",
+                    p.getName(),
+                    p.getReadMethodName());
                 return null;
             }
             return super.visitStringType(type, p);
@@ -1634,10 +1631,11 @@ public class ModelMetaGenerator implements Generator {
         public Void visitTextType(TextType type, AttributeMetaDesc p)
                 throws RuntimeException {
             if (p.isCipher()) {
-                printer.println(
-                    "entity.setUnindexedProperty(\"%1$s\", encrypt(m.%2$s()));",
-                    p.getName(),
-                    p.getReadMethodName());
+                printer
+                    .println(
+                        "entity.setUnindexedProperty(\"%1$s\", encrypt(m.%2$s()));",
+                        p.getName(),
+                        p.getReadMethodName());
                 return null;
             }
             printer.println(

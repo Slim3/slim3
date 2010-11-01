@@ -22,7 +22,6 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.google.appengine.repackaged.com.google.common.util.Base64;
-import com.google.gwt.user.server.Base64Utils;
 
 /**
  * A class to cipher using the AES algorithm.
@@ -176,7 +175,7 @@ public class AesCipher implements Cipher {
                 javax.crypto.Cipher.DECRYPT_MODE,
                 spec,
                 new IvParameterSpec(CBC_IV));
-            byte[] bytes = Base64Utils.fromBase64(encryptedText);
+            byte[] bytes = Base64.decode(encryptedText);
             result = new String(cipher.doFinal(bytes), ENCODING);
         } catch (Exception e) {
             logger.log(Level.WARNING, e.getMessage(), e);

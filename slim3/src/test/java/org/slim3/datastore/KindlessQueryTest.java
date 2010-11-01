@@ -41,7 +41,7 @@ public class KindlessQueryTest extends AppEngineTestCase {
     public void constructorUsingTxAndAncestorKey() throws Exception {
         Key ancestorKey = KeyFactory.createKey("Ancestor", 1);
         KindlessQuery query =
-            new KindlessQuery(ds.beginTransaction(), ancestorKey);
+            new KindlessQuery(ds, ds.beginTransaction(), ancestorKey);
         assertThat(query.query.getAncestor(), is(ancestorKey));
         assertThat(query.tx, is(notNullValue()));
     }

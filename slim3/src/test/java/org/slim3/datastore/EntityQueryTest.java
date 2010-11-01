@@ -45,7 +45,7 @@ public class EntityQueryTest extends AppEngineTestCase {
     public void constructorUsingTxAndKindAndAncestorKey() throws Exception {
         Key ancestorKey = KeyFactory.createKey("Ancestor", 1);
         EntityQuery query =
-            new EntityQuery(ds.beginTransaction(), "Hoge", ancestorKey);
+            new EntityQuery(ds, ds.beginTransaction(), "Hoge", ancestorKey);
         assertThat(query.query.getKind(), is("Hoge"));
         assertThat(query.query.getAncestor(), is(ancestorKey));
         assertThat(query.tx, is(notNullValue()));
@@ -56,7 +56,7 @@ public class EntityQueryTest extends AppEngineTestCase {
      */
     @Test
     public void sort() throws Exception {
-        EntityQuery q = new EntityQuery("Hoge");
+        EntityQuery q = new EntityQuery(ds, "Hoge");
         assertThat(q.sort("aaa", SortDirection.DESCENDING), is(sameInstance(q)));
         assertThat(q.query.getSortPredicates().size(), is(1));
         assertThat(
@@ -73,7 +73,7 @@ public class EntityQueryTest extends AppEngineTestCase {
     @Test
     public void asList() throws Exception {
         ds.put(new Entity("Hoge"));
-        EntityQuery q = new EntityQuery("Hoge");
+        EntityQuery q = new EntityQuery(ds, "Hoge");
         assertThat(q.asList().size(), is(1));
     }
 
@@ -83,7 +83,7 @@ public class EntityQueryTest extends AppEngineTestCase {
     @Test
     public void asQueryResultList() throws Exception {
         ds.put(new Entity("Hoge"));
-        EntityQuery q = new EntityQuery("Hoge");
+        EntityQuery q = new EntityQuery(ds, "Hoge");
         assertThat(q.asQueryResultList().size(), is(1));
     }
 
@@ -93,7 +93,7 @@ public class EntityQueryTest extends AppEngineTestCase {
     @Test
     public void asQueryResultIterator() throws Exception {
         ds.put(new Entity("Hoge"));
-        EntityQuery q = new EntityQuery("Hoge");
+        EntityQuery q = new EntityQuery(ds, "Hoge");
         assertThat(q.asQueryResultIterator(), is(notNullValue()));
     }
 
@@ -103,7 +103,7 @@ public class EntityQueryTest extends AppEngineTestCase {
     @Test
     public void asSingleEntity() throws Exception {
         ds.put(new Entity("Hoge"));
-        EntityQuery q = new EntityQuery("Hoge");
+        EntityQuery q = new EntityQuery(ds, "Hoge");
         Entity entity = q.asSingleEntity();
         assertThat(entity, is(not(nullValue())));
     }
@@ -114,7 +114,7 @@ public class EntityQueryTest extends AppEngineTestCase {
     @Test
     public void asIterable() throws Exception {
         ds.put(new Entity("Hoge"));
-        EntityQuery q = new EntityQuery("Hoge");
+        EntityQuery q = new EntityQuery(ds, "Hoge");
         boolean found = false;
         for (Entity entity : q.asIterable()) {
             found = true;
@@ -129,7 +129,7 @@ public class EntityQueryTest extends AppEngineTestCase {
     @Test
     public void asIterator() throws Exception {
         ds.put(new Entity("Hoge"));
-        EntityQuery q = new EntityQuery("Hoge");
+        EntityQuery q = new EntityQuery(ds, "Hoge");
         boolean found = false;
         for (Iterator<Entity> i = q.asIterator(); i.hasNext();) {
             found = true;

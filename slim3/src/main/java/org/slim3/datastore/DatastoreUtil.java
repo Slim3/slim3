@@ -34,7 +34,6 @@ import org.slim3.util.Cleaner;
 import org.slim3.util.IterableUtil;
 
 import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.DatastoreTimeoutException;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
@@ -52,6 +51,7 @@ import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.apphosting.api.ApiProxy;
 import com.google.apphosting.api.DatastorePb;
+import com.google.apphosting.api.ApiProxy.ApiConfig;
 import com.google.apphosting.api.DatastorePb.GetSchemaRequest;
 import com.google.apphosting.api.DatastorePb.PutRequest;
 import com.google.apphosting.api.DatastorePb.Schema;
@@ -134,10 +134,18 @@ public final class DatastoreUtil {
     /**
      * Begins a transaction.
      * 
+     * @param ds
+     *            the datastore service
+     * 
      * @return a begun transaction
+     * @throws NullPointerException
+     *             if the ds parameter is null
      */
-    public static Transaction beginTransaction() {
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+    public static Transaction beginTransaction(DatastoreService ds)
+            throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
         DatastoreTimeoutException dte = null;
         long wait = INITIAL_WAIT_MS;
         for (int i = 0; i < MAX_RETRY; i++) {
@@ -158,50 +166,6 @@ public final class DatastoreUtil {
     }
 
     /**
-     * Commits the transaction.
-     * 
-     * @param tx
-     *            the transaction
-     * @throws NullPointerException
-     *             if the tx parameter is null
-     * @throws IllegalArgumentException
-     *             if the transaction is not active
-     */
-    public static void commit(Transaction tx) throws NullPointerException,
-            IllegalArgumentException {
-        if (tx == null) {
-            throw new NullPointerException("The tx parameter must not be null.");
-        }
-        if (!tx.isActive()) {
-            throw new IllegalArgumentException(
-                "The transaction must be active.");
-        }
-        tx.commit();
-    }
-
-    /**
-     * Rolls back the transaction.
-     * 
-     * @param tx
-     *            the transaction
-     * @throws NullPointerException
-     *             if the tx parameter is null
-     * @throws IllegalArgumentException
-     *             if the transaction is not active
-     */
-    public static void rollback(Transaction tx) throws NullPointerException,
-            IllegalArgumentException {
-        if (tx == null) {
-            throw new NullPointerException("The tx parameter is null.");
-        }
-        if (!tx.isActive()) {
-            throw new IllegalArgumentException(
-                "The transaction must be active.");
-        }
-        tx.rollback();
-    }
-
-    /**
      * Clears the active transactions.
      */
     public static void clearActiveGlobalTransactions() {
@@ -211,13 +175,19 @@ public final class DatastoreUtil {
     /**
      * Allocates a key within a namespace defined by the kind.
      * 
+     * @param ds
+     *            the datastore service
      * @param kind
      *            the kind
      * @return a key within a namespace defined by the kind
      * @throws NullPointerException
-     *             if the kind parameter is null
+     *             if the ds parameter is null or if the kind parameter is null
      */
-    public static Key allocateId(String kind) throws NullPointerException {
+    public static Key allocateId(DatastoreService ds, String kind)
+            throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
         if (kind == null) {
             throw new NullPointerException(
                 "The kind parameter must not be null.");
@@ -226,7 +196,7 @@ public final class DatastoreUtil {
         if (keys != null && keys.hasNext()) {
             return keys.next();
         }
-        keys = allocateIds(kind, KEY_CACHE_SIZE).iterator();
+        keys = allocateIds(ds, kind, KEY_CACHE_SIZE).iterator();
         keysCache.put(kind, keys);
         return keys.next();
     }
@@ -235,6 +205,8 @@ public final class DatastoreUtil {
      * Allocates a key within a namespace defined by the parent key and the
      * kind.
      * 
+     * @param ds
+     *            the datastore service
      * @param parentKey
      *            the parent key
      * @param kind
@@ -242,11 +214,14 @@ public final class DatastoreUtil {
      * 
      * @return a key within a namespace defined by the kind and the parent key
      * @throws NullPointerException
-     *             if the parentKey parameter is null or if the kind parameter
-     *             is null
+     *             if the ds parameter is null or if the parentKey parameter is
+     *             null or if the kind parameter is null
      */
-    public static Key allocateId(Key parentKey, String kind)
+    public static Key allocateId(DatastoreService ds, Key parentKey, String kind)
             throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
         if (parentKey == null) {
             throw new NullPointerException(
                 "The parentKey parameter must not be null.");
@@ -255,27 +230,32 @@ public final class DatastoreUtil {
             throw new NullPointerException(
                 "The kind parameter must not be null.");
         }
-        Iterator<Key> keys = allocateIds(parentKey, kind, 1).iterator();
+        Iterator<Key> keys = allocateIds(ds, parentKey, kind, 1).iterator();
         return keys.next();
     }
 
     /**
      * Allocates keys within a namespace defined by the kind.
      * 
+     * @param ds
+     *            the datastore service
      * @param kind
      *            the kind
      * @param num
      *            the number of allocated keys
      * @return keys within a namespace defined by the kind
      * @throws NullPointerException
-     *             if the kind parameter is null
+     *             if the ds parameter is null or if the kind parameter is null
      */
-    public static KeyRange allocateIds(String kind, long num)
-            throws NullPointerException {
-        if (kind == null) {
-            throw new NullPointerException("The kind parameter is null.");
+    public static KeyRange allocateIds(DatastoreService ds, String kind,
+            long num) throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
         }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        if (kind == null) {
+            throw new NullPointerException(
+                "The kind parameter must not be null.");
+        }
         DatastoreTimeoutException dte = null;
         long wait = INITIAL_WAIT_MS;
         for (int i = 0; i < MAX_RETRY; i++) {
@@ -298,6 +278,8 @@ public final class DatastoreUtil {
     /**
      * Allocates keys within a namespace defined by the parent key and the kind.
      * 
+     * @param ds
+     *            the datastore service
      * @param parentKey
      *            the parent key
      * @param kind
@@ -305,18 +287,21 @@ public final class DatastoreUtil {
      * @param num
      * @return keys within a namespace defined by the parent key and the kind
      * @throws NullPointerException
-     *             if the parentKey parameter is null or if the kind parameter
-     *             is null
+     *             if the ds parameter is null or if the parentKey parameter is
+     *             null or if the kind parameter is null
      */
-    public static KeyRange allocateIds(Key parentKey, String kind, long num)
-            throws NullPointerException {
+    public static KeyRange allocateIds(DatastoreService ds, Key parentKey,
+            String kind, long num) throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
         if (parentKey == null) {
-            throw new NullPointerException("The parentKey parameter is null.");
+            throw new NullPointerException(
+                "The parentKey parameter must not be null.");
         }
         if (kind == null) {
             throw new NullPointerException("The kind parameter is null.");
         }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         DatastoreTimeoutException dte = null;
         long wait = INITIAL_WAIT_MS;
         for (int i = 0; i < MAX_RETRY; i++) {
@@ -339,22 +324,30 @@ public final class DatastoreUtil {
     /**
      * Assigns a new key to the entity if necessary.
      * 
+     * @param ds
+     *            the datastore service
      * @param entity
      *            the entity
      * @throws NullPointerException
-     *             if the entity parameter is null
+     *             if the ds parameter is null or if the entity parameter is
+     *             null
      */
-    public static void assignKeyIfNecessary(Entity entity)
+    public static void assignKeyIfNecessary(DatastoreService ds, Entity entity)
             throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
         if (entity == null) {
             throw new NullPointerException(
                 "The entity parameter must not be null.");
         }
         if (!entity.getKey().isComplete()) {
             long id =
-                entity.getParent() == null ? allocateId(entity.getKind())
-                    .getId() : allocateId(entity.getParent(), entity.getKind())
-                    .getId();
+                entity.getParent() == null ? allocateId(ds, entity.getKind())
+                    .getId() : allocateId(
+                    ds,
+                    entity.getParent(),
+                    entity.getKind()).getId();
             KeyUtil.setId(entity.getKey(), id);
         }
     }
@@ -362,19 +355,25 @@ public final class DatastoreUtil {
     /**
      * Assigns a new key to the entity if necessary.
      * 
+     * @param ds
+     *            the datastore service
      * @param entities
      *            the entities
      * @throws NullPointerException
-     *             if the entities parameter is null
+     *             if the ds parameter is null or if the entities parameter is
+     *             null
      */
-    public static void assignKeyIfNecessary(Iterable<Entity> entities)
-            throws NullPointerException {
+    public static void assignKeyIfNecessary(DatastoreService ds,
+            Iterable<Entity> entities) throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
         if (entities == null) {
             throw new NullPointerException(
                 "The entities parameter must not be null.");
         }
         for (Entity e : entities) {
-            assignKeyIfNecessary(e);
+            assignKeyIfNecessary(ds, e);
         }
     }
 
@@ -382,21 +381,25 @@ public final class DatastoreUtil {
      * Returns an entity specified by the key. If there is a current
      * transaction, this operation will execute within that transaction.
      * 
+     * @param ds
+     *            the datastore service
      * @param key
      *            the key
      * @return an entity specified by the key
      * @throws NullPointerException
-     *             if the key parameter is null
+     *             if the ds parameter is null or if the key parameter is null
      * @throws EntityNotFoundRuntimeException
      *             if no entity specified by the key could be found
      */
-    public static Entity get(Key key) throws NullPointerException,
-            EntityNotFoundRuntimeException {
+    public static Entity get(DatastoreService ds, Key key)
+            throws NullPointerException, EntityNotFoundRuntimeException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
         if (key == null) {
             throw new NullPointerException(
                 "The key parameter must not be null.");
         }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         try {
             DatastoreTimeoutException dte = null;
             long wait = INITIAL_WAIT_MS;
@@ -423,22 +426,27 @@ public final class DatastoreUtil {
     /**
      * Returns an entity specified by the key within the provided transaction.
      * 
+     * @param ds
+     *            the datastore service
      * @param tx
      *            the transaction
      * @param key
      *            the key
      * @return an entity specified by the key
      * @throws NullPointerException
-     *             if the key parameter is null
+     *             if the ds parameter is null or if the key parameter is null
      * @throws IllegalStateException
      *             if the transaction is not null and the transaction is not
      *             active
      * @throws EntityNotFoundRuntimeException
      *             if no entity specified by the key could be found
      */
-    public static Entity get(Transaction tx, Key key)
+    public static Entity get(DatastoreService ds, Transaction tx, Key key)
             throws NullPointerException, IllegalStateException,
             EntityNotFoundRuntimeException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
         if (key == null) {
             throw new NullPointerException(
                 "The key parameter must not be null.");
@@ -446,7 +454,6 @@ public final class DatastoreUtil {
         if (tx != null && !tx.isActive()) {
             throw new IllegalStateException("The transaction must be active.");
         }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         try {
             DatastoreTimeoutException dte = null;
             long wait = INITIAL_WAIT_MS;
@@ -474,14 +481,19 @@ public final class DatastoreUtil {
      * Returns entities specified by the keys as map. If there is a current
      * transaction, this operation will execute within that transaction.
      * 
+     * @param ds
+     *            the datastore service
      * @param keys
      *            the keys
      * @return entities specified by the keys
      * @throws NullPointerException
-     *             if the keys parameter is null
+     *             if the ds parameter is null or if the keys parameter is null
      */
-    public static Map<Key, Entity> getAsMap(Iterable<Key> keys)
-            throws NullPointerException {
+    public static Map<Key, Entity> getAsMap(DatastoreService ds,
+            Iterable<Key> keys) throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
         if (keys == null) {
             throw new NullPointerException(
                 "The keys parameter must not be null.");
@@ -489,7 +501,6 @@ public final class DatastoreUtil {
         if (keys instanceof Collection<?> && ((Collection<?>) keys).size() == 0) {
             return new HashMap<Key, Entity>();
         }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         DatastoreTimeoutException dte = null;
         long wait = INITIAL_WAIT_MS;
         for (int i = 0; i < MAX_RETRY; i++) {
@@ -513,19 +524,25 @@ public final class DatastoreUtil {
      * Returns entities specified by the keys as map within the provided
      * transaction.
      * 
+     * @param ds
+     *            the datastore service
      * @param tx
      *            the transaction
      * @param keys
      *            the keys
      * @return entities specified by the keys
      * @throws NullPointerException
-     *             if the keys parameter is null
+     *             if the ds parameter is null or if the keys parameter is null
      * @throws IllegalStateException
      *             if the transaction is not null and the transaction is not
      *             active
      */
-    public static Map<Key, Entity> getAsMap(Transaction tx, Iterable<Key> keys)
-            throws NullPointerException, IllegalStateException {
+    public static Map<Key, Entity> getAsMap(DatastoreService ds,
+            Transaction tx, Iterable<Key> keys) throws NullPointerException,
+            IllegalStateException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
         if (keys == null) {
             throw new NullPointerException(
                 "The keys parameter must not be null.");
@@ -536,7 +553,6 @@ public final class DatastoreUtil {
         if (keys instanceof Collection<?> && ((Collection<?>) keys).size() == 0) {
             return new HashMap<Key, Entity>();
         }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         DatastoreTimeoutException dte = null;
         long wait = INITIAL_WAIT_MS;
         for (int i = 0; i < MAX_RETRY; i++) {
@@ -560,78 +576,129 @@ public final class DatastoreUtil {
      * Puts the entity to datastore. If there is a current transaction, this
      * operation will execute within that transaction.
      * 
+     * @param ds
+     *            the datastore service
+     * @param apiConfig
+     *            the AppEngine API configuration
      * @param entity
      *            the entity
+     * 
      * @return a key
      * @throws NullPointerException
-     *             if the entity parameter is null
+     *             if the ds parameter is null or if the entity parameter is
+     *             null or if the apiConfig parameter is null
      * @throws IllegalStateException
      *             if the transaction is not null and the transaction is not
      *             active
      */
-    public static Key put(Entity entity) throws NullPointerException,
-            IllegalStateException {
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        return put(ds.getCurrentTransaction(null), entity);
+    public static Key put(DatastoreService ds, ApiConfig apiConfig,
+            Entity entity) throws NullPointerException, IllegalStateException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        if (apiConfig == null) {
+            throw new NullPointerException(
+                "The apiConfig parameter must not be null.");
+        }
+        return put(ds, apiConfig, ds.getCurrentTransaction(null), entity);
     }
 
     /**
      * Puts the entity to datastore within the provided transaction.
      * 
+     * @param ds
+     *            the datastore service
+     * @param apiConfig
+     *            the AppEngine API configuration
      * @param tx
      *            the transaction
      * @param entity
      *            the entity
+     * 
      * @return a key
      * @throws NullPointerException
-     *             if the entity parameter is null
+     *             if the ds parameter is null or if the apiConfig parameter is
+     *             null or if the entity parameter is null
      * @throws IllegalStateException
      *             if the transaction is not null and the transaction is not
      *             active
      */
-    public static Key put(Transaction tx, Entity entity)
-            throws NullPointerException, IllegalStateException {
+    public static Key put(DatastoreService ds, ApiConfig apiConfig,
+            Transaction tx, Entity entity) throws NullPointerException,
+            IllegalStateException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        if (apiConfig == null) {
+            throw new NullPointerException(
+                "The apiConfig parameter must not be null.");
+        }
         if (tx != null && !tx.isActive()) {
             throw new IllegalStateException("The transaction must be active.");
         }
-        assignKeyIfNecessary(entity);
+        assignKeyIfNecessary(ds, entity);
         EntityProto entityProto = EntityTranslator.convertToPb(entity);
         PutRequest req = createPutRequest(tx);
         req.addEntity(entityProto);
-        putUsingLowerApi(req);
+        putUsingLowerApi(apiConfig, req);
         return entity.getKey();
     }
 
     /**
      * Puts the entities to datastore within the provided transaction.
      * 
+     * @param ds
+     *            the datastore service
      * @param entities
      *            the entities
+     * @param apiConfig
+     *            the AppEngine API configuration
      * @return a list of keys
      * @throws NullPointerException
-     *             if the entities parameter is null
+     *             if the ds parameter is null or if the apiConfig parameter is
+     *             null or if the entities parameter is null
      */
-    public static List<Key> put(Iterable<Entity> entities)
-            throws NullPointerException {
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+    public static List<Key> put(DatastoreService ds, ApiConfig apiConfig,
+            Iterable<Entity> entities) throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        if (apiConfig == null) {
+            throw new NullPointerException(
+                "The apiConfig parameter must not be null.");
+        }
         Transaction tx = ds.getCurrentTransaction(null);
         if (tx == null) {
-            return putWithoutTx(entities);
+            return putWithoutTx(ds, apiConfig, entities);
         }
-        return put(tx, entities);
+        return put(ds, apiConfig, tx, entities);
     }
 
     /**
      * Puts the entities to datastore without transaction.
      * 
+     * @param ds
+     *            the datastore service
+     * @param apiConfig
+     *            the AppEngine API configuration
      * @param entities
      *            the entities
+     * 
      * @return a list of keys
      * @throws NullPointerException
-     *             if the entities parameter is null
+     *             if the ds parameter is null or if the apiConfig parameter is
+     *             null or if the entities parameter is null
      */
-    public static List<Key> putWithoutTx(Iterable<Entity> entities)
+    public static List<Key> putWithoutTx(DatastoreService ds,
+            ApiConfig apiConfig, Iterable<Entity> entities)
             throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        if (apiConfig == null) {
+            throw new NullPointerException(
+                "The apiConfig parameter must not be null.");
+        }
         if (entities == null) {
             throw new NullPointerException(
                 "The entities parameter must not be null.");
@@ -640,10 +707,10 @@ public final class DatastoreUtil {
         long wait = INITIAL_WAIT_MS;
         for (int i = 0; i < MAX_RETRY; i++) {
             try {
-                assignKeyIfNecessary(entities);
+                assignKeyIfNecessary(ds, entities);
                 List<Key> keyList = toKeyList(entities);
                 List<EntityProto> entityProtoList = toEntityProtoList(entities);
-                putUsingLowerApi(null, entityProtoList);
+                putUsingLowerApi(apiConfig, null, entityProtoList);
                 return keyList;
             } catch (ConcurrentModificationException e) {
                 cme = e;
@@ -662,46 +729,70 @@ public final class DatastoreUtil {
     /**
      * Puts the entities to datastore within the provided transaction.
      * 
+     * @param ds
+     *            the datastore service
+     * @param apiConfig
+     *            the AppEngine API configuration
      * @param tx
      *            the transaction
      * @param entities
      *            the entities
+     * 
      * @return a list of keys
      * @throws NullPointerException
-     *             if the entities parameter is null
+     *             if the ds parameter is null or if the apiConfig parameter is
+     *             null or if the entities parameter is null
      * @throws IllegalStateException
      *             if the transaction is not null and the transaction is not
      *             active
      */
-    public static List<Key> put(Transaction tx, Iterable<Entity> entities)
+    public static List<Key> put(DatastoreService ds, ApiConfig apiConfig,
+            Transaction tx, Iterable<Entity> entities)
             throws NullPointerException, IllegalStateException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        if (apiConfig == null) {
+            throw new NullPointerException(
+                "The apiConfig parameter must not be null.");
+        }
         if (entities == null) {
             throw new NullPointerException(
                 "The entities parameter must not be null.");
         }
-        if (tx != null && !tx.isActive()) {
+        if (tx == null) {
+            return putWithoutTx(ds, apiConfig, entities);
+        }
+        if (!tx.isActive()) {
             throw new IllegalStateException("The transaction must be active.");
         }
-        if (tx == null) {
-            return putWithoutTx(entities);
-        }
-        assignKeyIfNecessary(entities);
+        assignKeyIfNecessary(ds, entities);
         List<Key> keyList = toKeyList(entities);
         List<EntityProto> entityProtoList = toEntityProtoList(entities);
-        putUsingLowerApi(tx, entityProtoList);
+        putUsingLowerApi(apiConfig, tx, entityProtoList);
         return keyList;
     }
 
     /**
      * Puts the entities using lower level API.
      * 
+     * @param apiConfig
+     *            the AppEngine API configuration
      * @param tx
      *            the transaction
      * @param entities
      *            the entities
+     * 
+     * @throws NullPointerException
+     *             if the apiConfig parameter is null or if the entities
+     *             parameter is null
      */
-    public static void putUsingLowerApi(Transaction tx,
-            Iterable<EntityProto> entities) {
+    public static void putUsingLowerApi(ApiConfig apiConfig, Transaction tx,
+            Iterable<EntityProto> entities) throws NullPointerException {
+        if (apiConfig == null) {
+            throw new NullPointerException(
+                "The apiConfig parameter must not be null.");
+        }
         if (entities == null) {
             throw new NullPointerException(
                 "The entities parameter must not be null.");
@@ -712,7 +803,7 @@ public final class DatastoreUtil {
             int size = e.encodingSize();
             if ((totalSize != 0 && totalSize + size + EXTRA_SIZE > MAX_ENTITY_SIZE)
                 || req.entitySize() >= MAX_NUMBER_OF_ENTITIES) {
-                putUsingLowerApi(req);
+                putUsingLowerApi(apiConfig, req);
                 req = createPutRequest(tx);
                 totalSize = 0;
             }
@@ -720,7 +811,7 @@ public final class DatastoreUtil {
             totalSize += size + EXTRA_SIZE;
         }
         if (req.entitySize() > 0) {
-            putUsingLowerApi(req);
+            putUsingLowerApi(apiConfig, req);
         }
     }
 
@@ -790,10 +881,21 @@ public final class DatastoreUtil {
     /**
      * Puts the entities using lower level API.
      * 
+     * @param apiConfig
+     *            the AppEngine API configuration
      * @param putRequest
      *            the request for put
+     * 
+     * @throws NullPointerException
+     *             if the apiConfig parameter is null or if the putRequest
+     *             parameter is null
      */
-    public static void putUsingLowerApi(PutRequest putRequest) {
+    public static void putUsingLowerApi(ApiConfig apiConfig,
+            PutRequest putRequest) throws NullPointerException {
+        if (apiConfig == null) {
+            throw new NullPointerException(
+                "The apiConfig parameter must not be null.");
+        }
         if (putRequest == null) {
             throw new NullPointerException(
                 "The putRequest parameter must not be null.");
@@ -809,7 +911,8 @@ public final class DatastoreUtil {
                         ApiProxy.makeSyncCall(
                             DATASTORE_SERVICE,
                             PUT_METHOD,
-                            requestBuf);
+                            requestBuf,
+                            apiConfig);
                         return;
                     } catch (DatastoreTimeoutException e) {
                         dte = e;
@@ -833,12 +936,18 @@ public final class DatastoreUtil {
     /**
      * Deletes entities specified by the keys within the provided transaction.
      * 
+     * @param ds
+     *            the datastore service
      * @param keys
      *            the keys
      * @throws NullPointerException
-     *             if the keys parameter is null
+     *             if the ds parameter is null or if the keys parameter is null
      */
-    public static void delete(Iterable<Key> keys) throws NullPointerException {
+    public static void delete(DatastoreService ds, Iterable<Key> keys)
+            throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
         if (keys == null) {
             throw new NullPointerException(
                 "The keys parameter must not be null.");
@@ -846,25 +955,29 @@ public final class DatastoreUtil {
         if (keys instanceof Collection<?> && ((Collection<?>) keys).size() == 0) {
             return;
         }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         Transaction tx = ds.getCurrentTransaction(null);
         if (tx == null) {
-            deleteWithoutTx(keys);
+            deleteWithoutTx(ds, keys);
         } else {
-            delete(tx, keys);
+            delete(ds, tx, keys);
         }
     }
 
     /**
      * Deletes entities specified by the keys without transaction.
      * 
+     * @param ds
+     *            the datastore service
      * @param keys
      *            the keys
      * @throws NullPointerException
-     *             if the keys parameter is null
+     *             if the ds parameter is null or if the keys parameter is null
      */
-    public static void deleteWithoutTx(Iterable<Key> keys)
+    public static void deleteWithoutTx(DatastoreService ds, Iterable<Key> keys)
             throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
         if (keys == null) {
             throw new NullPointerException(
                 "The keys parameter must not be null.");
@@ -872,7 +985,6 @@ public final class DatastoreUtil {
         if (keys instanceof Collection<?> && ((Collection<?>) keys).size() == 0) {
             return;
         }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         ConcurrentModificationException cme = null;
         for (int i = 0; i < MAX_RETRY; i++) {
             try {
@@ -908,29 +1020,27 @@ public final class DatastoreUtil {
     /**
      * Deletes entities specified by the keys within the provided transaction.
      * 
+     * @param ds
+     *            the datastore service
      * @param tx
      *            the transaction
      * @param keys
      *            the keys
      * @throws NullPointerException
-     *             if the keys parameter is null
-     * @throws IllegalStateException
-     *             if the transaction is not null and the transaction is not
-     *             active
+     *             if the ds parameter is null or if the keys parameter is null
      */
-    public static void delete(Transaction tx, Iterable<Key> keys)
-            throws NullPointerException, IllegalStateException {
+    public static void delete(DatastoreService ds, Transaction tx,
+            Iterable<Key> keys) throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
         if (keys == null) {
             throw new NullPointerException(
                 "The keys parameter must not be null.");
         }
-        if (tx != null && !tx.isActive()) {
-            throw new IllegalStateException("The transaction must be active.");
-        }
         if (keys instanceof Collection<?> && ((Collection<?>) keys).size() == 0) {
             return;
         }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         DatastoreTimeoutException dte = null;
         long wait = INITIAL_WAIT_MS;
         for (int i = 0; i < MAX_RETRY; i++) {
@@ -1634,18 +1744,30 @@ public final class DatastoreUtil {
     /**
      * Converts the model to an entity.
      * 
+     * @param ds
+     *            the datastore service
      * @param model
      *            the model
      * @return an entity
      * @throws NullPointerException
-     *             if the model parameter is null
+     *             if the ds parameter is null or if the model parameter is null
      */
-    public static Entity modelToEntity(Object model)
+    public static Entity modelToEntity(DatastoreService ds, Object model)
             throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
         if (model == null) {
-            throw new NullPointerException("The model parameter is null.");
+            throw new NullPointerException(
+                "The model parameter must not be null.");
         }
         ModelMeta<?> modelMeta = getModelMeta(model.getClass());
+        Key key = modelMeta.getKey(model);
+        if (key == null) {
+            key = allocateId(ds, modelMeta.getKind());
+            modelMeta.setKey(model, key);
+        }
+        modelMeta.incrementVersion(model);
         modelMeta.prePut(model);
         return modelMeta.modelToEntity(model);
     }
@@ -1653,14 +1775,20 @@ public final class DatastoreUtil {
     /**
      * Converts the models to entities.
      * 
+     * @param ds
+     *            the datastore service
      * @param models
      *            the models
      * @return entities
      * @throws NullPointerException
-     *             if the models parameter is null
+     *             if the ds parameter is null or if the models parameter is
+     *             null
      */
-    public static List<Entity> modelsToEntities(Iterable<?> models)
-            throws NullPointerException {
+    public static List<Entity> modelsToEntities(DatastoreService ds,
+            Iterable<?> models) throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
         if (models == null) {
             throw new NullPointerException(
                 "The models parameter must not be null.");
@@ -1669,10 +1797,10 @@ public final class DatastoreUtil {
         for (Object model : models) {
             if (model instanceof Entity) {
                 Entity entity = (Entity) model;
-                DatastoreUtil.assignKeyIfNecessary(entity);
+                assignKeyIfNecessary(ds, entity);
                 entities.add(entity);
             } else {
-                entities.add(modelToEntity(model));
+                entities.add(modelToEntity(ds, model));
             }
         }
         return entities;
@@ -1762,7 +1890,7 @@ public final class DatastoreUtil {
             if (entity == null) {
                 throw new EntityNotFoundRuntimeException(key);
             }
-            ModelMeta<M> mm = DatastoreUtil.getModelMeta(modelMeta, entity);
+            ModelMeta<M> mm = getModelMeta(modelMeta, entity);
             mm.validateKey(key);
             list.add(mm.entityToModel(entity));
         }
@@ -1796,7 +1924,7 @@ public final class DatastoreUtil {
         Map<Key, M> modelMap = new HashMap<Key, M>(map.size());
         for (Key key : map.keySet()) {
             Entity entity = map.get(key);
-            ModelMeta<M> mm = DatastoreUtil.getModelMeta(modelMeta, entity);
+            ModelMeta<M> mm = getModelMeta(modelMeta, entity);
             mm.validateKey(key);
             modelMap.put(key, mm.entityToModel(entity));
         }

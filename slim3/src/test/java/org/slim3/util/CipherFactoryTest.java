@@ -80,5 +80,9 @@ public class CipherFactoryTest {
         public void setLimitedKey(String key) {
         }
 
+        @Override
+        public void clearGlobalKey() {
+        }
+
     }
 }

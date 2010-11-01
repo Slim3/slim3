@@ -65,26 +65,6 @@ public abstract class ModelMeta<M> {
     protected BeanDesc beanDesc;
 
     /**
-     * Assigns a new key to the model if necessary.
-     * 
-     * @param modelMeta
-     * 
-     * @param model
-     *            the model
-     * @return a key
-     * @throws NullPointerException
-     *             if the modelMeta parameter is null
-     */
-    protected static Key assignKeyIfNecessary(ModelMeta<?> modelMeta,
-            Object model) throws NullPointerException {
-        if (modelMeta == null) {
-            throw new NullPointerException(
-                "The modelMeta parameter must not be null.");
-        }
-        return modelMeta.assignKeyIfNecessary(model);
-    }
-
-    /**
      * Constructor.
      * 
      * @param kind
@@ -258,26 +238,6 @@ public abstract class ModelMeta<M> {
                 + kind
                 + ".");
         }
-    }
-
-    /**
-     * Assigns a new key to the model if necessary.
-     * 
-     * @param model
-     *            the model
-     * @return a key
-     */
-    protected Key assignKeyIfNecessary(Object model) {
-        if (model == null) {
-            return null;
-        }
-        Key key = getKey(model);
-        if (key != null) {
-            return key;
-        }
-        key = Datastore.allocateId(kind);
-        setKey(model, key);
-        return key;
     }
 
     /**
@@ -665,7 +625,7 @@ public abstract class ModelMeta<M> {
         beanDesc = BeanUtil.getBeanDesc(modelClass);
         return beanDesc;
     }
-    
+
     /**
      * Determines if the property is cipher.
      * 
@@ -677,7 +637,7 @@ public abstract class ModelMeta<M> {
     protected boolean isCipherProperty(String propertyName) {
         return false;
     }
-    
+
     /**
      * Encrypt the text.
      * 
@@ -690,7 +650,7 @@ public abstract class ModelMeta<M> {
         Cipher c = CipherFactory.getFactory().createCipher();
         return c.encrypt(text);
     }
-    
+
     /**
      * Encrypt the text.
      * 
@@ -700,7 +660,8 @@ public abstract class ModelMeta<M> {
      * @since 1.0.6
      */
     protected Text encrypt(Text text) {
-        if (text == null) return null;
+        if (text == null)
+            return null;
         return new Text(encrypt(text.getValue()));
     }
 
@@ -716,7 +677,7 @@ public abstract class ModelMeta<M> {
         Cipher c = CipherFactory.getFactory().createCipher();
         return c.decrypt(encryptedText);
     }
-    
+
     /**
      * Decrypt the encrypted text.
      * 
@@ -726,7 +687,8 @@ public abstract class ModelMeta<M> {
      * @since 1.0.6
      */
     protected Text decrypt(Text encryptedText) {
-        if (encryptedText == null) return null;
+        if (encryptedText == null)
+            return null;
         return new Text(decrypt(encryptedText.getValue()));
     }
 }

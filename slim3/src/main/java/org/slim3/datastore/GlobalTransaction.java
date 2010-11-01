@@ -30,13 +30,16 @@ import java.util.logging.Logger;
 
 import org.slim3.util.ThrowableUtil;
 
+import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.labs.taskqueue.Queue;
 import com.google.appengine.api.labs.taskqueue.QueueFactory;
 import com.google.appengine.api.labs.taskqueue.TaskOptions;
 import com.google.apphosting.api.DeadlineExceededException;
+import com.google.apphosting.api.ApiProxy.ApiConfig;
 
 /**
  * The global transaction coordinator. If an error occurs during transaction,
@@ -73,13 +76,7 @@ public class GlobalTransaction {
      * The active global transactions.
      */
     protected static final ThreadLocal<Stack<GlobalTransaction>> activeTransactions =
-        new ThreadLocal<Stack<GlobalTransaction>>() {
-
-            @Override
-            protected Stack<GlobalTransaction> initialValue() {
-                return new Stack<GlobalTransaction>();
-            }
-        };
+        new ThreadLocal<Stack<GlobalTransaction>>();
 
     private static final Logger logger =
         Logger.getLogger(GlobalTransaction.class.getName());
@@ -125,12 +122,36 @@ public class GlobalTransaction {
     protected boolean valid = true;
 
     /**
+     * The datastore service
+     */
+    protected DatastoreService ds;
+
+    /**
+     * the AppEngine API configuration
+     */
+    protected ApiConfig apiConfig;
+
+    /**
+     * Returns the current transaction stack.
+     * 
+     * @return the current transaction stack
+     */
+    protected static Stack<GlobalTransaction> getCurrentTransactionStack() {
+        Stack<GlobalTransaction> stack = activeTransactions.get();
+        if (stack == null) {
+            stack = new Stack<GlobalTransaction>();
+            activeTransactions.set(stack);
+        }
+        return stack;
+    }
+
+    /**
      * Returns the current transaction.
      * 
      * @return the current transaction
      */
     protected static GlobalTransaction getCurrentTransaction() {
-        Stack<GlobalTransaction> stack = activeTransactions.get();
+        Stack<GlobalTransaction> stack = getCurrentTransactionStack();
         if (stack.isEmpty()) {
             return null;
         }
@@ -143,7 +164,7 @@ public class GlobalTransaction {
      * @return the active transactions
      */
     protected static Collection<GlobalTransaction> getActiveTransactions() {
-        Stack<GlobalTransaction> stack = activeTransactions.get();
+        Stack<GlobalTransaction> stack = getCurrentTransactionStack();
         Stack<GlobalTransaction> copy = new Stack<GlobalTransaction>();
         copy.addAll(stack);
         return copy;
@@ -153,60 +174,98 @@ public class GlobalTransaction {
      * Clears the active transactions.
      */
     protected static void clearActiveTransactions() {
-        activeTransactions.get().clear();
+        getCurrentTransactionStack().clear();
     }
 
     /**
      * Returns a global transaction specified by the key. Returns null if no
      * entity is found.
      * 
+     * @param ds
+     *            the datastore service
+     * @param apiConfig
+     *            the AppEngine API configuration
      * @param tx
      *            the transaction
      * @param key
      *            the global transaction key
+     * 
      * @return a global transaction
+     * @throws NullPointerException
+     *             if the ds parameter is null or if the apiConfig parameter is
+     *             null or if the tx parameter is null or if the key parameter
+     *             is null
      */
-    protected static GlobalTransaction getOrNull(Transaction tx, Key key) {
-        Entity entity = Datastore.getOrNull(tx, key);
+    protected static GlobalTransaction getOrNull(DatastoreService ds,
+            ApiConfig apiConfig, Transaction tx, Key key)
+            throws NullPointerException {
+        Entity entity =
+            DatastoreUtil.getAsMap(ds, tx, Arrays.asList(key)).get(key);
         if (entity == null) {
             return null;
         }
-        return toGlobalTransaction(entity);
+        return toGlobalTransaction(ds, apiConfig, entity);
     }
 
     /**
      * Converts the entity to a global transaction.
      * 
+     * @param ds
+     *            the datastore service
+     * @param apiConfig
+     *            the AppEngine API configuration
      * @param entity
      *            the entity
+     * 
      * @return a global transaction
      * @throws NullPointerException
-     *             if the entity parameter is null or if the valid property is
-     *             null
+     *             if the ds parameter is null or if the apiConfig parameter is
+     *             null or if the entity parameter is null or if the valid
+     *             property is null
      */
-    protected static GlobalTransaction toGlobalTransaction(Entity entity)
-            throws NullPointerException {
+    protected static GlobalTransaction toGlobalTransaction(DatastoreService ds,
+            ApiConfig apiConfig, Entity entity) throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        if (apiConfig == null) {
+            throw new NullPointerException(
+                "The apiConfig parameter must not be null.");
+        }
         if (entity == null) {
             throw new NullPointerException(
                 "The entity parameter must not be null.");
         }
         Boolean valid = (Boolean) entity.getProperty(VALID_PROPERTY);
-        return new GlobalTransaction(entity.getKey(), valid);
+        return new GlobalTransaction(ds, apiConfig, entity.getKey(), valid);
     }
 
     /**
      * Puts the global transaction to datastore.
      * 
+     * @param ds
+     *            the datastore service
+     * @param apiConfig
+     *            the AppEngine API configuration
      * @param tx
      *            the transaction
      * @param globalTransaction
      *            the global transaction
      * @throws NullPointerException
-     *             if the tx parameter is null or if the globalTransaction
-     *             parameter is null
+     *             if the ds parameter is null or if the apiConfig parameter is
+     *             null or if the tx parameter is null or if the
+     *             globalTransaction parameter is null
      */
-    protected static void put(Transaction tx,
-            GlobalTransaction globalTransaction) throws NullPointerException {
+    protected static void put(DatastoreService ds, ApiConfig apiConfig,
+            Transaction tx, GlobalTransaction globalTransaction)
+            throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        if (apiConfig == null) {
+            throw new NullPointerException(
+                "The apiConfig parameter must not be null.");
+        }
         if (tx == null) {
             throw new NullPointerException("The tx parameter must not be null.");
         }
@@ -214,49 +273,74 @@ public class GlobalTransaction {
             throw new NullPointerException(
                 "The globalTransaction parameter must not be null.");
         }
-        Datastore.put(tx, globalTransaction.toEntity());
+        DatastoreUtil.put(ds, apiConfig, tx, globalTransaction.toEntity());
     }
 
     /**
      * Rolls forward the transaction.
      * 
+     * @param ds
+     *            the datastore service
+     * @param apiConfig
+     *            the AppEngine API configuration
      * @param globalTransactionKey
      *            the global transaction key
      * @throws NullPointerException
-     *             if the globalTransactionKey parameter is null
+     *             if the ds parameter is null or if the apiConfig parameter is
+     *             null or if the globalTransactionKey parameter is null
      */
-    protected static void rollForward(Key globalTransactionKey)
-            throws NullPointerException {
+    protected static void rollForward(DatastoreService ds, ApiConfig apiConfig,
+            Key globalTransactionKey) throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        if (apiConfig == null) {
+            throw new NullPointerException(
+                "The apiConfig parameter must not be null.");
+        }
         if (globalTransactionKey == null) {
             logger
                 .warning("The globalTransactionKey parameter must not be null.");
             return;
         }
-        if (Datastore.getAsMap(globalTransactionKey).size() == 0) {
+        if (DatastoreUtil
+            .getAsMap(ds, Arrays.asList(globalTransactionKey))
+            .size() == 0) {
             return;
         }
-        Journal.apply(globalTransactionKey);
-        Lock.deleteWithoutTx(globalTransactionKey);
-        Datastore.deleteWithoutTx(globalTransactionKey);
+        Journal.apply(ds, apiConfig, globalTransactionKey);
+        Lock.deleteWithoutTx(ds, globalTransactionKey);
+        DatastoreUtil.delete(ds, null, Arrays.asList(globalTransactionKey));
     }
 
     /**
      * Rolls back the transaction.
      * 
+     * @param ds
+     *            the datastore service
+     * @param apiConfig
+     *            the AppEngine API configuration
      * @param globalTransactionKey
      *            the global transaction key
      * @throws NullPointerException
      *             if the globalTransactionKey parameter is null
      */
-    protected static void rollback(Key globalTransactionKey)
-            throws NullPointerException {
+    protected static void rollback(DatastoreService ds, ApiConfig apiConfig,
+            Key globalTransactionKey) throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        if (apiConfig == null) {
+            throw new NullPointerException(
+                "The apiConfig parameter must not be null.");
+        }
         if (globalTransactionKey == null) {
             logger
                 .warning("The globalTransactionKey parameter must not be null.");
             return;
         }
-        Journal.deleteInTx(globalTransactionKey);
-        Lock.deleteInTx(globalTransactionKey);
+        Journal.deleteInTx(ds, globalTransactionKey);
+        Lock.deleteInTx(ds, apiConfig, globalTransactionKey);
     }
 
     /**
@@ -282,7 +366,7 @@ public class GlobalTransaction {
             throw new NullPointerException(
                 "The globalTransactionKey parameter must not be null.");
         }
-        String encodedKey = Datastore.keyToString(globalTransactionKey);
+        String encodedKey = KeyFactory.keyToString(globalTransactionKey);
         Queue queue = QueueFactory.getQueue(QUEUE_NAME);
         queue.add(tx, TaskOptions.Builder.url(
             GlobalTransactionServlet.SERVLET_PATH).param(
@@ -306,7 +390,7 @@ public class GlobalTransaction {
             throw new NullPointerException(
                 "The globalTransactionKey parameter must not be null.");
         }
-        String encodedKey = Datastore.keyToString(globalTransactionKey);
+        String encodedKey = KeyFactory.keyToString(globalTransactionKey);
         Queue queue = QueueFactory.getQueue(QUEUE_NAME);
         queue.add(null, TaskOptions.Builder.url(
             GlobalTransactionServlet.SERVLET_PATH).param(
@@ -318,23 +402,48 @@ public class GlobalTransaction {
 
     /**
      * Constructor.
+     * 
+     * @param ds
+     *            the datastore service
+     * @param apiConfig
+     *            the AppEngine API configuration
+     * @throws NullPointerException
+     *             if the ds parameter is null or if the apiConfig parameter is
+     *             null
      */
-    public GlobalTransaction() {
+    public GlobalTransaction(DatastoreService ds, ApiConfig apiConfig)
+            throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        if (apiConfig == null) {
+            throw new NullPointerException(
+                "The apiConfig parameter must not be null.");
+        }
+        this.ds = ds;
+        this.apiConfig = apiConfig;
     }
 
     /**
      * Constructor.
      * 
+     * @param ds
+     *            the datastore service
      * @param globalTransactionKey
      *            the global transaction key
      * @param valid
      *            whether this transaction is valid
+     * @param apiConfig
+     *            the AppEngine API configuration
      * @throws NullPointerException
-     *             if the globalTransactionKey parameter is null or if the valid
-     *             parameter is null
+     *             if the ds parameter is null or if the apiConfig parameter is
+     *             null or if the globalTransactionKey parameter is null or if
+     *             the valid parameter is null
      */
-    protected GlobalTransaction(Key globalTransactionKey, Boolean valid)
+    protected GlobalTransaction(DatastoreService ds, ApiConfig apiConfig,
+            Key globalTransactionKey, Boolean valid)
             throws NullPointerException {
+        this(ds, apiConfig);
         if (globalTransactionKey == null) {
             throw new NullPointerException(
                 "The globalTransactionKey parameter must not be null.");
@@ -399,8 +508,8 @@ public class GlobalTransaction {
      * Begins this global transaction.
      */
     protected void begin() {
-        activeTransactions.get().add(this);
-        localTransaction = Datastore.beginTransaction();
+        getCurrentTransactionStack().add(this);
+        localTransaction = ds.beginTransaction();
         timestamp = System.currentTimeMillis();
         lockMap = new HashMap<Key, Lock>();
         globalJournalMap = new HashMap<Key, Entity>();
@@ -579,7 +688,10 @@ public class GlobalTransaction {
             return verifyLockAndGetAsMap(rootKey, Arrays.asList(key)).get(key);
         }
         if (rootKey.equals(localTransactionRootKey)) {
-            return Datastore.getOrNull(localTransaction, key);
+            return DatastoreUtil.getAsMap(
+                ds,
+                localTransaction,
+                Arrays.asList(key)).get(key);
         }
         return lockAndGetAsMap(rootKey, Arrays.asList(key)).get(key);
     }
@@ -827,14 +939,15 @@ public class GlobalTransaction {
             map.putAll(verifyLockAndGetAsMap(ltxRootKey, ltxKeys));
         } else {
             if (ltxKeys.size() > 0) {
-                map.putAll(Datastore.getAsMap(localTransaction, ltxKeys));
+                map.putAll(DatastoreUtil
+                    .getAsMap(ds, localTransaction, ltxKeys));
             }
         }
         if (gtxKeys.size() > 0) {
             for (Key key : gtxRootKeys) {
                 lock(key);
             }
-            map.putAll(Datastore.getAsMapWithoutTx(gtxKeys));
+            map.putAll(DatastoreUtil.getAsMap(ds, null, gtxKeys));
         }
         return map;
     }
@@ -976,12 +1089,12 @@ public class GlobalTransaction {
         Key rootKey = DatastoreUtil.getRoot(ancestorKey);
         if (localTransactionRootKey == null) {
             setLocalTransactionRootKey(rootKey);
-            return Datastore.query(localTransaction, kind, ancestorKey);
+            return new EntityQuery(ds, localTransaction, kind, ancestorKey);
         } else if (rootKey.equals(localTransactionRootKey)) {
-            return Datastore.query(localTransaction, kind, ancestorKey);
+            return new EntityQuery(ds, localTransaction, kind, ancestorKey);
         }
         lock(rootKey);
-        return Datastore.query(kind, ancestorKey);
+        return new EntityQuery(ds, kind, ancestorKey);
     }
 
     /**
@@ -1008,12 +1121,17 @@ public class GlobalTransaction {
         Key rootKey = DatastoreUtil.getRoot(ancestorKey);
         if (localTransactionRootKey == null) {
             setLocalTransactionRootKey(rootKey);
-            return Datastore.query(localTransaction, modelClass, ancestorKey);
+            return new ModelQuery<M>(ds, localTransaction, DatastoreUtil
+                .getModelMeta(modelClass), ancestorKey);
         } else if (rootKey.equals(localTransactionRootKey)) {
-            return Datastore.query(localTransaction, modelClass, ancestorKey);
+            return new ModelQuery<M>(ds, localTransaction, DatastoreUtil
+                .getModelMeta(modelClass), ancestorKey);
         }
         lock(rootKey);
-        return Datastore.query(modelClass, ancestorKey);
+        return new ModelQuery<M>(
+            ds,
+            DatastoreUtil.getModelMeta(modelClass),
+            ancestorKey);
     }
 
     /**
@@ -1040,12 +1158,20 @@ public class GlobalTransaction {
         Key rootKey = DatastoreUtil.getRoot(ancestorKey);
         if (localTransactionRootKey == null) {
             setLocalTransactionRootKey(rootKey);
-            return Datastore.query(localTransaction, modelMeta, ancestorKey);
+            return new ModelQuery<M>(
+                ds,
+                localTransaction,
+                modelMeta,
+                ancestorKey);
         } else if (rootKey.equals(localTransactionRootKey)) {
-            return Datastore.query(localTransaction, modelMeta, ancestorKey);
+            return new ModelQuery<M>(
+                ds,
+                localTransaction,
+                modelMeta,
+                ancestorKey);
         }
         lock(rootKey);
-        return Datastore.query(modelMeta, ancestorKey);
+        return new ModelQuery<M>(ds, modelMeta, ancestorKey);
     }
 
     /**
@@ -1066,12 +1192,12 @@ public class GlobalTransaction {
         Key rootKey = DatastoreUtil.getRoot(ancestorKey);
         if (localTransactionRootKey == null) {
             setLocalTransactionRootKey(rootKey);
-            return Datastore.query(localTransaction, ancestorKey);
+            return new KindlessQuery(ds, localTransaction, ancestorKey);
         } else if (rootKey.equals(localTransactionRootKey)) {
-            return Datastore.query(localTransaction, ancestorKey);
+            return new KindlessQuery(ds, localTransaction, ancestorKey);
         }
         lock(rootKey);
-        return Datastore.query(ancestorKey);
+        return new KindlessQuery(ds, ancestorKey);
     }
 
     /**
@@ -1094,7 +1220,7 @@ public class GlobalTransaction {
             throw new NullPointerException(
                 "The entity parameter must not be null.");
         }
-        DatastoreUtil.assignKeyIfNecessary(entity);
+        DatastoreUtil.assignKeyIfNecessary(ds, entity);
         Key key = entity.getKey();
         Key rootKey = DatastoreUtil.getRoot(key);
         if (localTransactionRootKey == null) {
@@ -1125,7 +1251,7 @@ public class GlobalTransaction {
      */
     public Key put(Object model) throws NullPointerException,
             IllegalArgumentException, ConcurrentModificationException {
-        Entity entity = DatastoreUtil.modelToEntity(model);
+        Entity entity = DatastoreUtil.modelToEntity(ds, model);
         return put(entity);
     }
 
@@ -1253,16 +1379,18 @@ public class GlobalTransaction {
         Key rootKey = DatastoreUtil.getRoot(ancestorKey);
         if (localTransactionRootKey == null) {
             setLocalTransactionRootKey(rootKey);
-            for (Key key : Datastore.query(ancestorKey).asKeyList()) {
+            for (Key key : new KindlessQuery(ds, localTransaction, ancestorKey)
+                .asKeyList()) {
                 localJournalMap.put(key, null);
             }
         } else if (rootKey.equals(localTransactionRootKey)) {
-            for (Key key : Datastore.query(ancestorKey).asKeyList()) {
+            for (Key key : new KindlessQuery(ds, localTransaction, ancestorKey)
+                .asKeyList()) {
                 localJournalMap.put(key, null);
             }
         } else {
             lock(rootKey);
-            for (Key key : Datastore.query(ancestorKey).asKeyList()) {
+            for (Key key : new KindlessQuery(ds, ancestorKey).asKeyList()) {
                 if (key.getKind().equals(Lock.KIND)) {
                     continue;
                 }
@@ -1276,7 +1404,7 @@ public class GlobalTransaction {
      */
     public void commit() {
         assertActive();
-        Journal.apply(localTransaction, localJournalMap);
+        Journal.apply(ds, apiConfig, localTransaction, localJournalMap);
         if (isLocalTransaction()) {
             commitLocalTransaction();
         } else {
@@ -1344,7 +1472,7 @@ public class GlobalTransaction {
         }
         this.localTransactionRootKey = rootKey;
         globalTransactionKey =
-            Datastore.createKey(rootKey, KIND, localTransaction.getId());
+            KeyFactory.createKey(rootKey, KIND, localTransaction.getId());
     }
 
     /**
@@ -1370,7 +1498,7 @@ public class GlobalTransaction {
                 "The keys parameter must not be null.");
         }
         assertActive();
-        return Lock.verifyAndGetAsMap(localTransaction, rootKey, keys);
+        return Lock.verifyAndGetAsMap(ds, localTransaction, rootKey, keys);
     }
 
     /**
@@ -1399,7 +1527,13 @@ public class GlobalTransaction {
         }
         assertActive();
         if (!lockMap.containsKey(rootKey)) {
-            Lock lock = new Lock(globalTransactionKey, rootKey, timestamp);
+            Lock lock =
+                new Lock(
+                    ds,
+                    apiConfig,
+                    globalTransactionKey,
+                    rootKey,
+                    timestamp);
             try {
                 Map<Key, Entity> map = lock.lockAndGetAsMap(keys);
                 lockMap.put(rootKey, lock);
@@ -1409,7 +1543,7 @@ public class GlobalTransaction {
                 throw e;
             }
         }
-        return Datastore.getAsMapWithoutTx(keys);
+        return DatastoreUtil.getAsMap(ds, null, keys);
     }
 
     /**
@@ -1431,7 +1565,13 @@ public class GlobalTransaction {
         }
         assertActive();
         if (!lockMap.containsKey(rootKey)) {
-            Lock lock = new Lock(globalTransactionKey, rootKey, timestamp);
+            Lock lock =
+                new Lock(
+                    ds,
+                    apiConfig,
+                    globalTransactionKey,
+                    rootKey,
+                    timestamp);
             try {
                 lock.lock();
             } catch (ConcurrentModificationException e) {
@@ -1446,12 +1586,13 @@ public class GlobalTransaction {
      * Unlocks entities.
      */
     protected void unlock() {
-        activeTransactions.get().remove(this);
+        getCurrentTransactionStack().remove(this);
         if (localTransaction.isActive()) {
             localTransaction.rollback();
         }
         if (!lockMap.isEmpty()) {
-            Lock.deleteInTx(globalTransactionKey, lockMap.values());
+            Lock.deleteInTx(ds, apiConfig, globalTransactionKey, lockMap
+                .values());
             lockMap.clear();
         }
     }
@@ -1469,7 +1610,7 @@ public class GlobalTransaction {
      * Commits this transaction as local transaction.
      */
     protected void commitLocalTransaction() {
-        activeTransactions.get().remove(this);
+        getCurrentTransactionStack().remove(this);
         try {
             localTransaction.commit();
         } finally {
@@ -1485,9 +1626,9 @@ public class GlobalTransaction {
     protected void commitGlobalTransaction() {
         List<Entity> journals = putJournals();
         commitGlobalTransactionInternally();
-        Journal.apply(journals);
-        Lock.deleteWithoutTx(lockMap.values());
-        Datastore.deleteWithoutTx(globalTransactionKey);
+        Journal.apply(ds, apiConfig, journals);
+        Lock.deleteWithoutTx(ds, lockMap.values());
+        DatastoreUtil.delete(ds, null, Arrays.asList(globalTransactionKey));
     }
 
     /**
@@ -1497,10 +1638,14 @@ public class GlobalTransaction {
      */
     protected List<Entity> putJournals() {
         try {
-            return Journal.put(globalTransactionKey, globalJournalMap);
+            return Journal.put(
+                ds,
+                apiConfig,
+                globalTransactionKey,
+                globalJournalMap);
         } catch (Throwable cause) {
             try {
-                Journal.deleteInTx(globalTransactionKey);
+                Journal.deleteInTx(ds, globalTransactionKey);
             } catch (Throwable cause2) {
                 logger.log(Level.WARNING, cause2.getMessage(), cause2);
             }
@@ -1518,9 +1663,9 @@ public class GlobalTransaction {
      * Commits this global transaction.
      */
     protected void commitGlobalTransactionInternally() {
-        activeTransactions.get().remove(this);
+        getCurrentTransactionStack().remove(this);
         try {
-            Datastore.put(localTransaction, toEntity());
+            DatastoreUtil.put(ds, apiConfig, localTransaction, toEntity());
             submitRollForwardJob(
                 localTransaction,
                 globalTransactionKey,
@@ -1536,7 +1681,11 @@ public class GlobalTransaction {
             }
             try {
                 GlobalTransaction gtx =
-                    getOrNull((Transaction) null, globalTransactionKey);
+                    getOrNull(
+                        ds,
+                        apiConfig,
+                        (Transaction) null,
+                        globalTransactionKey);
                 if (gtx != null && gtx.valid) {
                     return;
                 }
@@ -1544,7 +1693,7 @@ public class GlobalTransaction {
                 logger.log(Level.WARNING, cause2.getMessage(), cause2);
             }
             try {
-                Journal.deleteInTx(globalTransactionKey);
+                Journal.deleteInTx(ds, globalTransactionKey);
             } catch (Throwable cause2) {
                 logger.log(Level.WARNING, cause2.getMessage(), cause2);
             }
@@ -1568,7 +1717,7 @@ public class GlobalTransaction {
      * Rolls back this transaction as global transaction.
      */
     protected void rollbackGlobalTransaction() {
-        Journal.deleteInTx(globalTransactionKey);
+        Journal.deleteInTx(ds, globalTransactionKey);
         unlock();
     }
 
@@ -1577,7 +1726,7 @@ public class GlobalTransaction {
      */
     protected void rollbackAsyncGlobalTransaction() {
         submitRollbackJob(globalTransactionKey);
-        activeTransactions.get().remove(this);
+        getCurrentTransactionStack().remove(this);
         if (localTransaction.isActive()) {
             localTransaction.rollback();
         }

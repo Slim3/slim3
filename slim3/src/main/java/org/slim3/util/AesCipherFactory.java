@@ -54,6 +54,9 @@ public class AesCipherFactory extends CipherFactory {
             }
             key = globalKey;
         }
+        if (key == null) {
+            throw new IllegalStateException("A cipher key is required.");
+        }
         c.setKey(key);
         return c;
     }
@@ -64,6 +67,11 @@ public class AesCipherFactory extends CipherFactory {
     @Override
     public void clearLimitedKey() {
         keys.set(null);
+    }
+
+    @Override
+    public void clearGlobalKey() {
+        globalKey = null;
     }
 
     /**

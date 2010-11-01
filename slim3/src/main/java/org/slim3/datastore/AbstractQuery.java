@@ -24,7 +24,6 @@ import org.slim3.util.ThrowableUtil;
 
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
@@ -53,6 +52,11 @@ import com.google.appengine.repackaged.com.google.common.util.Base64DecoderExcep
 public abstract class AbstractQuery<SUB> {
 
     /**
+     * The datastore service.
+     */
+    protected DatastoreService ds;
+
+    /**
      * The datastore query.
      */
     protected Query query;
@@ -75,50 +79,80 @@ public abstract class AbstractQuery<SUB> {
     /**
      * Constructor.
      * 
+     * @param ds
+     *            the datastore service
+     * @throws NullPointerException
+     *             if the ds parameter is null
+     * 
      */
-    public AbstractQuery() {
+    public AbstractQuery(DatastoreService ds) throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        this.ds = ds;
         setUpQuery();
     }
 
     /**
      * Constructor.
      * 
+     * @param ds
+     *            the datastore service
      * @param kind
      *            the kind
      * @throws NullPointerException
-     *             if the kind parameter is null
+     *             if the ds parameter is null or if the kind parameter is null
      * 
      */
-    public AbstractQuery(String kind) throws NullPointerException {
+    public AbstractQuery(DatastoreService ds, String kind)
+            throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        this.ds = ds;
         setUpQuery(kind);
     }
 
     /**
      * Constructor.
      * 
+     * @param ds
+     *            the datastore service
      * @param kind
      *            the kind
      * @param ancestorKey
      *            the ancestor key
      * @throws NullPointerException
-     *             if the kind parameter is null or if the ancestorKey parameter
-     *             is null
+     *             if the ds parameter is null or if the kind parameter is null
+     *             or if the ancestorKey parameter is null
      * 
      */
-    public AbstractQuery(String kind, Key ancestorKey)
+    public AbstractQuery(DatastoreService ds, String kind, Key ancestorKey)
             throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        this.ds = ds;
         setUpQuery(kind, ancestorKey);
     }
 
     /**
      * Constructor.
      * 
+     * @param ds
+     *            the datastore service
      * @param ancestorKey
      *            the ancestor key
      * @throws NullPointerException
-     *             if the ancestorKey parameter is null
+     *             if the ds parameter is null or if the ancestorKey parameter
+     *             is null
      */
-    public AbstractQuery(Key ancestorKey) throws NullPointerException {
+    public AbstractQuery(DatastoreService ds, Key ancestorKey)
+            throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        this.ds = ds;
         setUpQuery(ancestorKey);
     }
 
@@ -579,7 +613,6 @@ public abstract class AbstractQuery<SUB> {
      * @return entities as list
      */
     protected List<Entity> asEntityList() {
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         if (!AppEngineUtil.isProduction() && query.getKind() == null) {
             List<Entity> list = new ArrayList<Entity>();
             List<String> kinds = DatastoreUtil.getKinds();
@@ -587,29 +620,27 @@ public abstract class AbstractQuery<SUB> {
             if (ancestor != null) {
                 for (String kind : kinds) {
                     Query q = new Query(kind, ancestor);
-                    list.addAll(asEntityList(ds, q));
+                    list.addAll(asEntityList(q));
                 }
             } else {
                 for (String kind : kinds) {
                     Query q = new Query(kind);
-                    list.addAll(asEntityList(ds, q));
+                    list.addAll(asEntityList(q));
                 }
             }
             return list;
         }
-        return asEntityList(ds, query);
+        return asEntityList(query);
     }
 
     /**
      * Returns entities as list.
      * 
-     * @param ds
-     *            the datastore service
      * @param qry
      *            the query
      * @return entities as list
      */
-    protected List<Entity> asEntityList(DatastoreService ds, Query qry) {
+    protected List<Entity> asEntityList(Query qry) {
         PreparedQuery pq =
             txSet ? DatastoreUtil.prepare(ds, tx, qry) : DatastoreUtil.prepare(
                 ds,
@@ -623,7 +654,6 @@ public abstract class AbstractQuery<SUB> {
      * @return entities as query result list
      */
     protected QueryResultList<Entity> asQueryResultEntityList() {
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         PreparedQuery pq =
             txSet ? DatastoreUtil.prepare(ds, tx, query) : DatastoreUtil
                 .prepare(ds, query);
@@ -636,7 +666,6 @@ public abstract class AbstractQuery<SUB> {
      * @return entities as query result iterator
      */
     protected QueryResultIterator<Entity> asQueryResultEntityIterator() {
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         PreparedQuery pq =
             txSet ? DatastoreUtil.prepare(ds, tx, query) : DatastoreUtil
                 .prepare(ds, query);
@@ -649,7 +678,6 @@ public abstract class AbstractQuery<SUB> {
      * @return entities as query result iterable
      */
     protected QueryResultIterable<Entity> asQueryResultEntityIterable() {
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         PreparedQuery pq =
             txSet ? DatastoreUtil.prepare(ds, tx, query) : DatastoreUtil
                 .prepare(ds, query);
@@ -672,7 +700,6 @@ public abstract class AbstractQuery<SUB> {
             }
             return list.get(0);
         }
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         PreparedQuery pq =
             txSet ? DatastoreUtil.prepare(ds, tx, query) : DatastoreUtil
                 .prepare(ds, query);
@@ -700,7 +727,6 @@ public abstract class AbstractQuery<SUB> {
      * @return the number of entities
      */
     public int count() {
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         PreparedQuery pq =
             txSet ? DatastoreUtil.prepare(ds, tx, query) : DatastoreUtil
                 .prepare(ds, query);
@@ -779,7 +805,6 @@ public abstract class AbstractQuery<SUB> {
      * @return entities as {@link Iterable}
      */
     protected Iterable<Entity> asIterableEntities() {
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         PreparedQuery pq =
             txSet ? DatastoreUtil.prepare(ds, tx, query) : DatastoreUtil
                 .prepare(ds, query);

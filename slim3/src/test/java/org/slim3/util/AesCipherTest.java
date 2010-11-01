@@ -13,27 +13,28 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.datastore;
+package org.slim3.util;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.slim3.datastore.meta.HogeMeta;
-import org.slim3.tester.AppEngineTestCase;
-
-import com.google.appengine.api.datastore.KeyFactory;
 
 /**
  * @author higa
  * 
  */
-public class ModelMetaDatastoreTest extends AppEngineTestCase {
-
-    private HogeMeta meta = new HogeMeta();
+public class AesCipherTest {
 
     /**
      * @throws Exception
      */
-    @Test(expected = IllegalArgumentException.class)
-    public void validateKey() throws Exception {
-        meta.validateKey(KeyFactory.createKey("Aaa", 1));
+    @Test
+    public void encryptAndDecrypt() throws Exception {
+        String key = "xxxxxxxxxxxxxxxx";
+        AesCipher cipher = new AesCipher();
+        cipher.setKey(key);
+        String value = "abc";
+        assertThat(cipher.decrypt(cipher.encrypt(value)), is(value));
     }
 }

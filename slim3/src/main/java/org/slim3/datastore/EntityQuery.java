@@ -18,6 +18,7 @@ package org.slim3.datastore;
 import java.util.Iterator;
 import java.util.List;
 
+import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.QueryResultIterator;
@@ -36,36 +37,43 @@ public class EntityQuery extends AbstractQuery<EntityQuery> {
     /**
      * Constructor.
      * 
+     * @param ds
+     *            the datastore service
      * @param kind
      *            the kind
      * @throws NullPointerException
-     *             if the kind parameter is null
+     *             if the ds parameter is null or if the kind parameter is null
      * 
      */
-    public EntityQuery(String kind) throws NullPointerException {
-        super(kind);
+    public EntityQuery(DatastoreService ds, String kind)
+            throws NullPointerException {
+        super(ds, kind);
     }
 
     /**
      * Constructor.
      * 
+     * @param ds
+     *            the datastore service
      * @param kind
      *            the kind
      * @param ancestorKey
      *            the ancestor key
      * @throws NullPointerException
-     *             if the kind parameter is null or if the ancestorKey parameter
-     *             is null
+     *             if the ds parameter is null or if the kind parameter is null
+     *             or if the ancestorKey parameter is null
      * 
      */
-    public EntityQuery(String kind, Key ancestorKey)
+    public EntityQuery(DatastoreService ds, String kind, Key ancestorKey)
             throws NullPointerException {
-        super(kind, ancestorKey);
+        super(ds, kind, ancestorKey);
     }
 
     /**
      * Constructor.
      * 
+     * @param ds
+     *            the datastore service
      * @param tx
      *            the transaction
      * @param kind
@@ -73,13 +81,13 @@ public class EntityQuery extends AbstractQuery<EntityQuery> {
      * @param ancestorKey
      *            the ancestor key
      * @throws NullPointerException
-     *             if the kind parameter is null or if the ancestorKey parameter
-     *             is null
+     *             if the ds parameter is null if the kind parameter is null or
+     *             if the ancestorKey parameter is null
      * 
      */
-    public EntityQuery(Transaction tx, String kind, Key ancestorKey)
-            throws NullPointerException {
-        super(kind, ancestorKey);
+    public EntityQuery(DatastoreService ds, Transaction tx, String kind,
+            Key ancestorKey) throws NullPointerException {
+        super(ds, kind, ancestorKey);
         setTx(tx);
     }
 

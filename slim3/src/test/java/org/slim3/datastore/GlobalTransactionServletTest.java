@@ -21,7 +21,10 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.slim3.tester.ServletTestCase;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.apphosting.api.ApiProxy.ApiConfig;
 
 /**
  * @author higa
@@ -29,12 +32,16 @@ import com.google.appengine.api.datastore.Entity;
  */
 public class GlobalTransactionServletTest extends ServletTestCase {
 
+    private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+
+    private ApiConfig apiConfig = new ApiConfig();
+
     private GlobalTransaction gtx;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        gtx = new GlobalTransaction();
+        gtx = new GlobalTransaction(ds, apiConfig);
         gtx.begin();
     }
 
@@ -57,10 +64,10 @@ public class GlobalTransactionServletTest extends ServletTestCase {
             encodedKey);
         GlobalTransactionServlet servlet = new GlobalTransactionServlet();
         servlet.process(tester.request, tester.response);
-        assertThat(Datastore.query("Hoge").count(), is(1));
-        assertThat(Datastore.query(GlobalTransaction.KIND).count(), is(0));
-        assertThat(Datastore.query(Lock.KIND).count(), is(0));
-        assertThat(Datastore.query(Journal.KIND).count(), is(0));
+        assertThat(tester.count("Hoge"), is(1));
+        assertThat(tester.count(GlobalTransaction.KIND), is(0));
+        assertThat(tester.count(Lock.KIND), is(0));
+        assertThat(tester.count(Journal.KIND), is(0));
     }
 
     /**
@@ -81,9 +88,9 @@ public class GlobalTransactionServletTest extends ServletTestCase {
             encodedKey);
         GlobalTransactionServlet servlet = new GlobalTransactionServlet();
         servlet.process(tester.request, tester.response);
-        assertThat(Datastore.query("Hoge").count(), is(0));
-        assertThat(Datastore.query(GlobalTransaction.KIND).count(), is(0));
-        assertThat(Datastore.query(Lock.KIND).count(), is(0));
-        assertThat(Datastore.query(Journal.KIND).count(), is(0));
+        assertThat(tester.count("Hoge"), is(0));
+        assertThat(tester.count(GlobalTransaction.KIND), is(0));
+        assertThat(tester.count(Lock.KIND), is(0));
+        assertThat(tester.count(Journal.KIND), is(0));
     }
 }

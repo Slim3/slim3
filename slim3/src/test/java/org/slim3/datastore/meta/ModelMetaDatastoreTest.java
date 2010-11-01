@@ -31,6 +31,7 @@ import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.datastore.model.MySerializable;
 import org.slim3.tester.AppEngineTestCase;
+import org.slim3.util.CipherFactory;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -55,6 +56,18 @@ public class ModelMetaDatastoreTest extends AppEngineTestCase {
     private Bbb bbb = new Bbb();
 
     private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        CipherFactory.getFactory().setGlobalKey("xxxxxxxxxxxxxxxx");
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        super.tearDown();
+        CipherFactory.getFactory().clearGlobalKey();
+    }
 
     /**
      * @throws Exception

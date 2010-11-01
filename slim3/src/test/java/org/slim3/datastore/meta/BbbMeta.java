@@ -127,8 +127,6 @@ public final class BbbMeta extends
 
     @Override
     protected void prePut(Object model) {
-        assignKeyIfNecessary(model);
-        incrementVersion(model);
     }
 
     @Override

@@ -105,8 +105,6 @@ public final class CccMeta extends
 
     @Override
     protected void prePut(Object model) {
-        assignKeyIfNecessary(model);
-        incrementVersion(model);
     }
 
     @Override

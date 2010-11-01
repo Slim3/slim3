@@ -50,26 +50,15 @@ public class AesCipherFactoryTest {
     }
 
     /**
-     *
+     * @throws Exception
      */
-    public static class MyCipherFactory extends CipherFactory {
-
-        @Override
-        public void clearLimitedKey() {
-        }
-
-        @Override
-        public Cipher createCipher() {
-            return null;
-        }
-
-        @Override
-        public void setGlobalKey(String key) {
-        }
-
-        @Override
-        public void setLimitedKey(String key) {
-        }
-
+    @Test
+    public void globalKey() throws Exception {
+        String key = "xxxxxxxxxxxxxxxx";
+        AesCipherFactory factory = new AesCipherFactory();
+        factory.setGlobalKey(key);
+        assertThat(AesCipherFactory.globalKey, is(key));
+        factory.clearGlobalKey();
+        assertThat(AesCipherFactory.globalKey, is(nullValue()));
     }
 }

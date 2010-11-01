@@ -18,6 +18,7 @@ package org.slim3.datastore;
 import java.util.Iterator;
 import java.util.List;
 
+import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Transaction;
@@ -34,36 +35,48 @@ public class KindlessQuery extends AbstractQuery<KindlessQuery> {
     /**
      * Constructor.
      * 
+     * @param ds
+     *            the datastore service
+     * @throws NullPointerException
+     *             if the ds parameter is null
+     * 
      */
-    public KindlessQuery() {
-        super();
+    public KindlessQuery(DatastoreService ds) throws NullPointerException {
+        super(ds);
     }
 
     /**
      * Constructor.
      * 
+     * @param ds
+     *            the datastore service
      * @param ancestorKey
      *            the ancestor key
      * @throws NullPointerException
-     *             if the ancestorKey parameter is null
+     *             if the ds parameter is null or if the ancestorKey parameter
+     *             is null
      */
-    public KindlessQuery(Key ancestorKey) throws NullPointerException {
-        super(ancestorKey);
+    public KindlessQuery(DatastoreService ds, Key ancestorKey)
+            throws NullPointerException {
+        super(ds, ancestorKey);
     }
 
     /**
      * Constructor.
      * 
+     * @param ds
+     *            the datastore service
      * @param tx
      *            the transaction
      * @param ancestorKey
      *            the ancestor key
      * @throws NullPointerException
-     *             if the ancestorKey parameter is null
+     *             if the ds parameter is null or if the ancestorKey parameter
+     *             is null
      */
-    public KindlessQuery(Transaction tx, Key ancestorKey)
+    public KindlessQuery(DatastoreService ds, Transaction tx, Key ancestorKey)
             throws NullPointerException {
-        super(ancestorKey);
+        super(ds, ancestorKey);
         setTx(tx);
     }
 

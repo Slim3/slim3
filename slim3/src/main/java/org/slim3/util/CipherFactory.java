@@ -56,6 +56,11 @@ public abstract class CipherFactory {
     public abstract void clearLimitedKey();
 
     /**
+     * Clear the global key for cipher.
+     */
+    public abstract void clearGlobalKey();
+
+    /**
      * Sets the limited key for cipher to the current thread.
      * 
      * @param key

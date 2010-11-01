@@ -41,7 +41,7 @@ public class S3QueryResultListTest extends AppEngineTestCase {
     @Test
     public void constructor() throws Exception {
         ds.put(new Entity("Hoge"));
-        EntityQuery q = new EntityQuery("Hoge");
+        EntityQuery q = new EntityQuery(ds, "Hoge");
         QueryResultList<Entity> qrList = q.asQueryResultList();
         Cursor cursor = qrList.getCursor();
         S3QueryResultList<Entity> list =
