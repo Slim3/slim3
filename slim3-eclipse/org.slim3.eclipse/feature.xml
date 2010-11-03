@@ -219,7 +219,7 @@
    </license>
 
    <url>
-      <update label="Slim3 Update Site" url="http://localhost/"/>
+      <update label="Slim3 Update Site" url="http://slim3download.sp.land.to/dl"/>
    </url>
 
    <plugin
