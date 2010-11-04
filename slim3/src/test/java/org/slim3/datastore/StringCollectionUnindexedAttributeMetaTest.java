@@ -23,6 +23,7 @@ import java.util.List;
 import org.junit.Test;
 import org.slim3.datastore.model.Hoge;
 
+import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 
@@ -74,6 +75,11 @@ public class StringCollectionUnindexedAttributeMetaTest {
         @Override
         public String getSchemaVersionName() {
             return null;
+        }
+
+        @Override
+        protected void assignKeyToModelRefIfNecessary(DatastoreService ds,
+                Object model) throws NullPointerException {
         }
     };
 

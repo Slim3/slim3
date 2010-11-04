@@ -133,6 +133,7 @@ public class ModelMetaGenerator implements Generator {
         printGetKeyMethod(printer);
         printSetKeyMethod(printer);
         printGetVersionMethod(printer);
+        printAssignKeyToModelRefIfNecessaryMethod(printer);
         printIncrementVersionMethod(printer);
         printPrePutMethod(printer);
         printGetSchemaVersionName(printer);
@@ -505,6 +506,19 @@ public class ModelMetaGenerator implements Generator {
         }
         printer.println("}");
         printer.println();
+    }
+
+    /**
+     * Generates the {@code setKey} method.
+     * 
+     * @param printer
+     *            the printer
+     */
+    protected void printAssignKeyToModelRefIfNecessaryMethod(
+            final Printer printer) {
+        AssignKeyToModelRefIfNecessaryMethodGenerator generator =
+            new AssignKeyToModelRefIfNecessaryMethodGenerator(printer);
+        generator.generate();
     }
 
     /**
@@ -1657,17 +1671,14 @@ public class ModelMetaGenerator implements Generator {
             if (p.isUnindexed()) {
                 printer
                     .println(
-                        "entity.setUnindexedProperty(\"%1$s\", %2$s.assignKeyIfNecessary(m.%3$s().getModelMeta(), m.%3$s().getModel()));",
+                        "entity.setUnindexedProperty(\"%1$s\", m.%2$s().getKey());",
                         p.getName(),
-                        ClassConstants.ModelMeta,
                         p.getReadMethodName());
             } else {
-                printer
-                    .println(
-                        "entity.setProperty(\"%1$s\", %2$s.assignKeyIfNecessary(m.%3$s().getModelMeta(), m.%3$s().getModel()));",
-                        p.getName(),
-                        ClassConstants.ModelMeta,
-                        p.getReadMethodName());
+                printer.println(
+                    "entity.setProperty(\"%1$s\", m.%2$s().getKey());",
+                    p.getName(),
+                    p.getReadMethodName());
             }
             return null;
         }
@@ -1735,4 +1746,90 @@ public class ModelMetaGenerator implements Generator {
         }
     }
 
+    /**
+     * Represents the {@code modelToMethod} method generator.
+     * 
+     * @author taedium
+     * @since 1.0.0
+     * 
+     */
+    protected class AssignKeyToModelRefIfNecessaryMethodGenerator extends
+            SimpleDataTypeVisitor<Void, AttributeMetaDesc, RuntimeException> {
+
+        /** the printer */
+        protected final Printer printer;
+
+        /**
+         * Constructor.
+         * 
+         * @param printer
+         *            the printer
+         */
+        public AssignKeyToModelRefIfNecessaryMethodGenerator(Printer printer) {
+            this.printer = printer;
+        }
+
+        /**
+         * Generates the modelToMethod method.
+         */
+        public void generate() {
+            printer.println("@Override");
+            printer
+                .println(
+                    "protected void assignKeyToModelRefIfNecessary(%1$s ds, %2$s model) {",
+                    DatastoreService,
+                    Object);
+            printer.indent();
+            if (modelMetaDesc.isAbstrct()) {
+                printer.println(
+                    "throw new %1$s(\"The class(%2$s) is abstract.\");",
+                    UnsupportedOperationException.class.getName(),
+                    modelMetaDesc.getModelClassName());
+            } else {
+                boolean found = false;
+                for (AttributeMetaDesc attr : modelMetaDesc
+                    .getAttributeMetaDescList()) {
+                    if (attr.getDataType() instanceof ModelRefType) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) {
+                    printer.println("%1$s m = (%1$s) model;", modelMetaDesc
+                        .getModelClassName());
+                    for (AttributeMetaDesc attr : modelMetaDesc
+                        .getAttributeMetaDescList()) {
+                        if (attr.isPrimaryKey()) {
+                            continue;
+                        }
+                        DataType dataType = attr.getDataType();
+                        dataType.accept(this, attr);
+                    }
+                }
+            }
+            printer.unindent();
+            printer.println("}");
+            printer.println();
+        }
+
+        @Override
+        protected Void defaultAction(DataType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            return null;
+        }
+
+        @Override
+        public Void visitModelRefType(ModelRefType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            printer.println("if (m.%1$s() == null) {", p.getReadMethodName());
+            printer
+                .println(
+                    "    throw new NullPointerException(\"The property(%1$s) must not be null.\");",
+                    p.getAttributeName());
+            printer.println("}");
+            printer.println("m.%1$s().assignKeyIfNecessary(ds);", p
+                .getReadMethodName());
+            return null;
+        }
+    }
 }

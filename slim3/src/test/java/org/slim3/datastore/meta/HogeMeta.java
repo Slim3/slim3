@@ -33,6 +33,7 @@ import org.slim3.datastore.model.Hoge;
 import org.slim3.datastore.model.MySerializable;
 
 import com.google.appengine.api.datastore.Blob;
+import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.ShortBlob;
@@ -576,6 +577,11 @@ public class HogeMeta extends ModelMeta<Hoge> {
 
     @Override
     protected void prePut(Object model) {
+    }
+
+    @Override
+    protected void assignKeyToModelRefIfNecessary(DatastoreService ds,
+            Object model) throws NullPointerException {
     }
 
     @Override

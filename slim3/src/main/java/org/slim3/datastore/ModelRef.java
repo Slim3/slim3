@@ -15,6 +15,7 @@
  */
 package org.slim3.datastore;
 
+import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Key;
 
 /**
@@ -172,5 +173,28 @@ public class ModelRef<M> extends AbstractModelRef<M> {
             return false;
         }
         return key.equals(otherKey);
+    }
+
+    /**
+     * Assigns a new key to the model if necessary.
+     * 
+     * @param ds
+     *            the datastore service
+     * @return a key
+     * @throws NullPointerException
+     *             if the ds parameter is null
+     */
+    public Key assignKeyIfNecessary(DatastoreService ds)
+            throws NullPointerException {
+        if (model == null) {
+            return null;
+        }
+        key = getModelMeta().getKey(model);
+        if (key != null) {
+            return key;
+        }
+        key = DatastoreUtil.allocateId(ds, getModelMeta().getKind());
+        getModelMeta().setKey(model, key);
+        return key;
     }
 }

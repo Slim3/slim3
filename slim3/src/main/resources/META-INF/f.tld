@@ -40,6 +40,18 @@
 
   <function>
     <description>
+      Returns blobstore URL.
+    </description>
+    <name>blobstoreUrl</name>
+    <function-class>org.slim3.jsp.Functions</function-class>
+    <function-signature>java.lang.String blobstoreUrl(java.lang.String)</function-signature>
+    <example>
+      &lt;a href="${f:blobstoreUrl(param)}" ...
+    </example>
+  </function>
+  
+  <function>
+    <description>
       Converts a blank to &amp;nbsp;.
     </description>
     <name>nbsp</name>

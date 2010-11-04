@@ -35,6 +35,8 @@ import org.slim3.util.ResponseLocator;
 import org.slim3.util.StringUtil;
 import org.slim3.util.TimeZoneLocator;
 
+import com.google.appengine.api.blobstore.BlobstoreService;
+import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
@@ -110,6 +112,35 @@ public final class Functions {
             sb.append(path).append(input);
         }
         return ResponseLocator.get().encodeURL(sb.toString());
+    }
+
+    /**
+     * Returns blobstore URL.
+     * 
+     * @param url
+     *            the part of url
+     * @return context-relative URL
+     */
+    public static String blobstoreUrl(String url) {
+        BlobstoreService bs = BlobstoreServiceFactory.getBlobstoreService();
+        boolean empty = StringUtil.isEmpty(url);
+        if (!empty && url.indexOf(':') >= 0) {
+            return bs.createUploadUrl(url);
+        }
+        HttpServletRequest request = request();
+        String path =
+            (String) request.getAttribute(ControllerConstants.BASE_PATH_KEY);
+        if (path == null) {
+            path = RequestUtil.getPath(request);
+        }
+        int pos = path.lastIndexOf('/');
+        path = path.substring(0, pos + 1);
+        if (empty) {
+            return bs.createUploadUrl(path);
+        } else if (url.startsWith("/")) {
+            return bs.createUploadUrl(url);
+        }
+        return bs.createUploadUrl(path + url);
     }
 
     /**

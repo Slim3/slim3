@@ -22,7 +22,10 @@ import org.junit.Test;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.AppEngineTestCase;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 
 /**
  * @author higa
@@ -31,6 +34,8 @@ import com.google.appengine.api.datastore.Key;
 public class ModelRefTest extends AppEngineTestCase {
 
     private ModelRef<Hoge> ref = new ModelRef<Hoge>(Hoge.class);
+
+    private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
     /**
      * @throws Exception
@@ -174,5 +179,41 @@ public class ModelRefTest extends AppEngineTestCase {
         ref.setKey(key);
         other.setKey(key);
         assertThat(ref.equals(other), is(true));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void assignKeyIfNecessary() throws Exception {
+        Hoge hoge = new Hoge();
+        ref.setModel(hoge);
+        ref.assignKeyIfNecessary(ds);
+        assertThat(ref.getKey(), is(notNullValue()));
+        assertThat(hoge.getKey(), is(notNullValue()));
+        assertThat(ref.getKey(), is(hoge.getKey()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void assignKeyIfNecessaryKeyIsAssigned() throws Exception {
+        Hoge hoge = new Hoge();
+        hoge.setKey(KeyFactory.createKey("Hoge", 1));
+        ref.setModel(hoge);
+        ref.assignKeyIfNecessary(ds);
+        assertThat(ref.getKey(), is(notNullValue()));
+        assertThat(hoge.getKey(), is(notNullValue()));
+        assertThat(ref.getKey(), is(hoge.getKey()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void assignKeyIfNecessaryModelIsNull() throws Exception {
+        ref.assignKeyIfNecessary(ds);
+        assertThat(ref.getKey(), is(nullValue()));
     }
 }

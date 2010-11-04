@@ -134,6 +134,10 @@ public final class ClassConstants {
     public static final String Entity =
         "com.google.appengine.api.datastore.Entity";
 
+    /** {@code com.google.appengine.api.datastore.DatastoreService} */
+    public static final String DatastoreService =
+        "com.google.appengine.api.datastore.DatastoreService";
+
     /** {@code java.lang.Object} */
     public static final String Object = "java.lang.Object";
 

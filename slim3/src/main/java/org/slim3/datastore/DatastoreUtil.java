@@ -1767,6 +1767,7 @@ public final class DatastoreUtil {
             key = allocateId(ds, modelMeta.getKind());
             modelMeta.setKey(model, key);
         }
+        modelMeta.assignKeyToModelRefIfNecessary(ds, model);
         modelMeta.incrementVersion(model);
         modelMeta.prePut(model);
         return modelMeta.modelToEntity(model);

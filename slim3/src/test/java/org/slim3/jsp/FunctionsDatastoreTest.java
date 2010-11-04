@@ -39,4 +39,37 @@ public class FunctionsDatastoreTest extends ServletTestCase {
         String encodedKey = KeyFactory.keyToString(key);
         assertThat(Functions.h(key), is(encodedKey));
     }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void blobstoreUrl() throws Exception {
+        String basePath = "/blobstore/";
+        String url = "upload";
+        tester.request.setServletPath(basePath);
+        assertThat(Functions.blobstoreUrl(url), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void blobstoreUrlforEmpty() throws Exception {
+        String basePath = "/blobstore/";
+        String url = "";
+        tester.request.setServletPath(basePath);
+        assertThat(Functions.blobstoreUrl(url), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void blobstoreUrlforNull() throws Exception {
+        String basePath = "/blobstore/";
+        String url = null;
+        tester.request.setServletPath(basePath);
+        assertThat(Functions.blobstoreUrl(url), is(notNullValue()));
+    }
 }
