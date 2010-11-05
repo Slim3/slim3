@@ -18,14 +18,11 @@ package org.slim3.datastore;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.slim3.util.AppEngineUtil;
 import org.slim3.util.ClassUtil;
@@ -34,20 +31,13 @@ import org.slim3.util.Cleaner;
 import org.slim3.util.IterableUtil;
 
 import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreTimeoutException;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.EntityTranslator;
-import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.KeyRange;
 import com.google.appengine.api.datastore.KeyUtil;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.QueryResultIterable;
-import com.google.appengine.api.datastore.QueryResultIterator;
-import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.apphosting.api.ApiProxy;
 import com.google.apphosting.api.DatastorePb;
@@ -69,11 +59,6 @@ import com.google.storage.onestore.v3.OnestoreEntity.Path.Element;
 public final class DatastoreUtil {
 
     /**
-     * The maximum retry count.
-     */
-    public static final int MAX_RETRY = 10;
-
-    /**
      * The maximum size(bytes) of entity.
      */
     public static final int MAX_ENTITY_SIZE = 1000000;
@@ -88,10 +73,6 @@ public final class DatastoreUtil {
      */
     public static final int EXTRA_SIZE = 200;
 
-    private static final long INITIAL_WAIT_MS = 100L;
-
-    private static final int WAIT_MULTIPLIER_FACTOR = 2;
-
     private static final int KEY_CACHE_SIZE = 50;
 
     private static final String DATASTORE_SERVICE = "datastore_v3";
@@ -99,9 +80,6 @@ public final class DatastoreUtil {
     private static final String GET_SCHEMA_METHOD = "GetSchema";
 
     private static final String PUT_METHOD = "Put";
-
-    private static final Logger logger =
-        Logger.getLogger(DatastoreUtil.class.getName());
 
     /**
      * The cache for {@link ModelMeta}.
@@ -129,40 +107,6 @@ public final class DatastoreUtil {
             }
         });
         initialized = true;
-    }
-
-    /**
-     * Begins a transaction.
-     * 
-     * @param ds
-     *            the datastore service
-     * 
-     * @return a begun transaction
-     * @throws NullPointerException
-     *             if the ds parameter is null
-     */
-    public static Transaction beginTransaction(DatastoreService ds)
-            throws NullPointerException {
-        if (ds == null) {
-            throw new NullPointerException("The ds parameter must not be null.");
-        }
-        DatastoreTimeoutException dte = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                return ds.beginTransaction();
-            } catch (DatastoreTimeoutException e) {
-                dte = e;
-                logger.log(Level.INFO, "RETRY["
-                    + i
-                    + "] This message is just INFORMATION["
-                    + e
-                    + "].", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw dte;
     }
 
     /**
@@ -256,23 +200,7 @@ public final class DatastoreUtil {
             throw new NullPointerException(
                 "The kind parameter must not be null.");
         }
-        DatastoreTimeoutException dte = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                return ds.allocateIds(kind, num);
-            } catch (DatastoreTimeoutException e) {
-                dte = e;
-                logger.log(Level.INFO, "RETRY["
-                    + i
-                    + "] This message is just INFORMATION["
-                    + e
-                    + "].", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw dte;
+        return ds.allocateIds(kind, num);
     }
 
     /**
@@ -302,23 +230,7 @@ public final class DatastoreUtil {
         if (kind == null) {
             throw new NullPointerException("The kind parameter is null.");
         }
-        DatastoreTimeoutException dte = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                return ds.allocateIds(parentKey, kind, num);
-            } catch (DatastoreTimeoutException e) {
-                dte = e;
-                logger.log(Level.INFO, "RETRY["
-                    + i
-                    + "] This message is just INFORMATION["
-                    + e
-                    + "].", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw dte;
+        return ds.allocateIds(parentKey, kind, num);
     }
 
     /**
@@ -401,23 +313,7 @@ public final class DatastoreUtil {
                 "The key parameter must not be null.");
         }
         try {
-            DatastoreTimeoutException dte = null;
-            long wait = INITIAL_WAIT_MS;
-            for (int i = 0; i < MAX_RETRY; i++) {
-                try {
-                    return ds.get(key);
-                } catch (DatastoreTimeoutException e) {
-                    dte = e;
-                    logger.log(Level.INFO, "RETRY["
-                        + i
-                        + "] This message is just INFORMATION["
-                        + e
-                        + "].", e);
-                    sleep(wait);
-                    wait *= WAIT_MULTIPLIER_FACTOR;
-                }
-            }
-            throw dte;
+            return ds.get(key);
         } catch (EntityNotFoundException cause) {
             throw new EntityNotFoundRuntimeException(key, cause);
         }
@@ -455,23 +351,7 @@ public final class DatastoreUtil {
             throw new IllegalStateException("The transaction must be active.");
         }
         try {
-            DatastoreTimeoutException dte = null;
-            long wait = INITIAL_WAIT_MS;
-            for (int i = 0; i < MAX_RETRY; i++) {
-                try {
-                    return ds.get(tx, key);
-                } catch (DatastoreTimeoutException e) {
-                    dte = e;
-                    logger.log(Level.INFO, "RETRY["
-                        + i
-                        + "] This message is just INFORMATION["
-                        + e
-                        + "].", e);
-                    sleep(wait);
-                    wait *= WAIT_MULTIPLIER_FACTOR;
-                }
-            }
-            throw dte;
+            return ds.get(tx, key);
         } catch (EntityNotFoundException cause) {
             throw new EntityNotFoundRuntimeException(key, cause);
         }
@@ -501,23 +381,7 @@ public final class DatastoreUtil {
         if (keys instanceof Collection<?> && ((Collection<?>) keys).size() == 0) {
             return new HashMap<Key, Entity>();
         }
-        DatastoreTimeoutException dte = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                return ds.get(keys);
-            } catch (DatastoreTimeoutException e) {
-                dte = e;
-                logger.log(Level.INFO, "RETRY["
-                    + i
-                    + "] This message is just INFORMATION["
-                    + e
-                    + "].", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw dte;
+        return ds.get(keys);
     }
 
     /**
@@ -553,23 +417,7 @@ public final class DatastoreUtil {
         if (keys instanceof Collection<?> && ((Collection<?>) keys).size() == 0) {
             return new HashMap<Key, Entity>();
         }
-        DatastoreTimeoutException dte = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                return ds.get(tx, keys);
-            } catch (DatastoreTimeoutException e) {
-                dte = e;
-                logger.log(Level.INFO, "RETRY["
-                    + i
-                    + "] This message is just INFORMATION["
-                    + e
-                    + "].", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw dte;
+        return ds.get(tx, keys);
     }
 
     /**
@@ -703,27 +551,11 @@ public final class DatastoreUtil {
             throw new NullPointerException(
                 "The entities parameter must not be null.");
         }
-        ConcurrentModificationException cme = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                assignKeyIfNecessary(ds, entities);
-                List<Key> keyList = toKeyList(entities);
-                List<EntityProto> entityProtoList = toEntityProtoList(entities);
-                putUsingLowerApi(apiConfig, null, entityProtoList);
-                return keyList;
-            } catch (ConcurrentModificationException e) {
-                cme = e;
-                logger.log(Level.INFO, "RETRY["
-                    + i
-                    + "] This message is just INFORMATION["
-                    + e
-                    + "].", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw cme;
+        assignKeyIfNecessary(ds, entities);
+        List<Key> keyList = toKeyList(entities);
+        List<EntityProto> entityProtoList = toEntityProtoList(entities);
+        putUsingLowerApi(apiConfig, null, entityProtoList);
+        return keyList;
     }
 
     /**
@@ -901,36 +733,11 @@ public final class DatastoreUtil {
                 "The putRequest parameter must not be null.");
         }
         byte[] requestBuf = putRequest.toByteArray();
-        ConcurrentModificationException cme = null;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                DatastoreTimeoutException dte = null;
-                long wait = INITIAL_WAIT_MS;
-                for (int j = 0; j < MAX_RETRY; j++) {
-                    try {
-                        ApiProxy.makeSyncCall(
-                            DATASTORE_SERVICE,
-                            PUT_METHOD,
-                            requestBuf,
-                            apiConfig);
-                        return;
-                    } catch (DatastoreTimeoutException e) {
-                        dte = e;
-                        logger.log(Level.INFO, "RETRY["
-                            + j
-                            + "] This message is just INFORMATION["
-                            + e
-                            + "].", e);
-                        sleep(wait);
-                        wait *= WAIT_MULTIPLIER_FACTOR;
-                    }
-                }
-                throw dte;
-            } catch (ConcurrentModificationException e) {
-                cme = e;
-            }
-        }
-        throw cme;
+        ApiProxy.makeSyncCall(
+            DATASTORE_SERVICE,
+            PUT_METHOD,
+            requestBuf,
+            apiConfig);
     }
 
     /**
@@ -985,36 +792,11 @@ public final class DatastoreUtil {
         if (keys instanceof Collection<?> && ((Collection<?>) keys).size() == 0) {
             return;
         }
-        ConcurrentModificationException cme = null;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                DatastoreTimeoutException dte = null;
-                long wait = INITIAL_WAIT_MS;
-                for (int j = 0; j < MAX_RETRY; j++) {
-                    try {
-                        for (Iterable<Key> keys2 : IterableUtil.split(
-                            keys,
-                            MAX_NUMBER_OF_ENTITIES)) {
-                            ds.delete(null, keys2);
-                        }
-                        return;
-                    } catch (DatastoreTimeoutException e) {
-                        dte = e;
-                        logger.log(Level.INFO, "RETRY["
-                            + j
-                            + "] This message is just INFORMATION["
-                            + e
-                            + "].", e);
-                        sleep(wait);
-                        wait *= WAIT_MULTIPLIER_FACTOR;
-                    }
-                }
-                throw dte;
-            } catch (ConcurrentModificationException e) {
-                cme = e;
-            }
+        for (Iterable<Key> keys2 : IterableUtil.split(
+            keys,
+            MAX_NUMBER_OF_ENTITIES)) {
+            ds.delete(null, keys2);
         }
-        throw cme;
     }
 
     /**
@@ -1041,392 +823,11 @@ public final class DatastoreUtil {
         if (keys instanceof Collection<?> && ((Collection<?>) keys).size() == 0) {
             return;
         }
-        DatastoreTimeoutException dte = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                for (Iterable<Key> keys2 : IterableUtil.split(
-                    keys,
-                    MAX_NUMBER_OF_ENTITIES)) {
-                    ds.delete(tx, keys2);
-                }
-                return;
-            } catch (DatastoreTimeoutException e) {
-                dte = e;
-                logger.log(Level.INFO, "RETRY["
-                    + i
-                    + "] This message is just INFORMATION["
-                    + e
-                    + "].", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
+        for (Iterable<Key> keys2 : IterableUtil.split(
+            keys,
+            MAX_NUMBER_OF_ENTITIES)) {
+            ds.delete(tx, keys2);
         }
-        throw dte;
-    }
-
-    /**
-     * Prepares the query.
-     * 
-     * @param ds
-     *            the datastore
-     * @param query
-     *            the query
-     * @return a prepared query.
-     * @throws NullPointerException
-     *             if the ds parameter is null or if the query parameter is null
-     */
-    public static PreparedQuery prepare(DatastoreService ds, Query query)
-            throws NullPointerException {
-        if (ds == null) {
-            throw new NullPointerException("The ds parameter must not be null.");
-        }
-        if (query == null) {
-            throw new NullPointerException(
-                "The query parameter must not be null.");
-        }
-        DatastoreTimeoutException dte = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                return ds.prepare(query);
-            } catch (DatastoreTimeoutException e) {
-                dte = e;
-                logger.log(Level.INFO, "RETRY["
-                    + i
-                    + "] This message is just INFORMATION["
-                    + e
-                    + "].", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw dte;
-    }
-
-    /**
-     * Prepares the query.
-     * 
-     * @param ds
-     *            the datastore
-     * @param tx
-     *            the transaction
-     * @param query
-     *            the query
-     * @return a prepared query.
-     * @throws NullPointerException
-     *             if the ds parameter is null or if tx parameter is null or if
-     *             the query parameter is null
-     */
-    public static PreparedQuery prepare(DatastoreService ds, Transaction tx,
-            Query query) throws NullPointerException {
-        if (ds == null) {
-            throw new NullPointerException("The ds parameter must not be null.");
-        }
-        if (query == null) {
-            throw new NullPointerException(
-                "The query parameter must not be null.");
-        }
-        DatastoreTimeoutException dte = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                return ds.prepare(tx, query);
-            } catch (DatastoreTimeoutException e) {
-                dte = e;
-                logger.log(Level.INFO, "RETRY["
-                    + i
-                    + "] This message is just INFORMATION["
-                    + e
-                    + "].", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw dte;
-    }
-
-    /**
-     * Returns a list of entities.
-     * 
-     * @param preparedQuery
-     *            the prepared query
-     * @param fetchOptions
-     *            the fetch options
-     * @return a list of entities
-     * @throws NullPointerException
-     *             if the preparedQuery parameter is null or if the fetchOptions
-     *             parameter is null
-     */
-    public static List<Entity> asList(PreparedQuery preparedQuery,
-            FetchOptions fetchOptions) throws NullPointerException {
-        if (preparedQuery == null) {
-            throw new NullPointerException(
-                "The preparedQuery parameter must not be null.");
-        }
-        if (fetchOptions == null) {
-            throw new NullPointerException(
-                "The fetchOptions parameter must not be null.");
-        }
-        DatastoreTimeoutException dte = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                return preparedQuery.asList(fetchOptions);
-            } catch (DatastoreTimeoutException e) {
-                dte = e;
-                logger.log(Level.INFO, "RETRY["
-                    + i
-                    + "] This message is just INFORMATION["
-                    + e
-                    + "].", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw dte;
-    }
-
-    /**
-     * Returns a query result list.
-     * 
-     * @param preparedQuery
-     *            the prepared query
-     * @param fetchOptions
-     *            the fetch options
-     * @return a query result list
-     * @throws NullPointerException
-     *             if the preparedQuery parameter is null or if the fetchOptions
-     *             parameter is null
-     */
-    public static QueryResultList<Entity> asQueryResultList(
-            PreparedQuery preparedQuery, FetchOptions fetchOptions)
-            throws NullPointerException {
-        if (preparedQuery == null) {
-            throw new NullPointerException(
-                "The preparedQuery parameter must not be null.");
-        }
-        if (fetchOptions == null) {
-            throw new NullPointerException(
-                "The fetchOptions parameter must not be null.");
-        }
-        DatastoreTimeoutException dte = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                return preparedQuery.asQueryResultList(fetchOptions);
-            } catch (DatastoreTimeoutException e) {
-                dte = e;
-                logger.log(Level.INFO, "RETRY["
-                    + i
-                    + "] This message is just INFORMATION["
-                    + e
-                    + "].", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw dte;
-    }
-
-    /**
-     * Returns a query result iterator.
-     * 
-     * @param preparedQuery
-     *            the prepared query
-     * @param fetchOptions
-     *            the fetch options
-     * @return a query result iterator
-     * @throws NullPointerException
-     *             if the preparedQuery parameter is null or if the fetchOptions
-     *             parameter is null
-     */
-    public static QueryResultIterator<Entity> asQueryResultIterator(
-            PreparedQuery preparedQuery, FetchOptions fetchOptions)
-            throws NullPointerException {
-        if (preparedQuery == null) {
-            throw new NullPointerException(
-                "The preparedQuery parameter must not be null.");
-        }
-        if (fetchOptions == null) {
-            throw new NullPointerException(
-                "The fetchOptions parameter must not be null.");
-        }
-        DatastoreTimeoutException dte = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                return preparedQuery.asQueryResultIterator(fetchOptions);
-            } catch (DatastoreTimeoutException e) {
-                dte = e;
-                logger.log(Level.INFO, "RETRY["
-                    + i
-                    + "] This message is just INFORMATION["
-                    + e
-                    + "].", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw dte;
-    }
-
-    /**
-     * Returns a query result iterable.
-     * 
-     * @param preparedQuery
-     *            the prepared query
-     * @param fetchOptions
-     *            the fetch options
-     * @return a query result iterable
-     * @throws NullPointerException
-     *             if the preparedQuery parameter is null or if the fetchOptions
-     *             parameter is null
-     */
-    public static QueryResultIterable<Entity> asQueryResultIterable(
-            PreparedQuery preparedQuery, FetchOptions fetchOptions)
-            throws NullPointerException {
-        if (preparedQuery == null) {
-            throw new NullPointerException(
-                "The preparedQuery parameter must not be null.");
-        }
-        if (fetchOptions == null) {
-            throw new NullPointerException(
-                "The fetchOptions parameter must not be null.");
-        }
-        DatastoreTimeoutException dte = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                return preparedQuery.asQueryResultIterable(fetchOptions);
-            } catch (DatastoreTimeoutException e) {
-                dte = e;
-                logger.log(Level.INFO, "RETRY["
-                    + i
-                    + "] This message is just INFORMATION["
-                    + e
-                    + "].", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw dte;
-    }
-
-    /**
-     * Returns a single entity.
-     * 
-     * @param preparedQuery
-     *            the query
-     * @return a single entity
-     * @throws NullPointerException
-     *             if the preparedQuery parameter is null
-     */
-    public static Entity asSingleEntity(PreparedQuery preparedQuery)
-            throws NullPointerException {
-        if (preparedQuery == null) {
-            throw new NullPointerException(
-                "The preparedQuery parameter must not be null.");
-        }
-        DatastoreTimeoutException dte = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                return preparedQuery.asSingleEntity();
-            } catch (DatastoreTimeoutException e) {
-                dte = e;
-                logger.log(Level.INFO, "RETRY["
-                    + i
-                    + "] This message is just INFORMATION["
-                    + e
-                    + "].", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw dte;
-    }
-
-    /**
-     * Returns a single entity.
-     * 
-     * @param preparedQuery
-     *            the query
-     * @param fetchOptions
-     *            the fetch options
-     * @return a single entity
-     * @throws NullPointerException
-     *             if the preparedQuery parameter is null or if the fetchOptions
-     *             parameter is null
-     */
-    public static Iterable<Entity> asIterable(PreparedQuery preparedQuery,
-            FetchOptions fetchOptions) throws NullPointerException {
-        if (preparedQuery == null) {
-            throw new NullPointerException(
-                "The preparedQuery parameter must not be null.");
-        }
-        if (fetchOptions == null) {
-            throw new NullPointerException(
-                "The fetchOptions parameter must not be null.");
-        }
-        DatastoreTimeoutException dte = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                return preparedQuery.asIterable(fetchOptions);
-            } catch (DatastoreTimeoutException e) {
-                dte = e;
-                logger.log(Level.INFO, "RETRY["
-                    + i
-                    + "] This message is just INFORMATION["
-                    + e
-                    + "].", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw dte;
-    }
-
-    /**
-     * Returns a number of entities.
-     * 
-     * @param preparedQuery
-     *            the prepared query
-     * @param fetchOptions
-     *            the fetch options
-     * @return a number of entities
-     * @throws NullPointerException
-     *             if the preparedQuery parameter is null or if the fetchOptions
-     *             parameter is null
-     */
-    public static int countEntities(PreparedQuery preparedQuery,
-            FetchOptions fetchOptions) throws NullPointerException {
-        if (preparedQuery == null) {
-            throw new NullPointerException(
-                "The preparedQuery parameter must not be null.");
-        }
-        if (fetchOptions == null) {
-            throw new NullPointerException(
-                "The fetchOptions parameter must not be null.");
-        }
-        DatastoreTimeoutException dte = null;
-        long wait = INITIAL_WAIT_MS;
-        for (int i = 0; i < MAX_RETRY; i++) {
-            try {
-                return preparedQuery.countEntities(fetchOptions);
-            } catch (DatastoreTimeoutException e) {
-                dte = e;
-                logger.log(Level.INFO, "RETRY["
-                    + i
-                    + "] This message is just INFORMATION["
-                    + e
-                    + "].", e);
-                sleep(wait);
-                wait *= WAIT_MULTIPLIER_FACTOR;
-            }
-        }
-        throw dte;
     }
 
     /**
@@ -2007,13 +1408,6 @@ public final class DatastoreUtil {
     public static String getKind(Reference key) {
         List<Element> elements = key.getPath().elements();
         return elements.get(elements.size() - 1).getType();
-    }
-
-    private static void sleep(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException ignore) {
-        }
     }
 
     private DatastoreUtil() {

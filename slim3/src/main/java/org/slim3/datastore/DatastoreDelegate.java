@@ -128,7 +128,7 @@ public class DatastoreDelegate {
      * @return a begun transaction
      */
     public Transaction beginTransaction() {
-        return DatastoreUtil.beginTransaction(ds);
+        return ds.beginTransaction();
     }
 
     /**

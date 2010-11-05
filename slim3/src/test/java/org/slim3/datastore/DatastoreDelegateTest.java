@@ -164,6 +164,16 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
+    @Test(expected = IllegalStateException.class)
+    public void commitForIllegalTx() throws Exception {
+        Transaction tx = ds.beginTransaction();
+        tx.rollback();
+        delegate.commit(tx);
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test(expected = EntityNotFoundException.class)
     public void rollback() throws Exception {
         Transaction tx = ds.beginTransaction();

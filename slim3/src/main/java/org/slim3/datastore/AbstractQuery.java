@@ -641,11 +641,8 @@ public abstract class AbstractQuery<SUB> {
      * @return entities as list
      */
     protected List<Entity> asEntityList(Query qry) {
-        PreparedQuery pq =
-            txSet ? DatastoreUtil.prepare(ds, tx, qry) : DatastoreUtil.prepare(
-                ds,
-                qry);
-        return DatastoreUtil.asList(pq, fetchOptions);
+        PreparedQuery pq = txSet ? ds.prepare(tx, qry) : ds.prepare(qry);
+        return pq.asList(fetchOptions);
     }
 
     /**
@@ -654,10 +651,8 @@ public abstract class AbstractQuery<SUB> {
      * @return entities as query result list
      */
     protected QueryResultList<Entity> asQueryResultEntityList() {
-        PreparedQuery pq =
-            txSet ? DatastoreUtil.prepare(ds, tx, query) : DatastoreUtil
-                .prepare(ds, query);
-        return DatastoreUtil.asQueryResultList(pq, fetchOptions);
+        PreparedQuery pq = txSet ? ds.prepare(tx, query) : ds.prepare(query);
+        return pq.asQueryResultList(fetchOptions);
     }
 
     /**
@@ -666,10 +661,8 @@ public abstract class AbstractQuery<SUB> {
      * @return entities as query result iterator
      */
     protected QueryResultIterator<Entity> asQueryResultEntityIterator() {
-        PreparedQuery pq =
-            txSet ? DatastoreUtil.prepare(ds, tx, query) : DatastoreUtil
-                .prepare(ds, query);
-        return DatastoreUtil.asQueryResultIterator(pq, fetchOptions);
+        PreparedQuery pq = txSet ? ds.prepare(tx, query) : ds.prepare(query);
+        return pq.asQueryResultIterator(fetchOptions);
     }
 
     /**
@@ -678,10 +671,8 @@ public abstract class AbstractQuery<SUB> {
      * @return entities as query result iterable
      */
     protected QueryResultIterable<Entity> asQueryResultEntityIterable() {
-        PreparedQuery pq =
-            txSet ? DatastoreUtil.prepare(ds, tx, query) : DatastoreUtil
-                .prepare(ds, query);
-        return DatastoreUtil.asQueryResultIterable(pq, fetchOptions);
+        PreparedQuery pq = txSet ? ds.prepare(tx, query) : ds.prepare(query);
+        return pq.asQueryResultIterable(fetchOptions);
     }
 
     /**
@@ -700,10 +691,8 @@ public abstract class AbstractQuery<SUB> {
             }
             return list.get(0);
         }
-        PreparedQuery pq =
-            txSet ? DatastoreUtil.prepare(ds, tx, query) : DatastoreUtil
-                .prepare(ds, query);
-        return DatastoreUtil.asSingleEntity(pq);
+        PreparedQuery pq = txSet ? ds.prepare(tx, query) : ds.prepare(query);
+        return pq.asSingleEntity();
     }
 
     /**
@@ -727,13 +716,11 @@ public abstract class AbstractQuery<SUB> {
      * @return the number of entities
      */
     public int count() {
-        PreparedQuery pq =
-            txSet ? DatastoreUtil.prepare(ds, tx, query) : DatastoreUtil
-                .prepare(ds, query);
+        PreparedQuery pq = txSet ? ds.prepare(tx, query) : ds.prepare(query);
         if (fetchOptions.getLimit() == null) {
             fetchOptions.limit(Integer.MAX_VALUE);
         }
-        return DatastoreUtil.countEntities(pq, fetchOptions);
+        return pq.countEntities(fetchOptions);
     }
 
     /**
@@ -805,9 +792,7 @@ public abstract class AbstractQuery<SUB> {
      * @return entities as {@link Iterable}
      */
     protected Iterable<Entity> asIterableEntities() {
-        PreparedQuery pq =
-            txSet ? DatastoreUtil.prepare(ds, tx, query) : DatastoreUtil
-                .prepare(ds, query);
-        return DatastoreUtil.asIterable(pq, fetchOptions);
+        PreparedQuery pq = txSet ? ds.prepare(tx, query) : ds.prepare(query);
+        return pq.asIterable(fetchOptions);
     }
 }

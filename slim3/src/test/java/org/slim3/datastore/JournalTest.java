@@ -31,11 +31,8 @@ import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.PreparedQuery;
-import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.apphosting.api.ApiProxy.ApiConfig;
@@ -105,14 +102,11 @@ public class JournalTest extends AppEngineTestCase {
         journalMap.put(key, putEntity);
         journalMap.put(key2, null);
         Journal.put(ds, apiConfig, globalTransactionKey, journalMap);
-        PreparedQuery preparedQuery =
-            DatastoreUtil.prepare(ds, new Query(Journal.KIND).addFilter(
+        List<Entity> entities =
+            new EntityQuery(ds, Journal.KIND).filter(
                 Journal.GLOBAL_TRANSACTION_KEY_PROPERTY,
                 FilterOperator.EQUAL,
-                globalTransactionKey));
-        List<Entity> entities =
-            DatastoreUtil.asList(preparedQuery, FetchOptions.Builder
-                .withDefaults());
+                globalTransactionKey).asList();
         Journal.apply(ds, apiConfig, entities);
         assertThat(
             DatastoreUtil.getAsMap(ds, Arrays.asList(key)).get(key),
@@ -178,14 +172,11 @@ public class JournalTest extends AppEngineTestCase {
         List<Entity> entities =
             Journal.put(ds, apiConfig, globalTransactionKey, journalMap);
         assertThat(entities.size(), is(1));
-        PreparedQuery preparedQuery =
-            DatastoreUtil.prepare(ds, new Query(Journal.KIND).addFilter(
+        entities =
+            new EntityQuery(ds, Journal.KIND).filter(
                 Journal.GLOBAL_TRANSACTION_KEY_PROPERTY,
                 FilterOperator.EQUAL,
-                globalTransactionKey));
-        entities =
-            DatastoreUtil.asList(preparedQuery, FetchOptions.Builder
-                .withDefaults());
+                globalTransactionKey).asList();
         assertThat(entities.size(), is(1));
         Entity entity = entities.get(0);
         List<Blob> putList =
@@ -219,14 +210,11 @@ public class JournalTest extends AppEngineTestCase {
         journalMap.put(key, e);
         journalMap.put(key2, e2);
         Journal.put(ds, apiConfig, globalTransactionKey, journalMap);
-        PreparedQuery preparedQuery =
-            DatastoreUtil.prepare(ds, new Query(Journal.KIND).addFilter(
+        List<Entity> entities =
+            new EntityQuery(ds, Journal.KIND).filter(
                 Journal.GLOBAL_TRANSACTION_KEY_PROPERTY,
                 FilterOperator.EQUAL,
-                globalTransactionKey));
-        List<Entity> entities =
-            DatastoreUtil.asList(preparedQuery, FetchOptions.Builder
-                .withDefaults());
+                globalTransactionKey).asList();
         assertThat(entities.size(), is(2));
         Entity entity = entities.get(0);
         assertThat(entity, is(notNullValue()));

@@ -17,7 +17,6 @@ package org.slim3.datastore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Map;
 
@@ -374,24 +373,20 @@ public class Journal {
             throw new NullPointerException(
                 "The key parameter must not be null.");
         }
-        for (int i = 0; i < DatastoreUtil.MAX_RETRY; i++) {
-            Transaction tx = ds.beginTransaction();
-            try {
-                Entity entity =
-                    DatastoreUtil.getAsMap(ds, tx, Arrays.asList(key)).get(key);
-                if (entity != null
-                    && globalTransactionKey.equals(entity
-                        .getProperty(GLOBAL_TRANSACTION_KEY_PROPERTY))) {
-                    DatastoreUtil.delete(ds, tx, Arrays.asList(key));
-                    tx.commit();
-                }
-                return;
-            } catch (ConcurrentModificationException e) {
-                continue;
-            } finally {
-                if (tx.isActive()) {
-                    tx.rollback();
-                }
+        Transaction tx = ds.beginTransaction();
+        try {
+            Entity entity =
+                DatastoreUtil.getAsMap(ds, tx, Arrays.asList(key)).get(key);
+            if (entity != null
+                && globalTransactionKey.equals(entity
+                    .getProperty(GLOBAL_TRANSACTION_KEY_PROPERTY))) {
+                DatastoreUtil.delete(ds, tx, Arrays.asList(key));
+                tx.commit();
+            }
+            return;
+        } finally {
+            if (tx.isActive()) {
+                tx.rollback();
             }
         }
     }

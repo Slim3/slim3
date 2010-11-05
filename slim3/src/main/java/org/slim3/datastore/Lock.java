@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreTimeoutException;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -318,23 +317,18 @@ public class Lock {
             throw new NullPointerException(
                 "The key parameter must not be null.");
         }
-
-        for (int i = 0; i < DatastoreUtil.MAX_RETRY; i++) {
-            Transaction tx = ds.beginTransaction();
-            try {
-                Lock lock = getOrNull(ds, apiConfig, tx, key);
-                if (lock != null
-                    && globalTransactionKey.equals(lock.globalTransactionKey)) {
-                    ds.delete(tx, key);
-                    tx.commit();
-                }
-                return;
-            } catch (ConcurrentModificationException e) {
-                continue;
-            } finally {
-                if (tx.isActive()) {
-                    tx.rollback();
-                }
+        Transaction tx = ds.beginTransaction();
+        try {
+            Lock lock = getOrNull(ds, apiConfig, tx, key);
+            if (lock != null
+                && globalTransactionKey.equals(lock.globalTransactionKey)) {
+                ds.delete(tx, key);
+                tx.commit();
+            }
+            return;
+        } finally {
+            if (tx.isActive()) {
+                tx.rollback();
             }
         }
     }
@@ -557,31 +551,20 @@ public class Lock {
      *             if locking the entity failed
      */
     public void lock() throws ConcurrentModificationException {
-        DatastoreTimeoutException dte = null;
-        for (int i = 0; i < DatastoreUtil.MAX_RETRY; i++) {
-            Transaction tx = ds.beginTransaction();
-            try {
-                Lock other = getOrNull(ds, apiConfig, tx, key);
-                if (other != null) {
-                    verify(other);
-                }
-                DatastoreUtil.put(ds, apiConfig, tx, toEntity());
-                tx.commit();
-                return;
-            } catch (DatastoreTimeoutException e) {
-                Lock lock = getOrNull(ds, apiConfig, null, key);
-                if (lock != null
-                    && lock.globalTransactionKey.equals(globalTransactionKey)) {
-                    return;
-                }
-                dte = e;
-            } finally {
-                if (tx.isActive()) {
-                    tx.rollback();
-                }
+        Transaction tx = ds.beginTransaction();
+        try {
+            Lock other = getOrNull(ds, apiConfig, tx, key);
+            if (other != null) {
+                verify(other);
+            }
+            DatastoreUtil.put(ds, apiConfig, tx, toEntity());
+            tx.commit();
+            return;
+        } finally {
+            if (tx.isActive()) {
+                tx.rollback();
             }
         }
-        throw dte;
     }
 
     /**
@@ -597,41 +580,26 @@ public class Lock {
      */
     public Map<Key, Entity> lockAndGetAsMap(Collection<Key> targetKeys)
             throws NullPointerException, ConcurrentModificationException {
-        if (targetKeys == null) {
-            throw new NullPointerException(
-                "The targetKeys parameter must not be null.");
-        }
-        DatastoreTimeoutException dte = null;
-        for (int i = 0; i < DatastoreUtil.MAX_RETRY; i++) {
-            Map<Key, Entity> map = null;
-            Transaction tx = ds.beginTransaction();
-            try {
-                List<Key> keyList = new ArrayList<Key>(targetKeys.size() + 1);
-                keyList.addAll(targetKeys);
-                keyList.add(key);
-                map = DatastoreUtil.getAsMap(ds, tx, keyList);
-                Entity otherEntity = map.remove(key);
-                if (otherEntity != null) {
-                    Lock other = toLock(ds, apiConfig, otherEntity);
-                    verify(other);
-                }
-                DatastoreUtil.put(ds, apiConfig, tx, toEntity());
-                tx.commit();
-                return map;
-            } catch (DatastoreTimeoutException e) {
-                Lock lock = getOrNull(ds, apiConfig, null, key);
-                if (lock != null
-                    && lock.globalTransactionKey.equals(globalTransactionKey)) {
-                    return map;
-                }
-                dte = e;
-            } finally {
-                if (tx.isActive()) {
-                    tx.rollback();
-                }
+        Map<Key, Entity> map = null;
+        Transaction tx = ds.beginTransaction();
+        try {
+            List<Key> keyList = new ArrayList<Key>(targetKeys.size() + 1);
+            keyList.addAll(targetKeys);
+            keyList.add(key);
+            map = DatastoreUtil.getAsMap(ds, tx, keyList);
+            Entity otherEntity = map.remove(key);
+            if (otherEntity != null) {
+                Lock other = toLock(ds, apiConfig, otherEntity);
+                verify(other);
+            }
+            DatastoreUtil.put(ds, apiConfig, tx, toEntity());
+            tx.commit();
+            return map;
+        } finally {
+            if (tx.isActive()) {
+                tx.rollback();
             }
         }
-        throw dte;
     }
 
     /**
@@ -656,42 +624,35 @@ public class Lock {
         if (timestamp <= other.getTimestamp() + TIMEOUT) {
             throw createConcurrentModificationException(rootKey);
         }
-        DatastoreTimeoutException dte = null;
-        for (int i = 0; i < DatastoreUtil.MAX_RETRY; i++) {
-            Transaction tx = ds.beginTransaction();
-            try {
-                GlobalTransaction gtx =
-                    GlobalTransaction.getOrNull(
-                        ds,
-                        apiConfig,
-                        tx,
-                        other.globalTransactionKey);
-                if (gtx != null) {
-                    if (gtx.valid) {
-                        throw createConcurrentModificationException(rootKey);
-                    }
-                    return;
+        Transaction tx = ds.beginTransaction();
+        try {
+            GlobalTransaction gtx =
+                GlobalTransaction.getOrNull(
+                    ds,
+                    apiConfig,
+                    tx,
+                    other.globalTransactionKey);
+            if (gtx != null) {
+                if (gtx.valid) {
+                    throw createConcurrentModificationException(rootKey);
                 }
-                gtx =
-                    new GlobalTransaction(
-                        ds,
-                        apiConfig,
-                        other.globalTransactionKey,
-                        false);
-                GlobalTransaction.put(ds, apiConfig, tx, gtx);
-                tx.commit();
                 return;
-            } catch (DatastoreTimeoutException e) {
-                dte = e;
-            } catch (ConcurrentModificationException e) {
-                throw createConcurrentModificationException(rootKey, e);
-            } finally {
-                if (tx.isActive()) {
-                    tx.rollback();
-                }
+            }
+            gtx =
+                new GlobalTransaction(
+                    ds,
+                    apiConfig,
+                    other.globalTransactionKey,
+                    false);
+            GlobalTransaction.put(ds, apiConfig, tx, gtx);
+            tx.commit();
+        } catch (ConcurrentModificationException e) {
+            throw createConcurrentModificationException(rootKey, e);
+        } finally {
+            if (tx.isActive()) {
+                tx.rollback();
             }
         }
-        throw dte;
     }
 
     /**
