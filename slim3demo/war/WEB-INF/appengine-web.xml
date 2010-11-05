@@ -15,6 +15,9 @@
     
 	<system-properties>
 	    <property name="slim3.hotReloading" value="true"/>
+	    <!--
+	    <property name="slim3.datastoreDeadline" value="8"/>
+	    -->
 	    <property name="java.util.logging.config.file" value="WEB-INF/classes/logging.properties"/>
 	</system-properties>
 	<sessions-enabled>true</sessions-enabled>
