@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/org.slim3.eclipse_1.0.5.201011071250.jar" id="org.slim3.eclipse" version="1.0.5.201011071250">
+   <description name="Slim3 Update Site" url="https://slim3.googlecode.com/svn/trunk/slim3-eclipse/org.slim3.eclipse.updatesite/">
+      Slim3 Eclipse Plugin Update Sit
+   </description>
+   <feature url="features/org.slim3.eclipse_1.0.5.201011071450.jar" id="org.slim3.eclipse" version="1.0.5.201011071450">
       <category name="new_category_1"/>
    </feature>
    <category-def name="new_category_1" label="Slim3"/>
