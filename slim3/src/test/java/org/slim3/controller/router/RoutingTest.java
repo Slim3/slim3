@@ -18,6 +18,8 @@ package org.slim3.controller.router;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+import java.net.URLEncoder;
+
 import org.junit.Test;
 import org.slim3.controller.router.Routing.PlaceHolderFragment;
 import org.slim3.controller.router.Routing.StringFragment;
@@ -127,6 +129,38 @@ public class RoutingTest {
     public void setToWhenLastEndCurlyBracketIsMissing() throws Exception {
         new Routing("/abc/{xxx}/{yyy}", "/abc?xxx={xxx}&yyy={yyy");
     }
+    
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void catchAllSetFromNameIsNotFound() throws Exception {
+        new Routing("/abc/", "/abc&path={path}");
+    }
+    
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void catchAllSetFromMultiple() throws Exception {
+        new Routing("/abc/*path1/*path1", "/abc");
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void catchAllSetFromWrongNameSyntax() throws Exception {
+        new Routing("/abc/*path*xyz", "/abc&path={path*xyz}");
+    }
+    
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void catchAllSetFromFollowedByCurlyBraces() throws Exception {
+        new Routing("/abc/*path/{xxx}", "/abc?path={paths}&xxx={xxx}");
+    }
 
     /**
      * @throws Exception
@@ -172,5 +206,33 @@ public class RoutingTest {
         Routing routing = new Routing("/abc/", "/xyz/");
         assertThat(routing.route(request, "/abc/"), is("/xyz/"));
         assertThat(routing.route(request, "/abc/xxx"), is(nullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void routeCatchAll() throws Exception {
+        Routing routing = new Routing("/abc/*path", "/abc?path={path}");
+        assertThat(routing.route(request, "/abc/part1/part2/partN"), is("/abc?path="+URLEncoder.encode("part1/part2/partN", "UTF-8")));
+    }
+    
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void routeCatchAllNoMatchPath() throws Exception {
+        Routing routing = new Routing("/abc/*path", "/abc?path={path}");
+        assertThat(routing.route(request, "/abc"), is(nullValue()));
+        assertThat(routing.route(request, "/abc/"), is(nullValue()));
+    }
+    
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void routePathSegmentPlaceHolderAndCatchAll() throws Exception {
+        Routing routing = new Routing("/abc/{xxx}/*path", "/abc?xxx={xxx}&path={path}");
+        assertThat(routing.route(request, "/abc/123/part1/part2/partN"), is("/abc?xxx=123&path="+URLEncoder.encode("part1/part2/partN", "UTF-8")));
     }
 }

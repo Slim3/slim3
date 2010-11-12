@@ -95,10 +95,15 @@ public class Routing {
         char[] chars = from.toCharArray();
         int length = chars.length;
         int index = -1;
+        boolean catchAll = false;
         for (int i = 0; i < length; i++) {
             if (chars[i] == '{') {
                 if (index < 0) {
                     index = i;
+                } else if (catchAll) {
+                    throw new IllegalArgumentException("The from path("
+                            + from
+                            + ") is invalid, because of \"{\" after \"*\".");
                 } else {
                     throw new IllegalArgumentException("The from path("
                         + from
@@ -109,16 +114,37 @@ public class Routing {
                     sb.append("([^/]+)");
                     placeHolderList.add(from.substring(index + 1, i));
                     index = -1;
+                } else if (catchAll) {
+                    throw new IllegalArgumentException("The from path("
+                            + from
+                            + ") is invalid, because of \"}\" after \"*\".");
                 } else {
                     throw new IllegalArgumentException("The from path("
                         + from
                         + ") is invalid, because \"{\" is missing.");
                 }
+            } else if (chars[i] == '*') {
+                if (index < 0) {
+                    index = i;
+                    catchAll = true;
+                } else if (catchAll) {
+                    throw new IllegalArgumentException("The from path("
+                            + from
+                            + ") is invalid, because of duplicate \"*\".");
+                } else {
+                    throw new IllegalArgumentException("The from path("
+                            + from
+                            + ") is invalid, because \"}\" is missing.");
+                }
             } else if (index < 0) {
                 sb.append(chars[i]);
             }
         }
-        if (index >= 0) {
+        if (catchAll) {
+            sb.append("([^*]+)");
+            placeHolderList.add(from.substring(index + 1));
+            index = -1;
+        } else if (index >= 0) {
             throw new IllegalArgumentException("The from path("
                 + from
                 + ") is invalid, because \"}\" is missing.");
