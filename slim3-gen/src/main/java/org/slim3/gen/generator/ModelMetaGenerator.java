@@ -15,11 +15,40 @@
  */
 package org.slim3.gen.generator;
 
-import static org.slim3.gen.ClassConstants.*;
+import static org.slim3.gen.ClassConstants.AttributeListener;
+import static org.slim3.gen.ClassConstants.Blob;
+import static org.slim3.gen.ClassConstants.CollectionAttributeMeta;
+import static org.slim3.gen.ClassConstants.CollectionUnindexedAttributeMeta;
+import static org.slim3.gen.ClassConstants.CoreAttributeMeta;
+import static org.slim3.gen.ClassConstants.CoreUnindexedAttributeMeta;
+import static org.slim3.gen.ClassConstants.DatastoreService;
+import static org.slim3.gen.ClassConstants.Double;
+import static org.slim3.gen.ClassConstants.Entity;
+import static org.slim3.gen.ClassConstants.Float;
+import static org.slim3.gen.ClassConstants.HashSet;
+import static org.slim3.gen.ClassConstants.Integer;
+import static org.slim3.gen.ClassConstants.Key;
+import static org.slim3.gen.ClassConstants.LinkedHashSet;
+import static org.slim3.gen.ClassConstants.LinkedList;
+import static org.slim3.gen.ClassConstants.Long;
+import static org.slim3.gen.ClassConstants.ModelRefAttributeMeta;
+import static org.slim3.gen.ClassConstants.Object;
+import static org.slim3.gen.ClassConstants.Short;
+import static org.slim3.gen.ClassConstants.ShortBlob;
+import static org.slim3.gen.ClassConstants.String;
+import static org.slim3.gen.ClassConstants.StringAttributeMeta;
+import static org.slim3.gen.ClassConstants.StringCollectionAttributeMeta;
+import static org.slim3.gen.ClassConstants.StringCollectionUnindexedAttributeMeta;
+import static org.slim3.gen.ClassConstants.StringUnindexedAttributeMeta;
+import static org.slim3.gen.ClassConstants.Text;
+import static org.slim3.gen.ClassConstants.TreeSet;
+import static org.slim3.gen.ClassConstants.UnindexedAttributeMeta;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import org.slim3.gen.ClassConstants;
 import org.slim3.gen.ProductInfo;
@@ -29,6 +58,7 @@ import org.slim3.gen.datastore.CollectionType;
 import org.slim3.gen.datastore.CorePrimitiveType;
 import org.slim3.gen.datastore.CoreReferenceType;
 import org.slim3.gen.datastore.DataType;
+import org.slim3.gen.datastore.DateType;
 import org.slim3.gen.datastore.EnumType;
 import org.slim3.gen.datastore.FloatType;
 import org.slim3.gen.datastore.IntegerType;
@@ -139,6 +169,7 @@ public class ModelMetaGenerator implements Generator {
         printGetSchemaVersionName(printer);
         printGetClassHierarchyListName(printer);
         printIsCipherProperty(printer);
+        printModelToJsonMethod(printer);
         printer.unindent();
         printer.print("}");
     }
@@ -519,6 +550,17 @@ public class ModelMetaGenerator implements Generator {
         AssignKeyToModelRefIfNecessaryMethodGenerator generator =
             new AssignKeyToModelRefIfNecessaryMethodGenerator(printer);
         generator.generate();
+    }
+
+    /**
+     * Generates the {@code modelToEntity} method.
+     * 
+     * @param printer
+     *            the printer
+     */
+    protected void printModelToJsonMethod(
+            final Printer printer) {
+        new ModelToJsonMethodGenerator(printer).generate();
     }
 
     /**
@@ -1832,4 +1874,236 @@ public class ModelMetaGenerator implements Generator {
             return null;
         }
     }
+
+    /**
+     * @author Takao Nakaguchi
+     */
+    protected class ModelToJsonMethodGenerator extends
+            SimpleDataTypeVisitor<Void, AttributeMetaDesc, RuntimeException> {
+        /**
+         * Creates a new {@link ModelToJsonMethodGenerator}.
+         * @param printer the printer
+         */
+        public ModelToJsonMethodGenerator(Printer printer) {
+            this.printer = printer;
+        }
+
+        /**
+         * Generates the modelToJson method.
+         */
+        public void generate() {
+            printer.println("@Override");
+            printer.println(
+                "public String modelToJson(%s model) {",
+                Object);
+            printer.indent();
+            if (modelMetaDesc.isAbstrct()) {
+                printer.println(
+                    "throw new %1$s(\"The class(%2$s) is abstract.\");",
+                    UnsupportedOperationException.class.getName(),
+                    modelMetaDesc.getModelClassName());
+            } else {
+                printer.println("%1$s m = (%1$s) model;", modelMetaDesc.getModelClassName());
+                printer.println("StringBuilder b = new StringBuilder(\"{\");");
+                for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
+                    DataType dataType = attr.getDataType();
+                    dataType.accept(this, attr);
+                }
+                printer.println("b.append(\"}\");");
+                printer.println("return b.toString();");
+            }
+            printer.unindent();
+            printer.println("}");
+            printer.println();
+        }
+
+        @Override
+        public Void visitKeyType(KeyType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            printer.println("if(m.%s() != null){", p.getReadMethodName());
+            printer.indent();
+            printCommaIfNeeded();
+            printer.println(
+                    "b.append(\"\\\"%1$s\\\":\\\"\").append(" +
+                    "com.google.appengine.api.datastore.KeyFactory.keyToString(m.%2$s())" +
+                    ").append(\"\\\"\");",
+                    p.getAttributeName(),
+                    p.getReadMethodName());
+            printer.unindent();
+            printer.println("}");
+            return null;
+        }
+
+        @Override
+        public Void visitCorePrimitiveType(CorePrimitiveType type,
+                AttributeMetaDesc p) throws RuntimeException {
+            printCommaIfNeeded();
+            printer.println(
+                    "b.append(\"\\\"%1$s\\\":\").append(m.%2$s());",
+                    p.getName(),
+                    p.getReadMethodName());
+            return null;
+        }
+
+        @Override
+        public Void visitCoreReferenceType(CoreReferenceType type,
+                AttributeMetaDesc p) throws RuntimeException {
+            if(toStringTypes.contains(type.getClassName())){
+                printValue(p, "toString");
+            }
+            return null;
+        }
+
+        @Override
+        public Void visitDateType(DateType type, AttributeMetaDesc p)
+        throws RuntimeException {
+            printValue(p, "getTime");
+            return null;
+        }
+
+        @Override
+        public Void visitEnumType(EnumType type, AttributeMetaDesc p)
+        throws RuntimeException {
+            printString(p, "name");
+            return null;
+        }
+
+        @Override
+        public Void visitStringType(StringType type, AttributeMetaDesc p)
+        throws RuntimeException {
+            printer.println("if(m.%s() != null){", p.getReadMethodName());
+            printer.indent();
+            String getMethodCall = "m.%2$s()";
+            if(p.isCipher()){
+                getMethodCall = "encrypt(" + getMethodCall + ")";
+            }
+            printCommaIfNeeded();
+            printer.println(
+                    "b.append(\"\\\"%1$s\\\":\\\"\").append(" + getMethodCall + ").append(\"\\\"\");",
+                    p.getName(),
+                    p.getReadMethodName());
+            printer.unindent();
+            printer.println("}");
+            return null;
+        }
+
+        @Override
+        public Void visitCollectionType(CollectionType type, AttributeMetaDesc p)
+        throws RuntimeException {
+            type.getElementType().accept(new SimpleDataTypeVisitor<Void, AttributeMetaDesc, RuntimeException>(){
+                @Override
+                public Void visitCoreReferenceType(CoreReferenceType type,
+                        AttributeMetaDesc p) throws RuntimeException {
+                    if(!supportedElementTypes.contains(type.getClassName())) return null;
+                    printHeader(type, p);
+                    printer.println("b.append(v);");
+                    printFooter();
+                    return null;
+                }
+                @Override
+                public Void visitStringType(StringType type, AttributeMetaDesc p)
+                        throws RuntimeException {
+                    printHeader(type, p);
+                    printer.println("b.append(\"\\\"\").append(v).append(\"\\\"\");");
+                    printFooter();
+                    return null;
+                }
+                @Override
+                public Void visitDateType(DateType type, AttributeMetaDesc p)
+                        throws RuntimeException {
+                    printHeader(type, p);
+                    printer.println("b.append(v.getTime());");
+                    printFooter();
+                    return null;
+                }
+                @Override
+                public Void visitEnumType(EnumType type, AttributeMetaDesc p)
+                        throws RuntimeException {
+                    printHeader(type, p);
+                    printer.println("b.append(\"\\\"\").append(v.name()).append(\"\\\"\");");
+                    printFooter();
+                    return null;
+                }
+                private void printHeader(DataType type, AttributeMetaDesc p){
+                    printer.println("if(m.%s() != null){", p.getReadMethodName());
+                    printer.indent();
+                    printCommaIfNeeded();
+                    printer.println(
+                            "b.append(\"\\\"%1$s\\\":\");",
+                            p.getName()
+                            );
+                    printer.println("b.append(\"[\");");
+                    printer.println("boolean first = true;");
+                    printer.println("for(%s v : m.%s()){"
+                            , type.getClassName()
+                            , p.getReadMethodName());
+                    printer.indent();
+                    printer.println("if(first) first = false;");
+                    printer.println("else b.append(\",\");");
+                }
+                private void printFooter(){
+                    printer.unindent();
+                    printer.println("}");
+                    printer.println("b.append(\"]\");");
+                    printer.unindent();
+                    printer.println("}");
+                }
+            }, p);
+            return null;
+        }
+
+        private void printCommaIfNeeded(){
+            printer.println("if(b.length() > 1) b.append(\",\");");
+        }
+
+        private void printValue(AttributeMetaDesc p, String methodName){
+            printer.println("if(m.%s() != null){", p.getReadMethodName());
+            printer.indent();
+            printCommaIfNeeded();
+            printer.println(
+                    "b.append(\"\\\"%1$s\\\":\").append(m.%2$s().%3$s());",
+                    p.getName(),
+                    p.getReadMethodName(),
+                    methodName);
+            printer.unindent();
+            printer.println("}");
+        }
+
+        private void printString(AttributeMetaDesc p, String methodName){
+            printer.println("if(m.%s() != null){", p.getReadMethodName());
+            printer.indent();
+            printCommaIfNeeded();
+            printer.println(
+                    "b.append(\"\\\"%1$s\\\":\\\"\").append(m.%2$s().%3$s()).append(\"\\\"\");",
+                    p.getName(),
+                    p.getReadMethodName(),
+                    methodName);
+            printer.unindent();
+            printer.println("}");
+        }
+
+        private final Printer printer;
+    }
+
+    @SuppressWarnings("serial")
+    private static final Set<String> toStringTypes = new HashSet<String>(){{
+        add(Boolean.class.getName());
+        add(Short.class.getName());
+        add(Integer.class.getName());
+        add(Long.class.getName());
+        add(Float.class.getName());
+        add(Double.class.getName());
+    }};
+    @SuppressWarnings("serial")
+    private static final Set<String> supportedElementTypes = new HashSet<String>(){{
+        add(Boolean.class.getName());
+        add(Short.class.getName());
+        add(Integer.class.getName());
+        add(Long.class.getName());
+        add(Float.class.getName());
+        add(Double.class.getName());
+        add(String.class.getName());
+        add(Date.class.getName());
+        add(Enum.class.getName());
+    }};
 }
