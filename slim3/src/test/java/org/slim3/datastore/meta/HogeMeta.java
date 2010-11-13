@@ -604,4 +604,9 @@ public class HogeMeta extends ModelMeta<Hoge> {
             return true;
         return false;
     }
+
+    @Override
+    public String modelToJson(Object model) {
+        return null;
+    }
 }

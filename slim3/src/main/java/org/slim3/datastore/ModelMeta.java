@@ -177,6 +177,16 @@ public abstract class ModelMeta<M> {
     public abstract Entity modelToEntity(Object model);
 
     /**
+     * Converts the model to JSON string.
+     * 
+     * @param model
+     *            the model
+     *
+     * @return JSON string
+     */
+    public abstract String modelToJson(Object model);
+
+    /**
      * Returns version property value of the model.
      * 
      * @param model

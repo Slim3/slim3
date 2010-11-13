@@ -79,6 +79,11 @@ public class SortableUnindexedAttributeMetaTest {
         protected void assignKeyToModelRefIfNecessary(DatastoreService ds,
                 Object model) throws NullPointerException {
         }
+
+        @Override
+        public String modelToJson(Object model) {
+            return null;
+        }
     };
 
     /**

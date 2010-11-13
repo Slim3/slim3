@@ -139,4 +139,9 @@ public final class CccMeta extends
     public String getSchemaVersionName() {
         return "slim3.schemaVersion";
     }
+
+    @Override
+    public String modelToJson(Object model) {
+        return null;
+    }
 }

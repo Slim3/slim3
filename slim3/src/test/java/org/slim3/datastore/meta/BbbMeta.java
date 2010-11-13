@@ -196,4 +196,9 @@ public final class BbbMeta extends
     public String getSchemaVersionName() {
         return "slim3.schemaVersion";
     }
+
+    @Override
+    public String modelToJson(Object model) {
+        return null;
+    }
 }

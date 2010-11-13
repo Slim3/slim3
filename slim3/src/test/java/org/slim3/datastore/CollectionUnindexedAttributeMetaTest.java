@@ -82,6 +82,11 @@ public class CollectionUnindexedAttributeMetaTest {
         protected void assignKeyToModelRefIfNecessary(DatastoreService ds,
                 Object model) throws NullPointerException {
         }
+
+        @Override
+        public String modelToJson(Object model) {
+            return null;
+        }
     };
 
     private CollectionUnindexedAttributeMeta<Hoge, List<Integer>, Integer> myIntegerList =

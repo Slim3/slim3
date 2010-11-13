@@ -81,6 +81,11 @@ public class CoreUnindexedAttributeMetaTest {
         protected void assignKeyToModelRefIfNecessary(DatastoreService ds,
                 Object model) throws NullPointerException {
         }
+
+        @Override
+        public String modelToJson(Object model) {
+            return null;
+        }
     };
 
     private CoreUnindexedAttributeMeta<Hoge, String> myString =
