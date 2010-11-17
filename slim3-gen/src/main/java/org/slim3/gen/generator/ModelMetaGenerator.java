@@ -46,8 +46,10 @@ import static org.slim3.gen.ClassConstants.UnindexedAttributeMeta;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.slim3.gen.ClassConstants;
@@ -61,6 +63,8 @@ import org.slim3.gen.datastore.DataType;
 import org.slim3.gen.datastore.DateType;
 import org.slim3.gen.datastore.EnumType;
 import org.slim3.gen.datastore.FloatType;
+import org.slim3.gen.datastore.GeoPtType;
+import org.slim3.gen.datastore.IMHandleType;
 import org.slim3.gen.datastore.IntegerType;
 import org.slim3.gen.datastore.KeyType;
 import org.slim3.gen.datastore.LinkedHashSetType;
@@ -76,6 +80,7 @@ import org.slim3.gen.datastore.PrimitiveIntType;
 import org.slim3.gen.datastore.PrimitiveLongType;
 import org.slim3.gen.datastore.PrimitiveShortType;
 import org.slim3.gen.datastore.SetType;
+import org.slim3.gen.datastore.ShortBlobType;
 import org.slim3.gen.datastore.ShortType;
 import org.slim3.gen.datastore.SimpleDataTypeVisitor;
 import org.slim3.gen.datastore.SortedSetType;
@@ -1920,24 +1925,21 @@ public class ModelMetaGenerator implements Generator {
         @Override
         public Void visitKeyType(KeyType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            printer.println("if(m.%s() != null){", p.getReadMethodName());
-            printer.indent();
-            printCommaIfNeeded();
+            printHeader(p);
             printer.println(
                     "b.append(\"\\\"%1$s\\\":\\\"\").append(" +
                     "com.google.appengine.api.datastore.KeyFactory.keyToString(m.%2$s())" +
                     ").append(\"\\\"\");",
                     p.getAttributeName(),
                     p.getReadMethodName());
-            printer.unindent();
-            printer.println("}");
+            printFooter();
             return null;
         }
 
         @Override
         public Void visitCorePrimitiveType(CorePrimitiveType type,
                 AttributeMetaDesc p) throws RuntimeException {
-            printCommaIfNeeded();
+            printer.println("if(b.length() > 1) b.append(\",\");");
             printer.println(
                     "b.append(\"\\\"%1$s\\\":\").append(m.%2$s());",
                     p.getName(),
@@ -1949,41 +1951,81 @@ public class ModelMetaGenerator implements Generator {
         public Void visitCoreReferenceType(CoreReferenceType type,
                 AttributeMetaDesc p) throws RuntimeException {
             if(toStringTypes.contains(type.getClassName())){
-                printValue(p, "toString");
+                printAsValue(p);
+                return null;
             }
-            return null;
-        }
-
-        @Override
-        public Void visitDateType(DateType type, AttributeMetaDesc p)
-        throws RuntimeException {
-            printValue(p, "getTime");
+            String m = toStringMethods.get(type.getClassName());
+            if(m != null){
+                printAsValue(p, m);
+                return null;
+            }
+            m = toStringLiteralMethods.get(type.getClassName());
+            if(m != null){
+                printAsString(p, m);
+                return null;
+            }
             return null;
         }
 
         @Override
         public Void visitEnumType(EnumType type, AttributeMetaDesc p)
         throws RuntimeException {
-            printString(p, "name");
+            printAsString(p, "name");
+            return null;
+        }
+
+        @Override
+        public Void visitGeoPtType(GeoPtType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            printHeader(p);
+            printer.println(
+                "b.append(\"\\\"%1$s\\\":{\");", p.getName()
+                );
+            printer.println(
+                "b.append(\"\\\"latitude\\\":\").append(m.%s().getLatitude()).append(\",\");"
+                , p.getReadMethodName());
+            printer.println(
+                "b.append(\"\\\"longitude\\\":\").append(m.%s().getLongitude()).append(\"}\");"
+                , p.getReadMethodName());
+            printFooter();
+            return null;
+        }
+
+        @Override
+        public Void visitIMHandleType(IMHandleType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            printHeader(p);
+            printer.println(
+                "b.append(\"\\\"%1$s\\\":{\");", p.getName()
+                );
+            printer.println(
+                "b.append(\"\\\"address\\\":\\\"\").append(m.%s().getAddress()).append(\"\\\",\");"
+                , p.getReadMethodName());
+            printer.println(
+                "b.append(\"\\\"protocol\\\":\\\"\").append(m.%s().getProtocol()).append(\"\\\"}\");"
+                , p.getReadMethodName());
+            printFooter();
+            return null;
+        }
+
+        @Override
+        public Void visitShortBlobType(ShortBlobType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            printAsBlob(p);
+            return super.visitShortBlobType(type, p);
+        }
+
+        @Override
+        public Void visitBlobType(BlobType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            printAsBlob(p);
             return null;
         }
 
         @Override
         public Void visitStringType(StringType type, AttributeMetaDesc p)
         throws RuntimeException {
-            printer.println("if(m.%s() != null){", p.getReadMethodName());
-            printer.indent();
-            String getMethodCall = "m.%2$s()";
-            if(p.isCipher()){
-                getMethodCall = "encrypt(" + getMethodCall + ")";
-            }
-            printCommaIfNeeded();
-            printer.println(
-                    "b.append(\"\\\"%1$s\\\":\\\"\").append(" + getMethodCall + ").append(\"\\\"\");",
-                    p.getName(),
-                    p.getReadMethodName());
-            printer.unindent();
-            printer.println("}");
+            printAsString(p);
             return null;
         }
 
@@ -1994,10 +2036,26 @@ public class ModelMetaGenerator implements Generator {
                 @Override
                 public Void visitCoreReferenceType(CoreReferenceType type,
                         AttributeMetaDesc p) throws RuntimeException {
-                    if(!supportedElementTypes.contains(type.getClassName())) return null;
-                    printHeader(type, p);
-                    printer.println("b.append(v);");
-                    printFooter();
+                    if(toStringTypes.contains(type.getClassName())){
+                        printHeader(type, p);
+                        printer.println("b.append(v);");
+                        printFooter();
+                        return null;
+                    }
+                    String m = toStringMethods.get(type.getClassName());
+                    if(m != null){
+                        printHeader(type, p);
+                        printer.println("b.append(v.%s());", m);
+                        printFooter();
+                        return null;
+                    }
+                    m = toStringLiteralMethods.get(type.getClassName());
+                    if(m != null){
+                        printHeader(type, p);
+                        printer.println("b.append(\"\\\"\").append(v.%s()).append(\"\\\"\");", m);
+                        printFooter();
+                        return null;
+                    }
                     return null;
                 }
                 @Override
@@ -2024,10 +2082,56 @@ public class ModelMetaGenerator implements Generator {
                     printFooter();
                     return null;
                 }
+                @Override
+                public Void visitBlobType(BlobType type, AttributeMetaDesc p)
+                        throws RuntimeException {
+                    printHeader(type, p);
+                    printer.println(
+                        "b.append(\"\\\"\").append(" +
+                        "com.google.appengine.repackaged.com.google.common.util.Base64.encode(v.getBytes())" +
+                        ").append(\"\\\"\");"
+                        );
+                    printFooter();
+                    return null;
+                }
+                @Override
+                public Void visitGeoPtType(GeoPtType type, AttributeMetaDesc p)
+                        throws RuntimeException {
+                    printHeader(type, p);
+                    printer.println("b.append(\"{\\\"latitude\\\":\").append(v.getLatitude()).append(\",\");");
+                    printer.println("b.append(\"\\\"longitude\\\":\").append(v.getLongitude()).append(\"}\");");
+                    printFooter();
+                    return null;
+                }
+                @Override
+                public Void visitIMHandleType(IMHandleType type,
+                        AttributeMetaDesc p) throws RuntimeException {
+                    printHeader(type, p);
+                    printer.println(
+                        "b.append(\"{\\\"address\\\":\\\"\").append(v.getAddress()).append(\"\\\",\");"
+                        );
+                    printer.println(
+                        "b.append(\"\\\"protocol\\\":\\\"\").append(v.getProtocol()).append(\"\\\"}\");"
+                        );
+                    printFooter();
+                    return null;
+                }
+                @Override
+                public Void visitShortBlobType(ShortBlobType type,
+                        AttributeMetaDesc p) throws RuntimeException {
+                    printHeader(type, p);
+                    printer.println(
+                        "b.append(\"\\\"\").append(" +
+                        "com.google.appengine.repackaged.com.google.common.util.Base64.encode(v.getBytes())" +
+                        ").append(\"\\\"\");"
+                        );
+                    printFooter();
+                    return null;
+                }
                 private void printHeader(DataType type, AttributeMetaDesc p){
                     printer.println("if(m.%s() != null){", p.getReadMethodName());
                     printer.indent();
-                    printCommaIfNeeded();
+                    printer.println("if(b.length() > 1) b.append(\",\");");
                     printer.println(
                             "b.append(\"\\\"%1$s\\\":\");",
                             p.getName()
@@ -2052,34 +2156,61 @@ public class ModelMetaGenerator implements Generator {
             return null;
         }
 
-        private void printCommaIfNeeded(){
+        private void printHeader(AttributeMetaDesc p){
+            printer.println("if(m.%s() != null){", p.getReadMethodName());
+            printer.indent();
             printer.println("if(b.length() > 1) b.append(\",\");");
         }
 
-        private void printValue(AttributeMetaDesc p, String methodName){
-            printer.println("if(m.%s() != null){", p.getReadMethodName());
-            printer.indent();
-            printCommaIfNeeded();
-            printer.println(
-                    "b.append(\"\\\"%1$s\\\":\").append(m.%2$s().%3$s());",
-                    p.getName(),
-                    p.getReadMethodName(),
-                    methodName);
+        private void printFooter(){
             printer.unindent();
             printer.println("}");
         }
 
-        private void printString(AttributeMetaDesc p, String methodName){
-            printer.println("if(m.%s() != null){", p.getReadMethodName());
-            printer.indent();
-            printCommaIfNeeded();
+        private void printAsBlob(AttributeMetaDesc p){
+            printHeader(p);
             printer.println(
-                    "b.append(\"\\\"%1$s\\\":\\\"\").append(m.%2$s().%3$s()).append(\"\\\"\");",
+                    "b.append(\"\\\"%1$s\\\":\\\"\").append(" +
+                    "com.google.appengine.repackaged.com.google.common.util.Base64.encode(m.%2$s().getBytes())" +
+                    ").append(\"\\\"\");",
+                    p.getAttributeName(),
+                    p.getReadMethodName());
+            printFooter();
+        }
+
+        private void printAsValue(AttributeMetaDesc p){
+            printAsValue(p, null);
+        }
+
+        private void printAsValue(AttributeMetaDesc p, String methodName){
+            String getMethodCall = methodName != null ?
+                java.lang.String.format("m.%s().%s()", p.getReadMethodName(), methodName) :
+                java.lang.String.format("m.%s()", p.getReadMethodName());
+            printHeader(p);
+            printer.println(
+                    "b.append(\"\\\"%1$s\\\":\").append(%2$s);",
                     p.getName(),
-                    p.getReadMethodName(),
-                    methodName);
-            printer.unindent();
-            printer.println("}");
+                    getMethodCall);
+            printFooter();
+        }
+
+        private void printAsString(AttributeMetaDesc p){
+            printAsString(p, null);
+        }
+
+        private void printAsString(AttributeMetaDesc p, String methodName){
+            String getMethodCall = methodName != null ?
+                java.lang.String.format("m.%s().%s()", p.getReadMethodName(), methodName) :
+                java.lang.String.format("m.%s()", p.getReadMethodName());
+            if(p.isCipher()){
+                getMethodCall = "encrypt(" + getMethodCall + ")";
+            }
+            printHeader(p);
+            printer.println(
+                    "b.append(\"\\\"%s\\\":\\\"\").append(%s).append(\"\\\"\");",
+                    p.getName(),
+                    getMethodCall);
+            printFooter();
         }
 
         private final Printer printer;
@@ -2095,15 +2226,19 @@ public class ModelMetaGenerator implements Generator {
         add(Double.class.getName());
     }};
     @SuppressWarnings("serial")
-    private static final Set<String> supportedElementTypes = new HashSet<String>(){{
-        add(Boolean.class.getName());
-        add(Short.class.getName());
-        add(Integer.class.getName());
-        add(Long.class.getName());
-        add(Float.class.getName());
-        add(Double.class.getName());
-        add(String.class.getName());
-        add(Date.class.getName());
-        add(Enum.class.getName());
+    private static final Map<String, String> toStringMethods = new HashMap<String, String>(){{
+        put(Date.class.getName(), "getTime");
+        put("com.google.appengine.api.datastore.Rating", "getRating");
+    }};
+    @SuppressWarnings("serial")
+    private static final Map<String, String> toStringLiteralMethods = new HashMap<String, String>(){{
+        put(Date.class.getName(), "getTime");
+        put("com.google.appengine.api.blobstore.BlobKey", "getKeyString");
+        put("com.google.appengine.api.datastore.Category", "getCategory");
+        put("com.google.appengine.api.datastore.Email", "getEmail");
+        put("com.google.appengine.api.datastore.Link", "getValue");
+        put("com.google.appengine.api.datastore.PhoneNumber", "getNumber");
+        put("com.google.appengine.api.datastore.PostalAddress", "getAddress");
+        put("com.google.appengine.api.datastore.Text", "getValue");
     }};
 }
