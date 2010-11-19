@@ -17,22 +17,31 @@ package org.slim3.gen.generator;
 
 import static org.slim3.gen.ClassConstants.AttributeListener;
 import static org.slim3.gen.ClassConstants.Blob;
+import static org.slim3.gen.ClassConstants.BlobKey;
+import static org.slim3.gen.ClassConstants.Boolean;
+import static org.slim3.gen.ClassConstants.Category;
 import static org.slim3.gen.ClassConstants.CollectionAttributeMeta;
 import static org.slim3.gen.ClassConstants.CollectionUnindexedAttributeMeta;
 import static org.slim3.gen.ClassConstants.CoreAttributeMeta;
 import static org.slim3.gen.ClassConstants.CoreUnindexedAttributeMeta;
 import static org.slim3.gen.ClassConstants.DatastoreService;
+import static org.slim3.gen.ClassConstants.Date;
 import static org.slim3.gen.ClassConstants.Double;
+import static org.slim3.gen.ClassConstants.Email;
 import static org.slim3.gen.ClassConstants.Entity;
 import static org.slim3.gen.ClassConstants.Float;
 import static org.slim3.gen.ClassConstants.HashSet;
 import static org.slim3.gen.ClassConstants.Integer;
 import static org.slim3.gen.ClassConstants.Key;
+import static org.slim3.gen.ClassConstants.Link;
 import static org.slim3.gen.ClassConstants.LinkedHashSet;
 import static org.slim3.gen.ClassConstants.LinkedList;
 import static org.slim3.gen.ClassConstants.Long;
 import static org.slim3.gen.ClassConstants.ModelRefAttributeMeta;
 import static org.slim3.gen.ClassConstants.Object;
+import static org.slim3.gen.ClassConstants.PhoneNumber;
+import static org.slim3.gen.ClassConstants.PostalAddress;
+import static org.slim3.gen.ClassConstants.Rating;
 import static org.slim3.gen.ClassConstants.Short;
 import static org.slim3.gen.ClassConstants.ShortBlob;
 import static org.slim3.gen.ClassConstants.String;
@@ -86,6 +95,7 @@ import org.slim3.gen.datastore.SimpleDataTypeVisitor;
 import org.slim3.gen.datastore.SortedSetType;
 import org.slim3.gen.datastore.StringType;
 import org.slim3.gen.datastore.TextType;
+import org.slim3.gen.datastore.UserType;
 import org.slim3.gen.desc.AttributeMetaDesc;
 import org.slim3.gen.desc.ModelMetaDesc;
 import org.slim3.gen.printer.Printer;
@@ -559,7 +569,7 @@ public class ModelMetaGenerator implements Generator {
     }
 
     /**
-     * Generates the {@code modelToEntity} method.
+     * Generates the {@code modelToJson} method.
      * 
      * @param printer
      *            the printer
@@ -2038,6 +2048,64 @@ public class ModelMetaGenerator implements Generator {
             printAsString(p);
             return null;
         }
+        
+        @Override
+        public Void visitTextType(TextType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            String getMethodCall = 
+                java.lang.String.format("m.%s().getValue()", p.getReadMethodName());
+            if(p.isCipher()){
+                getMethodCall = "encrypt(" + getMethodCall + ")";
+            }
+            printHeader(p);
+            printer.println("if(m.%s().getValue() != null){",
+                    p.getReadMethodName());
+            printer.indent();
+            printer.println(
+                    "b.append(\"\\\"%s\\\":\\\"\").append(%s).append(\"\\\"\");",
+                    p.getName(),
+                    getMethodCall);
+            printer.unindent();
+            printer.println("}");
+            printFooter();
+            return null;
+        }
+
+        @Override
+        public Void visitUserType(UserType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            printHeader(p);
+            printer.println(
+                "b.append(\"\\\"%1$s\\\":{\");", p.getName()
+                );
+            printer.println(
+                "b.append(\"\\\"authDomain\\\":\\\"\").append(m.%s().getAuthDomain()).append(\"\\\",\");"
+                , p.getReadMethodName());
+            printer.println(
+                "b.append(\"\\\"email\\\":\\\"\").append(m.%s().getEmail()).append(\"\\\"\");"
+                , p.getReadMethodName());
+            printer.println("if(m.%s().getFederatedIdentity() != null){"
+                , p.getReadMethodName());
+            printer.indent();
+            printer.println(
+                "b.append(\",\\\"federatedIdentity\\\":\\\"\")" +
+                ".append(m.%s().getFederatedIdentity()).append(\"\\\"\");"
+                , p.getReadMethodName());
+            printer.unindent();
+            printer.println("}");
+            printer.println("if(m.%s().getUserId() != null){"
+                , p.getReadMethodName());
+            printer.indent();
+            printer.println(
+                "b.append(\",\\\"userId\\\":\\\"\")" +
+                ".append(m.%s().getUserId()).append(\"\\\"\");"
+                , p.getReadMethodName());
+            printer.unindent();
+            printer.println("}");
+            printer.println("b.append(\"}\");");
+            printFooter();
+            return null;
+       }
 
         @Override
         public Void visitCollectionType(CollectionType type, AttributeMetaDesc p)
@@ -2138,6 +2206,39 @@ public class ModelMetaGenerator implements Generator {
                     printFooter();
                     return null;
                 }
+                @Override
+                public Void visitUserType(UserType type, AttributeMetaDesc p)
+                        throws RuntimeException {
+                    printHeader(type, p);
+                    printer.println(
+                        "b.append(\"{\");", p.getName()
+                        );
+                    printer.println(
+                        "b.append(\"\\\"authDomain\\\":\\\"\").append(v.getAuthDomain()).append(\"\\\",\");"
+                        );
+                    printer.println(
+                        "b.append(\"\\\"email\\\":\\\"\").append(v.getEmail()).append(\"\\\"\");"
+                        );
+                    printer.println("if(v.getFederatedIdentity() != null){");
+                    printer.indent();
+                    printer.println(
+                        "b.append(\",\\\"federatedIdentity\\\":\\\"\")" +
+                        ".append(v.getFederatedIdentity()).append(\"\\\"\");"
+                        );
+                    printer.unindent();
+                    printer.println("}");
+                    printer.println("if(v.getUserId() != null){");
+                    printer.indent();
+                    printer.println(
+                        "b.append(\",\\\"userId\\\":\\\"\")" +
+                        ".append(v.getUserId()).append(\"\\\"\");"
+                        );
+                    printer.unindent();
+                    printer.println("}");
+                    printer.println("b.append(\"}\");");
+                    printFooter();
+                    return null;
+                }
                 private void printHeader(DataType type, AttributeMetaDesc p){
                     printer.println("if(m.%s() != null){", p.getReadMethodName());
                     printer.indent();
@@ -2179,12 +2280,17 @@ public class ModelMetaGenerator implements Generator {
 
         private void printAsBlob(AttributeMetaDesc p){
             printHeader(p);
+            printer.println("if(m.%s().getBytes() != null){"
+                    , p.getReadMethodName());
+            printer.indent();
             printer.println(
                     "b.append(\"\\\"%1$s\\\":\\\"\").append(" +
                     "com.google.appengine.repackaged.com.google.common.util.Base64.encode(m.%2$s().getBytes())" +
                     ").append(\"\\\"\");",
                     p.getAttributeName(),
                     p.getReadMethodName());
+            printer.unindent();
+            printer.println("}");
             printFooter();
         }
 
@@ -2226,29 +2332,29 @@ public class ModelMetaGenerator implements Generator {
         private final Printer printer;
     }
 
+
     @SuppressWarnings("serial")
     private static final Set<String> toStringTypes = new HashSet<String>(){{
-        add(Boolean.class.getName());
-        add(Short.class.getName());
-        add(Integer.class.getName());
-        add(Long.class.getName());
-        add(Float.class.getName());
-        add(Double.class.getName());
+        add(Boolean);
+        add(Short);
+        add(Integer);
+        add(Long);
+        add(Float);
+        add(Double);
     }};
     @SuppressWarnings("serial")
     private static final Map<String, String> toStringMethods = new HashMap<String, String>(){{
-        put(Date.class.getName(), "getTime");
-        put("com.google.appengine.api.datastore.Rating", "getRating");
+        put(Date, "getTime");
+        put(Rating, "getRating");
     }};
     @SuppressWarnings("serial")
     private static final Map<String, String> toStringLiteralMethods = new HashMap<String, String>(){{
-        put(Date.class.getName(), "getTime");
-        put("com.google.appengine.api.blobstore.BlobKey", "getKeyString");
-        put("com.google.appengine.api.datastore.Category", "getCategory");
-        put("com.google.appengine.api.datastore.Email", "getEmail");
-        put("com.google.appengine.api.datastore.Link", "getValue");
-        put("com.google.appengine.api.datastore.PhoneNumber", "getNumber");
-        put("com.google.appengine.api.datastore.PostalAddress", "getAddress");
-        put("com.google.appengine.api.datastore.Text", "getValue");
+        put(BlobKey, "getKeyString");
+        put(Category, "getCategory");
+        put(Email, "getEmail");
+        put(Link, "getValue");
+        put(PhoneNumber, "getNumber");
+        put(PostalAddress, "getAddress");
+        put(Text, "getValue");
     }};
 }
