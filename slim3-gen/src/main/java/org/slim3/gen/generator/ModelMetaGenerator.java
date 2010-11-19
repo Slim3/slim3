@@ -175,7 +175,7 @@ public class ModelMetaGenerator implements Generator {
         printGetClassHierarchyListName(printer);
         printIsCipherProperty(printer);
         printModelToJsonMethod(printer);
-        printCustomExtension(printer);
+        printCustomExtensionMethods(printer);
         printer.unindent();
         printer.print("}");
     }
@@ -575,7 +575,7 @@ public class ModelMetaGenerator implements Generator {
      * @param printer
      *            the printer
      */
-    protected void printCustomExtension(final Printer printer) {
+    protected void printCustomExtensionMethods(final Printer printer) {
     }
 
     /**
