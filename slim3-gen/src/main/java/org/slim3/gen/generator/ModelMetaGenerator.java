@@ -30,7 +30,9 @@ import static org.slim3.gen.ClassConstants.Double;
 import static org.slim3.gen.ClassConstants.Email;
 import static org.slim3.gen.ClassConstants.Entity;
 import static org.slim3.gen.ClassConstants.Float;
+import static org.slim3.gen.ClassConstants.GeoPt;
 import static org.slim3.gen.ClassConstants.HashSet;
+import static org.slim3.gen.ClassConstants.IMHandle;
 import static org.slim3.gen.ClassConstants.Integer;
 import static org.slim3.gen.ClassConstants.Key;
 import static org.slim3.gen.ClassConstants.Link;
@@ -52,6 +54,7 @@ import static org.slim3.gen.ClassConstants.StringUnindexedAttributeMeta;
 import static org.slim3.gen.ClassConstants.Text;
 import static org.slim3.gen.ClassConstants.TreeSet;
 import static org.slim3.gen.ClassConstants.UnindexedAttributeMeta;
+import static org.slim3.gen.ClassConstants.User;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -69,7 +72,6 @@ import org.slim3.gen.datastore.CollectionType;
 import org.slim3.gen.datastore.CorePrimitiveType;
 import org.slim3.gen.datastore.CoreReferenceType;
 import org.slim3.gen.datastore.DataType;
-import org.slim3.gen.datastore.DateType;
 import org.slim3.gen.datastore.EnumType;
 import org.slim3.gen.datastore.FloatType;
 import org.slim3.gen.datastore.GeoPtType;
@@ -1914,6 +1916,16 @@ public class ModelMetaGenerator implements Generator {
         }
 
         /**
+         * Creates a new {@link ModelToJsonMethodGenerator}.
+         * @param printer the printer
+         * @param varName the variable name
+         */
+        public ModelToJsonMethodGenerator(Printer printer, String varName) {
+            this.printer = printer;
+            this.value = varName;
+        }
+
+        /**
          * Generates the modelToJson method.
          */
         public void generate() {
@@ -1931,8 +1943,44 @@ public class ModelMetaGenerator implements Generator {
                 printer.println("%1$s m = (%1$s) model;", modelMetaDesc.getModelClassName());
                 printer.println("StringBuilder b = new StringBuilder(\"{\");");
                 for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
-                    DataType dataType = attr.getDataType();
-                    dataType.accept(this, attr);
+                    DataType dt = attr.getDataType();
+                    if(!(supportedTypes.contains(dt.getTypeName())) &&
+                            !(dt instanceof EnumType) &&
+                            !(dt instanceof CollectionType)){
+                        printer.println("// %s is not supported.", dt.getClassName());
+                        continue;
+                    }
+                    value = java.lang.String.format("m.%s()", attr.getReadMethodName());
+                    boolean isReferenceType = dt instanceof CoreReferenceType;
+                    boolean isTextType = dt instanceof TextType;
+                    boolean isBlobType = dt instanceof BlobType;
+                    if(isReferenceType){
+                        printer.println("if(%s != null){", value);
+                        printer.indent();
+                    }
+                    if(isTextType){
+                        printer.println("if(%s.getValue() != null){", value);
+                        printer.indent();
+                    }
+                    if(isBlobType){
+                        printer.println("if(%s.getBytes() != null){", value);
+                        printer.indent();
+                    }
+                    if(!(dt instanceof CollectionType)){
+                        printer.println("if(b.length() > 1) b.append(\",\");");
+                        printer.println(
+                            "b.append(\"\\\"%s\\\":\");"
+                            , attr.getAttributeName());
+                    }
+                    attr.getDataType().accept(this, attr);
+                    if(isTextType || isBlobType){
+                        printer.unindent();
+                        printer.println("}");
+                    }
+                    if(isReferenceType){
+                        printer.unindent();
+                        printer.println("}");
+                    }
                 }
                 printer.println("b.append(\"}\");");
                 printer.println("return b.toString();");
@@ -1945,25 +1993,18 @@ public class ModelMetaGenerator implements Generator {
         @Override
         public Void visitKeyType(KeyType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            printHeader(p);
             printer.println(
-                    "b.append(\"\\\"%1$s\\\":\\\"\").append(" +
-                    "com.google.appengine.api.datastore.KeyFactory.keyToString(m.%2$s())" +
+                    "b.append(\"\\\"\").append(" +
+                    "com.google.appengine.api.datastore.KeyFactory.keyToString(%s)" +
                     ").append(\"\\\"\");",
-                    p.getAttributeName(),
-                    p.getReadMethodName());
-            printFooter();
+                    value);
             return null;
         }
 
         @Override
         public Void visitCorePrimitiveType(CorePrimitiveType type,
                 AttributeMetaDesc p) throws RuntimeException {
-            printer.println("if(b.length() > 1) b.append(\",\");");
-            printer.println(
-                    "b.append(\"\\\"%1$s\\\":\").append(m.%2$s());",
-                    p.getName(),
-                    p.getReadMethodName());
+            printer.println("b.append(%s);", value);
             return null;
         }
 
@@ -1971,12 +2012,12 @@ public class ModelMetaGenerator implements Generator {
         public Void visitCoreReferenceType(CoreReferenceType type,
                 AttributeMetaDesc p) throws RuntimeException {
             if(toStringTypes.contains(type.getClassName())){
-                printAsValue(p);
+                printAsValue();
                 return null;
             }
             String m = toStringMethods.get(type.getClassName());
             if(m != null){
-                printAsValue(p, m);
+                printAsValue(m);
                 return null;
             }
             m = toStringLiteralMethods.get(type.getClassName());
@@ -1997,34 +2038,24 @@ public class ModelMetaGenerator implements Generator {
         @Override
         public Void visitGeoPtType(GeoPtType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            printHeader(p);
             printer.println(
-                "b.append(\"\\\"%1$s\\\":{\");", p.getName()
-                );
+                "b.append(\"{\\\"latitude\\\":\").append(%s.getLatitude()).append(\",\");"
+                , value);
             printer.println(
-                "b.append(\"\\\"latitude\\\":\").append(m.%s().getLatitude()).append(\",\");"
-                , p.getReadMethodName());
-            printer.println(
-                "b.append(\"\\\"longitude\\\":\").append(m.%s().getLongitude()).append(\"}\");"
-                , p.getReadMethodName());
-            printFooter();
+                "b.append(\"\\\"longitude\\\":\").append(%s.getLongitude()).append(\"}\");"
+                , value);
             return null;
         }
 
         @Override
         public Void visitIMHandleType(IMHandleType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            printHeader(p);
             printer.println(
-                "b.append(\"\\\"%1$s\\\":{\");", p.getName()
-                );
+                "b.append(\"{\\\"address\\\":\\\"\").append(%s.getAddress()).append(\"\\\",\");"
+                , value);
             printer.println(
-                "b.append(\"\\\"address\\\":\\\"\").append(m.%s().getAddress()).append(\"\\\",\");"
-                , p.getReadMethodName());
-            printer.println(
-                "b.append(\"\\\"protocol\\\":\\\"\").append(m.%s().getProtocol()).append(\"\\\"}\");"
-                , p.getReadMethodName());
-            printFooter();
+                "b.append(\"\\\"protocol\\\":\\\"\").append(%s.getProtocol()).append(\"\\\"}\");"
+                , value);
             return null;
         }
 
@@ -2032,7 +2063,7 @@ public class ModelMetaGenerator implements Generator {
         public Void visitShortBlobType(ShortBlobType type, AttributeMetaDesc p)
                 throws RuntimeException {
             printAsBlob(p);
-            return super.visitShortBlobType(type, p);
+            return null;
         }
 
         @Override
@@ -2053,261 +2084,102 @@ public class ModelMetaGenerator implements Generator {
         public Void visitTextType(TextType type, AttributeMetaDesc p)
                 throws RuntimeException {
             String getMethodCall = 
-                java.lang.String.format("m.%s().getValue()", p.getReadMethodName());
+                java.lang.String.format("%s.getValue()", value);
             if(p.isCipher()){
                 getMethodCall = "encrypt(" + getMethodCall + ")";
             }
-            printHeader(p);
-            printer.println("if(m.%s().getValue() != null){",
-                    p.getReadMethodName());
-            printer.indent();
             printer.println(
-                    "b.append(\"\\\"%s\\\":\\\"\").append(%s).append(\"\\\"\");",
-                    p.getName(),
+                    "b.append(\"\\\"\").append(%s).append(\"\\\"\");",
                     getMethodCall);
-            printer.unindent();
-            printer.println("}");
-            printFooter();
             return null;
         }
 
         @Override
         public Void visitUserType(UserType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            printHeader(p);
             printer.println(
-                "b.append(\"\\\"%1$s\\\":{\");", p.getName()
-                );
+                "b.append(\"{\\\"authDomain\\\":\\\"\").append(%s.getAuthDomain()).append(\"\\\",\");"
+                , value);
             printer.println(
-                "b.append(\"\\\"authDomain\\\":\\\"\").append(m.%s().getAuthDomain()).append(\"\\\",\");"
-                , p.getReadMethodName());
-            printer.println(
-                "b.append(\"\\\"email\\\":\\\"\").append(m.%s().getEmail()).append(\"\\\"\");"
-                , p.getReadMethodName());
-            printer.println("if(m.%s().getFederatedIdentity() != null){"
-                , p.getReadMethodName());
+                "b.append(\"\\\"email\\\":\\\"\").append(%s.getEmail()).append(\"\\\"\");"
+                , value);
+            printer.println("if(%s.getFederatedIdentity() != null){"
+                , value);
             printer.indent();
             printer.println(
                 "b.append(\",\\\"federatedIdentity\\\":\\\"\")" +
-                ".append(m.%s().getFederatedIdentity()).append(\"\\\"\");"
-                , p.getReadMethodName());
+                ".append(%s.getFederatedIdentity()).append(\"\\\"\");"
+                , value);
             printer.unindent();
             printer.println("}");
-            printer.println("if(m.%s().getUserId() != null){"
-                , p.getReadMethodName());
+            printer.println("if(%s.getUserId() != null){"
+                , value);
             printer.indent();
             printer.println(
                 "b.append(\",\\\"userId\\\":\\\"\")" +
-                ".append(m.%s().getUserId()).append(\"\\\"\");"
-                , p.getReadMethodName());
+                ".append(%s.getUserId()).append(\"\\\"\");"
+                , value);
             printer.unindent();
             printer.println("}");
             printer.println("b.append(\"}\");");
-            printFooter();
             return null;
        }
 
         @Override
         public Void visitCollectionType(CollectionType type, AttributeMetaDesc p)
         throws RuntimeException {
-            type.getElementType().accept(new SimpleDataTypeVisitor<Void, AttributeMetaDesc, RuntimeException>(){
-                @Override
-                public Void visitCoreReferenceType(CoreReferenceType type,
-                        AttributeMetaDesc p) throws RuntimeException {
-                    if(toStringTypes.contains(type.getClassName())){
-                        printHeader(type, p);
-                        printer.println("b.append(v);");
-                        printFooter();
-                        return null;
-                    }
-                    String m = toStringMethods.get(type.getClassName());
-                    if(m != null){
-                        printHeader(type, p);
-                        printer.println("b.append(v.%s());", m);
-                        printFooter();
-                        return null;
-                    }
-                    m = toStringLiteralMethods.get(type.getClassName());
-                    if(m != null){
-                        printHeader(type, p);
-                        printer.println("b.append(\"\\\"\").append(v.%s()).append(\"\\\"\");", m);
-                        printFooter();
-                        return null;
-                    }
-                    return null;
-                }
-                @Override
-                public Void visitStringType(StringType type, AttributeMetaDesc p)
-                        throws RuntimeException {
-                    printHeader(type, p);
-                    printer.println("b.append(\"\\\"\").append(v).append(\"\\\"\");");
-                    printFooter();
-                    return null;
-                }
-                @Override
-                public Void visitDateType(DateType type, AttributeMetaDesc p)
-                        throws RuntimeException {
-                    printHeader(type, p);
-                    printer.println("b.append(v.getTime());");
-                    printFooter();
-                    return null;
-                }
-                @Override
-                public Void visitEnumType(EnumType type, AttributeMetaDesc p)
-                        throws RuntimeException {
-                    printHeader(type, p);
-                    printer.println("b.append(\"\\\"\").append(v.name()).append(\"\\\"\");");
-                    printFooter();
-                    return null;
-                }
-                @Override
-                public Void visitBlobType(BlobType type, AttributeMetaDesc p)
-                        throws RuntimeException {
-                    printHeader(type, p);
-                    printer.println(
-                        "b.append(\"\\\"\").append(" +
-                        "com.google.appengine.repackaged.com.google.common.util.Base64.encode(v.getBytes())" +
-                        ").append(\"\\\"\");"
-                        );
-                    printFooter();
-                    return null;
-                }
-                @Override
-                public Void visitGeoPtType(GeoPtType type, AttributeMetaDesc p)
-                        throws RuntimeException {
-                    printHeader(type, p);
-                    printer.println("b.append(\"{\\\"latitude\\\":\").append(v.getLatitude()).append(\",\");");
-                    printer.println("b.append(\"\\\"longitude\\\":\").append(v.getLongitude()).append(\"}\");");
-                    printFooter();
-                    return null;
-                }
-                @Override
-                public Void visitIMHandleType(IMHandleType type,
-                        AttributeMetaDesc p) throws RuntimeException {
-                    printHeader(type, p);
-                    printer.println(
-                        "b.append(\"{\\\"address\\\":\\\"\").append(v.getAddress()).append(\"\\\",\");"
-                        );
-                    printer.println(
-                        "b.append(\"\\\"protocol\\\":\\\"\").append(v.getProtocol()).append(\"\\\"}\");"
-                        );
-                    printFooter();
-                    return null;
-                }
-                @Override
-                public Void visitShortBlobType(ShortBlobType type,
-                        AttributeMetaDesc p) throws RuntimeException {
-                    printHeader(type, p);
-                    printer.println(
-                        "b.append(\"\\\"\").append(" +
-                        "com.google.appengine.repackaged.com.google.common.util.Base64.encode(v.getBytes())" +
-                        ").append(\"\\\"\");"
-                        );
-                    printFooter();
-                    return null;
-                }
-                @Override
-                public Void visitUserType(UserType type, AttributeMetaDesc p)
-                        throws RuntimeException {
-                    printHeader(type, p);
-                    printer.println(
-                        "b.append(\"{\");", p.getName()
-                        );
-                    printer.println(
-                        "b.append(\"\\\"authDomain\\\":\\\"\").append(v.getAuthDomain()).append(\"\\\",\");"
-                        );
-                    printer.println(
-                        "b.append(\"\\\"email\\\":\\\"\").append(v.getEmail()).append(\"\\\"\");"
-                        );
-                    printer.println("if(v.getFederatedIdentity() != null){");
-                    printer.indent();
-                    printer.println(
-                        "b.append(\",\\\"federatedIdentity\\\":\\\"\")" +
-                        ".append(v.getFederatedIdentity()).append(\"\\\"\");"
-                        );
-                    printer.unindent();
-                    printer.println("}");
-                    printer.println("if(v.getUserId() != null){");
-                    printer.indent();
-                    printer.println(
-                        "b.append(\",\\\"userId\\\":\\\"\")" +
-                        ".append(v.getUserId()).append(\"\\\"\");"
-                        );
-                    printer.unindent();
-                    printer.println("}");
-                    printer.println("b.append(\"}\");");
-                    printFooter();
-                    return null;
-                }
-                private void printHeader(DataType type, AttributeMetaDesc p){
-                    printer.println("if(m.%s() != null){", p.getReadMethodName());
-                    printer.indent();
-                    printer.println("if(b.length() > 1) b.append(\",\");");
-                    printer.println(
-                            "b.append(\"\\\"%1$s\\\":\");",
-                            p.getName()
-                            );
-                    printer.println("b.append(\"[\");");
-                    printer.println("boolean first = true;");
-                    printer.println("for(%s v : m.%s()){"
-                            , type.getClassName()
-                            , p.getReadMethodName());
-                    printer.indent();
-                    printer.println("if(first) first = false;");
-                    printer.println("else b.append(\",\");");
-                }
-                private void printFooter(){
-                    printer.unindent();
-                    printer.println("}");
-                    printer.println("b.append(\"]\");");
-                    printer.unindent();
-                    printer.println("}");
-                }
-            }, p);
+            DataType et = type.getElementType();
+            String className = et.getClassName();
+            if(!(supportedTypes.contains(className)) && !(et instanceof EnumType)) return null;
+            printer.println("if(%s != null){", value);
+            printer.indent();
+            printer.println("if(b.length() > 1) b.append(\",\");");
+            printer.println(
+                    "b.append(\"\\\"%1$s\\\":\");",
+                    p.getName()
+                    );
+            printer.println("b.append(\"[\");");
+            printer.println("boolean first = true;");
+            printer.println("for(%s v : %s){"
+                    , className
+                    , value);
+            printer.indent();
+            printer.println("if(first) first = false;");
+            printer.println("else b.append(\",\");");
+            type.getElementType().accept(
+                new ModelToJsonMethodGenerator(printer, "v")
+                , p
+                );
+            printer.unindent();
+            printer.println("}");
+            printer.println("b.append(\"]\");");
+            printer.unindent();
+            printer.println("}");
             return null;
         }
 
-        private void printHeader(AttributeMetaDesc p){
-            printer.println("if(m.%s() != null){", p.getReadMethodName());
-            printer.indent();
-            printer.println("if(b.length() > 1) b.append(\",\");");
-        }
-
-        private void printFooter(){
-            printer.unindent();
-            printer.println("}");
-        }
-
         private void printAsBlob(AttributeMetaDesc p){
-            printHeader(p);
-            printer.println("if(m.%s().getBytes() != null){"
-                    , p.getReadMethodName());
+            printer.println("if(%s.getBytes() != null){", value);
             printer.indent();
             printer.println(
-                    "b.append(\"\\\"%1$s\\\":\\\"\").append(" +
-                    "com.google.appengine.repackaged.com.google.common.util.Base64.encode(m.%2$s().getBytes())" +
+                    "b.append(\"\\\"\").append(" +
+                    "com.google.appengine.repackaged.com.google.common.util.Base64.encode(" +
+                    "%s.getBytes())" +
                     ").append(\"\\\"\");",
-                    p.getAttributeName(),
-                    p.getReadMethodName());
+                    value);
             printer.unindent();
             printer.println("}");
-            printFooter();
         }
 
-        private void printAsValue(AttributeMetaDesc p){
-            printAsValue(p, null);
+        private void printAsValue(){
+            printAsValue(null);
         }
 
-        private void printAsValue(AttributeMetaDesc p, String methodName){
+        private void printAsValue(String methodName){
             String getMethodCall = methodName != null ?
-                java.lang.String.format("m.%s().%s()", p.getReadMethodName(), methodName) :
-                java.lang.String.format("m.%s()", p.getReadMethodName());
-            printHeader(p);
-            printer.println(
-                    "b.append(\"\\\"%1$s\\\":\").append(%2$s);",
-                    p.getName(),
-                    getMethodCall);
-            printFooter();
+                java.lang.String.format("%s.%s()", value, methodName) :
+                java.lang.String.format("%s", value);
+            printer.println("b.append(%s);", getMethodCall);
         }
 
         private void printAsString(AttributeMetaDesc p){
@@ -2316,19 +2188,17 @@ public class ModelMetaGenerator implements Generator {
 
         private void printAsString(AttributeMetaDesc p, String methodName){
             String getMethodCall = methodName != null ?
-                java.lang.String.format("m.%s().%s()", p.getReadMethodName(), methodName) :
-                java.lang.String.format("m.%s()", p.getReadMethodName());
+                java.lang.String.format("%s.%s()", value, methodName) :
+                java.lang.String.format("%s", value);
             if(p.isCipher()){
                 getMethodCall = "encrypt(" + getMethodCall + ")";
             }
-            printHeader(p);
             printer.println(
-                    "b.append(\"\\\"%s\\\":\\\"\").append(%s).append(\"\\\"\");",
-                    p.getName(),
+                    "b.append(\"\\\"\").append(%s).append(\"\\\"\");",
                     getMethodCall);
-            printFooter();
         }
 
+        private String value = "m";
         private final Printer printer;
     }
 
@@ -2357,4 +2227,11 @@ public class ModelMetaGenerator implements Generator {
         put(PostalAddress, "getAddress");
         put(Text, "getValue");
     }};
+    private static final Set<String> supportedTypes = new HashSet<String>();
+    static{
+        supportedTypes.addAll(toStringTypes);
+        supportedTypes.addAll(toStringMethods.keySet());
+        supportedTypes.addAll(toStringLiteralMethods.keySet());
+        supportedTypes.addAll(Arrays.asList(String, Key, Blob, GeoPt, IMHandle, ShortBlob, User));
+    }
 }
