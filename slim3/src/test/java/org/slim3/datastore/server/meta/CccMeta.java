@@ -141,7 +141,7 @@ public final class CccMeta extends
     }
 
     @Override
-    public String modelToJson(Object model) {
+    protected String modelToJson(Object model, int nest) {
         return null;
     }
 }

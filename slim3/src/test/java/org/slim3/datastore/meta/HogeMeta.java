@@ -606,7 +606,7 @@ public class HogeMeta extends ModelMeta<Hoge> {
     }
 
     @Override
-    public String modelToJson(Object model) {
+    protected String modelToJson(Object model, int nest) {
         return null;
     }
 }

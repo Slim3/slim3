@@ -81,7 +81,7 @@ public class SortableUnindexedAttributeMetaTest {
         }
 
         @Override
-        public String modelToJson(Object model) {
+        protected String modelToJson(Object model, int nest) {
             return null;
         }
     };

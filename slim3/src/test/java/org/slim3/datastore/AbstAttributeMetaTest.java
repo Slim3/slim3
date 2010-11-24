@@ -82,7 +82,7 @@ public class AbstAttributeMetaTest extends AppEngineTestCase {
         }
 
         @Override
-        public String modelToJson(Object model) {
+        protected String modelToJson(Object model, int nest) {
             return null;
         }
     };

@@ -184,7 +184,40 @@ public abstract class ModelMeta<M> {
      *
      * @return JSON string
      */
-    public abstract String modelToJson(Object model);
+    public String modelToJson(Object model){
+        return modelToJson(model, 0);
+    }
+
+    /**
+     * Converts the model to JSON string.
+     * 
+     * @param model
+     *            the model
+     *
+     * @param nest
+     *            the nest count
+     *
+     * @return JSON string
+     */
+    protected abstract String modelToJson(Object model, int nest);
+
+    /**
+     * Invoke the modelToJson method.
+     * 
+     * @param meta
+     *            the meta
+     *
+     * @param model
+     *            the model
+     *
+     * @param nest
+     *            the nest count
+     *
+     * @return JSON string
+     */
+    protected String invokeModelToJson(ModelMeta<?> meta, Object model, int nest){
+        return meta.modelToJson(model, nest);
+    }
 
     /**
      * Returns version property value of the model.

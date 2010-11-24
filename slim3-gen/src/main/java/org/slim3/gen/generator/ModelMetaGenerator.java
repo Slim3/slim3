@@ -1918,11 +1918,11 @@ public class ModelMetaGenerator implements Generator {
         /**
          * Creates a new {@link ModelToJsonMethodGenerator}.
          * @param printer the printer
-         * @param varName the variable name
+         * @param valueExp the expression that represents target value
          */
-        public ModelToJsonMethodGenerator(Printer printer, String varName) {
+        public ModelToJsonMethodGenerator(Printer printer, String valueExp) {
             this.printer = printer;
-            this.value = varName;
+            this.valueExp = valueExp;
         }
 
         /**
@@ -1931,7 +1931,7 @@ public class ModelMetaGenerator implements Generator {
         public void generate() {
             printer.println("@Override");
             printer.println(
-                "public String modelToJson(%s model) {",
+                "protected String modelToJson(%s model, int nest) {",
                 Object);
             printer.indent();
             if (modelMetaDesc.isAbstrct()) {
@@ -1946,25 +1946,32 @@ public class ModelMetaGenerator implements Generator {
                     DataType dt = attr.getDataType();
                     if(!(supportedTypes.contains(dt.getTypeName())) &&
                             !(dt instanceof EnumType) &&
-                            !(dt instanceof CollectionType)){
+                            !(dt instanceof CollectionType) &&
+                            !(dt instanceof ModelRefType)){
                         printer.println("// %s is not supported.", dt.getClassName());
                         continue;
                     }
-                    value = java.lang.String.format("m.%s()", attr.getReadMethodName());
-                    boolean isReferenceType = dt instanceof CoreReferenceType;
-                    boolean isTextType = dt instanceof TextType;
-                    boolean isBlobType = dt instanceof BlobType;
-                    if(isReferenceType){
-                        printer.println("if(%s != null){", value);
+                    int indent = 0;
+                    valueExp = java.lang.String.format("m.%s()", attr.getReadMethodName());
+                    if(dt instanceof CoreReferenceType){
+                        printer.println("if(%s != null){", valueExp);
                         printer.indent();
+                        indent++;
                     }
-                    if(isTextType){
-                        printer.println("if(%s.getValue() != null){", value);
+                    if(dt instanceof TextType){
+                        printer.println("if(%s.getValue() != null){", valueExp);
                         printer.indent();
+                        indent++;
                     }
-                    if(isBlobType){
-                        printer.println("if(%s.getBytes() != null){", value);
+                    if(dt instanceof BlobType){
+                        printer.println("if(%s.getBytes() != null){", valueExp);
                         printer.indent();
+                        indent++;
+                    }
+                    if(dt instanceof ModelRefType){
+                        printer.println("if(nest < 2 && %s != null && %1$s.getModel() != null){", valueExp);
+                        printer.indent();
+                        indent++;
                     }
                     if(!(dt instanceof CollectionType)){
                         printer.println("if(b.length() > 1) b.append(\",\");");
@@ -1973,11 +1980,7 @@ public class ModelMetaGenerator implements Generator {
                             , attr.getAttributeName());
                     }
                     attr.getDataType().accept(this, attr);
-                    if(isTextType || isBlobType){
-                        printer.unindent();
-                        printer.println("}");
-                    }
-                    if(isReferenceType){
+                    for(int i = 0; i < indent; i++){
                         printer.unindent();
                         printer.println("}");
                     }
@@ -1997,14 +2000,14 @@ public class ModelMetaGenerator implements Generator {
                     "b.append(\"\\\"\").append(" +
                     "com.google.appengine.api.datastore.KeyFactory.keyToString(%s)" +
                     ").append(\"\\\"\");",
-                    value);
+                    valueExp);
             return null;
         }
 
         @Override
         public Void visitCorePrimitiveType(CorePrimitiveType type,
                 AttributeMetaDesc p) throws RuntimeException {
-            printer.println("b.append(%s);", value);
+            printer.println("b.append(%s);", valueExp);
             return null;
         }
 
@@ -2040,10 +2043,10 @@ public class ModelMetaGenerator implements Generator {
                 throws RuntimeException {
             printer.println(
                 "b.append(\"{\\\"latitude\\\":\").append(%s.getLatitude()).append(\",\");"
-                , value);
+                , valueExp);
             printer.println(
                 "b.append(\"\\\"longitude\\\":\").append(%s.getLongitude()).append(\"}\");"
-                , value);
+                , valueExp);
             return null;
         }
 
@@ -2052,10 +2055,10 @@ public class ModelMetaGenerator implements Generator {
                 throws RuntimeException {
             printer.println(
                 "b.append(\"{\\\"address\\\":\\\"\").append(%s.getAddress()).append(\"\\\",\");"
-                , value);
+                , valueExp);
             printer.println(
                 "b.append(\"\\\"protocol\\\":\\\"\").append(%s.getProtocol()).append(\"\\\"}\");"
-                , value);
+                , valueExp);
             return null;
         }
 
@@ -2084,7 +2087,7 @@ public class ModelMetaGenerator implements Generator {
         public Void visitTextType(TextType type, AttributeMetaDesc p)
                 throws RuntimeException {
             String getMethodCall = 
-                java.lang.String.format("%s.getValue()", value);
+                java.lang.String.format("%s.getValue()", valueExp);
             if(p.isCipher()){
                 getMethodCall = "encrypt(" + getMethodCall + ")";
             }
@@ -2099,26 +2102,26 @@ public class ModelMetaGenerator implements Generator {
                 throws RuntimeException {
             printer.println(
                 "b.append(\"{\\\"authDomain\\\":\\\"\").append(%s.getAuthDomain()).append(\"\\\",\");"
-                , value);
+                , valueExp);
             printer.println(
                 "b.append(\"\\\"email\\\":\\\"\").append(%s.getEmail()).append(\"\\\"\");"
-                , value);
+                , valueExp);
             printer.println("if(%s.getFederatedIdentity() != null){"
-                , value);
+                , valueExp);
             printer.indent();
             printer.println(
                 "b.append(\",\\\"federatedIdentity\\\":\\\"\")" +
                 ".append(%s.getFederatedIdentity()).append(\"\\\"\");"
-                , value);
+                , valueExp);
             printer.unindent();
             printer.println("}");
             printer.println("if(%s.getUserId() != null){"
-                , value);
+                , valueExp);
             printer.indent();
             printer.println(
                 "b.append(\",\\\"userId\\\":\\\"\")" +
                 ".append(%s.getUserId()).append(\"\\\"\");"
-                , value);
+                , valueExp);
             printer.unindent();
             printer.println("}");
             printer.println("b.append(\"}\");");
@@ -2131,7 +2134,7 @@ public class ModelMetaGenerator implements Generator {
             DataType et = type.getElementType();
             String className = et.getClassName();
             if(!(supportedTypes.contains(className)) && !(et instanceof EnumType)) return null;
-            printer.println("if(%s != null){", value);
+            printer.println("if(%s != null){", valueExp);
             printer.indent();
             printer.println("if(b.length() > 1) b.append(\",\");");
             printer.println(
@@ -2142,7 +2145,7 @@ public class ModelMetaGenerator implements Generator {
             printer.println("boolean first = true;");
             printer.println("for(%s v : %s){"
                     , className
-                    , value);
+                    , valueExp);
             printer.indent();
             printer.println("if(first) first = false;");
             printer.println("else b.append(\",\");");
@@ -2158,15 +2161,25 @@ public class ModelMetaGenerator implements Generator {
             return null;
         }
 
+        @Override
+        public Void visitModelRefType(ModelRefType type, AttributeMetaDesc p)
+        throws RuntimeException {
+            printer.println("b.append(invokeModelToJson(" +
+            		"org.slim3.datastore.Datastore.getModelMeta(%s.class), %s.getModel(), nest + 1));",
+            		type.getReferenceModelClassName(),
+            		valueExp);
+            return null;
+        }
+
         private void printAsBlob(AttributeMetaDesc p){
-            printer.println("if(%s.getBytes() != null){", value);
+            printer.println("if(%s.getBytes() != null){", valueExp);
             printer.indent();
             printer.println(
                     "b.append(\"\\\"\").append(" +
                     "com.google.appengine.repackaged.com.google.common.util.Base64.encode(" +
                     "%s.getBytes())" +
                     ").append(\"\\\"\");",
-                    value);
+                    valueExp);
             printer.unindent();
             printer.println("}");
         }
@@ -2177,8 +2190,8 @@ public class ModelMetaGenerator implements Generator {
 
         private void printAsValue(String methodName){
             String getMethodCall = methodName != null ?
-                java.lang.String.format("%s.%s()", value, methodName) :
-                java.lang.String.format("%s", value);
+                java.lang.String.format("%s.%s()", valueExp, methodName) :
+                java.lang.String.format("%s", valueExp);
             printer.println("b.append(%s);", getMethodCall);
         }
 
@@ -2188,8 +2201,8 @@ public class ModelMetaGenerator implements Generator {
 
         private void printAsString(AttributeMetaDesc p, String methodName){
             String getMethodCall = methodName != null ?
-                java.lang.String.format("%s.%s()", value, methodName) :
-                java.lang.String.format("%s", value);
+                java.lang.String.format("%s.%s()", valueExp, methodName) :
+                java.lang.String.format("%s", valueExp);
             if(p.isCipher()){
                 getMethodCall = "encrypt(" + getMethodCall + ")";
             }
@@ -2198,7 +2211,7 @@ public class ModelMetaGenerator implements Generator {
                     getMethodCall);
         }
 
-        private String value = "m";
+        private String valueExp = "m";
         private final Printer printer;
     }
 
@@ -2232,6 +2245,8 @@ public class ModelMetaGenerator implements Generator {
         supportedTypes.addAll(toStringTypes);
         supportedTypes.addAll(toStringMethods.keySet());
         supportedTypes.addAll(toStringLiteralMethods.keySet());
-        supportedTypes.addAll(Arrays.asList(String, Key, Blob, GeoPt, IMHandle, ShortBlob, User));
+        supportedTypes.addAll(Arrays.asList(
+            String, Key, Blob, GeoPt, IMHandle, ShortBlob,
+            User));
     }
 }
