@@ -24,6 +24,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.appengine.api.blobstore.BlobKey;
+import com.google.appengine.api.blobstore.BlobstoreService;
+import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
@@ -243,6 +246,25 @@ public class ServletTesterTest {
     @Test
     public void getDestinationPathForward() throws Exception {
         assertThat(tester.getDestinationPath(), is(nullValue()));
+        tester.servletContext.getRequestDispatcher("/").forward(
+            tester.request,
+            tester.response);
+        assertThat(tester.getDestinationPath(), is("/"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void addBlobKey() throws Exception {
+        String name = "aaa";
+        String value = "hoge";
+        BlobstoreService bs = BlobstoreServiceFactory.getBlobstoreService();
+        tester.addBlobKey(name, value);
+        assertThat(
+            bs.getUploadedBlobs(tester.request).get(name),
+            is(new BlobKey(value)));
         tester.servletContext.getRequestDispatcher("/").forward(
             tester.request,
             tester.response);

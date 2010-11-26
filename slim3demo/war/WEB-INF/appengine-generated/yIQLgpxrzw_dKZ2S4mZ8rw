@@ -1,0 +1,38 @@
+Hi all,
+
+We are pleased to announce the release of Slim3 1.0.5.
+
+Release Notes:
+http://sites.google.com/site/slim3appengine/release-notes
+
+* Supported for Automatic Values:
+  http://code.google.com/p/slim3/issues/detail?id=23
+  http://sites.google.com/site/slim3appengine/slim3-datastore/defining-data-classes/automatic-values
+* Fixed the issue where Slim3-gen cannot persist some collections like 
+  ConcurrentHashSet as Blob:
+  http://code.google.com/p/slim3/issues/detail?id=25
+* Fixed the issue with the missing setup step for [Enable Annoation Processing]: 
+  http://code.google.com/p/slim3/issues/detail?id=29
+Fixed the issue where static routing path like addRouting("/xxx/", "/yyy/") does not 
+  work:
+  http://code.google.com/p/slim3/issues/detail?id=30
+* Fixed the issue where DatastoreUtil#assignKeyIfNecessary() does not consider the 
+  case the parent key exsists:
+  http://code.google.com/p/slim3/issues/detail?id=33
+* Fixed the issue where Slim3 cannot support package like 
+  xxx.model.yyy.model.ZzzModel:
+  http://code.google.com/p/slim3/issues/detail?id=34
+* Fixed the issue where BlobKey must be stored in the datastore as @Attribute(lob = 
+  false):
+  http://code.google.com/p/slim3/issues/detail?id=35
+* Fixed the issue where IN Query does not work on production server: 
+  http://code.google.com/p/slim3/issues/detail?id=36
+* Supported for ShortBlob:
+  http://code.google.com/p/slim3/issues/detail?id=37
+
+Downloads:
+http://code.google.com/p/slim3/downloads/list
+
+Thanks,
+
+Yasuo Higa

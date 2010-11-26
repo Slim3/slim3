@@ -11,18 +11,21 @@ import slim3.demo.model.Blobstore;
 
 import com.google.appengine.api.datastore.Key;
 
-public class UploadControllerTest extends ControllerTestCase {
+public class DeleteControllerTest extends ControllerTestCase {
 
     @Test
     public void run() throws Exception {
-        String keyString = "hoge";
-        tester.addBlobKey("formFile", keyString);
-        tester.start("/blobstore/upload");
-        UploadController controller = tester.getController();
+        String keyName = "hoge";
+        Blobstore blobstore = new Blobstore();
+        Key key = Datastore.createKey(Blobstore.class, keyName);
+        blobstore.setKey(key);
+        Datastore.put(blobstore);
+        tester.param("keyName", keyName);
+        tester.start("/blobstore/delete");
+        DeleteController controller = tester.getController();
         assertThat(controller, is(notNullValue()));
         assertThat(tester.isRedirect(), is(true));
         assertThat(tester.getDestinationPath(), is("/blobstore/"));
-        Key key = Datastore.createKey(Blobstore.class, keyString);
-        Datastore.get(key);
+        assertThat(Datastore.getOrNull(key), is(nullValue()));
     }
 }

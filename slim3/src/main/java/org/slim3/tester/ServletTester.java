@@ -18,7 +18,9 @@ package org.slim3.tester;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
 import javax.servlet.ServletConfig;
@@ -53,6 +55,12 @@ import com.google.appengine.api.datastore.KeyFactory;
  * 
  */
 public class ServletTester extends AppEngineTester {
+
+    /**
+     * The key of blob keys.
+     */
+    protected static final String BLOBKEYS_KEY =
+        "com.google.appengine.api.blobstore.upload.blobkeys";
 
     /**
      * The mock for {@link ServletContext}.
@@ -613,5 +621,34 @@ public class ServletTester extends AppEngineTester {
             return response.getRedirectPath();
         }
         return null;
+    }
+
+    /**
+     * Adds a blob key.
+     * 
+     * @param name
+     *            the blob key name
+     * @param value
+     *            the blob key value
+     * @throws NullPointerException
+     *             if the name parameter is null or if the value parameter is
+     *             null
+     */
+    public void addBlobKey(String name, String value)
+            throws NullPointerException {
+        if (name == null) {
+            throw new NullPointerException(
+                "The name parameter must not be null.");
+        }
+        if (value == null) {
+            throw new NullPointerException(
+                "The value parameter must not be null.");
+        }
+        Map<String, String> blobKeys = requestScope(BLOBKEYS_KEY);
+        if (blobKeys == null) {
+            blobKeys = new HashMap<String, String>();
+            requestScope(BLOBKEYS_KEY, blobKeys);
+        }
+        blobKeys.put(name, value);
     }
 }

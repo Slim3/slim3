@@ -29,17 +29,15 @@ Source:
 <table>
 <c:if test="${fn:length(dataList) > 0}">
 <thead>
-<tr><th>FileName</th><th>Bytes</th></tr>
+<tr><th>Key</th></tr>
 </thead>
 </c:if>
 <tbody>
 <c:forEach var="e" items="${dataList}">
 <tr>
-<td>${f:h(e.fileName)}</td><td>${f:h(e.length)}</td>
-<c:set var="downloadUrl" value="download?key=${f:h(e.key)}&version=${e.version}"/>
-<c:set var="showUrl" value="show?key=${f:h(e.key)}&version=${e.version}"/>
-<c:set var="deleteUrl" value="delete?key=${f:h(e.key)}&version=${e.version}"/>
-<td><a href="${f:url(downloadUrl)}">Download</a></td>
+<td>${f:h(e.key.name)}</td>
+<c:set var="showUrl" value="show?keyName=${f:h(e.key.name)}"/>
+<c:set var="deleteUrl" value="delete?keyName=${f:h(e.key.name)}"/>
 <td><a href="${f:url(showUrl)}">Show</a></td>
 <td><a href="${f:url(deleteUrl)}" onclick="return confirm('delete OK?')">Delete</a></td>
 </tr>

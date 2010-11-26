@@ -12,6 +12,7 @@
 <li><a href="${f:url('/select/')}">Select</a></li>
 <li><a href="${f:url('/multiselect/')}">Multiselect</a></li>
 <li><a href="${f:url('/upload/')}">Upload</a></li>
+<li><a href="${f:url('/blobstore/')}">Blobstore</a></li>
 <li><a href="${f:url('/locale/')}">Locale</a></li>
 <li><a href="${f:url('/timezone/')}">TimeZone</a></li>
 <li><a href="${f:url('/ajax/')}">HTML with Ajax</a></li>

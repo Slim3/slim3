@@ -2,12 +2,6 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>ajax Index</title>
-<script src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
-<script type="text/javascript">
-$(function() {
-	$('#ready').load('ready');
-});
-</script>
 </head>
 <body>
 
@@ -23,5 +17,12 @@ Source:
 <span id="message"></span><br />
 <input type="button" value="hello"
     onclick="$('#message').load('hello');"/>
+    
+<script src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
+<script type="text/javascript">
+$(function() {
+    $('#ready').load('ready');
+});
+</script>
 </body>
 </html>
