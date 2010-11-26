@@ -87,6 +87,11 @@ public class CollectionUnindexedAttributeMetaTest {
         protected String modelToJson(Object model, int nest) {
             return null;
         }
+
+        @Override
+        public Hoge jsonToModel(String json) {
+            return null;
+        }
     };
 
     private CollectionUnindexedAttributeMeta<Hoge, List<Integer>, Integer> myIntegerList =

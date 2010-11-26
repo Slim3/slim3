@@ -144,4 +144,9 @@ public final class CccMeta extends
     protected String modelToJson(Object model, int nest) {
         return null;
     }
+
+    @Override
+    public org.slim3.datastore.shared.model.Ccc jsonToModel(String json) {
+        return null;
+    }
 }

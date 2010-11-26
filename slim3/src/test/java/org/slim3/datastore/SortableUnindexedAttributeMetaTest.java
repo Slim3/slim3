@@ -84,6 +84,11 @@ public class SortableUnindexedAttributeMetaTest {
         protected String modelToJson(Object model, int nest) {
             return null;
         }
+
+        @Override
+        public Hoge jsonToModel(String json) {
+            return null;
+        }
     };
 
     /**

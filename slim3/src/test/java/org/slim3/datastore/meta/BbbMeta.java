@@ -201,4 +201,9 @@ public final class BbbMeta extends
     protected String modelToJson(Object model, int nest) {
         return null;
     }
+
+    @Override
+    public org.slim3.datastore.model.Bbb jsonToModel(String json) {
+        return null;
+    }
 }

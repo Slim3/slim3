@@ -85,6 +85,11 @@ public class AbstAttributeMetaTest extends AppEngineTestCase {
         protected String modelToJson(Object model, int nest) {
             return null;
         }
+
+        @Override
+        public Hoge jsonToModel(String json) {
+            return null;
+        }
     };
 
     /**

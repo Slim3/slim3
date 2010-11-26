@@ -220,6 +220,16 @@ public abstract class ModelMeta<M> {
     }
 
     /**
+     * Converts the JSON string to model.
+     * 
+     * @param json
+     *            the JSON string
+     *
+     * @return model
+     */
+    public abstract M jsonToModel(String json);
+
+    /**
      * Returns version property value of the model.
      * 
      * @param model

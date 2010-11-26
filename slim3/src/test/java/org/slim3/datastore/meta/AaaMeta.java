@@ -148,4 +148,9 @@ public final class AaaMeta extends
     protected String modelToJson(Object model, int nest) {
         return null;
     }
+
+    @Override
+    public org.slim3.datastore.model.Aaa jsonToModel(String json) {
+        return null;
+    }
 }
