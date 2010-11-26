@@ -72,6 +72,7 @@ import org.slim3.gen.datastore.CollectionType;
 import org.slim3.gen.datastore.CorePrimitiveType;
 import org.slim3.gen.datastore.CoreReferenceType;
 import org.slim3.gen.datastore.DataType;
+import org.slim3.gen.datastore.DateType;
 import org.slim3.gen.datastore.EnumType;
 import org.slim3.gen.datastore.FloatType;
 import org.slim3.gen.datastore.GeoPtType;
@@ -90,6 +91,7 @@ import org.slim3.gen.datastore.PrimitiveFloatType;
 import org.slim3.gen.datastore.PrimitiveIntType;
 import org.slim3.gen.datastore.PrimitiveLongType;
 import org.slim3.gen.datastore.PrimitiveShortType;
+import org.slim3.gen.datastore.PrimitiveType;
 import org.slim3.gen.datastore.SetType;
 import org.slim3.gen.datastore.ShortBlobType;
 import org.slim3.gen.datastore.ShortType;
@@ -187,6 +189,7 @@ public class ModelMetaGenerator implements Generator {
         printGetClassHierarchyListName(printer);
         printIsCipherProperty(printer);
         printModelToJsonMethod(printer);
+        printJsonToModelMethod(printer);
         printCustomExtensionMethods(printer);
         printer.unindent();
         printer.print("}");
@@ -578,7 +581,18 @@ public class ModelMetaGenerator implements Generator {
      */
     protected void printModelToJsonMethod(
             final Printer printer) {
-        new ModelToJsonMethodGenerator(printer).generate();
+        new ModelToJsonMethodGenerator(modelMetaDesc, printer).generate();
+    }
+    
+    /**
+     * Generates the {@code jsonToModel} method.
+     * 
+     * @param printer
+     *            the printer
+     */
+    protected void printJsonToModelMethod(
+            final Printer printer) {
+        new JsonToModelMethodGenerator(modelMetaDesc, printer).generate();
     }
     
     /**
@@ -1905,22 +1919,64 @@ public class ModelMetaGenerator implements Generator {
     /**
      * @author Takao Nakaguchi
      */
-    protected class ModelToJsonMethodGenerator extends
+    protected static class ModelToJsonMethodGenerator extends
             SimpleDataTypeVisitor<Void, AttributeMetaDesc, RuntimeException> {
+        @SuppressWarnings("serial")
+        private static final Set<String> toStringTypes = new HashSet<String>(){{
+            add(Boolean);
+            add(Short);
+            add(Integer);
+            add(Long);
+            add(Float);
+            add(Double);
+        }};
+        @SuppressWarnings("serial")
+        private static final Map<String, String> toStringMethods = new HashMap<String, String>(){{
+            put(Date, "getTime");
+            put(Rating, "getRating");
+        }};
+        @SuppressWarnings("serial")
+        private static final Map<String, String> toStringLiteralMethods = new HashMap<String, String>(){{
+            put(BlobKey, "getKeyString");
+            put(Category, "getCategory");
+            put(Email, "getEmail");
+            put(Link, "getValue");
+            put(PhoneNumber, "getNumber");
+            put(PostalAddress, "getAddress");
+            put(Text, "getValue");
+        }};
+        private static final Set<String> supportedTypes = new HashSet<String>();
+        static{
+            supportedTypes.addAll(toStringTypes);
+            supportedTypes.addAll(toStringMethods.keySet());
+            supportedTypes.addAll(toStringLiteralMethods.keySet());
+            supportedTypes.addAll(Arrays.asList(
+                String, Key, Blob, GeoPt, IMHandle, ShortBlob,
+                User));
+        }
+        private final Printer printer;
+        private ModelMetaDesc modelMetaDesc;
+        private String valueExp = "m";
+
         /**
          * Creates a new {@link ModelToJsonMethodGenerator}.
+         * @param modelMetaDesc the model meta desc
          * @param printer the printer
          */
-        public ModelToJsonMethodGenerator(Printer printer) {
+        public ModelToJsonMethodGenerator(ModelMetaDesc modelMetaDesc, Printer printer) {
+            this.modelMetaDesc = modelMetaDesc;
             this.printer = printer;
         }
 
         /**
          * Creates a new {@link ModelToJsonMethodGenerator}.
+         * @param modelMetaDesc the model meta desc
          * @param printer the printer
          * @param valueExp the expression that represents target value
          */
-        public ModelToJsonMethodGenerator(Printer printer, String valueExp) {
+        public ModelToJsonMethodGenerator(
+                ModelMetaDesc modelMetaDesc, Printer printer, String valueExp) {
+            this.modelMetaDesc = modelMetaDesc;
             this.printer = printer;
             this.valueExp = valueExp;
         }
@@ -1940,7 +1996,9 @@ public class ModelMetaGenerator implements Generator {
                     UnsupportedOperationException.class.getName(),
                     modelMetaDesc.getModelClassName());
             } else {
-                printer.println("%1$s m = (%1$s) model;", modelMetaDesc.getModelClassName());
+                printer.println("%s %s = (%1$s) model;",
+                    modelMetaDesc.getModelClassName(),
+                    valueExp);
                 printer.println("StringBuilder b = new StringBuilder(\"{\");");
                 for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
                     DataType dt = attr.getDataType();
@@ -2150,7 +2208,7 @@ public class ModelMetaGenerator implements Generator {
             printer.println("if(first) first = false;");
             printer.println("else b.append(\",\");");
             type.getElementType().accept(
-                new ModelToJsonMethodGenerator(printer, "v")
+                new ModelToJsonMethodGenerator(modelMetaDesc, printer, "v")
                 , p
                 );
             printer.unindent();
@@ -2210,43 +2268,142 @@ public class ModelMetaGenerator implements Generator {
                     "b.append(\"\\\"\").append(%s).append(\"\\\"\");",
                     getMethodCall);
         }
+    }
 
-        private String valueExp = "m";
+    /**
+     * @author Takao Nakaguchi
+     */
+    protected static class JsonToModelMethodGenerator extends
+            SimpleDataTypeVisitor<Void, AttributeMetaDesc, RuntimeException> {
+        private static final Set<String> supportedTypes = new HashSet<String>();
+        static{
+//            supportedTypes.addAll(toStringTypes);
+//            supportedTypes.addAll(toStringMethods.keySet());
+//            supportedTypes.addAll(toStringLiteralMethods.keySet());
+            supportedTypes.addAll(Arrays.asList(
+                String,// Key, Blob, GeoPt, IMHandle, ShortBlob,
+                //User
+                Date
+                ));
+        }
         private final Printer printer;
+        private ModelMetaDesc modelMetaDesc;
+        private String valueExp;
+
+        /**
+         * Creates a new {@link ModelToJsonMethodGenerator}.
+         * @param modelMetaDesc the model meta desc
+         * @param printer the printer
+         */
+        public JsonToModelMethodGenerator(ModelMetaDesc modelMetaDesc, Printer printer) {
+            this.modelMetaDesc = modelMetaDesc;
+            this.printer = printer;
+            this.valueExp = "j";
+        }
+
+        /**
+         * Generates the modelToJson method.
+         */
+        public void generate() {
+            printer.println("@Override");
+            printer.println(
+                "public %s jsonToModel(String json) {",
+                modelMetaDesc.getModelClassName());
+            printer.indent();
+            if (modelMetaDesc.isAbstrct()) {
+                printer.println(
+                    "throw new %1$s(\"The class(%2$s) is abstract.\");",
+                    UnsupportedOperationException.class.getName(),
+                    modelMetaDesc.getModelClassName());
+            } else {
+                printer.println("%1$s m = new %1$s();",
+                    modelMetaDesc.getModelClassName());
+                printer.println("com.google.appengine.repackaged.org.json.JSONObject %s = null;",
+                    valueExp);
+                printer.println("try{");
+                printer.indent();
+                printer.println("%s = new com.google.appengine.repackaged.org.json.JSONObject(json);",
+                    valueExp);
+                for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
+                    DataType dt = attr.getDataType();
+                    if(!supportedTypes.contains(dt.getClassName()) &&
+                            !supportedTypes.contains(dt.getTypeName()) &&
+                            !(dt instanceof CorePrimitiveType) &&
+                            !(dt instanceof EnumType)){
+                        printer.println("// %s is not supported.", dt.getClassName());
+                        continue;
+                    }
+                    printer.println("if(j.has(\"%s\")){", attr.getAttributeName());
+                    printer.indent();
+                    dt.accept(this, attr);
+                    printer.unindent();
+                    printer.println("}");
+                }
+                printer.unindent();
+                printer.println("} catch(com.google.appengine.repackaged.org.json.JSONException e){");
+                printer.println("}");
+                printer.println("return m;");
+            }
+            printer.unindent();
+            printer.println("}");
+        }
+        
+        @Override
+        public Void visitPrimitiveType(PrimitiveType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            printer.println("m.%s((%s)j.%s(\"%s\"));",
+                p.getWriteMethodName(),
+                type.getClassName(),
+                getValueMethods.get(type.getTypeName()),
+                p.getAttributeName());
+            return null;
+        }
+
+        @Override
+        public Void visitEnumType(EnumType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            printer.println("try{");
+            printer.indent();
+            printer.println("m.%s(%s.valueOf(j.getString(\"%s\")));",
+                p.getWriteMethodName(),
+                type.getClassName(),
+                p.getAttributeName());
+            printer.unindent();
+            printer.println("} catch(IllegalArgumentException e){");
+            printer.println("}");
+            return null;
+        }
+
+        @Override
+        public Void visitStringType(StringType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            String getValueMethod = java.lang.String.format("j.getString(\"%s\")",
+                p.getAttributeName());
+            if(p.isCipher()){
+                getValueMethod = "decrypt(" + getValueMethod + ")";
+            }
+            printer.println("m.%s(" + getValueMethod + ");",
+                p.getWriteMethodName());
+            return null;
+        }
+
+        @Override
+        public Void visitDateType(DateType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            printer.println("m.%s(new java.util.Date(j.getLong(\"%s\")));",
+                p.getWriteMethodName(),
+                p.getAttributeName());
+            return null;
+        }
     }
 
-
     @SuppressWarnings("serial")
-    private static final Set<String> toStringTypes = new HashSet<String>(){{
-        add(Boolean);
-        add(Short);
-        add(Integer);
-        add(Long);
-        add(Float);
-        add(Double);
+    private static final Map<String, String> getValueMethods = new HashMap<String, String>(){{
+        put(Boolean, "getBoolean");
+        put(Short, "getInt");
+        put(Integer, "getInt");
+        put(Long, "getLong");
+        put(Float, "getDouble");
+        put(Double, "getDouble");
     }};
-    @SuppressWarnings("serial")
-    private static final Map<String, String> toStringMethods = new HashMap<String, String>(){{
-        put(Date, "getTime");
-        put(Rating, "getRating");
-    }};
-    @SuppressWarnings("serial")
-    private static final Map<String, String> toStringLiteralMethods = new HashMap<String, String>(){{
-        put(BlobKey, "getKeyString");
-        put(Category, "getCategory");
-        put(Email, "getEmail");
-        put(Link, "getValue");
-        put(PhoneNumber, "getNumber");
-        put(PostalAddress, "getAddress");
-        put(Text, "getValue");
-    }};
-    private static final Set<String> supportedTypes = new HashSet<String>();
-    static{
-        supportedTypes.addAll(toStringTypes);
-        supportedTypes.addAll(toStringMethods.keySet());
-        supportedTypes.addAll(toStringLiteralMethods.keySet());
-        supportedTypes.addAll(Arrays.asList(
-            String, Key, Blob, GeoPt, IMHandle, ShortBlob,
-            User));
-    }
 }
