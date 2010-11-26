@@ -15,7 +15,7 @@ Source:
 <ul>
 <li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/controller/blobstore/IndexController.java">IndexController</a></li>
 <li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/controller/blobstore/UploadController.java">UploadController</a></li>
-<li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/controller/blobstore/DownloadController.java">DownloadController</a></li>
+<li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/controller/blobstore/ShowController.java">ShowController</a></li>
 <li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/controller/blobstore/DeleteController.java">DeleteController</a></li>
 <li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/model/Blobstore.java">Blobstore model</a></li>
 <li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/war/blobstore/index.jsp">index.jsp</a></li>
