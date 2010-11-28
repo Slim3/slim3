@@ -2275,10 +2275,19 @@ public class ModelMetaGenerator implements Generator {
      */
     protected static class JsonToModelMethodGenerator extends
             SimpleDataTypeVisitor<Void, AttributeMetaDesc, RuntimeException> {
+        @SuppressWarnings("serial")
+        private static final Map<String, String> valueOfMethods = new HashMap<String, String>(){{
+            put(Boolean, "Boolean.valueOf");
+            put(Short, "Short.valueOf");
+            put(Integer, "Integer.valueOf");
+            put(Long, "Long.valueOf");
+            put(Float, "Float.valueOf");
+            put(Double, "Double.valueOf");
+        }};
         private static final Set<String> supportedTypes = new HashSet<String>();
         static{
 //            supportedTypes.addAll(toStringTypes);
-//            supportedTypes.addAll(toStringMethods.keySet());
+            supportedTypes.addAll(valueOfMethods.keySet());
 //            supportedTypes.addAll(toStringLiteralMethods.keySet());
             supportedTypes.addAll(Arrays.asList(
                 String,// Key, Blob, GeoPt, IMHandle, ShortBlob,
@@ -2356,6 +2365,24 @@ public class ModelMetaGenerator implements Generator {
                 type.getClassName(),
                 getValueMethods.get(type.getTypeName()),
                 p.getAttributeName());
+            return null;
+        }
+
+        @Override
+        public Void visitCoreReferenceType(CoreReferenceType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            String m = valueOfMethods.get(type.getTypeName());
+            if(m != null){
+                printer.println("try{");
+                printer.indent();
+                printer.println("m.%s(%s(j.getString(\"%s\")));",
+                    p.getWriteMethodName(),
+                    m,
+                    p.getAttributeName());
+                printer.unindent();
+                printer.println("} catch(NumberFormatException e){");
+                printer.println("}");
+            }
             return null;
         }
 
