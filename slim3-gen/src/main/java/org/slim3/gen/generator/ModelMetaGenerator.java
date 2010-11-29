@@ -2284,13 +2284,22 @@ public class ModelMetaGenerator implements Generator {
             put(Float, "Float.valueOf");
             put(Double, "Double.valueOf");
         }};
+        @SuppressWarnings("serial")
+        private static final Map<String, String> getValueMethods = new HashMap<String, String>(){{
+            put(Boolean, "getBoolean");
+            put(Short, "getInt");
+            put(Integer, "getInt");
+            put(Long, "getLong");
+            put(Float, "getDouble");
+            put(Double, "getDouble");
+        }};
         private static final Set<String> supportedTypes = new HashSet<String>();
         static{
 //            supportedTypes.addAll(toStringTypes);
             supportedTypes.addAll(valueOfMethods.keySet());
 //            supportedTypes.addAll(toStringLiteralMethods.keySet());
             supportedTypes.addAll(Arrays.asList(
-                String,// Key, Blob, GeoPt, IMHandle, ShortBlob,
+                String, Key,// Blob, GeoPt, IMHandle, ShortBlob,
                 //User
                 Date
                 ));
@@ -2337,6 +2346,7 @@ public class ModelMetaGenerator implements Generator {
                     DataType dt = attr.getDataType();
                     if(!supportedTypes.contains(dt.getClassName()) &&
                             !supportedTypes.contains(dt.getTypeName()) &&
+                            !(dt instanceof CollectionType) &&
                             !(dt instanceof CorePrimitiveType) &&
                             !(dt instanceof EnumType)){
                         printer.println("// %s is not supported.", dt.getClassName());
@@ -2385,6 +2395,18 @@ public class ModelMetaGenerator implements Generator {
             }
             return null;
         }
+        
+        @Override
+        public Void visitKeyType(KeyType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            printer.println(
+                "m.%s(com.google.appengine.api.datastore.KeyFactory.stringToKey(" +
+                "j.getString(\"%s\")));",
+                p.getWriteMethodName(),
+                p.getAttributeName());
+            // TODO Auto-generated method stub
+            return super.visitKeyType(type, p);
+        }
 
         @Override
         public Void visitEnumType(EnumType type, AttributeMetaDesc p)
@@ -2422,15 +2444,76 @@ public class ModelMetaGenerator implements Generator {
                 p.getAttributeName());
             return null;
         }
-    }
 
-    @SuppressWarnings("serial")
-    private static final Map<String, String> getValueMethods = new HashMap<String, String>(){{
-        put(Boolean, "getBoolean");
-        put(Short, "getInt");
-        put(Integer, "getInt");
-        put(Long, "getLong");
-        put(Float, "getDouble");
-        put(Double, "getDouble");
-    }};
+        @Override
+        public Void visitCollectionType(CollectionType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            DataType et = type.getElementType();
+            if(!supportedTypes.contains(et.getClassName()) &&
+                    !(et instanceof EnumType)){
+                return null;
+            }
+            String container = "java.util.ArrayList";
+            if(type instanceof SortedSetType) container = "java.util.TreeSet";
+            else if(type instanceof SetType) container = "java.util.HashSet";
+            printer.println("%s<%s> elements = new %1$s<%2$s>();",
+                container,
+                type.getElementType().getClassName());
+            printer.println("com.google.appengine.repackaged.org.json.JSONArray array" +
+                " = j.getJSONArray(\"%s\");", p.getAttributeName());
+            printer.println("int n = array.length();");
+            printer.println("for(int i = 0; i < n; i++){");
+            printer.indent();
+            printer.println("try{");
+            printer.indent();
+            printer.print("elements.add(");
+            type.getElementType().accept(new SimpleDataTypeVisitor<Void, AttributeMetaDesc, RuntimeException>(){
+                @Override
+                public Void visitCoreReferenceType(CoreReferenceType type,
+                        AttributeMetaDesc p) throws RuntimeException {
+                    String m = valueOfMethods.get(type.getClassName());
+                    if(m == null) return null;
+                    printer.printWithoutIndent("%s(array.getString(i))", m);
+                    return null;
+                }
+                @Override
+                public Void visitKeyType(KeyType type, AttributeMetaDesc p)
+                        throws RuntimeException {
+                    printer.printWithoutIndent(
+                        "com.google.appengine.api.datastore.KeyFactory.stringToKey(" +
+                    	"array.getString(i))");
+                    return null;
+                }
+                @Override
+                public Void visitDateType(DateType type, AttributeMetaDesc p)
+                        throws RuntimeException {
+                    printer.printWithoutIndent("new %s(%s.valueOf(array.getString(i)))",
+                        Date, Long);
+                    return null;
+                }
+                @Override
+                public Void visitEnumType(EnumType type, AttributeMetaDesc p)
+                        throws RuntimeException {
+                    printer.printWithoutIndent("%s.valueOf(array.getString(i))",
+                        type.getClassName());
+                    return null;
+                }
+                @Override
+                public Void visitStringType(StringType type, AttributeMetaDesc p)
+                        throws RuntimeException {
+                    printer.printWithoutIndent("array.getString(i)");
+                    return null;
+                }
+            }, p);
+            printer.printlnWithoutIndent(");");
+            printer.unindent();
+            printer.println("} catch(NumberFormatException e){");
+            printer.println("} catch(com.google.appengine.repackaged.org.json.JSONException e){");
+            printer.println("}");
+            printer.unindent();
+            printer.println("}");
+            printer.println("m.%s(elements);", p.getWriteMethodName());
+            return null;
+        }
+    }
 }
