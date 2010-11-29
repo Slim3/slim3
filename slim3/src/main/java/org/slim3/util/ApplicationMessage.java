@@ -28,12 +28,31 @@ import java.util.MissingResourceException;
 public final class ApplicationMessage {
 
     /**
+     * The key of ApplicationMessageDelegate.
+     */
+    public static final String DELEGATE_KEY =
+        "slim3.applicationMessageDelegate";
+
+    /**
      * The delegate.
      */
     protected static ApplicationMessageDelegate delegate;
 
     static {
         setDelegateClass(ResourceBundleApplicationMessageDelegate.class);
+    }
+
+    /**
+     * Initializes this class.
+     */
+    protected static void initialize() {
+        String className =
+            System.getProperty(
+                DELEGATE_KEY,
+                ResourceBundleApplicationMessageDelegate.class.getName());
+        Class<? extends ApplicationMessageDelegate> clazz =
+            ClassUtil.forName(className);
+        setDelegateClass(clazz);
     }
 
     /**

@@ -30,7 +30,16 @@ import java.util.ResourceBundle;
 public class ResourceBundleApplicationMessageDelegate implements
         ApplicationMessageDelegate {
 
-    private ThreadLocal<ResourceBundle> bundles =
+    /**
+     * The resource bundles.
+     */
+    protected ThreadLocal<ResourceBundle> bundles =
+        new ThreadLocal<ResourceBundle>();
+
+    /**
+     * The resource bundles.
+     */
+    protected ThreadLocal<ResourceBundle> defaultBundles =
         new ThreadLocal<ResourceBundle>();
 
     public void setBundle(String bundleName, Locale locale)
@@ -44,10 +53,15 @@ public class ResourceBundleApplicationMessageDelegate implements
         bundles.set(ResourceBundle.getBundle(bundleName, locale, Thread
             .currentThread()
             .getContextClassLoader()));
+        defaultBundles.set(ResourceBundle.getBundle(
+            bundleName,
+            Locale.ENGLISH,
+            Thread.currentThread().getContextClassLoader()));
     }
 
     public void clearBundle() {
         bundles.set(null);
+        defaultBundles.set(null);
     }
 
     public String get(String key, Object... args)
@@ -57,7 +71,17 @@ public class ResourceBundleApplicationMessageDelegate implements
             throw new IllegalStateException(
                 "The bundle attached to the current thread is not found.");
         }
-        String pattern = bundle.getString(key);
+        String pattern = null;
+        try {
+            pattern = bundle.getString(key);
+        } catch (MissingResourceException e) {
+            bundle = defaultBundles.get();
+            if (bundle == null) {
+                throw new IllegalStateException(
+                    "The bundle attached to the current thread is not found.");
+            }
+            pattern = bundle.getString(key);
+        }
         return MessageFormat.format(pattern, args);
     }
 }

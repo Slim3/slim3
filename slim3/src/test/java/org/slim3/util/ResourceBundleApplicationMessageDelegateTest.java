@@ -21,7 +21,7 @@ import static org.junit.Assert.*;
 import java.util.Locale;
 import java.util.MissingResourceException;
 
-import org.junit.Before;
+import org.junit.After;
 import org.junit.Test;
 
 /**
@@ -36,9 +36,9 @@ public class ResourceBundleApplicationMessageDelegateTest {
     /**
      * @throws Exception
      */
-    @Before
-    public void setUp() throws Exception {
-        delegate.setBundle("test", Locale.ENGLISH);
+    @After
+    public void tearDown() throws Exception {
+        delegate.clearBundle();
     }
 
     /**
@@ -46,6 +46,16 @@ public class ResourceBundleApplicationMessageDelegateTest {
      */
     @Test
     public void get() throws Exception {
+        delegate.setBundle("test", Locale.ENGLISH);
+        assertThat(delegate.get("aaa", "hoge"), is("hoge is required."));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getForUnknownLocale() throws Exception {
+        delegate.setBundle("test", Locale.FRANCE);
         assertThat(delegate.get("aaa", "hoge"), is("hoge is required."));
     }
 
@@ -54,6 +64,7 @@ public class ResourceBundleApplicationMessageDelegateTest {
      */
     @Test(expected = MissingResourceException.class)
     public void getWhenMessageIsNotFound() throws Exception {
+        delegate.setBundle("test", Locale.ENGLISH);
         delegate.get("xxx");
     }
 }

@@ -39,6 +39,7 @@ public class ApplicationMessageSetDelegateClassTest {
      */
     @After
     public void tearDown() throws Exception {
+        System.clearProperty(ApplicationMessage.DELEGATE_KEY);
         ApplicationMessage.clearBundle();
         ApplicationMessage
             .setDelegateClass(ResourceBundleApplicationMessageDelegate.class);
@@ -49,6 +50,17 @@ public class ApplicationMessageSetDelegateClassTest {
      */
     @Test
     public void delegate() throws Exception {
+        assertThat(ApplicationMessage.delegate, is(MyDelegate.class));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void initialize() throws Exception {
+        System.setProperty(ApplicationMessage.DELEGATE_KEY, MyDelegate.class
+            .getName());
+        ApplicationMessage.initialize();
         assertThat(ApplicationMessage.delegate, is(MyDelegate.class));
     }
 
