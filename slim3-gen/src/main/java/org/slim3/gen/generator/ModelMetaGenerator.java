@@ -92,6 +92,7 @@ import org.slim3.gen.datastore.PrimitiveIntType;
 import org.slim3.gen.datastore.PrimitiveLongType;
 import org.slim3.gen.datastore.PrimitiveShortType;
 import org.slim3.gen.datastore.PrimitiveType;
+import org.slim3.gen.datastore.RatingType;
 import org.slim3.gen.datastore.SetType;
 import org.slim3.gen.datastore.ShortBlobType;
 import org.slim3.gen.datastore.ShortType;
@@ -2275,8 +2276,23 @@ public class ModelMetaGenerator implements Generator {
      */
     protected static class JsonToModelMethodGenerator extends
             SimpleDataTypeVisitor<Void, AttributeMetaDesc, RuntimeException> {
+        private static final String Base64 = "com.google.appengine.repackaged.com.google.common.util.Base64";
+        private static final String Base64DecoderException = "com.google.appengine.repackaged.com.google.common.util.Base64DecoderException";
+        private static final String JSONArray = "com.google.appengine.repackaged.org.json.JSONArray";
+        private static final String JSONException = "com.google.appengine.repackaged.org.json.JSONException";
+        private static final String JSONObject = "com.google.appengine.repackaged.org.json.JSONObject";
+        private static final String KeyFactory = "com.google.appengine.api.datastore.KeyFactory";
         @SuppressWarnings("serial")
-        private static final Map<String, String> valueOfMethods = new HashMap<String, String>(){{
+        private static final Set<String> fromStringTypes = new HashSet<String>(){{
+            add(BlobKey);
+            add(Category);
+            add(Email);
+            add(Link);
+            add(PhoneNumber);
+            add(PostalAddress);
+        }};
+        @SuppressWarnings("serial")
+        private static final Map<String, String> fromStringMethods = new HashMap<String, String>(){{
             put(Boolean, "Boolean.valueOf");
             put(Short, "Short.valueOf");
             put(Integer, "Integer.valueOf");
@@ -2285,28 +2301,28 @@ public class ModelMetaGenerator implements Generator {
             put(Double, "Double.valueOf");
         }};
         @SuppressWarnings("serial")
-        private static final Map<String, String> getValueMethods = new HashMap<String, String>(){{
-            put(Boolean, "getBoolean");
-            put(Short, "getInt");
-            put(Integer, "getInt");
-            put(Long, "getLong");
-            put(Float, "getDouble");
-            put(Double, "getDouble");
+        private static final Map<String, String> getPrimitiveMethods = new HashMap<String, String>(){{
+            put("boolean", "optBoolean");
+            put("short", "optInt");
+            put("int", "optInt");
+            put("long", "optLong");
+            put("float", "optDouble");
+            put("double", "optDouble");
         }};
         private static final Set<String> supportedTypes = new HashSet<String>();
         static{
-//            supportedTypes.addAll(toStringTypes);
-            supportedTypes.addAll(valueOfMethods.keySet());
-//            supportedTypes.addAll(toStringLiteralMethods.keySet());
+            supportedTypes.addAll(fromStringTypes);
+            supportedTypes.addAll(fromStringMethods.keySet());
             supportedTypes.addAll(Arrays.asList(
-                String, Key,// Blob, GeoPt, IMHandle, ShortBlob,
-                //User
-                Date
+                String, Key, Blob, GeoPt, IMHandle, ShortBlob,
+                User, Date, Rating, Text
                 ));
         }
         private final Printer printer;
         private ModelMetaDesc modelMetaDesc;
-        private String valueExp;
+        private String setterExp;
+        private String jsonObjExp;
+        private String jsonObjMethodArgExp;
 
         /**
          * Creates a new {@link ModelToJsonMethodGenerator}.
@@ -2316,7 +2332,6 @@ public class ModelMetaGenerator implements Generator {
         public JsonToModelMethodGenerator(ModelMetaDesc modelMetaDesc, Printer printer) {
             this.modelMetaDesc = modelMetaDesc;
             this.printer = printer;
-            this.valueExp = "j";
         }
 
         /**
@@ -2334,14 +2349,13 @@ public class ModelMetaGenerator implements Generator {
                     UnsupportedOperationException.class.getName(),
                     modelMetaDesc.getModelClassName());
             } else {
+                jsonObjExp = "j";
                 printer.println("%1$s m = new %1$s();",
                     modelMetaDesc.getModelClassName());
-                printer.println("com.google.appengine.repackaged.org.json.JSONObject %s = null;",
-                    valueExp);
+                printer.println("%s %s = null;", JSONObject, jsonObjExp);
                 printer.println("try{");
                 printer.indent();
-                printer.println("%s = new com.google.appengine.repackaged.org.json.JSONObject(json);",
-                    valueExp);
+                printer.println("%s = new %s(json);", jsonObjExp, JSONObject);
                 for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
                     DataType dt = attr.getDataType();
                     if(!supportedTypes.contains(dt.getClassName()) &&
@@ -2352,6 +2366,8 @@ public class ModelMetaGenerator implements Generator {
                         printer.println("// %s is not supported.", dt.getClassName());
                         continue;
                     }
+                    setterExp = "m." + attr.getWriteMethodName();
+                    jsonObjMethodArgExp = "\"" + attr.getAttributeName() + "\"";
                     printer.println("if(j.has(\"%s\")){", attr.getAttributeName());
                     printer.indent();
                     dt.accept(this, attr);
@@ -2359,7 +2375,7 @@ public class ModelMetaGenerator implements Generator {
                     printer.println("}");
                 }
                 printer.unindent();
-                printer.println("} catch(com.google.appengine.repackaged.org.json.JSONException e){");
+                printer.println("} catch(%s e){", JSONException);
                 printer.println("}");
                 printer.println("return m;");
             }
@@ -2370,28 +2386,36 @@ public class ModelMetaGenerator implements Generator {
         @Override
         public Void visitPrimitiveType(PrimitiveType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            printer.println("m.%s((%s)j.%s(\"%s\"));",
-                p.getWriteMethodName(),
+            printer.println("%s((%s)%s.%s(" + jsonObjMethodArgExp + "));",
+                setterExp,
                 type.getClassName(),
-                getValueMethods.get(type.getTypeName()),
-                p.getAttributeName());
+                jsonObjExp,
+                getPrimitiveMethods.get(type.getClassName()));
             return null;
         }
 
         @Override
         public Void visitCoreReferenceType(CoreReferenceType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            String m = valueOfMethods.get(type.getTypeName());
+            if(fromStringTypes.contains(type.getClassName())){
+                printer.println("%s(new %s(%s.getString(" + jsonObjMethodArgExp + ")));",
+                    setterExp,
+                    type.getClassName(),
+                    jsonObjExp);
+                return null;
+            }
+            String m = fromStringMethods.get(type.getTypeName());
             if(m != null){
                 printer.println("try{");
                 printer.indent();
-                printer.println("m.%s(%s(j.getString(\"%s\")));",
-                    p.getWriteMethodName(),
+                printer.println("%s(%s(%s.getString(" + jsonObjMethodArgExp + ")));",
+                    setterExp,
                     m,
-                    p.getAttributeName());
+                    jsonObjExp);
                 printer.unindent();
                 printer.println("} catch(NumberFormatException e){");
                 printer.println("}");
+                return null;
             }
             return null;
         }
@@ -2400,12 +2424,11 @@ public class ModelMetaGenerator implements Generator {
         public Void visitKeyType(KeyType type, AttributeMetaDesc p)
                 throws RuntimeException {
             printer.println(
-                "m.%s(com.google.appengine.api.datastore.KeyFactory.stringToKey(" +
-                "j.getString(\"%s\")));",
-                p.getWriteMethodName(),
-                p.getAttributeName());
-            // TODO Auto-generated method stub
-            return super.visitKeyType(type, p);
+                "%s(%s.stringToKey(%s.getString(" + jsonObjMethodArgExp + ")));",
+                setterExp,
+                KeyFactory,
+                jsonObjExp);
+            return null;
         }
 
         @Override
@@ -2413,10 +2436,10 @@ public class ModelMetaGenerator implements Generator {
                 throws RuntimeException {
             printer.println("try{");
             printer.indent();
-            printer.println("m.%s(%s.valueOf(j.getString(\"%s\")));",
-                p.getWriteMethodName(),
+            printer.println("%s(%s.valueOf(%s.getString(" + jsonObjMethodArgExp + ")));",
+                setterExp,
                 type.getClassName(),
-                p.getAttributeName());
+                jsonObjExp);
             printer.unindent();
             printer.println("} catch(IllegalArgumentException e){");
             printer.println("}");
@@ -2426,22 +2449,149 @@ public class ModelMetaGenerator implements Generator {
         @Override
         public Void visitStringType(StringType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            String getValueMethod = java.lang.String.format("j.getString(\"%s\")",
-                p.getAttributeName());
+            String getValueMethod = java.lang.String.format("%s.getString(%s)",
+                jsonObjExp, jsonObjMethodArgExp);
             if(p.isCipher()){
                 getValueMethod = "decrypt(" + getValueMethod + ")";
             }
-            printer.println("m.%s(" + getValueMethod + ");",
-                p.getWriteMethodName());
+            printer.println("%s(" + getValueMethod + ");", setterExp);
+            return null;
+        }
+        
+        @Override
+        public Void visitTextType(TextType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            String getValueMethod = java.lang.String.format("%s.getString(%s)",
+                jsonObjExp, jsonObjMethodArgExp);
+            if(p.isCipher()){
+                getValueMethod = "decrypt(" + getValueMethod + ")";
+            }
+            printer.println("%s(new %s(" + getValueMethod + "));", setterExp, Text);
+            return null;
+        }
+
+        @Override
+        public Void visitBlobType(BlobType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            printAsBlob(Blob);
+            return null;
+        }
+        
+        @Override
+        public Void visitShortBlobType(ShortBlobType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            printAsBlob(ShortBlob);
             return null;
         }
 
         @Override
         public Void visitDateType(DateType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            printer.println("m.%s(new java.util.Date(j.getLong(\"%s\")));",
-                p.getWriteMethodName(),
-                p.getAttributeName());
+            printer.println("%s(new java.util.Date(%s.getLong(" + jsonObjMethodArgExp + ")));",
+                setterExp,
+                jsonObjExp);
+            return null;
+        }
+        
+        @Override
+        public Void visitGeoPtType(GeoPtType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            printer.println("try{");
+            printer.indent();
+            printer.println("%s o = %s.getJSONObject(" + jsonObjMethodArgExp + ");",
+                JSONObject, jsonObjExp);
+            printer.println("if(o.has(\"latitude\") && o.has(\"longitude\")){");
+            printer.indent();
+            printer.println("%s(new %s(%s.valueOf(o.getString(\"latitude\"))," +
+            	"%3$s.valueOf(o.getString(\"longitude\"))));",
+                setterExp, GeoPt, Float);
+            printer.unindent();
+            printer.println("}");
+            printer.unindent();
+            printer.println("} catch(NumberFormatException e){");
+            printer.println("}");
+            return null;
+        }
+       
+        @Override
+        public Void visitIMHandleType(IMHandleType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            printer.println("%s o = %s.getJSONObject(" + jsonObjMethodArgExp + ");",
+                JSONObject, jsonObjExp);
+            printer.println("if(o.has(\"protocol\") && o.has(\"address\")){");
+            printer.indent();
+            printer.println("%s.Scheme s = null;", IMHandle);
+            printer.println("java.net.URL u = null;");
+            printer.println("try{");
+            printer.indent();
+            printer.println("s = %s.Scheme.valueOf(o.getString(\"protocol\"));",
+                IMHandle);
+            printer.unindent();
+            printer.println("} catch(IllegalArgumentException e){");
+            printer.indent();
+            printer.println("try{");
+            printer.indent();
+            printer.println("u = new java.net.URL(o.getString(\"protocol\"));");
+            printer.unindent();
+            printer.println("} catch(java.net.MalformedURLException ex){");
+            printer.println("}");
+            printer.unindent();
+            printer.println("}");
+            printer.println("if(s != null){");
+            printer.indent();
+            printer.println("%s(new %s(s, o.getString(\"address\")));",
+                setterExp, IMHandle);
+            printer.unindent();
+            printer.println("} else if(u != null){");
+            printer.indent();
+            printer.println("%s(new %s(u, o.getString(\"address\")));",
+                setterExp, IMHandle);
+            printer.unindent();
+            printer.println("}");
+            printer.unindent();
+            printer.println("}");
+            return null;
+        }
+        
+        @Override
+        public Void visitRatingType(RatingType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            printer.println("try{");
+            printer.indent();
+            printer.println("%s(new %s(%s.parseInt(%s.getString(" + jsonObjMethodArgExp + "))));",
+                setterExp, Rating, Integer, jsonObjExp);
+            printer.unindent();
+            printer.println("} catch(NumberFormatException e){");
+            printer.println("}");
+            return null;
+        }
+        
+        @Override
+        public Void visitUserType(UserType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            printer.println("%s o = %s.getJSONObject(" + jsonObjMethodArgExp + ");",
+                JSONObject, jsonObjExp);
+            printer.println("String domain = o.optString(\"authDomain\", null);");
+            printer.println("String email = o.optString(\"email\", null);");
+            printer.println("String uid = o.optString(\"userId\", null);");
+            printer.println("String fid = o.optString(\"federatedIdentity\", null);");
+            printer.println("if(domain != null && email != null){");
+            printer.indent();
+            printer.println("if(uid == null){");
+            printer.indent();
+            printer.println("%s(new %s(email, domain));", setterExp, User);
+            printer.unindent();
+            printer.println("} else if(fid == null){");
+            printer.indent();
+            printer.println("%s(new %s(email, domain, uid));", setterExp, User);
+            printer.unindent();
+            printer.println("} else{");
+            printer.indent();
+            printer.println("%s(new %s(email, domain, uid, fid));", setterExp, User);
+            printer.unindent();
+            printer.println("}");
+            printer.unindent();
+            printer.println("}");
             return null;
         }
 
@@ -2459,61 +2609,37 @@ public class ModelMetaGenerator implements Generator {
             printer.println("%s<%s> elements = new %1$s<%2$s>();",
                 container,
                 type.getElementType().getClassName());
-            printer.println("com.google.appengine.repackaged.org.json.JSONArray array" +
-                " = j.getJSONArray(\"%s\");", p.getAttributeName());
+            printer.println("%s array = %s.optJSONArray(" + jsonObjMethodArgExp + ");",
+                JSONArray, jsonObjExp);
+            printer.println("if(array != null){");
+            printer.indent();
             printer.println("int n = array.length();");
             printer.println("for(int i = 0; i < n; i++){");
             printer.indent();
-            printer.println("try{");
-            printer.indent();
-            printer.print("elements.add(");
-            type.getElementType().accept(new SimpleDataTypeVisitor<Void, AttributeMetaDesc, RuntimeException>(){
-                @Override
-                public Void visitCoreReferenceType(CoreReferenceType type,
-                        AttributeMetaDesc p) throws RuntimeException {
-                    String m = valueOfMethods.get(type.getClassName());
-                    if(m == null) return null;
-                    printer.printWithoutIndent("%s(array.getString(i))", m);
-                    return null;
-                }
-                @Override
-                public Void visitKeyType(KeyType type, AttributeMetaDesc p)
-                        throws RuntimeException {
-                    printer.printWithoutIndent(
-                        "com.google.appengine.api.datastore.KeyFactory.stringToKey(" +
-                    	"array.getString(i))");
-                    return null;
-                }
-                @Override
-                public Void visitDateType(DateType type, AttributeMetaDesc p)
-                        throws RuntimeException {
-                    printer.printWithoutIndent("new %s(%s.valueOf(array.getString(i)))",
-                        Date, Long);
-                    return null;
-                }
-                @Override
-                public Void visitEnumType(EnumType type, AttributeMetaDesc p)
-                        throws RuntimeException {
-                    printer.printWithoutIndent("%s.valueOf(array.getString(i))",
-                        type.getClassName());
-                    return null;
-                }
-                @Override
-                public Void visitStringType(StringType type, AttributeMetaDesc p)
-                        throws RuntimeException {
-                    printer.printWithoutIndent("array.getString(i)");
-                    return null;
-                }
-            }, p);
-            printer.printlnWithoutIndent(");");
-            printer.unindent();
-            printer.println("} catch(NumberFormatException e){");
-            printer.println("} catch(com.google.appengine.repackaged.org.json.JSONException e){");
-            printer.println("}");
+            JsonToModelMethodGenerator gen = new JsonToModelMethodGenerator(modelMetaDesc, printer);
+            gen.setterExp = "elements.add";
+            gen.jsonObjExp = "array";
+            gen.jsonObjMethodArgExp = "i";
+            type.getElementType().accept(gen, p);
             printer.unindent();
             printer.println("}");
             printer.println("m.%s(elements);", p.getWriteMethodName());
+            printer.unindent();
+            printer.println("}");
             return null;
+        }
+
+        private void printAsBlob(String blobClassName) throws RuntimeException{
+            printer.println("try{");
+            printer.indent();
+            printer.println("%s(new %s(%s.decode(%s.getString(" + jsonObjMethodArgExp + "))));",
+                setterExp,
+                blobClassName,
+                Base64,
+                jsonObjExp);
+            printer.unindent();
+            printer.println("} catch(%s e){", Base64DecoderException);
+            printer.println("}");
         }
     }
 }
