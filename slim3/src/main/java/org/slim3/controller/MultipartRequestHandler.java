@@ -26,6 +26,7 @@ import org.slim3.controller.upload.FileItemStream;
 import org.slim3.controller.upload.FileUpload;
 import org.slim3.controller.upload.Streams;
 import org.slim3.util.ArrayUtil;
+import org.slim3.util.StringUtil;
 import org.slim3.util.ThrowableUtil;
 
 /**
@@ -36,6 +37,16 @@ import org.slim3.util.ThrowableUtil;
  * 
  */
 public class MultipartRequestHandler extends RequestHandler {
+
+    /**
+     * The key of maximum allowed size of a complete request.
+     */
+    public static final String SIZE_MAX_KEY = "slim3.uploadSizeMax";
+
+    /**
+     * The key of maximum allowed size of a single uploaded file.
+     */
+    public static final String FILE_SIZE_MAX_KEY = "slim3.uploadFileSizeMax";
 
     private static final int BYTE_ARRAY_SIZE = 8 * 1024;
 
@@ -52,8 +63,7 @@ public class MultipartRequestHandler extends RequestHandler {
     @Override
     public void handle() {
         try {
-            FileUpload upload = new FileUpload();
-            upload.setHeaderEncoding(request.getCharacterEncoding());
+            FileUpload upload = createFileUpload();
             FileItemIterator iter = upload.getItemIterator(request);
             while (iter.hasNext()) {
                 FileItemStream item = iter.next();
@@ -95,5 +105,24 @@ public class MultipartRequestHandler extends RequestHandler {
         } catch (Exception e) {
             ThrowableUtil.wrapAndThrow(e);
         }
+    }
+
+    /**
+     * Creates a {@link FileUpload}.
+     * 
+     * @return a {@link FileUpload}
+     */
+    protected FileUpload createFileUpload() {
+        FileUpload upload = new FileUpload();
+        upload.setHeaderEncoding(request.getCharacterEncoding());
+        String sizeMax = System.getProperty(SIZE_MAX_KEY);
+        if (!StringUtil.isEmpty(sizeMax)) {
+            upload.setSizeMax(Long.valueOf(sizeMax));
+        }
+        String fileSizeMax = System.getProperty(FILE_SIZE_MAX_KEY);
+        if (!StringUtil.isEmpty(fileSizeMax)) {
+            upload.setFileSizeMax(Long.valueOf(fileSizeMax));
+        }
+        return upload;
     }
 }

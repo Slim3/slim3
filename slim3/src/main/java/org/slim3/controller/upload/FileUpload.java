@@ -511,7 +511,7 @@ public class FileUpload {
                                 + " exceeds its maximum permitted "
                                 + " size of "
                                 + pSizeMax
-                                + " characters.", pCount, pSizeMax);
+                                + " bytes.", pCount, pSizeMax);
                         }
                     };
                 }
