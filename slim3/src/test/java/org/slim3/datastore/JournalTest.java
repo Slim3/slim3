@@ -35,7 +35,6 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.apphosting.api.ApiProxy.ApiConfig;
 
 /**
  * @author higa
@@ -44,8 +43,6 @@ import com.google.apphosting.api.ApiProxy.ApiConfig;
 public class JournalTest extends AppEngineTestCase {
 
     private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-
-    private ApiConfig apiConfig = new ApiConfig();
 
     /**
      * @throws Exception
@@ -71,13 +68,13 @@ public class JournalTest extends AppEngineTestCase {
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
         Key key = KeyFactory.createKey("Hoge", 1);
         Key key2 = KeyFactory.createKey("Hoge", 2);
-        DatastoreUtil.put(ds, apiConfig, null, new Entity(key2));
+        DatastoreUtil.put(ds, null, new Entity(key2));
         Map<Key, Entity> journalMap = new LinkedHashMap<Key, Entity>();
         Entity putEntity = new Entity(key);
         journalMap.put(key, putEntity);
         journalMap.put(key2, null);
-        Journal.put(ds, apiConfig, globalTransactionKey, journalMap);
-        Journal.apply(ds, apiConfig, globalTransactionKey);
+        Journal.put(ds, globalTransactionKey, journalMap);
+        Journal.apply(ds, globalTransactionKey);
         assertThat(
             DatastoreUtil.getAsMap(ds, Arrays.asList(key)).get(key),
             is(notNullValue()));
@@ -96,18 +93,18 @@ public class JournalTest extends AppEngineTestCase {
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
         Key key = KeyFactory.createKey("Hoge", 1);
         Key key2 = KeyFactory.createKey("Hoge", 2);
-        DatastoreUtil.put(ds, apiConfig, null, new Entity(key2));
+        DatastoreUtil.put(ds, null, new Entity(key2));
         Map<Key, Entity> journalMap = new LinkedHashMap<Key, Entity>();
         Entity putEntity = new Entity(key);
         journalMap.put(key, putEntity);
         journalMap.put(key2, null);
-        Journal.put(ds, apiConfig, globalTransactionKey, journalMap);
+        Journal.put(ds, globalTransactionKey, journalMap);
         List<Entity> entities =
             new EntityQuery(ds, Journal.KIND).filter(
                 Journal.GLOBAL_TRANSACTION_KEY_PROPERTY,
                 FilterOperator.EQUAL,
                 globalTransactionKey).asList();
-        Journal.apply(ds, apiConfig, entities);
+        Journal.apply(ds, entities);
         assertThat(
             DatastoreUtil.getAsMap(ds, Arrays.asList(key)).get(key),
             is(notNullValue()));
@@ -124,13 +121,13 @@ public class JournalTest extends AppEngineTestCase {
     public void applyWithLocalTransaction() throws Exception {
         Key key = KeyFactory.createKey("Hoge", 1);
         Key key2 = KeyFactory.createKey(key, "Hoge", 2);
-        DatastoreUtil.put(ds, apiConfig, new Entity(key2));
+        DatastoreUtil.put(ds, new Entity(key2));
         Map<Key, Entity> journalMap = new LinkedHashMap<Key, Entity>();
         Entity putEntity = new Entity(key);
         journalMap.put(key, putEntity);
         journalMap.put(key2, null);
         Transaction tx = ds.beginTransaction();
-        Journal.apply(ds, apiConfig, tx, journalMap);
+        Journal.apply(ds, tx, journalMap);
         tx.commit();
         assertThat(
             DatastoreUtil.getAsMap(ds, Arrays.asList(key)).get(key),
@@ -150,7 +147,7 @@ public class JournalTest extends AppEngineTestCase {
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
         Map<Key, Entity> journalMap = new HashMap<Key, Entity>();
         journalMap.put(targetKey, null);
-        Journal.put(ds, apiConfig, globalTransactionKey, journalMap);
+        Journal.put(ds, globalTransactionKey, journalMap);
         List<Key> keys = Journal.getKeys(ds, globalTransactionKey);
         assertThat(keys.size(), is(1));
     }
@@ -170,7 +167,7 @@ public class JournalTest extends AppEngineTestCase {
         journalMap.put(key, putEntity);
         journalMap.put(key2, null);
         List<Entity> entities =
-            Journal.put(ds, apiConfig, globalTransactionKey, journalMap);
+            Journal.put(ds, globalTransactionKey, journalMap);
         assertThat(entities.size(), is(1));
         entities =
             new EntityQuery(ds, Journal.KIND).filter(
@@ -209,7 +206,7 @@ public class JournalTest extends AppEngineTestCase {
         e2.setUnindexedProperty("aaa", blob);
         journalMap.put(key, e);
         journalMap.put(key2, e2);
-        Journal.put(ds, apiConfig, globalTransactionKey, journalMap);
+        Journal.put(ds, globalTransactionKey, journalMap);
         List<Entity> entities =
             new EntityQuery(ds, Journal.KIND).filter(
                 Journal.GLOBAL_TRANSACTION_KEY_PROPERTY,
@@ -243,7 +240,7 @@ public class JournalTest extends AppEngineTestCase {
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
         Map<Key, Entity> journalMap = new HashMap<Key, Entity>();
         journalMap.put(targetKey, null);
-        Journal.put(ds, apiConfig, globalTransactionKey, journalMap);
+        Journal.put(ds, globalTransactionKey, journalMap);
         Journal.deleteInTx(ds, globalTransactionKey);
         assertThat(tester.count(Journal.KIND), is(0));
     }
@@ -258,7 +255,7 @@ public class JournalTest extends AppEngineTestCase {
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
         Map<Key, Entity> journalMap = new HashMap<Key, Entity>();
         journalMap.put(targetKey, null);
-        Journal.put(ds, apiConfig, globalTransactionKey, journalMap);
+        Journal.put(ds, globalTransactionKey, journalMap);
         List<Key> keys = Journal.getKeys(ds, globalTransactionKey);
         Journal.deleteInTx(ds, globalTransactionKey, keys.get(0));
         assertThat(tester.count(Journal.KIND), is(0));

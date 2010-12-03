@@ -24,7 +24,6 @@ import org.slim3.tester.ServletTestCase;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.apphosting.api.ApiProxy.ApiConfig;
 
 /**
  * @author higa
@@ -34,14 +33,12 @@ public class GlobalTransactionServletTest extends ServletTestCase {
 
     private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
-    private ApiConfig apiConfig = new ApiConfig();
-
     private GlobalTransaction gtx;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        gtx = new GlobalTransaction(ds, apiConfig);
+        gtx = new GlobalTransaction(ds);
         gtx.begin();
     }
 

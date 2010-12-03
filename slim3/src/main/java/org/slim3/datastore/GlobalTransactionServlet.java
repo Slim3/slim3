@@ -28,7 +28,6 @@ import org.slim3.util.StringUtil;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Key;
-import com.google.apphosting.api.ApiProxy.ApiConfig;
 
 /**
  * {@link HttpServlet} for Global Transaction.
@@ -97,7 +96,6 @@ public class GlobalTransactionServlet extends HttpServlet {
             throws ServletException, IOException {
         String command = req.getParameter(COMMAND_NAME);
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-        ApiConfig apiConfig = new ApiConfig();
         if (ROLLFORWARD_COMMAND.equalsIgnoreCase(command)) {
             String keyStr = req.getParameter(KEY_NAME);
             if (StringUtil.isEmpty(keyStr)) {
@@ -105,7 +103,7 @@ public class GlobalTransactionServlet extends HttpServlet {
                 return;
             }
             Key key = Datastore.stringToKey(keyStr);
-            GlobalTransaction.rollForward(ds, apiConfig, key);
+            GlobalTransaction.rollForward(ds, key);
         } else if (ROLLBACK_COMMAND.equalsIgnoreCase(command)) {
             String keyStr = req.getParameter(KEY_NAME);
             if (StringUtil.isEmpty(keyStr)) {
@@ -113,7 +111,7 @@ public class GlobalTransactionServlet extends HttpServlet {
                 return;
             }
             Key key = Datastore.stringToKey(keyStr);
-            GlobalTransaction.rollback(ds, apiConfig, key);
+            GlobalTransaction.rollback(ds, key);
         } else {
             logger.warning("The command(" + command + ") is unknown.");
         }

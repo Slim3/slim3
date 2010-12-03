@@ -32,7 +32,6 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.KeyRange;
 import com.google.appengine.api.datastore.Transaction;
-import com.google.apphosting.api.ApiProxy.ApiConfig;
 
 /**
  * A delegate to access datastore service.
@@ -57,11 +56,6 @@ public class DatastoreDelegate {
      * The datastore service.
      */
     protected DatastoreService ds;
-
-    /**
-     * The AppEngine API configuration.
-     */
-    protected ApiConfig apiConfig;
 
     /**
      * The datastore service configuration.
@@ -114,10 +108,8 @@ public class DatastoreDelegate {
      */
     protected DatastoreService createDatastoreService() {
         dsConfig = DatastoreServiceConfig.Builder.withDefaults();
-        apiConfig = new ApiConfig();
         if (deadline != null) {
             dsConfig.deadline(deadline);
-            apiConfig.setDeadlineInSeconds(deadline);
         }
         return DatastoreServiceFactory.getDatastoreService(dsConfig);
     }
@@ -189,7 +181,7 @@ public class DatastoreDelegate {
      * @return a begun global transaction
      */
     public GlobalTransaction beginGlobalTransaction() {
-        GlobalTransaction gtx = new GlobalTransaction(ds, apiConfig);
+        GlobalTransaction gtx = new GlobalTransaction(ds);
         gtx.begin();
         return gtx;
     }
@@ -2241,7 +2233,7 @@ public class DatastoreDelegate {
      *             if the entity parameter is null
      */
     public Key put(Entity entity) throws NullPointerException {
-        return DatastoreUtil.put(ds, apiConfig, entity);
+        return DatastoreUtil.put(ds, entity);
     }
 
     /**
@@ -2254,7 +2246,7 @@ public class DatastoreDelegate {
      *             if the entity parameter is null
      */
     public Key putWithoutTx(Entity entity) throws NullPointerException {
-        return DatastoreUtil.put(ds, apiConfig, (Transaction) null, entity);
+        return DatastoreUtil.put(ds, (Transaction) null, entity);
     }
 
     /**
@@ -2269,7 +2261,7 @@ public class DatastoreDelegate {
      */
     public Key put(Object model) throws NullPointerException {
         Entity entity = DatastoreUtil.modelToEntity(ds, model);
-        return DatastoreUtil.put(ds, apiConfig, entity);
+        return DatastoreUtil.put(ds, entity);
     }
 
     /**
@@ -2283,7 +2275,7 @@ public class DatastoreDelegate {
      */
     public Key putWithoutTx(Object model) throws NullPointerException {
         Entity entity = DatastoreUtil.modelToEntity(ds, model);
-        return DatastoreUtil.put(ds, apiConfig, (Transaction) null, entity);
+        return DatastoreUtil.put(ds, (Transaction) null, entity);
     }
 
     /**
@@ -2302,7 +2294,7 @@ public class DatastoreDelegate {
      */
     public Key put(Transaction tx, Entity entity) throws NullPointerException,
             IllegalStateException {
-        return DatastoreUtil.put(ds, apiConfig, tx, entity);
+        return DatastoreUtil.put(ds, tx, entity);
     }
 
     /**
@@ -2322,7 +2314,7 @@ public class DatastoreDelegate {
     public Key put(Transaction tx, Object model) throws NullPointerException,
             IllegalStateException {
         Entity entity = DatastoreUtil.modelToEntity(ds, model);
-        return DatastoreUtil.put(ds, apiConfig, tx, entity);
+        return DatastoreUtil.put(ds, tx, entity);
     }
 
     /**
@@ -2337,7 +2329,7 @@ public class DatastoreDelegate {
      */
     public List<Key> put(Iterable<?> models) throws NullPointerException {
         List<Entity> entities = DatastoreUtil.modelsToEntities(ds, models);
-        return DatastoreUtil.put(ds, apiConfig, entities);
+        return DatastoreUtil.put(ds, entities);
     }
 
     /**
@@ -2352,7 +2344,7 @@ public class DatastoreDelegate {
     public List<Key> putWithoutTx(Iterable<?> models)
             throws NullPointerException {
         List<Entity> entities = DatastoreUtil.modelsToEntities(ds, models);
-        return DatastoreUtil.putWithoutTx(ds, apiConfig, entities);
+        return DatastoreUtil.put(ds, (Transaction) null, entities);
     }
 
     /**
@@ -2395,7 +2387,7 @@ public class DatastoreDelegate {
     public List<Key> put(Transaction tx, Iterable<?> models)
             throws NullPointerException, IllegalStateException {
         List<Entity> entities = DatastoreUtil.modelsToEntities(ds, models);
-        return DatastoreUtil.put(ds, apiConfig, tx, entities);
+        return DatastoreUtil.put(ds, tx, entities);
     }
 
     /**
@@ -2437,7 +2429,7 @@ public class DatastoreDelegate {
      *             if the keys parameter is null
      */
     public void deleteWithoutTx(Iterable<Key> keys) throws NullPointerException {
-        DatastoreUtil.deleteWithoutTx(ds, keys);
+        DatastoreUtil.delete(ds, (Transaction) null, keys);
     }
 
     /**

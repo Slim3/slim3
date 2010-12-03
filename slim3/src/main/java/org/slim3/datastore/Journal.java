@@ -27,7 +27,6 @@ import com.google.appengine.api.datastore.EntityTranslator;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.apphosting.api.ApiProxy.ApiConfig;
 import com.google.apphosting.api.DatastorePb.PutRequest;
 import com.google.storage.onestore.v3.OnestoreEntity.EntityProto;
 
@@ -71,16 +70,14 @@ public class Journal {
      * 
      * @param ds
      *            the datastore service
-     * @param apiConfig
-     *            the AppEngine API configuration
      * @param globalTransactionKey
      *            the global transaction key
      * @throws NullPointerException
      *             if the globalTransactionKey parameter is null
      * 
      */
-    public static void apply(DatastoreService ds, ApiConfig apiConfig,
-            Key globalTransactionKey) throws NullPointerException {
+    public static void apply(DatastoreService ds, Key globalTransactionKey)
+            throws NullPointerException {
         if (globalTransactionKey == null) {
             throw new NullPointerException(
                 "The globalTransactionKey parameter must not be null.");
@@ -90,7 +87,7 @@ public class Journal {
                 GLOBAL_TRANSACTION_KEY_PROPERTY,
                 FilterOperator.EQUAL,
                 globalTransactionKey).asList();
-        apply(ds, apiConfig, entities);
+        apply(ds, entities);
     }
 
     /**
@@ -98,24 +95,18 @@ public class Journal {
      * 
      * @param ds
      *            the datastore service
-     * @param apiConfig
-     *            the AppEngine API configuration
      * @param entities
      *            the entities
      * @throws NullPointerException
-     *             if the ds parameter is null or if the apiConfig parameter is
-     *             null or if the entities parameter is null
+     *             if the ds parameter is null or if the entities parameter is
+     *             null
      * 
      */
     @SuppressWarnings("unchecked")
-    public static void apply(DatastoreService ds, ApiConfig apiConfig,
-            List<Entity> entities) throws NullPointerException {
+    public static void apply(DatastoreService ds, List<Entity> entities)
+            throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
-        }
-        if (apiConfig == null) {
-            throw new NullPointerException(
-                "The apiConfig parameter must not be null.");
         }
         if (entities == null) {
             throw new NullPointerException(
@@ -127,14 +118,16 @@ public class Journal {
                 (List<Blob>) entity.getProperty(PUT_LIST_PROPERTY);
             List<Key> deleteList =
                 (List<Key>) entity.getProperty(DELETE_LIST_PROPERTY);
+            List<Entity> putEntities = new ArrayList<Entity>();
             if (putList != null) {
                 for (Blob blob : putList) {
                     EntityProto proto = putReq.addEntity();
                     proto.mergeFrom(blob.getBytes());
+                    putEntities.add(EntityTranslator.createFromPb(proto));
                 }
             }
-            if (putReq.entitySize() > 0) {
-                DatastoreUtil.putUsingLowerApi(apiConfig, putReq);
+            if (putEntities.size() > 0) {
+                DatastoreUtil.put(ds, null, putEntities);
             }
             if (deleteList != null) {
                 DatastoreUtil.delete(ds, null, deleteList);
@@ -148,27 +141,19 @@ public class Journal {
      * 
      * @param ds
      *            the datastore service
-     * @param apiConfig
-     *            the AppEngine API configuration
      * @param tx
      *            the transaction
      * @param journals
      *            the journals
      * @throws NullPointerException
-     *             if the ds parameter is null or if the apiConfig parameter is
-     *             null or if the tx parameter is null or if the journals
-     *             parameter is null
+     *             if the ds parameter is null or if the tx parameter is null or
+     *             if the journals parameter is null
      * 
      */
-    public static void apply(DatastoreService ds, ApiConfig apiConfig,
-            Transaction tx, Map<Key, Entity> journals)
-            throws NullPointerException {
+    public static void apply(DatastoreService ds, Transaction tx,
+            Map<Key, Entity> journals) throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
-        }
-        if (apiConfig == null) {
-            throw new NullPointerException(
-                "The apiConfig parameter must not be null.");
         }
         if (tx == null) {
             throw new NullPointerException("The tx parameter must not be null.");
@@ -187,7 +172,7 @@ public class Journal {
                 deleteList.add(key);
             }
         }
-        DatastoreUtil.put(ds, apiConfig, tx, putList);
+        DatastoreUtil.put(ds, tx, putList);
         DatastoreUtil.delete(ds, tx, deleteList);
     }
 
@@ -196,28 +181,21 @@ public class Journal {
      * 
      * @param ds
      *            the datastore service
-     * @param apiConfig
-     *            the AppEngine API configuration
      * @param globalTransactionKey
      *            the global transaction key
      * @param journalMap
      *            the map of journals
      * @return journal entities
      * @throws NullPointerException
-     *             if the ds parameter is null or if the apiConfig parameter is
-     *             null or if the globalTransactionKey parameter is null or if
-     *             the journalMap parameter is null
+     *             if the ds parameter is null or if the globalTransactionKey
+     *             parameter is null or if the journalMap parameter is null
      * 
      */
-    public static List<Entity> put(DatastoreService ds, ApiConfig apiConfig,
+    public static List<Entity> put(DatastoreService ds,
             Key globalTransactionKey, Map<Key, Entity> journalMap)
             throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
-        }
-        if (apiConfig == null) {
-            throw new NullPointerException(
-                "The apiConfig parameter must not be null.");
         }
         if (journalMap == null) {
             throw new NullPointerException(
@@ -241,7 +219,7 @@ public class Journal {
                 && totalSize + size + DatastoreUtil.EXTRA_SIZE > DatastoreUtil.MAX_ENTITY_SIZE) {
                 entity.setUnindexedProperty(PUT_LIST_PROPERTY, putList);
                 entity.setUnindexedProperty(DELETE_LIST_PROPERTY, deleteList);
-                DatastoreUtil.put(ds, apiConfig, null, entity);
+                DatastoreUtil.put(ds, null, entity);
                 entities.add(entity);
                 entity = createEntity(ds, globalTransactionKey);
                 putList = new ArrayList<Blob>();
@@ -259,7 +237,7 @@ public class Journal {
         }
         entity.setUnindexedProperty(PUT_LIST_PROPERTY, putList);
         entity.setUnindexedProperty(DELETE_LIST_PROPERTY, deleteList);
-        DatastoreUtil.put(ds, apiConfig, null, entity);
+        DatastoreUtil.put(ds, null, entity);
         entities.add(entity);
         return entities;
     }

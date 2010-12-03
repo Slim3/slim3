@@ -28,7 +28,6 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.apphosting.api.ApiProxy.ApiConfig;
 
 /**
  * A class to lock a target entity.
@@ -64,11 +63,6 @@ public class Lock {
      * The datastore service.
      */
     protected DatastoreService ds;
-
-    /**
-     * The AppEngine API configuration.
-     */
-    protected ApiConfig apiConfig;
 
     /**
      * The key.
@@ -116,21 +110,17 @@ public class Lock {
      * 
      * @param ds
      *            the datastore service
-     * @param apiConfig
-     *            the AppEngine API configuration
      * @param entity
      *            an entity
      * 
      * @return a {@link Lock}
      * @throws NullPointerException
-     *             if the ds parameter is null or if the apiConfig parameter is
-     *             null or if the entity property is null
+     *             if the ds parameter is null or if the entity property is null
      * @throws IllegalArgumentException
      *             if the kind of the entity is not slim3.Lock
      */
-    public static Lock toLock(DatastoreService ds, ApiConfig apiConfig,
-            Entity entity) throws NullPointerException,
-            IllegalArgumentException {
+    public static Lock toLock(DatastoreService ds, Entity entity)
+            throws NullPointerException, IllegalArgumentException {
         if (entity == null) {
             throw new NullPointerException(
                 "The entity parameter must not be null.");
@@ -147,9 +137,11 @@ public class Lock {
         Key globalTransactionKey =
             (Key) entity.getProperty(GLOBAL_TRANSACTION_KEY_PROPERTY);
         Long timestamp = (Long) entity.getProperty(TIMESTAMP_PROPERTY);
-        return new Lock(ds, apiConfig, globalTransactionKey, entity
-            .getKey()
-            .getParent(), timestamp);
+        return new Lock(
+            ds,
+            globalTransactionKey,
+            entity.getKey().getParent(),
+            timestamp);
     }
 
     /**
@@ -158,8 +150,6 @@ public class Lock {
      * 
      * @param ds
      *            the datastore service
-     * @param apiConfig
-     *            the AppEngine API configuration
      * @param tx
      *            the transaction
      * @param key
@@ -167,17 +157,16 @@ public class Lock {
      * 
      * @return a {@link Lock} specified by the key
      * @throws NullPointerException
-     *             if the ds parameter is null or if the apiConfig parameter is
-     *             null
+     *             if the ds parameter is null
      */
-    public static Lock getOrNull(DatastoreService ds, ApiConfig apiConfig,
-            Transaction tx, Key key) throws NullPointerException {
+    public static Lock getOrNull(DatastoreService ds, Transaction tx, Key key)
+            throws NullPointerException {
         Entity entity =
             DatastoreUtil.getAsMap(ds, tx, Arrays.asList(key)).get(key);
         if (entity == null) {
             return null;
         }
-        return toLock(ds, apiConfig, entity);
+        return toLock(ds, entity);
     }
 
     /**
@@ -212,8 +201,6 @@ public class Lock {
      * 
      * @param ds
      *            the datastore service
-     * @param apiConfig
-     *            the AppEngine API configuration
      * @param globalTransactionKey
      *            the global transaction key
      * @throws NullPointerException
@@ -221,21 +208,17 @@ public class Lock {
      *             parameter is null
      * 
      */
-    public static void deleteInTx(DatastoreService ds, ApiConfig apiConfig,
-            Key globalTransactionKey) throws NullPointerException {
+    public static void deleteInTx(DatastoreService ds, Key globalTransactionKey)
+            throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
-        }
-        if (apiConfig == null) {
-            throw new NullPointerException(
-                "The apiConfig parameter must not be null.");
         }
         if (globalTransactionKey == null) {
             throw new NullPointerException(
                 "The globalTransactionKey parameter must not be null.");
         }
         for (Key key : getKeys(ds, globalTransactionKey)) {
-            deleteInTx(ds, apiConfig, globalTransactionKey, key);
+            deleteInTx(ds, globalTransactionKey, key);
         }
     }
 
@@ -244,27 +227,20 @@ public class Lock {
      * 
      * @param ds
      *            the datastore service
-     * @param apiConfig
-     *            the AppEngine API configuration
      * @param globalTransactionKey
      *            the global transaction key
      * @param locks
      *            the locks
      * @throws NullPointerException
-     *             if the ds parameter is null or if the apiConfig parameter is
-     *             null or if the globalTransactionKey parameter is null or if
-     *             the locks parameter is null
+     *             if the ds parameter is null or if the globalTransactionKey
+     *             parameter is null or if the locks parameter is null
      * 
      */
-    public static void deleteInTx(DatastoreService ds, ApiConfig apiConfig,
+    public static void deleteInTx(DatastoreService ds,
             Key globalTransactionKey, Iterable<Lock> locks)
             throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
-        }
-        if (apiConfig == null) {
-            throw new NullPointerException(
-                "The apiConfig parameter must not be null.");
         }
         if (globalTransactionKey == null) {
             throw new NullPointerException(
@@ -274,12 +250,8 @@ public class Lock {
             throw new NullPointerException(
                 "The locks parameter must not be null.");
         }
-        if (locks instanceof Collection<?>
-            && ((Collection<?>) locks).size() == 0) {
-            return;
-        }
         for (Lock lock : locks) {
-            deleteInTx(ds, apiConfig, globalTransactionKey, lock.key);
+            deleteInTx(ds, globalTransactionKey, lock.key);
         }
     }
 
@@ -288,26 +260,19 @@ public class Lock {
      * 
      * @param ds
      *            the datastore service
-     * @param apiConfig
-     *            the AppEngine API configuration
      * @param globalTransactionKey
      *            the global transaction key
      * @param key
      *            the key
      * 
      * @throws NullPointerException
-     *             if the ds parameter is null or if the apiConfig parameter is
-     *             null or if the globalTransactionKey parameter is null or if
-     *             the key parameter is null
+     *             if the ds parameter is null or if the globalTransactionKey
+     *             parameter is null or if the key parameter is null
      */
-    protected static void deleteInTx(DatastoreService ds, ApiConfig apiConfig,
+    protected static void deleteInTx(DatastoreService ds,
             Key globalTransactionKey, Key key) throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
-        }
-        if (apiConfig == null) {
-            throw new NullPointerException(
-                "The apiConfig parameter must not be null.");
         }
         if (globalTransactionKey == null) {
             throw new NullPointerException(
@@ -319,7 +284,7 @@ public class Lock {
         }
         Transaction tx = ds.beginTransaction();
         try {
-            Lock lock = getOrNull(ds, apiConfig, tx, key);
+            Lock lock = getOrNull(ds, tx, key);
             if (lock != null
                 && globalTransactionKey.equals(lock.globalTransactionKey)) {
                 ds.delete(tx, key);
@@ -485,8 +450,6 @@ public class Lock {
      * 
      * @param ds
      *            the datastore service
-     * @param apiConfig
-     *            the AppEngine API configuration
      * @param globalTransactionKey
      *            the global transaction key
      * @param rootKey
@@ -495,20 +458,14 @@ public class Lock {
      *            the time-stamp
      * 
      * @throws NullPointerException
-     *             if the ds parameter is null or if the apiConfig parameter is
-     *             null or if the rootKey parameter is null or if the timestamp
-     *             parameter is null or if the globalTransactionKey parameter is
-     *             null
+     *             if the ds parameter is null or if the rootKey parameter is
+     *             null or if the timestamp parameter is null or if the
+     *             globalTransactionKey parameter is null
      */
-    public Lock(DatastoreService ds, ApiConfig apiConfig,
-            Key globalTransactionKey, Key rootKey, Long timestamp)
-            throws NullPointerException {
+    public Lock(DatastoreService ds, Key globalTransactionKey, Key rootKey,
+            Long timestamp) throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
-        }
-        if (apiConfig == null) {
-            throw new NullPointerException(
-                "The apiConfig parameter must not be null.");
         }
         if (globalTransactionKey == null) {
             throw new NullPointerException(
@@ -523,7 +480,6 @@ public class Lock {
                 "The timestamp parameter must not be null.");
         }
         this.ds = ds;
-        this.apiConfig = apiConfig;
         this.globalTransactionKey = globalTransactionKey;
         this.key = createKey(rootKey);
         this.rootKey = rootKey;
@@ -553,11 +509,11 @@ public class Lock {
     public void lock() throws ConcurrentModificationException {
         Transaction tx = ds.beginTransaction();
         try {
-            Lock other = getOrNull(ds, apiConfig, tx, key);
+            Lock other = getOrNull(ds, tx, key);
             if (other != null) {
                 verify(other);
             }
-            DatastoreUtil.put(ds, apiConfig, tx, toEntity());
+            DatastoreUtil.put(ds, tx, toEntity());
             tx.commit();
             return;
         } finally {
@@ -589,10 +545,10 @@ public class Lock {
             map = DatastoreUtil.getAsMap(ds, tx, keyList);
             Entity otherEntity = map.remove(key);
             if (otherEntity != null) {
-                Lock other = toLock(ds, apiConfig, otherEntity);
+                Lock other = toLock(ds, otherEntity);
                 verify(other);
             }
-            DatastoreUtil.put(ds, apiConfig, tx, toEntity());
+            DatastoreUtil.put(ds, tx, toEntity());
             tx.commit();
             return map;
         } finally {
@@ -627,24 +583,15 @@ public class Lock {
         Transaction tx = ds.beginTransaction();
         try {
             GlobalTransaction gtx =
-                GlobalTransaction.getOrNull(
-                    ds,
-                    apiConfig,
-                    tx,
-                    other.globalTransactionKey);
+                GlobalTransaction.getOrNull(ds, tx, other.globalTransactionKey);
             if (gtx != null) {
                 if (gtx.valid) {
                     throw createConcurrentModificationException(rootKey);
                 }
                 return;
             }
-            gtx =
-                new GlobalTransaction(
-                    ds,
-                    apiConfig,
-                    other.globalTransactionKey,
-                    false);
-            GlobalTransaction.put(ds, apiConfig, tx, gtx);
+            gtx = new GlobalTransaction(ds, other.globalTransactionKey, false);
+            GlobalTransaction.put(ds, tx, gtx);
             tx.commit();
         } catch (ConcurrentModificationException e) {
             throw createConcurrentModificationException(rootKey, e);

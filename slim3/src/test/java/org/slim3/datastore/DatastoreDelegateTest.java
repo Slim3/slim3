@@ -110,8 +110,6 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
         assertThat(del.getDatastoreService(), is(notNullValue()));
         assertThat(del.dsConfig, is(notNullValue()));
         assertThat(del.dsConfig.getDeadline(), is(deadline));
-        assertThat(del.apiConfig, is(notNullValue()));
-        assertThat(del.apiConfig.getDeadlineInSeconds(), is(deadline));
     }
 
     /**
@@ -123,8 +121,6 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
         assertThat(del.getDatastoreService(), is(notNullValue()));
         assertThat(del.dsConfig, is(notNullValue()));
         assertThat(del.dsConfig.getDeadline(), is(nullValue()));
-        assertThat(del.apiConfig, is(notNullValue()));
-        assertThat(del.apiConfig.getDeadlineInSeconds(), is(nullValue()));
     }
 
     /**
@@ -138,8 +134,6 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
         assertThat(del.getDatastoreService(), is(notNullValue()));
         assertThat(del.dsConfig, is(notNullValue()));
         assertThat(del.dsConfig.getDeadline(), is(deadline));
-        assertThat(del.apiConfig, is(notNullValue()));
-        assertThat(del.apiConfig.getDeadlineInSeconds(), is(deadline));
     }
 
     /**

@@ -32,7 +32,6 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Transaction;
-import com.google.apphosting.api.ApiProxy.ApiConfig;
 
 /**
  * @author higa
@@ -41,8 +40,6 @@ import com.google.apphosting.api.ApiProxy.ApiConfig;
 public class LockTest extends AppEngineTestCase {
 
     private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-
-    private ApiConfig apiConfig = new ApiConfig();
 
     /**
      * @throws Exception
@@ -78,9 +75,8 @@ public class LockTest extends AppEngineTestCase {
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
         long timestamp = System.currentTimeMillis();
         Lock lock =
-            Lock.toLock(ds, apiConfig, new Lock(
+            Lock.toLock(ds, new Lock(
                 ds,
-                apiConfig,
                 globalTransactionKey,
                 rootKey,
                 timestamp).toEntity());
@@ -99,14 +95,13 @@ public class LockTest extends AppEngineTestCase {
         long timestamp = System.currentTimeMillis();
         Key globalTransactionKey =
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
-        DatastoreUtil.put(ds, apiConfig, null, new Lock(
+        DatastoreUtil.put(ds, null, new Lock(
             ds,
-            apiConfig,
             globalTransactionKey,
             rootKey,
             timestamp).toEntity());
         Transaction tx = ds.beginTransaction();
-        Lock lock = Lock.getOrNull(ds, apiConfig, tx, key);
+        Lock lock = Lock.getOrNull(ds, tx, key);
         assertThat(lock.globalTransactionKey, is(globalTransactionKey));
         assertThat(lock.timestamp, is(timestamp));
     }
@@ -119,7 +114,7 @@ public class LockTest extends AppEngineTestCase {
         Key rootKey = KeyFactory.createKey("Hoge", 1);
         Key key = Lock.createKey(rootKey);
         Transaction tx = ds.beginTransaction();
-        assertThat(Lock.getOrNull(ds, apiConfig, tx, key), is(nullValue()));
+        assertThat(Lock.getOrNull(ds, tx, key), is(nullValue()));
     }
 
     /**
@@ -131,10 +126,9 @@ public class LockTest extends AppEngineTestCase {
         long timestamp = System.currentTimeMillis();
         Key globalTransactionKey =
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
-        Lock lock =
-            new Lock(ds, apiConfig, globalTransactionKey, rootKey, timestamp);
-        DatastoreUtil.put(ds, apiConfig, lock.toEntity());
-        Lock.deleteInTx(ds, apiConfig, globalTransactionKey, lock.key);
+        Lock lock = new Lock(ds, globalTransactionKey, rootKey, timestamp);
+        DatastoreUtil.put(ds, lock.toEntity());
+        Lock.deleteInTx(ds, globalTransactionKey, lock.key);
         assertThat(
             DatastoreUtil.getAsMap(ds, Arrays.asList(lock.key)).size(),
             is(0));
@@ -149,11 +143,9 @@ public class LockTest extends AppEngineTestCase {
         long timestamp = System.currentTimeMillis();
         Key globalTransactionKey =
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
-        Lock lock =
-            new Lock(ds, apiConfig, globalTransactionKey, rootKey, timestamp);
-        DatastoreUtil.put(ds, apiConfig, lock.toEntity());
-        Lock.deleteInTx(ds, apiConfig, globalTransactionKey, Arrays
-            .asList(lock));
+        Lock lock = new Lock(ds, globalTransactionKey, rootKey, timestamp);
+        DatastoreUtil.put(ds, lock.toEntity());
+        Lock.deleteInTx(ds, globalTransactionKey, Arrays.asList(lock));
         assertThat(
             DatastoreUtil.getAsMap(ds, Arrays.asList(lock.key)).size(),
             is(0));
@@ -168,10 +160,9 @@ public class LockTest extends AppEngineTestCase {
         long timestamp = System.currentTimeMillis();
         Key globalTransactionKey =
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
-        Lock lock =
-            new Lock(ds, apiConfig, globalTransactionKey, rootKey, timestamp);
-        DatastoreUtil.put(ds, apiConfig, lock.toEntity());
-        Lock.deleteInTx(ds, apiConfig, globalTransactionKey);
+        Lock lock = new Lock(ds, globalTransactionKey, rootKey, timestamp);
+        DatastoreUtil.put(ds, lock.toEntity());
+        Lock.deleteInTx(ds, globalTransactionKey);
         assertThat(
             DatastoreUtil.getAsMap(ds, Arrays.asList(lock.key)).size(),
             is(0));
@@ -186,9 +177,8 @@ public class LockTest extends AppEngineTestCase {
         long timestamp = System.currentTimeMillis();
         Key globalTransactionKey =
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
-        Lock lock =
-            new Lock(ds, apiConfig, globalTransactionKey, rootKey, timestamp);
-        DatastoreUtil.put(ds, apiConfig, lock.toEntity());
+        Lock lock = new Lock(ds, globalTransactionKey, rootKey, timestamp);
+        DatastoreUtil.put(ds, lock.toEntity());
         Lock.deleteWithoutTx(ds, globalTransactionKey);
         assertThat(
             DatastoreUtil.getAsMap(ds, Arrays.asList(lock.key)).size(),
@@ -204,9 +194,8 @@ public class LockTest extends AppEngineTestCase {
         long timestamp = System.currentTimeMillis();
         Key globalTransactionKey =
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
-        Lock lock =
-            new Lock(ds, apiConfig, globalTransactionKey, rootKey, timestamp);
-        DatastoreUtil.put(ds, apiConfig, lock.toEntity());
+        Lock lock = new Lock(ds, globalTransactionKey, rootKey, timestamp);
+        DatastoreUtil.put(ds, lock.toEntity());
         Lock.deleteWithoutTx(ds, Arrays.asList(lock));
         assertThat(tester.count(Lock.KIND), is(0));
     }
@@ -220,9 +209,8 @@ public class LockTest extends AppEngineTestCase {
         long timestamp = System.currentTimeMillis();
         Key globalTransactionKey =
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
-        Lock lock =
-            new Lock(ds, apiConfig, globalTransactionKey, rootKey, timestamp);
-        DatastoreUtil.put(ds, apiConfig, lock.toEntity());
+        Lock lock = new Lock(ds, globalTransactionKey, rootKey, timestamp);
+        DatastoreUtil.put(ds, lock.toEntity());
         List<Key> keys = Lock.getKeys(ds, globalTransactionKey);
         assertThat(keys.size(), is(1));
     }
@@ -232,7 +220,7 @@ public class LockTest extends AppEngineTestCase {
      */
     @Test
     public void verifyAndGetAsMap() throws Exception {
-        Key key = DatastoreUtil.put(ds, apiConfig, null, new Entity("Hoge"));
+        Key key = DatastoreUtil.put(ds, null, new Entity("Hoge"));
         Map<Key, Entity> map =
             Lock.verifyAndGetAsMap(ds, ds.beginTransaction(), key, Arrays
                 .asList(key));
@@ -258,7 +246,7 @@ public class LockTest extends AppEngineTestCase {
     @Test(expected = ConcurrentModificationException.class)
     public void verifyAndGetOrNullWhenLockError() throws Exception {
         Key key = KeyFactory.createKey("Hoge", 1);
-        DatastoreUtil.put(ds, apiConfig, null, new Entity(Lock.createKey(key)));
+        DatastoreUtil.put(ds, null, new Entity(Lock.createKey(key)));
         Lock.verifyAndGetAsMap(ds, ds.beginTransaction(), key, Arrays
             .asList(key));
     }
@@ -273,10 +261,8 @@ public class LockTest extends AppEngineTestCase {
         Key globalTransactionKey =
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
         long timestamp = System.currentTimeMillis();
-        Lock lock =
-            new Lock(ds, apiConfig, globalTransactionKey, rootKey, timestamp);
+        Lock lock = new Lock(ds, globalTransactionKey, rootKey, timestamp);
         assertThat(lock.ds, is(ds));
-        assertThat(lock.apiConfig, is(apiConfig));
         assertThat(lock.key, is(key));
         assertThat(lock.rootKey, is(rootKey));
         assertThat(lock.globalTransactionKey, is(globalTransactionKey));
@@ -293,8 +279,7 @@ public class LockTest extends AppEngineTestCase {
         Key globalTransactionKey =
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
         long timestamp = System.currentTimeMillis();
-        Lock lock =
-            new Lock(ds, apiConfig, globalTransactionKey, rootKey, timestamp);
+        Lock lock = new Lock(ds, globalTransactionKey, rootKey, timestamp);
         Entity entity = lock.toEntity();
         assertThat(entity.getKey(), is(key));
         assertThat(
@@ -314,8 +299,7 @@ public class LockTest extends AppEngineTestCase {
         long timestamp = System.currentTimeMillis();
         Key globalTransactionKey =
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
-        Lock lock =
-            new Lock(ds, apiConfig, globalTransactionKey, rootKey, timestamp);
+        Lock lock = new Lock(ds, globalTransactionKey, rootKey, timestamp);
         lock.lock();
         assertThat(DatastoreUtil.get(ds, lock.getKey()), is(notNullValue()));
     }
@@ -331,10 +315,8 @@ public class LockTest extends AppEngineTestCase {
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
         Key rootKey = KeyFactory.createKey("Hoge", 1);
         long timestamp = System.currentTimeMillis();
-        Lock lock =
-            new Lock(ds, apiConfig, globalTransactionKey, rootKey, timestamp);
-        Lock other =
-            new Lock(ds, apiConfig, globalTransactionKey2, rootKey, timestamp);
+        Lock lock = new Lock(ds, globalTransactionKey, rootKey, timestamp);
+        Lock other = new Lock(ds, globalTransactionKey2, rootKey, timestamp);
         other.lock();
         try {
             lock.lock();
@@ -351,12 +333,11 @@ public class LockTest extends AppEngineTestCase {
     @Test
     public void lockAndGetAsMap() throws Exception {
         Key key = KeyFactory.createKey("Hoge", 1);
-        DatastoreUtil.put(ds, apiConfig, new Entity(key));
+        DatastoreUtil.put(ds, new Entity(key));
         long timestamp = System.currentTimeMillis();
         Key globalTransactionKey =
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
-        Lock lock =
-            new Lock(ds, apiConfig, globalTransactionKey, key, timestamp);
+        Lock lock = new Lock(ds, globalTransactionKey, key, timestamp);
         Map<Key, Entity> map = lock.lockAndGetAsMap(Arrays.asList(key));
         assertThat(map.size(), is(1));
         assertThat(map.get(key), is(notNullValue()));
@@ -372,8 +353,7 @@ public class LockTest extends AppEngineTestCase {
         long timestamp = System.currentTimeMillis();
         Key globalTransactionKey =
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
-        Lock lock =
-            new Lock(ds, apiConfig, globalTransactionKey, key, timestamp);
+        Lock lock = new Lock(ds, globalTransactionKey, key, timestamp);
         assertThat(
             lock.lockAndGetAsMap(Arrays.asList(key)).get(key),
             is(nullValue()));
@@ -391,10 +371,8 @@ public class LockTest extends AppEngineTestCase {
         Key globalTransactionKey2 =
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
         long timestamp = System.currentTimeMillis();
-        Lock lock =
-            new Lock(ds, apiConfig, globalTransactionKey, rootKey, timestamp);
-        Lock other =
-            new Lock(ds, apiConfig, globalTransactionKey2, rootKey, timestamp);
+        Lock lock = new Lock(ds, globalTransactionKey, rootKey, timestamp);
+        Lock other = new Lock(ds, globalTransactionKey2, rootKey, timestamp);
         lock.verify(other);
     }
 
@@ -407,10 +385,8 @@ public class LockTest extends AppEngineTestCase {
         Key globalTransactionKey =
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
         long timestamp = System.currentTimeMillis();
-        Lock lock =
-            new Lock(ds, apiConfig, globalTransactionKey, rootKey, timestamp);
-        Lock other =
-            new Lock(ds, apiConfig, globalTransactionKey, rootKey, timestamp);
+        Lock lock = new Lock(ds, globalTransactionKey, rootKey, timestamp);
+        Lock other = new Lock(ds, globalTransactionKey, rootKey, timestamp);
         lock.verify(other);
     }
 
@@ -425,16 +401,17 @@ public class LockTest extends AppEngineTestCase {
         Key globalTransactionKey2 =
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
         long timestamp = System.currentTimeMillis();
-        Lock lock =
-            new Lock(ds, apiConfig, globalTransactionKey, rootKey, timestamp);
+        Lock lock = new Lock(ds, globalTransactionKey, rootKey, timestamp);
         Lock other =
-            new Lock(ds, apiConfig, globalTransactionKey2, rootKey, timestamp
+            new Lock(ds, globalTransactionKey2, rootKey, timestamp
                 - Lock.TIMEOUT
                 - 1);
         lock.verify(other);
         GlobalTransaction gtx =
-            GlobalTransaction.toGlobalTransaction(ds, apiConfig, DatastoreUtil
-                .get(ds, null, globalTransactionKey2));
+            GlobalTransaction.toGlobalTransaction(ds, DatastoreUtil.get(
+                ds,
+                null,
+                globalTransactionKey2));
         assertThat(gtx.valid, is(false));
     }
 
@@ -449,15 +426,14 @@ public class LockTest extends AppEngineTestCase {
         Key globalTransactionKey2 =
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
         long timestamp = System.currentTimeMillis();
-        Lock lock =
-            new Lock(ds, apiConfig, globalTransactionKey, rootKey, timestamp);
+        Lock lock = new Lock(ds, globalTransactionKey, rootKey, timestamp);
         Lock other =
-            new Lock(ds, apiConfig, globalTransactionKey2, rootKey, timestamp
+            new Lock(ds, globalTransactionKey2, rootKey, timestamp
                 - Lock.TIMEOUT
                 - 1);
         Entity entity = new Entity(globalTransactionKey2);
         entity.setUnindexedProperty(GlobalTransaction.VALID_PROPERTY, true);
-        DatastoreUtil.put(ds, apiConfig, entity);
+        DatastoreUtil.put(ds, entity);
         lock.verify(other);
     }
 
@@ -472,19 +448,20 @@ public class LockTest extends AppEngineTestCase {
         Key globalTransactionKey2 =
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
         long timestamp = System.currentTimeMillis();
-        Lock lock =
-            new Lock(ds, apiConfig, globalTransactionKey, rootKey, timestamp);
+        Lock lock = new Lock(ds, globalTransactionKey, rootKey, timestamp);
         Lock other =
-            new Lock(ds, apiConfig, globalTransactionKey2, rootKey, timestamp
+            new Lock(ds, globalTransactionKey2, rootKey, timestamp
                 - Lock.TIMEOUT
                 - 1);
         Entity entity = new Entity(globalTransactionKey2);
         entity.setUnindexedProperty(GlobalTransaction.VALID_PROPERTY, false);
-        DatastoreUtil.put(ds, apiConfig, entity);
+        DatastoreUtil.put(ds, entity);
         lock.verify(other);
         GlobalTransaction gtx =
-            GlobalTransaction.toGlobalTransaction(ds, apiConfig, DatastoreUtil
-                .get(ds, null, globalTransactionKey2));
+            GlobalTransaction.toGlobalTransaction(ds, DatastoreUtil.get(
+                ds,
+                null,
+                globalTransactionKey2));
         assertThat(gtx.valid, is(false));
     }
 

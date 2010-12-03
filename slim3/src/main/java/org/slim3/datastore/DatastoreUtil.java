@@ -16,7 +16,6 @@
 package org.slim3.datastore;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,7 +27,6 @@ import org.slim3.util.AppEngineUtil;
 import org.slim3.util.ClassUtil;
 import org.slim3.util.Cleanable;
 import org.slim3.util.Cleaner;
-import org.slim3.util.IterableUtil;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
@@ -40,10 +38,7 @@ import com.google.appengine.api.datastore.KeyRange;
 import com.google.appengine.api.datastore.KeyUtil;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.apphosting.api.ApiProxy;
-import com.google.apphosting.api.DatastorePb;
-import com.google.apphosting.api.ApiProxy.ApiConfig;
 import com.google.apphosting.api.DatastorePb.GetSchemaRequest;
-import com.google.apphosting.api.DatastorePb.PutRequest;
 import com.google.apphosting.api.DatastorePb.Schema;
 import com.google.storage.onestore.v3.OnestoreEntity.EntityProto;
 import com.google.storage.onestore.v3.OnestoreEntity.Reference;
@@ -78,8 +73,6 @@ public final class DatastoreUtil {
     private static final String DATASTORE_SERVICE = "datastore_v3";
 
     private static final String GET_SCHEMA_METHOD = "GetSchema";
-
-    private static final String PUT_METHOD = "Put";
 
     /**
      * The cache for {@link ModelMeta}.
@@ -378,9 +371,6 @@ public final class DatastoreUtil {
             throw new NullPointerException(
                 "The keys parameter must not be null.");
         }
-        if (keys instanceof Collection<?> && ((Collection<?>) keys).size() == 0) {
-            return new HashMap<Key, Entity>();
-        }
         return ds.get(keys);
     }
 
@@ -414,9 +404,6 @@ public final class DatastoreUtil {
         if (tx != null && !tx.isActive()) {
             throw new IllegalStateException("The transaction must be active.");
         }
-        if (keys instanceof Collection<?> && ((Collection<?>) keys).size() == 0) {
-            return new HashMap<Key, Entity>();
-        }
         return ds.get(tx, keys);
     }
 
@@ -426,29 +413,23 @@ public final class DatastoreUtil {
      * 
      * @param ds
      *            the datastore service
-     * @param apiConfig
-     *            the AppEngine API configuration
      * @param entity
      *            the entity
      * 
      * @return a key
      * @throws NullPointerException
      *             if the ds parameter is null or if the entity parameter is
-     *             null or if the apiConfig parameter is null
+     *             null
      * @throws IllegalStateException
      *             if the transaction is not null and the transaction is not
      *             active
      */
-    public static Key put(DatastoreService ds, ApiConfig apiConfig,
-            Entity entity) throws NullPointerException, IllegalStateException {
+    public static Key put(DatastoreService ds, Entity entity)
+            throws NullPointerException, IllegalStateException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
         }
-        if (apiConfig == null) {
-            throw new NullPointerException(
-                "The apiConfig parameter must not be null.");
-        }
-        return put(ds, apiConfig, ds.getCurrentTransaction(null), entity);
+        return put(ds, ds.getCurrentTransaction(null), entity);
     }
 
     /**
@@ -456,8 +437,6 @@ public final class DatastoreUtil {
      * 
      * @param ds
      *            the datastore service
-     * @param apiConfig
-     *            the AppEngine API configuration
      * @param tx
      *            the transaction
      * @param entity
@@ -465,31 +444,22 @@ public final class DatastoreUtil {
      * 
      * @return a key
      * @throws NullPointerException
-     *             if the ds parameter is null or if the apiConfig parameter is
-     *             null or if the entity parameter is null
+     *             if the ds parameter is null or if the entity parameter is
+     *             null
      * @throws IllegalStateException
      *             if the transaction is not null and the transaction is not
      *             active
      */
-    public static Key put(DatastoreService ds, ApiConfig apiConfig,
-            Transaction tx, Entity entity) throws NullPointerException,
-            IllegalStateException {
+    public static Key put(DatastoreService ds, Transaction tx, Entity entity)
+            throws NullPointerException, IllegalStateException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
-        }
-        if (apiConfig == null) {
-            throw new NullPointerException(
-                "The apiConfig parameter must not be null.");
         }
         if (tx != null && !tx.isActive()) {
             throw new IllegalStateException("The transaction must be active.");
         }
         assignKeyIfNecessary(ds, entity);
-        EntityProto entityProto = EntityTranslator.convertToPb(entity);
-        PutRequest req = createPutRequest(tx);
-        req.addEntity(entityProto);
-        putUsingLowerApi(apiConfig, req);
-        return entity.getKey();
+        return ds.put(tx, entity);
     }
 
     /**
@@ -499,63 +469,17 @@ public final class DatastoreUtil {
      *            the datastore service
      * @param entities
      *            the entities
-     * @param apiConfig
-     *            the AppEngine API configuration
      * @return a list of keys
      * @throws NullPointerException
-     *             if the ds parameter is null or if the apiConfig parameter is
-     *             null or if the entities parameter is null
+     *             if the ds parameter is null or if the entities parameter is
+     *             null
      */
-    public static List<Key> put(DatastoreService ds, ApiConfig apiConfig,
-            Iterable<Entity> entities) throws NullPointerException {
-        if (ds == null) {
-            throw new NullPointerException("The ds parameter must not be null.");
-        }
-        if (apiConfig == null) {
-            throw new NullPointerException(
-                "The apiConfig parameter must not be null.");
-        }
-        Transaction tx = ds.getCurrentTransaction(null);
-        if (tx == null) {
-            return putWithoutTx(ds, apiConfig, entities);
-        }
-        return put(ds, apiConfig, tx, entities);
-    }
-
-    /**
-     * Puts the entities to datastore without transaction.
-     * 
-     * @param ds
-     *            the datastore service
-     * @param apiConfig
-     *            the AppEngine API configuration
-     * @param entities
-     *            the entities
-     * 
-     * @return a list of keys
-     * @throws NullPointerException
-     *             if the ds parameter is null or if the apiConfig parameter is
-     *             null or if the entities parameter is null
-     */
-    public static List<Key> putWithoutTx(DatastoreService ds,
-            ApiConfig apiConfig, Iterable<Entity> entities)
+    public static List<Key> put(DatastoreService ds, Iterable<Entity> entities)
             throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
         }
-        if (apiConfig == null) {
-            throw new NullPointerException(
-                "The apiConfig parameter must not be null.");
-        }
-        if (entities == null) {
-            throw new NullPointerException(
-                "The entities parameter must not be null.");
-        }
-        assignKeyIfNecessary(ds, entities);
-        List<Key> keyList = toKeyList(entities);
-        List<EntityProto> entityProtoList = toEntityProtoList(entities);
-        putUsingLowerApi(apiConfig, null, entityProtoList);
-        return keyList;
+        return put(ds, ds.getCurrentTransaction(null), entities);
     }
 
     /**
@@ -563,8 +487,6 @@ public final class DatastoreUtil {
      * 
      * @param ds
      *            the datastore service
-     * @param apiConfig
-     *            the AppEngine API configuration
      * @param tx
      *            the transaction
      * @param entities
@@ -572,172 +494,27 @@ public final class DatastoreUtil {
      * 
      * @return a list of keys
      * @throws NullPointerException
-     *             if the ds parameter is null or if the apiConfig parameter is
-     *             null or if the entities parameter is null
+     *             if the ds parameter is null or if the entities parameter is
+     *             null
      * @throws IllegalStateException
      *             if the transaction is not null and the transaction is not
      *             active
      */
-    public static List<Key> put(DatastoreService ds, ApiConfig apiConfig,
-            Transaction tx, Iterable<Entity> entities)
-            throws NullPointerException, IllegalStateException {
+    public static List<Key> put(DatastoreService ds, Transaction tx,
+            Iterable<Entity> entities) throws NullPointerException,
+            IllegalStateException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
         }
-        if (apiConfig == null) {
-            throw new NullPointerException(
-                "The apiConfig parameter must not be null.");
-        }
         if (entities == null) {
             throw new NullPointerException(
                 "The entities parameter must not be null.");
         }
-        if (tx == null) {
-            return putWithoutTx(ds, apiConfig, entities);
-        }
-        if (!tx.isActive()) {
+        if (tx != null && !tx.isActive()) {
             throw new IllegalStateException("The transaction must be active.");
         }
         assignKeyIfNecessary(ds, entities);
-        List<Key> keyList = toKeyList(entities);
-        List<EntityProto> entityProtoList = toEntityProtoList(entities);
-        putUsingLowerApi(apiConfig, tx, entityProtoList);
-        return keyList;
-    }
-
-    /**
-     * Puts the entities using lower level API.
-     * 
-     * @param apiConfig
-     *            the AppEngine API configuration
-     * @param tx
-     *            the transaction
-     * @param entities
-     *            the entities
-     * 
-     * @throws NullPointerException
-     *             if the apiConfig parameter is null or if the entities
-     *             parameter is null
-     */
-    public static void putUsingLowerApi(ApiConfig apiConfig, Transaction tx,
-            Iterable<EntityProto> entities) throws NullPointerException {
-        if (apiConfig == null) {
-            throw new NullPointerException(
-                "The apiConfig parameter must not be null.");
-        }
-        if (entities == null) {
-            throw new NullPointerException(
-                "The entities parameter must not be null.");
-        }
-        PutRequest req = createPutRequest(tx);
-        int totalSize = 0;
-        for (EntityProto e : entities) {
-            int size = e.encodingSize();
-            if ((totalSize != 0 && totalSize + size + EXTRA_SIZE > MAX_ENTITY_SIZE)
-                || req.entitySize() >= MAX_NUMBER_OF_ENTITIES) {
-                putUsingLowerApi(apiConfig, req);
-                req = createPutRequest(tx);
-                totalSize = 0;
-            }
-            req.addEntity(e);
-            totalSize += size + EXTRA_SIZE;
-        }
-        if (req.entitySize() > 0) {
-            putUsingLowerApi(apiConfig, req);
-        }
-    }
-
-    /**
-     * Creates a request for put.
-     * 
-     * @param tx
-     *            the transaction
-     * @return a request for put
-     */
-    protected static PutRequest createPutRequest(Transaction tx) {
-        PutRequest req = new PutRequest();
-        if (tx != null) {
-            DatastorePb.Transaction tx2 = new DatastorePb.Transaction();
-            tx2.setHandle(Long.valueOf(tx.getId()));
-            tx2.setApp(ApiProxy.getCurrentEnvironment().getAppId());
-            req.setTransaction(tx2);
-        }
-        return req;
-    }
-
-    /**
-     * Converts the entities to a list of entities represented as protocol
-     * buffer.
-     * 
-     * @param entities
-     *            the entities
-     * @return a list of entities represented as protocol buffer
-     * @throws NullPointerException
-     *             if the entities parameter is null
-     */
-    protected static List<EntityProto> toEntityProtoList(
-            Iterable<Entity> entities) throws NullPointerException {
-        if (entities == null) {
-            throw new NullPointerException(
-                "The entities parameter must not be null.");
-        }
-        List<EntityProto> list = new ArrayList<EntityProto>();
-        for (Entity e : entities) {
-            list.add(EntityTranslator.convertToPb(e));
-        }
-        return list;
-    }
-
-    /**
-     * Converts the entities to a list of keys.
-     * 
-     * @param entities
-     *            the entities
-     * @return a list of keys
-     * @throws NullPointerException
-     *             if the entities parameter is null
-     */
-    protected static List<Key> toKeyList(Iterable<Entity> entities)
-            throws NullPointerException {
-        if (entities == null) {
-            throw new NullPointerException(
-                "The entities parameter must not be null.");
-        }
-        List<Key> list = new ArrayList<Key>();
-        for (Entity e : entities) {
-            list.add(e.getKey());
-        }
-        return list;
-    }
-
-    /**
-     * Puts the entities using lower level API.
-     * 
-     * @param apiConfig
-     *            the AppEngine API configuration
-     * @param putRequest
-     *            the request for put
-     * 
-     * @throws NullPointerException
-     *             if the apiConfig parameter is null or if the putRequest
-     *             parameter is null
-     */
-    public static void putUsingLowerApi(ApiConfig apiConfig,
-            PutRequest putRequest) throws NullPointerException {
-        if (apiConfig == null) {
-            throw new NullPointerException(
-                "The apiConfig parameter must not be null.");
-        }
-        if (putRequest == null) {
-            throw new NullPointerException(
-                "The putRequest parameter must not be null.");
-        }
-        byte[] requestBuf = putRequest.toByteArray();
-        ApiProxy.makeSyncCall(
-            DATASTORE_SERVICE,
-            PUT_METHOD,
-            requestBuf,
-            apiConfig);
+        return ds.put(tx, entities);
     }
 
     /**
@@ -755,48 +532,7 @@ public final class DatastoreUtil {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
         }
-        if (keys == null) {
-            throw new NullPointerException(
-                "The keys parameter must not be null.");
-        }
-        if (keys instanceof Collection<?> && ((Collection<?>) keys).size() == 0) {
-            return;
-        }
-        Transaction tx = ds.getCurrentTransaction(null);
-        if (tx == null) {
-            deleteWithoutTx(ds, keys);
-        } else {
-            delete(ds, tx, keys);
-        }
-    }
-
-    /**
-     * Deletes entities specified by the keys without transaction.
-     * 
-     * @param ds
-     *            the datastore service
-     * @param keys
-     *            the keys
-     * @throws NullPointerException
-     *             if the ds parameter is null or if the keys parameter is null
-     */
-    public static void deleteWithoutTx(DatastoreService ds, Iterable<Key> keys)
-            throws NullPointerException {
-        if (ds == null) {
-            throw new NullPointerException("The ds parameter must not be null.");
-        }
-        if (keys == null) {
-            throw new NullPointerException(
-                "The keys parameter must not be null.");
-        }
-        if (keys instanceof Collection<?> && ((Collection<?>) keys).size() == 0) {
-            return;
-        }
-        for (Iterable<Key> keys2 : IterableUtil.split(
-            keys,
-            MAX_NUMBER_OF_ENTITIES)) {
-            ds.delete(null, keys2);
-        }
+        delete(ds, ds.getCurrentTransaction(null), keys);
     }
 
     /**
@@ -820,14 +556,10 @@ public final class DatastoreUtil {
             throw new NullPointerException(
                 "The keys parameter must not be null.");
         }
-        if (keys instanceof Collection<?> && ((Collection<?>) keys).size() == 0) {
-            return;
+        if (tx != null && !tx.isActive()) {
+            throw new IllegalStateException("The transaction must be active.");
         }
-        for (Iterable<Key> keys2 : IterableUtil.split(
-            keys,
-            MAX_NUMBER_OF_ENTITIES)) {
-            ds.delete(tx, keys2);
-        }
+        ds.delete(tx, keys);
     }
 
     /**
