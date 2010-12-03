@@ -32,13 +32,13 @@ import org.slim3.datastore.model.Bbb;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.labs.taskqueue.Queue;
-import com.google.appengine.api.labs.taskqueue.QueueFactory;
-import com.google.appengine.api.labs.taskqueue.TaskOptions;
-import com.google.appengine.api.labs.taskqueue.TaskQueuePb.TaskQueueAddRequest;
 import com.google.appengine.api.mail.MailServiceFactory;
 import com.google.appengine.api.mail.MailService.Message;
 import com.google.appengine.api.mail.MailServicePb.MailMessage;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
+import com.google.appengine.api.taskqueue.TaskQueuePb.TaskQueueAddRequest;
 import com.google.appengine.api.urlfetch.HTTPRequest;
 import com.google.appengine.api.urlfetch.HTTPResponse;
 import com.google.appengine.api.urlfetch.URLFetchService;
@@ -177,7 +177,8 @@ public class AppEngineTesterTest {
     @Test
     public void taskQueueForDefaultQueue() throws Exception {
         Queue queue = QueueFactory.getDefaultQueue();
-        queue.add(TaskOptions.Builder.url("/tqHandler").param("key", "aaa"));
+        queue
+            .add(TaskOptions.Builder.withUrl("/tqHandler").param("key", "aaa"));
         assertThat(tester.tasks.size(), is(1));
         TaskQueueAddRequest task = tester.tasks.get(0);
         assertThat(task.getUrl(), is("/tqHandler"));
@@ -191,7 +192,8 @@ public class AppEngineTesterTest {
     @Test
     public void taskQueueForNamedQueue() throws Exception {
         Queue queue = QueueFactory.getQueue("test-queue");
-        queue.add(TaskOptions.Builder.url("/tqHandler").param("key", "aaa"));
+        queue
+            .add(TaskOptions.Builder.withUrl("/tqHandler").param("key", "aaa"));
         assertThat(tester.tasks.size(), is(1));
         TaskQueueAddRequest task = tester.tasks.get(0);
         assertThat(task.getUrl(), is("/tqHandler"));

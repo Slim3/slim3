@@ -35,9 +35,9 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Transaction;
-import com.google.appengine.api.labs.taskqueue.Queue;
-import com.google.appengine.api.labs.taskqueue.QueueFactory;
-import com.google.appengine.api.labs.taskqueue.TaskOptions;
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 import com.google.apphosting.api.DeadlineExceededException;
 import com.google.apphosting.api.ApiProxy.ApiConfig;
 
@@ -368,7 +368,7 @@ public class GlobalTransaction {
         }
         String encodedKey = KeyFactory.keyToString(globalTransactionKey);
         Queue queue = QueueFactory.getQueue(QUEUE_NAME);
-        queue.add(tx, TaskOptions.Builder.url(
+        queue.add(tx, TaskOptions.Builder.withUrl(
             GlobalTransactionServlet.SERVLET_PATH).param(
             GlobalTransactionServlet.COMMAND_NAME,
             GlobalTransactionServlet.ROLLFORWARD_COMMAND).param(
@@ -392,7 +392,7 @@ public class GlobalTransaction {
         }
         String encodedKey = KeyFactory.keyToString(globalTransactionKey);
         Queue queue = QueueFactory.getQueue(QUEUE_NAME);
-        queue.add(null, TaskOptions.Builder.url(
+        queue.add(null, TaskOptions.Builder.withUrl(
             GlobalTransactionServlet.SERVLET_PATH).param(
             GlobalTransactionServlet.COMMAND_NAME,
             GlobalTransactionServlet.ROLLBACK_COMMAND).param(
