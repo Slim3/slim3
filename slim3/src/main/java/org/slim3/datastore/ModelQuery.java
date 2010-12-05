@@ -17,6 +17,7 @@ package org.slim3.datastore;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.slim3.util.ConversionUtil;
@@ -350,6 +351,48 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
                 "In the case of asKeyList(), you cannot specify sortInMemory() except for primary key.");
         }
         return keys;
+    }
+
+    /**
+     * Returns the result as an {@link Iterator}.
+     * 
+     * @return the result as an {@link Iterator}
+     * @throws IllegalStateException
+     *             if in-memory filers are specified or if in-memory sorts are
+     *             specified
+     */
+    public Iterator<M> asIterator() throws IllegalStateException {
+        if (inMemoryFilterCriteria.size() > 0) {
+            throw new IllegalStateException(
+                "In case of asIterator(), you cannot specify filterInMemory().");
+        }
+        if (inMemorySortCriteria.size() > 0) {
+            throw new IllegalStateException(
+                "In case of asIterator(), you cannot specify sortInMemory().");
+        }
+        addFilterIfPolyModel();
+        Iterator<Entity> entityIterator = asEntityIterator();
+        return new ModelIterator<M>(entityIterator, modelMeta);
+    }
+
+    /**
+     * Returns the result as an {@link Iterable}.
+     * 
+     * @return the result as an {@link Iterable}
+     * @throws IllegalStateException
+     *             if in-memory filers are specified or if in-memory sorts are
+     *             specified
+     */
+    public Iterable<M> asIterable() throws IllegalStateException {
+        if (inMemoryFilterCriteria.size() > 0) {
+            throw new IllegalStateException(
+                "In case of asIterator(), you cannot specify filterInMemory().");
+        }
+        if (inMemorySortCriteria.size() > 0) {
+            throw new IllegalStateException(
+                "In case of asIterator(), you cannot specify sortInMemory().");
+        }
+        return new ModelIterable<M>(asIterator());
     }
 
     /**

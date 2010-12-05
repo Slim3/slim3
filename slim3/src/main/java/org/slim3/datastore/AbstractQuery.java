@@ -16,6 +16,7 @@
 package org.slim3.datastore;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.slim3.util.AppEngineUtil;
@@ -794,5 +795,15 @@ public abstract class AbstractQuery<SUB> {
     protected Iterable<Entity> asIterableEntities() {
         PreparedQuery pq = txSet ? ds.prepare(tx, query) : ds.prepare(query);
         return pq.asIterable(fetchOptions);
+    }
+
+    /**
+     * Returns entities as {@link Iterator}.
+     * 
+     * @return entities as {@link Iterator}
+     */
+    protected Iterator<Entity> asEntityIterator() {
+        PreparedQuery pq = txSet ? ds.prepare(tx, query) : ds.prepare(query);
+        return pq.asIterator(fetchOptions);
     }
 }

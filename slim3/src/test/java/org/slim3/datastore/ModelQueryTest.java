@@ -19,6 +19,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
@@ -436,6 +437,65 @@ public class ModelQueryTest extends AppEngineTestCase {
         ModelQuery<Bbb> query2 = new ModelQuery<Bbb>(ds, bbbMeta);
         List<Key> list2 = query2.asKeyList();
         assertThat(list2.size(), is(1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asIterator() throws Exception {
+        DatastoreUtil.put(ds, new Entity("Hoge"));
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(ds, meta);
+        Iterator<Hoge> iterator = query.asIterator();
+        assertThat(iterator.next(), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asIteratorForPolyModel() throws Exception {
+        DatastoreUtil.put(ds, AaaMeta.get().modelToEntity(new Aaa()));
+        DatastoreUtil.put(ds, BbbMeta.get().modelToEntity(new Bbb()));
+        DatastoreUtil.put(ds, CccMeta.get().modelToEntity(new Ccc()));
+
+        ModelQuery<Aaa> query = new ModelQuery<Aaa>(ds, aaaMeta);
+        Iterator<Aaa> iterator = query.asIterator();
+        assertThat(
+            iterator.next().getClass().getName(),
+            is(Aaa.class.getName()));
+        assertThat(
+            iterator.next().getClass().getName(),
+            is(Bbb.class.getName()));
+        assertThat(
+            iterator.next().getClass().getName(),
+            is(Ccc.class.getName()));
+        assertThat(iterator.hasNext(), is(false));
+
+        ModelQuery<Bbb> query2 = new ModelQuery<Bbb>(ds, bbbMeta);
+        Iterator<Bbb> iterator2 = query2.asIterator();
+        assertThat(iterator2.next().getClass().getName(), is(Bbb.class
+            .getName()));
+        assertThat(iterator2.next().getClass().getName(), is(Ccc.class
+            .getName()));
+        assertThat(iterator2.hasNext(), is(false));
+
+        ModelQuery<Ccc> query3 = new ModelQuery<Ccc>(ds, cccMeta);
+        Iterator<Ccc> iterator3 = query3.asIterator();
+        assertThat(iterator3.next().getClass().getName(), is(Ccc.class
+            .getName()));
+        assertThat(iterator3.hasNext(), is(false));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asIterable() throws Exception {
+        DatastoreUtil.put(ds, new Entity("Hoge"));
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(ds, meta);
+        Iterable<Hoge> iterable = query.asIterable();
+        assertThat(iterable.iterator(), is(notNullValue()));
     }
 
     /**

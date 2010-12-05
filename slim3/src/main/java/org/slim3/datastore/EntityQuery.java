@@ -138,7 +138,7 @@ public class EntityQuery extends AbstractQuery<EntityQuery> {
      * @return entities as {@link Iterator}
      */
     public Iterator<Entity> asIterator() {
-        return asIterable().iterator();
+        return asEntityIterator();
     }
 
     @SuppressWarnings("unchecked")

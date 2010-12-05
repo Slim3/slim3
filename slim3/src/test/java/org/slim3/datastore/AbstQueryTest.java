@@ -19,6 +19,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
@@ -216,6 +217,21 @@ public class AbstQueryTest extends AppEngineTestCase {
         for (Entity entity : query.asIterableEntities()) {
             found = true;
             assertThat(entity.getKind(), is("Hoge"));
+        }
+        assertThat(found, is(true));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asEntityIterator() throws Exception {
+        ds.put(new Entity("Hoge"));
+        MyQuery query = new MyQuery(ds, "Hoge");
+        boolean found = false;
+        for (Iterator<Entity> i = query.asEntityIterator(); i.hasNext();) {
+            found = true;
+            assertThat(i.next(), is(notNullValue()));
         }
         assertThat(found, is(true));
     }
