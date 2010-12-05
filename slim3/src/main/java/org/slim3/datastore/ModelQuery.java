@@ -386,11 +386,11 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
     public Iterable<M> asIterable() throws IllegalStateException {
         if (inMemoryFilterCriteria.size() > 0) {
             throw new IllegalStateException(
-                "In case of asIterator(), you cannot specify filterInMemory().");
+                "In case of asIterable(), you cannot specify filterInMemory().");
         }
         if (inMemorySortCriteria.size() > 0) {
             throw new IllegalStateException(
-                "In case of asIterator(), you cannot specify sortInMemory().");
+                "In case of asIterable(), you cannot specify sortInMemory().");
         }
         return new ModelIterable<M>(asIterator());
     }
