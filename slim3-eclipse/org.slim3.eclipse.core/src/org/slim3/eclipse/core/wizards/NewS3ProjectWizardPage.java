@@ -23,12 +23,15 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaConventions;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.jdt.internal.core.JavaElement;
+import org.eclipse.jdt.internal.core.JavaProject;
+import org.eclipse.jdt.internal.core.ProjectReferenceChange;
 import org.eclipse.jdt.internal.corext.util.Messages;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.internal.ui.viewsupport.BasicElementLabels;
@@ -256,7 +259,8 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 			changeFactoryPath(projectHandle, monitor);
 			changeGenSrcDir(projectHandle, monitor);
 			changeRootPackage(projectHandle, rootPackage, monitor);
-			copyAppEngineJarToWebInfLib(projectHandle, monitor);
+			//copyAppEngineJarToWebInfLib(projectHandle, monitor);
+			updateClassPath(projectHandle, false, monitor);
 		} catch(Exception ex) {
 			throw new InvocationTargetException(ex);
 		}
@@ -271,13 +275,13 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 			changeFactoryPath(projectHandle, monitor);
 			changeGenSrcDir(projectHandle, monitor);
 			changeRootPackage(projectHandle, rootPackage, monitor);
-			copyAppEngineJarToWebInfLib(projectHandle, monitor);
-			
+			//copyAppEngineJarToWebInfLib(projectHandle, monitor);
 			if(isAutoGen) {
 				generateModule(projectHandle, rootPackage, monitor);			
 				generateEntryPoint(projectHandle, rootPackage, monitor);
 				generateHostPage(projectHandle, monitor);
 			}
+			updateClassPath(projectHandle, true, monitor);
 		} catch(Exception ex) {
 			throw new InvocationTargetException(ex);
 		}
@@ -446,17 +450,17 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 		}
 	}
 	
-	private void copyAppEngineJarToWebInfLib(IProject projectHandle, IProgressMonitor monitor) throws CoreException {
-		
-		Path dest = new Path(projectHandle.getFullPath().toPortableString() + "/war/WEB-INF/lib");
-		IJavaProject project = JavaCore.create(projectHandle);
-		IPackageFragmentRoot[] roots = project.getPackageFragmentRoots();
-		for(IPackageFragmentRoot root : roots) {
-			if(root.getElementName().startsWith("appengine-api")) {
-				copy(((JavaElement) root).getPath(), dest.append(root.getElementName()), monitor);
-			}
-		}
-	}
+//	private void copyAppEngineJarToWebInfLib(IProject projectHandle, IProgressMonitor monitor) throws CoreException {
+//		
+//		Path dest = new Path(projectHandle.getFullPath().toPortableString() + "/war/WEB-INF/lib");
+//		IJavaProject project = JavaCore.create(projectHandle);
+//		IPackageFragmentRoot[] roots = project.getPackageFragmentRoots();
+//		for(IPackageFragmentRoot root : roots) {
+//			if(root.getElementName().startsWith("appengine-api")) {
+//				copy(((JavaElement) root).getPath(), dest.append(root.getElementName()), monitor);
+//			}
+//		}
+//	}
 	
 	private void copy(IPath srcPath, IPath destPath, IProgressMonitor monitor)
 			throws CoreException {
@@ -507,5 +511,25 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 
     public String queryOverwrite(String pathString) {
 		return ALL;
+	}
+
+    private String GAE_CONTAINER_ID = "com.google.appengine.eclipse.core.GAE_CONTAINER";
+    private String GWT_CONTAINER_ID = "com.google.gwt.eclipse.core.GWT_CONTAINER";
+    
+	private void updateClassPath(IProject projectHandle, boolean isGWT, IProgressMonitor monitor) throws CoreException {
+		IJavaProject project = JavaCore.create(projectHandle);
+		IClasspathEntry[] classpaths = project.getRawClasspath();
+		IClasspathEntry[] newClassPaths;
+		if(isGWT) {
+			newClassPaths = new IClasspathEntry[classpaths.length + 2];
+		} else {
+			newClassPaths = new IClasspathEntry[classpaths.length + 1];
+		}
+		System.arraycopy(classpaths, 0, newClassPaths, 0, classpaths.length);
+		newClassPaths[classpaths.length] = JavaCore.newContainerEntry(new Path(GAE_CONTAINER_ID));
+		if(isGWT) {
+			newClassPaths[classpaths.length + 1] = JavaCore.newContainerEntry(new Path(GWT_CONTAINER_ID));
+		}
+		project.setRawClasspath(newClassPaths, monitor);
 	}
 }
