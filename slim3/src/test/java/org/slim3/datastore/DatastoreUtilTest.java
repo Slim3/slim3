@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 import org.junit.Test;
 import org.slim3.datastore.meta.AaaMeta;
@@ -35,6 +36,7 @@ import org.slim3.datastore.shared.model.Ccc;
 import org.slim3.tester.AppEngineTestCase;
 import org.slim3.util.CipherFactory;
 
+import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -56,6 +58,9 @@ import com.google.storage.onestore.v3.OnestoreEntity.Path.Element;
 public class DatastoreUtilTest extends AppEngineTestCase {
 
     private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+
+    private AsyncDatastoreService ads =
+        DatastoreServiceFactory.getAsyncDatastoreService();
 
     private HogeMeta meta = new HogeMeta();
 
@@ -85,6 +90,17 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void allocateIdsAsync() throws Exception {
+        Future<KeyRange> future =
+            DatastoreUtil.allocateIdsAsync(ads, "Hoge", 2);
+        assertThat(future, is(notNullValue()));
+        assertThat(future.get().getSize(), is(2L));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void allocateIdsWithParentKey() throws Exception {
         Key parentKey = KeyFactory.createKey("Parent", 1);
         KeyRange range = DatastoreUtil.allocateIds(ds, parentKey, "Child", 2);
@@ -96,14 +112,31 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void allocateIdsAsyncWithParentKey() throws Exception {
+        Key parentKey = KeyFactory.createKey("Parent", 1);
+        Future<KeyRange> future =
+            DatastoreUtil.allocateIdsAsync(ads, parentKey, "Child", 2);
+        assertThat(future, is(notNullValue()));
+        assertThat(future.get().getSize(), is(2L));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void allocateId() throws Exception {
+        DatastoreUtil.keysCache.remove("Hoge");
         Key key = DatastoreUtil.allocateId(ds, "Hoge");
         assertThat(key, is(notNullValue()));
         Iterator<Key> keys = DatastoreUtil.keysCache.get("Hoge");
         assertThat(keys, is(notNullValue()));
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 49; i++) {
             DatastoreUtil.allocateId(ds, "Hoge");
+            assertThat(
+                DatastoreUtil.keysCache.get("Hoge"),
+                is(sameInstance(keys)));
         }
+        DatastoreUtil.allocateId(ds, "Hoge");
         assertThat(
             DatastoreUtil.keysCache.get("Hoge"),
             is(not(sameInstance(keys))));
@@ -113,9 +146,32 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void allocateIdAsync() throws Exception {
+        DatastoreUtil.keysCache.remove("Hoge");
+        Key key = DatastoreUtil.allocateIdAsync(ads, "Hoge").get();
+        assertThat(key, is(notNullValue()));
+        Iterator<Key> keys = DatastoreUtil.keysCache.get("Hoge");
+        assertThat(keys, is(nullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void allocateIdWithParentKey() throws Exception {
         Key parentKey = KeyFactory.createKey("Parent", 1);
         Key key = DatastoreUtil.allocateId(ds, parentKey, "Child");
+        assertThat(key, is(notNullValue()));
+        assertThat(key.isComplete(), is(true));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void allocateIdAsyncWithParentKey() throws Exception {
+        Key parentKey = KeyFactory.createKey("Parent", 1);
+        Key key = DatastoreUtil.allocateIdAsync(ads, parentKey, "Child").get();
         assertThat(key, is(notNullValue()));
         assertThat(key.isComplete(), is(true));
     }

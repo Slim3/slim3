@@ -22,12 +22,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 
 import org.slim3.util.AppEngineUtil;
 import org.slim3.util.ClassUtil;
 import org.slim3.util.Cleanable;
 import org.slim3.util.Cleaner;
 
+import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
@@ -37,6 +39,7 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.KeyRange;
 import com.google.appengine.api.datastore.KeyUtil;
 import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.utils.FutureWrapper;
 import com.google.apphosting.api.ApiProxy;
 import com.google.apphosting.api.DatastorePb.GetSchemaRequest;
 import com.google.apphosting.api.DatastorePb.Schema;
@@ -139,6 +142,40 @@ public final class DatastoreUtil {
     }
 
     /**
+     * Allocates a key within a namespace defined by the kind asynchronously.
+     * 
+     * @param ds
+     *            the asynchronous datastore service
+     * @param kind
+     *            the kind
+     * @return a future key within a namespace defined by the kind
+     * @throws NullPointerException
+     *             if the ds parameter is null or if the kind parameter is null
+     */
+    public static Future<Key> allocateIdAsync(AsyncDatastoreService ds,
+            final String kind) throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        if (kind == null) {
+            throw new NullPointerException(
+                "The kind parameter must not be null.");
+        }
+        return new FutureWrapper<KeyRange, Key>(allocateIdsAsync(ds, kind, 1)) {
+
+            @Override
+            protected Throwable convertException(Throwable throwable) {
+                return throwable;
+            }
+
+            @Override
+            protected Key wrap(KeyRange keyRange) throws Exception {
+                return keyRange.iterator().next();
+            }
+        };
+    }
+
+    /**
      * Allocates a key within a namespace defined by the parent key and the
      * kind.
      * 
@@ -172,6 +209,53 @@ public final class DatastoreUtil {
     }
 
     /**
+     * Allocates a key within a namespace defined by the parent key and the kind
+     * asynchronously.
+     * 
+     * @param ds
+     *            the asynchronous datastore service
+     * @param parentKey
+     *            the parent key
+     * @param kind
+     *            the kind
+     * 
+     * @return a key within a namespace defined by the kind and the parent key
+     * @throws NullPointerException
+     *             if the ds parameter is null or if the parentKey parameter is
+     *             null or if the kind parameter is null
+     */
+    public static Future<Key> allocateIdAsync(AsyncDatastoreService ds,
+            Key parentKey, String kind) throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        if (parentKey == null) {
+            throw new NullPointerException(
+                "The parentKey parameter must not be null.");
+        }
+        if (kind == null) {
+            throw new NullPointerException(
+                "The kind parameter must not be null.");
+        }
+        return new FutureWrapper<KeyRange, Key>(allocateIdsAsync(
+            ds,
+            parentKey,
+            kind,
+            1)) {
+
+            @Override
+            protected Throwable convertException(Throwable throwable) {
+                return throwable;
+            }
+
+            @Override
+            protected Key wrap(KeyRange keyRange) throws Exception {
+                return keyRange.iterator().next();
+            }
+        };
+    }
+
+    /**
      * Allocates keys within a namespace defined by the kind.
      * 
      * @param ds
@@ -186,6 +270,31 @@ public final class DatastoreUtil {
      */
     public static KeyRange allocateIds(DatastoreService ds, String kind,
             long num) throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        if (kind == null) {
+            throw new NullPointerException(
+                "The kind parameter must not be null.");
+        }
+        return ds.allocateIds(kind, num);
+    }
+
+    /**
+     * Allocates keys within a namespace defined by the kind asynchronously.
+     * 
+     * @param ds
+     *            the asynchronous datastore service
+     * @param kind
+     *            the kind
+     * @param num
+     *            the number of allocated keys
+     * @return future keys within a namespace defined by the kind
+     * @throws NullPointerException
+     *             if the ds parameter is null or if the kind parameter is null
+     */
+    public static Future<KeyRange> allocateIdsAsync(AsyncDatastoreService ds,
+            String kind, long num) throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
         }
@@ -213,6 +322,38 @@ public final class DatastoreUtil {
      */
     public static KeyRange allocateIds(DatastoreService ds, Key parentKey,
             String kind, long num) throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        if (parentKey == null) {
+            throw new NullPointerException(
+                "The parentKey parameter must not be null.");
+        }
+        if (kind == null) {
+            throw new NullPointerException("The kind parameter is null.");
+        }
+        return ds.allocateIds(parentKey, kind, num);
+    }
+
+    /**
+     * Allocates keys within a namespace defined by the parent key and the kind
+     * asynchronously.
+     * 
+     * @param ds
+     *            the asynchronous datastore service
+     * @param parentKey
+     *            the parent key
+     * @param kind
+     *            the kind
+     * @param num
+     * @return future keys within a namespace defined by the parent key and the
+     *         kind
+     * @throws NullPointerException
+     *             if the ds parameter is null or if the parentKey parameter is
+     *             null or if the kind parameter is null
+     */
+    public static Future<KeyRange> allocateIdsAsync(AsyncDatastoreService ds,
+            Key parentKey, String kind, long num) throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
         }

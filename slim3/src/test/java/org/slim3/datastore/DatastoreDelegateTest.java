@@ -104,10 +104,11 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void datastoreService() throws Exception {
+    public void datastoreServices() throws Exception {
         Double deadline = 1.0;
         DatastoreDelegate del = new DatastoreDelegate(deadline);
         assertThat(del.getDatastoreService(), is(notNullValue()));
+        assertThat(del.getAsyncDatastoreService(), is(notNullValue()));
         assertThat(del.dsConfig, is(notNullValue()));
         assertThat(del.dsConfig.getDeadline(), is(deadline));
     }
@@ -116,9 +117,10 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void datastoreServiceForDefaultConstructor() throws Exception {
+    public void datastoreServicesForDefaultConstructor() throws Exception {
         DatastoreDelegate del = new DatastoreDelegate();
         assertThat(del.getDatastoreService(), is(notNullValue()));
+        assertThat(del.getAsyncDatastoreService(), is(notNullValue()));
         assertThat(del.dsConfig, is(notNullValue()));
         assertThat(del.dsConfig.getDeadline(), is(nullValue()));
     }
@@ -127,11 +129,12 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void datastoreServiceForSystemProperty() throws Exception {
+    public void datastoreServicesForSystemProperty() throws Exception {
         Double deadline = 1.0;
         System.setProperty(DatastoreDelegate.DEADLINE, deadline.toString());
         DatastoreDelegate del = new DatastoreDelegate();
         assertThat(del.getDatastoreService(), is(notNullValue()));
+        assertThat(del.getAsyncDatastoreService(), is(notNullValue()));
         assertThat(del.dsConfig, is(notNullValue()));
         assertThat(del.dsConfig.getDeadline(), is(deadline));
     }
@@ -214,12 +217,46 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
         assertThat(delegate.allocateId("Hoge"), is(not(nullValue())));
         assertThat(delegate.allocateId(Hoge.class), is(not(nullValue())));
         assertThat(delegate.allocateId(meta), is(not(nullValue())));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void allocateIdWithParentKey() throws Exception {
         Key parentKey = KeyFactory.createKey("Parent", 1);
         assertThat(delegate.allocateId(parentKey, "Hoge"), is(not(nullValue())));
         assertThat(
             delegate.allocateId(parentKey, Hoge.class),
             is(not(nullValue())));
         assertThat(delegate.allocateId(parentKey, meta), is(not(nullValue())));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void allocateIdAsync() throws Exception {
+        assertThat(delegate.allocateIdAsync("Hoge"), is(not(nullValue())));
+        assertThat(delegate.allocateIdAsync(Hoge.class), is(not(nullValue())));
+        assertThat(delegate.allocateIdAsync(meta), is(not(nullValue())));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void allocateIdAsyncWithParentKey() throws Exception {
+        Key parentKey = KeyFactory.createKey("Parent", 1);
+        assertThat(
+            delegate.allocateIdAsync(parentKey, "Hoge"),
+            is(not(nullValue())));
+        assertThat(
+            delegate.allocateIdAsync(parentKey, Hoge.class),
+            is(not(nullValue())));
+        assertThat(
+            delegate.allocateIdAsync(parentKey, meta),
+            is(not(nullValue())));
     }
 
     /**
@@ -244,6 +281,24 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void allocateIdsAsync() throws Exception {
+        KeyRange range = delegate.allocateIdsAsync("Hoge", 2).get();
+        assertThat(range, is(notNullValue()));
+        assertThat(range.getSize(), is(2L));
+
+        range = delegate.allocateIdsAsync(Hoge.class, 2).get();
+        assertThat(range, is(notNullValue()));
+        assertThat(range.getSize(), is(2L));
+
+        range = delegate.allocateIdsAsync(meta, 2).get();
+        assertThat(range, is(notNullValue()));
+        assertThat(range.getSize(), is(2L));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void allocateIdsWithParentKey() throws Exception {
         Key parentKey = KeyFactory.createKey("Parent", 1);
         KeyRange range = delegate.allocateIds(parentKey, "Hoge", 2);
@@ -255,6 +310,25 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
         assertEquals(2, range.getSize());
 
         range = delegate.allocateIds(parentKey, meta, 2);
+        assertThat(range, is(notNullValue()));
+        assertThat(range.getSize(), is(2L));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void allocateIdsAsyncWithParentKey() throws Exception {
+        Key parentKey = KeyFactory.createKey("Parent", 1);
+        KeyRange range = delegate.allocateIdsAsync(parentKey, "Hoge", 2).get();
+        assertThat(range, is(notNullValue()));
+        assertThat(range.getSize(), is(2L));
+
+        range = delegate.allocateIdsAsync(parentKey, Hoge.class, 2).get();
+        assertThat(range, is(notNullValue()));
+        assertEquals(2, range.getSize());
+
+        range = delegate.allocateIdsAsync(parentKey, meta, 2).get();
         assertThat(range, is(notNullValue()));
         assertThat(range.getSize(), is(2L));
     }

@@ -165,6 +165,23 @@ public class DatastoreTest extends AppEngineTestCase {
         assertThat(Datastore.allocateId("Hoge"), is(not(nullValue())));
         assertThat(Datastore.allocateId(Hoge.class), is(not(nullValue())));
         assertThat(Datastore.allocateId(meta), is(not(nullValue())));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void allocateIdAsync() throws Exception {
+        assertThat(Datastore.allocateIdAsync("Hoge"), is(not(nullValue())));
+        assertThat(Datastore.allocateIdAsync(Hoge.class), is(not(nullValue())));
+        assertThat(Datastore.allocateIdAsync(meta), is(not(nullValue())));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void allocateIdWithParentKey() throws Exception {
         Key parentKey = KeyFactory.createKey("Parent", 1);
         assertThat(
             Datastore.allocateId(parentKey, "Hoge"),
@@ -173,6 +190,23 @@ public class DatastoreTest extends AppEngineTestCase {
             Datastore.allocateId(parentKey, Hoge.class),
             is(not(nullValue())));
         assertThat(Datastore.allocateId(parentKey, meta), is(not(nullValue())));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void allocateIdAsyncWithParentKey() throws Exception {
+        Key parentKey = KeyFactory.createKey("Parent", 1);
+        assertThat(
+            Datastore.allocateIdAsync(parentKey, "Hoge"),
+            is(not(nullValue())));
+        assertThat(
+            Datastore.allocateIdAsync(parentKey, Hoge.class),
+            is(not(nullValue())));
+        assertThat(
+            Datastore.allocateIdAsync(parentKey, meta),
+            is(not(nullValue())));
     }
 
     /**
@@ -197,6 +231,24 @@ public class DatastoreTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void allocateIdsAsync() throws Exception {
+        KeyRange range = Datastore.allocateIdsAsync("Hoge", 2).get();
+        assertThat(range, is(notNullValue()));
+        assertThat(range.getSize(), is(2L));
+
+        range = Datastore.allocateIdsAsync(Hoge.class, 2).get();
+        assertThat(range, is(notNullValue()));
+        assertThat(range.getSize(), is(2L));
+
+        range = Datastore.allocateIdsAsync(meta, 2).get();
+        assertThat(range, is(notNullValue()));
+        assertThat(range.getSize(), is(2L));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void allocateIdsWithParentKey() throws Exception {
         Key parentKey = KeyFactory.createKey("Parent", 1);
         KeyRange range = Datastore.allocateIds(parentKey, "Hoge", 2);
@@ -208,6 +260,25 @@ public class DatastoreTest extends AppEngineTestCase {
         assertEquals(2, range.getSize());
 
         range = Datastore.allocateIds(parentKey, meta, 2);
+        assertThat(range, is(notNullValue()));
+        assertThat(range.getSize(), is(2L));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void allocateIdsAsyncWithParentKey() throws Exception {
+        Key parentKey = KeyFactory.createKey("Parent", 1);
+        KeyRange range = Datastore.allocateIdsAsync(parentKey, "Hoge", 2).get();
+        assertThat(range, is(notNullValue()));
+        assertThat(range.getSize(), is(2L));
+
+        range = Datastore.allocateIdsAsync(parentKey, Hoge.class, 2).get();
+        assertThat(range, is(notNullValue()));
+        assertEquals(2, range.getSize());
+
+        range = Datastore.allocateIdsAsync(parentKey, meta, 2).get();
         assertThat(range, is(notNullValue()));
         assertThat(range.getSize(), is(2L));
     }

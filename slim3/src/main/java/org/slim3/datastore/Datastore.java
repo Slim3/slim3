@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 import org.slim3.util.CipherFactory;
 import org.slim3.util.ClassUtil;
@@ -187,12 +188,26 @@ public final class Datastore {
      * 
      * @param kind
      *            the kind
-     * @return keys within a namespace defined by the kind
+     * @return a key within a namespace defined by the kind
      * @throws NullPointerException
      *             if the kind parameter is null
      */
     public static Key allocateId(String kind) throws NullPointerException {
         return delegate().allocateId(kind);
+    }
+
+    /**
+     * Allocates a key within a namespace defined by the kind asynchronously.
+     * 
+     * @param kind
+     *            the kind
+     * @return a future key within a namespace defined by the kind
+     * @throws NullPointerException
+     *             if the kind parameter is null
+     */
+    public static Future<Key> allocateIdAsync(String kind)
+            throws NullPointerException {
+        return delegate().allocateIdAsync(kind);
     }
 
     /**
@@ -210,6 +225,21 @@ public final class Datastore {
     }
 
     /**
+     * Allocates a key within a namespace defined by the kind of the model
+     * asynchronously.
+     * 
+     * @param modelClass
+     *            the model class
+     * @return a future key within a namespace defined by the kind of the model
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     */
+    public static Future<Key> allocateIdAsync(Class<?> modelClass)
+            throws NullPointerException {
+        return delegate().allocateIdAsync(modelClass);
+    }
+
+    /**
      * Allocates a key within a namespace defined by the kind of the model.
      * 
      * @param modelMeta
@@ -221,6 +251,21 @@ public final class Datastore {
     public static Key allocateId(ModelMeta<?> modelMeta)
             throws NullPointerException {
         return delegate().allocateId(modelMeta);
+    }
+
+    /**
+     * Allocates a key within a namespace defined by the kind of the model
+     * asynchronously.
+     * 
+     * @param modelMeta
+     *            the meta data of the model
+     * @return a future key within a namespace defined by the kind of the model
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null
+     */
+    public static Future<Key> allocateIdAsync(ModelMeta<?> modelMeta)
+            throws NullPointerException {
+        return delegate().allocateIdAsync(modelMeta);
     }
 
     /**
@@ -239,6 +284,25 @@ public final class Datastore {
     public static Key allocateId(Key parentKey, String kind)
             throws NullPointerException {
         return delegate().allocateId(parentKey, kind);
+    }
+
+    /**
+     * Allocates a key within a namespace defined by the parent key and the kind
+     * asynchronously.
+     * 
+     * @param parentKey
+     *            the parent key
+     * @param kind
+     *            the kind
+     * @return a future key within a namespace defined by the parent key and the
+     *         kind
+     * @throws NullPointerException
+     *             if the parentKey parameter is null or if the kind parameter
+     *             is null
+     */
+    public static Future<Key> allocateIdAsync(Key parentKey, String kind)
+            throws NullPointerException {
+        return delegate().allocateIdAsync(parentKey, kind);
     }
 
     /**
@@ -262,6 +326,25 @@ public final class Datastore {
 
     /**
      * Allocates a key within a namespace defined by the parent key and the kind
+     * of the model asynchronously.
+     * 
+     * @param parentKey
+     *            the parent key
+     * @param modelClass
+     *            the model class
+     * @return a future key within a namespace defined by the parent key and the
+     *         kind of the model
+     * @throws NullPointerException
+     *             if the parentKey parameter is null or if the modelClass
+     *             parameter is null
+     */
+    public static Future<Key> allocateIdAsync(Key parentKey, Class<?> modelClass)
+            throws NullPointerException {
+        return delegate().allocateIdAsync(parentKey, modelClass);
+    }
+
+    /**
+     * Allocates a key within a namespace defined by the parent key and the kind
      * of the model.
      * 
      * @param parentKey
@@ -277,6 +360,25 @@ public final class Datastore {
     public static Key allocateId(Key parentKey, ModelMeta<?> modelMeta)
             throws NullPointerException {
         return delegate().allocateId(parentKey, modelMeta);
+    }
+
+    /**
+     * Allocates a key within a namespace defined by the parent key and the kind
+     * of the model asynchronously.
+     * 
+     * @param parentKey
+     *            the parent key
+     * @param modelMeta
+     *            the meta data of the model
+     * @return a future key within a namespace defined by the parent key and the
+     *         kind of the model
+     * @throws NullPointerException
+     *             if the parentKey parameter is null or if the modelMeta
+     *             parameter is null
+     */
+    public static Future<Key> allocateIdAsync(Key parentKey,
+            ModelMeta<?> modelMeta) throws NullPointerException {
+        return delegate().allocateIdAsync(parentKey, modelMeta);
     }
 
     /**
@@ -296,6 +398,22 @@ public final class Datastore {
     }
 
     /**
+     * Allocates keys within a namespace defined by the kind asynchronously.
+     * 
+     * @param kind
+     *            the kind
+     * @param num
+     *            the number of allocated keys
+     * @return future keys within a namespace defined by the kind
+     * @throws NullPointerException
+     *             if the kind parameter is null
+     */
+    public static Future<KeyRange> allocateIdsAsync(String kind, long num)
+            throws NullPointerException {
+        return delegate().allocateIdsAsync(kind, num);
+    }
+
+    /**
      * Allocates keys within a namespace defined by the kind of the model.
      * 
      * @param modelClass
@@ -312,6 +430,23 @@ public final class Datastore {
     }
 
     /**
+     * Allocates keys within a namespace defined by the kind of the model
+     * asynchronously.
+     * 
+     * @param modelClass
+     *            the model class
+     * @param num
+     *            the number of allocated keys
+     * @return future keys within a namespace defined by the kind of the model
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     */
+    public static Future<KeyRange> allocateIdsAsync(Class<?> modelClass,
+            long num) throws NullPointerException {
+        return delegate().allocateIdsAsync(modelClass, num);
+    }
+
+    /**
      * Allocates keys within a namespace defined by the kind of the model.
      * 
      * @param modelMeta
@@ -322,6 +457,21 @@ public final class Datastore {
      */
     public static KeyRange allocateIds(ModelMeta<?> modelMeta, long num) {
         return delegate().allocateIds(modelMeta, num);
+    }
+
+    /**
+     * Allocates keys within a namespace defined by the kind of the model
+     * asynchronously.
+     * 
+     * @param modelMeta
+     *            the meta data of the model
+     * @param num
+     *            the number of allocated keys
+     * @return future keys within a namespace defined by the kind of the model
+     */
+    public static Future<KeyRange> allocateIdsAsync(ModelMeta<?> modelMeta,
+            long num) {
+        return delegate().allocateIdsAsync(modelMeta, num);
     }
 
     /**
@@ -340,6 +490,26 @@ public final class Datastore {
     public static KeyRange allocateIds(Key parentKey, String kind, int num)
             throws NullPointerException {
         return delegate().allocateIds(parentKey, kind, num);
+    }
+
+    /**
+     * Allocates keys within a namespace defined by the parent key and the kind
+     * asynchronously.
+     * 
+     * @param parentKey
+     *            the parent key
+     * @param kind
+     *            the kind
+     * @param num
+     * @return future keys within a namespace defined by the parent key and the
+     *         kind
+     * @throws NullPointerException
+     *             if the parentKey parameter is null or if the kind parameter
+     *             is null
+     */
+    public static Future<KeyRange> allocateIdsAsync(Key parentKey, String kind,
+            int num) throws NullPointerException {
+        return delegate().allocateIdsAsync(parentKey, kind, num);
     }
 
     /**
@@ -364,6 +534,26 @@ public final class Datastore {
 
     /**
      * Allocates keys within a namespace defined by the parent key and the kind
+     * of the model asynchronously.
+     * 
+     * @param parentKey
+     *            the parent key
+     * @param modelClass
+     *            the model class
+     * @param num
+     * @return future keys within a namespace defined by the parent key and the
+     *         kind of the model
+     * @throws NullPointerException
+     *             if the parentKey parameter is null or if the modelClass
+     *             parameter is null
+     */
+    public static Future<KeyRange> allocateIdsAsync(Key parentKey,
+            Class<?> modelClass, int num) throws NullPointerException {
+        return delegate().allocateIdsAsync(parentKey, modelClass, num);
+    }
+
+    /**
+     * Allocates keys within a namespace defined by the parent key and the kind
      * of the model.
      * 
      * @param parentKey
@@ -380,6 +570,26 @@ public final class Datastore {
     public static KeyRange allocateIds(Key parentKey, ModelMeta<?> modelMeta,
             int num) throws NullPointerException {
         return delegate().allocateIds(parentKey, modelMeta, num);
+    }
+
+    /**
+     * Allocates keys within a namespace defined by the parent key and the kind
+     * of the model asynchronously.
+     * 
+     * @param parentKey
+     *            the parent key
+     * @param modelMeta
+     *            the meta data of the model
+     * @param num
+     * @return future keys within a namespace defined by the parent key and the
+     *         kind of the model
+     * @throws NullPointerException
+     *             if the parentKey parameter is null or if the modelMeta
+     *             parameter is null
+     */
+    public static Future<KeyRange> allocateIdsAsync(Key parentKey,
+            ModelMeta<?> modelMeta, int num) throws NullPointerException {
+        return delegate().allocateIdsAsync(parentKey, modelMeta, num);
     }
 
     /**
