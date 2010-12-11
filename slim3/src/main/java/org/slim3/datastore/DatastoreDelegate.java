@@ -30,10 +30,12 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceConfig;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.KeyRange;
 import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.utils.FutureWrapper;
 
 /**
  * A delegate to access datastore service.
@@ -1046,7 +1048,21 @@ public class DatastoreDelegate {
      */
     public Entity get(Key key) throws NullPointerException,
             EntityNotFoundRuntimeException {
-        return DatastoreUtil.get(ds, key);
+        return get(ds.getCurrentTransaction(null), key);
+    }
+
+    /**
+     * Returns an entity specified by the key asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
+     * 
+     * @param key
+     *            the key
+     * @return a future entity specified by the key
+     * @throws NullPointerException
+     *             if the key parameter is null
+     */
+    public Future<Entity> getAsync(Key key) throws NullPointerException {
+        return getAsync(ds.getCurrentTransaction(null), key);
     }
 
     /**
@@ -1075,6 +1091,32 @@ public class DatastoreDelegate {
     }
 
     /**
+     * Returns a model specified by the key asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param key
+     *            the key
+     * @return a future model specified by the key
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity specified by the key could be found
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
+     */
+    public <M> Future<M> getAsync(Class<M> modelClass, Key key)
+            throws NullPointerException, EntityNotFoundRuntimeException,
+            IllegalArgumentException {
+        return getAsync(getModelMeta(modelClass), key);
+    }
+
+    /**
      * Returns a model specified by the key. If there is a current transaction,
      * this operation will execute within that transaction.
      * 
@@ -1092,13 +1134,27 @@ public class DatastoreDelegate {
      */
     public <M> M get(ModelMeta<M> modelMeta, Key key)
             throws NullPointerException, EntityNotFoundRuntimeException {
-        if (modelMeta == null) {
-            throw new NullPointerException("The modelMeta parameter is null.");
-        }
-        Entity entity = get(key);
-        ModelMeta<M> mm = DatastoreUtil.getModelMeta(modelMeta, entity);
-        mm.validateKey(key);
-        return mm.entityToModel(entity);
+        return get(ds.getCurrentTransaction(null), modelMeta, key);
+    }
+
+    /**
+     * Returns a model specified by the key asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param key
+     *            the key
+     * @return a future model specified by the key
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null
+     * 
+     */
+    public <M> Future<M> getAsync(final ModelMeta<M> modelMeta, final Key key)
+            throws NullPointerException {
+        return getAsync(ds.getCurrentTransaction(null), modelMeta, key);
     }
 
     /**
@@ -1113,7 +1169,22 @@ public class DatastoreDelegate {
      *             if the key parameter is null
      */
     public Entity getOrNull(Key key) throws NullPointerException {
-        return getAsMap(key).get(key);
+        return getOrNull(ds.getCurrentTransaction(null), key);
+    }
+
+    /**
+     * Returns an entity specified by the key asynchronously. Returns null if no
+     * entity is found. If there is a current transaction, this operation will
+     * execute within that transaction.
+     * 
+     * @param key
+     *            the key
+     * @return a future entity specified by the key
+     * @throws NullPointerException
+     *             if the key parameter is null
+     */
+    public Future<Entity> getOrNullAsync(Key key) throws NullPointerException {
+        return getOrNullAsync(ds.getCurrentTransaction(null), key);
     }
 
     /**
@@ -1137,7 +1208,31 @@ public class DatastoreDelegate {
      */
     public <M> M getOrNull(Class<M> modelClass, Key key)
             throws NullPointerException, IllegalArgumentException {
-        return getAsMap(getModelMeta(modelClass), key).get(key);
+        return getOrNull(getModelMeta(modelClass), key);
+    }
+
+    /**
+     * Returns a model specified by the key asynchronously. Returns null if no
+     * entity is found. If there is a current transaction, this operation will
+     * execute within that transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param key
+     *            the key
+     * @return a future model specified by the key
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
+     */
+    public <M> Future<M> getOrNullAsync(Class<M> modelClass, Key key)
+            throws NullPointerException, IllegalArgumentException {
+        return getOrNullAsync(getModelMeta(modelClass), key);
     }
 
     /**
@@ -1162,7 +1257,32 @@ public class DatastoreDelegate {
      */
     public <M> M getOrNull(ModelMeta<M> modelMeta, Key key)
             throws NullPointerException, IllegalArgumentException {
-        return getAsMap(modelMeta, key).get(key);
+        return getOrNull(ds.getCurrentTransaction(null), modelMeta, key);
+    }
+
+    /**
+     * Returns a model specified by the key asynchronously. Returns null if no
+     * entity is found. If there is a current transaction, this operation will
+     * execute within that transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param key
+     *            the key
+     * @return a future model specified by the key
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
+     * 
+     */
+    public <M> Future<M> getOrNullAsync(ModelMeta<M> modelMeta, Key key)
+            throws NullPointerException, IllegalArgumentException {
+        return getOrNullAsync(ds.getCurrentTransaction(null), modelMeta, key);
     }
 
     /**
@@ -1178,7 +1298,22 @@ public class DatastoreDelegate {
      */
     public Entity getWithoutTx(Key key) throws NullPointerException,
             EntityNotFoundRuntimeException {
-        return DatastoreUtil.get(ds, (Transaction) null, key);
+        return get((Transaction) null, key);
+    }
+
+    /**
+     * Returns an entity specified by the key without transaction
+     * asynchronously.
+     * 
+     * @param key
+     *            the key
+     * @return a future entity specified by the key
+     * @throws NullPointerException
+     *             if the key parameter is null
+     */
+    public Future<Entity> getWithoutTxAsync(Key key)
+            throws NullPointerException {
+        return getAsync((Transaction) null, key);
     }
 
     /**
@@ -1207,6 +1342,28 @@ public class DatastoreDelegate {
     }
 
     /**
+     * Returns a model specified by the key without transaction asynchronously.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param key
+     *            the key
+     * @return a future model specified by the key
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
+     */
+    public <M> Future<M> getWithoutTxAsync(Class<M> modelClass, Key key)
+            throws NullPointerException, IllegalArgumentException {
+        return getWithoutTxAsync(getModelMeta(modelClass), key);
+    }
+
+    /**
      * Returns a model specified by the key without transaction.
      * 
      * @param <M>
@@ -1223,13 +1380,26 @@ public class DatastoreDelegate {
      */
     public <M> M getWithoutTx(ModelMeta<M> modelMeta, Key key)
             throws NullPointerException, EntityNotFoundRuntimeException {
-        if (modelMeta == null) {
-            throw new NullPointerException("The modelMeta parameter is null.");
-        }
-        Entity entity = getWithoutTx(key);
-        ModelMeta<M> mm = DatastoreUtil.getModelMeta(modelMeta, entity);
-        mm.validateKey(key);
-        return mm.entityToModel(entity);
+        return get(null, modelMeta, key);
+    }
+
+    /**
+     * Returns a model specified by the key without transaction asynchronously.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param key
+     *            the key
+     * @return a future model specified by the key
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null
+     * 
+     */
+    public <M> Future<M> getWithoutTxAsync(ModelMeta<M> modelMeta, Key key)
+            throws NullPointerException {
+        return getAsync(null, modelMeta, key);
     }
 
     /**
@@ -1243,7 +1413,22 @@ public class DatastoreDelegate {
      *             if the key parameter is null
      */
     public Entity getOrNullWithoutTx(Key key) throws NullPointerException {
-        return getAsMapWithoutTx(key).get(key);
+        return getOrNull((Transaction) null, key);
+    }
+
+    /**
+     * Returns an entity specified by the key without transaction
+     * asynchronously. Returns null if no entity is found.
+     * 
+     * @param key
+     *            the key
+     * @return a future entity specified by the key
+     * @throws NullPointerException
+     *             if the key parameter is null
+     */
+    public Future<Entity> getOrNullWithoutTxAsync(Key key)
+            throws NullPointerException {
+        return getOrNullAsync((Transaction) null, key);
     }
 
     /**
@@ -1266,7 +1451,30 @@ public class DatastoreDelegate {
      */
     public <M> M getOrNullWithoutTx(Class<M> modelClass, Key key)
             throws NullPointerException, IllegalArgumentException {
-        return getAsMapWithoutTx(getModelMeta(modelClass), key).get(key);
+        return getOrNullWithoutTx(getModelMeta(modelClass), key);
+    }
+
+    /**
+     * Returns a model specified by the key without transaction asynchronously.
+     * Returns null if no entity is found.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param key
+     *            the key
+     * @return a future model specified by the key
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
+     */
+    public <M> Future<M> getOrNullWithoutTxAsync(Class<M> modelClass, Key key)
+            throws NullPointerException, IllegalArgumentException {
+        return getOrNullWithoutTxAsync(getModelMeta(modelClass), key);
     }
 
     /**
@@ -1289,7 +1497,30 @@ public class DatastoreDelegate {
      */
     public <M> M getOrNullWithoutTx(ModelMeta<M> modelMeta, Key key)
             throws NullPointerException, IllegalArgumentException {
-        return getAsMapWithoutTx(modelMeta, key).get(key);
+        return getOrNull((Transaction) null, modelMeta, key);
+    }
+
+    /**
+     * Returns a model specified by the key without transaction asynchronously.
+     * Returns null if no entity is found.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param key
+     *            the key
+     * @return a future model specified by the key
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
+     */
+    public <M> Future<M> getOrNullWithoutTxAsync(ModelMeta<M> modelMeta, Key key)
+            throws NullPointerException, IllegalArgumentException {
+        return getOrNullAsync((Transaction) null, modelMeta, key);
     }
 
     /**
@@ -1328,6 +1559,36 @@ public class DatastoreDelegate {
     }
 
     /**
+     * Returns a model specified by the key and checks the version
+     * asynchronously. If there is a current transaction, this operation will
+     * execute within that transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param key
+     *            the key
+     * @param version
+     *            the version
+     * @return a future model specified by the key
+     * @throws NullPointerException
+     *             if the modelClass parameter is null or if the key parameter
+     *             is null or if the version parameter is null
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
+     * @throws ConcurrentModificationException
+     *             if the version of the model is updated
+     */
+    public <M> Future<M> getAsync(Class<M> modelClass, Key key, Long version)
+            throws NullPointerException, IllegalArgumentException,
+            ConcurrentModificationException {
+        return getAsync(getModelMeta(modelClass), key, version);
+    }
+
+    /**
      * Returns a model specified by the key and checks the version. If there is
      * a current transaction, this operation will execute within that
      * transaction.
@@ -1356,25 +1617,37 @@ public class DatastoreDelegate {
     public <M> M get(ModelMeta<M> modelMeta, Key key, Long version)
             throws NullPointerException, EntityNotFoundRuntimeException,
             IllegalArgumentException, ConcurrentModificationException {
-        if (modelMeta == null) {
-            throw new NullPointerException("The modelMeta parameter is null.");
-        }
-        if (version == null) {
-            throw new NullPointerException("The version parameter is null.");
-        }
-        Entity entity = get(key);
-        ModelMeta<M> mm = DatastoreUtil.getModelMeta(modelMeta, entity);
-        mm.validateKey(key);
-        M model = mm.entityToModel(entity);
-        if (version != modelMeta.getVersion(model)) {
-            throw new ConcurrentModificationException(
-                "Failed optimistic lock by key("
-                    + key
-                    + ") and version("
-                    + version
-                    + ").");
-        }
-        return model;
+        return get(ds.getCurrentTransaction(null), modelMeta, key, version);
+    }
+
+    /**
+     * Returns a model specified by the key and checks the version
+     * asynchronously. If there is a current transaction, this operation will
+     * execute within that transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param key
+     *            the key
+     * @param version
+     *            the version
+     * @return a future model specified by the key
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null or if the key parameter is
+     *             null or if the version parameter is null
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
+     * @throws ConcurrentModificationException
+     *             if the version of the model is updated
+     */
+    public <M> Future<M> getAsync(ModelMeta<M> modelMeta, Key key, Long version)
+            throws NullPointerException, IllegalArgumentException,
+            ConcurrentModificationException {
+        return getAsync(ds.getCurrentTransaction(null), modelMeta, key, version);
     }
 
     /**
@@ -1396,6 +1669,26 @@ public class DatastoreDelegate {
     public Entity get(Transaction tx, Key key) throws NullPointerException,
             IllegalStateException, EntityNotFoundRuntimeException {
         return DatastoreUtil.get(ds, tx, key);
+    }
+
+    /**
+     * Returns an entity specified by the key within the provided transaction
+     * asynchronously.
+     * 
+     * @param tx
+     *            the transaction
+     * @param key
+     *            the key
+     * @return a future entity specified by the key
+     * @throws NullPointerException
+     *             if the key parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public Future<Entity> getAsync(Transaction tx, Key key)
+            throws NullPointerException, IllegalStateException {
+        return DatastoreUtil.getAsync(ads, tx, key);
     }
 
     /**
@@ -1427,6 +1720,36 @@ public class DatastoreDelegate {
             throws NullPointerException, IllegalStateException,
             EntityNotFoundRuntimeException, IllegalArgumentException {
         return get(tx, getModelMeta(modelClass), key);
+    }
+
+    /**
+     * Returns a model specified by the key within the provided transaction
+     * asynchronously.
+     * 
+     * @param <M>
+     *            the model type
+     * @param tx
+     *            the transaction
+     * @param modelClass
+     *            the model class
+     * @param key
+     *            the key
+     * @return a future model specified by the key
+     * @throws NullPointerException
+     *             if the modelClass parameter is null or the key parameter is
+     *             null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
+     */
+    public <M> Future<M> getAsync(Transaction tx, Class<M> modelClass, Key key)
+            throws NullPointerException, IllegalStateException,
+            IllegalArgumentException {
+        return getAsync(tx, getModelMeta(modelClass), key);
     }
 
     /**
@@ -1463,6 +1786,51 @@ public class DatastoreDelegate {
     }
 
     /**
+     * Returns a model specified by the key within the provided transaction
+     * asynchronously.
+     * 
+     * @param <M>
+     *            the model type
+     * @param tx
+     *            the transaction
+     * @param modelMeta
+     *            the meta data of model
+     * @param key
+     *            the key
+     * @return a future model specified by the key
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
+     */
+    public <M> Future<M> getAsync(Transaction tx, final ModelMeta<M> modelMeta,
+            final Key key) throws NullPointerException, IllegalStateException,
+            IllegalArgumentException {
+        return new FutureWrapper<Entity, M>(getAsync(tx, key)) {
+
+            @Override
+            protected Throwable convertException(Throwable throwable) {
+                if (throwable instanceof EntityNotFoundException) {
+                    return new EntityNotFoundRuntimeException(key, throwable);
+                }
+                return throwable;
+            }
+
+            @Override
+            protected M wrap(Entity entity) throws Exception {
+                ModelMeta<M> mm = DatastoreUtil.getModelMeta(modelMeta, entity);
+                mm.validateKey(key);
+                return mm.entityToModel(entity);
+            }
+        };
+    }
+
+    /**
      * Returns an entity specified by the key within the provided transaction.
      * Returns null if no entity is found.
      * 
@@ -1480,6 +1848,42 @@ public class DatastoreDelegate {
     public Entity getOrNull(Transaction tx, Key key)
             throws NullPointerException, IllegalStateException {
         return getAsMap(tx, key).get(key);
+    }
+
+    /**
+     * Returns an entity specified by the key within the provided transaction
+     * asynchronously.
+     * 
+     * @param tx
+     *            the transaction
+     * @param key
+     *            the key
+     * @return a future entity specified by the key
+     * @throws NullPointerException
+     *             if the key parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public Future<Entity> getOrNullAsync(Transaction tx, final Key key)
+            throws NullPointerException, IllegalStateException {
+        return new FutureWrapper<Map<Key, Entity>, Entity>(getAsMapAsync(
+            tx,
+            key)) {
+
+            @Override
+            protected Throwable convertException(Throwable throwable) {
+                if (throwable instanceof EntityNotFoundException) {
+                    return new EntityNotFoundRuntimeException(key, throwable);
+                }
+                return throwable;
+            }
+
+            @Override
+            protected Entity wrap(Map<Key, Entity> map) throws Exception {
+                return map.get(key);
+            }
+        };
     }
 
     /**
@@ -1509,7 +1913,37 @@ public class DatastoreDelegate {
     public <M> M getOrNull(Transaction tx, Class<M> modelClass, Key key)
             throws NullPointerException, IllegalStateException,
             IllegalArgumentException {
-        return getAsMap(tx, getModelMeta(modelClass), key).get(key);
+        return getOrNull(tx, getModelMeta(modelClass), key);
+    }
+
+    /**
+     * Returns a model specified by the key within the provided transaction
+     * asynchronously.
+     * 
+     * @param <M>
+     *            the model type
+     * @param tx
+     *            the transaction
+     * @param modelClass
+     *            the model class
+     * @param key
+     *            the key
+     * @return a future model specified by the key
+     * @throws NullPointerException
+     *             if the modelClass parameter is null or the key parameter is
+     *             null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
+     */
+    public <M> Future<M> getOrNullAsync(Transaction tx, Class<M> modelClass,
+            Key key) throws NullPointerException, IllegalStateException,
+            IllegalArgumentException {
+        return getOrNullAsync(tx, getModelMeta(modelClass), key);
     }
 
     /**
@@ -1539,6 +1973,56 @@ public class DatastoreDelegate {
             throws NullPointerException, IllegalStateException,
             IllegalArgumentException {
         return getAsMap(tx, modelMeta, key).get(key);
+    }
+
+    /**
+     * Returns a model specified by the key within the provided transaction
+     * asynchronously.
+     * 
+     * @param <M>
+     *            the model type
+     * @param tx
+     *            the transaction
+     * @param modelMeta
+     *            the meta data of model
+     * @param key
+     *            the key
+     * @return a future model specified by the key
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
+     */
+    public <M> Future<M> getOrNullAsync(Transaction tx,
+            final ModelMeta<M> modelMeta, final Key key)
+            throws NullPointerException, IllegalStateException,
+            IllegalArgumentException {
+        return new FutureWrapper<Map<Key, Entity>, M>(getAsMapAsync(tx, key)) {
+
+            @Override
+            protected Throwable convertException(Throwable throwable) {
+                if (throwable instanceof EntityNotFoundException) {
+                    return new EntityNotFoundRuntimeException(key, throwable);
+                }
+                return throwable;
+            }
+
+            @Override
+            protected M wrap(Map<Key, Entity> map) throws Exception {
+                Entity entity = map.get(key);
+                if (entity == null) {
+                    return null;
+                }
+                ModelMeta<M> mm = DatastoreUtil.getModelMeta(modelMeta, entity);
+                mm.validateKey(key);
+                return mm.entityToModel(entity);
+            }
+        };
     }
 
     /**
@@ -1575,6 +2059,38 @@ public class DatastoreDelegate {
             EntityNotFoundRuntimeException, IllegalArgumentException,
             ConcurrentModificationException {
         return get(tx, getModelMeta(modelClass), key, version);
+    }
+
+    /**
+     * Returns a model specified by the key within the provided transaction
+     * asynchronously.
+     * 
+     * @param <M>
+     *            the model type
+     * @param tx
+     *            the transaction
+     * @param modelClass
+     *            the model class
+     * @param key
+     *            the key
+     * @param version
+     *            the version
+     * @return a future model specified by the key
+     * @throws NullPointerException
+     *             if the modelClass parameter is null or if the key parameter
+     *             is null or if the version parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
+     */
+    public <M> Future<M> getAsync(Transaction tx, Class<M> modelClass, Key key,
+            Long version) throws NullPointerException, IllegalStateException,
+            IllegalArgumentException {
+        return getAsync(tx, getModelMeta(modelClass), key, version);
     }
 
     /**
@@ -1630,6 +2146,67 @@ public class DatastoreDelegate {
     }
 
     /**
+     * Returns a model specified by the key within the provided transaction
+     * asynchronously.
+     * 
+     * @param <M>
+     *            the model type
+     * @param tx
+     *            the transaction
+     * @param modelMeta
+     *            the meta data of model
+     * @param key
+     *            the key
+     * @param version
+     *            the version
+     * @return a future model specified by the key
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null or if the key parameter is
+     *             null or if the version parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
+     */
+    public <M> Future<M> getAsync(Transaction tx, final ModelMeta<M> modelMeta,
+            final Key key, final Long version) throws NullPointerException,
+            IllegalStateException, IllegalArgumentException {
+        if (version == null) {
+            throw new NullPointerException(
+                "The version parameter must not be null.");
+        }
+        return new FutureWrapper<Entity, M>(getAsync(tx, key)) {
+
+            @Override
+            protected Throwable convertException(Throwable throwable) {
+                if (throwable instanceof EntityNotFoundException) {
+                    return new EntityNotFoundRuntimeException(key, throwable);
+                }
+                return throwable;
+            }
+
+            @Override
+            protected M wrap(Entity entity) throws Exception {
+                ModelMeta<M> mm = DatastoreUtil.getModelMeta(modelMeta, entity);
+                mm.validateKey(key);
+                M model = mm.entityToModel(entity);
+                if (version != mm.getVersion(model)) {
+                    throw new ConcurrentModificationException(
+                        "Failed optimistic lock by key("
+                            + key
+                            + ") and version("
+                            + version
+                            + ").");
+                }
+                return model;
+            }
+        };
+    }
+
+    /**
      * Returns entities specified by the keys. If there is a current
      * transaction, this operation will execute within that transaction.
      * 
@@ -1643,7 +2220,22 @@ public class DatastoreDelegate {
      */
     public List<Entity> get(Iterable<Key> keys) throws NullPointerException,
             EntityNotFoundRuntimeException {
-        return DatastoreUtil.entityMapToEntityList(keys, getAsMap(keys));
+        return get(ds.getCurrentTransaction(null), keys);
+    }
+
+    /**
+     * Returns entities specified by the keys asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
+     * 
+     * @param keys
+     *            the keys
+     * @return future entities specified by the key
+     * @throws NullPointerException
+     *             if the keys parameter is null
+     */
+    public Future<List<Entity>> getAsync(Iterable<Key> keys)
+            throws NullPointerException {
+        return getAsync(ds.getCurrentTransaction(null), keys);
     }
 
     /**
@@ -1658,6 +2250,19 @@ public class DatastoreDelegate {
      */
     public List<Entity> get(Key... keys) throws EntityNotFoundRuntimeException {
         return get(Arrays.asList(keys));
+    }
+
+    /**
+     * Returns entities specified by the keys asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
+     * 
+     * @param keys
+     *            the keys
+     * @return future entities specified by the key
+     * 
+     */
+    public Future<List<Entity>> getAsync(Key... keys) {
+        return getAsync(Arrays.asList(keys));
     }
 
     /**
@@ -1688,6 +2293,30 @@ public class DatastoreDelegate {
     }
 
     /**
+     * Returns models specified by the keys asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param keys
+     *            the keys
+     * @return future models specified by the keys
+     * @throws NullPointerException
+     *             if the modelClass parameter is null of if the keys parameter
+     *             is null
+     * @throws IllegalArgumentException
+     *             if the kind of the key is different from the kind of the
+     *             model or if the model class is not assignable from entity
+     *             class
+     */
+    public <M> Future<List<M>> getAsync(Class<M> modelClass, Iterable<Key> keys)
+            throws NullPointerException, IllegalArgumentException {
+        return getAsync(getModelMeta(modelClass), keys);
+    }
+
+    /**
      * Returns models specified by the keys. If there is a current transaction,
      * this operation will execute within that transaction.
      * 
@@ -1711,10 +2340,29 @@ public class DatastoreDelegate {
     public <M> List<M> get(ModelMeta<M> modelMeta, Iterable<Key> keys)
             throws NullPointerException, EntityNotFoundRuntimeException,
             IllegalArgumentException {
-        return DatastoreUtil.entityMapToModelList(
-            modelMeta,
-            keys,
-            getAsMap(keys));
+        return get(ds.getCurrentTransaction(null), modelMeta, keys);
+
+    }
+
+    /**
+     * Returns models specified by the keys asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param keys
+     *            the keys
+     * @return future models specified by the keys
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null of if the keys parameter
+     *             is null
+     * 
+     */
+    public <M> Future<List<M>> getAsync(ModelMeta<M> modelMeta,
+            Iterable<Key> keys) throws NullPointerException {
+        return getAsync(ds.getCurrentTransaction(null), modelMeta, keys);
 
     }
 
@@ -1745,6 +2393,25 @@ public class DatastoreDelegate {
     }
 
     /**
+     * Returns models specified by the keys asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param keys
+     *            the keys
+     * @return future models specified by the keys
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     */
+    public <M> Future<List<M>> getAsync(Class<M> modelClass, Key... keys)
+            throws NullPointerException {
+        return getAsync(modelClass, Arrays.asList(keys));
+    }
+
+    /**
      * Returns models specified by the keys. If there is a current transaction,
      * this operation will execute within that transaction.
      * 
@@ -1772,6 +2439,26 @@ public class DatastoreDelegate {
     }
 
     /**
+     * Returns models specified by the keys asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param keys
+     *            the keys
+     * @return future models specified by the keys
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null or if the keys parameter
+     *             is null
+     */
+    public <M> Future<List<M>> getAsync(ModelMeta<M> modelMeta, Key... keys)
+            throws NullPointerException {
+        return getAsync(modelMeta, Arrays.asList(keys));
+    }
+
+    /**
      * Returns entities specified by the keys without transaction.
      * 
      * @param keys
@@ -1784,9 +2471,22 @@ public class DatastoreDelegate {
      */
     public List<Entity> getWithoutTx(Iterable<Key> keys)
             throws NullPointerException, EntityNotFoundRuntimeException {
-        return DatastoreUtil.entityMapToEntityList(
-            keys,
-            getAsMapWithoutTx(keys));
+        return get((Transaction) null, keys);
+    }
+
+    /**
+     * Returns entities specified by the keys without transaction
+     * asynchronously.
+     * 
+     * @param keys
+     *            the keys
+     * @return entities specified by the key
+     * @throws NullPointerException
+     *             if the keys parameter is null
+     */
+    public Future<List<Entity>> getWithoutTxAsync(Iterable<Key> keys)
+            throws NullPointerException {
+        return getAsync((Transaction) null, keys);
     }
 
     /**
@@ -1802,6 +2502,19 @@ public class DatastoreDelegate {
     public List<Entity> getWithoutTx(Key... keys)
             throws EntityNotFoundRuntimeException {
         return getWithoutTx(Arrays.asList(keys));
+    }
+
+    /**
+     * Returns entities specified by the keys asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
+     * 
+     * @param keys
+     *            the keys
+     * @return entities specified by the key
+     * 
+     */
+    public Future<List<Entity>> getWithoutTxAsync(Key... keys) {
+        return getWithoutTxAsync(Arrays.asList(keys));
     }
 
     /**
@@ -1831,6 +2544,25 @@ public class DatastoreDelegate {
     }
 
     /**
+     * Returns models specified by the keys without transaction asynchronously.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param keys
+     *            the keys
+     * @return future models specified by the keys
+     * @throws NullPointerException
+     *             if the modelClass parameter is null of if the keys parameter
+     *             is null
+     */
+    public <M> Future<List<M>> getWithoutTxAsync(Class<M> modelClass,
+            Iterable<Key> keys) throws NullPointerException {
+        return getWithoutTxAsync(getModelMeta(modelClass), keys);
+    }
+
+    /**
      * Returns models specified by the keys without transaction.
      * 
      * @param <M>
@@ -1853,10 +2585,27 @@ public class DatastoreDelegate {
     public <M> List<M> getWithoutTx(ModelMeta<M> modelMeta, Iterable<Key> keys)
             throws NullPointerException, EntityNotFoundRuntimeException,
             IllegalArgumentException {
-        return DatastoreUtil.entityMapToModelList(
-            modelMeta,
-            keys,
-            getAsMapWithoutTx(keys));
+        return get((Transaction) null, modelMeta, keys);
+
+    }
+
+    /**
+     * Returns models specified by the keys without transaction asynchronously.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param keys
+     *            the keys
+     * @return future models specified by the keys
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null of if the keys parameter
+     *             is null
+     */
+    public <M> Future<List<M>> getWithoutTxAsync(ModelMeta<M> modelMeta,
+            Iterable<Key> keys) throws NullPointerException {
+        return getAsync((Transaction) null, modelMeta, keys);
 
     }
 
@@ -1886,6 +2635,24 @@ public class DatastoreDelegate {
     }
 
     /**
+     * Returns models specified by the keys without transaction asynchronously.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param keys
+     *            the keys
+     * @return future models specified by the keys
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     */
+    public <M> Future<List<M>> getWithoutTxAsync(Class<M> modelClass,
+            Key... keys) throws NullPointerException {
+        return getWithoutTxAsync(modelClass, Arrays.asList(keys));
+    }
+
+    /**
      * Returns models specified by the keys without transaction.
      * 
      * @param <M>
@@ -1912,6 +2679,25 @@ public class DatastoreDelegate {
     }
 
     /**
+     * Returns models specified by the keys without transaction asynchronously.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param keys
+     *            the keys
+     * @return models specified by the keys
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null or if the keys parameter
+     *             is null
+     */
+    public <M> Future<List<M>> getWithoutTxAsync(ModelMeta<M> modelMeta,
+            Key... keys) throws NullPointerException {
+        return getWithoutTxAsync(modelMeta, Arrays.asList(keys));
+    }
+
+    /**
      * Returns entities specified by the keys within the provided transaction.
      * 
      * @param tx
@@ -1934,6 +2720,37 @@ public class DatastoreDelegate {
     }
 
     /**
+     * Returns entities specified by the keys within the provided transaction
+     * asynchronously.
+     * 
+     * @param tx
+     *            the transaction
+     * @param keys
+     *            the keys
+     * @return future entities specified by the key
+     * @throws NullPointerException
+     *             if the keys parameter is null
+     * 
+     */
+    public Future<List<Entity>> getAsync(Transaction tx,
+            final Iterable<Key> keys) throws NullPointerException {
+        return new FutureWrapper<Map<Key, Entity>, List<Entity>>(getAsMapAsync(
+            tx,
+            keys)) {
+
+            @Override
+            protected Throwable convertException(Throwable throwable) {
+                return throwable;
+            }
+
+            @Override
+            protected List<Entity> wrap(Map<Key, Entity> map) throws Exception {
+                return DatastoreUtil.entityMapToEntityList(keys, map);
+            }
+        };
+    }
+
+    /**
      * Returns entities specified by the keys within the provided transaction.
      * 
      * @param tx
@@ -1950,6 +2767,24 @@ public class DatastoreDelegate {
     public List<Entity> get(Transaction tx, Key... keys)
             throws IllegalStateException, EntityNotFoundRuntimeException {
         return get(tx, Arrays.asList(keys));
+    }
+
+    /**
+     * Returns entities specified by the keys within the provided transaction
+     * asynchronously.
+     * 
+     * @param tx
+     *            the transaction
+     * @param keys
+     *            the keys
+     * @return future entities specified by the key
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public Future<List<Entity>> getAsync(Transaction tx, Key... keys)
+            throws IllegalStateException {
+        return getAsync(tx, Arrays.asList(keys));
     }
 
     /**
@@ -1981,6 +2816,31 @@ public class DatastoreDelegate {
             IllegalStateException, EntityNotFoundRuntimeException,
             IllegalArgumentException {
         return get(tx, getModelMeta(modelClass), keys);
+    }
+
+    /**
+     * Returns models specified by the keys within the provided transaction
+     * asynchronously.
+     * 
+     * @param <M>
+     *            the model type
+     * @param tx
+     *            the transaction
+     * @param modelClass
+     *            the model class
+     * @param keys
+     *            the keys
+     * @return future models specified by the keys
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public <M> Future<List<M>> getAsync(Transaction tx, Class<M> modelClass,
+            Iterable<Key> keys) throws NullPointerException,
+            IllegalStateException {
+        return getAsync(tx, getModelMeta(modelClass), keys);
     }
 
     /**
@@ -2017,6 +2877,44 @@ public class DatastoreDelegate {
     }
 
     /**
+     * Returns models specified by the keys within the provided transaction
+     * asynchronously.
+     * 
+     * @param <M>
+     *            the model type
+     * @param tx
+     *            the transaction
+     * @param modelMeta
+     *            the meta data of model
+     * @param keys
+     *            the keys
+     * @return future models specified by the keys
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public <M> Future<List<M>> getAsync(Transaction tx,
+            final ModelMeta<M> modelMeta, final Iterable<Key> keys)
+            throws NullPointerException, IllegalStateException {
+        return new FutureWrapper<Map<Key, Entity>, List<M>>(getAsMapAsync(
+            tx,
+            keys)) {
+
+            @Override
+            protected Throwable convertException(Throwable throwable) {
+                return throwable;
+            }
+
+            @Override
+            protected List<M> wrap(Map<Key, Entity> map) throws Exception {
+                return DatastoreUtil.entityMapToModelList(modelMeta, keys, map);
+            }
+        };
+    }
+
+    /**
      * Returns models specified by the keys within the provided transaction.
      * 
      * @param <M>
@@ -2044,6 +2942,30 @@ public class DatastoreDelegate {
             throws NullPointerException, IllegalStateException,
             EntityNotFoundRuntimeException, IllegalArgumentException {
         return get(tx, getModelMeta(modelClass), Arrays.asList(keys));
+    }
+
+    /**
+     * Returns models specified by the keys within the provided transaction
+     * asynchronously.
+     * 
+     * @param <M>
+     *            the model type
+     * @param tx
+     *            the transaction
+     * @param modelClass
+     *            the model class
+     * @param keys
+     *            the keys
+     * @return future models specified by the keys
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public <M> Future<List<M>> getAsync(Transaction tx, Class<M> modelClass,
+            Key... keys) throws NullPointerException, IllegalStateException {
+        return getAsync(tx, getModelMeta(modelClass), Arrays.asList(keys));
     }
 
     /**
@@ -2077,6 +2999,30 @@ public class DatastoreDelegate {
     }
 
     /**
+     * Returns models specified by the keys within the provided transaction
+     * asynchronously.
+     * 
+     * @param <M>
+     *            the model type
+     * @param tx
+     *            the transaction
+     * @param modelMeta
+     *            the meta data of model
+     * @param keys
+     *            the keys
+     * @return future models specified by the keys
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public <M> Future<List<M>> getAsync(Transaction tx, ModelMeta<M> modelMeta,
+            Key... keys) throws NullPointerException, IllegalStateException {
+        return getAsync(tx, modelMeta, Arrays.asList(keys));
+    }
+
+    /**
      * Returns entities specified by the keys. If there is a current
      * transaction, this operation will execute within that transaction.
      * 
@@ -2088,7 +3034,22 @@ public class DatastoreDelegate {
      */
     public Map<Key, Entity> getAsMap(Iterable<Key> keys)
             throws NullPointerException {
-        return DatastoreUtil.getAsMap(ds, keys);
+        return getAsMap(ds.getCurrentTransaction(null), keys);
+    }
+
+    /**
+     * Returns entities specified by the keys asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
+     * 
+     * @param keys
+     *            the keys
+     * @return future entities specified by the keys
+     * @throws NullPointerException
+     *             if the keys parameter is null
+     */
+    public Future<Map<Key, Entity>> getAsMapAsync(Iterable<Key> keys)
+            throws NullPointerException {
+        return getAsMapAsync(ds.getCurrentTransaction(null), keys);
     }
 
     /**
@@ -2101,6 +3062,18 @@ public class DatastoreDelegate {
      */
     public Map<Key, Entity> getAsMap(Key... keys) {
         return getAsMap(Arrays.asList(keys));
+    }
+
+    /**
+     * Returns entities specified by the keys asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
+     * 
+     * @param keys
+     *            the keys
+     * @return future entities specified by the keys
+     */
+    public Future<Map<Key, Entity>> getAsMapAsync(Key... keys) {
+        return getAsMapAsync(Arrays.asList(keys));
     }
 
     /**
@@ -2128,6 +3101,26 @@ public class DatastoreDelegate {
     }
 
     /**
+     * Returns models specified by the keys asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param keys
+     *            the keys
+     * @return future models specified by the keys
+     * @throws NullPointerException
+     *             if the modelClass parameter is null or if the keys parameter
+     *             is null
+     */
+    public <M> Future<Map<Key, M>> getAsMapAsync(Class<M> modelClass,
+            Iterable<Key> keys) throws NullPointerException {
+        return getAsMapAsync(getModelMeta(modelClass), keys);
+    }
+
+    /**
      * Returns models specified by the keys. If there is a current transaction,
      * this operation will execute within that transaction.
      * 
@@ -2148,7 +3141,27 @@ public class DatastoreDelegate {
      */
     public <M> Map<Key, M> getAsMap(ModelMeta<M> modelMeta, Iterable<Key> keys)
             throws NullPointerException, IllegalArgumentException {
-        return DatastoreUtil.entityMapToModelMap(modelMeta, getAsMap(keys));
+        return getAsMap(ds.getCurrentTransaction(null), modelMeta, keys);
+    }
+
+    /**
+     * Returns models specified by the keys asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param keys
+     *            the keys
+     * @return future models specified by the keys
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null or if the keys parameter
+     *             is null
+     */
+    public <M> Future<Map<Key, M>> getAsMapAsync(ModelMeta<M> modelMeta,
+            Iterable<Key> keys) throws NullPointerException {
+        return getAsMapAsync(ds.getCurrentTransaction(null), modelMeta, keys);
     }
 
     /**
@@ -2175,6 +3188,25 @@ public class DatastoreDelegate {
     }
 
     /**
+     * Returns models specified by the keys asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param keys
+     *            the keys
+     * @return future models specified by the keys
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     */
+    public <M> Future<Map<Key, M>> getAsMapAsync(Class<M> modelClass,
+            Key... keys) throws NullPointerException {
+        return getAsMapAsync(getModelMeta(modelClass), Arrays.asList(keys));
+    }
+
+    /**
      * Returns models specified by the keys. If there is a current transaction,
      * this operation will execute within that transaction.
      * 
@@ -2198,6 +3230,25 @@ public class DatastoreDelegate {
     }
 
     /**
+     * Returns models specified by the keys asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param keys
+     *            the keys
+     * @return future models specified by the keys
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null
+     */
+    public <M> Future<Map<Key, M>> getAsMapAsync(ModelMeta<M> modelMeta,
+            Key... keys) throws NullPointerException {
+        return getAsMapAsync(modelMeta, Arrays.asList(keys));
+    }
+
+    /**
      * Returns entities specified by the keys without transaction.
      * 
      * @param keys
@@ -2208,7 +3259,22 @@ public class DatastoreDelegate {
      */
     public Map<Key, Entity> getAsMapWithoutTx(Iterable<Key> keys)
             throws NullPointerException {
-        return DatastoreUtil.getAsMap(ds, (Transaction) null, keys);
+        return getAsMap((Transaction) null, keys);
+    }
+
+    /**
+     * Returns entities specified by the keys without transaction
+     * asynchronously.
+     * 
+     * @param keys
+     *            the keys
+     * @return future entities specified by the keys
+     * @throws NullPointerException
+     *             if the keys parameter is null
+     */
+    public Future<Map<Key, Entity>> getAsMapWithoutTxAsync(Iterable<Key> keys)
+            throws NullPointerException {
+        return getAsMapAsync((Transaction) null, keys);
     }
 
     /**
@@ -2220,6 +3286,18 @@ public class DatastoreDelegate {
      */
     public Map<Key, Entity> getAsMapWithoutTx(Key... keys) {
         return getAsMapWithoutTx(Arrays.asList(keys));
+    }
+
+    /**
+     * Returns entities specified by the keys without transaction
+     * asynchronously.
+     * 
+     * @param keys
+     *            the keys
+     * @return future entities specified by the keys
+     */
+    public Future<Map<Key, Entity>> getAsMapWithoutTxAsync(Key... keys) {
+        return getAsMapWithoutTxAsync(Arrays.asList(keys));
     }
 
     /**
@@ -2247,6 +3325,25 @@ public class DatastoreDelegate {
     }
 
     /**
+     * Returns models specified by the keys without transaction asynchronously.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param keys
+     *            the keys
+     * @return future models specified by the keys
+     * @throws NullPointerException
+     *             if the modelClass parameter is null or if the keys parameter
+     *             is null
+     */
+    public <M> Future<Map<Key, M>> getAsMapWithoutTxAsync(Class<M> modelClass,
+            Iterable<Key> keys) throws NullPointerException {
+        return getAsMapWithoutTxAsync(getModelMeta(modelClass), keys);
+    }
+
+    /**
      * Returns models specified by the keys without transaction.
      * 
      * @param <M>
@@ -2267,9 +3364,27 @@ public class DatastoreDelegate {
     public <M> Map<Key, M> getAsMapWithoutTx(ModelMeta<M> modelMeta,
             Iterable<Key> keys) throws NullPointerException,
             IllegalArgumentException {
-        return DatastoreUtil.entityMapToModelMap(
-            modelMeta,
-            getAsMapWithoutTx(keys));
+        return getAsMap((Transaction) null, modelMeta, keys);
+    }
+
+    /**
+     * Returns models specified by the keys without transaction asynchronously.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param keys
+     *            the keys
+     * @return future models specified by the keys
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null or if the keys parameter
+     *             is null
+     */
+    public <M> Future<Map<Key, M>> getAsMapWithoutTxAsync(
+            ModelMeta<M> modelMeta, Iterable<Key> keys)
+            throws NullPointerException {
+        return getAsMapAsync((Transaction) null, modelMeta, keys);
     }
 
     /**
@@ -2295,6 +3410,25 @@ public class DatastoreDelegate {
     }
 
     /**
+     * Returns models specified by the keys without transaction asynchronously.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelClass
+     *            the model class
+     * @param keys
+     *            the keys
+     * @return future models specified by the keys
+     * @throws NullPointerException
+     *             if the modelClass parameter is null
+     */
+    public <M> Future<Map<Key, M>> getAsMapWithoutTxAsync(Class<M> modelClass,
+            Key... keys) throws NullPointerException {
+        return getAsMapWithoutTxAsync(getModelMeta(modelClass), Arrays
+            .asList(keys));
+    }
+
+    /**
      * Returns models specified by the keys without transaction.
      * 
      * @param <M>
@@ -2317,6 +3451,24 @@ public class DatastoreDelegate {
     }
 
     /**
+     * Returns models specified by the keys without transaction asynchronously.
+     * 
+     * @param <M>
+     *            the model type
+     * @param modelMeta
+     *            the meta data of model
+     * @param keys
+     *            the keys
+     * @return future models specified by the keys
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null
+     */
+    public <M> Future<Map<Key, M>> getAsMapWithoutTxAsync(
+            ModelMeta<M> modelMeta, Key... keys) throws NullPointerException {
+        return getAsMapWithoutTxAsync(modelMeta, Arrays.asList(keys));
+    }
+
+    /**
      * Returns entities specified by the keys within the provided transaction.
      * 
      * @param tx
@@ -2336,6 +3488,27 @@ public class DatastoreDelegate {
     }
 
     /**
+     * Returns entities specified by the keys within the provided transaction
+     * asynchronously.
+     * 
+     * @param tx
+     *            the transaction
+     * @param keys
+     *            the keys
+     * @return future entities specified by the keys
+     * @throws NullPointerException
+     *             if the keys parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public Future<Map<Key, Entity>> getAsMapAsync(Transaction tx,
+            Iterable<Key> keys) throws NullPointerException,
+            IllegalStateException {
+        return DatastoreUtil.getAsMapAsync(ads, tx, keys);
+    }
+
+    /**
      * Returns entities specified by the keys within the provided transaction.
      * 
      * @param tx
@@ -2350,6 +3523,24 @@ public class DatastoreDelegate {
     public Map<Key, Entity> getAsMap(Transaction tx, Key... keys)
             throws IllegalStateException {
         return getAsMap(tx, Arrays.asList(keys));
+    }
+
+    /**
+     * Returns entities specified by the keys within the provided transaction
+     * asynchronously.
+     * 
+     * @param tx
+     *            the transaction
+     * @param keys
+     *            the keys
+     * @return future entities specified by the keys
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public Future<Map<Key, Entity>> getAsMapAsync(Transaction tx, Key... keys)
+            throws IllegalStateException {
+        return getAsMapAsync(tx, Arrays.asList(keys));
     }
 
     /**
@@ -2379,6 +3570,32 @@ public class DatastoreDelegate {
             Iterable<Key> keys) throws NullPointerException,
             IllegalStateException, IllegalArgumentException {
         return getAsMap(tx, getModelMeta(modelClass), keys);
+    }
+
+    /**
+     * Returns models specified by the keys within the provided transaction
+     * asynchronously.
+     * 
+     * @param <M>
+     *            the model type
+     * @param tx
+     *            the transaction
+     * @param modelClass
+     *            the model class
+     * @param keys
+     *            the keys
+     * @return future entities specified by the key
+     * @throws NullPointerException
+     *             if the modelClass parameter is null or if the keys parameter
+     *             is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public <M> Future<Map<Key, M>> getAsMapAsync(Transaction tx,
+            Class<M> modelClass, Iterable<Key> keys)
+            throws NullPointerException, IllegalStateException {
+        return getAsMapAsync(tx, getModelMeta(modelClass), keys);
     }
 
     /**
@@ -2412,6 +3629,45 @@ public class DatastoreDelegate {
     }
 
     /**
+     * Returns models specified by the keys within the provided transaction
+     * asynchronously.
+     * 
+     * @param <M>
+     *            the model type
+     * @param tx
+     *            the transaction
+     * @param modelMeta
+     *            the meta data of model
+     * @param keys
+     *            the keys
+     * @return future entities specified by the key
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null or if the keys parameter
+     *             is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public <M> Future<Map<Key, M>> getAsMapAsync(Transaction tx,
+            final ModelMeta<M> modelMeta, final Iterable<Key> keys)
+            throws NullPointerException, IllegalStateException {
+        return new FutureWrapper<Map<Key, Entity>, Map<Key, M>>(getAsMapAsync(
+            tx,
+            keys)) {
+
+            @Override
+            protected Throwable convertException(Throwable throwable) {
+                return throwable;
+            }
+
+            @Override
+            protected Map<Key, M> wrap(Map<Key, Entity> map) throws Exception {
+                return DatastoreUtil.entityMapToModelMap(modelMeta, map);
+            }
+        };
+    }
+
+    /**
      * Returns models specified by the keys within the provided transaction.
      * 
      * @param <M>
@@ -2441,6 +3697,32 @@ public class DatastoreDelegate {
     }
 
     /**
+     * Returns models specified by the keys within the provided transaction
+     * asynchronously.
+     * 
+     * @param <M>
+     *            the model type
+     * @param tx
+     *            the transaction
+     * @param modelClass
+     *            the model class
+     * @param keys
+     *            the keys
+     * @return future entities specified by the key
+     * @throws NullPointerException
+     *             if the modelClass parameter is null or if the keys parameter
+     *             is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public <M> Future<Map<Key, M>> getAsMapAsync(Transaction tx,
+            Class<M> modelClass, Key... keys) throws NullPointerException,
+            IllegalStateException {
+        return getAsMapAsync(tx, getModelMeta(modelClass), Arrays.asList(keys));
+    }
+
+    /**
      * Returns models specified by the keys within the provided transaction.
      * 
      * @param <M>
@@ -2467,6 +3749,32 @@ public class DatastoreDelegate {
             Key... keys) throws NullPointerException, IllegalStateException,
             IllegalArgumentException {
         return getAsMap(tx, modelMeta, Arrays.asList(keys));
+    }
+
+    /**
+     * Returns models specified by the keys within the provided transaction
+     * asynchronously.
+     * 
+     * @param <M>
+     *            the model type
+     * @param tx
+     *            the transaction
+     * @param modelMeta
+     *            the meta data of model
+     * @param keys
+     *            the keys
+     * @return future entities specified by the key
+     * @throws NullPointerException
+     *             if the modelMeta parameter is null or if the keys parameter
+     *             is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public <M> Future<Map<Key, M>> getAsMapAsync(Transaction tx,
+            ModelMeta<M> modelMeta, Key... keys) throws NullPointerException,
+            IllegalStateException {
+        return getAsMapAsync(tx, modelMeta, Arrays.asList(keys));
     }
 
     /**

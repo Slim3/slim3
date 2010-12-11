@@ -454,6 +454,27 @@ public final class DatastoreUtil {
     }
 
     /**
+     * Returns an entity specified by the key asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
+     * 
+     * @param ds
+     *            the datastore service
+     * @param key
+     *            the key
+     * @return a future entity specified by the key
+     * @throws NullPointerException
+     *             if the ds parameter is null or if the key parameter is null
+     * 
+     */
+    public static Future<Entity> getAsync(AsyncDatastoreService ds,
+            final Key key) throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        return getAsync(ds, ds.getCurrentTransaction(null), key);
+    }
+
+    /**
      * Returns an entity specified by the key within the provided transaction.
      * 
      * @param ds
@@ -492,6 +513,53 @@ public final class DatastoreUtil {
     }
 
     /**
+     * Returns an entity specified by the key within the provided transaction
+     * asynchronously.
+     * 
+     * @param ds
+     *            the datastore service
+     * @param tx
+     *            the transaction
+     * @param key
+     *            the key
+     * @return a future entity specified by the key
+     * @throws NullPointerException
+     *             if the ds parameter is null or if the key parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public static Future<Entity> getAsync(AsyncDatastoreService ds,
+            Transaction tx, final Key key) throws NullPointerException,
+            IllegalStateException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        if (key == null) {
+            throw new NullPointerException(
+                "The key parameter must not be null.");
+        }
+        if (tx != null && !tx.isActive()) {
+            throw new IllegalStateException("The transaction must be active.");
+        }
+        return new FutureWrapper<Entity, Entity>(ds.get(tx, key)) {
+
+            @Override
+            protected Throwable convertException(Throwable throwable) {
+                if (throwable instanceof EntityNotFoundException) {
+                    return new EntityNotFoundRuntimeException(key, throwable);
+                }
+                return throwable;
+            }
+
+            @Override
+            protected Entity wrap(Entity entity) throws Exception {
+                return entity;
+            }
+        };
+    }
+
+    /**
      * Returns entities specified by the keys as map. If there is a current
      * transaction, this operation will execute within that transaction.
      * 
@@ -513,6 +581,28 @@ public final class DatastoreUtil {
                 "The keys parameter must not be null.");
         }
         return ds.get(keys);
+    }
+
+    /**
+     * Returns entities specified by the keys as map asynchronously. If there is
+     * a current transaction, this operation will execute within that
+     * transaction.
+     * 
+     * @param ds
+     *            the datastore service
+     * @param keys
+     *            the keys
+     * @return future entities specified by the keys
+     * @throws NullPointerException
+     *             if the ds parameter is null or if the keys parameter is null
+     */
+    public static Future<Map<Key, Entity>> getAsMapAsync(
+            AsyncDatastoreService ds, Iterable<Key> keys)
+            throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        return getAsMapAsync(ds, ds.getCurrentTransaction(null), keys);
     }
 
     /**
@@ -546,6 +636,53 @@ public final class DatastoreUtil {
             throw new IllegalStateException("The transaction must be active.");
         }
         return ds.get(tx, keys);
+    }
+
+    /**
+     * Returns entities specified by the keys as map within the provided
+     * transaction asynchronously.
+     * 
+     * @param ds
+     *            the asynchronous datastore service
+     * @param tx
+     *            the transaction
+     * @param keys
+     *            the keys
+     * @return future entities specified by the keys
+     * @throws NullPointerException
+     *             if the ds parameter is null or if the keys parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public static Future<Map<Key, Entity>> getAsMapAsync(
+            AsyncDatastoreService ds, Transaction tx, Iterable<Key> keys)
+            throws NullPointerException, IllegalStateException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        if (keys == null) {
+            throw new NullPointerException(
+                "The keys parameter must not be null.");
+        }
+        if (tx != null && !tx.isActive()) {
+            throw new IllegalStateException("The transaction must be active.");
+        }
+        return new FutureWrapper<Map<Key, Entity>, Map<Key, Entity>>(ds.get(
+            tx,
+            keys)) {
+
+            @Override
+            protected Throwable convertException(Throwable throwable) {
+                return throwable;
+            }
+
+            @Override
+            protected Map<Key, Entity> wrap(Map<Key, Entity> map)
+                    throws Exception {
+                return map;
+            }
+        };
     }
 
     /**

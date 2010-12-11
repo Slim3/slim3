@@ -24,10 +24,10 @@ import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import org.junit.Test;
 import org.slim3.datastore.meta.AaaMeta;
-import org.slim3.datastore.meta.BbbMeta;
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Aaa;
 import org.slim3.datastore.model.Bbb;
@@ -419,6 +419,16 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getModelAsyncUsingModelMeta() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Hoge model = delegate.getAsync(meta, key).get();
+        assertThat(model, is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getModelOrNullUsingModelMeta() throws Exception {
         Key key = delegate.createKey("Hoge", 1);
         Hoge model = delegate.getOrNull(meta, key);
@@ -429,7 +439,17 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void getModelUsingModelMetaWithoutTx() throws Exception {
+    public void getModelOrNullAsyncUsingModelMeta() throws Exception {
+        Key key = delegate.createKey("Hoge", 1);
+        Hoge model = delegate.getOrNullAsync(meta, key).get();
+        assertThat(model, is(nullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelWithoutTxUsingModelMeta() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Hoge model = delegate.getWithoutTx(meta, key);
         assertThat(model, is(notNullValue()));
@@ -439,9 +459,29 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void getModelOrNullUsingModelMetaWithoutTx() throws Exception {
+    public void getModelWithoutTxAsyncUsingModelMeta() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Hoge model = delegate.getWithoutTxAsync(meta, key).get();
+        assertThat(model, is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelOrNullWithoutTxUsingModelMeta() throws Exception {
         Key key = delegate.createKey("Hoge", 1);
         Hoge model = delegate.getOrNullWithoutTx(meta, key);
+        assertThat(model, is(nullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelOrNullWithoutTxAsyncUsingModelMeta() throws Exception {
+        Key key = delegate.createKey("Hoge", 1);
+        Hoge model = delegate.getOrNullWithoutTxAsync(meta, key).get();
         assertThat(model, is(nullValue()));
     }
 
@@ -459,6 +499,16 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getModelAsyncUsingModelClass() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Hoge model = delegate.getAsync(Hoge.class, key).get();
+        assertThat(model, is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getModelOrNullUsingModelClass() throws Exception {
         Key key = delegate.createKey("Hoge", 1);
         Hoge model = delegate.getOrNull(Hoge.class, key);
@@ -469,7 +519,17 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void getModelUsingModelClassWithoutTx() throws Exception {
+    public void getModelOrNullAsyncUsingModelClass() throws Exception {
+        Key key = delegate.createKey("Hoge", 1);
+        Hoge model = delegate.getOrNullAsync(Hoge.class, key).get();
+        assertThat(model, is(nullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelWithoutTxUsingModelClass() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Hoge model = delegate.getWithoutTx(Hoge.class, key);
         assertThat(model, is(notNullValue()));
@@ -479,9 +539,29 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void getModelOrNullUsingModelClassWithoutTx() throws Exception {
+    public void getModelWithoutTxAsyncUsingModelClass() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Hoge model = delegate.getWithoutTxAsync(Hoge.class, key).get();
+        assertThat(model, is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelOrNullWithoutTxUsingModelClass() throws Exception {
         Key key = delegate.createKey("Hoge", 1);
         Hoge model = delegate.getOrNullWithoutTx(Hoge.class, key);
+        assertThat(model, is(nullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelOrNullWithoutTxAsyncUsingModelClass() throws Exception {
+        Key key = delegate.createKey("Hoge", 1);
+        Hoge model = delegate.getOrNullWithoutTxAsync(Hoge.class, key).get();
         assertThat(model, is(nullValue()));
     }
 
@@ -499,9 +579,29 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getSubModelAsyncUsingClass() throws Exception {
+        Key key = delegate.put(new Bbb());
+        Aaa model = delegate.getAsync(Aaa.class, key).get();
+        assertThat(model.getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getSubModelUsingModelMeta() throws Exception {
         Key key = delegate.put(new Bbb());
-        Aaa model = delegate.get(new BbbMeta(), key);
+        Aaa model = delegate.get(AaaMeta.get(), key);
+        assertThat(model.getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelAsyncUsingModelMeta() throws Exception {
+        Key key = delegate.put(new Bbb());
+        Aaa model = delegate.getAsync(AaaMeta.get(), key).get();
         assertThat(model.getClass().getName(), is(Bbb.class.getName()));
     }
 
@@ -518,11 +618,37 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getModelAsyncUsingClassAndValidateKey() throws Exception {
+        Key key = ds.put(new Entity("Aaa"));
+        try {
+            delegate.getAsync(Hoge.class, key).get();
+            fail();
+        } catch (ExecutionException e) {
+            assertThat(e.getCause(), is(IllegalArgumentException.class));
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getModelUsingClassAndCheckVersion() throws Exception {
         Entity entity = new Entity("Hoge");
         entity.setProperty("version", 1);
         Key key = ds.put(entity);
         Hoge model = delegate.get(Hoge.class, key, 1L);
+        assertThat(model, is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelAsyncUsingClassAndCheckVersion() throws Exception {
+        Entity entity = new Entity("Hoge");
+        entity.setProperty("version", 1);
+        Key key = ds.put(entity);
+        Hoge model = delegate.getAsync(Hoge.class, key, 1L).get();
         assertThat(model, is(notNullValue()));
     }
 
@@ -542,14 +668,51 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
+    @Test
+    public void getModelAsyncUsingClassAndCheckVersionWhenError()
+            throws Exception {
+        Entity entity = new Entity("Hoge");
+        entity.setProperty("version", 1);
+        Key key = ds.put(entity);
+        Hoge model = delegate.get(Hoge.class, key, 1L);
+        assertThat(model, is(notNullValue()));
+        try {
+            delegate.getAsync(Hoge.class, key, 0L).get();
+            fail();
+        } catch (ExecutionException e) {
+            assertThat(e.getCause(), is(ConcurrentModificationException.class));
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test(expected = ConcurrentModificationException.class)
-    public void getModelAndCheckVersion() throws Exception {
+    public void getModelUsingModelMetaAndCheckVersion() throws Exception {
         Entity entity = new Entity("Hoge");
         entity.setProperty("version", 1);
         Key key = ds.put(entity);
         Hoge model = delegate.get(meta, key, 1L);
         assertThat(model, is(notNullValue()));
         delegate.get(meta, key, 0L);
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelAsyncUsingModelMetaAndCheckVersion() throws Exception {
+        Entity entity = new Entity("Hoge");
+        entity.setProperty("version", 1);
+        Key key = ds.put(entity);
+        Hoge model = delegate.get(meta, key, 1L);
+        assertThat(model, is(notNullValue()));
+        try {
+            delegate.getAsync(meta, key, 0L).get();
+            fail();
+        } catch (ExecutionException e) {
+            assertThat(e.getCause(), is(ConcurrentModificationException.class));
+        }
     }
 
     /**
@@ -567,9 +730,32 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getSubModelAsyncUsingClassAndCheckVersion() throws Exception {
+        Key key = delegate.put(new Bbb());
+        Aaa model = delegate.getAsync(Aaa.class, key, 1L).get();
+        assertThat(model, is(notNullValue()));
+        assertThat(model.getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getSubModelUsingModelMetaAndCheckVersion() throws Exception {
         Key key = delegate.put(new Bbb());
-        Aaa model = delegate.get(new AaaMeta(), key, 1L);
+        Aaa model = delegate.get(AaaMeta.get(), key, 1L);
+        assertThat(model, is(notNullValue()));
+        assertThat(model.getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelAsyncUsingModelMetaAndCheckVersion()
+            throws Exception {
+        Key key = delegate.put(new Bbb());
+        Aaa model = delegate.getAsync(AaaMeta.get(), key, 1L).get();
         assertThat(model, is(notNullValue()));
         assertThat(model.getClass().getName(), is(Bbb.class.getName()));
     }
@@ -588,10 +774,38 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getModelAsyncUsingClassAndCheckVersionForValidatingKey()
+            throws Exception {
+        Key key = delegate.put(new Bbb());
+        try {
+            delegate.getAsync(Hoge.class, key, 1L).get();
+            fail();
+        } catch (ExecutionException e) {
+            assertThat(e.getCause(), is(IllegalArgumentException.class));
+
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getModelInTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Transaction tx = ds.beginTransaction();
         Hoge model = delegate.get(tx, meta, key);
+        tx.rollback();
+        assertThat(model, is(not(nullValue())));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelAsyncInTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Transaction tx = ds.beginTransaction();
+        Hoge model = delegate.getAsync(tx, meta, key).get();
         tx.rollback();
         assertThat(model, is(not(nullValue())));
     }
@@ -612,10 +826,34 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getModelAsyncInTxUsingModelClass() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Transaction tx = ds.beginTransaction();
+        Hoge model = delegate.getAsync(tx, Hoge.class, key).get();
+        tx.rollback();
+        assertThat(model, is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getModelOrNullInTxUsingModelClass() throws Exception {
         Key key = delegate.createKey("Hoge", 1);
         Transaction tx = ds.beginTransaction();
         Hoge model = delegate.getOrNull(tx, Hoge.class, key);
+        tx.rollback();
+        assertThat(model, is(nullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelOrNullAsyncInTxUsingModelClass() throws Exception {
+        Key key = delegate.createKey("Hoge", 1);
+        Transaction tx = ds.beginTransaction();
+        Hoge model = delegate.getOrNullAsync(tx, Hoge.class, key).get();
         tx.rollback();
         assertThat(model, is(nullValue()));
     }
@@ -636,6 +874,18 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getModelAsyncInTxUsingModelMeta() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Transaction tx = ds.beginTransaction();
+        Hoge model = delegate.getAsync(tx, meta, key).get();
+        tx.rollback();
+        assertThat(model, is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getModelOrNullInTxUsingModelMeta() throws Exception {
         Key key = delegate.createKey("Hoge", 1);
         Transaction tx = ds.beginTransaction();
@@ -647,10 +897,37 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
+    @Test
+    public void getModelOrNullAsyncInTxUsingModelMeta() throws Exception {
+        Key key = delegate.createKey("Hoge", 1);
+        Transaction tx = ds.beginTransaction();
+        Hoge model = delegate.getOrNullAsync(tx, meta, key).get();
+        tx.rollback();
+        assertThat(model, is(nullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test(expected = IllegalArgumentException.class)
     public void getModelInTxUsingModelClassAndValidateKey() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         delegate.get(null, Aaa.class, key);
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelAsyncInTxUsingModelClassAndValidateKey()
+            throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        try {
+            delegate.getAsync(null, Aaa.class, key).get();
+            fail();
+        } catch (ExecutionException e) {
+            assertThat(e.getCause(), is(IllegalArgumentException.class));
+        }
     }
 
     /**
@@ -670,10 +947,36 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getSubModelAsyncInTxUsingClass() throws Exception {
+        Key key = delegate.put(new Bbb());
+        Transaction tx = ds.beginTransaction();
+        Aaa model = delegate.getAsync(tx, Aaa.class, key).get();
+        tx.rollback();
+        assertThat(model, is(notNullValue()));
+        assertThat(model.getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getSubModelInTxUsingModelMeta() throws Exception {
         Key key = delegate.put(new Bbb());
         Transaction tx = ds.beginTransaction();
-        Aaa model = delegate.get(tx, new AaaMeta(), key);
+        Aaa model = delegate.get(tx, AaaMeta.get(), key);
+        tx.rollback();
+        assertThat(model, is(notNullValue()));
+        assertThat(model.getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelAsyncInTxUsingModelMeta() throws Exception {
+        Key key = delegate.put(new Bbb());
+        Transaction tx = ds.beginTransaction();
+        Aaa model = delegate.getAsync(tx, AaaMeta.get(), key).get();
         tx.rollback();
         assertThat(model, is(notNullValue()));
         assertThat(model.getClass().getName(), is(Bbb.class.getName()));
@@ -688,14 +991,30 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
         entity.setProperty("version", 1);
         Key key = ds.put(entity);
         Transaction tx = delegate.beginTransaction();
-        Hoge model = delegate.get(tx, Hoge.class, key, 1L);
-        assertThat(model, is(notNullValue()));
         delegate.get(tx, Hoge.class, key, 0L);
     }
 
     /**
      * @throws Exception
      */
+    @Test
+    public void getModelAsyncInTxUsingClassAndCheckVersion() throws Exception {
+        Entity entity = new Entity("Hoge");
+        entity.setProperty("version", 1);
+        Key key = ds.put(entity);
+        Transaction tx = delegate.beginTransaction();
+        try {
+            delegate.getAsync(tx, Hoge.class, key, 0L).get();
+            fail();
+        } catch (ExecutionException e) {
+            assertThat(e.getCause(), is(ConcurrentModificationException.class));
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    // TODO add asynchronous test
     @Test
     public void getSubModelInTxUsingClassAndVersion() throws Exception {
         Key key = delegate.put(new Bbb());

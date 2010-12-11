@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import org.junit.Test;
@@ -222,9 +223,32 @@ public class DatastoreUtilTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
+    @Test
+    public void getEntityAsync() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Entity entity = DatastoreUtil.getAsync(ads, key).get();
+        assertThat(entity, is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test(expected = EntityNotFoundRuntimeException.class)
     public void getEntityWhenEntityIsNotFound() throws Exception {
         DatastoreUtil.get(ds, KeyFactory.createKey("Aaa", 1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getEntitySyncWhenEntityIsNotFound() throws Exception {
+        try {
+            DatastoreUtil.getAsync(ads, KeyFactory.createKey("Aaa", 1)).get();
+            fail();
+        } catch (ExecutionException e) {
+            assertThat(e.getCause(), is(EntityNotFoundRuntimeException.class));
+        }
     }
 
     /**
@@ -241,9 +265,32 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getEntityAsyncInTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Transaction tx = ds.beginTransaction();
+        assertThat(
+            DatastoreUtil.getAsync(ads, tx, key).get(),
+            is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getEntityInTxWhenTxIsNull() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         assertThat(DatastoreUtil.get(ds, null, key), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getEntityAsyncInTxWhenTxIsNull() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        assertThat(
+            DatastoreUtil.getAsync(ads, null, key).get(),
+            is(notNullValue()));
     }
 
     /**
@@ -253,6 +300,22 @@ public class DatastoreUtilTest extends AppEngineTestCase {
     public void getEntityInTxWhenEntityIsNotFound() throws Exception {
         Transaction tx = ds.beginTransaction();
         DatastoreUtil.get(ds, tx, KeyFactory.createKey("Aaa", 1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getEntityAsyncInTxWhenEntityIsNotFound() throws Exception {
+        Transaction tx = ds.beginTransaction();
+        try {
+            DatastoreUtil
+                .getAsync(ads, tx, KeyFactory.createKey("Aaa", 1))
+                .get();
+            fail();
+        } catch (ExecutionException e) {
+            assertThat(e.getCause(), is(EntityNotFoundRuntimeException.class));
+        }
     }
 
     /**
@@ -269,12 +332,36 @@ public class DatastoreUtilTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
+    @Test(expected = IllegalStateException.class)
+    public void getEntityAsyncInIllegalTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Transaction tx = ds.beginTransaction();
+        tx.rollback();
+        DatastoreUtil.getAsync(ads, tx, key);
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test
     public void getEntitiesAsMap() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         Map<Key, Entity> map =
             DatastoreUtil.getAsMap(ds, Arrays.asList(key, key2));
+        assertThat(map, is(notNullValue()));
+        assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getEntitiesAsMapAsync() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        Map<Key, Entity> map =
+            DatastoreUtil.getAsMapAsync(ads, Arrays.asList(key, key2)).get();
         assertThat(map, is(notNullValue()));
         assertThat(map.size(), is(2));
     }
@@ -297,11 +384,42 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getEntitiesAsMapAsyncInTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = ds.beginTransaction();
+        Map<Key, Entity> map =
+            DatastoreUtil
+                .getAsMapAsync(ads, tx, Arrays.asList(key, key2))
+                .get();
+        assertThat(map, is(notNullValue()));
+        assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getEntitiesAsMapInTxWhenTxIsNull() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Map<Key, Entity> map =
             DatastoreUtil.getAsMap(ds, null, Arrays.asList(key, key2));
+        assertThat(map, is(notNullValue()));
+        assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getEntitiesAsMapAsyncInTxWhenTxIsNull() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Map<Key, Entity> map =
+            DatastoreUtil
+                .getAsMapAsync(ads, null, Arrays.asList(key, key2))
+                .get();
         assertThat(map, is(notNullValue()));
         assertThat(map.size(), is(2));
     }
