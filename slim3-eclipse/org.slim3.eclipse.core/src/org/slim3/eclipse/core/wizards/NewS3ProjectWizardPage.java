@@ -3,11 +3,11 @@ package org.slim3.eclipse.core.wizards;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.eclipse.core.resources.IFile;
@@ -29,9 +29,6 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaConventions;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
-import org.eclipse.jdt.internal.core.JavaElement;
-import org.eclipse.jdt.internal.core.JavaProject;
-import org.eclipse.jdt.internal.core.ProjectReferenceChange;
 import org.eclipse.jdt.internal.corext.util.Messages;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.internal.ui.viewsupport.BasicElementLabels;
@@ -40,21 +37,23 @@ import org.eclipse.jdt.ui.wizards.NewContainerWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
+import org.eclipse.ui.browser.IWebBrowser;
+import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.eclipse.ui.dialogs.IOverwriteQuery;
-import org.eclipse.ui.ide.undo.CreateFileOperation;
-import org.eclipse.ui.ide.undo.WorkspaceUndoUtil;
-import org.eclipse.ui.internal.ide.IDEWorkbenchMessages;
-import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
 import org.eclipse.ui.wizards.datatransfer.ImportOperation;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.osgi.framework.Bundle;
@@ -76,6 +75,8 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 
 	private Text txtProjectName;
     private Text txtRootPackage;
+	private Button cbIsSlim3;
+	private Button cbIsScenic3;
 	private Button cbIsGWT;
 	private Button cbIsAutoGen;
 	
@@ -107,8 +108,55 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 		txtRootPackage.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		txtRootPackage.addListener(SWT.Modify, nameModifyListener);
 
-		cbIsGWT = new Button(localComposite, SWT.CHECK);
-		cbIsGWT.setText("Use Google Web Toolkit");
+		Group uig = new Group(localComposite, SWT.NONE);
+		uig.setLayout(new GridLayout(2, false));
+		GridData gd = new GridData();
+		gd.horizontalSpan = 2;
+		uig.setLayoutData(gd);
+		
+		cbIsSlim3 = new Button(uig, SWT.RADIO);
+		cbIsSlim3.setText("Use MVC of Slim3.");
+		cbIsSlim3.setSelection(true);
+		
+		Link slim3Link = new Link(uig, SWT.NONE);
+		slim3Link.setText("<a>http://sites.google.com/site/slim3appengine/</a>");
+		slim3Link.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
+	        public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+	        	IWorkbenchBrowserSupport browserSupport = 
+	        		PlatformUI.getWorkbench().getBrowserSupport();
+			    try {
+			        IWebBrowser browser = browserSupport.getExternalBrowser();
+			        browser.openURL(new URL("http://sites.google.com/site/slim3appengine/"));
+			    } catch (PartInitException ex) {
+			        ex.printStackTrace();
+			    } catch (MalformedURLException ex) {
+			        ex.printStackTrace();
+			    }
+	        }
+	    });
+		
+		cbIsScenic3 = new Button(uig, SWT.RADIO);
+		cbIsScenic3.setText("Use MVC of Scenic3.");
+
+		Link link = new Link(uig, SWT.NONE);
+		link.setText("You can create multiple action methods into a Page class. <a>http://code.google.com/p/scenic3/</a>");
+        link.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
+	        public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+	        	IWorkbenchBrowserSupport browserSupport = 
+	        		PlatformUI.getWorkbench().getBrowserSupport();
+			    try {
+			        IWebBrowser browser = browserSupport.getExternalBrowser();
+			        browser.openURL(new URL("http://code.google.com/p/scenic3/"));
+			    } catch (PartInitException ex) {
+			        ex.printStackTrace();
+			    } catch (MalformedURLException ex) {
+			        ex.printStackTrace();
+			    }
+	        }
+	    });
+		 
+		cbIsGWT = new Button(uig, SWT.RADIO);
+		cbIsGWT.setText("Use Google Web Toolkit.");
 		
 		cbIsGWT.addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -116,18 +164,17 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 
 			public void widgetSelected(SelectionEvent e) {
 		        Button bChk = (Button)e.widget;
-		        cbIsAutoGen.setEnabled(bChk.getSelection());
+		        if(bChk == cbIsGWT) {
+		        	cbIsAutoGen.setEnabled(bChk.getSelection());
+		        }
 			}
 		});
 
-		cbIsAutoGen = new Button(localComposite, SWT.CHECK);
+		cbIsAutoGen = new Button(uig, SWT.CHECK);
 		cbIsAutoGen.setText("Generate a Module, an Entry Point and a Host Page.");
 		cbIsAutoGen.setSelection(true);
 		cbIsAutoGen.setEnabled(false);
 		
-		//cbIsAutoGen.setSelection(false);
-		//cbIsAutoGen.setVisible(false);
-
 		setControl(composite);
 	}
 
@@ -221,7 +268,9 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
     	final String projectName = txtProjectName.getText();
     	final String rootPackage = txtRootPackage.getText();
     	final boolean isGwtProject = cbIsGWT.getSelection();
+    	final boolean isScenic3Project = cbIsScenic3.getSelection();
     	final boolean isAutoGen = cbIsAutoGen.getSelection();
+    	
     	
 		try {
 			WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
@@ -230,7 +279,7 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 						throws CoreException, InvocationTargetException,
 						InterruptedException {
 					if(! isGwtProject) {
-						createExistingProject(projectName, rootPackage, monitor);
+						createExistingProject(projectName, rootPackage, isScenic3Project, monitor);
 					} else {
 						createExistingGwtProject(projectName, rootPackage, isAutoGen, monitor);
 					}
@@ -252,15 +301,22 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 	}
 
 	protected void createExistingProject(String projectName, String rootPackage, 
-			IProgressMonitor monitor) throws InvocationTargetException {
+			boolean isScenic3Project, IProgressMonitor monitor) throws InvocationTargetException {
 		try {
 			IProject projectHandle = createProjectHandle(projectName, monitor);
 			importBlankProject(projectHandle, monitor);
-			changeFactoryPath(projectHandle, monitor);
-			changeGenSrcDir(projectHandle, monitor);
+			if(isScenic3Project) {
+				importScenic3BlankProject(projectHandle, monitor);
+			}
+			changeFactoryPath(projectHandle, isScenic3Project, monitor);
+			changeGenSrcDir(projectHandle, rootPackage, isScenic3Project, monitor);
 			changeRootPackage(projectHandle, rootPackage, monitor);
 			//copyAppEngineJarToWebInfLib(projectHandle, monitor);
-			updateClassPath(projectHandle, false, monitor);
+			updateClassPath(projectHandle, false, isScenic3Project, monitor);
+			if(isScenic3Project) {
+				generateFrontPage(projectHandle, rootPackage, monitor);
+				generateAppUrls(projectHandle, rootPackage, monitor);
+			}
 		} catch(Exception ex) {
 			throw new InvocationTargetException(ex);
 		}
@@ -272,8 +328,8 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 			IProject projectHandle = createProjectHandle(projectName, monitor);
 			importBlankProject(projectHandle, monitor);
 			importGwtBlankProject(projectHandle, monitor);
-			changeFactoryPath(projectHandle, monitor);
-			changeGenSrcDir(projectHandle, monitor);
+			changeFactoryPath(projectHandle, false, monitor);
+			changeGenSrcDir(projectHandle, rootPackage, false, monitor);
 			changeRootPackage(projectHandle, rootPackage, monitor);
 			//copyAppEngineJarToWebInfLib(projectHandle, monitor);
 			if(isAutoGen) {
@@ -281,7 +337,7 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 				generateEntryPoint(projectHandle, rootPackage, monitor);
 				generateHostPage(projectHandle, monitor);
 			}
-			updateClassPath(projectHandle, true, monitor);
+			updateClassPath(projectHandle, true, false, monitor);
 		} catch(Exception ex) {
 			throw new InvocationTargetException(ex);
 		}
@@ -296,6 +352,10 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 	
 	private void importBlankProject(IProject projectHandle, IProgressMonitor monitor) throws Exception {
 		importProject(projectHandle, "slim3-sdk", monitor);
+	}
+
+	private void importScenic3BlankProject(IProject projectHandle, IProgressMonitor monitor) throws Exception {
+		importProject(projectHandle, "scenic3-sdk", monitor);
 	}
 
 	private void importGwtBlankProject(IProject projectHandle, IProgressMonitor monitor) throws Exception {
@@ -325,13 +385,17 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 		operation.run(monitor);
 	}
 	
-	private void changeFactoryPath(IProject projectHandle, IProgressMonitor monitor) throws CoreException {
+	private void changeFactoryPath(IProject projectHandle, boolean isScenic3Project, IProgressMonitor monitor) throws CoreException {
 		IFile factoryPath = projectHandle.getFile(".factorypath");
 		StringBuilder sb = new StringBuilder();
 		sb.append("<factorypath>\r\n");
 		sb.append("   <factorypathentry kind=\"WKSPJAR\" id=\""
 				+ getGenJarFileName(projectHandle, monitor)
 				+ "\" enabled=\"true\" runInBatchMode=\"false\"/>\r\n");
+		if(isScenic3Project) {
+			sb.append("   <factorypathentry kind=\"WKSPJAR\" id=\""
+					+ getScenic3JarFileName(projectHandle, monitor)
+					+ "\" enabled=\"true\" runInBatchMode=\"false\"/>\r\n");		}
 		sb.append("</factorypath>\r\n");
 		
 		ByteArrayInputStream source = new ByteArrayInputStream(sb.toString().getBytes());
@@ -358,7 +422,26 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 		throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Not found lib/slim3-gen-xxx.jar"));
 	}
 	
-	private void changeGenSrcDir(IProject projectHandle, IProgressMonitor monitor) throws CoreException {
+	private IPath getScenic3JarFilePath(IProject projectHandle, IProgressMonitor monitor) throws CoreException {
+		IPath warlib = new Path("war/WEB-INF/lib");
+		IFolder libFolder = projectHandle.getFolder(warlib);
+		IResource[] members = libFolder.members();
+		for(IResource m : members) {
+			if((m.getType() == IResource.FILE) && (m.getFileExtension().equals("jar"))) {
+				String filename = m.getName();
+				if(filename.startsWith("scenic3-")) {
+					return m.getFullPath();
+				}
+			}
+		}		
+		throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Not found war/WEB-INF/lib/scenic3-xxx.jar"));
+	}
+	
+	private String getScenic3JarFileName(IProject projectHandle, IProgressMonitor monitor) throws CoreException {
+		return getScenic3JarFilePath(projectHandle, monitor).toString();
+	}
+	
+	private void changeGenSrcDir(IProject projectHandle, String rootPackageName, boolean isScenic3Project, IProgressMonitor monitor) throws CoreException {
 		IFile aptCorePref = projectHandle.getFolder(".settings").getFile("org.eclipse.jdt.apt.core.prefs");
 		if(aptCorePref.exists()) {
 			InputStream is = aptCorePref.getContents();
@@ -376,6 +459,9 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 						sb.append(line);
 						sb.append("\r\n");
 					}
+				}
+				if(isScenic3Project) {
+					sb.append("org.eclipse.jdt.apt.processorOptions/slim3.rootPackage=" + rootPackageName);
 				}
 				ByteArrayInputStream source = new ByteArrayInputStream(sb.toString().getBytes());
 				aptCorePref.setContents(source, true, true, monitor);
@@ -462,24 +548,24 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 //		}
 //	}
 	
-	private void copy(IPath srcPath, IPath destPath, IProgressMonitor monitor)
-			throws CoreException {
-		File src = new File(srcPath.toOSString());
-	    IFile newFileHandle
-    		= IDEWorkbenchPlugin.getPluginWorkspace().getRoot().getFile(destPath);
-	    try {
-	        CreateFileOperation op
-		    	= new CreateFileOperation(newFileHandle, null, 
-			        new FileInputStream(src), 
-			        IDEWorkbenchMessages.WizardNewFileCreationPage_title);
-	
-	        PlatformUI.getWorkbench().getOperationSupport().getOperationHistory().execute(
-	            op, monitor, WorkspaceUndoUtil.getUIInfoAdapter(getShell()));
-	        
-	    } catch (Exception ex) {
-			throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Failed to create module", ex));
-	    }	    
-	}
+//	private void copy(IPath srcPath, IPath destPath, IProgressMonitor monitor)
+//			throws CoreException {
+//		File src = new File(srcPath.toOSString());
+//	    IFile newFileHandle
+//    		= IDEWorkbenchPlugin.getPluginWorkspace().getRoot().getFile(destPath);
+//	    try {
+//	        CreateFileOperation op
+//		    	= new CreateFileOperation(newFileHandle, null, 
+//			        new FileInputStream(src), 
+//			        IDEWorkbenchMessages.WizardNewFileCreationPage_title);
+//	
+//	        PlatformUI.getWorkbench().getOperationSupport().getOperationHistory().execute(
+//	            op, monitor, WorkspaceUndoUtil.getUIInfoAdapter(getShell()));
+//	        
+//	    } catch (Exception ex) {
+//			throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Failed to create module", ex));
+//	    }	    
+//	}
 	
 	private void generateModule(IProject projectHandle, String rootPackage,
 			IProgressMonitor monitor) throws CoreException {
@@ -505,6 +591,20 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 		page = null;
 	}
 
+	private void generateFrontPage(IProject projectHandle, String rootPackage, IProgressMonitor monitor)  throws CoreException {
+		NewFrontPageWizardPage page = new NewFrontPageWizardPage();
+		page.create(projectHandle, rootPackage, monitor);
+		page.dispose();
+		page = null;
+	}
+
+	private void generateAppUrls(IProject projectHandle,  String rootPackage, IProgressMonitor monitor) throws CoreException {
+		NewAppUrlsWizardPage page = new NewAppUrlsWizardPage();
+		page.create(projectHandle, rootPackage, monitor);
+		page.dispose();
+		page = null;
+	}
+	
 	public IProject getProjectHandle(String prjname) {
         return ResourcesPlugin.getWorkspace().getRoot().getProject(prjname);
     }
@@ -516,11 +616,11 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
     private String GAE_CONTAINER_ID = "com.google.appengine.eclipse.core.GAE_CONTAINER";
     private String GWT_CONTAINER_ID = "com.google.gwt.eclipse.core.GWT_CONTAINER";
     
-	private void updateClassPath(IProject projectHandle, boolean isGWT, IProgressMonitor monitor) throws CoreException {
+	private void updateClassPath(IProject projectHandle, boolean isGWT, boolean isScenic3, IProgressMonitor monitor) throws CoreException {
 		IJavaProject project = JavaCore.create(projectHandle);
 		IClasspathEntry[] classpaths = project.getRawClasspath();
 		IClasspathEntry[] newClassPaths;
-		if(isGWT) {
+		if(isGWT || isScenic3) {
 			newClassPaths = new IClasspathEntry[classpaths.length + 2];
 		} else {
 			newClassPaths = new IClasspathEntry[classpaths.length + 1];
@@ -529,6 +629,10 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 		newClassPaths[classpaths.length] = JavaCore.newContainerEntry(new Path(GAE_CONTAINER_ID));
 		if(isGWT) {
 			newClassPaths[classpaths.length + 1] = JavaCore.newContainerEntry(new Path(GWT_CONTAINER_ID));
+		}
+		if(isScenic3) {
+			newClassPaths[classpaths.length + 1] = JavaCore.newLibraryEntry(
+					getScenic3JarFilePath(projectHandle, monitor), null, null);
 		}
 		project.setRawClasspath(newClassPaths, monitor);
 	}
