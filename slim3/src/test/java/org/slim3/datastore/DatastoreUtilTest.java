@@ -660,6 +660,18 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void deleteEntitiesAsync() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Transaction tx = ds.beginTransaction();
+        DatastoreUtil.deleteAsync(ads, Arrays.asList(key)).get();
+        tx.rollback();
+        assertThat(ds.get(key), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void deleteEntitiesInTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Transaction tx = ds.beginTransaction();
@@ -672,17 +684,12 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void deleteManyEntitiesWithoutTx() throws Exception {
-        List<Key> keys = new ArrayList<Key>();
-        Key parentKey = KeyFactory.createKey("Parent", 1);
-        for (int i = 0; i < 510; i++) {
-            keys.add(ds.put(new Entity(DatastoreUtil.allocateId(
-                ds,
-                parentKey,
-                "Hoge"))));
-        }
-        DatastoreUtil.delete(ds, keys);
-        assertThat(tester.count("Hoge"), is(0));
+    public void deleteEntitiesAsyncInTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Transaction tx = ds.beginTransaction();
+        DatastoreUtil.deleteAsync(ads, tx, Arrays.asList(key)).get();
+        tx.rollback();
+        assertThat(ds.get(key), is(notNullValue()));
     }
 
     /**
@@ -698,12 +705,33 @@ public class DatastoreUtilTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
+    @Test(expected = EntityNotFoundException.class)
+    public void deleteEntitiesAsyncInTxWhenTxIsNull() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        DatastoreUtil.deleteAsync(ads, null, Arrays.asList(key)).get();
+        ds.get(key);
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test(expected = IllegalStateException.class)
     public void deleteEntitiesInIllegalTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Transaction tx = ds.beginTransaction();
         tx.rollback();
         DatastoreUtil.delete(ds, tx, Arrays.asList(key));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalStateException.class)
+    public void deleteEntitiesAsyncInIllegalTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Transaction tx = ds.beginTransaction();
+        tx.rollback();
+        DatastoreUtil.deleteAsync(ads, tx, Arrays.asList(key));
     }
 
     /**

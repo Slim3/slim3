@@ -946,6 +946,26 @@ public final class DatastoreUtil {
     }
 
     /**
+     * Deletes entities specified by the keys within the provided transaction
+     * asynchronously.
+     * 
+     * @param ds
+     *            the datastore service
+     * @param keys
+     *            the keys
+     * @return a future void
+     * @throws NullPointerException
+     *             if the ds parameter is null or if the keys parameter is null
+     */
+    public static Future<Void> deleteAsync(AsyncDatastoreService ds,
+            Iterable<Key> keys) throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        return deleteAsync(ds, ds.getCurrentTransaction(null), keys);
+    }
+
+    /**
      * Deletes entities specified by the keys within the provided transaction.
      * 
      * @param ds
@@ -970,6 +990,35 @@ public final class DatastoreUtil {
             throw new IllegalStateException("The transaction must be active.");
         }
         ds.delete(tx, keys);
+    }
+
+    /**
+     * Deletes entities specified by the keys within the provided transaction
+     * asynchronously.
+     * 
+     * @param ds
+     *            the asynchronous datastore service
+     * @param tx
+     *            the transaction
+     * @param keys
+     *            the keys
+     * @return a future void
+     * @throws NullPointerException
+     *             if the ds parameter is null or if the keys parameter is null
+     */
+    public static Future<Void> deleteAsync(AsyncDatastoreService ds,
+            Transaction tx, Iterable<Key> keys) throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        if (keys == null) {
+            throw new NullPointerException(
+                "The keys parameter must not be null.");
+        }
+        if (tx != null && !tx.isActive()) {
+            throw new IllegalStateException("The transaction must be active.");
+        }
+        return ds.delete(tx, keys);
     }
 
     /**
