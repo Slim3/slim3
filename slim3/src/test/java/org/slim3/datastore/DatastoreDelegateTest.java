@@ -28,6 +28,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.junit.Test;
 import org.slim3.datastore.meta.AaaMeta;
+import org.slim3.datastore.meta.BbbMeta;
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Aaa;
 import org.slim3.datastore.model.Bbb;
@@ -1014,12 +1015,23 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
-    // TODO add asynchronous test
     @Test
     public void getSubModelInTxUsingClassAndVersion() throws Exception {
         Key key = delegate.put(new Bbb());
         Transaction tx = ds.beginTransaction();
         Aaa model = delegate.get(tx, Aaa.class, key, 1L);
+        assertThat(model, is(notNullValue()));
+        assertThat(model.getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelAsyncInTxUsingClassAndVersion() throws Exception {
+        Key key = delegate.put(new Bbb());
+        Transaction tx = ds.beginTransaction();
+        Aaa model = delegate.getAsync(tx, Aaa.class, key, 1L).get();
         assertThat(model, is(notNullValue()));
         assertThat(model.getClass().getName(), is(Bbb.class.getName()));
     }
@@ -1039,6 +1051,18 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
+    @Test
+    public void getSubModelAsyncInTxUsingModelMetaAndVersion() throws Exception {
+        Key key = delegate.put(new Bbb());
+        Transaction tx = ds.beginTransaction();
+        Aaa model = delegate.getAsync(tx, new AaaMeta(), key, 1L).get();
+        assertThat(model, is(notNullValue()));
+        assertThat(model.getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test(expected = IllegalArgumentException.class)
     public void getModelInTxUsingClassAndVersionAndValidateKey()
             throws Exception {
@@ -1050,15 +1074,47 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
+    @Test
+    public void getModelIAsyncnTxUsingClassAndVersionAndValidateKey()
+            throws Exception {
+        Key key = delegate.put(new Bbb());
+        Transaction tx = ds.beginTransaction();
+        try {
+            delegate.getAsync(tx, Hoge.class, key, 1L).get();
+            fail();
+        } catch (ExecutionException e) {
+            assertThat(e.getCause(), is(IllegalArgumentException.class));
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test(expected = ConcurrentModificationException.class)
     public void getModelInTxUsingModelMetaAndCheckVersion() throws Exception {
         Entity entity = new Entity("Hoge");
         entity.setProperty("version", 1);
         Key key = ds.put(entity);
         Transaction tx = delegate.beginTransaction();
-        Hoge model = delegate.get(tx, meta, key, 1L);
-        assertThat(model, is(not(nullValue())));
         delegate.get(tx, meta, key, 0L);
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelAsyncInTxUsingModelMetaAndCheckVersion()
+            throws Exception {
+        Entity entity = new Entity("Hoge");
+        entity.setProperty("version", 1);
+        Key key = ds.put(entity);
+        Transaction tx = delegate.beginTransaction();
+        try {
+            delegate.getAsync(tx, meta, key, 0L).get();
+            fail();
+        } catch (ExecutionException e) {
+            assertThat(e.getCause(), is(ConcurrentModificationException.class));
+        }
     }
 
     /**
@@ -1075,11 +1131,35 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
+    @Test(expected = IllegalStateException.class)
+    public void getModelAsyncInIllegalTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Transaction tx = ds.beginTransaction();
+        tx.rollback();
+        delegate.getAsync(tx, meta, key);
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test
     public void getModelsUsingModelMeta() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         List<Hoge> models = delegate.get(meta, Arrays.asList(key, key2));
+        assertThat(models, is(not(nullValue())));
+        assertThat(models.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelsAsyncUsingModelMeta() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        List<Hoge> models =
+            delegate.getAsync(meta, Arrays.asList(key, key2)).get();
         assertThat(models, is(not(nullValue())));
         assertThat(models.size(), is(2));
     }
@@ -1101,10 +1181,36 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getModelsWithoutTxAsyncUsingModelMeta() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        List<Hoge> models =
+            delegate.getWithoutTxAsync(meta, Arrays.asList(key, key2)).get();
+        assertThat(models, is(not(nullValue())));
+        assertThat(models.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getModelsUsingClass() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         List<Hoge> models = delegate.get(Hoge.class, Arrays.asList(key, key2));
+        assertThat(models, is(notNullValue()));
+        assertThat(models.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelsAsyncUsingClass() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        List<Hoge> models =
+            delegate.getAsync(Hoge.class, Arrays.asList(key, key2)).get();
         assertThat(models, is(notNullValue()));
         assertThat(models.size(), is(2));
     }
@@ -1126,9 +1232,37 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getModelsWithoutTxAsyncUsingClass() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        List<Hoge> models =
+            delegate
+                .getWithoutTxAsync(Hoge.class, Arrays.asList(key, key2))
+                .get();
+        assertThat(models, is(notNullValue()));
+        assertThat(models.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getSubModelsUsingClass() throws Exception {
         Key key = delegate.put(new Bbb());
         List<Aaa> models = delegate.get(Aaa.class, Arrays.asList(key));
+        assertThat(models, is(notNullValue()));
+        assertThat(models.size(), is(1));
+        assertThat(models.get(0).getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelsAsyncUsingClass() throws Exception {
+        Key key = delegate.put(new Bbb());
+        List<Aaa> models =
+            delegate.getAsync(Aaa.class, Arrays.asList(key)).get();
         assertThat(models, is(notNullValue()));
         assertThat(models.size(), is(1));
         assertThat(models.get(0).getClass().getName(), is(Bbb.class.getName()));
@@ -1150,6 +1284,19 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getSubModelsAsyncUsingModelMeta() throws Exception {
+        Key key = delegate.put(new Bbb());
+        List<Aaa> models =
+            delegate.getAsync(AaaMeta.get(), Arrays.asList(key)).get();
+        assertThat(models, is(notNullValue()));
+        assertThat(models.size(), is(1));
+        assertThat(models.get(0).getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getModelsUsingModelMetaForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
@@ -1162,10 +1309,35 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getModelsAsyncUsingModelMetaForVarargs() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        List<Hoge> models = delegate.getAsync(meta, key, key2).get();
+        assertThat(models, is(not(nullValue())));
+        assertThat(models.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getModelsWithoutTxUsingModelMetaForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         List<Hoge> models = delegate.getWithoutTx(meta, key, key2);
+        assertThat(models, is(not(nullValue())));
+        assertThat(models.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelsWithoutTxAsyncUsingModelMetaForVarargs()
+            throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        List<Hoge> models = delegate.getWithoutTxAsync(meta, key, key2).get();
         assertThat(models, is(not(nullValue())));
         assertThat(models.size(), is(2));
     }
@@ -1188,10 +1360,38 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getSubModelsUsingAsyncClassForVarargs() throws Exception {
+        Key key = delegate.put(new Bbb());
+        Key key2 = delegate.put(new Bbb());
+        List<Aaa> models = delegate.getAsync(Aaa.class, key, key2).get();
+        assertThat(models, is(notNullValue()));
+        assertThat(models.size(), is(2));
+        assertThat(models.get(0).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(models.get(1).getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getSubModelsUsingModelMetaForVarargs() throws Exception {
         Key key = delegate.put(new Bbb());
         Key key2 = delegate.put(new Bbb());
-        List<Aaa> models = delegate.get(new AaaMeta(), key, key2);
+        List<Aaa> models = delegate.get(AaaMeta.get(), key, key2);
+        assertThat(models, is(notNullValue()));
+        assertThat(models.size(), is(2));
+        assertThat(models.get(0).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(models.get(1).getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelsAsyncUsingModelMetaForVarargs() throws Exception {
+        Key key = delegate.put(new Bbb());
+        Key key2 = delegate.put(new Bbb());
+        List<Aaa> models = delegate.getAsync(AaaMeta.get(), key, key2).get();
         assertThat(models, is(notNullValue()));
         assertThat(models.size(), is(2));
         assertThat(models.get(0).getClass().getName(), is(Bbb.class.getName()));
@@ -1214,10 +1414,35 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getModelsAsyncUsingClassForVarargs() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        List<Hoge> models = delegate.getAsync(Hoge.class, key, key2).get();
+        assertThat(models, is(not(nullValue())));
+        assertThat(models.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getModelsWithoutTxUsingClassForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         List<Hoge> models = delegate.getWithoutTx(Hoge.class, key, key2);
+        assertThat(models, is(not(nullValue())));
+        assertThat(models.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelsWithoutTxAsyncUsingClassForVarargs() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        List<Hoge> models =
+            delegate.getWithoutTxAsync(Hoge.class, key, key2).get();
         assertThat(models, is(not(nullValue())));
         assertThat(models.size(), is(2));
     }
@@ -1236,11 +1461,41 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getModelsAsyncWhenEntityNotFound() throws Exception {
+        Key key = KeyFactory.createKey("Hoge", 1);
+        Key key2 = KeyFactory.createKey("Hoge", 1);
+        try {
+            delegate.getAsync(meta, key, key2).get();
+            fail();
+        } catch (ExecutionException e) {
+            assertThat(e.getCause(), is(EntityNotFoundRuntimeException.class));
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getModelsInTxUsingModelMeta() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = ds.beginTransaction();
         List<Hoge> models = delegate.get(tx, meta, Arrays.asList(key, key2));
+        tx.rollback();
+        assertThat(models, is(not(nullValue())));
+        assertThat(models.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelsAsyncInTxUsingModelMeta() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = ds.beginTransaction();
+        List<Hoge> models =
+            delegate.getAsync(tx, meta, Arrays.asList(key, key2)).get();
         tx.rollback();
         assertThat(models, is(not(nullValue())));
         assertThat(models.size(), is(2));
@@ -1265,11 +1520,43 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getModelsAsyncInTxUsingClass() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = ds.beginTransaction();
+        List<Hoge> models =
+            delegate.getAsync(tx, Hoge.class, Arrays.asList(key, key2)).get();
+        tx.rollback();
+        assertThat(models, is(notNullValue()));
+        assertThat(models.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getSubModelsInTxUsingClass() throws Exception {
         Key key = delegate.put(new Bbb());
         Key key2 = delegate.put(new Bbb());
+        Transaction tx = ds.beginTransaction();
         List<Aaa> models =
-            delegate.get(null, Aaa.class, Arrays.asList(key, key2));
+            delegate.get(tx, Aaa.class, Arrays.asList(key, key2));
+        assertThat(models, is(notNullValue()));
+        assertThat(models.size(), is(2));
+        assertThat(models.get(0).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(models.get(1).getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelsAsyncInTxUsingClass() throws Exception {
+        Key key = delegate.put(new Bbb());
+        Key key2 = delegate.put(new Bbb());
+        Transaction tx = ds.beginTransaction();
+        List<Aaa> models =
+            delegate.getAsync(tx, Aaa.class, Arrays.asList(key, key2)).get();
         assertThat(models, is(notNullValue()));
         assertThat(models.size(), is(2));
         assertThat(models.get(0).getClass().getName(), is(Bbb.class.getName()));
@@ -1282,13 +1569,25 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     @Test
     public void getSubModelsInTxUsingModelMeta() throws Exception {
         Key key = delegate.put(new Bbb());
-        Key key2 = delegate.put(new Bbb());
-        List<Aaa> models =
-            delegate.get(null, new AaaMeta(), Arrays.asList(key, key2));
+        Transaction tx = ds.beginTransaction();
+        List<Aaa> models = delegate.get(tx, AaaMeta.get(), Arrays.asList(key));
         assertThat(models, is(notNullValue()));
-        assertThat(models.size(), is(2));
+        assertThat(models.size(), is(1));
         assertThat(models.get(0).getClass().getName(), is(Bbb.class.getName()));
-        assertThat(models.get(1).getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelsAsyncInTxUsingModelMeta() throws Exception {
+        Key key = delegate.put(new Bbb());
+        Transaction tx = ds.beginTransaction();
+        List<Aaa> models =
+            delegate.getAsync(tx, AaaMeta.get(), Arrays.asList(key)).get();
+        assertThat(models, is(notNullValue()));
+        assertThat(models.size(), is(1));
+        assertThat(models.get(0).getClass().getName(), is(Bbb.class.getName()));
     }
 
     /**
@@ -1306,12 +1605,38 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
+    @Test(expected = IllegalStateException.class)
+    public void getModelsAsyncInIllegalTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = ds.beginTransaction();
+        tx.rollback();
+        delegate.getAsync(tx, meta, Arrays.asList(key, key2));
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test
     public void getModelsInTxForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = ds.beginTransaction();
         List<Hoge> models = delegate.get(tx, meta, key, key2);
+        tx.rollback();
+        assertThat(models, is(not(nullValue())));
+        assertThat(models.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelsAsyncInTxForVarargs() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = ds.beginTransaction();
+        List<Hoge> models = delegate.getAsync(tx, meta, key, key2).get();
         tx.rollback();
         assertThat(models, is(not(nullValue())));
         assertThat(models.size(), is(2));
@@ -1335,10 +1660,44 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getModelsAsyncInTxForVarargsUsingClass() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = ds.beginTransaction();
+        List<Hoge> models = delegate.getAsync(tx, Hoge.class, key, key2).get();
+        tx.rollback();
+        assertThat(models, is(not(nullValue())));
+        assertThat(models.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getSubModelsInTxForVarargsUsingClass() throws Exception {
         Key key = delegate.put(new Bbb());
-        Key key2 = delegate.put(new Bbb());
-        List<Aaa> models = delegate.get(null, Aaa.class, key, key2);
+        Bbb bbb2 = new Bbb();
+        bbb2.setKey(KeyFactory.createKey(key, BbbMeta.get().getKind(), "aaa"));
+        Key key2 = delegate.put(bbb2);
+        Transaction tx = ds.beginTransaction();
+        List<Aaa> models = delegate.get(tx, Aaa.class, key, key2);
+        assertThat(models, is(notNullValue()));
+        assertThat(models.size(), is(2));
+        assertThat(models.get(0).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(models.get(1).getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelsAsyncInTxForVarargsUsingClass() throws Exception {
+        Key key = delegate.put(new Bbb());
+        Bbb bbb2 = new Bbb();
+        bbb2.setKey(KeyFactory.createKey(key, BbbMeta.get().getKind(), "aaa"));
+        Key key2 = delegate.put(bbb2);
+        Transaction tx = ds.beginTransaction();
+        List<Aaa> models = delegate.getAsync(tx, Aaa.class, key, key2).get();
         assertThat(models, is(notNullValue()));
         assertThat(models.size(), is(2));
         assertThat(models.get(0).getClass().getName(), is(Bbb.class.getName()));
@@ -1351,8 +1710,30 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     @Test
     public void getSubModelsInTxForVarargsUsingModelMeta() throws Exception {
         Key key = delegate.put(new Bbb());
-        Key key2 = delegate.put(new Bbb());
-        List<Aaa> models = delegate.get(null, new AaaMeta(), key, key2);
+        Bbb bbb2 = new Bbb();
+        bbb2.setKey(KeyFactory.createKey(key, BbbMeta.get().getKind(), "aaa"));
+        Key key2 = delegate.put(bbb2);
+        Transaction tx = ds.beginTransaction();
+        List<Aaa> models = delegate.get(tx, AaaMeta.get(), key, key2);
+        assertThat(models, is(notNullValue()));
+        assertThat(models.size(), is(2));
+        assertThat(models.get(0).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(models.get(1).getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelsAsyncInTxForVarargsUsingModelMeta()
+            throws Exception {
+        Key key = delegate.put(new Bbb());
+        Bbb bbb2 = new Bbb();
+        bbb2.setKey(KeyFactory.createKey(key, BbbMeta.get().getKind(), "aaa"));
+        Key key2 = delegate.put(bbb2);
+        Transaction tx = ds.beginTransaction();
+        List<Aaa> models =
+            delegate.getAsync(tx, AaaMeta.get(), key, key2).get();
         assertThat(models, is(notNullValue()));
         assertThat(models.size(), is(2));
         assertThat(models.get(0).getClass().getName(), is(Bbb.class.getName()));
@@ -1374,11 +1755,36 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
+    @Test(expected = IllegalStateException.class)
+    public void getModelsAsyncInIllegalTxForVarargs() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = ds.beginTransaction();
+        tx.rollback();
+        delegate.getAsync(tx, meta, key, key2);
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test
     public void getModelsAsMapUsnigModelMeta() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         Map<Key, Hoge> map = delegate.getAsMap(meta, Arrays.asList(key, key2));
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelsAsMapAsyncUsnigModelMeta() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        Map<Key, Hoge> map =
+            delegate.getAsMapAsync(meta, Arrays.asList(key, key2)).get();
         assertThat(map, is(not(nullValue())));
         assertThat(map.size(), is(2));
     }
@@ -1401,6 +1807,22 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getModelsAsMapWithoutTxAsyncUsnigModelMeta() throws Exception {
+        Key key = delegate.put(new Aaa());
+        Key key2 = delegate.put(new Bbb());
+        delegate.beginTransaction();
+        Map<Key, Aaa> map =
+            delegate.getAsMapWithoutTxAsync(
+                AaaMeta.get(),
+                Arrays.asList(key, key2)).get();
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getModelsAsMapUsingClass() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
@@ -1414,11 +1836,41 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getModelsAsMapAsyncUsingClass() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        Map<Key, Hoge> map =
+            delegate.getAsMapAsync(Hoge.class, Arrays.asList(key, key2)).get();
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getSubModelsAsMapUsingModelMeta() throws Exception {
         Key key = delegate.put(new Bbb());
         Key key2 = delegate.put(new Bbb());
         Map<Key, Aaa> map =
-            delegate.getAsMap(new AaaMeta(), Arrays.asList(key, key2));
+            delegate.getAsMap(AaaMeta.get(), Arrays.asList(key, key2));
+        assertThat(map, is(notNullValue()));
+        assertThat(map.size(), is(2));
+        assertThat(map.get(key).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(map.get(key2).getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelsAsMapAsyncUsingModelMeta() throws Exception {
+        Key key = delegate.put(new Bbb());
+        Key key2 = delegate.put(new Bbb());
+        Map<Key, Aaa> map =
+            delegate
+                .getAsMapAsync(AaaMeta.get(), Arrays.asList(key, key2))
+                .get();
         assertThat(map, is(notNullValue()));
         assertThat(map.size(), is(2));
         assertThat(map.get(key).getClass().getName(), is(Bbb.class.getName()));
@@ -1444,10 +1896,37 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getSubModelsAsMapAsyncUsingClass() throws Exception {
+        Key key = delegate.put(new Bbb());
+        Key key2 = delegate.put(new Bbb());
+        Map<Key, Aaa> map =
+            delegate.getAsMapAsync(Aaa.class, Arrays.asList(key, key2)).get();
+        assertThat(map, is(notNullValue()));
+        assertThat(map.size(), is(2));
+        assertThat(map.get(key).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(map.get(key2).getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getModelsAsMapForVarargsUsingModelMeta() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         Map<Key, Hoge> map = delegate.getAsMap(meta, key, key2);
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelsAsMapAsyncForVarargsUsingModelMeta() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        Map<Key, Hoge> map = delegate.getAsMapAsync(meta, key, key2).get();
         assertThat(map, is(not(nullValue())));
         assertThat(map.size(), is(2));
     }
@@ -1469,10 +1948,37 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getModelsAsMapWithoutTxAsyncForVarargsUsingModelMeta()
+            throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        Map<Key, Hoge> map =
+            delegate.getAsMapWithoutTxAsync(meta, key, key2).get();
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getModelsAsMapForVarargsUsingClass() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         Map<Key, Hoge> map = delegate.getAsMap(Hoge.class, key, key2);
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelsAsMapAsyncForVarargsUsingClass() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        Map<Key, Hoge> map =
+            delegate.getAsMapAsync(Hoge.class, key, key2).get();
         assertThat(map, is(not(nullValue())));
         assertThat(map.size(), is(2));
     }
@@ -1493,10 +1999,40 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getModelsAsMapWithoutTxAsyncForVarargsUsingClass()
+            throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        Map<Key, Hoge> map =
+            delegate.getAsMapWithoutTxAsync(Hoge.class, key, key2).get();
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getSubModelsAsMapForVarargsUsingModelMeta() throws Exception {
         Key key = delegate.put(new Bbb());
         Key key2 = delegate.put(new Bbb());
-        Map<Key, Aaa> map = delegate.getAsMap(new AaaMeta(), key, key2);
+        Map<Key, Aaa> map = delegate.getAsMap(AaaMeta.get(), key, key2);
+        assertThat(map, is(notNullValue()));
+        assertThat(map.size(), is(2));
+        assertThat(map.get(key).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(map.get(key2).getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelsAsMapAsyncForVarargsUsingModelMeta()
+            throws Exception {
+        Key key = delegate.put(new Bbb());
+        Key key2 = delegate.put(new Bbb());
+        Map<Key, Aaa> map =
+            delegate.getAsMapAsync(AaaMeta.get(), key, key2).get();
         assertThat(map, is(notNullValue()));
         assertThat(map.size(), is(2));
         assertThat(map.get(key).getClass().getName(), is(Bbb.class.getName()));
@@ -1511,6 +2047,20 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
         Key key = delegate.put(new Bbb());
         Key key2 = delegate.put(new Bbb());
         Map<Key, Aaa> map = delegate.getAsMap(Aaa.class, key, key2);
+        assertThat(map, is(notNullValue()));
+        assertThat(map.size(), is(2));
+        assertThat(map.get(key).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(map.get(key2).getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelsAsMapAsyncForVarargsUsingClass() throws Exception {
+        Key key = delegate.put(new Bbb());
+        Key key2 = delegate.put(new Bbb());
+        Map<Key, Aaa> map = delegate.getAsMapAsync(Aaa.class, key, key2).get();
         assertThat(map, is(notNullValue()));
         assertThat(map.size(), is(2));
         assertThat(map.get(key).getClass().getName(), is(Bbb.class.getName()));
@@ -1536,6 +2086,21 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getModelsAsMapAsyncInTxUsingModelMeta() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = ds.beginTransaction();
+        Map<Key, Hoge> map =
+            delegate.getAsMapAsync(tx, meta, Arrays.asList(key, key2)).get();
+        tx.rollback();
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getModelsAsMapInTxUsingClass() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
@@ -1551,11 +2116,51 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getModelsAsMapAsyncInTxUsingClass() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = ds.beginTransaction();
+        Map<Key, Hoge> map =
+            delegate
+                .getAsMapAsync(tx, Hoge.class, Arrays.asList(key, key2))
+                .get();
+        tx.rollback();
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getSubModelsAsMapInTxUsingModelMeta() throws Exception {
         Key key = delegate.put(new Bbb());
-        Key key2 = delegate.put(new Bbb());
+        Bbb bbb2 = new Bbb();
+        bbb2.setKey(KeyFactory.createKey(key, BbbMeta.get().getKind(), "Hoge"));
+        Key key2 = delegate.put(bbb2);
+        Transaction tx = ds.beginTransaction();
         Map<Key, Aaa> map =
-            delegate.getAsMap(null, new AaaMeta(), Arrays.asList(key, key2));
+            delegate.getAsMap(tx, new AaaMeta(), Arrays.asList(key, key2));
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
+        assertThat(map.get(key).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(map.get(key2).getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelsAsMapAsyncInTxUsingModelMeta() throws Exception {
+        Key key = delegate.put(new Bbb());
+        Bbb bbb2 = new Bbb();
+        bbb2.setKey(KeyFactory.createKey(key, BbbMeta.get().getKind(), "Hoge"));
+        Key key2 = delegate.put(bbb2);
+        Transaction tx = ds.beginTransaction();
+        Map<Key, Aaa> map =
+            delegate
+                .getAsMapAsync(tx, AaaMeta.get(), Arrays.asList(key, key2))
+                .get();
         assertThat(map, is(not(nullValue())));
         assertThat(map.size(), is(2));
         assertThat(map.get(key).getClass().getName(), is(Bbb.class.getName()));
@@ -1568,9 +2173,32 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     @Test
     public void getSubModelsAsMapInTxUsingClass() throws Exception {
         Key key = delegate.put(new Bbb());
-        Key key2 = delegate.put(new Bbb());
+        Bbb bbb2 = new Bbb();
+        bbb2.setKey(KeyFactory.createKey(key, BbbMeta.get().getKind(), "Hoge"));
+        Key key2 = delegate.put(bbb2);
+        Transaction tx = ds.beginTransaction();
         Map<Key, Aaa> map =
-            delegate.getAsMap(null, Aaa.class, Arrays.asList(key, key2));
+            delegate.getAsMap(tx, Aaa.class, Arrays.asList(key, key2));
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
+        assertThat(map.get(key).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(map.get(key2).getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelsAsMapAsyncInTxUsingClass() throws Exception {
+        Key key = delegate.put(new Bbb());
+        Bbb bbb2 = new Bbb();
+        bbb2.setKey(KeyFactory.createKey(key, BbbMeta.get().getKind(), "Hoge"));
+        Key key2 = delegate.put(bbb2);
+        Transaction tx = ds.beginTransaction();
+        Map<Key, Aaa> map =
+            delegate
+                .getAsMapAsync(tx, Aaa.class, Arrays.asList(key, key2))
+                .get();
         assertThat(map, is(not(nullValue())));
         assertThat(map.size(), is(2));
         assertThat(map.get(key).getClass().getName(), is(Bbb.class.getName()));
@@ -1595,6 +2223,20 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getModelsAsMapAsyncInTxForVarargs() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = ds.beginTransaction();
+        Map<Key, Hoge> map = delegate.getAsMapAsync(tx, meta, key, key2).get();
+        tx.rollback();
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getModelsAsMapInTxForVarargsUsingClass() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
@@ -1609,11 +2251,48 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getModelsAsMapAsyncInTxForVarargsUsingClass() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = ds.beginTransaction();
+        Map<Key, Hoge> map =
+            delegate.getAsMapAsync(tx, Hoge.class, key, key2).get();
+        tx.rollback();
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getSubModelsAsMapInTxForVarargsUsingModelMeta()
             throws Exception {
         Key key = delegate.put(new Bbb());
-        Key key2 = delegate.put(new Bbb());
-        Map<Key, Aaa> map = delegate.getAsMap(null, new AaaMeta(), key, key2);
+        Bbb bbb2 = new Bbb();
+        bbb2.setKey(KeyFactory.createKey(key, BbbMeta.get().getKind(), "Hoge"));
+        Key key2 = delegate.put(bbb2);
+        Transaction tx = ds.beginTransaction();
+        Map<Key, Aaa> map = delegate.getAsMap(tx, AaaMeta.get(), key, key2);
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
+        assertThat(map.get(key).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(map.get(key2).getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelsAsMapAsyncInTxForVarargsUsingModelMeta()
+            throws Exception {
+        Key key = delegate.put(new Bbb());
+        Bbb bbb2 = new Bbb();
+        bbb2.setKey(KeyFactory.createKey(key, BbbMeta.get().getKind(), "Hoge"));
+        Key key2 = delegate.put(bbb2);
+        Transaction tx = ds.beginTransaction();
+        Map<Key, Aaa> map =
+            delegate.getAsMapAsync(tx, AaaMeta.get(), key, key2).get();
         assertThat(map, is(not(nullValue())));
         assertThat(map.size(), is(2));
         assertThat(map.get(key).getClass().getName(), is(Bbb.class.getName()));
@@ -1626,8 +2305,30 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     @Test
     public void getSubModelsAsMapInTxForVarargsUsingClass() throws Exception {
         Key key = delegate.put(new Bbb());
-        Key key2 = delegate.put(new Bbb());
-        Map<Key, Aaa> map = delegate.getAsMap(null, Aaa.class, key, key2);
+        Bbb bbb2 = new Bbb();
+        bbb2.setKey(KeyFactory.createKey(key, BbbMeta.get().getKind(), "Hoge"));
+        Key key2 = delegate.put(bbb2);
+        Transaction tx = ds.beginTransaction();
+        Map<Key, Aaa> map = delegate.getAsMap(tx, Aaa.class, key, key2);
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
+        assertThat(map.get(key).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(map.get(key2).getClass().getName(), is(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getSubModelsAsMapAsyncInTxForVarargsUsingClass()
+            throws Exception {
+        Key key = delegate.put(new Bbb());
+        Bbb bbb2 = new Bbb();
+        bbb2.setKey(KeyFactory.createKey(key, BbbMeta.get().getKind(), "Hoge"));
+        Key key2 = delegate.put(bbb2);
+        Transaction tx = ds.beginTransaction();
+        Map<Key, Aaa> map =
+            delegate.getAsMapAsync(tx, Aaa.class, key, key2).get();
         assertThat(map, is(not(nullValue())));
         assertThat(map.size(), is(2));
         assertThat(map.get(key).getClass().getName(), is(Bbb.class.getName()));
@@ -1648,6 +2349,16 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getEntityAsync() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Entity entity = delegate.getAsync(key).get();
+        assertThat(entity, is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getEntityOrNull() throws Exception {
         assertThat(
             delegate.getOrNull(KeyFactory.createKey("Hoge", 1)),
@@ -1658,9 +2369,29 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getEntityOrNullAsync() throws Exception {
+        assertThat(delegate
+            .getOrNullAsync(KeyFactory.createKey("Hoge", 1))
+            .get(), is(nullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getEntityWithoutTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Entity entity = delegate.getWithoutTx(key);
+        assertThat(entity, is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getEntityWithoutTxAsync() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Entity entity = delegate.getWithoutTxAsync(key).get();
         assertThat(entity, is(notNullValue()));
     }
 
@@ -1678,10 +2409,31 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getEntityOrNullWithoutTxAsync() throws Exception {
+        assertThat(delegate.getOrNullWithoutTxAsync(
+            KeyFactory.createKey("Hoge", 1)).get(), is(nullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getEntityInTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Transaction tx = ds.beginTransaction();
         Entity entity = delegate.get(tx, key);
+        tx.rollback();
+        assertThat(entity, is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getEntityAsyncInTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Transaction tx = ds.beginTransaction();
+        Entity entity = delegate.getAsync(tx, key).get();
         tx.rollback();
         assertThat(entity, is(notNullValue()));
     }
@@ -1702,10 +2454,35 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getEntityOrNullAsyncInTx() throws Exception {
+        Key key = KeyFactory.createKey("Hoge", 1);
+        Transaction tx = ds.beginTransaction();
+        Entity entity = delegate.getOrNullAsync(tx, key).get();
+        tx.rollback();
+        assertThat(entity, is(nullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getEntitiesAsMap() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         Map<Key, Entity> map = delegate.getAsMap(Arrays.asList(key, key2));
+        assertThat(map, is(notNullValue()));
+        assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getEntitiesAsMapAsync() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        Map<Key, Entity> map =
+            delegate.getAsMapAsync(Arrays.asList(key, key2)).get();
         assertThat(map, is(notNullValue()));
         assertThat(map.size(), is(2));
     }
@@ -1728,10 +2505,36 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getEntitiesAsMapWithoutTxAsync() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge2"));
+        ds.beginTransaction();
+        Map<Key, Entity> map =
+            delegate.getAsMapWithoutTxAsync(Arrays.asList(key, key2)).get();
+        assertThat(map, is(notNullValue()));
+        assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getEntitiesAsMapForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         Map<Key, Entity> map = delegate.getAsMap(key, key2);
+        assertThat(map, is(notNullValue()));
+        assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getEntitiesAsMapAsyncForVarargs() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        Map<Key, Entity> map = delegate.getAsMapAsync(key, key2).get();
         assertThat(map, is(notNullValue()));
         assertThat(map.size(), is(2));
     }
@@ -1753,11 +2556,38 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getEntitiesAsMapWithoutTxAsyncForVarargs() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge2"));
+        ds.beginTransaction();
+        Map<Key, Entity> map = delegate.getAsMapWithoutTxAsync(key, key2).get();
+        assertThat(map, is(notNullValue()));
+        assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getEntitiesAsMapInTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = ds.beginTransaction();
         Map<Key, Entity> map = delegate.getAsMap(tx, Arrays.asList(key, key2));
+        assertThat(map, is(notNullValue()));
+        assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getEntitiesAsMapAsyncInTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = ds.beginTransaction();
+        Map<Key, Entity> map =
+            delegate.getAsMapAsync(tx, Arrays.asList(key, key2)).get();
         assertThat(map, is(notNullValue()));
         assertThat(map.size(), is(2));
     }
@@ -1780,8 +2610,32 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getEntitiesAsMapAsyncInTxForVarargs() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = ds.beginTransaction();
+        Map<Key, Entity> map = delegate.getAsMapAsync(tx, key, key2).get();
+        tx.rollback();
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getEntitiesAsMapForZeroVarargs() throws Exception {
         Map<Key, Entity> map = delegate.getAsMap();
+        assertThat(map, is(not(nullValue())));
+        assertThat(map.size(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getEntitiesAsMapAsyncForZeroVarargs() throws Exception {
+        Map<Key, Entity> map = delegate.getAsMapAsync().get();
         assertThat(map, is(not(nullValue())));
         assertThat(map.size(), is(0));
     }
@@ -1794,6 +2648,18 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         List<Entity> list = delegate.get(Arrays.asList(key, key2));
+        assertThat(list, is(not(nullValue())));
+        assertThat(list.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getEntitiesAsync() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        List<Entity> list = delegate.getAsync(Arrays.asList(key, key2)).get();
         assertThat(list, is(not(nullValue())));
         assertThat(list.size(), is(2));
     }
@@ -1815,10 +2681,36 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getEntitiesWithoutTxAsync() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge2"));
+        ds.beginTransaction();
+        List<Entity> list =
+            delegate.getWithoutTxAsync(Arrays.asList(key, key2)).get();
+        assertThat(list, is(not(nullValue())));
+        assertThat(list.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getEntitiesForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         List<Entity> list = delegate.get(key, key2);
+        assertThat(list, is(not(nullValue())));
+        assertThat(list.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getEntitiesAsyncForVarargs() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        List<Entity> list = delegate.getAsync(key, key2).get();
         assertThat(list, is(not(nullValue())));
         assertThat(list.size(), is(2));
     }
@@ -1839,6 +2731,19 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
+    @Test
+    public void getEntitiesWithoutTxAsyncForVarargs() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        ds.beginTransaction();
+        List<Entity> list = delegate.getWithoutTxAsync(key, key2).get();
+        assertThat(list, is(not(nullValue())));
+        assertThat(list.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test(expected = EntityNotFoundRuntimeException.class)
     public void getEntitiesWhenEntityNotFound() throws Exception {
         Key key = KeyFactory.createKey("Hoge", 1);
@@ -1850,11 +2755,41 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void getEntitiesAsyncWhenEntityNotFound() throws Exception {
+        Key key = KeyFactory.createKey("Hoge", 1);
+        Key key2 = KeyFactory.createKey("Hoge", 1);
+        try {
+            delegate.getAsync(key, key2).get();
+            fail();
+        } catch (ExecutionException e) {
+            assertThat(e.getCause(), is(EntityNotFoundRuntimeException.class));
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void getEntitiesInTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = ds.beginTransaction();
         List<Entity> list = delegate.get(tx, Arrays.asList(key, key2));
+        tx.rollback();
+        assertThat(list, is(not(nullValue())));
+        assertThat(list.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getEntitiesAsyncInTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = ds.beginTransaction();
+        List<Entity> list =
+            delegate.getAsync(tx, Arrays.asList(key, key2)).get();
         tx.rollback();
         assertThat(list, is(not(nullValue())));
         assertThat(list.size(), is(2));
@@ -1875,12 +2810,38 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
+    @Test(expected = IllegalStateException.class)
+    public void getEntitiesAsyncInIllegalTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = ds.beginTransaction();
+        tx.rollback();
+        delegate.getAsync(tx, Arrays.asList(key, key2));
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test
     public void getEntitiesInTxForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = ds.beginTransaction();
         List<Entity> list = delegate.get(tx, key, key2);
+        tx.rollback();
+        assertThat(list, is(not(nullValue())));
+        assertThat(list.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getEntitiesAsyncInTxForVarargs() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = ds.beginTransaction();
+        List<Entity> list = delegate.getAsync(tx, key, key2).get();
         tx.rollback();
         assertThat(list, is(not(nullValue())));
         assertThat(list.size(), is(2));
@@ -1896,6 +2857,18 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
         Transaction tx = ds.beginTransaction();
         tx.rollback();
         delegate.get(tx, key, key2);
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalStateException.class)
+    public void getEntitiesAsyncInIllegalTxForVarargs() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = ds.beginTransaction();
+        tx.rollback();
+        delegate.getAsync(tx, key, key2);
     }
 
     /**
