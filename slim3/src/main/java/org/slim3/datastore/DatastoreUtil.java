@@ -711,6 +711,34 @@ public final class DatastoreUtil {
     }
 
     /**
+     * Puts the entity to datastore asynchronously. If there is a current
+     * transaction, this operation will execute within that transaction.
+     * 
+     * @param ads
+     *            the asynchronous datastore service
+     * @param ds
+     *            the datastore service
+     * @param entity
+     *            the entity
+     * 
+     * @return a future key
+     * @throws NullPointerException
+     *             if the ads parameter is null or if the ds parameter is null
+     *             or if the entity parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public static Future<Key> putAsync(AsyncDatastoreService ads,
+            DatastoreService ds, Entity entity) throws NullPointerException,
+            IllegalStateException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        return putAsync(ads, ds, ds.getCurrentTransaction(null), entity);
+    }
+
+    /**
      * Puts the entity to datastore within the provided transaction.
      * 
      * @param ds
@@ -741,6 +769,44 @@ public final class DatastoreUtil {
     }
 
     /**
+     * Puts the entity to datastore within the provided transaction
+     * asynchronously.
+     * 
+     * @param ads
+     *            the asynchronous datastore service
+     * @param ds
+     *            the datastore service
+     * @param tx
+     *            the transaction
+     * @param entity
+     *            the entity
+     * 
+     * @return a future key
+     * @throws NullPointerException
+     *             if the ads parameter is null or if the ds parameter is null
+     *             or if the entity parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public static Future<Key> putAsync(AsyncDatastoreService ads,
+            DatastoreService ds, Transaction tx, Entity entity)
+            throws NullPointerException, IllegalStateException {
+        if (ads == null) {
+            throw new NullPointerException(
+                "The ads parameter must not be null.");
+        }
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        if (tx != null && !tx.isActive()) {
+            throw new IllegalStateException("The transaction must be active.");
+        }
+        assignKeyIfNecessary(ds, entity);
+        return ads.put(tx, entity);
+    }
+
+    /**
      * Puts the entities to datastore within the provided transaction.
      * 
      * @param ds
@@ -758,6 +824,30 @@ public final class DatastoreUtil {
             throw new NullPointerException("The ds parameter must not be null.");
         }
         return put(ds, ds.getCurrentTransaction(null), entities);
+    }
+
+    /**
+     * Puts the entities to datastore within the provided transaction
+     * asynchronously.
+     * 
+     * @param ads
+     *            the asynchronous datastore service
+     * @param ds
+     *            the datastore service
+     * @param entities
+     *            the entities
+     * @return a future list of keys
+     * @throws NullPointerException
+     *             if the ads parameter is null or if the ds parameter is null
+     *             or if the entities parameter is null
+     */
+    public static Future<List<Key>> putAsync(AsyncDatastoreService ads,
+            DatastoreService ds, Iterable<Entity> entities)
+            throws NullPointerException {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        return putAsync(ads, ds, ds.getCurrentTransaction(null), entities);
     }
 
     /**
@@ -793,6 +883,48 @@ public final class DatastoreUtil {
         }
         assignKeyIfNecessary(ds, entities);
         return ds.put(tx, entities);
+    }
+
+    /**
+     * Puts the entities to datastore within the provided transaction
+     * asynchronously.
+     * 
+     * @param ads
+     *            the asynchronous datastore service
+     * @param ds
+     *            the datastore service
+     * @param tx
+     *            the transaction
+     * @param entities
+     *            the entities
+     * 
+     * @return a future list of keys
+     * @throws NullPointerException
+     *             if the ads parameter is null or if the ds parameter is null
+     *             or if the entities parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public static Future<List<Key>> putAsync(AsyncDatastoreService ads,
+            DatastoreService ds, Transaction tx, Iterable<Entity> entities)
+            throws NullPointerException, IllegalStateException {
+        if (ads == null) {
+            throw new NullPointerException(
+                "The ads parameter must not be null.");
+        }
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        if (entities == null) {
+            throw new NullPointerException(
+                "The entities parameter must not be null.");
+        }
+        if (tx != null && !tx.isActive()) {
+            throw new IllegalStateException("The transaction must be active.");
+        }
+        assignKeyIfNecessary(ds, entities);
+        return ads.put(tx, entities);
     }
 
     /**

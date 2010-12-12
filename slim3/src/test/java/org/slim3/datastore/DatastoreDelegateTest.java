@@ -1537,7 +1537,9 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     @Test
     public void getSubModelsInTxUsingClass() throws Exception {
         Key key = delegate.put(new Bbb());
-        Key key2 = delegate.put(new Bbb());
+        Bbb bbb2 = new Bbb();
+        bbb2.setKey(KeyFactory.createKey(key, BbbMeta.get().getKind(), "Hoge"));
+        Key key2 = delegate.put(bbb2);
         Transaction tx = ds.beginTransaction();
         List<Aaa> models =
             delegate.get(tx, Aaa.class, Arrays.asList(key, key2));
@@ -1553,7 +1555,9 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     @Test
     public void getSubModelsAsyncInTxUsingClass() throws Exception {
         Key key = delegate.put(new Bbb());
-        Key key2 = delegate.put(new Bbb());
+        Bbb bbb2 = new Bbb();
+        bbb2.setKey(KeyFactory.createKey(key, BbbMeta.get().getKind(), "Hoge"));
+        Key key2 = delegate.put(bbb2);
         Transaction tx = ds.beginTransaction();
         List<Aaa> models =
             delegate.getAsync(tx, Aaa.class, Arrays.asList(key, key2)).get();
@@ -1569,11 +1573,16 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     @Test
     public void getSubModelsInTxUsingModelMeta() throws Exception {
         Key key = delegate.put(new Bbb());
+        Bbb bbb2 = new Bbb();
+        bbb2.setKey(KeyFactory.createKey(key, BbbMeta.get().getKind(), "Hoge"));
+        Key key2 = delegate.put(bbb2);
         Transaction tx = ds.beginTransaction();
-        List<Aaa> models = delegate.get(tx, AaaMeta.get(), Arrays.asList(key));
+        List<Aaa> models =
+            delegate.get(tx, AaaMeta.get(), Arrays.asList(key, key2));
         assertThat(models, is(notNullValue()));
-        assertThat(models.size(), is(1));
+        assertThat(models.size(), is(2));
         assertThat(models.get(0).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(models.get(1).getClass().getName(), is(Bbb.class.getName()));
     }
 
     /**
@@ -1582,12 +1591,18 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     @Test
     public void getSubModelsAsyncInTxUsingModelMeta() throws Exception {
         Key key = delegate.put(new Bbb());
+        Bbb bbb2 = new Bbb();
+        bbb2.setKey(KeyFactory.createKey(key, BbbMeta.get().getKind(), "Hoge"));
+        Key key2 = delegate.put(bbb2);
         Transaction tx = ds.beginTransaction();
         List<Aaa> models =
-            delegate.getAsync(tx, AaaMeta.get(), Arrays.asList(key)).get();
+            delegate
+                .getAsync(tx, AaaMeta.get(), Arrays.asList(key, key2))
+                .get();
         assertThat(models, is(notNullValue()));
-        assertThat(models.size(), is(1));
+        assertThat(models.size(), is(2));
         assertThat(models.get(0).getClass().getName(), is(Bbb.class.getName()));
+        assertThat(models.get(1).getClass().getName(), is(Bbb.class.getName()));
     }
 
     /**

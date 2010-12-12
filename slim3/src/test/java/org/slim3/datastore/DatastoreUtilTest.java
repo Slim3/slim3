@@ -440,9 +440,33 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test(expected = EntityNotFoundException.class)
+    public void putEntityAsync() throws Exception {
+        Transaction tx = ds.beginTransaction();
+        Key key = DatastoreUtil.putAsync(ads, ds, new Entity("Hoge")).get();
+        tx.rollback();
+        assertThat(key, is(notNullValue()));
+        ds.get(key);
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = EntityNotFoundException.class)
     public void putEntityInTx() throws Exception {
         Transaction tx = ds.beginTransaction();
         Key key = DatastoreUtil.put(ds, tx, new Entity("Hoge"));
+        tx.rollback();
+        assertThat(key, is(notNullValue()));
+        ds.get(key);
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = EntityNotFoundException.class)
+    public void putEntityAsyncInTx() throws Exception {
+        Transaction tx = ds.beginTransaction();
+        Key key = DatastoreUtil.putAsync(ads, ds, tx, new Entity("Hoge")).get();
         tx.rollback();
         assertThat(key, is(notNullValue()));
         ds.get(key);
@@ -461,11 +485,32 @@ public class DatastoreUtilTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
+    @Test
+    public void putEntityAsyncInTxWhenTxIsNull() throws Exception {
+        Key key = DatastoreUtil.putAsync(ads, ds, new Entity("Hoge")).get();
+        assertThat(key, is(notNullValue()));
+        assertThat(ds.get(key), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test(expected = IllegalStateException.class)
     public void putEntityWhenTxIsIllegal() throws Exception {
         Transaction tx = ds.beginTransaction();
         tx.commit();
         DatastoreUtil.put(ds, tx, new Entity("Hoge"));
+        fail();
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalStateException.class)
+    public void putEntityAsyncWhenTxIsIllegal() throws Exception {
+        Transaction tx = ds.beginTransaction();
+        tx.commit();
+        DatastoreUtil.putAsync(ads, ds, tx, new Entity("Hoge"));
         fail();
     }
 
@@ -479,6 +524,25 @@ public class DatastoreUtilTest extends AppEngineTestCase {
             new Entity(KeyFactory.createKey(entity.getKey(), "Hoge", 1));
         Transaction tx = ds.beginTransaction();
         List<Key> keys = DatastoreUtil.put(ds, Arrays.asList(entity, entity2));
+        tx.rollback();
+        assertThat(keys, is(notNullValue()));
+        assertThat(keys.size(), is(2));
+        assertThat(ds.get(keys).size(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void putEntitiesAsync() throws Exception {
+        Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
+        Entity entity2 =
+            new Entity(KeyFactory.createKey(entity.getKey(), "Hoge", 1));
+        Transaction tx = ds.beginTransaction();
+        List<Key> keys =
+            DatastoreUtil
+                .putAsync(ads, ds, Arrays.asList(entity, entity2))
+                .get();
         tx.rollback();
         assertThat(keys, is(notNullValue()));
         assertThat(keys.size(), is(2));
@@ -506,11 +570,47 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void putEntitiesAsyncInTx() throws Exception {
+        Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
+        Entity entity2 =
+            new Entity(KeyFactory.createKey(entity.getKey(), "Hoge", 1));
+        Transaction tx = ds.beginTransaction();
+        List<Key> keys =
+            DatastoreUtil
+                .putAsync(ads, ds, tx, Arrays.asList(entity, entity2))
+                .get();
+        tx.rollback();
+        assertThat(keys, is(notNullValue()));
+        assertThat(keys.size(), is(2));
+        assertThat(ds.get(keys).size(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void putEntitiesInTxWhenTxIsNull() throws Exception {
         Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
         Entity entity2 =
             new Entity(KeyFactory.createKey(entity.getKey(), "Hoge", 1));
         List<Key> keys = DatastoreUtil.put(ds, Arrays.asList(entity, entity2));
+        assertThat(keys, is(notNullValue()));
+        assertThat(keys.size(), is(2));
+        assertThat(ds.get(keys).size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void putEntitiesAsyncInTxWhenTxIsNull() throws Exception {
+        Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
+        Entity entity2 =
+            new Entity(KeyFactory.createKey(entity.getKey(), "Hoge", 1));
+        List<Key> keys =
+            DatastoreUtil
+                .putAsync(ads, ds, Arrays.asList(entity, entity2))
+                .get();
         assertThat(keys, is(notNullValue()));
         assertThat(keys.size(), is(2));
         assertThat(ds.get(keys).size(), is(2));
@@ -527,6 +627,20 @@ public class DatastoreUtilTest extends AppEngineTestCase {
         Transaction tx = ds.beginTransaction();
         tx.commit();
         DatastoreUtil.put(ds, tx, Arrays.asList(entity, entity2));
+        fail();
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalStateException.class)
+    public void putEntitiesAsyncWhenTxIsIlleagal() throws Exception {
+        Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
+        Entity entity2 =
+            new Entity(KeyFactory.createKey(entity.getKey(), "Hoge", 1));
+        Transaction tx = ds.beginTransaction();
+        tx.commit();
+        DatastoreUtil.putAsync(ads, ds, tx, Arrays.asList(entity, entity2));
         fail();
     }
 
