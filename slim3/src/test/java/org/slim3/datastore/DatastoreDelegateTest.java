@@ -2901,9 +2901,31 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void putModelAsync() throws Exception {
+        Hoge hoge = new Hoge();
+        assertThat(delegate.putAsync(hoge), is(notNullValue()));
+        assertThat(hoge.getKey(), is(notNullValue()));
+        assertThat(hoge.getVersion(), is(1L));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void putModelWithoutTx() throws Exception {
         Hoge hoge = new Hoge();
         assertThat(delegate.putWithoutTx(hoge), is(notNullValue()));
+        assertThat(hoge.getKey(), is(notNullValue()));
+        assertThat(hoge.getVersion(), is(1L));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void putModelWithoutTxAsync() throws Exception {
+        Hoge hoge = new Hoge();
+        assertThat(delegate.putWithoutTxAsync(hoge).get(), is(notNullValue()));
         assertThat(hoge.getKey(), is(notNullValue()));
         assertThat(hoge.getVersion(), is(1L));
     }
@@ -2916,6 +2938,20 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     public void putPolyModel() throws Exception {
         Bbb bbb = new Bbb();
         assertThat(delegate.put(bbb), is(notNullValue()));
+        assertThat(bbb.getKey().getKind(), is("Aaa"));
+        Entity entity = delegate.get(bbb.getKey());
+        assertThat((List<String>) entity.getProperty(meta
+            .getClassHierarchyListName()), hasItem(Bbb.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void putPolyModelAsync() throws Exception {
+        Bbb bbb = new Bbb();
+        assertThat(delegate.putAsync(bbb).get(), is(notNullValue()));
         assertThat(bbb.getKey().getKind(), is("Aaa"));
         Entity entity = delegate.get(bbb.getKey());
         assertThat((List<String>) entity.getProperty(meta
@@ -2940,11 +2976,36 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
+    @Test(expected = EntityNotFoundException.class)
+    public void putModelAsyncInTx() throws Exception {
+        Hoge hoge = new Hoge();
+        Transaction tx = delegate.beginTransaction();
+        Key key = delegate.putAsync(tx, hoge).get();
+        tx.rollback();
+        assertThat(key, is(not(nullValue())));
+        assertThat(hoge.getKey(), is(not(nullValue())));
+        assertThat(hoge.getVersion(), is(1L));
+        ds.get(key);
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test(expected = IllegalStateException.class)
     public void putModelInIllegalTx() throws Exception {
         Transaction tx = ds.beginTransaction();
         tx.rollback();
         delegate.put(tx, new Hoge());
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalStateException.class)
+    public void putModelAsyncInIllegalTx() throws Exception {
+        Transaction tx = ds.beginTransaction();
+        tx.rollback();
+        delegate.putAsync(tx, new Hoge());
     }
 
     /**
@@ -2966,9 +3027,39 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void putModelsAsync() throws Exception {
+        List<Hoge> models = Arrays.asList(new Hoge(), new Hoge());
+        List<Key> keys = delegate.putAsync(models).get();
+        assertThat(keys, is(not(nullValue())));
+        assertEquals(2, keys.size());
+        for (Hoge hoge : models) {
+            assertThat(hoge.getKey(), is(not(nullValue())));
+            assertThat(hoge.getVersion(), is(1L));
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void putModelsWithoutTx() throws Exception {
         List<Hoge> models = Arrays.asList(new Hoge(), new Hoge());
         List<Key> keys = delegate.putWithoutTx(models);
+        assertThat(keys, is(not(nullValue())));
+        assertEquals(2, keys.size());
+        for (Hoge hoge : models) {
+            assertThat(hoge.getKey(), is(not(nullValue())));
+            assertThat(hoge.getVersion(), is(1L));
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void putModelsWithoutTxAsync() throws Exception {
+        List<Hoge> models = Arrays.asList(new Hoge(), new Hoge());
+        List<Key> keys = delegate.putWithoutTxAsync(models).get();
         assertThat(keys, is(not(nullValue())));
         assertEquals(2, keys.size());
         for (Hoge hoge : models) {
@@ -2997,10 +3088,42 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void putModelsAsyncForVarargs() throws Exception {
+        Hoge hoge = new Hoge();
+        Hoge hoge2 = new Hoge();
+        List<Key> keys = delegate.putAsync(hoge, hoge2).get();
+        assertThat(keys, is(not(nullValue())));
+        assertThat(keys.size(), is(2));
+        assertThat(hoge.getKey(), is(not(nullValue())));
+        assertThat(hoge2.getKey(), is(not(nullValue())));
+        assertThat(hoge.getVersion(), is(1L));
+        assertThat(hoge2.getVersion(), is(1L));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void putModelsWithoutTxForVarargs() throws Exception {
         Hoge hoge = new Hoge();
         Hoge hoge2 = new Hoge();
         List<Key> keys = delegate.putWithoutTx(hoge, hoge2);
+        assertThat(keys, is(not(nullValue())));
+        assertThat(keys.size(), is(2));
+        assertThat(hoge.getKey(), is(not(nullValue())));
+        assertThat(hoge2.getKey(), is(not(nullValue())));
+        assertThat(hoge.getVersion(), is(1L));
+        assertThat(hoge2.getVersion(), is(1L));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void putModelsWithoutTxAsyncForVarargs() throws Exception {
+        Hoge hoge = new Hoge();
+        Hoge hoge2 = new Hoge();
+        List<Key> keys = delegate.putWithoutTxAsync(hoge, hoge2).get();
         assertThat(keys, is(not(nullValue())));
         assertThat(keys.size(), is(2));
         assertThat(hoge.getKey(), is(not(nullValue())));
@@ -3035,6 +3158,29 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
+    @Test
+    public void putModelsAsyncInTx() throws Exception {
+        Key key = KeyFactory.createKey("Hoge", 1);
+        Key key2 = KeyFactory.createKey(key, "Hoge", 1);
+        Hoge hoge = new Hoge();
+        hoge.setKey(key);
+        Hoge hoge2 = new Hoge();
+        hoge2.setKey(key2);
+        List<Hoge> models = Arrays.asList(hoge, hoge2);
+        Transaction tx = ds.beginTransaction();
+        List<Key> keys = delegate.putAsync(tx, models).get();
+        tx.rollback();
+        assertThat(keys, is(not(nullValue())));
+        assertThat(keys.size(), is(2));
+        assertThat(hoge.getKey(), is(key));
+        assertThat(hoge2.getKey(), is(key2));
+        assertThat(hoge.getVersion(), is(1L));
+        assertThat(hoge2.getVersion(), is(1L));
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test(expected = IllegalStateException.class)
     public void putModelsInIllegalTx() throws Exception {
         Key key = KeyFactory.createKey("Hoge", 1);
@@ -3052,6 +3198,23 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
+    @Test(expected = IllegalStateException.class)
+    public void putModelsAsyncInIllegalTx() throws Exception {
+        Key key = KeyFactory.createKey("Hoge", 1);
+        Key key2 = KeyFactory.createKey(key, "Hoge", 1);
+        Hoge hoge = new Hoge();
+        hoge.setKey(key);
+        Hoge hoge2 = new Hoge();
+        hoge2.setKey(key2);
+        List<Hoge> models = Arrays.asList(hoge, hoge2);
+        Transaction tx = ds.beginTransaction();
+        tx.rollback();
+        delegate.putAsync(tx, models);
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test
     public void putModelsInTxForVarargs() throws Exception {
         Key key = KeyFactory.createKey("Hoge", 1);
@@ -3062,6 +3225,28 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
         hoge2.setKey(key2);
         Transaction tx = ds.beginTransaction();
         List<Key> keys = delegate.put(tx, hoge, hoge2);
+        tx.rollback();
+        assertThat(keys, is(not(nullValue())));
+        assertThat(keys.size(), is(2));
+        assertThat(hoge.getKey(), is(key));
+        assertThat(hoge2.getKey(), is(key2));
+        assertThat(hoge.getVersion(), is(1L));
+        assertThat(hoge2.getVersion(), is(1L));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void putModelsAsyncInTxForVarargs() throws Exception {
+        Key key = KeyFactory.createKey("Hoge", 1);
+        Key key2 = KeyFactory.createKey(key, "Hoge", 1);
+        Hoge hoge = new Hoge();
+        hoge.setKey(key);
+        Hoge hoge2 = new Hoge();
+        hoge2.setKey(key2);
+        Transaction tx = ds.beginTransaction();
+        List<Key> keys = delegate.putAsync(tx, hoge, hoge2).get();
         tx.rollback();
         assertThat(keys, is(not(nullValue())));
         assertThat(keys.size(), is(2));
@@ -3090,6 +3275,22 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
+    @Test(expected = IllegalStateException.class)
+    public void putModelsAsyncInIllegalTxForVarargs() throws Exception {
+        Key key = KeyFactory.createKey("Hoge", 1);
+        Key key2 = KeyFactory.createKey(key, "Hoge", 1);
+        Hoge hoge = new Hoge();
+        hoge.setKey(key);
+        Hoge hoge2 = new Hoge();
+        hoge2.setKey(key2);
+        Transaction tx = ds.beginTransaction();
+        tx.rollback();
+        delegate.putAsync(tx, hoge, hoge2);
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test
     public void putEntity() throws Exception {
         assertThat(delegate.put(new Entity("Hoge")), is(notNullValue()));
@@ -3099,9 +3300,27 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void putEntityAsync() throws Exception {
+        assertThat(delegate.putAsync(new Entity("Hoge")), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void putEntityWithoutTx() throws Exception {
         assertThat(
             delegate.putWithoutTx(new Entity("Hoge")),
+            is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void putEntityWithoutTxAsync() throws Exception {
+        assertThat(
+            delegate.putWithoutTxAsync(new Entity("Hoge")),
             is(notNullValue()));
     }
 
@@ -3120,11 +3339,33 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
+    @Test(expected = EntityNotFoundException.class)
+    public void putEntityAsyncInTx() throws Exception {
+        Transaction tx = ds.beginTransaction();
+        Key key = delegate.putAsync(tx, new Entity("Hoge")).get();
+        tx.rollback();
+        assertThat(key, is(notNullValue()));
+        ds.get(key);
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test(expected = IllegalStateException.class)
     public void putEntityInIllegalTx() throws Exception {
         Transaction tx = ds.beginTransaction();
         tx.rollback();
         delegate.put(tx, new Entity("Hoge"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalStateException.class)
+    public void putEntityAsyncInIllegalTx() throws Exception {
+        Transaction tx = ds.beginTransaction();
+        tx.rollback();
+        delegate.putAsync(tx, new Entity("Hoge"));
     }
 
     /**
@@ -3142,8 +3383,31 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void putEntitiesAsync() throws Exception {
+        List<Key> keys =
+            delegate.putAsync(
+                Arrays.asList(new Entity("Hoge"), new Entity("Hoge"))).get();
+        assertThat(keys, is(notNullValue()));
+        assertThat(keys.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void putEntitiesForVarargs() throws Exception {
         List<Key> keys = delegate.put(new Entity("Hoge"), new Entity("Hoge"));
+        assertThat(keys, is(not(nullValue())));
+        assertThat(keys.size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void putEntitiesAsyncForVarargs() throws Exception {
+        List<Key> keys =
+            delegate.putAsync(new Entity("Hoge"), new Entity("Hoge")).get();
         assertThat(keys, is(not(nullValue())));
         assertThat(keys.size(), is(2));
     }
@@ -3167,6 +3431,23 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
+    @Test
+    public void putEntitiesAsyncInTx() throws Exception {
+        Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
+        Entity entity2 =
+            new Entity(KeyFactory.createKey(entity.getKey(), "Hoge", 1));
+        Transaction tx = ds.beginTransaction();
+        List<Key> keys =
+            delegate.putAsync(tx, Arrays.asList(entity, entity2)).get();
+        tx.rollback();
+        assertThat(keys, is(notNullValue()));
+        assertThat(keys.size(), is(2));
+        assertThat(ds.get(keys).size(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test(expected = IllegalStateException.class)
     public void putEntitiesInIllegalTx() throws Exception {
         Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
@@ -3175,6 +3456,19 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
         Transaction tx = ds.beginTransaction();
         tx.rollback();
         delegate.put(tx, Arrays.asList(entity, entity2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalStateException.class)
+    public void putEntitiesAsyncInIllegalTx() throws Exception {
+        Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
+        Entity entity2 =
+            new Entity(KeyFactory.createKey(entity.getKey(), "Hoge", 1));
+        Transaction tx = ds.beginTransaction();
+        tx.rollback();
+        delegate.putAsync(tx, Arrays.asList(entity, entity2));
     }
 
     /**
@@ -3196,6 +3490,22 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
+    @Test
+    public void putEntitiesAsyncInTxForVarargs() throws Exception {
+        Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
+        Entity entity2 =
+            new Entity(KeyFactory.createKey(entity.getKey(), "Hoge", 1));
+        Transaction tx = ds.beginTransaction();
+        List<Key> keys = delegate.putAsync(tx, entity, entity2).get();
+        tx.rollback();
+        assertThat(keys, is(not(nullValue())));
+        assertThat(keys.size(), is(2));
+        assertThat(ds.get(keys).size(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test(expected = IllegalStateException.class)
     public void putEntitiesInIllegalTxForVarargs() throws Exception {
         Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
@@ -3204,6 +3514,19 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
         Transaction tx = ds.beginTransaction();
         tx.rollback();
         delegate.put(tx, entity, entity2);
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test(expected = IllegalStateException.class)
+    public void putEntitiesAsyncInIllegalTxForVarargs() throws Exception {
+        Entity entity = new Entity(KeyFactory.createKey("Hoge", 1));
+        Entity entity2 =
+            new Entity(KeyFactory.createKey(entity.getKey(), "Hoge", 1));
+        Transaction tx = ds.beginTransaction();
+        tx.rollback();
+        delegate.putAsync(tx, entity, entity2);
     }
 
     /**

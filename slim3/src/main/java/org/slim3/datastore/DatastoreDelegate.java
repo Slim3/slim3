@@ -3788,7 +3788,21 @@ public class DatastoreDelegate {
      *             if the entity parameter is null
      */
     public Key put(Entity entity) throws NullPointerException {
-        return DatastoreUtil.put(ds, entity);
+        return put(ds.getCurrentTransaction(null), entity);
+    }
+
+    /**
+     * Puts the entity to datastore asynchronously. If there is a current
+     * transaction, this operation will execute within that transaction.
+     * 
+     * @param entity
+     *            the entity
+     * @return a future key
+     * @throws NullPointerException
+     *             if the entity parameter is null
+     */
+    public Future<Key> putAsync(Entity entity) throws NullPointerException {
+        return putAsync(ds.getCurrentTransaction(null), entity);
     }
 
     /**
@@ -3801,7 +3815,21 @@ public class DatastoreDelegate {
      *             if the entity parameter is null
      */
     public Key putWithoutTx(Entity entity) throws NullPointerException {
-        return DatastoreUtil.put(ds, (Transaction) null, entity);
+        return put((Transaction) null, entity);
+    }
+
+    /**
+     * Puts the entity to datastore without transaction asynchronously.
+     * 
+     * @param entity
+     *            the entity
+     * @return a future key
+     * @throws NullPointerException
+     *             if the entity parameter is null
+     */
+    public Future<Key> putWithoutTxAsync(Entity entity)
+            throws NullPointerException {
+        return putAsync((Transaction) null, entity);
     }
 
     /**
@@ -3815,8 +3843,21 @@ public class DatastoreDelegate {
      *             if the model parameter is null
      */
     public Key put(Object model) throws NullPointerException {
-        Entity entity = DatastoreUtil.modelToEntity(ds, model);
-        return DatastoreUtil.put(ds, entity);
+        return put(ds.getCurrentTransaction(null), model);
+    }
+
+    /**
+     * Puts the model to datastore asynchronously. If there is a current
+     * transaction, this operation will execute within that transaction.
+     * 
+     * @param model
+     *            the model
+     * @return a future key
+     * @throws NullPointerException
+     *             if the model parameter is null
+     */
+    public Future<Key> putAsync(Object model) throws NullPointerException {
+        return putAsync(ds.getCurrentTransaction(null), model);
     }
 
     /**
@@ -3829,8 +3870,21 @@ public class DatastoreDelegate {
      *             if the model parameter is null
      */
     public Key putWithoutTx(Object model) throws NullPointerException {
-        Entity entity = DatastoreUtil.modelToEntity(ds, model);
-        return DatastoreUtil.put(ds, (Transaction) null, entity);
+        return put((Transaction) null, model);
+    }
+
+    /**
+     * Puts the model to datastore without transaction.
+     * 
+     * @param model
+     *            the model
+     * @return a key
+     * @throws NullPointerException
+     *             if the model parameter is null
+     */
+    public Future<Key> putWithoutTxAsync(Object model)
+            throws NullPointerException {
+        return putAsync((Transaction) null, model);
     }
 
     /**
@@ -3850,6 +3904,26 @@ public class DatastoreDelegate {
     public Key put(Transaction tx, Entity entity) throws NullPointerException,
             IllegalStateException {
         return DatastoreUtil.put(ds, tx, entity);
+    }
+
+    /**
+     * Puts the entity to datastore within the provided transaction
+     * asynchronously.
+     * 
+     * @param tx
+     *            the transaction
+     * @param entity
+     *            the entity
+     * @return a future key
+     * @throws NullPointerException
+     *             if the entity parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public Future<Key> putAsync(Transaction tx, Entity entity)
+            throws NullPointerException, IllegalStateException {
+        return DatastoreUtil.putAsync(ads, ds, tx, entity);
     }
 
     /**
@@ -3873,6 +3947,27 @@ public class DatastoreDelegate {
     }
 
     /**
+     * Puts the model to datastore within the provided transaction
+     * asynchronously.
+     * 
+     * @param tx
+     *            the transaction
+     * @param model
+     *            the model
+     * @return a future key
+     * @throws NullPointerException
+     *             if the model parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public Future<Key> putAsync(Transaction tx, Object model)
+            throws NullPointerException, IllegalStateException {
+        Entity entity = DatastoreUtil.modelToEntity(ds, model);
+        return DatastoreUtil.putAsync(ads, ds, tx, entity);
+    }
+
+    /**
      * Puts the models or entities to datastore. If there is a current
      * transaction, this operation will execute within that transaction.
      * 
@@ -3883,8 +3978,22 @@ public class DatastoreDelegate {
      *             if the models parameter is null
      */
     public List<Key> put(Iterable<?> models) throws NullPointerException {
-        List<Entity> entities = DatastoreUtil.modelsToEntities(ds, models);
-        return DatastoreUtil.put(ds, entities);
+        return put(ds.getCurrentTransaction(null), models);
+    }
+
+    /**
+     * Puts the models or entities to datastore asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
+     * 
+     * @param models
+     *            the models or entities
+     * @return a future list of keys
+     * @throws NullPointerException
+     *             if the models parameter is null
+     */
+    public Future<List<Key>> putAsync(Iterable<?> models)
+            throws NullPointerException {
+        return putAsync(ds.getCurrentTransaction(null), models);
     }
 
     /**
@@ -3898,8 +4007,22 @@ public class DatastoreDelegate {
      */
     public List<Key> putWithoutTx(Iterable<?> models)
             throws NullPointerException {
-        List<Entity> entities = DatastoreUtil.modelsToEntities(ds, models);
-        return DatastoreUtil.put(ds, (Transaction) null, entities);
+        return put((Transaction) null, models);
+    }
+
+    /**
+     * Puts the models or entities to datastore without transaction
+     * asynchronously.
+     * 
+     * @param models
+     *            the models or entities
+     * @return a future list of keys
+     * @throws NullPointerException
+     *             if the models parameter is null
+     */
+    public Future<List<Key>> putWithoutTxAsync(Iterable<?> models)
+            throws NullPointerException {
+        return putAsync((Transaction) null, models);
     }
 
     /**
@@ -3915,6 +4038,18 @@ public class DatastoreDelegate {
     }
 
     /**
+     * Puts the models or entities to datastore asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
+     * 
+     * @param models
+     *            the models or entities
+     * @return a future list of keys
+     */
+    public Future<List<Key>> putAsync(Object... models) {
+        return putAsync(Arrays.asList(models));
+    }
+
+    /**
      * Puts the models or entities to datastore without transaction.
      * 
      * @param models
@@ -3923,6 +4058,18 @@ public class DatastoreDelegate {
      */
     public List<Key> putWithoutTx(Object... models) {
         return putWithoutTx(Arrays.asList(models));
+    }
+
+    /**
+     * Puts the models or entities to datastore without transaction
+     * asynchronously.
+     * 
+     * @param models
+     *            the models or entities
+     * @return a future list of keys
+     */
+    public Future<List<Key>> putWithoutTxAsync(Object... models) {
+        return putWithoutTxAsync(Arrays.asList(models));
     }
 
     /**
@@ -3946,6 +4093,27 @@ public class DatastoreDelegate {
     }
 
     /**
+     * Puts the models or entities to datastore within the provided transaction
+     * asynchronously.
+     * 
+     * @param tx
+     *            the transaction
+     * @param models
+     *            the models or entities
+     * @return a future list of keys
+     * @throws NullPointerException
+     *             if the models parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public Future<List<Key>> putAsync(Transaction tx, Iterable<?> models)
+            throws NullPointerException, IllegalStateException {
+        List<Entity> entities = DatastoreUtil.modelsToEntities(ds, models);
+        return DatastoreUtil.putAsync(ads, ds, tx, entities);
+    }
+
+    /**
      * Puts the models or entities to datastore within the provided transaction.
      * 
      * @param tx
@@ -3960,6 +4128,24 @@ public class DatastoreDelegate {
     public List<Key> put(Transaction tx, Object... models)
             throws IllegalStateException {
         return put(tx, Arrays.asList(models));
+    }
+
+    /**
+     * Puts the models or entities to datastore within the provided transaction
+     * asynchronously.
+     * 
+     * @param tx
+     *            the transaction
+     * @param models
+     *            the models or entities
+     * @return a future list of keys
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public Future<List<Key>> putAsync(Transaction tx, Object... models)
+            throws IllegalStateException {
+        return putAsync(tx, Arrays.asList(models));
     }
 
     /**
