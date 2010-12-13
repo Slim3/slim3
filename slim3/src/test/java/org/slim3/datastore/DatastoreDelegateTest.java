@@ -3542,11 +3542,33 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
+    @Test(expected = EntityNotFoundException.class)
+    public void deleteAsync() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        delegate.deleteAsync(key).get();
+        ds.get(key);
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test
     public void deleteInTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Transaction tx = ds.beginTransaction();
         delegate.delete(tx, key);
+        tx.rollback();
+        assertThat(ds.get(key), is(not(nullValue())));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void deleteAsyncInTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Transaction tx = ds.beginTransaction();
+        delegate.deleteAsync(tx, key).get();
         tx.rollback();
         assertThat(ds.get(key), is(not(nullValue())));
     }
@@ -3565,11 +3587,33 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
+    @Test(expected = IllegalStateException.class)
+    public void deleteAsyncInIllegalTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Transaction tx = ds.beginTransaction();
+        tx.rollback();
+        delegate.deleteAsync(tx, key);
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test
     public void deleteEntities() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         delegate.delete(Arrays.asList(key, key2));
+        assertThat(ds.get(Arrays.asList(key, key2)).size(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void deleteEntitiesAsync() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        delegate.deleteAsync(Arrays.asList(key, key2)).get();
         assertThat(ds.get(Arrays.asList(key, key2)).size(), is(0));
     }
 
@@ -3591,10 +3635,35 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void deleteEntitiesWithoutTxAsync() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge2"));
+        ds.beginTransaction();
+        delegate.deleteWithoutTxAsync(Arrays.asList(key, key2)).get();
+        assertThat(
+            delegate.getAsMapWithoutTx(Arrays.asList(key, key2)).size(),
+            is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void deleteEntitiesForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge"));
         delegate.delete(key, key2);
+        assertThat(ds.get(Arrays.asList(key, key2)).size(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void deleteEntitiesAsyncForVarargs() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge"));
+        delegate.deleteAsync(key, key2).get();
         assertThat(ds.get(Arrays.asList(key, key2)).size(), is(0));
     }
 
@@ -3616,10 +3685,36 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void deleteEntitiesWithoutTxAsyncForVarargs() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge2"));
+        ds.beginTransaction();
+        delegate.deleteWithoutTxAsync(key, key2).get();
+        assertThat(
+            delegate.getAsMapWithoutTx(Arrays.asList(key, key2)).size(),
+            is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void deleteEntitiesInTx() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Transaction tx = ds.beginTransaction();
         delegate.delete(tx, Arrays.asList(key));
+        tx.rollback();
+        assertThat(ds.get(key), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void deleteEntitiesInTxAsync() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Transaction tx = ds.beginTransaction();
+        delegate.deleteAsync(tx, Arrays.asList(key)).get();
         tx.rollback();
         assertThat(ds.get(key), is(notNullValue()));
     }
@@ -3638,12 +3733,36 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
+    @Test(expected = IllegalStateException.class)
+    public void deleteEntitiesAsyncInIllegalTx() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Transaction tx = ds.beginTransaction();
+        tx.rollback();
+        delegate.deleteAsync(tx, Arrays.asList(key));
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test
     public void deleteEntitiesInTxForVarargs() throws Exception {
         Key key = ds.put(new Entity("Hoge"));
         Key key2 = ds.put(new Entity("Hoge", key));
         Transaction tx = ds.beginTransaction();
         delegate.delete(tx, key, key2);
+        tx.rollback();
+        assertThat(ds.get(Arrays.asList(key, key2)).size(), is(2));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void deleteEntitiesAsyncInTxForVarargs() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = ds.beginTransaction();
+        delegate.deleteAsync(tx, key, key2).get();
         tx.rollback();
         assertThat(ds.get(Arrays.asList(key, key2)).size(), is(2));
     }
@@ -3663,6 +3782,18 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
+    @Test(expected = IllegalStateException.class)
+    public void deleteEntitiesAsyncInIllegalTxForVarargs() throws Exception {
+        Key key = ds.put(new Entity("Hoge"));
+        Key key2 = ds.put(new Entity("Hoge", key));
+        Transaction tx = ds.beginTransaction();
+        tx.rollback();
+        delegate.deleteAsync(tx, key, key2);
+    }
+
+    /**
+     * @throws Exception
+     */
     @Test
     public void deleteAll() throws Exception {
         Key parentKey = KeyFactory.createKey("Parent", 1);
@@ -3670,6 +3801,20 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
         ds.put(new Entity(parentKey));
         ds.put(new Entity(childKey));
         delegate.deleteAll(parentKey);
+        assertThat(tester.count("Parent"), is(0));
+        assertThat(tester.count("Child"), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void deleteAllAsync() throws Exception {
+        Key parentKey = KeyFactory.createKey("Parent", 1);
+        Key childKey = KeyFactory.createKey(parentKey, "Child", 1);
+        ds.put(new Entity(parentKey));
+        ds.put(new Entity(childKey));
+        delegate.deleteAllAsync(parentKey).get();
         assertThat(tester.count("Parent"), is(0));
         assertThat(tester.count("Child"), is(0));
     }
@@ -3694,6 +3839,22 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void deleteAllAsyncInTx() throws Exception {
+        Key parentKey = KeyFactory.createKey("Parent", 1);
+        Key childKey = KeyFactory.createKey(parentKey, "Child", 1);
+        ds.put(new Entity(parentKey));
+        ds.put(new Entity(childKey));
+        Transaction tx = ds.beginTransaction();
+        delegate.deleteAllAsync(tx, parentKey).get();
+        tx.rollback();
+        assertThat(tester.count("Parent"), is(1));
+        assertThat(tester.count("Child"), is(1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void deleteAllWithoutTx() throws Exception {
         Key parentKey = KeyFactory.createKey("Parent", 1);
         Key childKey = KeyFactory.createKey(parentKey, "Child", 1);
@@ -3701,6 +3862,22 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
         ds.put(new Entity(childKey));
         Transaction tx = ds.beginTransaction();
         delegate.deleteAllWithoutTx(parentKey);
+        tx.rollback();
+        assertThat(tester.count("Parent"), is(0));
+        assertThat(tester.count("Child"), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void deleteAllWithoutTxAsync() throws Exception {
+        Key parentKey = KeyFactory.createKey("Parent", 1);
+        Key childKey = KeyFactory.createKey(parentKey, "Child", 1);
+        ds.put(new Entity(parentKey));
+        ds.put(new Entity(childKey));
+        Transaction tx = ds.beginTransaction();
+        delegate.deleteAllWithoutTxAsync(parentKey).get();
         tx.rollback();
         assertThat(tester.count("Parent"), is(0));
         assertThat(tester.count("Child"), is(0));

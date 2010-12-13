@@ -4158,7 +4158,22 @@ public class DatastoreDelegate {
      *             if the keys parameter is null
      */
     public void delete(Iterable<Key> keys) throws NullPointerException {
-        DatastoreUtil.delete(ds, keys);
+        delete(ds.getCurrentTransaction(null), keys);
+    }
+
+    /**
+     * Deletes entities specified by the keys asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
+     * 
+     * @param keys
+     *            the keys
+     * @return a future {@link Void}
+     * @throws NullPointerException
+     *             if the keys parameter is null
+     */
+    public Future<Void> deleteAsync(Iterable<Key> keys)
+            throws NullPointerException {
+        return deleteAsync(ds.getCurrentTransaction(null), keys);
     }
 
     /**
@@ -4170,7 +4185,22 @@ public class DatastoreDelegate {
      *             if the keys parameter is null
      */
     public void deleteWithoutTx(Iterable<Key> keys) throws NullPointerException {
-        DatastoreUtil.delete(ds, (Transaction) null, keys);
+        delete((Transaction) null, keys);
+    }
+
+    /**
+     * Deletes entities specified by the keys without transaction
+     * asynchronously.
+     * 
+     * @param keys
+     *            the keys
+     * @return a future {@link Void}
+     * @throws NullPointerException
+     *             if the keys parameter is null
+     */
+    public Future<Void> deleteWithoutTxAsync(Iterable<Key> keys)
+            throws NullPointerException {
+        return deleteAsync((Transaction) null, keys);
     }
 
     /**
@@ -4185,6 +4215,18 @@ public class DatastoreDelegate {
     }
 
     /**
+     * Deletes entities specified by the keys asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
+     * 
+     * @param keys
+     *            the keys
+     * @return a future {@link Void}
+     */
+    public Future<Void> deleteAsync(Key... keys) {
+        return deleteAsync(Arrays.asList(keys));
+    }
+
+    /**
      * Deletes entities specified by the keys without transaction.
      * 
      * @param keys
@@ -4192,6 +4234,18 @@ public class DatastoreDelegate {
      */
     public void deleteWithoutTx(Key... keys) {
         deleteWithoutTx(Arrays.asList(keys));
+    }
+
+    /**
+     * Deletes entities specified by the keys without transaction
+     * asynchronously.
+     * 
+     * @param keys
+     *            the keys
+     * @return a future {@link Void}
+     */
+    public Future<Void> deleteWithoutTxAsync(Key... keys) {
+        return deleteWithoutTxAsync(Arrays.asList(keys));
     }
 
     /**
@@ -4213,6 +4267,26 @@ public class DatastoreDelegate {
     }
 
     /**
+     * Deletes entities specified by the keys within the provided transaction
+     * asynchronously.
+     * 
+     * @param tx
+     *            the transaction
+     * @param keys
+     *            the keys
+     * @return a future {@link Void}
+     * @throws NullPointerException
+     *             if the keys parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public Future<Void> deleteAsync(Transaction tx, Iterable<Key> keys)
+            throws NullPointerException, IllegalStateException {
+        return DatastoreUtil.deleteAsync(ads, tx, keys);
+    }
+
+    /**
      * Deletes entities specified by the keys within the provided transaction.
      * 
      * @param tx
@@ -4229,6 +4303,24 @@ public class DatastoreDelegate {
     }
 
     /**
+     * Deletes entities specified by the keys within the provided transaction
+     * asynchronously.
+     * 
+     * @param tx
+     *            the transaction
+     * @param keys
+     *            the keys
+     * @return a future {@link Void}
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public Future<Void> deleteAsync(Transaction tx, Key... keys)
+            throws IllegalStateException {
+        return deleteAsync(tx, Arrays.asList(keys));
+    }
+
+    /**
      * Deletes all descendant entities.
      * 
      * @param ancestorKey
@@ -4242,6 +4334,24 @@ public class DatastoreDelegate {
                 "The ancestorKey parameter must not be null.");
         }
         delete(query(ancestorKey).asKeyList());
+    }
+
+    /**
+     * Deletes all descendant entities asynchronously.
+     * 
+     * @param ancestorKey
+     *            the ancestor key
+     * @return a future {@link Void}
+     * @throws NullPointerException
+     *             if the ancestorKey parameter is null
+     */
+    public Future<Void> deleteAllAsync(Key ancestorKey)
+            throws NullPointerException {
+        if (ancestorKey == null) {
+            throw new NullPointerException(
+                "The ancestorKey parameter must not be null.");
+        }
+        return deleteAsync(query(ancestorKey).asKeyList());
     }
 
     /**
@@ -4263,6 +4373,26 @@ public class DatastoreDelegate {
     }
 
     /**
+     * Deletes all descendant entities within the provided transaction
+     * asynchronously.
+     * 
+     * @param tx
+     *            the transaction
+     * @param ancestorKey
+     *            the ancestor key
+     * @return a future {@link Void}
+     * @throws NullPointerException
+     *             if the ancestorKey parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public Future<Void> deleteAllAsync(Transaction tx, Key ancestorKey)
+            throws NullPointerException, IllegalStateException {
+        return deleteAsync(tx, query(ancestorKey).asKeyList());
+    }
+
+    /**
      * Deletes all descendant entities without transaction.
      * 
      * @param ancestorKey
@@ -4272,6 +4402,20 @@ public class DatastoreDelegate {
      */
     public void deleteAllWithoutTx(Key ancestorKey) throws NullPointerException {
         deleteWithoutTx(query(ancestorKey).asKeyList());
+    }
+
+    /**
+     * Deletes all descendant entities without transaction asynchronously.
+     * 
+     * @param ancestorKey
+     *            the ancestor key
+     * @return a future {@link Void}
+     * @throws NullPointerException
+     *             if the ancestorKey parameter is null
+     */
+    public Future<Void> deleteAllWithoutTxAsync(Key ancestorKey)
+            throws NullPointerException {
+        return deleteWithoutTxAsync(query(ancestorKey).asKeyList());
     }
 
     /**
