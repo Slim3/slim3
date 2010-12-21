@@ -594,7 +594,7 @@ public class ModelMetaGenerator implements Generator {
      */
     protected void printJsonToModelMethod(
             final Printer printer) {
-        new JsonToModelMethodGenerator(modelMetaDesc, printer).generate();
+        new JsonToModelMethodGenerator(printer).generate();
     }
     
     /**
@@ -1919,7 +1919,11 @@ public class ModelMetaGenerator implements Generator {
     }
 
     /**
+     * The method generator for modelToJson method.
+     * 
      * @author Takao Nakaguchi
+     * 
+     * @since 1.0.6
      */
     protected class ModelToJsonMethodGenerator extends
             SimpleDataTypeVisitor<Void, AttributeMetaDesc, RuntimeException> {
@@ -1972,6 +1976,10 @@ public class ModelMetaGenerator implements Generator {
                     JsonAnnotation a = attr.getJson();
                     if(a.isIgnore()) continue;
                     DataType dataType = attr.getDataType();
+                    if(!isSupportedForJson(dataType)){
+                        printer.println("// %s is not supported.", dataType.getClassName());
+                        continue;
+                    }
                     if(!(dataType instanceof CorePrimitiveType) && a.isIgnoreNull()){
                         printer.print("if(%s != null", valueExp);
                         if(dataType instanceof TextType){
@@ -2081,6 +2089,10 @@ public class ModelMetaGenerator implements Generator {
         public Void visitCollectionType(CollectionType type, AttributeMetaDesc p)
                 throws RuntimeException {
             DataType et = type.getElementType();
+            if(!isSupportedForJson(et)){
+                printer.println("// %s is not supported.", et.getClassName());
+                return null;
+            }
             if(!p.getJson().isIgnoreNull()){
                 printer.println("if(%s == null){", valueExp);
                 printer.indent();
@@ -2139,48 +2151,36 @@ public class ModelMetaGenerator implements Generator {
     }
 
     /**
+     * The method generator for jsonToModel method.
+     * 
      * @author Takao Nakaguchi
+     * 
+     * @since 1.0.6
      */
-    protected static class JsonToModelMethodGenerator extends
+    protected class JsonToModelMethodGenerator extends
             SimpleDataTypeVisitor<Void, AttributeMetaDesc, RuntimeException> {
-        private static final Set<String> supportedTypes = new HashSet<String>();
-        static{
-            supportedTypes.addAll(Arrays.asList(
-                Boolean, Short, Integer, Long, Float, Double,
-                String, Date,
-                Blob, BlobKey, Category, Email, GeoPt, IMHandle,
-                Key, Link, PhoneNumber, PostalAddress, Rating,
-                ShortBlob, Text, User,
-                ModelRef
-                ));
-        }
         private final Printer printer;
-        private ModelMetaDesc modelMetaDesc;
         private String getterExp;
         private String setterExp;
         private boolean ignoreNull;
 
         /**
          * Creates a new {@link ModelToJsonMethodGenerator}.
-         * @param modelMetaDesc the model meta desc
          * @param printer the printer
          */
-        public JsonToModelMethodGenerator(ModelMetaDesc modelMetaDesc, Printer printer) {
-            this.modelMetaDesc = modelMetaDesc;
+        public JsonToModelMethodGenerator(Printer printer) {
             this.printer = printer;
         }
 
         /**
          * Creates a new {@link ModelToJsonMethodGenerator}.
-         * @param modelMetaDesc the model meta desc
          * @param printer the printer
          * @param getterExp the getterExp
          * @param setterExp the setterExp
          * @param ignoreNull true if ignone null
          */
-        public JsonToModelMethodGenerator(ModelMetaDesc modelMetaDesc, Printer printer,
+        public JsonToModelMethodGenerator(Printer printer,
                 String getterExp, String setterExp, boolean ignoreNull) {
-            this.modelMetaDesc = modelMetaDesc;
             this.printer = printer;
             this.getterExp = getterExp;
             this.setterExp = setterExp;
@@ -2209,7 +2209,7 @@ public class ModelMetaGenerator implements Generator {
                 for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
                     if(attr.getJson().isIgnore()) continue;
                     DataType dt = attr.getDataType();
-                    if(!isSupported(dt)){
+                    if(!isSupportedForJson(dt)){
                         printer.println("// %s is not supported.", dt.getClassName());
                         continue;
                     }
@@ -2226,17 +2226,6 @@ public class ModelMetaGenerator implements Generator {
             }
             printer.unindent();
             printer.println("}");
-        }
-        
-        private boolean isSupported(DataType dataType){
-            if(!supportedTypes.contains(dataType.getClassName()) &&
-                    !supportedTypes.contains(dataType.getTypeName()) &&
-                    !(dataType instanceof CollectionType) &&
-                    !(dataType instanceof CorePrimitiveType) &&
-                    !(dataType instanceof EnumType)){
-                return false;
-            }
-            return true;
         }
         
         @Override
@@ -2300,7 +2289,7 @@ public class ModelMetaGenerator implements Generator {
         public Void visitCollectionType(CollectionType type, AttributeMetaDesc p)
                 throws RuntimeException {
             DataType et = type.getElementType();
-            if(!isSupported(et)){
+            if(!isSupportedForJson(et)){
                 return null;
             }
             String container = ArrayList;
@@ -2325,7 +2314,7 @@ public class ModelMetaGenerator implements Generator {
                     et.getTypeName(),
                     ((ModelRefType)et).getReferenceModelTypeName());
                 type.getElementType().accept(new JsonToModelMethodGenerator(
-                    modelMetaDesc, printer
+                    printer
                     , "ref", "elements.add", true), p);
                 printer.println("if(ref.getKey() != null){");
                 printer.indent();
@@ -2334,7 +2323,7 @@ public class ModelMetaGenerator implements Generator {
                 printer.println("}");
             } else{
                 type.getElementType().accept(new JsonToModelMethodGenerator(
-                    modelMetaDesc, printer
+                    printer
                     , "(" + et.getClassName() + ")null", "elements.add", true), p);
             }
             printer.unindent();
@@ -2355,5 +2344,26 @@ public class ModelMetaGenerator implements Generator {
                 );
             return null;
         }
+    }
+
+    private boolean isSupportedForJson(DataType dataType){
+        if(jsonSupportedTypes.contains(dataType.getClassName())) return true;
+        if(jsonSupportedTypes.contains(dataType.getTypeName())) return true;
+        if(dataType instanceof CollectionType) return true;
+        if(dataType instanceof CorePrimitiveType) return true;
+        if(dataType instanceof EnumType) return true;
+        return false;
+    }
+    
+    private static final Set<String> jsonSupportedTypes = new HashSet<String>();
+    static{
+        jsonSupportedTypes.addAll(Arrays.asList(
+            Boolean, Short, Integer, Long, Float, Double,
+            String, Date,
+            Blob, BlobKey, Category, Email, GeoPt, IMHandle,
+            Key, Link, PhoneNumber, PostalAddress, Rating,
+            ShortBlob, Text, User,
+            ModelRef
+            ));
     }
 }
