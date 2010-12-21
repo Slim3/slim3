@@ -54,7 +54,10 @@ public class AttributeMetaDesc {
 
     /** the cipher */
     protected boolean cipher;
-    
+
+    /** the json */
+    protected JsonAnnotation json;
+
     /** the readMethodName */
     protected String readMethodName;
 
@@ -185,6 +188,20 @@ public class AttributeMetaDesc {
         this.cipher = cipher;
     }
     
+    /**
+     * @return the json annotation
+     */
+    public JsonAnnotation getJson() {
+        return json;
+    }
+
+    /**
+     * @param json the json annotation
+     */
+    public void setJson(JsonAnnotation json) {
+        this.json = json;
+    }
+
     /**
      * @return the readMethodName
      */

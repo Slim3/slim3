@@ -18,6 +18,8 @@ package org.slim3.datastore.meta;
 import java.util.Arrays;
 
 import org.slim3.datastore.ModelRef;
+import org.slim3.datastore.json.JsonRootReader;
+import org.slim3.datastore.json.JsonWriter;
 import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Hoge;
 
@@ -198,12 +200,11 @@ public final class BbbMeta extends
     }
 
     @Override
-    protected String modelToJson(Object model, int nest) {
-        return null;
+    protected void modelToJson(JsonWriter writer, Object model, int maxDepth, int currentDepth) {
     }
 
     @Override
-    public org.slim3.datastore.model.Bbb jsonToModel(String json) {
+    public Bbb jsonToModel(JsonRootReader reader, int maxDepth, int currentDepth) {
         return null;
     }
 }

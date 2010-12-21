@@ -19,6 +19,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.slim3.datastore.json.JsonReader;
+import org.slim3.datastore.json.JsonRootReader;
+import org.slim3.datastore.json.JsonWriter;
+import org.slim3.datastore.json.ModelReader;
+import org.slim3.datastore.json.ModelWriter;
 import org.slim3.util.BeanDesc;
 import org.slim3.util.BeanUtil;
 import org.slim3.util.ByteUtil;
@@ -177,7 +182,7 @@ public abstract class ModelMeta<M> {
     public abstract Entity modelToEntity(Object model);
 
     /**
-     * Converts the model to JSON string.
+     * Converts the model to JSON string assuming maxDepth is 0.
      * 
      * @param model
      *            the model
@@ -193,13 +198,42 @@ public abstract class ModelMeta<M> {
      * 
      * @param model
      *            the model
-     *
-     * @param nest
-     *            the nest count
+     * 
+     * @param maxDepth
+     *            the max depth of ModelRef expanding
      *
      * @return JSON string
      */
-    protected abstract String modelToJson(Object model, int nest);
+    public String modelToJson(final Object model, int maxDepth){
+        StringBuilder b = new StringBuilder();
+        JsonWriter w = new JsonWriter(b, new ModelWriter() {
+            public void write(JsonWriter writer, Object model, int maxDepth,
+                    int currentDepth) {
+                invokeModelToJson(
+                    Datastore.getModelMeta(model.getClass()),
+                    writer, model, maxDepth, currentDepth + 1);
+            }
+        });
+        modelToJson(w, model, maxDepth, 0);
+        return b.toString();
+    }
+
+    /**
+     * Converts the model to JSON string.
+     * 
+     * @param writer
+     *            the writer
+     * 
+     * @param model
+     *            the model
+     *            
+     * @param maxDepth
+     *            the max depth
+     *
+     * @param currentDepth
+     *            the current depth
+     */
+    protected abstract void modelToJson(JsonWriter writer, Object model, int maxDepth, int currentDepth);
 
     /**
      * Invoke the modelToJson method.
@@ -207,16 +241,21 @@ public abstract class ModelMeta<M> {
      * @param meta
      *            the meta
      *
+     * @param writer
+     *            the writer
+     * 
      * @param model
      *            the model
+     *            
+     * @param maxDepth
+     *            the max depth
      *
-     * @param nest
-     *            the nest count
-     *
-     * @return JSON string
+     * @param currentDepth
+     *            the current depth
      */
-    protected String invokeModelToJson(ModelMeta<?> meta, Object model, int nest){
-        return meta.modelToJson(model, nest);
+    protected void invokeModelToJson(ModelMeta<?> meta, JsonWriter writer
+            , Object model, int maxDepth, int currentDepth){
+        meta.modelToJson(writer, model, maxDepth, currentDepth);
     }
 
     /**
@@ -227,7 +266,91 @@ public abstract class ModelMeta<M> {
      *
      * @return model
      */
-    public abstract M jsonToModel(String json);
+    public M jsonToModel(String json){
+        return jsonToModel(json, 0);
+    }
+    
+    /**
+     * Converts the JSON string to model.
+     * 
+     * @param json
+     *            the JSON string
+     *            
+     * @param maxDepth
+     *            the max depth
+     *            
+     * @return model
+     */
+    public M jsonToModel(String json, int maxDepth){
+        return jsonToModel(json, maxDepth, 0);
+    }
+
+    /**
+     * Converts the JSON string to model.
+     * 
+     * @param json
+     *            the JSON string
+     *            
+     * @param maxDepth
+     *            the max depth
+     *            
+     * @param currentDepth
+     *            the current depth
+     *            
+     * @return model
+     */
+    public M jsonToModel(String json, int maxDepth, int currentDepth){
+        return jsonToModel(new JsonRootReader(json, new ModelReader() {
+            public <T> T read(JsonReader reader, Class<T> modelClass, int maxDepth,
+                    int currentDepth) {
+                return invokeJsonToModel(
+                    Datastore.getModelMeta(modelClass),
+                    reader, maxDepth, currentDepth + 1);
+            }
+        })
+        , maxDepth, currentDepth);
+    }
+
+    /**
+     * Converts the JSON string to model.
+     * 
+     * @param reader
+     *            the JSON reader
+     *            
+     * @param maxDepth
+     *            the max depth
+     *            
+     * @param currentDepth
+     *            the current depth
+     *            
+     * @return model
+     */
+    public abstract M jsonToModel(JsonRootReader reader, int maxDepth, int currentDepth);
+    
+    /**
+     * Converts the JSON string to model.
+     * 
+     * @param <T>
+     *            the type of model
+     *            
+     * @param meta
+     *            the model meta
+     *            
+     * @param reader
+     *            the JSON reader
+     *            
+     * @param maxDepth
+     *            the max depth
+     *            
+     * @param currentDepth
+     *            the current depth
+     *            
+     * @return model
+     */
+    protected <T> T invokeJsonToModel(ModelMeta<T> meta, JsonReader reader
+            , int maxDepth, int currentDepth){
+        return meta.jsonToModel(reader.read(), maxDepth, currentDepth);
+    }
 
     /**
      * Returns version property value of the model.

@@ -21,6 +21,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.slim3.datastore.json.Default;
+import org.slim3.datastore.json.Json;
+
 /**
  * An annotation for property of entity.
  * 
@@ -75,4 +78,12 @@ public @interface Attribute {
      */
     @SuppressWarnings("unchecked")
     Class<? extends AttributeListener> listener() default AttributeListener.class;
+
+    /**
+     * The json attribute which controls the json input and output.
+     * 
+     * @since 1.0.6
+     */
+    Json json() default @Json(ignore=false, ignoreNull=true, alias="",
+        coder=Default.class);
 }

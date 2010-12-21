@@ -142,7 +142,11 @@ public enum MessageCode {
     /** */
     SLIM3GEN1052("The listener must not be an interface."),
     /** */
-    SLIM3GEN1053("The type annotated with @Attribute(cipher = true) must be com.google.appengine.api.datastore.Text or java.lang.String.");
+    SLIM3GEN1053("The type annotated with @Attribute(cipher = true) must be com.google.appengine.api.datastore.Text or java.lang.String."),
+    /** */
+    SLIM3GEN1054("The coder[{0}] of @Json does not have a default constructor."),
+    /** */
+    SLIM3GEN1055("The coder of @Json must not be an interface.");
 
     /** the message */
     public final String message;

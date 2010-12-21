@@ -17,6 +17,7 @@ package org.slim3.gen.desc;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.slim3.gen.AnnotationConstants;
 import org.slim3.gen.ClassConstants;
@@ -38,6 +39,8 @@ import org.slim3.gen.util.TypeUtil;
 
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.declaration.AnnotationMirror;
+import com.sun.mirror.declaration.AnnotationTypeElementDeclaration;
+import com.sun.mirror.declaration.AnnotationValue;
 import com.sun.mirror.declaration.ClassDeclaration;
 import com.sun.mirror.declaration.FieldDeclaration;
 import com.sun.mirror.declaration.MethodDeclaration;
@@ -197,6 +200,11 @@ public class AttributeMetaDescFactory {
                     fieldDeclaration,
                     attribute);
             }
+        handleJson(
+            attributeMetaDesc,
+            classDeclaration,
+            fieldDeclaration,
+            attribute);
         handleAttributeListener(
             attributeMetaDesc,
             classDeclaration,
@@ -523,6 +531,96 @@ public class AttributeMetaDescFactory {
                 attribute.getPosition());
         }
         attributeMetaDesc.setCipher(true);
+    }
+
+    /**
+     * Handles the json.
+     * 
+     * @param attributeMetaDesc
+     *            the attribute meta description
+     * @param classDeclaration
+     *            the model class declaration
+     * @param fieldDeclaration
+     *            the field declaration
+     * @param attribute
+     *            the annotation mirror for Attribute
+     */
+    protected void handleJson(AttributeMetaDesc attributeMetaDesc,
+            ClassDeclaration classDeclaration,
+            FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
+        AnnotationMirror json =
+            AnnotationMirrorUtil.getElementValueWithDefault(
+                attribute,
+                AnnotationConstants.json);
+        JsonAnnotation anno = new JsonAnnotation();
+        attributeMetaDesc.setJson(anno);
+        if(json == null){
+            return;
+        }
+        for(Map.Entry<AnnotationTypeElementDeclaration, AnnotationValue> entry
+                : json.getElementValues().entrySet()){
+            String sn = entry.getKey().getSimpleName();
+            if(sn.equals(AnnotationConstants.ignore)) {
+                anno.setIgnore(entry.getValue() != null ?
+                    (Boolean)entry.getValue().getValue()
+                    : false);
+            } else if(sn.equals(AnnotationConstants.ignoreNull)){
+                anno.setIgnoreNull(entry.getValue() != null ?
+                    (Boolean)entry.getValue().getValue()
+                    : false);
+            } else if(sn.equals(AnnotationConstants.alias)){
+                anno.setAlias(entry.getValue() != null ?
+                    (String)entry.getValue().getValue()
+                    : "");
+            } else if(sn.equals(AnnotationConstants.coder)){
+                anno.setCoderClassName(getClassNameOfClassParameter(
+                    entry.getKey(), entry.getValue()
+                    ));
+            }
+        }
+    }
+
+    /**
+     * Gets the class name of the class parameter.
+     * @param declaration the declaration
+     * @param value the value
+     * @return the class name
+     */
+    protected String getClassNameOfClassParameter(
+            AnnotationTypeElementDeclaration declaration, AnnotationValue value){
+        String className = TypeUtil.toClassType(
+            (TypeMirror)declaration.getDefaultValue().getValue()
+            ).getDeclaration().getQualifiedName();
+        TypeMirror mirror = (TypeMirror)value.getValue();
+        if(mirror == null){
+            return className;
+        }
+        if (value instanceof InterfaceType) {
+            throw new ValidationException(
+                MessageCode.SLIM3GEN1055,
+                env,
+                declaration.getPosition());
+        }
+        ClassType coderClassType = TypeUtil.toClassType(mirror);
+        if(coderClassType == null) return className;
+        ClassDeclaration coderClassDeclaration =
+            coderClassType.getDeclaration();
+        if (coderClassDeclaration == null) {
+            throw new UnknownDeclarationException(
+                env,
+                coderClassDeclaration,
+                coderClassType);
+        }
+        className = coderClassDeclaration.getQualifiedName();
+        if (!DeclarationUtil
+                .hasPublicDefaultConstructor(coderClassDeclaration)) {
+                throw new ValidationException(
+                    MessageCode.SLIM3GEN1054,
+                    env,
+                    declaration.getPosition(),
+                    className);
+        }
+        return className;
     }
     
     /**

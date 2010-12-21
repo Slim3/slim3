@@ -19,6 +19,8 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.slim3.datastore.json.JsonRootReader;
+import org.slim3.datastore.json.JsonWriter;
 import org.slim3.datastore.model.Hoge;
 
 import com.google.appengine.api.datastore.AsyncDatastoreService;
@@ -81,12 +83,12 @@ public class SortableUnindexedAttributeMetaTest {
         }
 
         @Override
-        protected String modelToJson(Object model, int nest) {
-            return null;
+        protected void modelToJson(JsonWriter writer, Object model, int maxDepth, int currentDepth) {
         }
 
         @Override
-        public Hoge jsonToModel(String json) {
+        public Hoge jsonToModel(JsonRootReader reader, int maxDepth,
+                int currentDepth) {
             return null;
         }
     };

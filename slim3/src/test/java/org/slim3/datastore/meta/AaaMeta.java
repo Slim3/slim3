@@ -15,6 +15,10 @@
  */
 package org.slim3.datastore.meta;
 
+import org.slim3.datastore.json.JsonRootReader;
+import org.slim3.datastore.json.JsonWriter;
+import org.slim3.datastore.model.Aaa;
+
 import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.Key;
 
@@ -145,12 +149,11 @@ public final class AaaMeta extends
     }
 
     @Override
-    protected String modelToJson(Object model, int nest) {
-        return null;
+    protected void modelToJson(JsonWriter writer, Object model, int maxDepth, int currentDepth) {
     }
 
     @Override
-    public org.slim3.datastore.model.Aaa jsonToModel(String json) {
+    public Aaa jsonToModel(JsonRootReader reader, int maxDepth, int currentDepth) {
         return null;
     }
 }

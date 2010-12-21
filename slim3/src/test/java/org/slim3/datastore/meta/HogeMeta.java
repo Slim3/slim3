@@ -29,6 +29,8 @@ import org.slim3.datastore.StringAttributeMeta;
 import org.slim3.datastore.StringCollectionAttributeMeta;
 import org.slim3.datastore.StringUnindexedAttributeMeta;
 import org.slim3.datastore.UnindexedAttributeMeta;
+import org.slim3.datastore.json.JsonRootReader;
+import org.slim3.datastore.json.JsonWriter;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.datastore.model.MySerializable;
 
@@ -36,9 +38,9 @@ import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.ShortBlob;
 import com.google.appengine.api.datastore.Text;
-import com.google.appengine.api.datastore.Query.SortDirection;
 
 /**
  * @author higa
@@ -606,12 +608,11 @@ public class HogeMeta extends ModelMeta<Hoge> {
     }
 
     @Override
-    protected String modelToJson(Object model, int nest) {
-        return null;
+    protected void modelToJson(JsonWriter writer, Object model, int maxDepth, int currentDepth) {
     }
 
     @Override
-    public Hoge jsonToModel(String json) {
+    public Hoge jsonToModel(JsonRootReader reader, int maxDepth, int currentDepth) {
         return null;
     }
 }

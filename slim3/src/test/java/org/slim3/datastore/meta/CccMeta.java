@@ -17,6 +17,8 @@ package org.slim3.datastore.meta;
 
 import java.util.Arrays;
 
+import org.slim3.datastore.json.JsonRootReader;
+import org.slim3.datastore.json.JsonWriter;
 import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Ccc;
 
@@ -152,12 +154,11 @@ public final class CccMeta extends
     }
 
     @Override
-    protected String modelToJson(Object model, int nest) {
-        return null;
+    protected void modelToJson(JsonWriter writer, Object model, int maxDepth, int currentDepth) {
     }
 
     @Override
-    public org.slim3.datastore.model.Ccc jsonToModel(String json) {
+    public Ccc jsonToModel(JsonRootReader reader, int maxDepth, int currentDepth) {
         return null;
     }
 }

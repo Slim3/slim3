@@ -72,6 +72,21 @@ public final class AnnotationConstants {
     /** the name of cipher element */
     public static final String cipher = "cipher";
     
+    /** the name of json element */
+    public static final String json = "json";
+    
+    /** the name of ignore element of @Json */
+    public static final String ignore = "ignore";
+    
+    /** the name of ignoreNull element of @Json */
+    public static final String ignoreNull = "ignoreNull";
+    
+    /** the name of alias element of @Json */
+    public static final String alias = "alias";
+    
+    /** the name of coder element of @Json */
+    public static final String coder = "coder";
+    
     /** {@code org.junit.Test} */
     public static final String Test = "org.junit.Test";
 }
