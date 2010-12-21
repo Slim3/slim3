@@ -54,10 +54,10 @@ public class ModelRefAttrModel {
 	@Attribute(primaryKey=true)
 	private Key key;
 	private String name;
-	@Attribute(json=@Json(encoder=Expanded.class, decoder=Expanded.class))
+	@Attribute(json=@Json(coder=Expanded.class))
 	private ModelRef<ModelRefAttrModel> expandedRef = new ModelRef<ModelRefAttrModel>(ModelRefAttrModel.class);
 	private ModelRef<ModelRefAttrModel> ref = new ModelRef<ModelRefAttrModel>(ModelRefAttrModel.class);
-	@Attribute(json=@Json(encoder=Expanded.class, decoder=Expanded.class))
+	@Attribute(json=@Json(coder=Expanded.class))
 	private List<ModelRef<ModelRefAttrModel>> expandedRefList = new ArrayList<ModelRef<ModelRefAttrModel>>();
 	private List<ModelRef<ModelRefAttrModel>> refList = new ArrayList<ModelRef<ModelRefAttrModel>>();
 }
