@@ -22,8 +22,8 @@ import java.util.List;
 
 import org.slim3.util.ConversionUtil;
 
+import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.Cursor;
-import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
@@ -65,14 +65,14 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
      * Constructor.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param modelMeta
      *            the meta data of model
      * @throws NullPointerException
      *             if the ds parameter is null or if the modelMeta parameter is
      *             null
      */
-    public ModelQuery(DatastoreService ds, ModelMeta<M> modelMeta)
+    public ModelQuery(AsyncDatastoreService ds, ModelMeta<M> modelMeta)
             throws NullPointerException {
         super(ds);
         if (modelMeta == null) {
@@ -86,7 +86,7 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
      * Constructor.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param modelMeta
      *            the meta data of model
      * @param ancestorKey
@@ -95,7 +95,7 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
      *             if the ds parameter is null or if the modelMeta parameter is
      *             null or if the ancestorKey parameter is null
      */
-    public ModelQuery(DatastoreService ds, ModelMeta<M> modelMeta,
+    public ModelQuery(AsyncDatastoreService ds, ModelMeta<M> modelMeta,
             Key ancestorKey) throws NullPointerException {
         super(ds);
         if (modelMeta == null) {
@@ -112,7 +112,7 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
      * Constructor.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param tx
      *            the transaction
      * @param modelMeta
@@ -123,7 +123,7 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
      *             if the ds parameter is null or if the modelMeta parameter is
      *             null or if the ancestorKey parameter is null
      */
-    public ModelQuery(DatastoreService ds, Transaction tx,
+    public ModelQuery(AsyncDatastoreService ds, Transaction tx,
             ModelMeta<M> modelMeta, Key ancestorKey)
             throws NullPointerException {
         super(ds);

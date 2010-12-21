@@ -26,8 +26,8 @@ import org.junit.Test;
 import org.slim3.tester.AppEngineTestCase;
 import org.slim3.util.ByteUtil;
 
+import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.Cursor;
-import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
@@ -46,7 +46,8 @@ import com.google.appengine.repackaged.com.google.common.util.Base64;
  */
 public class AbstQueryTest extends AppEngineTestCase {
 
-    private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+    private AsyncDatastoreService ds =
+        DatastoreServiceFactory.getAsyncDatastoreService();
 
     /**
      * @throws Exception
@@ -94,7 +95,7 @@ public class AbstQueryTest extends AppEngineTestCase {
     @Test
     public void setTx() throws Exception {
         MyQuery q = new MyQuery(ds, "Hoge");
-        q.setTx(ds.beginTransaction());
+        q.setTx(DatastoreUtil.beginTransaction(ds));
         assertNotNull(q.tx);
         assertTrue(q.txSet);
     }
@@ -126,7 +127,7 @@ public class AbstQueryTest extends AppEngineTestCase {
     @Test(expected = IllegalStateException.class)
     public void setIllegalTx() throws Exception {
         MyQuery q = new MyQuery(ds, "Hoge");
-        Transaction tx = ds.beginTransaction();
+        Transaction tx = DatastoreUtil.beginTransaction(ds);
         tx.rollback();
         q.setTx(tx);
     }
@@ -158,7 +159,7 @@ public class AbstQueryTest extends AppEngineTestCase {
      */
     @Test
     public void asEntityListForKindlessAncestorQuery() throws Exception {
-        Key parentKey = ds.put(new Entity("Parent"));
+        Key parentKey = DatastoreUtil.put(ds, null, new Entity("Parent"));
         ds.put(new Entity(KeyFactory.createKey(parentKey, "Child", 1)));
         MyQuery query = new MyQuery(ds, parentKey);
         List<Entity> list = query.asEntityList();
@@ -201,7 +202,7 @@ public class AbstQueryTest extends AppEngineTestCase {
      */
     @Test
     public void asKeyList() throws Exception {
-        Key key = ds.put(new Entity("Hoge"));
+        Key key = DatastoreUtil.put(ds, null, new Entity("Hoge"));
         MyQuery query = new MyQuery(ds, "Hoge");
         assertThat(query.asKeyList(), is(Arrays.asList(key)));
     }
@@ -587,7 +588,7 @@ public class AbstQueryTest extends AppEngineTestCase {
          * @param ds
          * 
          */
-        public MyQuery(DatastoreService ds) {
+        public MyQuery(AsyncDatastoreService ds) {
             super(ds);
         }
 
@@ -596,7 +597,7 @@ public class AbstQueryTest extends AppEngineTestCase {
          * @param ancestorKey
          * @throws NullPointerException
          */
-        public MyQuery(DatastoreService ds, Key ancestorKey)
+        public MyQuery(AsyncDatastoreService ds, Key ancestorKey)
                 throws NullPointerException {
             super(ds, ancestorKey);
         }
@@ -607,7 +608,7 @@ public class AbstQueryTest extends AppEngineTestCase {
          * @param ancestorKey
          * @throws NullPointerException
          */
-        public MyQuery(DatastoreService ds, String kind, Key ancestorKey)
+        public MyQuery(AsyncDatastoreService ds, String kind, Key ancestorKey)
                 throws NullPointerException {
             super(ds, kind, ancestorKey);
         }
@@ -617,7 +618,7 @@ public class AbstQueryTest extends AppEngineTestCase {
          * @param kind
          * @throws NullPointerException
          */
-        public MyQuery(DatastoreService ds, String kind)
+        public MyQuery(AsyncDatastoreService ds, String kind)
                 throws NullPointerException {
             super(ds, kind);
         }

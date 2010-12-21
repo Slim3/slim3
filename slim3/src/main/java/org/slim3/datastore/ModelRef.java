@@ -15,7 +15,7 @@
  */
 package org.slim3.datastore;
 
-import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.Key;
 
 /**
@@ -179,12 +179,12 @@ public class ModelRef<M> extends AbstractModelRef<M> {
      * Assigns a new key to the model if necessary.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @return a key
      * @throws NullPointerException
      *             if the ds parameter is null
      */
-    public Key assignKeyIfNecessary(DatastoreService ds)
+    public Key assignKeyIfNecessary(AsyncDatastoreService ds)
             throws NullPointerException {
         if (model == null) {
             return null;

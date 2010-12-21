@@ -18,7 +18,7 @@ package org.slim3.datastore;
 import java.util.Iterator;
 import java.util.List;
 
-import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Transaction;
@@ -36,12 +36,12 @@ public class KindlessQuery extends AbstractQuery<KindlessQuery> {
      * Constructor.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @throws NullPointerException
      *             if the ds parameter is null
      * 
      */
-    public KindlessQuery(DatastoreService ds) throws NullPointerException {
+    public KindlessQuery(AsyncDatastoreService ds) throws NullPointerException {
         super(ds);
     }
 
@@ -49,14 +49,14 @@ public class KindlessQuery extends AbstractQuery<KindlessQuery> {
      * Constructor.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param ancestorKey
      *            the ancestor key
      * @throws NullPointerException
      *             if the ds parameter is null or if the ancestorKey parameter
      *             is null
      */
-    public KindlessQuery(DatastoreService ds, Key ancestorKey)
+    public KindlessQuery(AsyncDatastoreService ds, Key ancestorKey)
             throws NullPointerException {
         super(ds, ancestorKey);
     }
@@ -65,7 +65,7 @@ public class KindlessQuery extends AbstractQuery<KindlessQuery> {
      * Constructor.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param tx
      *            the transaction
      * @param ancestorKey
@@ -74,8 +74,8 @@ public class KindlessQuery extends AbstractQuery<KindlessQuery> {
      *             if the ds parameter is null or if the ancestorKey parameter
      *             is null
      */
-    public KindlessQuery(DatastoreService ds, Transaction tx, Key ancestorKey)
-            throws NullPointerException {
+    public KindlessQuery(AsyncDatastoreService ds, Transaction tx,
+            Key ancestorKey) throws NullPointerException {
         super(ds, ancestorKey);
         setTx(tx);
     }

@@ -16,6 +16,7 @@
 package org.slim3.datastore;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,18 +29,17 @@ import org.slim3.util.AppEngineUtil;
 import org.slim3.util.ClassUtil;
 import org.slim3.util.Cleanable;
 import org.slim3.util.Cleaner;
+import org.slim3.util.FutureUtil;
 
 import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.EntityTranslator;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.KeyRange;
 import com.google.appengine.api.datastore.KeyUtil;
 import com.google.appengine.api.datastore.Transaction;
-import com.google.appengine.api.utils.FutureWrapper;
 import com.google.apphosting.api.ApiProxy;
 import com.google.apphosting.api.DatastorePb.GetSchemaRequest;
 import com.google.apphosting.api.DatastorePb.Schema;
@@ -113,17 +113,31 @@ public final class DatastoreUtil {
     }
 
     /**
-     * Allocates a key within a namespace defined by the kind.
+     * Begins a transaction.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
+     * @return a begun transaction
+     */
+    public static Transaction beginTransaction(AsyncDatastoreService ds) {
+        if (ds == null) {
+            throw new NullPointerException("The ds parameter must not be null.");
+        }
+        return FutureUtil.getQuietly(ds.beginTransaction());
+    }
+
+    /**
+     * Allocates a key within a namespace defined by the kind with caching.
+     * 
+     * @param ds
+     *            the asynchronous datastore service
      * @param kind
      *            the kind
      * @return a key within a namespace defined by the kind
      * @throws NullPointerException
      *             if the ds parameter is null or if the kind parameter is null
      */
-    public static Key allocateId(DatastoreService ds, String kind)
+    public static Key allocateId(AsyncDatastoreService ds, String kind)
             throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
@@ -136,63 +150,30 @@ public final class DatastoreUtil {
         if (keys != null && keys.hasNext()) {
             return keys.next();
         }
-        keys = allocateIds(ds, kind, KEY_CACHE_SIZE).iterator();
+        keys =
+            FutureUtil
+                .getQuietly(allocateIdsAsync(ds, kind, KEY_CACHE_SIZE))
+                .iterator();
         keysCache.put(kind, keys);
         return keys.next();
     }
 
     /**
-     * Allocates a key within a namespace defined by the kind asynchronously.
+     * Allocates a key within a namespace defined by the parentKey and the kind.
      * 
      * @param ds
      *            the asynchronous datastore service
-     * @param kind
-     *            the kind
-     * @return a future key within a namespace defined by the kind
-     * @throws NullPointerException
-     *             if the ds parameter is null or if the kind parameter is null
-     */
-    public static Future<Key> allocateIdAsync(AsyncDatastoreService ds,
-            final String kind) throws NullPointerException {
-        if (ds == null) {
-            throw new NullPointerException("The ds parameter must not be null.");
-        }
-        if (kind == null) {
-            throw new NullPointerException(
-                "The kind parameter must not be null.");
-        }
-        return new FutureWrapper<KeyRange, Key>(allocateIdsAsync(ds, kind, 1)) {
-
-            @Override
-            protected Throwable convertException(Throwable throwable) {
-                return throwable;
-            }
-
-            @Override
-            protected Key wrap(KeyRange keyRange) throws Exception {
-                return keyRange.iterator().next();
-            }
-        };
-    }
-
-    /**
-     * Allocates a key within a namespace defined by the parent key and the
-     * kind.
-     * 
-     * @param ds
-     *            the datastore service
      * @param parentKey
      *            the parent key
      * @param kind
      *            the kind
-     * 
-     * @return a key within a namespace defined by the kind and the parent key
+     * @return a key within a namespace defined by the kind
      * @throws NullPointerException
      *             if the ds parameter is null or if the parentKey parameter is
      *             null or if the kind parameter is null
      */
-    public static Key allocateId(DatastoreService ds, Key parentKey, String kind)
-            throws NullPointerException {
+    public static Key allocateId(AsyncDatastoreService ds, Key parentKey,
+            String kind) throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
         }
@@ -204,80 +185,11 @@ public final class DatastoreUtil {
             throw new NullPointerException(
                 "The kind parameter must not be null.");
         }
-        Iterator<Key> keys = allocateIds(ds, parentKey, kind, 1).iterator();
+        Iterator<Key> keys =
+            FutureUtil
+                .getQuietly(allocateIdsAsync(ds, parentKey, kind, 1))
+                .iterator();
         return keys.next();
-    }
-
-    /**
-     * Allocates a key within a namespace defined by the parent key and the kind
-     * asynchronously.
-     * 
-     * @param ds
-     *            the asynchronous datastore service
-     * @param parentKey
-     *            the parent key
-     * @param kind
-     *            the kind
-     * 
-     * @return a key within a namespace defined by the kind and the parent key
-     * @throws NullPointerException
-     *             if the ds parameter is null or if the parentKey parameter is
-     *             null or if the kind parameter is null
-     */
-    public static Future<Key> allocateIdAsync(AsyncDatastoreService ds,
-            Key parentKey, String kind) throws NullPointerException {
-        if (ds == null) {
-            throw new NullPointerException("The ds parameter must not be null.");
-        }
-        if (parentKey == null) {
-            throw new NullPointerException(
-                "The parentKey parameter must not be null.");
-        }
-        if (kind == null) {
-            throw new NullPointerException(
-                "The kind parameter must not be null.");
-        }
-        return new FutureWrapper<KeyRange, Key>(allocateIdsAsync(
-            ds,
-            parentKey,
-            kind,
-            1)) {
-
-            @Override
-            protected Throwable convertException(Throwable throwable) {
-                return throwable;
-            }
-
-            @Override
-            protected Key wrap(KeyRange keyRange) throws Exception {
-                return keyRange.iterator().next();
-            }
-        };
-    }
-
-    /**
-     * Allocates keys within a namespace defined by the kind.
-     * 
-     * @param ds
-     *            the datastore service
-     * @param kind
-     *            the kind
-     * @param num
-     *            the number of allocated keys
-     * @return keys within a namespace defined by the kind
-     * @throws NullPointerException
-     *             if the ds parameter is null or if the kind parameter is null
-     */
-    public static KeyRange allocateIds(DatastoreService ds, String kind,
-            long num) throws NullPointerException {
-        if (ds == null) {
-            throw new NullPointerException("The ds parameter must not be null.");
-        }
-        if (kind == null) {
-            throw new NullPointerException(
-                "The kind parameter must not be null.");
-        }
-        return ds.allocateIds(kind, num);
     }
 
     /**
@@ -289,9 +201,9 @@ public final class DatastoreUtil {
      *            the kind
      * @param num
      *            the number of allocated keys
-     * @return future keys within a namespace defined by the kind
+     * @return keys represented as {@link Future}
      * @throws NullPointerException
-     *             if the ds parameter is null or if the kind parameter is null
+     *             if the ads parameter is null or if the kind parameter is null
      */
     public static Future<KeyRange> allocateIdsAsync(AsyncDatastoreService ds,
             String kind, long num) throws NullPointerException {
@@ -306,36 +218,6 @@ public final class DatastoreUtil {
     }
 
     /**
-     * Allocates keys within a namespace defined by the parent key and the kind.
-     * 
-     * @param ds
-     *            the datastore service
-     * @param parentKey
-     *            the parent key
-     * @param kind
-     *            the kind
-     * @param num
-     * @return keys within a namespace defined by the parent key and the kind
-     * @throws NullPointerException
-     *             if the ds parameter is null or if the parentKey parameter is
-     *             null or if the kind parameter is null
-     */
-    public static KeyRange allocateIds(DatastoreService ds, Key parentKey,
-            String kind, long num) throws NullPointerException {
-        if (ds == null) {
-            throw new NullPointerException("The ds parameter must not be null.");
-        }
-        if (parentKey == null) {
-            throw new NullPointerException(
-                "The parentKey parameter must not be null.");
-        }
-        if (kind == null) {
-            throw new NullPointerException("The kind parameter is null.");
-        }
-        return ds.allocateIds(parentKey, kind, num);
-    }
-
-    /**
      * Allocates keys within a namespace defined by the parent key and the kind
      * asynchronously.
      * 
@@ -346,8 +228,7 @@ public final class DatastoreUtil {
      * @param kind
      *            the kind
      * @param num
-     * @return future keys within a namespace defined by the parent key and the
-     *         kind
+     * @return keys represented as {@link Future}
      * @throws NullPointerException
      *             if the ds parameter is null or if the parentKey parameter is
      *             null or if the kind parameter is null
@@ -371,15 +252,15 @@ public final class DatastoreUtil {
      * Assigns a new key to the entity if necessary.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param entity
      *            the entity
      * @throws NullPointerException
      *             if the ds parameter is null or if the entity parameter is
      *             null
      */
-    public static void assignKeyIfNecessary(DatastoreService ds, Entity entity)
-            throws NullPointerException {
+    public static void assignKeyIfNecessary(AsyncDatastoreService ds,
+            Entity entity) throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
         }
@@ -402,14 +283,14 @@ public final class DatastoreUtil {
      * Assigns a new key to the entity if necessary.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param entities
      *            the entities
      * @throws NullPointerException
      *             if the ds parameter is null or if the entities parameter is
      *             null
      */
-    public static void assignKeyIfNecessary(DatastoreService ds,
+    public static void assignKeyIfNecessary(AsyncDatastoreService ds,
             Iterable<Entity> entities) throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
@@ -424,185 +305,32 @@ public final class DatastoreUtil {
     }
 
     /**
-     * Returns an entity specified by the key. If there is a current
-     * transaction, this operation will execute within that transaction.
-     * 
-     * @param ds
-     *            the datastore service
-     * @param key
-     *            the key
-     * @return an entity specified by the key
-     * @throws NullPointerException
-     *             if the ds parameter is null or if the key parameter is null
-     * @throws EntityNotFoundRuntimeException
-     *             if no entity specified by the key could be found
-     */
-    public static Entity get(DatastoreService ds, Key key)
-            throws NullPointerException, EntityNotFoundRuntimeException {
-        if (ds == null) {
-            throw new NullPointerException("The ds parameter must not be null.");
-        }
-        if (key == null) {
-            throw new NullPointerException(
-                "The key parameter must not be null.");
-        }
-        try {
-            return ds.get(key);
-        } catch (EntityNotFoundException cause) {
-            throw new EntityNotFoundRuntimeException(key, cause);
-        }
-    }
-
-    /**
-     * Returns an entity specified by the key asynchronously. If there is a
-     * current transaction, this operation will execute within that transaction.
-     * 
-     * @param ds
-     *            the datastore service
-     * @param key
-     *            the key
-     * @return a future entity specified by the key
-     * @throws NullPointerException
-     *             if the ds parameter is null or if the key parameter is null
-     * 
-     */
-    public static Future<Entity> getAsync(AsyncDatastoreService ds,
-            final Key key) throws NullPointerException {
-        if (ds == null) {
-            throw new NullPointerException("The ds parameter must not be null.");
-        }
-        return getAsync(ds, ds.getCurrentTransaction(null), key);
-    }
-
-    /**
-     * Returns an entity specified by the key within the provided transaction.
-     * 
-     * @param ds
-     *            the datastore service
-     * @param tx
-     *            the transaction
-     * @param key
-     *            the key
-     * @return an entity specified by the key
-     * @throws NullPointerException
-     *             if the ds parameter is null or if the key parameter is null
-     * @throws IllegalStateException
-     *             if the transaction is not null and the transaction is not
-     *             active
-     * @throws EntityNotFoundRuntimeException
-     *             if no entity specified by the key could be found
-     */
-    public static Entity get(DatastoreService ds, Transaction tx, Key key)
-            throws NullPointerException, IllegalStateException,
-            EntityNotFoundRuntimeException {
-        if (ds == null) {
-            throw new NullPointerException("The ds parameter must not be null.");
-        }
-        if (key == null) {
-            throw new NullPointerException(
-                "The key parameter must not be null.");
-        }
-        if (tx != null && !tx.isActive()) {
-            throw new IllegalStateException("The transaction must be active.");
-        }
-        try {
-            return ds.get(tx, key);
-        } catch (EntityNotFoundException cause) {
-            throw new EntityNotFoundRuntimeException(key, cause);
-        }
-    }
-
-    /**
-     * Returns an entity specified by the key within the provided transaction
-     * asynchronously.
-     * 
-     * @param ds
-     *            the datastore service
-     * @param tx
-     *            the transaction
-     * @param key
-     *            the key
-     * @return a future entity specified by the key
-     * @throws NullPointerException
-     *             if the ds parameter is null or if the key parameter is null
-     * @throws IllegalStateException
-     *             if the transaction is not null and the transaction is not
-     *             active
-     */
-    public static Future<Entity> getAsync(AsyncDatastoreService ds,
-            Transaction tx, final Key key) throws NullPointerException,
-            IllegalStateException {
-        if (ds == null) {
-            throw new NullPointerException("The ds parameter must not be null.");
-        }
-        if (key == null) {
-            throw new NullPointerException(
-                "The key parameter must not be null.");
-        }
-        if (tx != null && !tx.isActive()) {
-            throw new IllegalStateException("The transaction must be active.");
-        }
-        return new FutureWrapper<Entity, Entity>(ds.get(tx, key)) {
-
-            @Override
-            protected Throwable convertException(Throwable throwable) {
-                if (throwable instanceof EntityNotFoundException) {
-                    return new EntityNotFoundRuntimeException(key, throwable);
-                }
-                return throwable;
-            }
-
-            @Override
-            protected Entity wrap(Entity entity) throws Exception {
-                return entity;
-            }
-        };
-    }
-
-    /**
-     * Returns entities specified by the keys as map. If there is a current
-     * transaction, this operation will execute within that transaction.
-     * 
-     * @param ds
-     *            the datastore service
-     * @param keys
-     *            the keys
-     * @return entities specified by the keys
-     * @throws NullPointerException
-     *             if the ds parameter is null or if the keys parameter is null
-     */
-    public static Map<Key, Entity> getAsMap(DatastoreService ds,
-            Iterable<Key> keys) throws NullPointerException {
-        if (ds == null) {
-            throw new NullPointerException("The ds parameter must not be null.");
-        }
-        if (keys == null) {
-            throw new NullPointerException(
-                "The keys parameter must not be null.");
-        }
-        return ds.get(keys);
-    }
-
-    /**
-     * Returns entities specified by the keys as map asynchronously. If there is
-     * a current transaction, this operation will execute within that
+     * Returns entities specified by the keys as map within the provided
      * transaction.
      * 
      * @param ds
-     *            the datastore service
-     * @param keys
-     *            the keys
-     * @return future entities specified by the keys
+     *            the asynchronous datastore service
+     * @param tx
+     *            the transaction
+     * @param key
+     *            the key
+     * @return an entity
      * @throws NullPointerException
-     *             if the ds parameter is null or if the keys parameter is null
+     *             if the ds parameter is null or if the key parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     * @throws EntityNotFoundRuntimeException
+     *             if no entity is found
      */
-    public static Future<Map<Key, Entity>> getAsMapAsync(
-            AsyncDatastoreService ds, Iterable<Key> keys)
-            throws NullPointerException {
-        if (ds == null) {
-            throw new NullPointerException("The ds parameter must not be null.");
+    public static Entity get(AsyncDatastoreService ds, Transaction tx, Key key)
+            throws NullPointerException, IllegalStateException,
+            EntityNotFoundRuntimeException {
+        Entity entity = getOrNull(ds, tx, key);
+        if (entity == null) {
+            throw new EntityNotFoundRuntimeException(key);
         }
-        return getAsMapAsync(ds, ds.getCurrentTransaction(null), keys);
+        return entity;
     }
 
     /**
@@ -610,32 +338,50 @@ public final class DatastoreUtil {
      * transaction.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
+     * @param tx
+     *            the transaction
+     * @param key
+     *            the key
+     * @return an entity
+     * @throws NullPointerException
+     *             if the ds parameter is null or if the key parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public static Entity getOrNull(AsyncDatastoreService ds, Transaction tx,
+            Key key) throws NullPointerException, IllegalStateException {
+        if (key == null) {
+            throw new NullPointerException(
+                "The key parameter must not be null.");
+        }
+        return FutureUtil
+            .getQuietly(getAsMapAsync(ds, tx, Arrays.asList(key)))
+            .get(key);
+    }
+
+    /**
+     * Returns entities specified by the keys as map within the provided
+     * transaction.
+     * 
+     * @param ds
+     *            the asynchronous datastore service
      * @param tx
      *            the transaction
      * @param keys
      *            the keys
-     * @return entities specified by the keys
+     * @return entities
      * @throws NullPointerException
      *             if the ds parameter is null or if the keys parameter is null
      * @throws IllegalStateException
      *             if the transaction is not null and the transaction is not
      *             active
      */
-    public static Map<Key, Entity> getAsMap(DatastoreService ds,
+    public static Map<Key, Entity> getAsMap(AsyncDatastoreService ds,
             Transaction tx, Iterable<Key> keys) throws NullPointerException,
             IllegalStateException {
-        if (ds == null) {
-            throw new NullPointerException("The ds parameter must not be null.");
-        }
-        if (keys == null) {
-            throw new NullPointerException(
-                "The keys parameter must not be null.");
-        }
-        if (tx != null && !tx.isActive()) {
-            throw new IllegalStateException("The transaction must be active.");
-        }
-        return ds.get(tx, keys);
+        return FutureUtil.getQuietly(getAsMapAsync(ds, tx, keys));
     }
 
     /**
@@ -648,7 +394,7 @@ public final class DatastoreUtil {
      *            the transaction
      * @param keys
      *            the keys
-     * @return future entities specified by the keys
+     * @return entities represented as {@link Future}
      * @throws NullPointerException
      *             if the ds parameter is null or if the keys parameter is null
      * @throws IllegalStateException
@@ -668,87 +414,20 @@ public final class DatastoreUtil {
         if (tx != null && !tx.isActive()) {
             throw new IllegalStateException("The transaction must be active.");
         }
-        return new FutureWrapper<Map<Key, Entity>, Map<Key, Entity>>(ds.get(
-            tx,
-            keys)) {
-
-            @Override
-            protected Throwable convertException(Throwable throwable) {
-                return throwable;
-            }
-
-            @Override
-            protected Map<Key, Entity> wrap(Map<Key, Entity> map)
-                    throws Exception {
-                return map;
-            }
-        };
-    }
-
-    /**
-     * Puts the entity to datastore. If there is a current transaction, this
-     * operation will execute within that transaction.
-     * 
-     * @param ds
-     *            the datastore service
-     * @param entity
-     *            the entity
-     * 
-     * @return a key
-     * @throws NullPointerException
-     *             if the ds parameter is null or if the entity parameter is
-     *             null
-     * @throws IllegalStateException
-     *             if the transaction is not null and the transaction is not
-     *             active
-     */
-    public static Key put(DatastoreService ds, Entity entity)
-            throws NullPointerException, IllegalStateException {
-        if (ds == null) {
-            throw new NullPointerException("The ds parameter must not be null.");
-        }
-        return put(ds, ds.getCurrentTransaction(null), entity);
-    }
-
-    /**
-     * Puts the entity to datastore asynchronously. If there is a current
-     * transaction, this operation will execute within that transaction.
-     * 
-     * @param ads
-     *            the asynchronous datastore service
-     * @param ds
-     *            the datastore service
-     * @param entity
-     *            the entity
-     * 
-     * @return a future key
-     * @throws NullPointerException
-     *             if the ads parameter is null or if the ds parameter is null
-     *             or if the entity parameter is null
-     * @throws IllegalStateException
-     *             if the transaction is not null and the transaction is not
-     *             active
-     */
-    public static Future<Key> putAsync(AsyncDatastoreService ads,
-            DatastoreService ds, Entity entity) throws NullPointerException,
-            IllegalStateException {
-        if (ds == null) {
-            throw new NullPointerException("The ds parameter must not be null.");
-        }
-        return putAsync(ads, ds, ds.getCurrentTransaction(null), entity);
+        return ds.get(tx, keys);
     }
 
     /**
      * Puts the entity to datastore within the provided transaction.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param tx
      *            the transaction
      * @param entity
      *            the entity
      * 
-     * @return a key
+     * @return a list of keys
      * @throws NullPointerException
      *             if the ds parameter is null or if the entity parameter is
      *             null
@@ -756,111 +435,81 @@ public final class DatastoreUtil {
      *             if the transaction is not null and the transaction is not
      *             active
      */
-    public static Key put(DatastoreService ds, Transaction tx, Entity entity)
-            throws NullPointerException, IllegalStateException {
-        if (ds == null) {
-            throw new NullPointerException("The ds parameter must not be null.");
+    public static Key put(AsyncDatastoreService ds, Transaction tx,
+            Entity entity) throws NullPointerException, IllegalStateException {
+        if (entity == null) {
+            throw new NullPointerException(
+                "The entity parameter must not be null.");
         }
-        if (tx != null && !tx.isActive()) {
-            throw new IllegalStateException("The transaction must be active.");
-        }
-        assignKeyIfNecessary(ds, entity);
-        return ds.put(tx, entity);
+        List<Key> list = put(ds, tx, Arrays.asList(entity));
+        return list.get(0);
+    }
+
+    /**
+     * Puts the entities to datastore within the provided transaction.
+     * 
+     * @param ds
+     *            the asynchronous datastore service
+     * @param tx
+     *            the transaction
+     * @param entities
+     *            the entities
+     * 
+     * @return a list of keys
+     * @throws NullPointerException
+     *             if the ds parameter is null or if the entities parameter is
+     *             null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
+     */
+    public static List<Key> put(AsyncDatastoreService ds, Transaction tx,
+            Iterable<Entity> entities) throws NullPointerException,
+            IllegalStateException {
+        return FutureUtil.getQuietly(putAsync(ds, tx, entities));
     }
 
     /**
      * Puts the entity to datastore within the provided transaction
      * asynchronously.
      * 
-     * @param ads
-     *            the asynchronous datastore service
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param tx
      *            the transaction
      * @param entity
      *            the entity
      * 
-     * @return a future key
+     * @return a list of keys represented as {@link Future}
      * @throws NullPointerException
-     *             if the ads parameter is null or if the ds parameter is null
-     *             or if the entity parameter is null
+     *             if the ds parameter is null or if the entity parameter is
+     *             null
      * @throws IllegalStateException
      *             if the transaction is not null and the transaction is not
      *             active
      */
-    public static Future<Key> putAsync(AsyncDatastoreService ads,
-            DatastoreService ds, Transaction tx, Entity entity)
-            throws NullPointerException, IllegalStateException {
-        if (ads == null) {
+    public static Key putAsync(AsyncDatastoreService ds, Transaction tx,
+            Entity entity) throws NullPointerException, IllegalStateException {
+        if (entity == null) {
             throw new NullPointerException(
-                "The ads parameter must not be null.");
+                "The entity parameter must not be null.");
         }
-        if (ds == null) {
-            throw new NullPointerException("The ds parameter must not be null.");
-        }
-        if (tx != null && !tx.isActive()) {
-            throw new IllegalStateException("The transaction must be active.");
-        }
-        assignKeyIfNecessary(ds, entity);
-        return ads.put(tx, entity);
-    }
-
-    /**
-     * Puts the entities to datastore within the provided transaction.
-     * 
-     * @param ds
-     *            the datastore service
-     * @param entities
-     *            the entities
-     * @return a list of keys
-     * @throws NullPointerException
-     *             if the ds parameter is null or if the entities parameter is
-     *             null
-     */
-    public static List<Key> put(DatastoreService ds, Iterable<Entity> entities)
-            throws NullPointerException {
-        if (ds == null) {
-            throw new NullPointerException("The ds parameter must not be null.");
-        }
-        return put(ds, ds.getCurrentTransaction(null), entities);
+        List<Key> list = put(ds, tx, Arrays.asList(entity));
+        return list.get(0);
     }
 
     /**
      * Puts the entities to datastore within the provided transaction
      * asynchronously.
      * 
-     * @param ads
+     * @param ds
      *            the asynchronous datastore service
-     * @param ds
-     *            the datastore service
-     * @param entities
-     *            the entities
-     * @return a future list of keys
-     * @throws NullPointerException
-     *             if the ads parameter is null or if the ds parameter is null
-     *             or if the entities parameter is null
-     */
-    public static Future<List<Key>> putAsync(AsyncDatastoreService ads,
-            DatastoreService ds, Iterable<Entity> entities)
-            throws NullPointerException {
-        if (ds == null) {
-            throw new NullPointerException("The ds parameter must not be null.");
-        }
-        return putAsync(ads, ds, ds.getCurrentTransaction(null), entities);
-    }
-
-    /**
-     * Puts the entities to datastore within the provided transaction.
-     * 
-     * @param ds
-     *            the datastore service
      * @param tx
      *            the transaction
      * @param entities
      *            the entities
      * 
-     * @return a list of keys
+     * @return a list of keys represented as {@link Future}
      * @throws NullPointerException
      *             if the ds parameter is null or if the entities parameter is
      *             null
@@ -868,9 +517,9 @@ public final class DatastoreUtil {
      *             if the transaction is not null and the transaction is not
      *             active
      */
-    public static List<Key> put(DatastoreService ds, Transaction tx,
-            Iterable<Entity> entities) throws NullPointerException,
-            IllegalStateException {
+    public static Future<List<Key>> putAsync(AsyncDatastoreService ds,
+            Transaction tx, Iterable<Entity> entities)
+            throws NullPointerException, IllegalStateException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
         }
@@ -886,110 +535,48 @@ public final class DatastoreUtil {
     }
 
     /**
-     * Puts the entities to datastore within the provided transaction
-     * asynchronously.
+     * Deletes the entity specified by the key within the provided transaction.
      * 
-     * @param ads
-     *            the asynchronous datastore service
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param tx
      *            the transaction
-     * @param entities
-     *            the entities
-     * 
-     * @return a future list of keys
+     * @param key
+     *            the key
      * @throws NullPointerException
-     *             if the ads parameter is null or if the ds parameter is null
-     *             or if the entities parameter is null
+     *             if the ds parameter is null or if the key parameter is null
      * @throws IllegalStateException
      *             if the transaction is not null and the transaction is not
      *             active
      */
-    public static Future<List<Key>> putAsync(AsyncDatastoreService ads,
-            DatastoreService ds, Transaction tx, Iterable<Entity> entities)
+    public static void delete(AsyncDatastoreService ds, Transaction tx, Key key)
             throws NullPointerException, IllegalStateException {
-        if (ads == null) {
+        if (key == null) {
             throw new NullPointerException(
-                "The ads parameter must not be null.");
+                "The key parameter must not be null.");
         }
-        if (ds == null) {
-            throw new NullPointerException("The ds parameter must not be null.");
-        }
-        if (entities == null) {
-            throw new NullPointerException(
-                "The entities parameter must not be null.");
-        }
-        if (tx != null && !tx.isActive()) {
-            throw new IllegalStateException("The transaction must be active.");
-        }
-        assignKeyIfNecessary(ds, entities);
-        return ads.put(tx, entities);
+        FutureUtil.getQuietly(deleteAsync(ds, tx, Arrays.asList(key)));
     }
 
     /**
      * Deletes entities specified by the keys within the provided transaction.
      * 
      * @param ds
-     *            the datastore service
-     * @param keys
-     *            the keys
-     * @throws NullPointerException
-     *             if the ds parameter is null or if the keys parameter is null
-     */
-    public static void delete(DatastoreService ds, Iterable<Key> keys)
-            throws NullPointerException {
-        if (ds == null) {
-            throw new NullPointerException("The ds parameter must not be null.");
-        }
-        delete(ds, ds.getCurrentTransaction(null), keys);
-    }
-
-    /**
-     * Deletes entities specified by the keys within the provided transaction
-     * asynchronously.
-     * 
-     * @param ds
-     *            the datastore service
-     * @param keys
-     *            the keys
-     * @return a future void
-     * @throws NullPointerException
-     *             if the ds parameter is null or if the keys parameter is null
-     */
-    public static Future<Void> deleteAsync(AsyncDatastoreService ds,
-            Iterable<Key> keys) throws NullPointerException {
-        if (ds == null) {
-            throw new NullPointerException("The ds parameter must not be null.");
-        }
-        return deleteAsync(ds, ds.getCurrentTransaction(null), keys);
-    }
-
-    /**
-     * Deletes entities specified by the keys within the provided transaction.
-     * 
-     * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param tx
      *            the transaction
      * @param keys
      *            the keys
      * @throws NullPointerException
      *             if the ds parameter is null or if the keys parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
      */
-    public static void delete(DatastoreService ds, Transaction tx,
-            Iterable<Key> keys) throws NullPointerException {
-        if (ds == null) {
-            throw new NullPointerException("The ds parameter must not be null.");
-        }
-        if (keys == null) {
-            throw new NullPointerException(
-                "The keys parameter must not be null.");
-        }
-        if (tx != null && !tx.isActive()) {
-            throw new IllegalStateException("The transaction must be active.");
-        }
-        ds.delete(tx, keys);
+    public static void delete(AsyncDatastoreService ds, Transaction tx,
+            Iterable<Key> keys) throws NullPointerException,
+            IllegalStateException {
+        FutureUtil.getQuietly(deleteAsync(ds, tx, keys));
     }
 
     /**
@@ -1002,12 +589,16 @@ public final class DatastoreUtil {
      *            the transaction
      * @param keys
      *            the keys
-     * @return a future void
+     * @return a {@link Void} represented as {@link Future}
      * @throws NullPointerException
      *             if the ds parameter is null or if the keys parameter is null
+     * @throws IllegalStateException
+     *             if the transaction is not null and the transaction is not
+     *             active
      */
     public static Future<Void> deleteAsync(AsyncDatastoreService ds,
-            Transaction tx, Iterable<Key> keys) throws NullPointerException {
+            Transaction tx, Iterable<Key> keys) throws NullPointerException,
+            IllegalStateException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
         }
@@ -1337,14 +928,14 @@ public final class DatastoreUtil {
      * Converts the model to an entity.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param model
      *            the model
      * @return an entity
      * @throws NullPointerException
      *             if the ds parameter is null or if the model parameter is null
      */
-    public static Entity modelToEntity(DatastoreService ds, Object model)
+    public static Entity modelToEntity(AsyncDatastoreService ds, Object model)
             throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
@@ -1369,7 +960,7 @@ public final class DatastoreUtil {
      * Converts the models to entities.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param models
      *            the models
      * @return entities
@@ -1377,7 +968,7 @@ public final class DatastoreUtil {
      *             if the ds parameter is null or if the models parameter is
      *             null
      */
-    public static List<Entity> modelsToEntities(DatastoreService ds,
+    public static List<Entity> modelsToEntities(AsyncDatastoreService ds,
             Iterable<?> models) throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");

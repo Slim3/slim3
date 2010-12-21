@@ -23,8 +23,8 @@ import org.slim3.util.AppEngineUtil;
 import org.slim3.util.ByteUtil;
 import org.slim3.util.ThrowableUtil;
 
+import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.Cursor;
-import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
@@ -53,9 +53,9 @@ import com.google.appengine.repackaged.com.google.common.util.Base64DecoderExcep
 public abstract class AbstractQuery<SUB> {
 
     /**
-     * The datastore service.
+     * The asynchronous datastore service.
      */
-    protected DatastoreService ds;
+    protected AsyncDatastoreService ds;
 
     /**
      * The datastore query.
@@ -81,12 +81,12 @@ public abstract class AbstractQuery<SUB> {
      * Constructor.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @throws NullPointerException
      *             if the ds parameter is null
      * 
      */
-    public AbstractQuery(DatastoreService ds) throws NullPointerException {
+    public AbstractQuery(AsyncDatastoreService ds) throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
         }
@@ -98,14 +98,14 @@ public abstract class AbstractQuery<SUB> {
      * Constructor.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param kind
      *            the kind
      * @throws NullPointerException
      *             if the ds parameter is null or if the kind parameter is null
      * 
      */
-    public AbstractQuery(DatastoreService ds, String kind)
+    public AbstractQuery(AsyncDatastoreService ds, String kind)
             throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
@@ -118,7 +118,7 @@ public abstract class AbstractQuery<SUB> {
      * Constructor.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param kind
      *            the kind
      * @param ancestorKey
@@ -128,7 +128,7 @@ public abstract class AbstractQuery<SUB> {
      *             or if the ancestorKey parameter is null
      * 
      */
-    public AbstractQuery(DatastoreService ds, String kind, Key ancestorKey)
+    public AbstractQuery(AsyncDatastoreService ds, String kind, Key ancestorKey)
             throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
@@ -141,14 +141,14 @@ public abstract class AbstractQuery<SUB> {
      * Constructor.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param ancestorKey
      *            the ancestor key
      * @throws NullPointerException
      *             if the ds parameter is null or if the ancestorKey parameter
      *             is null
      */
-    public AbstractQuery(DatastoreService ds, Key ancestorKey)
+    public AbstractQuery(AsyncDatastoreService ds, Key ancestorKey)
             throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");

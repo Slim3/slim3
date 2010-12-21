@@ -21,8 +21,8 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.slim3.tester.AppEngineTestCase;
 
+import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.Cursor;
-import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.QueryResultList;
@@ -33,14 +33,15 @@ import com.google.appengine.api.datastore.QueryResultList;
  */
 public class S3QueryResultListTest extends AppEngineTestCase {
 
-    private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+    private AsyncDatastoreService ds =
+        DatastoreServiceFactory.getAsyncDatastoreService();
 
     /**
      * @throws Exception
      */
     @Test
     public void constructor() throws Exception {
-        ds.put(new Entity("Hoge"));
+        DatastoreUtil.put(ds, null, new Entity("Hoge"));
         EntityQuery q = new EntityQuery(ds, "Hoge");
         QueryResultList<Entity> qrList = q.asQueryResultList();
         Cursor cursor = qrList.getCursor();

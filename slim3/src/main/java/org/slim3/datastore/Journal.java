@@ -16,12 +16,11 @@
 package org.slim3.datastore;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.Blob;
-import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityTranslator;
 import com.google.appengine.api.datastore.Key;
@@ -69,14 +68,14 @@ public class Journal {
      * Applies the journals.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param globalTransactionKey
      *            the global transaction key
      * @throws NullPointerException
      *             if the globalTransactionKey parameter is null
      * 
      */
-    public static void apply(DatastoreService ds, Key globalTransactionKey)
+    public static void apply(AsyncDatastoreService ds, Key globalTransactionKey)
             throws NullPointerException {
         if (globalTransactionKey == null) {
             throw new NullPointerException(
@@ -94,7 +93,7 @@ public class Journal {
      * Applies the journals.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param entities
      *            the entities
      * @throws NullPointerException
@@ -103,7 +102,7 @@ public class Journal {
      * 
      */
     @SuppressWarnings("unchecked")
-    public static void apply(DatastoreService ds, List<Entity> entities)
+    public static void apply(AsyncDatastoreService ds, List<Entity> entities)
             throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
@@ -132,7 +131,7 @@ public class Journal {
             if (deleteList != null) {
                 DatastoreUtil.delete(ds, null, deleteList);
             }
-            DatastoreUtil.delete(ds, null, Arrays.asList(entity.getKey()));
+            DatastoreUtil.delete(ds, null, entity.getKey());
         }
     }
 
@@ -140,7 +139,7 @@ public class Journal {
      * Applies the journals.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param tx
      *            the transaction
      * @param journals
@@ -150,7 +149,7 @@ public class Journal {
      *             if the journals parameter is null
      * 
      */
-    public static void apply(DatastoreService ds, Transaction tx,
+    public static void apply(AsyncDatastoreService ds, Transaction tx,
             Map<Key, Entity> journals) throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
@@ -180,7 +179,7 @@ public class Journal {
      * Puts the journals to the datastore.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param globalTransactionKey
      *            the global transaction key
      * @param journalMap
@@ -191,7 +190,7 @@ public class Journal {
      *             parameter is null or if the journalMap parameter is null
      * 
      */
-    public static List<Entity> put(DatastoreService ds,
+    public static List<Entity> put(AsyncDatastoreService ds,
             Key globalTransactionKey, Map<Key, Entity> journalMap)
             throws NullPointerException {
         if (ds == null) {
@@ -246,15 +245,15 @@ public class Journal {
      * Deletes entities specified by the global transaction key in transaction.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param globalTransactionKey
      *            the global transaction key
      * @throws NullPointerException
      *             if the ds parameter is null or if the globalTransactionKey
      *             parameter is null
      */
-    public static void deleteInTx(DatastoreService ds, Key globalTransactionKey)
-            throws NullPointerException {
+    public static void deleteInTx(AsyncDatastoreService ds,
+            Key globalTransactionKey) throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
         }
@@ -272,7 +271,7 @@ public class Journal {
      * Returns the keys specified by the global transaction key.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param globalTransactionKey
      *            the global transaction key
      * @return a list of keys
@@ -281,7 +280,7 @@ public class Journal {
      *             parameter is null
      * 
      */
-    protected static List<Key> getKeys(DatastoreService ds,
+    protected static List<Key> getKeys(AsyncDatastoreService ds,
             Key globalTransactionKey) throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
@@ -300,7 +299,7 @@ public class Journal {
      * Creates an entity.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param globalTransactionKey
      *            the global transaction key
      * @return an entity
@@ -308,7 +307,7 @@ public class Journal {
      *             if the ds parameter is null or if the globalTransactionKey
      *             parameter is null
      */
-    protected static Entity createEntity(DatastoreService ds,
+    protected static Entity createEntity(AsyncDatastoreService ds,
             Key globalTransactionKey) throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
@@ -328,7 +327,7 @@ public class Journal {
      * Deletes an entity specified by the key in transaction.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param globalTransactionKey
      *            the global transaction key
      * @param key
@@ -338,7 +337,7 @@ public class Journal {
      *             if the ds parameter is null or if the globalTransactionKey
      *             parameter is null or if the key parameter is null
      */
-    protected static void deleteInTx(DatastoreService ds,
+    protected static void deleteInTx(AsyncDatastoreService ds,
             Key globalTransactionKey, Key key) throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
@@ -351,17 +350,15 @@ public class Journal {
             throw new NullPointerException(
                 "The key parameter must not be null.");
         }
-        Transaction tx = ds.beginTransaction();
+        Transaction tx = DatastoreUtil.beginTransaction(ds);
         try {
-            Entity entity =
-                DatastoreUtil.getAsMap(ds, tx, Arrays.asList(key)).get(key);
+            Entity entity = DatastoreUtil.getOrNull(ds, tx, key);
             if (entity != null
                 && globalTransactionKey.equals(entity
                     .getProperty(GLOBAL_TRANSACTION_KEY_PROPERTY))) {
-                DatastoreUtil.delete(ds, tx, Arrays.asList(key));
+                DatastoreUtil.delete(ds, tx, key);
                 tx.commit();
             }
-            return;
         } finally {
             if (tx.isActive()) {
                 tx.rollback();

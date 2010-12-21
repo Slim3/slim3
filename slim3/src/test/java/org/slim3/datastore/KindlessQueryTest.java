@@ -21,7 +21,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.slim3.tester.AppEngineTestCase;
 
-import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -32,7 +32,8 @@ import com.google.appengine.api.datastore.KeyFactory;
  */
 public class KindlessQueryTest extends AppEngineTestCase {
 
-    private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+    private AsyncDatastoreService ds =
+        DatastoreServiceFactory.getAsyncDatastoreService();
 
     /**
      * @throws Exception
@@ -41,7 +42,10 @@ public class KindlessQueryTest extends AppEngineTestCase {
     public void constructorUsingTxAndAncestorKey() throws Exception {
         Key ancestorKey = KeyFactory.createKey("Ancestor", 1);
         KindlessQuery query =
-            new KindlessQuery(ds, ds.beginTransaction(), ancestorKey);
+            new KindlessQuery(
+                ds,
+                DatastoreUtil.beginTransaction(ds),
+                ancestorKey);
         assertThat(query.query.getAncestor(), is(ancestorKey));
         assertThat(query.tx, is(notNullValue()));
     }

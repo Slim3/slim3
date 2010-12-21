@@ -23,7 +23,7 @@ import java.util.Iterator;
 import org.junit.Test;
 import org.slim3.tester.AppEngineTestCase;
 
-import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
@@ -36,7 +36,8 @@ import com.google.appengine.api.datastore.Query.SortDirection;
  */
 public class EntityQueryTest extends AppEngineTestCase {
 
-    private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+    private AsyncDatastoreService ds =
+        DatastoreServiceFactory.getAsyncDatastoreService();
 
     /**
      * @throws Exception
@@ -45,7 +46,11 @@ public class EntityQueryTest extends AppEngineTestCase {
     public void constructorUsingTxAndKindAndAncestorKey() throws Exception {
         Key ancestorKey = KeyFactory.createKey("Ancestor", 1);
         EntityQuery query =
-            new EntityQuery(ds, ds.beginTransaction(), "Hoge", ancestorKey);
+            new EntityQuery(
+                ds,
+                DatastoreUtil.beginTransaction(ds),
+                "Hoge",
+                ancestorKey);
         assertThat(query.query.getKind(), is("Hoge"));
         assertThat(query.query.getAncestor(), is(ancestorKey));
         assertThat(query.tx, is(notNullValue()));

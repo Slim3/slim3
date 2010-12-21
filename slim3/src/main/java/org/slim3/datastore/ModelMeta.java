@@ -25,8 +25,8 @@ import org.slim3.util.ByteUtil;
 import org.slim3.util.Cipher;
 import org.slim3.util.CipherFactory;
 
+import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.Blob;
-import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.ShortBlob;
@@ -277,14 +277,14 @@ public abstract class ModelMeta<M> {
      * Assigns a key to {@link ModelRef} if necessary.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param model
      *            the model
      * @throws NullPointerException
      *             if the ds parameter is null or if the model parameter is null
      */
-    protected abstract void assignKeyToModelRefIfNecessary(DatastoreService ds,
-            Object model) throws NullPointerException;
+    protected abstract void assignKeyToModelRefIfNecessary(
+            AsyncDatastoreService ds, Object model) throws NullPointerException;
 
     /**
      * Validates the kind of the key.

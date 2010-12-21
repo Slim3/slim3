@@ -23,7 +23,7 @@ import java.util.Arrays;
 import org.junit.Test;
 import org.slim3.datastore.model.Hoge;
 
-import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 
@@ -78,7 +78,7 @@ public class CoreUnindexedAttributeMetaTest {
         }
 
         @Override
-        protected void assignKeyToModelRefIfNecessary(DatastoreService ds,
+        protected void assignKeyToModelRefIfNecessary(AsyncDatastoreService ds,
                 Object model) throws NullPointerException {
         }
 

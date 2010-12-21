@@ -25,12 +25,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.slim3.util.FutureUtil;
 import org.slim3.util.ThrowableUtil;
 
-import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -121,9 +123,9 @@ public class GlobalTransaction {
     protected boolean valid = true;
 
     /**
-     * The datastore service
+     * The asynchronous datastore service
      */
-    protected DatastoreService ds;
+    protected AsyncDatastoreService ds;
 
     /**
      * Returns the current transaction stack.
@@ -176,7 +178,7 @@ public class GlobalTransaction {
      * entity is found.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param tx
      *            the transaction
      * @param key
@@ -187,10 +189,11 @@ public class GlobalTransaction {
      *             if the ds parameter is null or if the tx parameter is null or
      *             if the key parameter is null
      */
-    protected static GlobalTransaction getOrNull(DatastoreService ds,
+    protected static GlobalTransaction getOrNull(AsyncDatastoreService ds,
             Transaction tx, Key key) throws NullPointerException {
-        Entity entity =
-            DatastoreUtil.getAsMap(ds, tx, Arrays.asList(key)).get(key);
+        Future<Map<Key, Entity>> future =
+            DatastoreUtil.getAsMapAsync(ds, tx, Arrays.asList(key));
+        Entity entity = FutureUtil.getQuietly(future).get(key);
         if (entity == null) {
             return null;
         }
@@ -201,7 +204,7 @@ public class GlobalTransaction {
      * Converts the entity to a global transaction.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param entity
      *            the entity
      * 
@@ -210,8 +213,9 @@ public class GlobalTransaction {
      *             if the ds parameter is null or if the entity parameter is
      *             null or if the valid property is null
      */
-    protected static GlobalTransaction toGlobalTransaction(DatastoreService ds,
-            Entity entity) throws NullPointerException {
+    protected static GlobalTransaction toGlobalTransaction(
+            AsyncDatastoreService ds, Entity entity)
+            throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
         }
@@ -227,7 +231,7 @@ public class GlobalTransaction {
      * Puts the global transaction to datastore.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param tx
      *            the transaction
      * @param globalTransaction
@@ -236,7 +240,7 @@ public class GlobalTransaction {
      *             if the ds parameter is null or if the tx parameter is null or
      *             if the globalTransaction parameter is null
      */
-    protected static void put(DatastoreService ds, Transaction tx,
+    protected static void put(AsyncDatastoreService ds, Transaction tx,
             GlobalTransaction globalTransaction) throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
@@ -248,21 +252,22 @@ public class GlobalTransaction {
             throw new NullPointerException(
                 "The globalTransaction parameter must not be null.");
         }
-        DatastoreUtil.put(ds, tx, globalTransaction.toEntity());
+        FutureUtil.getQuietly(DatastoreUtil.putAsync(ds, tx, Arrays
+            .asList(globalTransaction.toEntity())));
     }
 
     /**
      * Rolls forward the transaction.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param globalTransactionKey
      *            the global transaction key
      * @throws NullPointerException
      *             if the ds parameter is null or if the globalTransactionKey
      *             parameter is null
      */
-    protected static void rollForward(DatastoreService ds,
+    protected static void rollForward(AsyncDatastoreService ds,
             Key globalTransactionKey) throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
@@ -272,28 +277,26 @@ public class GlobalTransaction {
                 .warning("The globalTransactionKey parameter must not be null.");
             return;
         }
-        if (DatastoreUtil
-            .getAsMap(ds, Arrays.asList(globalTransactionKey))
-            .size() == 0) {
+        if (DatastoreUtil.getOrNull(ds, null, globalTransactionKey) == null) {
             return;
         }
         Journal.apply(ds, globalTransactionKey);
         Lock.deleteWithoutTx(ds, globalTransactionKey);
-        DatastoreUtil.delete(ds, null, Arrays.asList(globalTransactionKey));
+        DatastoreUtil.delete(ds, null, globalTransactionKey);
     }
 
     /**
      * Rolls back the transaction.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param globalTransactionKey
      *            the global transaction key
      * @throws NullPointerException
      *             if the globalTransactionKey parameter is null
      */
-    protected static void rollback(DatastoreService ds, Key globalTransactionKey)
-            throws NullPointerException {
+    protected static void rollback(AsyncDatastoreService ds,
+            Key globalTransactionKey) throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
         }
@@ -367,11 +370,12 @@ public class GlobalTransaction {
      * Constructor.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @throws NullPointerException
      *             if the ds parameter is null
      */
-    public GlobalTransaction(DatastoreService ds) throws NullPointerException {
+    public GlobalTransaction(AsyncDatastoreService ds)
+            throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
         }
@@ -382,7 +386,7 @@ public class GlobalTransaction {
      * Constructor.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param globalTransactionKey
      *            the global transaction key
      * @param valid
@@ -391,8 +395,9 @@ public class GlobalTransaction {
      *             if the ds parameter is null or if the globalTransactionKey
      *             parameter is null or if the valid parameter is null
      */
-    protected GlobalTransaction(DatastoreService ds, Key globalTransactionKey,
-            Boolean valid) throws NullPointerException {
+    protected GlobalTransaction(AsyncDatastoreService ds,
+            Key globalTransactionKey, Boolean valid)
+            throws NullPointerException {
         this(ds);
         if (globalTransactionKey == null) {
             throw new NullPointerException(
@@ -459,7 +464,7 @@ public class GlobalTransaction {
      */
     protected void begin() {
         getCurrentTransactionStack().add(this);
-        localTransaction = ds.beginTransaction();
+        localTransaction = DatastoreUtil.beginTransaction(ds);
         timestamp = System.currentTimeMillis();
         lockMap = new HashMap<Key, Lock>();
         globalJournalMap = new HashMap<Key, Entity>();
@@ -638,10 +643,7 @@ public class GlobalTransaction {
             return verifyLockAndGetAsMap(rootKey, Arrays.asList(key)).get(key);
         }
         if (rootKey.equals(localTransactionRootKey)) {
-            return DatastoreUtil.getAsMap(
-                ds,
-                localTransaction,
-                Arrays.asList(key)).get(key);
+            return DatastoreUtil.getOrNull(ds, localTransaction, key);
         }
         return lockAndGetAsMap(rootKey, Arrays.asList(key)).get(key);
     }

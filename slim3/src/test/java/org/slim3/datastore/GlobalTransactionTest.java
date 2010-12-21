@@ -30,7 +30,7 @@ import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.AppEngineTestCase;
 import org.slim3.util.CipherFactory;
 
-import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
@@ -44,7 +44,8 @@ import com.google.appengine.api.taskqueue.TaskQueuePb.TaskQueueAddRequest;
  */
 public class GlobalTransactionTest extends AppEngineTestCase {
 
-    private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+    private AsyncDatastoreService ds =
+        DatastoreServiceFactory.getAsyncDatastoreService();
 
     private GlobalTransaction gtx;
 
@@ -78,7 +79,7 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         GlobalTransaction gtx2 =
             GlobalTransaction.getOrNull(
                 ds,
-                ds.beginTransaction(),
+                DatastoreUtil.beginTransaction(ds),
                 globalTransactionKey);
         assertThat(gtx2.globalTransactionKey, is(globalTransactionKey));
         assertThat(gtx2.valid, is(valid));
@@ -105,7 +106,7 @@ public class GlobalTransactionTest extends AppEngineTestCase {
      */
     @Test
     public void putGlobalTransaction() throws Exception {
-        Transaction tx = ds.beginTransaction();
+        Transaction tx = DatastoreUtil.beginTransaction(ds);
         Key globalTransactionKey =
             KeyFactory.createKey(GlobalTransaction.KIND, 1);
         Boolean valid = false;
@@ -113,7 +114,7 @@ public class GlobalTransactionTest extends AppEngineTestCase {
             new GlobalTransaction(ds, globalTransactionKey, valid);
         GlobalTransaction.put(ds, tx, gtx2);
         tx.commit();
-        Entity entity = DatastoreUtil.get(ds, globalTransactionKey);
+        Entity entity = DatastoreUtil.get(ds, null, globalTransactionKey);
         assertThat(entity, is(notNullValue()));
         assertThat((Boolean) entity
             .getProperty(GlobalTransaction.VALID_PROPERTY), is(valid));
@@ -244,7 +245,9 @@ public class GlobalTransactionTest extends AppEngineTestCase {
             is(notNullValue()));
         Lock lock = gtx.lockMap.get(rootKey);
         assertThat(lock, is(notNullValue()));
-        assertThat(DatastoreUtil.get(ds, lock.key), is(notNullValue()));
+        assertThat(
+            DatastoreUtil.getOrNull(ds, null, lock.key),
+            is(notNullValue()));
     }
 
     /**
@@ -260,7 +263,9 @@ public class GlobalTransactionTest extends AppEngineTestCase {
             is(nullValue()));
         Lock lock = gtx.lockMap.get(rootKey);
         assertThat(lock, is(notNullValue()));
-        assertThat(DatastoreUtil.get(ds, lock.key), is(notNullValue()));
+        assertThat(
+            DatastoreUtil.getOrNull(ds, null, lock.key),
+            is(notNullValue()));
     }
 
     /**
@@ -284,9 +289,9 @@ public class GlobalTransactionTest extends AppEngineTestCase {
             assertThat(gtx.localTransaction.isActive(), is(false));
             assertThat(gtx.isActive(), is(false));
             assertThat(gtx.lockMap.size(), is(0));
-            assertThat(DatastoreUtil.getAsMap(
-                ds,
-                Arrays.asList(Lock.createKey(key))).size(), is(0));
+            assertThat(
+                DatastoreUtil.getOrNull(ds, null, Lock.createKey(key)),
+                is(nullValue()));
             Lock lock = Lock.getOrNull(ds, null, Lock.createKey(key2));
             assertThat(lock, is(notNullValue()));
             assertThat(
@@ -349,9 +354,9 @@ public class GlobalTransactionTest extends AppEngineTestCase {
             fail();
         } catch (ConcurrentModificationException e) {
             assertThat(gtx.lockMap.get(key), is(nullValue()));
-            assertThat(DatastoreUtil.getAsMap(
-                ds,
-                Arrays.asList(Lock.createKey(key))).size(), is(0));
+            assertThat(
+                DatastoreUtil.getOrNull(ds, null, Lock.createKey(key)),
+                is(nullValue()));
         }
     }
 
@@ -366,9 +371,9 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         gtx.unlock();
         assertThat(gtx.isActive(), is(false));
         assertThat(gtx.lockMap.get(key), is(nullValue()));
-        assertThat(DatastoreUtil.getAsMap(
-            ds,
-            Arrays.asList(Lock.createKey(key))).size(), is(0));
+        assertThat(
+            DatastoreUtil.getOrNull(ds, null, Lock.createKey(key)),
+            is(nullValue()));
     }
 
     /**
@@ -1060,11 +1065,11 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         Key rootKey = KeyFactory.createKey("Parent", 1);
         Key key = KeyFactory.createKey(rootKey, "Child", 1);
         Entity entity = new Entity(key);
-        Transaction tx = ds.beginTransaction();
+        Transaction tx = DatastoreUtil.beginTransaction(ds);
         assertThat(gtx.put(entity), is(entity.getKey()));
         tx.commit();
         assertThat(gtx.localTransactionRootKey, is(rootKey));
-        assertThat(DatastoreUtil.getAsMap(ds, Arrays.asList(key)).size(), is(0));
+        assertThat(DatastoreUtil.getOrNull(ds, null, key), is(nullValue()));
         assertThat(gtx.lockMap.size(), is(0));
         assertThat(gtx.globalJournalMap.size(), is(0));
         assertThat(gtx.localJournalMap.size(), is(1));
@@ -1080,7 +1085,7 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         Key key = KeyFactory.createKey(rootKey, "Child", 1);
         gtx.getAsMap(rootKey);
         Entity entity = new Entity(key);
-        Transaction tx = ds.beginTransaction();
+        Transaction tx = DatastoreUtil.beginTransaction(ds);
         assertThat(gtx.put(entity), is(entity.getKey()));
         tx.commit();
         assertThat(gtx.localTransactionRootKey, is(rootKey));
@@ -1102,7 +1107,7 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         Key key2 = KeyFactory.createKey(rootKey2, "Hoge", 2);
         gtx.getAsMap(key2);
         Entity entity = new Entity(key);
-        Transaction tx = ds.beginTransaction();
+        Transaction tx = DatastoreUtil.beginTransaction(ds);
         assertThat(gtx.put(entity), is(entity.getKey()));
         tx.commit();
         assertThat(gtx.localTransactionRootKey, is(rootKey2));
@@ -1173,7 +1178,7 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         Key rootKey = KeyFactory.createKey("Parent", 1);
         Key key = KeyFactory.createKey(rootKey, "Child", 1);
         DatastoreUtil.put(ds, null, new Entity(key));
-        Transaction tx = ds.beginTransaction();
+        Transaction tx = DatastoreUtil.beginTransaction(ds);
         gtx.delete(key);
         tx.commit();
         assertThat(tester.count("Child"), is(1));
@@ -1193,7 +1198,7 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         Key key = KeyFactory.createKey(rootKey, "Child", 1);
         DatastoreUtil.put(ds, null, new Entity(key));
         gtx.getAsMap(key);
-        Transaction tx = ds.beginTransaction();
+        Transaction tx = DatastoreUtil.beginTransaction(ds);
         gtx.delete(key);
         tx.commit();
         assertThat(tester.count("Child"), is(1));
@@ -1213,7 +1218,7 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         Key key = KeyFactory.createKey(rootKey, "Child", 1);
         Key key2 = KeyFactory.createKey("Hoge", 1);
         gtx.put(new Entity(key2));
-        Transaction tx = ds.beginTransaction();
+        Transaction tx = DatastoreUtil.beginTransaction(ds);
         gtx.delete(key);
         tx.commit();
         assertThat(gtx.lockMap.size(), is(1));
@@ -1275,7 +1280,7 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         Key key2 = KeyFactory.createKey(key, "Grandchild", 1);
         DatastoreUtil.put(ds, null, new Entity(key));
         DatastoreUtil.put(ds, null, new Entity(key2));
-        Transaction tx = ds.beginTransaction();
+        Transaction tx = DatastoreUtil.beginTransaction(ds);
         gtx.deleteAll(key);
         tx.commit();
         assertThat(tester.count("Child"), is(1));
@@ -1300,7 +1305,7 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         DatastoreUtil.put(ds, null, new Entity(key));
         DatastoreUtil.put(ds, null, new Entity(key2));
         gtx.getAsMap(rootKey);
-        Transaction tx = ds.beginTransaction();
+        Transaction tx = DatastoreUtil.beginTransaction(ds);
         gtx.deleteAll(key);
         tx.commit();
         assertThat(tester.count("Child"), is(1));
@@ -1375,7 +1380,7 @@ public class GlobalTransactionTest extends AppEngineTestCase {
         gtx.put(new Entity("Hoge"));
         Journal.apply(ds, gtx.localTransaction, gtx.localJournalMap);
         gtx.commitGlobalTransactionInternally();
-        Entity entity = DatastoreUtil.get(ds, gtx.globalTransactionKey);
+        Entity entity = DatastoreUtil.get(ds, null, gtx.globalTransactionKey);
         assertThat(entity, is(notNullValue()));
         assertThat((Boolean) entity
             .getProperty(GlobalTransaction.VALID_PROPERTY), is(true));

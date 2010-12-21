@@ -18,7 +18,6 @@ package org.slim3.datastore;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -27,8 +26,8 @@ import java.util.Map;
 import org.junit.Test;
 import org.slim3.tester.AppEngineTestCase;
 
+import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.Blob;
-import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
@@ -42,7 +41,8 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
  */
 public class JournalTest extends AppEngineTestCase {
 
-    private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+    private AsyncDatastoreService ds =
+        DatastoreServiceFactory.getAsyncDatastoreService();
 
     /**
      * @throws Exception
@@ -75,12 +75,8 @@ public class JournalTest extends AppEngineTestCase {
         journalMap.put(key2, null);
         Journal.put(ds, globalTransactionKey, journalMap);
         Journal.apply(ds, globalTransactionKey);
-        assertThat(
-            DatastoreUtil.getAsMap(ds, Arrays.asList(key)).get(key),
-            is(notNullValue()));
-        assertThat(
-            DatastoreUtil.getAsMap(ds, Arrays.asList(key2)).get(key2),
-            is(nullValue()));
+        assertThat(DatastoreUtil.getOrNull(ds, null, key), is(notNullValue()));
+        assertThat(DatastoreUtil.getOrNull(ds, null, key2), is(nullValue()));
         assertThat(tester.count(Journal.KIND), is(0));
     }
 
@@ -105,12 +101,8 @@ public class JournalTest extends AppEngineTestCase {
                 FilterOperator.EQUAL,
                 globalTransactionKey).asList();
         Journal.apply(ds, entities);
-        assertThat(
-            DatastoreUtil.getAsMap(ds, Arrays.asList(key)).get(key),
-            is(notNullValue()));
-        assertThat(
-            DatastoreUtil.getAsMap(ds, Arrays.asList(key2)).get(key2),
-            is(nullValue()));
+        assertThat(DatastoreUtil.getOrNull(ds, null, key), is(notNullValue()));
+        assertThat(DatastoreUtil.getOrNull(ds, null, key2), is(nullValue()));
         assertThat(tester.count(Journal.KIND), is(0));
     }
 
@@ -121,20 +113,16 @@ public class JournalTest extends AppEngineTestCase {
     public void applyWithLocalTransaction() throws Exception {
         Key key = KeyFactory.createKey("Hoge", 1);
         Key key2 = KeyFactory.createKey(key, "Hoge", 2);
-        DatastoreUtil.put(ds, new Entity(key2));
+        DatastoreUtil.put(ds, null, new Entity(key2));
         Map<Key, Entity> journalMap = new LinkedHashMap<Key, Entity>();
         Entity putEntity = new Entity(key);
         journalMap.put(key, putEntity);
         journalMap.put(key2, null);
-        Transaction tx = ds.beginTransaction();
+        Transaction tx = ds.beginTransaction().get();
         Journal.apply(ds, tx, journalMap);
         tx.commit();
-        assertThat(
-            DatastoreUtil.getAsMap(ds, Arrays.asList(key)).get(key),
-            is(notNullValue()));
-        assertThat(
-            DatastoreUtil.getAsMap(ds, Arrays.asList(key2)).get(key2),
-            is(nullValue()));
+        assertThat(DatastoreUtil.getOrNull(ds, null, key), is(notNullValue()));
+        assertThat(DatastoreUtil.getOrNull(ds, null, key2), is(nullValue()));
     }
 
     /**

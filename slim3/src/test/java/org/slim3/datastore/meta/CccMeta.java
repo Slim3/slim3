@@ -20,7 +20,7 @@ import java.util.Arrays;
 import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Ccc;
 
-import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.Key;
 
 /**
@@ -109,7 +109,7 @@ public final class CccMeta extends
     }
 
     @Override
-    protected void assignKeyToModelRefIfNecessary(DatastoreService ds,
+    protected void assignKeyToModelRefIfNecessary(AsyncDatastoreService ds,
             Object model) throws NullPointerException {
     }
 

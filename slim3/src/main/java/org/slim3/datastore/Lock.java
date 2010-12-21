@@ -16,13 +16,12 @@
 package org.slim3.datastore;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Map;
 
-import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -60,9 +59,9 @@ public class Lock {
     protected static final long TIMEOUT = 30 * 1000;
 
     /**
-     * The datastore service.
+     * The asynchronous datastore service.
      */
-    protected DatastoreService ds;
+    protected AsyncDatastoreService ds;
 
     /**
      * The key.
@@ -109,7 +108,7 @@ public class Lock {
      * Converts the entity to a {@link Lock}.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param entity
      *            an entity
      * 
@@ -119,7 +118,7 @@ public class Lock {
      * @throws IllegalArgumentException
      *             if the kind of the entity is not slim3.Lock
      */
-    public static Lock toLock(DatastoreService ds, Entity entity)
+    public static Lock toLock(AsyncDatastoreService ds, Entity entity)
             throws NullPointerException, IllegalArgumentException {
         if (entity == null) {
             throw new NullPointerException(
@@ -149,7 +148,7 @@ public class Lock {
      * found.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param tx
      *            the transaction
      * @param key
@@ -159,10 +158,9 @@ public class Lock {
      * @throws NullPointerException
      *             if the ds parameter is null
      */
-    public static Lock getOrNull(DatastoreService ds, Transaction tx, Key key)
-            throws NullPointerException {
-        Entity entity =
-            DatastoreUtil.getAsMap(ds, tx, Arrays.asList(key)).get(key);
+    public static Lock getOrNull(AsyncDatastoreService ds, Transaction tx,
+            Key key) throws NullPointerException {
+        Entity entity = DatastoreUtil.getOrNull(ds, tx, key);
         if (entity == null) {
             return null;
         }
@@ -173,7 +171,7 @@ public class Lock {
      * Returns keys specified by the global transaction key.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param globalTransactionKey
      *            the global transaction key
      * @return a list of keys
@@ -181,7 +179,7 @@ public class Lock {
      *             if the ds parameter is null or if the globalTransactionKey
      *             parameter is null
      */
-    public static List<Key> getKeys(DatastoreService ds,
+    public static List<Key> getKeys(AsyncDatastoreService ds,
             Key globalTransactionKey) throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
@@ -200,7 +198,7 @@ public class Lock {
      * Deletes entities specified by the global transaction key in transaction.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param globalTransactionKey
      *            the global transaction key
      * @throws NullPointerException
@@ -208,8 +206,8 @@ public class Lock {
      *             parameter is null
      * 
      */
-    public static void deleteInTx(DatastoreService ds, Key globalTransactionKey)
-            throws NullPointerException {
+    public static void deleteInTx(AsyncDatastoreService ds,
+            Key globalTransactionKey) throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
         }
@@ -226,7 +224,7 @@ public class Lock {
      * Deletes the locks from the datastore in transaction.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param globalTransactionKey
      *            the global transaction key
      * @param locks
@@ -236,7 +234,7 @@ public class Lock {
      *             parameter is null or if the locks parameter is null
      * 
      */
-    public static void deleteInTx(DatastoreService ds,
+    public static void deleteInTx(AsyncDatastoreService ds,
             Key globalTransactionKey, Iterable<Lock> locks)
             throws NullPointerException {
         if (ds == null) {
@@ -259,7 +257,7 @@ public class Lock {
      * Deletes an entity specified by the key in transaction.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param globalTransactionKey
      *            the global transaction key
      * @param key
@@ -269,7 +267,7 @@ public class Lock {
      *             if the ds parameter is null or if the globalTransactionKey
      *             parameter is null or if the key parameter is null
      */
-    protected static void deleteInTx(DatastoreService ds,
+    protected static void deleteInTx(AsyncDatastoreService ds,
             Key globalTransactionKey, Key key) throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
@@ -282,15 +280,14 @@ public class Lock {
             throw new NullPointerException(
                 "The key parameter must not be null.");
         }
-        Transaction tx = ds.beginTransaction();
+        Transaction tx = DatastoreUtil.beginTransaction(ds);
         try {
             Lock lock = getOrNull(ds, tx, key);
             if (lock != null
                 && globalTransactionKey.equals(lock.globalTransactionKey)) {
-                ds.delete(tx, key);
+                DatastoreUtil.delete(ds, tx, key);
                 tx.commit();
             }
-            return;
         } finally {
             if (tx.isActive()) {
                 tx.rollback();
@@ -303,14 +300,14 @@ public class Lock {
      * transaction.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param globalTransactionKey
      *            the global transaction key
      * @throws NullPointerException
      *             if the ds parameter is null or if the globalTransactionKey
      *             parameter is null
      */
-    public static void deleteWithoutTx(DatastoreService ds,
+    public static void deleteWithoutTx(AsyncDatastoreService ds,
             Key globalTransactionKey) throws NullPointerException {
         DatastoreUtil.delete(ds, null, getKeys(ds, globalTransactionKey));
     }
@@ -319,14 +316,14 @@ public class Lock {
      * Deletes the locks without transaction.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param locks
      *            the locks
      * @throws NullPointerException
      *             if the ds parameter is null or if the locks parameter is null
      */
-    public static void deleteWithoutTx(DatastoreService ds, Iterable<Lock> locks)
-            throws NullPointerException {
+    public static void deleteWithoutTx(AsyncDatastoreService ds,
+            Iterable<Lock> locks) throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
         }
@@ -349,7 +346,7 @@ public class Lock {
      * the keys as map.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param tx
      *            the transaction
      * @param rootKey
@@ -365,7 +362,7 @@ public class Lock {
      * @throws ConcurrentModificationException
      *             if locking the entity group failed
      */
-    public static Map<Key, Entity> verifyAndGetAsMap(DatastoreService ds,
+    public static Map<Key, Entity> verifyAndGetAsMap(AsyncDatastoreService ds,
             Transaction tx, Key rootKey, Collection<Key> keys)
             throws NullPointerException, ConcurrentModificationException {
         if (ds == null) {
@@ -449,7 +446,7 @@ public class Lock {
      * Constructor.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param globalTransactionKey
      *            the global transaction key
      * @param rootKey
@@ -462,8 +459,8 @@ public class Lock {
      *             null or if the timestamp parameter is null or if the
      *             globalTransactionKey parameter is null
      */
-    public Lock(DatastoreService ds, Key globalTransactionKey, Key rootKey,
-            Long timestamp) throws NullPointerException {
+    public Lock(AsyncDatastoreService ds, Key globalTransactionKey,
+            Key rootKey, Long timestamp) throws NullPointerException {
         if (ds == null) {
             throw new NullPointerException("The ds parameter must not be null.");
         }
@@ -507,7 +504,7 @@ public class Lock {
      *             if locking the entity failed
      */
     public void lock() throws ConcurrentModificationException {
-        Transaction tx = ds.beginTransaction();
+        Transaction tx = DatastoreUtil.beginTransaction(ds);
         try {
             Lock other = getOrNull(ds, tx, key);
             if (other != null) {
@@ -537,7 +534,7 @@ public class Lock {
     public Map<Key, Entity> lockAndGetAsMap(Collection<Key> targetKeys)
             throws NullPointerException, ConcurrentModificationException {
         Map<Key, Entity> map = null;
-        Transaction tx = ds.beginTransaction();
+        Transaction tx = DatastoreUtil.beginTransaction(ds);
         try {
             List<Key> keyList = new ArrayList<Key>(targetKeys.size() + 1);
             keyList.addAll(targetKeys);
@@ -580,7 +577,7 @@ public class Lock {
         if (timestamp <= other.getTimestamp() + TIMEOUT) {
             throw createConcurrentModificationException(rootKey);
         }
-        Transaction tx = ds.beginTransaction();
+        Transaction tx = DatastoreUtil.beginTransaction(ds);
         try {
             GlobalTransaction gtx =
                 GlobalTransaction.getOrNull(ds, tx, other.globalTransactionKey);

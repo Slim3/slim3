@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slim3.util.StringUtil;
 
-import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Key;
 
@@ -95,7 +95,8 @@ public class GlobalTransactionServlet extends HttpServlet {
     protected void process(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         String command = req.getParameter(COMMAND_NAME);
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        AsyncDatastoreService ds =
+            DatastoreServiceFactory.getAsyncDatastoreService();
         if (ROLLFORWARD_COMMAND.equalsIgnoreCase(command)) {
             String keyStr = req.getParameter(KEY_NAME);
             if (StringUtil.isEmpty(keyStr)) {

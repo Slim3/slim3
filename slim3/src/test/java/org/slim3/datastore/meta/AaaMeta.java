@@ -15,7 +15,7 @@
  */
 package org.slim3.datastore.meta;
 
-import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.Key;
 
 //@javax.annotation.Generated(value = { "slim3-gen", "null" }, date = "2009-11-09 15:30:15")
@@ -103,7 +103,7 @@ public final class AaaMeta extends
     }
 
     @Override
-    protected void assignKeyToModelRefIfNecessary(DatastoreService ds,
+    protected void assignKeyToModelRefIfNecessary(AsyncDatastoreService ds,
             Object model) throws NullPointerException {
     }
 

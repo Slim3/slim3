@@ -26,7 +26,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.slim3.tester.AppEngineTestCase;
 
-import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
@@ -39,7 +39,8 @@ import com.google.appengine.api.datastore.Transaction;
  */
 public class LockTest extends AppEngineTestCase {
 
-    private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+    private AsyncDatastoreService ds =
+        DatastoreServiceFactory.getAsyncDatastoreService();
 
     /**
      * @throws Exception
@@ -100,7 +101,7 @@ public class LockTest extends AppEngineTestCase {
             globalTransactionKey,
             rootKey,
             timestamp).toEntity());
-        Transaction tx = ds.beginTransaction();
+        Transaction tx = DatastoreUtil.beginTransaction(ds);
         Lock lock = Lock.getOrNull(ds, tx, key);
         assertThat(lock.globalTransactionKey, is(globalTransactionKey));
         assertThat(lock.timestamp, is(timestamp));
@@ -113,7 +114,7 @@ public class LockTest extends AppEngineTestCase {
     public void getOrNullWhenNotFound() throws Exception {
         Key rootKey = KeyFactory.createKey("Hoge", 1);
         Key key = Lock.createKey(rootKey);
-        Transaction tx = ds.beginTransaction();
+        Transaction tx = DatastoreUtil.beginTransaction(ds);
         assertThat(Lock.getOrNull(ds, tx, key), is(nullValue()));
     }
 
@@ -127,11 +128,9 @@ public class LockTest extends AppEngineTestCase {
         Key globalTransactionKey =
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
         Lock lock = new Lock(ds, globalTransactionKey, rootKey, timestamp);
-        DatastoreUtil.put(ds, lock.toEntity());
+        DatastoreUtil.put(ds, null, lock.toEntity());
         Lock.deleteInTx(ds, globalTransactionKey, lock.key);
-        assertThat(
-            DatastoreUtil.getAsMap(ds, Arrays.asList(lock.key)).size(),
-            is(0));
+        assertThat(DatastoreUtil.getOrNull(ds, null, lock.key), is(nullValue()));
     }
 
     /**
@@ -144,11 +143,11 @@ public class LockTest extends AppEngineTestCase {
         Key globalTransactionKey =
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
         Lock lock = new Lock(ds, globalTransactionKey, rootKey, timestamp);
-        DatastoreUtil.put(ds, lock.toEntity());
+        DatastoreUtil.put(ds, null, lock.toEntity());
         Lock.deleteInTx(ds, globalTransactionKey, Arrays.asList(lock));
-        assertThat(
-            DatastoreUtil.getAsMap(ds, Arrays.asList(lock.key)).size(),
-            is(0));
+        assertThat(DatastoreUtil
+            .getAsMap(ds, null, Arrays.asList(lock.key))
+            .size(), is(0));
     }
 
     /**
@@ -161,11 +160,9 @@ public class LockTest extends AppEngineTestCase {
         Key globalTransactionKey =
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
         Lock lock = new Lock(ds, globalTransactionKey, rootKey, timestamp);
-        DatastoreUtil.put(ds, lock.toEntity());
+        DatastoreUtil.put(ds, null, lock.toEntity());
         Lock.deleteInTx(ds, globalTransactionKey);
-        assertThat(
-            DatastoreUtil.getAsMap(ds, Arrays.asList(lock.key)).size(),
-            is(0));
+        assertThat(DatastoreUtil.getOrNull(ds, null, lock.key), is(nullValue()));
     }
 
     /**
@@ -178,11 +175,9 @@ public class LockTest extends AppEngineTestCase {
         Key globalTransactionKey =
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
         Lock lock = new Lock(ds, globalTransactionKey, rootKey, timestamp);
-        DatastoreUtil.put(ds, lock.toEntity());
+        DatastoreUtil.put(ds, null, lock.toEntity());
         Lock.deleteWithoutTx(ds, globalTransactionKey);
-        assertThat(
-            DatastoreUtil.getAsMap(ds, Arrays.asList(lock.key)).size(),
-            is(0));
+        assertThat(DatastoreUtil.getOrNull(ds, null, lock.key), is(nullValue()));
     }
 
     /**
@@ -195,7 +190,7 @@ public class LockTest extends AppEngineTestCase {
         Key globalTransactionKey =
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
         Lock lock = new Lock(ds, globalTransactionKey, rootKey, timestamp);
-        DatastoreUtil.put(ds, lock.toEntity());
+        DatastoreUtil.put(ds, null, lock.toEntity());
         Lock.deleteWithoutTx(ds, Arrays.asList(lock));
         assertThat(tester.count(Lock.KIND), is(0));
     }
@@ -210,7 +205,7 @@ public class LockTest extends AppEngineTestCase {
         Key globalTransactionKey =
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
         Lock lock = new Lock(ds, globalTransactionKey, rootKey, timestamp);
-        DatastoreUtil.put(ds, lock.toEntity());
+        DatastoreUtil.put(ds, null, lock.toEntity());
         List<Key> keys = Lock.getKeys(ds, globalTransactionKey);
         assertThat(keys.size(), is(1));
     }
@@ -222,8 +217,11 @@ public class LockTest extends AppEngineTestCase {
     public void verifyAndGetAsMap() throws Exception {
         Key key = DatastoreUtil.put(ds, null, new Entity("Hoge"));
         Map<Key, Entity> map =
-            Lock.verifyAndGetAsMap(ds, ds.beginTransaction(), key, Arrays
-                .asList(key));
+            Lock.verifyAndGetAsMap(
+                ds,
+                DatastoreUtil.beginTransaction(ds),
+                key,
+                Arrays.asList(key));
         assertThat(map.size(), is(1));
         assertThat(map.get(key), is(notNullValue()));
     }
@@ -235,8 +233,11 @@ public class LockTest extends AppEngineTestCase {
     public void verifyAndGetAsMapWhenNoEntityIsFound() throws Exception {
         Key key = KeyFactory.createKey("Hoge", 1);
         Map<Key, Entity> map =
-            Lock.verifyAndGetAsMap(ds, ds.beginTransaction(), key, Arrays
-                .asList(key));
+            Lock.verifyAndGetAsMap(
+                ds,
+                DatastoreUtil.beginTransaction(ds),
+                key,
+                Arrays.asList(key));
         assertThat(map.size(), is(0));
     }
 
@@ -247,8 +248,11 @@ public class LockTest extends AppEngineTestCase {
     public void verifyAndGetOrNullWhenLockError() throws Exception {
         Key key = KeyFactory.createKey("Hoge", 1);
         DatastoreUtil.put(ds, null, new Entity(Lock.createKey(key)));
-        Lock.verifyAndGetAsMap(ds, ds.beginTransaction(), key, Arrays
-            .asList(key));
+        Lock.verifyAndGetAsMap(
+            ds,
+            DatastoreUtil.beginTransaction(ds),
+            key,
+            Arrays.asList(key));
     }
 
     /**
@@ -301,7 +305,9 @@ public class LockTest extends AppEngineTestCase {
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
         Lock lock = new Lock(ds, globalTransactionKey, rootKey, timestamp);
         lock.lock();
-        assertThat(DatastoreUtil.get(ds, lock.getKey()), is(notNullValue()));
+        assertThat(
+            DatastoreUtil.getOrNull(ds, null, lock.getKey()),
+            is(notNullValue()));
     }
 
     /**
@@ -333,7 +339,7 @@ public class LockTest extends AppEngineTestCase {
     @Test
     public void lockAndGetAsMap() throws Exception {
         Key key = KeyFactory.createKey("Hoge", 1);
-        DatastoreUtil.put(ds, new Entity(key));
+        DatastoreUtil.put(ds, null, new Entity(key));
         long timestamp = System.currentTimeMillis();
         Key globalTransactionKey =
             DatastoreUtil.allocateId(ds, GlobalTransaction.KIND);
@@ -341,7 +347,9 @@ public class LockTest extends AppEngineTestCase {
         Map<Key, Entity> map = lock.lockAndGetAsMap(Arrays.asList(key));
         assertThat(map.size(), is(1));
         assertThat(map.get(key), is(notNullValue()));
-        assertThat(DatastoreUtil.get(ds, lock.getKey()), is(notNullValue()));
+        assertThat(
+            DatastoreUtil.getOrNull(ds, null, lock.getKey()),
+            is(notNullValue()));
     }
 
     /**
@@ -357,7 +365,9 @@ public class LockTest extends AppEngineTestCase {
         assertThat(
             lock.lockAndGetAsMap(Arrays.asList(key)).get(key),
             is(nullValue()));
-        assertThat(DatastoreUtil.get(ds, lock.getKey()), is(notNullValue()));
+        assertThat(
+            DatastoreUtil.getOrNull(ds, null, lock.getKey()),
+            is(notNullValue()));
     }
 
     /**
@@ -433,7 +443,7 @@ public class LockTest extends AppEngineTestCase {
                 - 1);
         Entity entity = new Entity(globalTransactionKey2);
         entity.setUnindexedProperty(GlobalTransaction.VALID_PROPERTY, true);
-        DatastoreUtil.put(ds, entity);
+        DatastoreUtil.put(ds, null, entity);
         lock.verify(other);
     }
 
@@ -455,7 +465,7 @@ public class LockTest extends AppEngineTestCase {
                 - 1);
         Entity entity = new Entity(globalTransactionKey2);
         entity.setUnindexedProperty(GlobalTransaction.VALID_PROPERTY, false);
-        DatastoreUtil.put(ds, entity);
+        DatastoreUtil.put(ds, null, entity);
         lock.verify(other);
         GlobalTransaction gtx =
             GlobalTransaction.toGlobalTransaction(ds, DatastoreUtil.get(

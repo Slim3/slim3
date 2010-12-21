@@ -18,7 +18,7 @@ package org.slim3.datastore;
 import java.util.Iterator;
 import java.util.List;
 
-import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.QueryResultIterator;
@@ -38,14 +38,14 @@ public class EntityQuery extends AbstractQuery<EntityQuery> {
      * Constructor.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param kind
      *            the kind
      * @throws NullPointerException
      *             if the ds parameter is null or if the kind parameter is null
      * 
      */
-    public EntityQuery(DatastoreService ds, String kind)
+    public EntityQuery(AsyncDatastoreService ds, String kind)
             throws NullPointerException {
         super(ds, kind);
     }
@@ -54,7 +54,7 @@ public class EntityQuery extends AbstractQuery<EntityQuery> {
      * Constructor.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param kind
      *            the kind
      * @param ancestorKey
@@ -64,7 +64,7 @@ public class EntityQuery extends AbstractQuery<EntityQuery> {
      *             or if the ancestorKey parameter is null
      * 
      */
-    public EntityQuery(DatastoreService ds, String kind, Key ancestorKey)
+    public EntityQuery(AsyncDatastoreService ds, String kind, Key ancestorKey)
             throws NullPointerException {
         super(ds, kind, ancestorKey);
     }
@@ -73,7 +73,7 @@ public class EntityQuery extends AbstractQuery<EntityQuery> {
      * Constructor.
      * 
      * @param ds
-     *            the datastore service
+     *            the asynchronous datastore service
      * @param tx
      *            the transaction
      * @param kind
@@ -85,7 +85,7 @@ public class EntityQuery extends AbstractQuery<EntityQuery> {
      *             if the ancestorKey parameter is null
      * 
      */
-    public EntityQuery(DatastoreService ds, Transaction tx, String kind,
+    public EntityQuery(AsyncDatastoreService ds, Transaction tx, String kind,
             Key ancestorKey) throws NullPointerException {
         super(ds, kind, ancestorKey);
         setTx(tx);

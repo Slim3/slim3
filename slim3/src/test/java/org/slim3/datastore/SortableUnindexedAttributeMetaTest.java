@@ -21,7 +21,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.slim3.datastore.model.Hoge;
 
-import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 
@@ -76,7 +76,7 @@ public class SortableUnindexedAttributeMetaTest {
         }
 
         @Override
-        protected void assignKeyToModelRefIfNecessary(DatastoreService ds,
+        protected void assignKeyToModelRefIfNecessary(AsyncDatastoreService ds,
                 Object model) throws NullPointerException {
         }
 

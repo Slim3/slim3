@@ -30,7 +30,7 @@ import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.AppEngineTestCase;
 import org.slim3.util.CipherFactory;
 
-import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 
@@ -40,7 +40,8 @@ import com.google.appengine.api.datastore.Entity;
  */
 public class ModelIteratorTest extends AppEngineTestCase {
 
-    private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+    private AsyncDatastoreService ds =
+        DatastoreServiceFactory.getAsyncDatastoreService();
 
     private HogeMeta meta = new HogeMeta();
 
@@ -65,7 +66,7 @@ public class ModelIteratorTest extends AppEngineTestCase {
      */
     @Test
     public void hasNext() throws Exception {
-        DatastoreUtil.put(ds, new Entity("Hoge"));
+        DatastoreUtil.put(ds, null, new Entity("Hoge"));
         EntityQuery query = new EntityQuery(ds, "Hoge");
         Iterator<Entity> iterator = query.asIterator();
         ModelIterator<Hoge> modelIterator =
@@ -80,7 +81,7 @@ public class ModelIteratorTest extends AppEngineTestCase {
      */
     @Test
     public void next() throws Exception {
-        DatastoreUtil.put(ds, new Entity("Hoge"));
+        DatastoreUtil.put(ds, null, new Entity("Hoge"));
         EntityQuery query = new EntityQuery(ds, "Hoge");
         Iterator<Entity> iterator = query.asIterator();
         ModelIterator<Hoge> modelIterator =
@@ -94,7 +95,7 @@ public class ModelIteratorTest extends AppEngineTestCase {
      */
     @Test(expected = UnsupportedOperationException.class)
     public void remove() throws Exception {
-        DatastoreUtil.put(ds, new Entity("Hoge"));
+        DatastoreUtil.put(ds, null, new Entity("Hoge"));
         EntityQuery query = new EntityQuery(ds, "Hoge");
         Iterator<Entity> iterator = query.asIterator();
         ModelIterator<Hoge> modelIterator =
@@ -107,8 +108,8 @@ public class ModelIteratorTest extends AppEngineTestCase {
      */
     @Test
     public void nextForPolyModel() throws Exception {
-        DatastoreUtil.put(ds, aaaMeta.modelToEntity(new Aaa()));
-        DatastoreUtil.put(ds, bbbMeta.modelToEntity(new Bbb()));
+        DatastoreUtil.put(ds, null, aaaMeta.modelToEntity(new Aaa()));
+        DatastoreUtil.put(ds, null, bbbMeta.modelToEntity(new Bbb()));
 
         EntityQuery query = new EntityQuery(ds, "Aaa");
         Iterator<Entity> entityIterator = query.asIterator();

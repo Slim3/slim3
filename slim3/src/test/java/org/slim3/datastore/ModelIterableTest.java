@@ -25,7 +25,7 @@ import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.AppEngineTestCase;
 
-import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 
@@ -35,7 +35,8 @@ import com.google.appengine.api.datastore.Entity;
  */
 public class ModelIterableTest extends AppEngineTestCase {
 
-    private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+    private AsyncDatastoreService ds =
+        DatastoreServiceFactory.getAsyncDatastoreService();
 
     private HogeMeta meta = new HogeMeta();
 
@@ -54,7 +55,7 @@ public class ModelIterableTest extends AppEngineTestCase {
      */
     @Test
     public void iterator() throws Exception {
-        DatastoreUtil.put(ds, new Entity("Hoge"));
+        DatastoreUtil.put(ds, null, new Entity("Hoge"));
         EntityQuery query = new EntityQuery(ds, "Hoge");
         Iterator<Entity> iterator = query.asIterator();
         ModelIterator<Hoge> modelIterator =

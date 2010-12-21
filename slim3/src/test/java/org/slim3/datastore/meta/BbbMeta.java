@@ -21,7 +21,7 @@ import org.slim3.datastore.ModelRef;
 import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Hoge;
 
-import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.Key;
 
 /**
@@ -131,7 +131,7 @@ public final class BbbMeta extends
     }
 
     @Override
-    protected void assignKeyToModelRefIfNecessary(DatastoreService ds,
+    protected void assignKeyToModelRefIfNecessary(AsyncDatastoreService ds,
             Object model) throws NullPointerException {
 
         org.slim3.datastore.model.Bbb m = (org.slim3.datastore.model.Bbb) model;

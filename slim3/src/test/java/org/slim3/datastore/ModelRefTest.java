@@ -23,7 +23,7 @@ import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.AppEngineTestCase;
 import org.slim3.util.CipherFactory;
 
-import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -36,7 +36,8 @@ public class ModelRefTest extends AppEngineTestCase {
 
     private ModelRef<Hoge> ref = new ModelRef<Hoge>(Hoge.class);
 
-    private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+    private AsyncDatastoreService ds =
+        DatastoreServiceFactory.getAsyncDatastoreService();
 
     @Override
     public void setUp() throws Exception {
