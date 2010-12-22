@@ -264,11 +264,11 @@ public final class ClassConstants {
     public static final String AttributeListener =
         "org.slim3.datastore.AttributeListener";
 
+    /** {@code org.slim3.datastore.json.JsonDecoder} */
+    public static final String JsonCoder = "org.slim3.datastore.json.JsonCoder";
+
     /** {@code org.slim3.datastore.json.JsonWriter} */
     public static final String JsonWriter = "org.slim3.datastore.json.JsonWriter";
-
-    /** {@code org.slim3.datastore.json.JsonEncoder} */
-    public static final String JsonEncoder = "org.slim3.datastore.json.JsonEncoder";
 
     /** {@code org.slim3.datastore.json.JsonReader} */
     public static final String JsonReader = "org.slim3.datastore.json.JsonReader";
@@ -284,7 +284,4 @@ public final class ClassConstants {
     
     /** {@code org.slim3.datastore.json.JsonValueReader} */
     public static final String JsonValueReader = "org.slim3.datastore.json.JsonValueReader";
-
-    /** {@code org.slim3.datastore.json.JsonDecoder} */
-    public static final String JsonDecoder = "org.slim3.datastore.json.JsonDecoder";
 }

@@ -36,8 +36,7 @@ import static org.slim3.gen.ClassConstants.HashSet;
 import static org.slim3.gen.ClassConstants.IMHandle;
 import static org.slim3.gen.ClassConstants.Integer;
 import static org.slim3.gen.ClassConstants.JsonArrayReader;
-import static org.slim3.gen.ClassConstants.JsonDecoder;
-import static org.slim3.gen.ClassConstants.JsonEncoder;
+import static org.slim3.gen.ClassConstants.JsonCoder;
 import static org.slim3.gen.ClassConstants.JsonReader;
 import static org.slim3.gen.ClassConstants.JsonRootReader;
 import static org.slim3.gen.ClassConstants.JsonValueReader;
@@ -1969,18 +1968,18 @@ public class ModelMetaGenerator implements Generator {
                     modelMetaDesc.getModelClassName());
                 printer.println("StringBuilder b = new StringBuilder();");
                 printer.println("writer.beginObject();");
-                printer.println("%s encoder = null;", JsonEncoder);
+                printer.println("%s encoder = null;", JsonCoder);
                 for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
                     valueExp = "m." + attr.getReadMethodName() + "()";
                     indent = 0;
-                    JsonAnnotation a = attr.getJson();
-                    if(a.isIgnore()) continue;
+                    JsonAnnotation ja = attr.getJson();
+                    if(ja.isIgnore()) continue;
                     DataType dataType = attr.getDataType();
                     if(!isSupportedForJson(dataType)){
                         printer.println("// %s is not supported.", dataType.getClassName());
                         continue;
                     }
-                    if(!(dataType instanceof CorePrimitiveType) && a.isIgnoreNull()){
+                    if(!(dataType instanceof CorePrimitiveType) && ja.isIgnoreNull()){
                         printer.print("if(%s != null", valueExp);
                         if(dataType instanceof TextType){
                             printer.printWithoutIndent(" && %s.getValue() != null",
@@ -1996,7 +1995,7 @@ public class ModelMetaGenerator implements Generator {
                         printer.indent();
                         indent++;
                     }
-                    String name = a.getAlias();
+                    String name = ja.getAlias();
                     if(name.length() == 0){
                         name = attr.getAttributeName();
                     }
@@ -2004,7 +2003,7 @@ public class ModelMetaGenerator implements Generator {
                         "writer.writePropertyName(\"%1$s\");",
                         name
                         );
-                    printer.println("encoder = new %s();", a.getCoderClassName());
+                    printer.println("encoder = new %s();", ja.getCoderClassName());
                     dataType.accept(this, attr);
                     for(int i = 0; i < indent; i++){
                         printer.unindent();
@@ -2205,18 +2204,23 @@ public class ModelMetaGenerator implements Generator {
                 printer.println("%1$s m = new %1$s();",
                     modelMetaDesc.getModelClassName());
                 printer.println("%s reader = null;", JsonReader);
-                printer.println("%s decoder = null;", JsonDecoder);
+                printer.println("%s decoder = null;", JsonCoder);
                 for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
-                    if(attr.getJson().isIgnore()) continue;
+                    JsonAnnotation ja = attr.getJson();
+                    if(ja.isIgnore()) continue;
                     DataType dt = attr.getDataType();
                     if(!isSupportedForJson(dt)){
                         printer.println("// %s is not supported.", dt.getClassName());
                         continue;
                     }
+                    String name = ja.getAlias();
+                    if(name.length() == 0){
+                        name = attr.getAttributeName();
+                    }
                     printer.println("reader = rootReader.newObjectReader(\"%s\");",
-                        attr.getAttributeName());
+                        name);
                     printer.println("decoder = new %s();",
-                        attr.getJson().getCoderClassName());
+                        ja.getCoderClassName());
                     setterExp = "m." + attr.getWriteMethodName();
                     getterExp = "m." + attr.getReadMethodName() + "()";
                     dt.accept(this, attr);
