@@ -52,7 +52,7 @@
     <target name="copy">
         <copy todir="war/WEB-INF/lib" file="../slim3/target/slim3-${ver}.jar"/>
         <copy todir="libsrc" file="../slim3/target/slim3-${ver}-sources.jar"/>
-        <copy todir="lib" file="../slim3-gen-extension-sample/target/slim3-gen-${ver}.jar"/>
+        <copy todir="lib" file="../slim3-gen/target/slim3-gen-${ver}.jar"/>
         <copy todir="libsrc" file="../slim3-gen/target/slim3-gen-${ver}-sources.jar"/>
     	<!--
         <copy todir="src" file="../slim3/src/main/resources/application_en.properties"/>

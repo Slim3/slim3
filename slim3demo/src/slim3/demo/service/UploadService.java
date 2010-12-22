@@ -85,6 +85,6 @@ public class UploadService {
         keys.add(key);
         keys.addAll(Datastore.query(f, key).asKeyList());
         Datastore.delete(tx, keys);
-        Datastore.commit(tx);
+        tx.commit();
     }
 }

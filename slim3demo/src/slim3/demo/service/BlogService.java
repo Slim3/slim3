@@ -27,7 +27,7 @@ public class BlogService {
     public void insert(Blog blog) {
         Transaction tx = Datastore.beginTransaction();
         Datastore.put(tx, blog);
-        Datastore.commit(tx);
+        tx.commit();
     }
 
     public Blog update(Key key, Long version, Map<String, Object> input) {
@@ -35,7 +35,7 @@ public class BlogService {
         Blog blog = Datastore.get(tx, b, key, version);
         BeanUtil.copy(input, blog);
         Datastore.put(tx, blog);
-        Datastore.commit(tx);
+        tx.commit();
         return blog;
     }
 
@@ -43,6 +43,6 @@ public class BlogService {
         Transaction tx = Datastore.beginTransaction();
         Blog blog = Datastore.get(tx, b, key, version);
         Datastore.delete(tx, blog.getKey());
-        Datastore.commit(tx);
+        tx.commit();
     }
 }
