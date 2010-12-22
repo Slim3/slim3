@@ -8,9 +8,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slim3.datastore.Datastore;
-import org.slim3.json.test.OtherJavaTypeAttrsModel;
 import org.slim3.json.test.OtherJavaTypeAttrsModel.WeekDay;
-import org.slim3.json.test.meta.OtherJavaTypeAttrsModelMeta;
 
 public class OtherJavaTypeAttrsModelTest {
 	@Before

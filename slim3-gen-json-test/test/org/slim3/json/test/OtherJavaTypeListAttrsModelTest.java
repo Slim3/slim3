@@ -10,9 +10,7 @@ import net.arnx.jsonic.JSON;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slim3.datastore.Datastore;
-import org.slim3.json.test.OtherJavaTypeListAttrsModel;
 import org.slim3.json.test.OtherJavaTypeListAttrsModel.WeekDay;
-import org.slim3.json.test.meta.OtherJavaTypeListAttrsModelMeta;
 
 public class OtherJavaTypeListAttrsModelTest {
 	@Test

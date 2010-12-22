@@ -7,8 +7,6 @@ import net.arnx.jsonic.JSON;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slim3.datastore.Datastore;
-import org.slim3.json.test.ModelRefAttrModel;
-import org.slim3.json.test.meta.ModelRefAttrModelMeta;
 import org.slim3.tester.TestEnvironment;
 
 import com.google.appengine.api.datastore.KeyFactory;

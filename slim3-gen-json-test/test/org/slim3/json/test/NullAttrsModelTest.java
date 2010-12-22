@@ -3,8 +3,6 @@ package org.slim3.json.test;
 import junit.framework.Assert;
 
 import org.junit.Test;
-import org.slim3.json.test.NullAttrsModel;
-import org.slim3.json.test.annotation.NullAttrsModelMeta;
 
 public class NullAttrsModelTest {
 	@Test

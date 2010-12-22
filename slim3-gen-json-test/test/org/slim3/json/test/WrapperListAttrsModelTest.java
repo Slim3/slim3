@@ -6,8 +6,6 @@ import net.arnx.jsonic.JSON;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.slim3.json.test.WrapperListAttrsModel;
-import org.slim3.json.test.meta.WrapperListAttrsModelMeta;
 
 public class WrapperListAttrsModelTest {
 	@Test

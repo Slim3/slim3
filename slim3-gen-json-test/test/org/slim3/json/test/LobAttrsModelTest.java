@@ -5,8 +5,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slim3.datastore.Datastore;
-import org.slim3.json.test.LobAttrModel;
-import org.slim3.json.test.meta.LobAttrModelMeta;
 
 public class LobAttrsModelTest {
 	@Before

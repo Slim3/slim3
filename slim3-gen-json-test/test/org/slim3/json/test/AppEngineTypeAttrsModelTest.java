@@ -11,8 +11,6 @@ import net.arnx.jsonic.JSON;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slim3.datastore.Datastore;
-import org.slim3.json.test.AppEngineTypeAttrsModel;
-import org.slim3.json.test.meta.AppEngineTypeAttrsModelMeta;
 import org.slim3.tester.TestEnvironment;
 
 import com.google.appengine.api.blobstore.BlobKey;

@@ -8,8 +8,6 @@ import net.arnx.jsonic.JSON;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.slim3.json.test.AppEngineTypeListAttrsModel;
-import org.slim3.json.test.meta.AppEngineTypeListAttrsModelMeta;
 import org.slim3.tester.TestEnvironment;
 
 import com.google.appengine.api.blobstore.BlobKey;
