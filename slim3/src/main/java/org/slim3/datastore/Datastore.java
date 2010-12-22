@@ -1015,7 +1015,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns an entity specified by the key without transaction.
+     * Returns an entity specified by the key without transaction
+     * asynchronously.
      * 
      * @param key
      *            the key
@@ -1055,7 +1056,7 @@ public final class Datastore {
     }
 
     /**
-     * Returns a model specified by the key without transaction.
+     * Returns a model specified by the key without transaction asynchronously.
      * 
      * @param <M>
      *            the model type
@@ -1093,7 +1094,7 @@ public final class Datastore {
     }
 
     /**
-     * Returns a model specified by the key without transaction.
+     * Returns a model specified by the key without transaction asynchronously.
      * 
      * @param <M>
      *            the model type
@@ -1126,7 +1127,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns an entity specified by the key without transaction.
+     * Returns an entity specified by the key without transaction
+     * asynchronously.
      * 
      * @param key
      *            the key
@@ -1163,7 +1165,7 @@ public final class Datastore {
     }
 
     /**
-     * Returns a model specified by the key without transaction.
+     * Returns a model specified by the key without transaction asynchronously.
      * 
      * @param <M>
      *            the model type
@@ -1204,7 +1206,7 @@ public final class Datastore {
     }
 
     /**
-     * Returns a model specified by the key without transaction.
+     * Returns a model specified by the key without transaction asynchronously.
      * 
      * @param <M>
      *            the model type
@@ -1254,9 +1256,9 @@ public final class Datastore {
     }
 
     /**
-     * Returns a model specified by the key and checks the version. If there is
-     * a current transaction, this operation will execute within that
-     * transaction.
+     * Returns a model specified by the key and checks the version
+     * asynchronously. If there is a current transaction, this operation will
+     * execute within that transaction.
      * 
      * @param <M>
      *            the model type
@@ -1309,9 +1311,9 @@ public final class Datastore {
     }
 
     /**
-     * Returns a model specified by the key and checks the version. If there is
-     * a current transaction, this operation will execute within that
-     * transaction.
+     * Returns a model specified by the key and checks the version
+     * asynchronously. If there is a current transaction, this operation will
+     * execute within that transaction.
      * 
      * @param <M>
      *            the model type
@@ -1354,7 +1356,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns an entity specified by the key within the provided transaction.
+     * Returns an entity specified by the key within the provided transaction
+     * asynchronously.
      * 
      * @param tx
      *            the transaction
@@ -1404,7 +1407,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns a model specified by the key within the provided transaction.
+     * Returns a model specified by the key within the provided transaction
+     * asynchronously.
      * 
      * @param <M>
      *            the model type
@@ -1458,7 +1462,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns a model specified by the key within the provided transaction.
+     * Returns a model specified by the key within the provided transaction
+     * asynchronously.
      * 
      * @param <M>
      *            the model type
@@ -1502,7 +1507,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns an entity specified by the key within the provided transaction.
+     * Returns an entity specified by the key within the provided transaction
+     * asynchronously.
      * 
      * @param tx
      *            the transaction
@@ -1551,7 +1557,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns a model specified by the key within the provided transaction.
+     * Returns a model specified by the key within the provided transaction
+     * asynchronously.
      * 
      * @param <M>
      *            the model type
@@ -1605,7 +1612,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns a model specified by the key within the provided transaction.
+     * Returns a model specified by the key within the provided transaction
+     * asynchronously.
      * 
      * @param <M>
      *            the model type
@@ -1665,7 +1673,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns a model specified by the key within the provided transaction.
+     * Returns a model specified by the key within the provided transaction
+     * asynchronously.
      * 
      * @param <M>
      *            the model type
@@ -1728,7 +1737,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns a model specified by the key within the provided transaction.
+     * Returns a model specified by the key within the provided transaction
+     * asynchronously.
      * 
      * @param <M>
      *            the model type
@@ -1772,8 +1782,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns entities specified by the keys. If there is a current
-     * transaction, this operation will execute within that transaction.
+     * Returns entities specified by the keys asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
      * 
      * @param keys
      *            the keys
@@ -1802,8 +1812,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns entities specified by the keys. If there is a current
-     * transaction, this operation will execute within that transaction.
+     * Returns entities specified by the keys asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
      * 
      * @param keys
      *            the keys
@@ -1841,8 +1851,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns models specified by the keys. If there is a current transaction,
-     * this operation will execute within that transaction.
+     * Returns models specified by the keys asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
      * 
      * @param <M>
      *            the model type
@@ -1889,8 +1899,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns models specified by the keys. If there is a current transaction,
-     * this operation will execute within that transaction.
+     * Returns models specified by the keys asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
      * 
      * @param <M>
      *            the model type
@@ -1936,8 +1946,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns models specified by the keys. If there is a current transaction,
-     * this operation will execute within that transaction.
+     * Returns models specified by the keys asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
      * 
      * @param <M>
      *            the model type
@@ -1982,8 +1992,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns models specified by the keys. If there is a current transaction,
-     * this operation will execute within that transaction.
+     * Returns models specified by the keys asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
      * 
      * @param <M>
      *            the model type
@@ -2018,7 +2028,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns entities specified by the keys without transaction.
+     * Returns entities specified by the keys without transaction
+     * asynchronously.
      * 
      * @param keys
      *            the keys
@@ -2047,8 +2058,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns entities specified by the keys. If there is a current
-     * transaction, this operation will execute within that transaction.
+     * Returns entities specified by the keys asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
      * 
      * @param keys
      *            the keys
@@ -2085,7 +2096,7 @@ public final class Datastore {
     }
 
     /**
-     * Returns models specified by the keys without transaction.
+     * Returns models specified by the keys without transaction asynchronously.
      * 
      * @param <M>
      *            the model type
@@ -2131,7 +2142,7 @@ public final class Datastore {
     }
 
     /**
-     * Returns models specified by the keys without transaction.
+     * Returns models specified by the keys without transaction asynchronously.
      * 
      * @param <M>
      *            the model type
@@ -2176,7 +2187,7 @@ public final class Datastore {
     }
 
     /**
-     * Returns models specified by the keys without transaction.
+     * Returns models specified by the keys without transaction asynchronously.
      * 
      * @param <M>
      *            the model type
@@ -2220,7 +2231,7 @@ public final class Datastore {
     }
 
     /**
-     * Returns models specified by the keys without transaction.
+     * Returns models specified by the keys without transaction asynchronously.
      * 
      * @param <M>
      *            the model type
@@ -2261,7 +2272,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns entities specified by the keys within the provided transaction.
+     * Returns entities specified by the keys within the provided transaction
+     * asynchronously.
      * 
      * @param tx
      *            the transaction
@@ -2300,7 +2312,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns entities specified by the keys within the provided transaction.
+     * Returns entities specified by the keys within the provided transaction
+     * asynchronously.
      * 
      * @param tx
      *            the transaction
@@ -2348,7 +2361,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns models specified by the keys within the provided transaction.
+     * Returns models specified by the keys within the provided transaction
+     * asynchronously.
      * 
      * @param <M>
      *            the model type
@@ -2403,7 +2417,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns models specified by the keys within the provided transaction.
+     * Returns models specified by the keys within the provided transaction
+     * asynchronously.
      * 
      * @param <M>
      *            the model type
@@ -2457,7 +2472,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns models specified by the keys within the provided transaction.
+     * Returns models specified by the keys within the provided transaction
+     * asynchronously.
      * 
      * @param <M>
      *            the model type
@@ -2511,7 +2527,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns models specified by the keys within the provided transaction.
+     * Returns models specified by the keys within the provided transaction
+     * asynchronously.
      * 
      * @param <M>
      *            the model type
@@ -2550,8 +2567,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns entities specified by the keys. If there is a current
-     * transaction, this operation will execute within that transaction.
+     * Returns entities specified by the keys asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
      * 
      * @param keys
      *            the keys
@@ -2577,8 +2594,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns entities specified by the keys. If there is a current
-     * transaction, this operation will execute within that transaction.
+     * Returns entities specified by the keys asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
      * 
      * @param keys
      *            the keys
@@ -2614,8 +2631,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns models specified by the keys. If there is a current transaction,
-     * this operation will execute within that transaction.
+     * Returns models specified by the keys asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
      * 
      * @param <M>
      *            the model type
@@ -2659,8 +2676,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns models specified by the keys. If there is a current transaction,
-     * this operation will execute within that transaction.
+     * Returns models specified by the keys asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
      * 
      * @param <M>
      *            the model type
@@ -2702,8 +2719,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns models specified by the keys. If there is a current transaction,
-     * this operation will execute within that transaction.
+     * Returns models specified by the keys asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
      * 
      * @param <M>
      *            the model type
@@ -2744,8 +2761,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns models specified by the keys. If there is a current transaction,
-     * this operation will execute within that transaction.
+     * Returns models specified by the keys asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
      * 
      * @param <M>
      *            the model type
@@ -2777,7 +2794,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns entities specified by the keys without transaction.
+     * Returns entities specified by the keys without transaction
+     * asynchronously.
      * 
      * @param keys
      *            the keys
@@ -2802,7 +2820,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns entities specified by the keys without transaction.
+     * Returns entities specified by the keys without transaction
+     * asynchronously.
      * 
      * @param keys
      *            the keys
@@ -2837,7 +2856,7 @@ public final class Datastore {
     }
 
     /**
-     * Returns models specified by the keys without transaction.
+     * Returns models specified by the keys without transaction asynchronously.
      * 
      * @param <M>
      *            the model type
@@ -2881,7 +2900,7 @@ public final class Datastore {
     }
 
     /**
-     * Returns models specified by the keys without transaction.
+     * Returns models specified by the keys without transaction asynchronously.
      * 
      * @param <M>
      *            the model type
@@ -2923,7 +2942,7 @@ public final class Datastore {
     }
 
     /**
-     * Returns models specified by the keys without transaction.
+     * Returns models specified by the keys without transaction asynchronously.
      * 
      * @param <M>
      *            the model type
@@ -2963,7 +2982,7 @@ public final class Datastore {
     }
 
     /**
-     * Returns models specified by the keys without transaction.
+     * Returns models specified by the keys without transaction asynchronously.
      * 
      * @param <M>
      *            the model type
@@ -3000,7 +3019,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns entities specified by the keys within the provided transaction.
+     * Returns entities specified by the keys within the provided transaction
+     * asynchronously.
      * 
      * @param tx
      *            the transaction
@@ -3037,7 +3057,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns entities specified by the keys within the provided transaction.
+     * Returns entities specified by the keys within the provided transaction
+     * asynchronously.
      * 
      * @param tx
      *            the transaction
@@ -3083,7 +3104,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns models specified by the keys within the provided transaction.
+     * Returns models specified by the keys within the provided transaction
+     * asynchronously.
      * 
      * @param <M>
      *            the model type
@@ -3139,7 +3161,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns models specified by the keys within the provided transaction.
+     * Returns models specified by the keys within the provided transaction
+     * asynchronously.
      * 
      * @param <M>
      *            the model type
@@ -3194,7 +3217,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns models specified by the keys within the provided transaction.
+     * Returns models specified by the keys within the provided transaction
+     * asynchronously.
      * 
      * @param <M>
      *            the model type
@@ -3248,7 +3272,8 @@ public final class Datastore {
     }
 
     /**
-     * Returns models specified by the keys within the provided transaction.
+     * Returns models specified by the keys within the provided transaction
+     * asynchronously.
      * 
      * @param <M>
      *            the model type
@@ -3287,8 +3312,8 @@ public final class Datastore {
     }
 
     /**
-     * Puts the entity to datastore. If there is a current transaction, this
-     * operation will execute within that transaction.
+     * Puts the entity to datastore asynchronously. If there is a current
+     * transaction, this operation will execute within that transaction.
      * 
      * @param entity
      *            the entity
@@ -3315,7 +3340,7 @@ public final class Datastore {
     }
 
     /**
-     * Puts the entity to datastore without transaction.
+     * Puts the entity to datastore without transaction asynchronously.
      * 
      * @param entity
      *            the entity
@@ -3343,8 +3368,8 @@ public final class Datastore {
     }
 
     /**
-     * Puts the model to datastore. If there is a current transaction, this
-     * operation will execute within that transaction.
+     * Puts the model to datastore asynchronously. If there is a current
+     * transaction, this operation will execute within that transaction.
      * 
      * @param model
      *            the model
@@ -3371,7 +3396,7 @@ public final class Datastore {
     }
 
     /**
-     * Puts the model to datastore without transaction.
+     * Puts the model to datastore without transaction asynchronously.
      * 
      * @param model
      *            the model
@@ -3404,7 +3429,8 @@ public final class Datastore {
     }
 
     /**
-     * Puts the entity to datastore within the provided transaction.
+     * Puts the entity to datastore within the provided transaction
+     * asynchronously.
      * 
      * @param tx
      *            the transaction
@@ -3442,7 +3468,8 @@ public final class Datastore {
     }
 
     /**
-     * Puts the model to datastore within the provided transaction.
+     * Puts the model to datastore within the provided transaction
+     * asynchronously.
      * 
      * @param tx
      *            the transaction
@@ -3475,8 +3502,8 @@ public final class Datastore {
     }
 
     /**
-     * Puts the models or entities to datastore. If there is a current
-     * transaction, this operation will execute within that transaction.
+     * Puts the models or entities to datastore asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
      * 
      * @param models
      *            the models or entities
@@ -3504,7 +3531,8 @@ public final class Datastore {
     }
 
     /**
-     * Puts the models or entities to datastore without transaction.
+     * Puts the models or entities to datastore without transaction
+     * asynchronously.
      * 
      * @param models
      *            the models or entities
@@ -3530,8 +3558,8 @@ public final class Datastore {
     }
 
     /**
-     * Puts the models or entities to datastore. If there is a current
-     * transaction, this operation will execute within that transaction.
+     * Puts the models or entities to datastore asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
      * 
      * @param models
      *            the models or entities
@@ -3553,7 +3581,8 @@ public final class Datastore {
     }
 
     /**
-     * Puts the models or entities to datastore without transaction.
+     * Puts the models or entities to datastore without transaction
+     * asynchronously.
      * 
      * @param models
      *            the models or entities
@@ -3583,7 +3612,8 @@ public final class Datastore {
     }
 
     /**
-     * Puts the models or entities to datastore within the provided transaction.
+     * Puts the models or entities to datastore within the provided transaction
+     * asynchronously.
      * 
      * @param tx
      *            the transaction
@@ -3619,7 +3649,8 @@ public final class Datastore {
     }
 
     /**
-     * Puts the models or entities to datastore within the provided transaction.
+     * Puts the models or entities to datastore within the provided transaction
+     * asynchronously.
      * 
      * @param tx
      *            the transaction
@@ -3649,8 +3680,8 @@ public final class Datastore {
     }
 
     /**
-     * Deletes entities specified by the keys. If there is a current
-     * transaction, this operation will execute within that transaction.
+     * Deletes entities specified by the keys asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
      * 
      * @param keys
      *            the keys
@@ -3677,7 +3708,8 @@ public final class Datastore {
     }
 
     /**
-     * Deletes entities specified by the keys without transaction.
+     * Deletes entities specified by the keys without transaction
+     * asynchronously.
      * 
      * @param keys
      *            the keys
@@ -3701,8 +3733,8 @@ public final class Datastore {
     }
 
     /**
-     * Deletes entities specified by the keys. If there is a current
-     * transaction, this operation will execute within that transaction.
+     * Deletes entities specified by the keys asynchronously. If there is a
+     * current transaction, this operation will execute within that transaction.
      * 
      * @param keys
      *            the keys
@@ -3722,7 +3754,8 @@ public final class Datastore {
     }
 
     /**
-     * Deletes entities specified by the keys without transaction.
+     * Deletes entities specified by the keys without transaction
+     * asynchronously.
      * 
      * @param keys
      *            the keys
@@ -3750,7 +3783,8 @@ public final class Datastore {
     }
 
     /**
-     * Deletes entities specified by the keys within the provided transaction.
+     * Deletes entities specified by the keys within the provided transaction
+     * asynchronously.
      * 
      * @param tx
      *            the transaction
@@ -3784,7 +3818,8 @@ public final class Datastore {
     }
 
     /**
-     * Deletes entities specified by the keys within the provided transaction.
+     * Deletes entities specified by the keys within the provided transaction
+     * asynchronously.
      * 
      * @param tx
      *            the transaction
@@ -3812,7 +3847,7 @@ public final class Datastore {
     }
 
     /**
-     * Deletes all descendant entities.
+     * Deletes all descendant entities asynchronously.
      * 
      * @param ancestorKey
      *            the ancestor key
@@ -3843,7 +3878,8 @@ public final class Datastore {
     }
 
     /**
-     * Deletes all descendant entities within the provided transaction.
+     * Deletes all descendant entities within the provided transaction
+     * asynchronously.
      * 
      * @param tx
      *            the transaction
@@ -3874,7 +3910,7 @@ public final class Datastore {
     }
 
     /**
-     * Deletes all descendant entities without transaction.
+     * Deletes all descendant entities without transaction asynchronously.
      * 
      * @param ancestorKey
      *            the ancestor key
