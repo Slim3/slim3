@@ -10,53 +10,64 @@ import com.google.appengine.api.datastore.Text;
 
 @Model
 public class NullAttrsModel {
-	public Key getKey() {
-		return key;
-	}
-	public void setKey(Key key) {
-		this.key = key;
-	}
-	public String getNullString() {
-		return nullString;
-	}
-	public void setNullString(String nullString) {
-		this.nullString = nullString;
-	}
-	public Blob getNullBlob() {
-		return nullBlob;
-	}
-	public void setNullBlob(Blob nullBlob) {
-		this.nullBlob = nullBlob;
-	}
-	public Blob getNullBytesBlob() {
-		return nullBytesBlob;
-	}
-	public void setNullBytesBlob(Blob nullBytesBlob) {
-		this.nullBytesBlob = nullBytesBlob;
-	}
-	public Text getNullText() {
-		return nullText;
-	}
-	public void setNullText(Text nullText) {
-		this.nullText = nullText;
-	}
-	public Text getNullValueText() {
-		return nullValueText;
-	}
-	public void setNullValueText(Text nullValueText) {
-		this.nullValueText = nullValueText;
-	}
+    public Key getKey() {
+        return key;
+    }
 
-	@Attribute(primaryKey=true)
-	private Key key;
-	@Attribute(json=@Json(ignoreNull=false))
-	private String nullString;
-	@Attribute(json=@Json(ignoreNull=false))
-	private Blob nullBlob;
-	@Attribute(json=@Json(ignoreNull=false))
-	private Blob nullBytesBlob = new Blob(null);
-	@Attribute(json=@Json(ignoreNull=false))
-	private Text nullText;
-	@Attribute(json=@Json(ignoreNull=false))
-	private Text nullValueText = new Text(null);
+    public void setKey(Key key) {
+        this.key = key;
+    }
+
+    public String getNullString() {
+        return nullString;
+    }
+
+    public void setNullString(String nullString) {
+        this.nullString = nullString;
+    }
+
+    public Blob getNullBlob() {
+        return nullBlob;
+    }
+
+    public void setNullBlob(Blob nullBlob) {
+        this.nullBlob = nullBlob;
+    }
+
+    public Blob getNullBytesBlob() {
+        return nullBytesBlob;
+    }
+
+    public void setNullBytesBlob(Blob nullBytesBlob) {
+        this.nullBytesBlob = nullBytesBlob;
+    }
+
+    public Text getNullText() {
+        return nullText;
+    }
+
+    public void setNullText(Text nullText) {
+        this.nullText = nullText;
+    }
+
+    public Text getNullValueText() {
+        return nullValueText;
+    }
+
+    public void setNullValueText(Text nullValueText) {
+        this.nullValueText = nullValueText;
+    }
+
+    @Attribute(primaryKey = true)
+    private Key key;
+    @Attribute(json = @Json(ignoreNull = false))
+    private String nullString;
+    @Attribute(json = @Json(ignoreNull = false))
+    private Blob nullBlob;
+    @Attribute(json = @Json(ignoreNull = false))
+    private Blob nullBytesBlob = new Blob(null);
+    @Attribute(json = @Json(ignoreNull = false))
+    private Text nullText;
+    @Attribute(json = @Json(ignoreNull = false))
+    private Text nullValueText = new Text(null);
 }
