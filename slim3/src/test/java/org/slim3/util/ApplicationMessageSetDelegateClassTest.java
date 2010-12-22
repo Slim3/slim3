@@ -22,6 +22,7 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -31,6 +32,14 @@ import org.junit.Test;
 public class ApplicationMessageSetDelegateClassTest {
 
     static {
+        ApplicationMessage.setDelegateClass(MyDelegate.class);
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Before
+    public void setUp() throws Exception {
         ApplicationMessage.setDelegateClass(MyDelegate.class);
     }
 
