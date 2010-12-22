@@ -1020,7 +1020,7 @@ public final class Datastore {
      * 
      * @param key
      *            the key
-     * @return an entity specified by the key
+     * @return an entity represented as {@link Future}
      * @throws NullPointerException
      *             if the key parameter is null
      */
@@ -1064,7 +1064,7 @@ public final class Datastore {
      *            the model class
      * @param key
      *            the key
-     * @return a model specified by the key
+     * @return a model represented as {@link Future}
      * @throws NullPointerException
      *             if the modelClass parameter is null
      */
@@ -1102,7 +1102,7 @@ public final class Datastore {
      *            the meta data of model
      * @param key
      *            the key
-     * @return a model specified by the key
+     * @return a model represented as {@link Future}
      * @throws NullPointerException
      *             if the modelMeta parameter is null
      */
@@ -1132,7 +1132,7 @@ public final class Datastore {
      * 
      * @param key
      *            the key
-     * @return an entity specified by the key
+     * @return an entity represented as {@link Future}
      * @throws NullPointerException
      *             if the key parameter is null
      */
@@ -1173,7 +1173,7 @@ public final class Datastore {
      *            the model class
      * @param key
      *            the key
-     * @return a model specified by the key
+     * @return a model represented as {@link Future}
      * @throws NullPointerException
      *             if the modelClass parameter is null
      */
@@ -1214,7 +1214,7 @@ public final class Datastore {
      *            the meta data of model
      * @param key
      *            the key
-     * @return a model specified by the key
+     * @return a model represented as {@link Future}
      * @throws NullPointerException
      *             if the modelMeta parameter is null
      */
@@ -1268,7 +1268,7 @@ public final class Datastore {
      *            the key
      * @param version
      *            the version
-     * @return a model specified by the key
+     * @return a model represented as {@link Future}
      * @throws NullPointerException
      *             if the modelClass parameter is null or if the key parameter
      *             is null or if the version parameter is null
@@ -1323,7 +1323,7 @@ public final class Datastore {
      *            the key
      * @param version
      *            the version
-     * @return a model specified by the key
+     * @return a model represented as {@link Future}
      * @throws NullPointerException
      *             if the modelMeta parameter is null or if the key parameter is
      *             null or if the version parameter is null
@@ -1363,7 +1363,7 @@ public final class Datastore {
      *            the transaction
      * @param key
      *            the key
-     * @return an entity specified by the key
+     * @return an entity represented as {@link Future}
      * @throws NullPointerException
      *             if the key parameter is null
      * @throws IllegalStateException
@@ -1418,7 +1418,7 @@ public final class Datastore {
      *            the model class
      * @param key
      *            the key
-     * @return a model specified by the key
+     * @return a model represented as {@link Future}
      * @throws NullPointerException
      *             if the modelClass parameter is null or the key parameter is
      *             null
@@ -1473,7 +1473,7 @@ public final class Datastore {
      *            the meta data of model
      * @param key
      *            the key
-     * @return a model specified by the key
+     * @return a model represented as {@link Future}
      * @throws NullPointerException
      *             if the modelMeta parameter is null
      * @throws IllegalStateException
@@ -1514,7 +1514,7 @@ public final class Datastore {
      *            the transaction
      * @param key
      *            the key
-     * @return an entity specified by the key
+     * @return an entity represented as {@link Future}
      * @throws NullPointerException
      *             if the key parameter is null
      * @throws IllegalStateException
@@ -1568,7 +1568,7 @@ public final class Datastore {
      *            the model class
      * @param key
      *            the key
-     * @return a model specified by the key
+     * @return a model represented as {@link Future}
      * @throws NullPointerException
      *             if the modelClass parameter is null or the key parameter is
      *             null
@@ -1623,7 +1623,7 @@ public final class Datastore {
      *            the meta data of model
      * @param key
      *            the key
-     * @return a model specified by the key
+     * @return a model represented as {@link Future}
      * @throws NullPointerException
      *             if the modelMeta parameter is null
      * @throws IllegalStateException
@@ -1686,7 +1686,7 @@ public final class Datastore {
      *            the key
      * @param version
      *            the version
-     * @return a model specified by the key
+     * @return a model represented as {@link Future}
      * @throws NullPointerException
      *             if the modelClass parameter is null or if the key parameter
      *             is null or if the version parameter is null
@@ -1750,7 +1750,7 @@ public final class Datastore {
      *            the key
      * @param version
      *            the version
-     * @return a model specified by the key
+     * @return a model represented as {@link Future}
      * @throws NullPointerException
      *             if the modelMeta parameter is null or if the key parameter is
      *             null or if the version parameter is null
@@ -1787,7 +1787,7 @@ public final class Datastore {
      * 
      * @param keys
      *            the keys
-     * @return entities specified by the key
+     * @return entities represented as {@link Future}
      * @throws NullPointerException
      *             if the keys parameter is null
      */
@@ -1817,7 +1817,7 @@ public final class Datastore {
      * 
      * @param keys
      *            the keys
-     * @return entities specified by the key
+     * @return entities represented as {@link Future}
      */
     public static Future<List<Entity>> getAsync(Key... keys) {
         return asyncDelegate().getAsync(keys);
@@ -1860,7 +1860,7 @@ public final class Datastore {
      *            the model class
      * @param keys
      *            the keys
-     * @return models specified by the keys
+     * @return models represented as {@link Future}
      * @throws NullPointerException
      *             if the modelClass parameter is null of if the keys parameter
      *             is null
@@ -1908,7 +1908,7 @@ public final class Datastore {
      *            the meta data of model
      * @param keys
      *            the keys
-     * @return models specified by the keys
+     * @return models represented as {@link Future}
      * @throws NullPointerException
      *             if the modelMeta parameter is null of if the keys parameter
      *             is null
@@ -1955,7 +1955,7 @@ public final class Datastore {
      *            the model class
      * @param keys
      *            the keys
-     * @return models specified by the keys
+     * @return models represented as {@link Future}
      * @throws NullPointerException
      *             if the modelClass parameter is null
      */
@@ -2001,7 +2001,7 @@ public final class Datastore {
      *            the meta data of model
      * @param keys
      *            the keys
-     * @return models specified by the keys
+     * @return models represented as {@link Future}
      * @throws NullPointerException
      *             if the modelMeta parameter is null or if the keys parameter
      *             is null
@@ -2033,7 +2033,7 @@ public final class Datastore {
      * 
      * @param keys
      *            the keys
-     * @return entities specified by the key
+     * @return entities represented as {@link Future}
      * @throws NullPointerException
      *             if the keys parameter is null
      */
@@ -2063,7 +2063,7 @@ public final class Datastore {
      * 
      * @param keys
      *            the keys
-     * @return entities specified by the key
+     * @return entities represented as {@link Future}
      */
     public static Future<List<Entity>> getWithoutTxAsync(Key... keys) {
         return asyncDelegate().getWithoutTxAsync(keys);
@@ -2104,7 +2104,7 @@ public final class Datastore {
      *            the model class
      * @param keys
      *            the keys
-     * @return models specified by the keys
+     * @return models represented as {@link Future}
      * @throws NullPointerException
      *             if the modelClass parameter is null of if the keys parameter
      *             is null
@@ -2150,7 +2150,7 @@ public final class Datastore {
      *            the meta data of model
      * @param keys
      *            the keys
-     * @return models specified by the keys
+     * @return models represented as {@link Future}
      * @throws NullPointerException
      *             if the modelMeta parameter is null of if the keys parameter
      *             is null
@@ -2195,7 +2195,7 @@ public final class Datastore {
      *            the model class
      * @param keys
      *            the keys
-     * @return models specified by the keys
+     * @return models represented as {@link Future}
      * @throws NullPointerException
      *             if the modelClass parameter is null
      */
@@ -2239,7 +2239,7 @@ public final class Datastore {
      *            the meta data of model
      * @param keys
      *            the keys
-     * @return models specified by the keys
+     * @return models represented as {@link Future}
      * @throws NullPointerException
      *             if the modelMeta parameter is null or if the keys parameter
      *             is null
@@ -2279,7 +2279,7 @@ public final class Datastore {
      *            the transaction
      * @param keys
      *            the keys
-     * @return entities specified by the key
+     * @return entities represented as {@link Future}
      * @throws NullPointerException
      *             if the keys parameter is null
      * @throws IllegalStateException
@@ -2319,7 +2319,7 @@ public final class Datastore {
      *            the transaction
      * @param keys
      *            the keys
-     * @return entities specified by the key
+     * @return entities represented as {@link Future}
      * @throws IllegalStateException
      *             if the transaction is not null and the transaction is not
      *             active
@@ -2372,7 +2372,7 @@ public final class Datastore {
      *            the model class
      * @param keys
      *            the keys
-     * @return models specified by the keys
+     * @return models represented as {@link Future}
      * @throws NullPointerException
      *             if the modelClass parameter is null
      * @throws IllegalStateException
@@ -2428,7 +2428,7 @@ public final class Datastore {
      *            the meta data of model
      * @param keys
      *            the keys
-     * @return models specified by the keys
+     * @return models represented as {@link Future}
      * @throws NullPointerException
      *             if the modelMeta parameter is null
      * @throws IllegalStateException
@@ -2483,7 +2483,7 @@ public final class Datastore {
      *            the model class
      * @param keys
      *            the keys
-     * @return models specified by the keys
+     * @return models represented as {@link Future}
      * @throws NullPointerException
      *             if the modelClass parameter is null
      * @throws IllegalStateException
@@ -2538,7 +2538,7 @@ public final class Datastore {
      *            the meta data of model
      * @param keys
      *            the keys
-     * @return models specified by the keys
+     * @return models represented as {@link Future}
      * @throws NullPointerException
      *             if the modelMeta parameter is null
      * @throws IllegalStateException
@@ -2572,7 +2572,7 @@ public final class Datastore {
      * 
      * @param keys
      *            the keys
-     * @return entities specified by the keys
+     * @return entities represented as {@link Future}
      * @throws NullPointerException
      *             if the keys parameter is null
      */
@@ -2599,7 +2599,7 @@ public final class Datastore {
      * 
      * @param keys
      *            the keys
-     * @return entities specified by the keys
+     * @return entities represented as {@link Future}
      */
     public static Future<Map<Key, Entity>> getAsMapAsync(Key... keys) {
         return asyncDelegate().getAsMapAsync(keys);
@@ -2640,7 +2640,7 @@ public final class Datastore {
      *            the model class
      * @param keys
      *            the keys
-     * @return models specified by the keys
+     * @return models represented as {@link Future}
      * @throws NullPointerException
      *             if the modelClass parameter is null or if the keys parameter
      *             is null
@@ -2685,7 +2685,7 @@ public final class Datastore {
      *            the meta data of model
      * @param keys
      *            the keys
-     * @return models specified by the keys
+     * @return models represented as {@link Future}
      * @throws NullPointerException
      *             if the modelMeta parameter is null or if the keys parameter
      *             is null
@@ -2728,7 +2728,7 @@ public final class Datastore {
      *            the model class
      * @param keys
      *            the keys
-     * @return models specified by the keys
+     * @return models represented as {@link Future}
      * @throws NullPointerException
      *             if the modelClass parameter is null
      */
@@ -2770,7 +2770,7 @@ public final class Datastore {
      *            the meta data of model
      * @param keys
      *            the keys
-     * @return models specified by the keys
+     * @return models represented as {@link Future}
      * @throws NullPointerException
      *             if the modelMeta parameter is null
      */
@@ -2799,7 +2799,7 @@ public final class Datastore {
      * 
      * @param keys
      *            the keys
-     * @return entities specified by the keys
+     * @return entities represented as {@link Future}
      * @throws NullPointerException
      *             if the keys parameter is null
      */
@@ -2825,7 +2825,7 @@ public final class Datastore {
      * 
      * @param keys
      *            the keys
-     * @return entities specified by the keys
+     * @return entities represented as {@link Future}
      */
     public static Future<Map<Key, Entity>> getAsMapWithoutTxAsync(Key... keys) {
         return asyncDelegate().getAsMapWithoutTxAsync(keys);
@@ -2864,7 +2864,7 @@ public final class Datastore {
      *            the model class
      * @param keys
      *            the keys
-     * @return models specified by the keys
+     * @return models represented as {@link Future}
      * @throws NullPointerException
      *             if the modelClass parameter is null or if the keys parameter
      *             is null
@@ -2908,7 +2908,7 @@ public final class Datastore {
      *            the meta data of model
      * @param keys
      *            the keys
-     * @return models specified by the keys
+     * @return models represented as {@link Future}
      * @throws NullPointerException
      *             if the modelMeta parameter is null or if the keys parameter
      *             is null
@@ -2950,7 +2950,7 @@ public final class Datastore {
      *            the model class
      * @param keys
      *            the keys
-     * @return models specified by the keys
+     * @return models represented as {@link Future}
      * @throws NullPointerException
      *             if the modelClass parameter is null
      */
@@ -2990,7 +2990,7 @@ public final class Datastore {
      *            the meta data of model
      * @param keys
      *            the keys
-     * @return models specified by the keys
+     * @return models represented as {@link Future}
      * @throws NullPointerException
      *             if the modelMeta parameter is null
      */
@@ -3026,7 +3026,7 @@ public final class Datastore {
      *            the transaction
      * @param keys
      *            the keys
-     * @return entities specified by the keys
+     * @return entities represented as {@link Future}
      * @throws NullPointerException
      *             if the keys parameter is null
      * @throws IllegalStateException
@@ -3064,7 +3064,7 @@ public final class Datastore {
      *            the transaction
      * @param keys
      *            the keys
-     * @return entities specified by the keys
+     * @return entities represented as {@link Future}
      * @throws IllegalStateException
      *             if the transaction is not null and the transaction is not
      *             active
@@ -3115,7 +3115,7 @@ public final class Datastore {
      *            the model class
      * @param keys
      *            the keys
-     * @return entities specified by the key
+     * @return entities represented as {@link Future}
      * @throws NullPointerException
      *             if the modelClass parameter is null or if the keys parameter
      *             is null
@@ -3172,7 +3172,7 @@ public final class Datastore {
      *            the meta data of model
      * @param keys
      *            the keys
-     * @return entities specified by the key
+     * @return entities represented as {@link Future}
      * @throws NullPointerException
      *             if the modelMeta parameter is null or if the keys parameter
      *             is null
@@ -3228,7 +3228,7 @@ public final class Datastore {
      *            the model class
      * @param keys
      *            the keys
-     * @return entities specified by the key
+     * @return entities represented as {@link Future}
      * @throws NullPointerException
      *             if the modelClass parameter is null or if the keys parameter
      *             is null
@@ -3283,7 +3283,7 @@ public final class Datastore {
      *            the meta data of model
      * @param keys
      *            the keys
-     * @return entities specified by the key
+     * @return entities represented as {@link Future}
      * @throws NullPointerException
      *             if the modelMeta parameter is null or if the keys parameter
      *             is null
@@ -3317,7 +3317,7 @@ public final class Datastore {
      * 
      * @param entity
      *            the entity
-     * @return a key
+     * @return a key represented as {@link Future}
      * @throws NullPointerException
      *             if the entity parameter is null
      */
@@ -3344,7 +3344,7 @@ public final class Datastore {
      * 
      * @param entity
      *            the entity
-     * @return a key
+     * @return a key represented as {@link Future}
      * @throws NullPointerException
      *             if the entity parameter is null
      */
@@ -3373,7 +3373,7 @@ public final class Datastore {
      * 
      * @param model
      *            the model
-     * @return a key
+     * @return a key represented as {@link Future}
      * @throws NullPointerException
      *             if the model parameter is null
      */
@@ -3400,7 +3400,7 @@ public final class Datastore {
      * 
      * @param model
      *            the model
-     * @return a key
+     * @return a key represented as {@link Future}
      * @throws NullPointerException
      *             if the model parameter is null
      */
@@ -3436,7 +3436,7 @@ public final class Datastore {
      *            the transaction
      * @param entity
      *            the entity
-     * @return a key
+     * @return a key represented as {@link Future}
      * @throws NullPointerException
      *             if the entity parameter is null
      * @throws IllegalStateException
@@ -3475,7 +3475,7 @@ public final class Datastore {
      *            the transaction
      * @param model
      *            the model
-     * @return a key
+     * @return a key represented as {@link Future}
      * @throws NullPointerException
      *             if the model parameter is null
      * @throws IllegalStateException
@@ -3507,7 +3507,7 @@ public final class Datastore {
      * 
      * @param models
      *            the models or entities
-     * @return a list of keys
+     * @return a list of keys represented as {@link Future}
      * @throws NullPointerException
      *             if the models parameter is null
      */
@@ -3536,7 +3536,7 @@ public final class Datastore {
      * 
      * @param models
      *            the models or entities
-     * @return a list of keys
+     * @return a list of keys represented as {@link Future}
      * @throws NullPointerException
      *             if the models parameter is null
      */
@@ -3563,7 +3563,7 @@ public final class Datastore {
      * 
      * @param models
      *            the models or entities
-     * @return a list of keys
+     * @return a list of keys represented as {@link Future}
      */
     public static Future<List<Key>> putAsync(Object... models) {
         return asyncDelegate().putAsync(models);
@@ -3586,7 +3586,7 @@ public final class Datastore {
      * 
      * @param models
      *            the models or entities
-     * @return a list of keys
+     * @return a list of keys represented as {@link Future}
      */
     public static Future<List<Key>> putWithoutTxAsync(Object... models) {
         return asyncDelegate().putWithoutTxAsync(models);
@@ -3619,7 +3619,7 @@ public final class Datastore {
      *            the transaction
      * @param models
      *            the models or entities
-     * @return a list of keys
+     * @return a list of keys represented as {@link Future}
      * @throws NullPointerException
      *             if the models parameter is null
      * @throws IllegalStateException
@@ -3656,7 +3656,7 @@ public final class Datastore {
      *            the transaction
      * @param models
      *            the models or entities
-     * @return a list of keys
+     * @return a list of keys represented as {@link Future}
      * @throws IllegalStateException
      *             if the transaction is not null and the transaction is not
      *             active
@@ -3713,6 +3713,7 @@ public final class Datastore {
      * 
      * @param keys
      *            the keys
+     * @return a {@link Void} represented as {@link Future}
      * @throws NullPointerException
      *             if the keys parameter is null
      */
@@ -3738,6 +3739,7 @@ public final class Datastore {
      * 
      * @param keys
      *            the keys
+     * @return a {@link Void} represented as {@link Future}
      */
     public static Future<Void> deleteAsync(Key... keys) {
         return asyncDelegate().deleteAsync(keys);
@@ -3759,6 +3761,7 @@ public final class Datastore {
      * 
      * @param keys
      *            the keys
+     * @return a {@link Void} represented as {@link Future}
      */
     public static Future<Void> deleteWithoutTxAsync(Key... keys) {
         return asyncDelegate().deleteWithoutTxAsync(keys);
@@ -3790,6 +3793,7 @@ public final class Datastore {
      *            the transaction
      * @param keys
      *            the keys
+     * @return a {@link Void} represented as {@link Future}
      * @throws NullPointerException
      *             if the keys parameter is null
      * @throws IllegalStateException
@@ -3825,6 +3829,7 @@ public final class Datastore {
      *            the transaction
      * @param keys
      *            the keys
+     * @return a {@link Void} represented as {@link Future}
      * @throws IllegalStateException
      *             if the transaction is not null and the transaction is not
      *             active
@@ -3851,6 +3856,7 @@ public final class Datastore {
      * 
      * @param ancestorKey
      *            the ancestor key
+     * @return a {@link Void} represented as {@link Future}
      * @throws NullPointerException
      *             if the ancestorKey parameter is null
      */
@@ -3885,6 +3891,7 @@ public final class Datastore {
      *            the transaction
      * @param ancestorKey
      *            the ancestor key
+     * @return a {@link Void} represented as {@link Future}
      * @throws NullPointerException
      *             if the ancestorKey parameter is null
      * @throws IllegalStateException
@@ -3914,6 +3921,7 @@ public final class Datastore {
      * 
      * @param ancestorKey
      *            the ancestor key
+     * @return a {@link Void} represented as {@link Future}
      * @throws NullPointerException
      *             if the ancestorKey parameter is null
      */

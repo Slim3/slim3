@@ -77,7 +77,7 @@ public class DatastoreFilter implements Filter {
             }
             for (Transaction tx : Datastore.getActiveTransactions()) {
                 try {
-                    Datastore.rollback(tx);
+                    tx.rollback();
                     logger.info("The local transaction("
                         + tx.getId()
                         + ") was rolled back.");
