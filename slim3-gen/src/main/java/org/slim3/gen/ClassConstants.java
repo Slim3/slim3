@@ -138,6 +138,10 @@ public final class ClassConstants {
     public static final String DatastoreService =
         "com.google.appengine.api.datastore.DatastoreService";
 
+    /** {@code com.google.appengine.api.datastore.AsyncDatastoreService} */
+    public static final String AsyncDatastoreService =
+        "com.google.appengine.api.datastore.AsyncDatastoreService";
+
     /** {@code java.lang.Object} */
     public static final String Object = "java.lang.Object";
 
@@ -268,20 +272,26 @@ public final class ClassConstants {
     public static final String JsonCoder = "org.slim3.datastore.json.JsonCoder";
 
     /** {@code org.slim3.datastore.json.JsonWriter} */
-    public static final String JsonWriter = "org.slim3.datastore.json.JsonWriter";
+    public static final String JsonWriter =
+        "org.slim3.datastore.json.JsonWriter";
 
     /** {@code org.slim3.datastore.json.JsonReader} */
-    public static final String JsonReader = "org.slim3.datastore.json.JsonReader";
+    public static final String JsonReader =
+        "org.slim3.datastore.json.JsonReader";
 
     /** {@code org.slim3.datastore.json.JsonRootReader} */
-    public static final String JsonRootReader = "org.slim3.datastore.json.JsonRootReader";
+    public static final String JsonRootReader =
+        "org.slim3.datastore.json.JsonRootReader";
 
     /** {@code org.slim3.datastore.json.JsonArrayReader} */
-    public static final String JsonArrayReader = "org.slim3.datastore.json.JsonArrayReader";
+    public static final String JsonArrayReader =
+        "org.slim3.datastore.json.JsonArrayReader";
 
     /** {@code org.slim3.datastore.json.JsonObjectReader} */
-    public static final String JsonObjectReader = "org.slim3.datastore.json.JsonObjectReader";
-    
+    public static final String JsonObjectReader =
+        "org.slim3.datastore.json.JsonObjectReader";
+
     /** {@code org.slim3.datastore.json.JsonValueReader} */
-    public static final String JsonValueReader = "org.slim3.datastore.json.JsonValueReader";
+    public static final String JsonValueReader =
+        "org.slim3.datastore.json.JsonValueReader";
 }

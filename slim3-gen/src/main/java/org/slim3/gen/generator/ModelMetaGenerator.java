@@ -15,54 +15,7 @@
  */
 package org.slim3.gen.generator;
 
-import static org.slim3.gen.ClassConstants.ArrayList;
-import static org.slim3.gen.ClassConstants.AttributeListener;
-import static org.slim3.gen.ClassConstants.Blob;
-import static org.slim3.gen.ClassConstants.BlobKey;
-import static org.slim3.gen.ClassConstants.Boolean;
-import static org.slim3.gen.ClassConstants.Category;
-import static org.slim3.gen.ClassConstants.CollectionAttributeMeta;
-import static org.slim3.gen.ClassConstants.CollectionUnindexedAttributeMeta;
-import static org.slim3.gen.ClassConstants.CoreAttributeMeta;
-import static org.slim3.gen.ClassConstants.CoreUnindexedAttributeMeta;
-import static org.slim3.gen.ClassConstants.DatastoreService;
-import static org.slim3.gen.ClassConstants.Date;
-import static org.slim3.gen.ClassConstants.Double;
-import static org.slim3.gen.ClassConstants.Email;
-import static org.slim3.gen.ClassConstants.Entity;
-import static org.slim3.gen.ClassConstants.Float;
-import static org.slim3.gen.ClassConstants.GeoPt;
-import static org.slim3.gen.ClassConstants.HashSet;
-import static org.slim3.gen.ClassConstants.IMHandle;
-import static org.slim3.gen.ClassConstants.Integer;
-import static org.slim3.gen.ClassConstants.JsonArrayReader;
-import static org.slim3.gen.ClassConstants.JsonCoder;
-import static org.slim3.gen.ClassConstants.JsonReader;
-import static org.slim3.gen.ClassConstants.JsonRootReader;
-import static org.slim3.gen.ClassConstants.JsonValueReader;
-import static org.slim3.gen.ClassConstants.JsonWriter;
-import static org.slim3.gen.ClassConstants.Key;
-import static org.slim3.gen.ClassConstants.Link;
-import static org.slim3.gen.ClassConstants.LinkedHashSet;
-import static org.slim3.gen.ClassConstants.LinkedList;
-import static org.slim3.gen.ClassConstants.Long;
-import static org.slim3.gen.ClassConstants.ModelRef;
-import static org.slim3.gen.ClassConstants.ModelRefAttributeMeta;
-import static org.slim3.gen.ClassConstants.Object;
-import static org.slim3.gen.ClassConstants.PhoneNumber;
-import static org.slim3.gen.ClassConstants.PostalAddress;
-import static org.slim3.gen.ClassConstants.Rating;
-import static org.slim3.gen.ClassConstants.Short;
-import static org.slim3.gen.ClassConstants.ShortBlob;
-import static org.slim3.gen.ClassConstants.String;
-import static org.slim3.gen.ClassConstants.StringAttributeMeta;
-import static org.slim3.gen.ClassConstants.StringCollectionAttributeMeta;
-import static org.slim3.gen.ClassConstants.StringCollectionUnindexedAttributeMeta;
-import static org.slim3.gen.ClassConstants.StringUnindexedAttributeMeta;
-import static org.slim3.gen.ClassConstants.Text;
-import static org.slim3.gen.ClassConstants.TreeSet;
-import static org.slim3.gen.ClassConstants.UnindexedAttributeMeta;
-import static org.slim3.gen.ClassConstants.User;
+import static org.slim3.gen.ClassConstants.*;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -580,22 +533,20 @@ public class ModelMetaGenerator implements Generator {
      * @param printer
      *            the printer
      */
-    protected void printModelToJsonMethod(
-            final Printer printer) {
+    protected void printModelToJsonMethod(final Printer printer) {
         new ModelToJsonMethodGenerator(printer).generate();
     }
-    
+
     /**
      * Generates the {@code jsonToModel} method.
      * 
      * @param printer
      *            the printer
      */
-    protected void printJsonToModelMethod(
-            final Printer printer) {
+    protected void printJsonToModelMethod(final Printer printer) {
         new JsonToModelMethodGenerator(printer).generate();
     }
-    
+
     /**
      * Empty method body to be overwritten by custom extensions
      * 
@@ -1861,7 +1812,7 @@ public class ModelMetaGenerator implements Generator {
             printer
                 .println(
                     "protected void assignKeyToModelRefIfNecessary(%1$s ds, %2$s model) {",
-                    DatastoreService,
+                    AsyncDatastoreService,
                     Object);
             printer.indent();
             if (modelMetaDesc.isAbstrct()) {
@@ -1932,7 +1883,9 @@ public class ModelMetaGenerator implements Generator {
 
         /**
          * Creates a new {@link ModelToJsonMethodGenerator}.
-         * @param printer the printer
+         * 
+         * @param printer
+         *            the printer
          */
         public ModelToJsonMethodGenerator(Printer printer) {
             this.printer = printer;
@@ -1940,11 +1893,13 @@ public class ModelMetaGenerator implements Generator {
 
         /**
          * Creates a new {@link ModelToJsonMethodGenerator}.
-         * @param printer the printer
-         * @param valueExp the value expression
+         * 
+         * @param printer
+         *            the printer
+         * @param valueExp
+         *            the value expression
          */
-        public ModelToJsonMethodGenerator(Printer printer
-                , String valueExp) {
+        public ModelToJsonMethodGenerator(Printer printer, String valueExp) {
             this.printer = printer;
             this.valueExp = valueExp;
         }
@@ -1954,9 +1909,11 @@ public class ModelMetaGenerator implements Generator {
          */
         public void generate() {
             printer.println("@Override");
-            printer.println(
-                "protected void modelToJson(%s writer, %s model, int maxDepth, int currentDepth) {",
-                JsonWriter, Object);
+            printer
+                .println(
+                    "protected void modelToJson(%s writer, %s model, int maxDepth, int currentDepth) {",
+                    JsonWriter,
+                    Object);
             printer.indent();
             if (modelMetaDesc.isAbstrct()) {
                 printer.println(
@@ -1964,31 +1921,38 @@ public class ModelMetaGenerator implements Generator {
                     UnsupportedOperationException.class.getName(),
                     modelMetaDesc.getModelClassName());
             } else {
-                printer.println("%s m = (%1$s) model;",
-                    modelMetaDesc.getModelClassName());
+                printer.println("%s m = (%1$s) model;", modelMetaDesc
+                    .getModelClassName());
                 printer.println("StringBuilder b = new StringBuilder();");
                 printer.println("writer.beginObject();");
                 printer.println("%s encoder = null;", JsonCoder);
-                for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
+                for (AttributeMetaDesc attr : modelMetaDesc
+                    .getAttributeMetaDescList()) {
                     valueExp = "m." + attr.getReadMethodName() + "()";
                     indent = 0;
                     JsonAnnotation ja = attr.getJson();
-                    if(ja.isIgnore()) continue;
+                    if (ja.isIgnore())
+                        continue;
                     DataType dataType = attr.getDataType();
-                    if(!isSupportedForJson(dataType)){
-                        printer.println("// %s is not supported.", dataType.getClassName());
+                    if (!isSupportedForJson(dataType)) {
+                        printer.println("// %s is not supported.", dataType
+                            .getClassName());
                         continue;
                     }
-                    if(!(dataType instanceof CorePrimitiveType) && ja.isIgnoreNull()){
+                    if (!(dataType instanceof CorePrimitiveType)
+                        && ja.isIgnoreNull()) {
                         printer.print("if(%s != null", valueExp);
-                        if(dataType instanceof TextType){
-                            printer.printWithoutIndent(" && %s.getValue() != null",
+                        if (dataType instanceof TextType) {
+                            printer.printWithoutIndent(
+                                " && %s.getValue() != null",
                                 valueExp);
-                        } else if(dataType instanceof BlobType){
-                            printer.printWithoutIndent(" && %s.getBytes() != null",
+                        } else if (dataType instanceof BlobType) {
+                            printer.printWithoutIndent(
+                                " && %s.getBytes() != null",
                                 valueExp);
-                        } else if(dataType instanceof ModelRefType){
-                            printer.printWithoutIndent(" && %s.getKey() != null",
+                        } else if (dataType instanceof ModelRefType) {
+                            printer.printWithoutIndent(
+                                " && %s.getKey() != null",
                                 valueExp);
                         }
                         printer.printlnWithoutIndent("){");
@@ -1996,16 +1960,15 @@ public class ModelMetaGenerator implements Generator {
                         indent++;
                     }
                     String name = ja.getAlias();
-                    if(name.length() == 0){
+                    if (name.length() == 0) {
                         name = attr.getAttributeName();
                     }
-                    printer.println(
-                        "writer.writePropertyName(\"%1$s\");",
-                        name
-                        );
-                    printer.println("encoder = new %s();", ja.getCoderClassName());
+                    printer
+                        .println("writer.writePropertyName(\"%1$s\");", name);
+                    printer.println("encoder = new %s();", ja
+                        .getCoderClassName());
                     dataType.accept(this, attr);
-                    for(int i = 0; i < indent; i++){
+                    for (int i = 0; i < indent; i++) {
                         printer.unindent();
                         printer.println("}");
                     }
@@ -2023,42 +1986,41 @@ public class ModelMetaGenerator implements Generator {
             printer.println("encoder.encode(writer, %s);", valueExp);
             return null;
         }
-        
+
         @Override
         public Void visitBlobType(BlobType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            if(!p.getJson().isIgnoreNull()){
-                printer.println("if(%s == null || %1$s.getBytes() == null){",
-                        valueExp);
+            if (!p.getJson().isIgnoreNull()) {
+                printer.println(
+                    "if(%s == null || %1$s.getBytes() == null){",
+                    valueExp);
                 printer.indent();
-                printer.println("encoder.encode(writer, (%s)null);",
-                        Blob);
+                printer.println("encoder.encode(writer, (%s)null);", Blob);
                 printer.unindent();
                 printer.println("} else{");
                 printer.indent();
                 indent++;
-            }                                
+            }
             return super.visitBlobType(type, p);
         }
-        
+
         @Override
         public Void visitTextType(TextType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            if(p.isCipher()){
-                if(!p.getJson().isIgnoreNull()){
-                    printer.println("if(%s == null || %1$s.getValue() == null){",
+            if (p.isCipher()) {
+                if (!p.getJson().isIgnoreNull()) {
+                    printer.println(
+                        "if(%s == null || %1$s.getValue() == null){",
                         valueExp);
                     printer.indent();
-                    printer.println("encoder.encode(writer, %s);",
-                        valueExp);
+                    printer.println("encoder.encode(writer, %s);", valueExp);
                     printer.unindent();
                     printer.println("} else{");
                     printer.indent();
                     indent++;
-                }                                
-                printer.println("encoder.encode(writer, " +
-                        "new %s(encrypt(%s.getValue())));",
-                        Text, valueExp);
+                }
+                printer.println("encoder.encode(writer, "
+                    + "new %s(encrypt(%s.getValue())));", Text, valueExp);
                 return null;
             }
             return super.visitTextType(type, p);
@@ -2067,8 +2029,8 @@ public class ModelMetaGenerator implements Generator {
         @Override
         public Void visitStringType(StringType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            if(p.isCipher()){
-                if(!p.getJson().isIgnoreNull()){
+            if (p.isCipher()) {
+                if (!p.getJson().isIgnoreNull()) {
                     printer.println("if(%s == null){", valueExp);
                     printer.indent();
                     printer.println("encoder.encode(writer, %s);", valueExp);
@@ -2076,23 +2038,24 @@ public class ModelMetaGenerator implements Generator {
                     printer.println("} else{");
                     printer.indent();
                     indent++;
-                }                                
-                printer.println("encoder.encode(writer, encrypt(%s));",
-                        valueExp);
+                }
+                printer.println(
+                    "encoder.encode(writer, encrypt(%s));",
+                    valueExp);
                 return null;
             }
             return super.visitStringType(type, p);
         }
-        
+
         @Override
         public Void visitCollectionType(CollectionType type, AttributeMetaDesc p)
                 throws RuntimeException {
             DataType et = type.getElementType();
-            if(!isSupportedForJson(et)){
+            if (!isSupportedForJson(et)) {
                 printer.println("// %s is not supported.", et.getClassName());
                 return null;
             }
-            if(!p.getJson().isIgnoreNull()){
+            if (!p.getJson().isIgnoreNull()) {
                 printer.println("if(%s == null){", valueExp);
                 printer.indent();
                 printer.println("writer.writeNull();");
@@ -2102,13 +2065,12 @@ public class ModelMetaGenerator implements Generator {
                 indent++;
             }
             printer.println("writer.beginArray();");
-            printer.println("for(%s v : %s){"
-                    , et.getClassName(), valueExp);
+            printer.println("for(%s v : %s){", et.getClassName(), valueExp);
             printer.indent();
-            ModelToJsonMethodGenerator gen = new ModelToJsonMethodGenerator(
-                printer, "v");
+            ModelToJsonMethodGenerator gen =
+                new ModelToJsonMethodGenerator(printer, "v");
             et.accept(gen, p);
-            for(int i = 0; i < gen.indent; i++){
+            for (int i = 0; i < gen.indent; i++) {
                 printer.unindent();
                 printer.println("}");
             }
@@ -2117,34 +2079,38 @@ public class ModelMetaGenerator implements Generator {
             printer.println("writer.endArray();");
             return null;
         }
-        
+
         @Override
         public Void visitArrayType(ArrayType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            if(type.getComponentType().getClassName().equals("byte")){
-                if(!p.getJson().isIgnoreNull()){
+            if (type.getComponentType().getClassName().equals("byte")) {
+                if (!p.getJson().isIgnoreNull()) {
                     printer.println("if(%s == null){", valueExp);
                     printer.indent();
-                    printer.println("encoder.encode(writer, (%s)null);",
+                    printer.println(
+                        "encoder.encode(writer, (%s)null);",
                         ShortBlob);
                     printer.unindent();
                     printer.println("} else{");
                     printer.indent();
                     indent++;
                 }
-                printer.println("encoder.encode(writer, new %s(%s));",
-                        ShortBlob, valueExp);
-            } else{
+                printer.println(
+                    "encoder.encode(writer, new %s(%s));",
+                    ShortBlob,
+                    valueExp);
+            } else {
                 super.visitArrayType(type, p);
             }
             return null;
         }
-        
+
         @Override
         public Void visitModelRefType(ModelRefType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            printer.println("encoder.encode(writer, %s, maxDepth, currentDepth);",
-                    valueExp);
+            printer.println(
+                "encoder.encode(writer, %s, maxDepth, currentDepth);",
+                valueExp);
             return null;
         }
     }
@@ -2165,7 +2131,9 @@ public class ModelMetaGenerator implements Generator {
 
         /**
          * Creates a new {@link ModelToJsonMethodGenerator}.
-         * @param printer the printer
+         * 
+         * @param printer
+         *            the printer
          */
         public JsonToModelMethodGenerator(Printer printer) {
             this.printer = printer;
@@ -2173,13 +2141,18 @@ public class ModelMetaGenerator implements Generator {
 
         /**
          * Creates a new {@link ModelToJsonMethodGenerator}.
-         * @param printer the printer
-         * @param getterExp the getterExp
-         * @param setterExp the setterExp
-         * @param ignoreNull true if ignone null
+         * 
+         * @param printer
+         *            the printer
+         * @param getterExp
+         *            the getterExp
+         * @param setterExp
+         *            the setterExp
+         * @param ignoreNull
+         *            true if ignone null
          */
-        public JsonToModelMethodGenerator(Printer printer,
-                String getterExp, String setterExp, boolean ignoreNull) {
+        public JsonToModelMethodGenerator(Printer printer, String getterExp,
+                String setterExp, boolean ignoreNull) {
             this.printer = printer;
             this.getterExp = getterExp;
             this.setterExp = setterExp;
@@ -2191,9 +2164,11 @@ public class ModelMetaGenerator implements Generator {
          */
         public void generate() {
             printer.println("@Override");
-            printer.println(
-                "public %s jsonToModel(%s rootReader, int maxDepth, int currentDepth) {",
-                modelMetaDesc.getModelClassName(), JsonRootReader);
+            printer
+                .println(
+                    "public %s jsonToModel(%s rootReader, int maxDepth, int currentDepth) {",
+                    modelMetaDesc.getModelClassName(),
+                    JsonRootReader);
             printer.indent();
             if (modelMetaDesc.isAbstrct()) {
                 printer.println(
@@ -2201,26 +2176,30 @@ public class ModelMetaGenerator implements Generator {
                     UnsupportedOperationException.class.getName(),
                     modelMetaDesc.getModelClassName());
             } else {
-                printer.println("%1$s m = new %1$s();",
-                    modelMetaDesc.getModelClassName());
+                printer.println("%1$s m = new %1$s();", modelMetaDesc
+                    .getModelClassName());
                 printer.println("%s reader = null;", JsonReader);
                 printer.println("%s decoder = null;", JsonCoder);
-                for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
+                for (AttributeMetaDesc attr : modelMetaDesc
+                    .getAttributeMetaDescList()) {
                     JsonAnnotation ja = attr.getJson();
-                    if(ja.isIgnore()) continue;
+                    if (ja.isIgnore())
+                        continue;
                     DataType dt = attr.getDataType();
-                    if(!isSupportedForJson(dt)){
-                        printer.println("// %s is not supported.", dt.getClassName());
+                    if (!isSupportedForJson(dt)) {
+                        printer.println("// %s is not supported.", dt
+                            .getClassName());
                         continue;
                     }
                     String name = ja.getAlias();
-                    if(name.length() == 0){
+                    if (name.length() == 0) {
                         name = attr.getAttributeName();
                     }
-                    printer.println("reader = rootReader.newObjectReader(\"%s\");",
+                    printer.println(
+                        "reader = rootReader.newObjectReader(\"%s\");",
                         name);
-                    printer.println("decoder = new %s();",
-                        ja.getCoderClassName());
+                    printer.println("decoder = new %s();", ja
+                        .getCoderClassName());
                     setterExp = "m." + attr.getWriteMethodName();
                     getterExp = "m." + attr.getReadMethodName() + "()";
                     dt.accept(this, attr);
@@ -2231,58 +2210,64 @@ public class ModelMetaGenerator implements Generator {
             printer.unindent();
             printer.println("}");
         }
-        
+
         @Override
         protected Void defaultAction(DataType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            if(ignoreNull){
-                printer.println("%s v = decoder.decode(reader, %s);",
-                    type.getClassName(), getterExp);
+            if (ignoreNull) {
+                printer.println("%s v = decoder.decode(reader, %s);", type
+                    .getClassName(), getterExp);
                 printer.println("if(v != null){");
                 printer.indent();
                 printer.println("%s(v);", setterExp);
                 printer.unindent();
                 printer.println("}");
-            } else{
-                printer.println("%s(decoder.decode(reader, %s));",
-                    setterExp, getterExp);
+            } else {
+                printer.println(
+                    "%s(decoder.decode(reader, %s));",
+                    setterExp,
+                    getterExp);
             }
             return null;
         }
-        
+
         @Override
         public Void visitEnumType(EnumType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            printer.println("%s(decoder.decode(reader, %s, %s.class));",
+            printer.println(
+                "%s(decoder.decode(reader, %s, %s.class));",
                 setterExp,
                 getterExp,
-                type.getClassName()
-                );
+                type.getClassName());
             return null;
         }
 
         @Override
         public Void visitStringType(StringType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            if(p.isCipher()){
+            if (p.isCipher()) {
                 printer.println("if(reader.read() != null){");
                 printer.indent();
-                printer.println("reader = new %s(decrypt(reader.read()), rootReader.getModelReader());",
-                    JsonValueReader);
+                printer
+                    .println(
+                        "reader = new %s(decrypt(reader.read()), rootReader.getModelReader());",
+                        JsonValueReader);
                 printer.unindent();
                 printer.println("}");
             }
             return super.visitStringType(type, p);
         }
-        
+
         @Override
         public Void visitTextType(TextType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            if(p.isCipher()){
+            if (p.isCipher()) {
                 printer.println("if(reader.read() != null){");
                 printer.indent();
-                printer.println("reader = new %s(decrypt(reader.read()), rootReader.getModelReader());",
-                    JsonValueReader);
+                printer
+                    .println(
+                        "reader = new %s(decrypt(reader.read()), rootReader.getModelReader());",
+                        JsonValueReader);
                 printer.unindent();
                 printer.println("}");
             }
@@ -2293,19 +2278,24 @@ public class ModelMetaGenerator implements Generator {
         public Void visitCollectionType(CollectionType type, AttributeMetaDesc p)
                 throws RuntimeException {
             DataType et = type.getElementType();
-            if(!isSupportedForJson(et)){
+            if (!isSupportedForJson(et)) {
                 return null;
             }
             String container = ArrayList;
-            if(type instanceof SortedSetType) container = TreeSet;
-            else if(type instanceof SetType) container = HashSet;
+            if (type instanceof SortedSetType)
+                container = TreeSet;
+            else if (type instanceof SetType)
+                container = HashSet;
             printer.println("{");
             printer.indent();
-            printer.println("%s<%s> elements = new %1$s<%2$s>();",
+            printer.println(
+                "%s<%s> elements = new %1$s<%2$s>();",
                 container,
                 et.getTypeName());
-            printer.println("%s r = rootReader.newArrayReader(\"%s\");",
-                JsonArrayReader, p.getAttributeName());
+            printer.println(
+                "%s r = rootReader.newArrayReader(\"%s\");",
+                JsonArrayReader,
+                p.getAttributeName());
             printer.println("if(r != null){");
             printer.indent();
             printer.println("reader = r;");
@@ -2313,22 +2303,28 @@ public class ModelMetaGenerator implements Generator {
             printer.println("for(int i = 0; i < n; i++){");
             printer.indent();
             printer.println("r.setIndex(i);");
-            if(et instanceof ModelRefType){
-                printer.println("%s ref = new %1$s(%s.class);",
-                    et.getTypeName(),
-                    ((ModelRefType)et).getReferenceModelTypeName());
-                type.getElementType().accept(new JsonToModelMethodGenerator(
-                    printer
-                    , "ref", "elements.add", true), p);
+            if (et instanceof ModelRefType) {
+                printer.println("%s ref = new %1$s(%s.class);", et
+                    .getTypeName(), ((ModelRefType) et)
+                    .getReferenceModelTypeName());
+                type.getElementType().accept(
+                    new JsonToModelMethodGenerator(
+                        printer,
+                        "ref",
+                        "elements.add",
+                        true),
+                    p);
                 printer.println("if(ref.getKey() != null){");
                 printer.indent();
                 printer.println("elements.add(ref);");
                 printer.unindent();
                 printer.println("}");
-            } else{
-                type.getElementType().accept(new JsonToModelMethodGenerator(
-                    printer
-                    , "(" + et.getClassName() + ")null", "elements.add", true), p);
+            } else {
+                type.getElementType().accept(
+                    new JsonToModelMethodGenerator(printer, "("
+                        + et.getClassName()
+                        + ")null", "elements.add", true),
+                    p);
             }
             printer.unindent();
             printer.println("}");
@@ -2339,35 +2335,56 @@ public class ModelMetaGenerator implements Generator {
             printer.println("}");
             return null;
         }
-        
+
         @Override
         public Void visitModelRefType(ModelRefType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            printer.println("decoder.decode(reader, %s, maxDepth, currentDepth);",
-                getterExp
-                );
+            printer.println(
+                "decoder.decode(reader, %s, maxDepth, currentDepth);",
+                getterExp);
             return null;
         }
     }
 
-    private boolean isSupportedForJson(DataType dataType){
-        if(jsonSupportedTypes.contains(dataType.getClassName())) return true;
-        if(jsonSupportedTypes.contains(dataType.getTypeName())) return true;
-        if(dataType instanceof CollectionType) return true;
-        if(dataType instanceof CorePrimitiveType) return true;
-        if(dataType instanceof EnumType) return true;
+    private boolean isSupportedForJson(DataType dataType) {
+        if (jsonSupportedTypes.contains(dataType.getClassName()))
+            return true;
+        if (jsonSupportedTypes.contains(dataType.getTypeName()))
+            return true;
+        if (dataType instanceof CollectionType)
+            return true;
+        if (dataType instanceof CorePrimitiveType)
+            return true;
+        if (dataType instanceof EnumType)
+            return true;
         return false;
     }
-    
+
     private static final Set<String> jsonSupportedTypes = new HashSet<String>();
-    static{
+    static {
         jsonSupportedTypes.addAll(Arrays.asList(
-            Boolean, Short, Integer, Long, Float, Double,
-            String, Date,
-            Blob, BlobKey, Category, Email, GeoPt, IMHandle,
-            Key, Link, PhoneNumber, PostalAddress, Rating,
-            ShortBlob, Text, User,
-            ModelRef
-            ));
+            Boolean,
+            Short,
+            Integer,
+            Long,
+            Float,
+            Double,
+            String,
+            Date,
+            Blob,
+            BlobKey,
+            Category,
+            Email,
+            GeoPt,
+            IMHandle,
+            Key,
+            Link,
+            PhoneNumber,
+            PostalAddress,
+            Rating,
+            ShortBlob,
+            Text,
+            User,
+            ModelRef));
     }
 }
