@@ -206,6 +206,11 @@
     </dependency>
     <dependency>
       <groupId>com.google.appengine</groupId>
+      <artifactId>appengine-api-labs</artifactId>
+      <version>1.4.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.appengine</groupId>
       <artifactId>appengine-local-runtime</artifactId>
       <version>1.4.0</version>
       <scope>test</scope>
@@ -241,5 +246,6 @@
       <type>jar</type>
       <scope>provided</scope>
     </dependency>
+    
   </dependencies>
 </project>
