@@ -39,9 +39,18 @@ public class JsonWriter {
      * Begins the array mode.
      */
     public void beginArray(){
+        checkPropertyName();
         writeCammaForValue();
         contexts.push(new Context(Context.Mode.ARRAY));
         builder.append("[");
+    }
+
+    private void checkPropertyName(){
+        if(nextPropertyName != null){
+            writeCammaForPropertyName();
+            builder.append("\"").append(nextPropertyName).append("\":");
+            nextPropertyName = null;
+        }
     }
 
     /**
@@ -56,6 +65,7 @@ public class JsonWriter {
      * Begins the object mode.
      */
     public void beginObject(){
+        checkPropertyName();
         writeCammaForValue();
         contexts.push(new Context(Context.Mode.OBJECT));
         builder.append("{");
@@ -67,15 +77,15 @@ public class JsonWriter {
     public void endObject(){
         builder.append("}");
         contexts.pop();
+        nextPropertyName = null;
     }
 
     /**
-     * Writes a property name.
+     * Sets a next property name.
      * @param name property name
      */
-    public void writePropertyName(String name){
-        writeCammaForPropertyName();
-        builder.append("\"").append(name).append("\":");
+    public void setNextPropertyName(String name){
+        this.nextPropertyName = name;
     }
 
     /**
@@ -84,7 +94,7 @@ public class JsonWriter {
      * @param value value
      */
     public void writeStringProperty(String name, String value) {
-        writePropertyName(name);
+        setNextPropertyName(name);
         if(value != null){
             writeString(value);
         } else{
@@ -98,7 +108,7 @@ public class JsonWriter {
      * @param value value
      */
     public void writeValueProperty(String name, Object value) {
-        writePropertyName(name);
+        setNextPropertyName(name);
         if(value != null){
             writeValue(value);
         } else{
@@ -111,6 +121,7 @@ public class JsonWriter {
      * @param value value
      */
     public void writeString(String value){
+        checkPropertyName();
         writeCammaForValue();
         builder.append("\"").append(value).append("\"");
     }
@@ -120,6 +131,7 @@ public class JsonWriter {
      * @param value value.
      */
     public void writeValue(Object value){
+        checkPropertyName();
         writeCammaForValue();
         builder.append(value);
     }
@@ -128,6 +140,7 @@ public class JsonWriter {
      * Writes a null.
      */
     public void writeNull(){
+        checkPropertyName();
         writeCammaForValue();
         builder.append("null");
     }
@@ -155,6 +168,7 @@ public class JsonWriter {
 
     private StringBuilder builder;
     private ModelWriter modelWriter;
+    private String nextPropertyName;
     private Stack<Context> contexts = new Stack<Context>();
 
     static class Context{

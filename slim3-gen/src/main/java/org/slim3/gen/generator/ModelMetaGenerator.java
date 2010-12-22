@@ -1923,7 +1923,6 @@ public class ModelMetaGenerator implements Generator {
             } else {
                 printer.println("%s m = (%1$s) model;", modelMetaDesc
                     .getModelClassName());
-                printer.println("StringBuilder b = new StringBuilder();");
                 printer.println("writer.beginObject();");
                 printer.println("%s encoder = null;", JsonCoder);
                 for (AttributeMetaDesc attr : modelMetaDesc
@@ -1964,7 +1963,7 @@ public class ModelMetaGenerator implements Generator {
                         name = attr.getAttributeName();
                     }
                     printer
-                        .println("writer.writePropertyName(\"%1$s\");", name);
+                        .println("writer.setNextPropertyName(\"%1$s\");", name);
                     printer.println("encoder = new %s();", ja
                         .getCoderClassName());
                     dataType.accept(this, attr);
@@ -2083,7 +2082,13 @@ public class ModelMetaGenerator implements Generator {
         @Override
         public Void visitArrayType(ArrayType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            if (type.getComponentType().getClassName().equals("byte")) {
+            DataType et = type.getComponentType();
+            if (!isSupportedForJson(et)) {
+                printer.println("// %s(%s) is not supported.",
+                    et.getClassName(), et.getTypeName());
+                return null;
+            }
+            if (et.getClassName().equals("byte")) {
                 if (!p.getJson().isIgnoreNull()) {
                     printer.println("if(%s == null){", valueExp);
                     printer.indent();
@@ -2100,7 +2105,30 @@ public class ModelMetaGenerator implements Generator {
                     ShortBlob,
                     valueExp);
             } else {
-                super.visitArrayType(type, p);
+                if(!p.getJson().isIgnoreNull()){
+                    printer.println("if(%s == null){", valueExp);
+                    printer.indent();
+                    printer.println("encoder.encode(writer, (%s));",
+                        valueExp);
+                    printer.unindent();
+                    printer.println("} else{");
+                    printer.indent();
+                    indent++;
+                }
+                printer.println("writer.beginArray();");
+                printer.println("for(%s v : %s){"
+                        , et.getClassName(), valueExp);
+                printer.indent();
+                ModelToJsonMethodGenerator gen = new ModelToJsonMethodGenerator(
+                    printer, "v");
+                et.accept(gen, p);
+                for(int i = 0; i < gen.indent; i++){
+                    printer.unindent();
+                    printer.println("}");
+                }
+                printer.unindent();
+                printer.println("}");
+                printer.println("writer.endArray();");
             }
             return null;
         }
@@ -2337,6 +2365,40 @@ public class ModelMetaGenerator implements Generator {
         }
 
         @Override
+        public Void visitArrayType(ArrayType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            DataType et = type.getComponentType();
+            if(!isSupportedForJson(et)){
+                printer.println("// %s(%s) is not supported.",
+                    et.getClassName(), et.getTypeName());
+                return null;
+            }
+            if(et.getClassName().equals("byte")){
+                printer.println("if(%s != null){", getterExp);
+                printer.indent();
+                printer.println("%s(decoder.decode(reader, new %s(%s)).getBytes());",
+                    setterExp, ShortBlob, getterExp);
+                printer.unindent();
+                printer.println("} else{");
+                printer.indent();
+                printer.println("%s v = decoder.decode(reader, (%1$s)null);", ShortBlob);
+                printer.println("if(v != null){");
+                printer.indent();                
+                printer.println("%s(v.getBytes());",
+                    setterExp);
+                printer.unindent();
+                printer.println("} else{");
+                printer.indent();                
+                printer.println("%s(null);", setterExp);
+                printer.unindent();
+                printer.println("}");
+                printer.unindent();
+                printer.println("}");
+            }
+            return null;
+        }
+        
+        @Override
         public Void visitModelRefType(ModelRefType type, AttributeMetaDesc p)
                 throws RuntimeException {
             printer.println(
@@ -2357,6 +2419,8 @@ public class ModelMetaGenerator implements Generator {
             return true;
         if (dataType instanceof EnumType)
             return true;
+        if(dataType instanceof ArrayType) return true;
+        if(dataType instanceof PrimitiveByteType) return true;
         return false;
     }
 
