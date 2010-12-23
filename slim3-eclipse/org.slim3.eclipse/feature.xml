@@ -2,7 +2,7 @@
 <feature
       id="org.slim3.eclipse"
       label="Slim3 Project"
-      version="1.0.5.qualifier"
+      version="1.0.6.qualifier"
       provider-name="slim3"
       plugin="org.slim3.eclipse.core">
 
@@ -219,14 +219,14 @@
    </license>
 
    <url>
-      <update label="Slim3 Update Site" url="https://slim3.googlecode.com/svn/trunk/slim3-eclipse/org.slim3.eclipse.updatesite/"/>
+      <update label="Slim3 Update Site" url="https://slim3.googlecode.com/svn/updates/"/>
    </url>
 
    <plugin
          id="org.slim3.eclipse.core"
          download-size="0"
          install-size="0"
-         version="1.0.5.qualifier"
+         version="0.0.0"
          unpack="false"/>
 
 </feature>
