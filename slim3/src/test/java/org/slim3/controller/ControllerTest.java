@@ -21,6 +21,7 @@ import static org.junit.Assert.*;
 import java.util.Date;
 
 import org.junit.Test;
+import org.slim3.controller.upload.FileUpload;
 import org.slim3.tester.ControllerTestCase;
 
 import com.google.appengine.api.datastore.Key;
@@ -360,6 +361,31 @@ public class ControllerTest extends ControllerTestCase {
             ControllerConstants.FORWARD_SERVLET_PATH_KEY,
             "/abc");
         assertThat(controller.getForwardServletPath(), is("/abc"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void createRequestHandler() throws Exception {
+        assertThat(controller
+            .createRequestHandler(tester.request)
+            .getClass()
+            .getName(), is(RequestHandler.class.getName()));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void createRequestHandlerForMultipartRequest() throws Exception {
+        tester.request.setContentType(FileUpload.MULTIPART);
+        assertThat(controller
+            .createRequestHandler(tester.request)
+            .getClass()
+            .getName(), is(MultipartRequestHandler.class.getName()));
     }
 
     private static class IndexController extends Controller {

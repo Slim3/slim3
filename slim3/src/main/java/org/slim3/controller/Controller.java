@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.slim3.controller.upload.FileUpload;
 import org.slim3.controller.validator.Errors;
 import org.slim3.util.AppEngineUtil;
 import org.slim3.util.BooleanUtil;
@@ -920,5 +921,20 @@ public abstract class Controller {
      */
     protected boolean isDelete() {
         return "delete".equalsIgnoreCase(request.getMethod());
+    }
+
+    /**
+     * Creates a new request handler.
+     * 
+     * @param request
+     *            the request
+     * @return a new request handler
+     * 
+     */
+    protected RequestHandler createRequestHandler(HttpServletRequest request) {
+        if (FileUpload.isMultipartContent(request)) {
+            return new MultipartRequestHandler(request);
+        }
+        return new RequestHandler(request);
     }
 }

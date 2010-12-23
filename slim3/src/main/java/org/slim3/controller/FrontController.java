@@ -39,7 +39,6 @@ import javax.servlet.http.HttpSession;
 
 import org.slim3.controller.router.Router;
 import org.slim3.controller.router.RouterFactory;
-import org.slim3.controller.upload.FileUpload;
 import org.slim3.controller.validator.Errors;
 import org.slim3.util.AppEngineUtil;
 import org.slim3.util.ApplicationMessage;
@@ -563,7 +562,8 @@ public class FrontController implements Filter {
     protected void processController(HttpServletRequest request,
             HttpServletResponse response, Controller controller)
             throws IOException, ServletException {
-        RequestHandler requestHandler = createRequestHandler(request);
+        RequestHandler requestHandler =
+            controller.createRequestHandler(request);
         requestHandler.handle();
         try {
             Navigation navigation = controller.runBare();
@@ -577,21 +577,6 @@ public class FrontController implements Filter {
             }
             throw ThrowableUtil.wrap(t);
         }
-    }
-
-    /**
-     * Creates a new request handlers.
-     * 
-     * @param request
-     *            the request
-     * @return a new request handler
-     * 
-     */
-    protected RequestHandler createRequestHandler(HttpServletRequest request) {
-        if (FileUpload.isMultipartContent(request)) {
-            return new MultipartRequestHandler(request);
-        }
-        return new RequestHandler(request);
     }
 
     /**
