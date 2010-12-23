@@ -21,7 +21,7 @@ import com.google.gwt.junit.client.GWTTestCase;
  * @author galdolber
  *
  */
-public class KeyFactoryTest extends GWTTestCase {
+public class KeyFactoryGWTTest extends GWTTestCase {
 
     @Override
     public String getModuleName() {

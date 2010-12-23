@@ -21,7 +21,7 @@ import com.google.gwt.junit.client.GWTTestCase;
  * @author galdolber
  *
  */
-public class KeyTest extends GWTTestCase {
+public class KeyGWTTest extends GWTTestCase {
 
     private final String kind = "Kind";
     private final String name = "name";
