@@ -22,6 +22,7 @@ import org.eclipse.ui.internal.ide.IDEWorkbenchMessages;
 import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
 import org.slim3.eclipse.core.Activator;
 import org.slim3.eclipse.core.JdtUtil;
+import org.slim3.eclipse.utils.ResourceUtil;
 
 @SuppressWarnings({"restriction"})
 public abstract class AbstractNewSourceFileWizardPage extends NewContainerWizardPage {
@@ -32,7 +33,7 @@ public abstract class AbstractNewSourceFileWizardPage extends NewContainerWizard
 		super(pageName);
 	}
 	
-	public void create(IProject projectHandle, String packageName, String fileName, IProgressMonitor monitor) throws CoreException {
+	public IPath create(IProject projectHandle, String packageName, String fileName, IProgressMonitor monitor) throws CoreException {
 	    IPath newFilePath = getFilePath(projectHandle, packageName, fileName);
 	    IFile newFileHandle
 	    	= IDEWorkbenchPlugin.getPluginWorkspace().getRoot().getFile(newFilePath);
@@ -45,6 +46,7 @@ public abstract class AbstractNewSourceFileWizardPage extends NewContainerWizard
         try {
 	          PlatformUI.getWorkbench().getOperationSupport().getOperationHistory().execute(
 	            op, monitor, WorkspaceUndoUtil.getUIInfoAdapter(getShell()));
+	          return newFilePath;
         } catch (Exception ex) {
 			throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Failed to create " + packageName + "." + fileName, ex));
         }
@@ -70,6 +72,6 @@ public abstract class AbstractNewSourceFileWizardPage extends NewContainerWizard
 
 		return rootPath.append(fileName);
 	}
-
+	
 	protected abstract InputStream getInitialContents(String packageName, String fileName);
 }

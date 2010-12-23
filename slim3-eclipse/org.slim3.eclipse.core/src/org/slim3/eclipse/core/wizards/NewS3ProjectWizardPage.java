@@ -11,7 +11,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
@@ -37,7 +36,6 @@ import org.eclipse.jdt.ui.wizards.NewContainerWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -58,6 +56,7 @@ import org.eclipse.ui.wizards.datatransfer.ImportOperation;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.osgi.framework.Bundle;
 import org.slim3.eclipse.core.Activator;
+import org.slim3.eclipse.utils.ResourceUtil;
 
 @SuppressWarnings("restriction")
 public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements IOverwriteQuery {
@@ -136,7 +135,7 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 	    });
 		
 		cbIsScenic3 = new Button(uig, SWT.RADIO);
-		cbIsScenic3.setText("Use MVC of Scenic3.");
+		cbIsScenic3.setText("Use MVC of Slim3 with Scenic3.");
 
 		Link link = new Link(uig, SWT.NONE);
 		link.setText("You can create multiple action methods into a Page class. <a>http://code.google.com/p/scenic3/</a>");
@@ -176,6 +175,8 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 		cbIsAutoGen.setEnabled(false);
 		
 		setControl(composite);
+		
+		txtProjectName.setFocus();
 	}
 
 	@Override
@@ -304,9 +305,10 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 			boolean isScenic3Project, IProgressMonitor monitor) throws InvocationTargetException {
 		try {
 			IProject projectHandle = createProjectHandle(projectName, monitor);
-			importBlankProject(projectHandle, monitor);
+			importCommonSDK(projectHandle, monitor);
+			importSlim3SDK(projectHandle, monitor);
 			if(isScenic3Project) {
-				importScenic3BlankProject(projectHandle, monitor);
+				importScenic3SDK(projectHandle, monitor);
 			}
 			changeFactoryPath(projectHandle, isScenic3Project, monitor);
 			changeGenSrcDir(projectHandle, rootPackage, isScenic3Project, monitor);
@@ -326,8 +328,8 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
     		boolean isAutoGen, IProgressMonitor monitor) throws InvocationTargetException {
 		try {
 			IProject projectHandle = createProjectHandle(projectName, monitor);
-			importBlankProject(projectHandle, monitor);
-			importGwtBlankProject(projectHandle, monitor);
+			importCommonSDK(projectHandle, monitor);
+			importGwtSDK(projectHandle, monitor);
 			changeFactoryPath(projectHandle, false, monitor);
 			changeGenSrcDir(projectHandle, rootPackage, false, monitor);
 			changeRootPackage(projectHandle, rootPackage, monitor);
@@ -350,15 +352,19 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 		return projectHandle;
 	}
 	
-	private void importBlankProject(IProject projectHandle, IProgressMonitor monitor) throws Exception {
+	private void importCommonSDK(IProject projectHandle, IProgressMonitor monitor) throws Exception {
+		importProject(projectHandle, "common-sdk", monitor);
+	}
+
+	private void importSlim3SDK(IProject projectHandle, IProgressMonitor monitor) throws Exception {
 		importProject(projectHandle, "slim3-sdk", monitor);
 	}
 
-	private void importScenic3BlankProject(IProject projectHandle, IProgressMonitor monitor) throws Exception {
+	private void importScenic3SDK(IProject projectHandle, IProgressMonitor monitor) throws Exception {
 		importProject(projectHandle, "scenic3-sdk", monitor);
 	}
 
-	private void importGwtBlankProject(IProject projectHandle, IProgressMonitor monitor) throws Exception {
+	private void importGwtSDK(IProject projectHandle, IProgressMonitor monitor) throws Exception {
 		importProject(projectHandle, "slim3-gwt-sdk", monitor);
 	}
 
@@ -408,39 +414,21 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 	}
 
 	private String getGenJarFileName(IProject projectHandle, IProgressMonitor monitor) throws CoreException {
-		IFolder libFolder = projectHandle.getFolder("lib");
-		IResource[] members = libFolder.members();
-		for(IResource m : members) {
-			if((m.getType() == IResource.FILE) && (m.getFileExtension().equals("jar"))) {
-				String filename = m.getName();
-				if(filename.startsWith("slim3-gen-")) {
-					return m.getFullPath().toString();
-				}
-			}
-		}
-		
-		throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Not found lib/slim3-gen-xxx.jar"));
+		return ResourceUtil.getFilePath(projectHandle, new Path("lib"), "slim3-gen-.\\..\\..\\.jar", monitor).toString();
 	}
 	
 	private IPath getScenic3JarFilePath(IProject projectHandle, IProgressMonitor monitor) throws CoreException {
-		IPath warlib = new Path("war/WEB-INF/lib");
-		IFolder libFolder = projectHandle.getFolder(warlib);
-		IResource[] members = libFolder.members();
-		for(IResource m : members) {
-			if((m.getType() == IResource.FILE) && (m.getFileExtension().equals("jar"))) {
-				String filename = m.getName();
-				if(filename.startsWith("scenic3-")) {
-					return m.getFullPath();
-				}
-			}
-		}		
-		throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Not found war/WEB-INF/lib/scenic3-xxx.jar"));
+		return ResourceUtil.getFilePath(projectHandle, new Path("war/WEB-INF/lib"), "scenic3-.\\..\\..\\.jar", monitor);
 	}
 	
 	private String getScenic3JarFileName(IProject projectHandle, IProgressMonitor monitor) throws CoreException {
 		return getScenic3JarFilePath(projectHandle, monitor).toString();
 	}
 	
+	private IPath getScenic3SourceJarFilePath(IProject projectHandle, IProgressMonitor monitor) throws CoreException {
+		return ResourceUtil.getFilePath(projectHandle, new Path("libsrc"), "scenic3-.\\..\\..-sources.jar", monitor);
+	}
+
 	private void changeGenSrcDir(IProject projectHandle, String rootPackageName, boolean isScenic3Project, IProgressMonitor monitor) throws CoreException {
 		IFile aptCorePref = projectHandle.getFolder(".settings").getFile("org.eclipse.jdt.apt.core.prefs");
 		if(aptCorePref.exists()) {
@@ -600,7 +588,7 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 
 	private void generateAppUrls(IProject projectHandle,  String rootPackage, IProgressMonitor monitor) throws CoreException {
 		NewAppUrlsWizardPage page = new NewAppUrlsWizardPage();
-		page.create(projectHandle, rootPackage, monitor);
+		page.create(projectHandle, rootPackage + ".controller", monitor);
 		page.dispose();
 		page = null;
 	}
@@ -632,7 +620,9 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 		}
 		if(isScenic3) {
 			newClassPaths[classpaths.length + 1] = JavaCore.newLibraryEntry(
-					getScenic3JarFilePath(projectHandle, monitor), null, null);
+					getScenic3JarFilePath(projectHandle, monitor),
+					getScenic3SourceJarFilePath(projectHandle, monitor),
+					null);
 		}
 		project.setRawClasspath(newClassPaths, monitor);
 	}

@@ -24,7 +24,7 @@
     </filter>
     <filter>
         <filter-name>FrontController</filter-name>
-        <filter-class>org.slim3.controller.ScenicFrontController</filter-class>
+        <filter-class>org.slim3.controller.FrontController</filter-class>
     </filter>
 
     <filter-mapping>
@@ -106,7 +106,15 @@
             <role-name>admin</role-name>
         </auth-constraint>
     </security-constraint>
-    
+    <security-constraint>
+        <web-resource-collection>
+            <url-pattern>/ktrwjr/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>admin</role-name>
+        </auth-constraint>
+    </security-constraint>
+
     <jsp-config>
         <jsp-property-group>
             <url-pattern>*.jsp</url-pattern>

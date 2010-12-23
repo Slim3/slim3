@@ -14,6 +14,8 @@ import com.google.gwt.eclipse.core.util.Util;
 
 @SuppressWarnings({"restriction", "unchecked", "rawtypes"})
 public class NewAppUrlsWizardPage extends AbstractNewSourceFileWizardPage {
+	private static String FILE_NAME = "AppUrls.java";
+	
 	protected NewAppUrlsWizardPage() {
 		this("");
 	}
@@ -24,7 +26,7 @@ public class NewAppUrlsWizardPage extends AbstractNewSourceFileWizardPage {
 	}
 	
 	public void create(IProject projectHandle, String packageName, IProgressMonitor monitor) throws CoreException {
-		create(projectHandle, packageName + ".controller", "AppUrls.java", monitor);
+		create(projectHandle, packageName, FILE_NAME, monitor);
     }
 
 	@Override
