@@ -29,8 +29,37 @@ public class Key {
 
     private AppIdNamespace appIdNamespace;
 
+    Key(String kind) {
+        this(kind, null, 0L);
+    }
+
+    Key(String kind, String name) {
+        this(kind, null, name);
+    }
+
+    Key(String kind, Key parentKey) {
+        this(kind, parentKey, 0L);
+    }
+
+    Key(String kind, Key parentKey, long id) {
+        this(kind, parentKey, id, null, (AppIdNamespace) null);
+    }
+
+    Key(String kind, Key parentKey, String name) {
+        this(kind, parentKey, 0L, name, (AppIdNamespace) null);
+    }
+
     Key(String kind, Key parentKey, long id, String name,
-        AppIdNamespace appIdNamespace) {
+            AppIdNamespace appIdNamespace) {
+        if (kind == null || kind.length() == 0)
+            throw new IllegalArgumentException("No kind specified.");
+        if (name != null) {
+            if (name.length() == 0)
+                throw new IllegalArgumentException("Name may not be empty.");
+            if (id != 0L)
+                throw new IllegalArgumentException(
+                    "Id and name may not both be specified at once.");
+        }
         this.name = name;
         this.id = id;
         this.parentKey = parentKey;
@@ -51,14 +80,14 @@ public class Key {
         }
         buffer.append(kind);
         buffer.append("(");
-        if(name != null) {
+        if (name != null) {
             buffer.append("\"").append(name).append("\"");
         } else {
             buffer.append(String.valueOf(id));
         }
         buffer.append(")");
     }
-  
+
     public String getKind() {
         return kind;
     }
@@ -79,6 +108,10 @@ public class Key {
         return appIdNamespace;
     }
     
+    public String getNamespace() {
+        throw new IllegalStateException("getNamespace is not supported on gwt");
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;

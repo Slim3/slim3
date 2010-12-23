@@ -22,6 +22,7 @@
 	<target name="dist" depends="clean">
 		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/Key_CustomFieldSerializer.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/Key_CustomFieldSerializer.java"/>
 		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/AppIdNamespace_CustomFieldSerializer.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/AppIdNamespace_CustomFieldSerializer.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/KeyFactory.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/KeyFactory.java"/>
 		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/Key.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/Key.java"/>
 		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/AppIdNamespace.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/AppIdNamespace.java"/>
 		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/Transaction.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/Transaction.java"/>
