@@ -15,9 +15,39 @@
  */
 package com.google.appengine.api.datastore;
 
-public class Key {
+import java.io.Serializable;
+
+public class Key implements Serializable {
 
     private Key parentKey;
+
+    public Key getParentKey() {
+        return parentKey;
+    }
+
+    public void setParentKey(Key parentKey) {
+        this.parentKey = parentKey;
+    }
+
+    public void setKind(String kind) {
+        this.kind = kind;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setAppIdNamespace(AppIdNamespace appIdNamespace) {
+        this.appIdNamespace = appIdNamespace;
+    }
 
     private String kind;
 
@@ -29,6 +59,9 @@ public class Key {
 
     private AppIdNamespace appIdNamespace;
 
+    public Key() {
+    }
+    
     Key(String kind) {
         this(kind, null, 0L);
     }
@@ -67,6 +100,7 @@ public class Key {
         this.appIdNamespace = appIdNamespace;
     }
 
+    @Override
     public String toString() {
         StringBuffer buffer = new StringBuffer(30);
         appendToString(buffer);
@@ -86,6 +120,10 @@ public class Key {
             buffer.append(String.valueOf(id));
         }
         buffer.append(")");
+    }
+    
+    public String getAppId() {
+        return appId;
     }
 
     public String getKind() {
@@ -110,6 +148,24 @@ public class Key {
     
     public String getNamespace() {
         throw new IllegalStateException("getNamespace is not supported on gwt");
+    }
+    
+    public Key getChild(String kind, long id) {
+        if(!isComplete())
+            throw new IllegalStateException("Cannot get a child of an incomplete key.");
+        else
+            return new Key(kind, this, id);
+    }
+
+    public Key getChild(String kind, String name) {
+        if(!isComplete())
+            throw new IllegalStateException("Cannot get a child of an incomplete key.");
+        else
+            return new Key(kind, this, name);
+    }
+    
+    public boolean isComplete() {
+        return id != 0L || name != null;
     }
 
     @Override

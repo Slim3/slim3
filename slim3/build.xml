@@ -28,6 +28,29 @@
 		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/Transaction.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/Transaction.java"/>
 		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/Entity.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/Entity.java"/>
 		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/Query.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/Query.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/Blob_CustomFieldSerializer.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/Blob_CustomFieldSerializer.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/Entity_CustomFieldSerializer.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/Entity_CustomFieldSerializer.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/Text_CustomFieldSerializer.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/Text_CustomFieldSerializer.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/Text.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/Text.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/Blob.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/Blob.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/Category_CustomFieldSerializer.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/Category_CustomFieldSerializer.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/Category.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/Category.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/Email_CustomFieldSerializer.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/Email_CustomFieldSerializer.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/Email.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/Email.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/GeoPt_CustomFieldSerializer.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/GeoPt_CustomFieldSerializer.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/GeoPt.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/GeoPt.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/Link_CustomFieldSerializer.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/Link_CustomFieldSerializer.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/Link.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/Link.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/PhoneNumber_CustomFieldSerializer.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/PhoneNumber_CustomFieldSerializer.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/PhoneNumber.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/PhoneNumber.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/PostalAddress_CustomFieldSerializer.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/PostalAddress_CustomFieldSerializer.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/PostalAddress.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/PostalAddress.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/Rating_CustomFieldSerializer.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/Rating_CustomFieldSerializer.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/Rating.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/Rating.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/ShortBlob_CustomFieldSerializer.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/ShortBlob_CustomFieldSerializer.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/datastore/ShortBlob.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/datastore/ShortBlob.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/users/User_CustomFieldSerializer.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/users/User_CustomFieldSerializer.java"/>
+		<copy file="src/main/resources/org/slim3/gwt/emul/com/google/appengine/api/users/User.java" tofile="build/classes/org/slim3/gwt/emul/com/google/appengine/api/users/User.java"/>
 		
 		<copy file="src/main/resources/org/slim3/gwt/emul/org/slim3/datastore/ModelMeta.java" tofile="build/classes/org/slim3/gwt/emul/org/slim3/datastore/ModelMeta.java"/>
 		<copy file="src/main/resources/org/slim3/gwt/emul/org/slim3/datastore/AbstractModelRef.java" tofile="build/classes/org/slim3/gwt/emul/org/slim3/datastore/AbstractModelRef.java"/>

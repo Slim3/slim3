@@ -613,7 +613,7 @@ public abstract class AbstractQuery<SUB> {
      * 
      * @return entities as list
      */
-    protected List<Entity> asEntityList() {
+    public List<Entity> asEntityList() {
         if (!AppEngineUtil.isProduction() && query.getKind() == null) {
             List<Entity> list = new ArrayList<Entity>();
             List<String> kinds = DatastoreUtil.getKinds();
@@ -651,7 +651,7 @@ public abstract class AbstractQuery<SUB> {
      * 
      * @return entities as query result list
      */
-    protected QueryResultList<Entity> asQueryResultEntityList() {
+    public QueryResultList<Entity> asQueryResultEntityList() {
         PreparedQuery pq = txSet ? ds.prepare(tx, query) : ds.prepare(query);
         return pq.asQueryResultList(fetchOptions);
     }
@@ -671,7 +671,7 @@ public abstract class AbstractQuery<SUB> {
      * 
      * @return entities as query result iterable
      */
-    protected QueryResultIterable<Entity> asQueryResultEntityIterable() {
+    public QueryResultIterable<Entity> asQueryResultEntityIterable() {
         PreparedQuery pq = txSet ? ds.prepare(tx, query) : ds.prepare(query);
         return pq.asQueryResultIterable(fetchOptions);
     }
@@ -681,7 +681,7 @@ public abstract class AbstractQuery<SUB> {
      * 
      * @return a single entity
      */
-    protected Entity asSingleEntity() {
+    public Entity asSingleEntity() {
         if (!AppEngineUtil.isProduction() && query.getKind() == null) {
             List<Entity> list = asEntityList();
             if (list.size() == 0) {
@@ -815,7 +815,7 @@ public abstract class AbstractQuery<SUB> {
      * 
      * @return entities as {@link Iterable}
      */
-    protected Iterable<Entity> asIterableEntities() {
+    public Iterable<Entity> asIterableEntities() {
         PreparedQuery pq = txSet ? ds.prepare(tx, query) : ds.prepare(query);
         return pq.asIterable(fetchOptions);
     }
@@ -825,7 +825,7 @@ public abstract class AbstractQuery<SUB> {
      * 
      * @return entities as {@link Iterator}
      */
-    protected Iterator<Entity> asEntityIterator() {
+    public Iterator<Entity> asEntityIterator() {
         PreparedQuery pq = txSet ? ds.prepare(tx, query) : ds.prepare(query);
         return pq.asIterator(fetchOptions);
     }
