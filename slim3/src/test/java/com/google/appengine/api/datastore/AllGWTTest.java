@@ -33,8 +33,8 @@ public class AllGWTTest extends GWTTestSuite {
         TestSuite suite = new TestSuite(AllGWTTest.class.getName());
         //$JUnit-BEGIN$
         suite.addTestSuite(RpcSerializationGWTTest.class);
-//        suite.addTestSuite(KeyGWTTest.class);
-//        suite.addTestSuite(KeyFactoryGWTTest.class);
+        suite.addTestSuite(KeyGWTTest.class);
+        suite.addTestSuite(KeyFactoryGWTTest.class);
         //$JUnit-END$
         return suite;
     }
