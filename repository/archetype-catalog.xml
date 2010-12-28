@@ -9,14 +9,12 @@
       <repository>http://slim3.googlecode.com/svn/trunk/repository/</repository>
       <description>Archetype - slim3-archetype-quickstart(slim3-1.0.6,appengine-1.4.0)</description>
     </archetype>
-    <!--
     <archetype>
       <groupId>org.slim3</groupId>
       <artifactId>slim3-archetype-kotori-quickstart</artifactId>
-      <version>1.0.5.2</version>
+      <version>1.0.6</version>
       <repository>http://slim3.googlecode.com/svn/trunk/repository/</repository>
-      <description>Archetype - slim3-archetype-kotori-quickstart(slim3-1.0.5.2,appengine-1.3.8)</description>
+      <description>Archetype - slim3-archetype-kotori-quickstart(slim3-1.0.6,appengine-1.4.0)</description>
     </archetype>
-    -->
   </archetypes>
 </archetype-catalog>
