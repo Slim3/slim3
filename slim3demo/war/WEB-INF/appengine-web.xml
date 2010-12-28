@@ -4,8 +4,6 @@
 	<version>106</version>
 	
 	<static-files>
-        <include path="/css/**.css"/>
-        <include path="/**/**.html"/>
     </static-files>
     
     <inbound-services>
