@@ -7,8 +7,8 @@
   <packaging>war</packaging>
   <version>${version}</version>
   <properties>
-    <slim3.version>1.0.5</slim3.version>
-    <appengine.version>1.3.8</appengine.version>
+    <slim3.version>1.0.6</slim3.version>
+    <appengine.version>1.4.0</appengine.version>
     <generated.src>.apt_generated</generated.src>
     <generated.war>war</generated.war>
     <eclipse.lib>eclipse.lib</eclipse.lib>
@@ -45,12 +45,12 @@
     <dependency>
       <groupId>com.google.appengine</groupId>
       <artifactId>appengine-api-1.0-sdk</artifactId>
-      <version>${appengine.version}</version>
+      <version>${dollar}${lcurly}appengine.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.appengine</groupId>
       <artifactId>appengine-api-labs</artifactId>
-      <version>${appengine.version}</version>
+      <version>${dollar}${lcurly}appengine.version}</version>
     </dependency>
     <dependency>
       <groupId>org.slim3</groupId>
