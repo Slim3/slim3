@@ -49,34 +49,52 @@ import com.google.appengine.repackaged.com.google.common.util.Base64DecoderExcep
  * @since 1.0.6
  */
 public class Default implements JsonCoder{
+    @Override
     public void encode(JsonWriter writer, Boolean value) {
         writer.writeValue(value);
     }
+
+    @Override
     public void encode(JsonWriter writer, Short value) {
         writer.writeValue(value);
     }
+
+    @Override
     public void encode(JsonWriter writer, Integer value) {
         writer.writeValue(value);
     }
+
+    @Override
     public void encode(JsonWriter writer, Long value) {
         writer.writeValue(value);
     }
+
+    @Override
     public void encode(JsonWriter writer, Float value) {
         writer.writeValue(value);
     }
+
+    @Override
     public void encode(JsonWriter writer, Double value) {
         writer.writeValue(value);
     }
+
+    @Override
     public void encode(JsonWriter writer, String value) {
         writer.writeString(value);
     }
 
+    @Override
     public void encode(JsonWriter writer, Date value) {
         writer.writeValue(value.getTime());
     }
+
+    @Override
     public void encode(JsonWriter writer, Enum<?> value) {
         writer.writeString(value.name());
     }
+
+    @Override
     public void encode(JsonWriter writer, Blob value) {
         if(value != null && value.getBytes() != null){
             writer.writeString(Base64.encode(value.getBytes()));
@@ -84,15 +102,23 @@ public class Default implements JsonCoder{
             writer.writeNull();
         }
     }
+
+    @Override
     public void encode(JsonWriter writer, BlobKey value) {
         writer.writeString(value.getKeyString());        
     }
+
+    @Override
     public void encode(JsonWriter writer, Category value) {
         writer.writeString(value.getCategory());
     }
+
+    @Override
     public void encode(JsonWriter writer, Email value) {
         writer.writeString(value.getEmail());
     }
+
+    @Override
     public void encode(JsonWriter writer, GeoPt value) {
         writer.beginObject();
         writer.writeValueProperty("latitude", value.getLatitude());
@@ -100,6 +126,7 @@ public class Default implements JsonCoder{
         writer.endObject();
     }
 
+    @Override
     public void encode(JsonWriter writer, IMHandle value) {
         writer.beginObject();
         writer.writeStringProperty("address", value.getAddress());
@@ -107,26 +134,32 @@ public class Default implements JsonCoder{
         writer.endObject();
     }
 
+    @Override
     public void encode(JsonWriter writer, Key value) {
         writer.writeString(KeyFactory.keyToString(value));
     }
 
+    @Override
     public void encode(JsonWriter writer, Link value) {
         writer.writeString(value.getValue());
     }
 
+    @Override
     public void encode(JsonWriter writer, PhoneNumber value) {
         writer.writeString(value.getNumber());
     }
 
+    @Override
     public void encode(JsonWriter writer, PostalAddress value) {
         writer.writeString(value.getAddress());
     }
- 
+
+    @Override
     public void encode(JsonWriter writer, Rating value) {
         writer.writeValue(value.getRating());
     }
- 
+
+    @Override
     public void encode(JsonWriter writer, ShortBlob value) {
         if(value != null && value.getBytes() != null){
             writer.writeString(Base64.encode(value.getBytes()));
@@ -135,6 +168,7 @@ public class Default implements JsonCoder{
         }
     }
 
+    @Override
     public void encode(JsonWriter writer, Text value) {
         if(value != null && value.getValue() != null){
             writer.writeString(value.getValue());
@@ -143,6 +177,7 @@ public class Default implements JsonCoder{
         }
     }
 
+    @Override
     public void encode(JsonWriter writer, User value) {
         writer.beginObject();
         writer.writeStringProperty("authDomain", value.getAuthDomain());
@@ -156,6 +191,7 @@ public class Default implements JsonCoder{
         writer.endObject();
     }
 
+    @Override
     public void encode(JsonWriter writer, ModelRef<?> value, int maxDepth, int currentDepth) {
         Object model = value.getModel();
         if(model != null && value.getKey() != null){
@@ -165,10 +201,12 @@ public class Default implements JsonCoder{
         }
     }
 
+    @Override
     public void encode(JsonWriter writer, Object value) {
         writer.writeNull();
     }
 
+    @Override
     public Boolean decode(JsonReader reader, Boolean defaultValue) {
         String text = reader.read();
         if(text != null){
@@ -177,6 +215,7 @@ public class Default implements JsonCoder{
         return defaultValue;
     }
 
+    @Override
     public Short decode(JsonReader reader, Short defaultValue) {
         String text = reader.read();
         if(text != null){
@@ -188,6 +227,7 @@ public class Default implements JsonCoder{
         return defaultValue;
     }
 
+    @Override
     public Integer decode(JsonReader reader, Integer defaultValue) {
         String text = reader.read();
         if(text != null){
@@ -199,6 +239,7 @@ public class Default implements JsonCoder{
         return defaultValue;
     }
 
+    @Override
     public Long decode(JsonReader reader, Long defaultValue) {
         String text = reader.read();
         if(text != null){
@@ -210,6 +251,7 @@ public class Default implements JsonCoder{
         return defaultValue;
     }
 
+    @Override
     public Float decode(JsonReader reader, Float defaultValue) {
         String text = reader.read();
         if(text != null){
@@ -221,6 +263,7 @@ public class Default implements JsonCoder{
         return defaultValue;
     }
 
+    @Override
     public Double decode(JsonReader reader, Double defaultValue) {
         String text = reader.read();
         if(text != null){
@@ -232,6 +275,7 @@ public class Default implements JsonCoder{
         return defaultValue;
     }
 
+    @Override
     public String decode(JsonReader reader, String defaultValue) {
         String text = reader.read();
         if(text != null){
@@ -240,6 +284,7 @@ public class Default implements JsonCoder{
         return defaultValue;
     }
 
+    @Override
     public Date decode(JsonReader reader, Date defaultValue) {
         String text = reader.read();
         if(text != null){
@@ -251,6 +296,7 @@ public class Default implements JsonCoder{
         return defaultValue;
     }
 
+    @Override
     public <T extends Enum<T>> T decode(JsonReader reader,
             T defaultValue, Class<T> clazz) {
         String text = reader.read();
@@ -263,6 +309,7 @@ public class Default implements JsonCoder{
         return defaultValue;
     }
     
+    @Override
     public Blob decode(JsonReader reader, Blob defaultValue) {
         String text = reader.read();
         if(text != null){
@@ -274,6 +321,7 @@ public class Default implements JsonCoder{
         return defaultValue;
     }
     
+    @Override
     public BlobKey decode(JsonReader reader, BlobKey defaultValue) {
         String text = reader.read();
         if(text != null){
@@ -282,6 +330,7 @@ public class Default implements JsonCoder{
         return defaultValue;
     }
 
+    @Override
     public Category decode(JsonReader reader, Category defaultValue) {
         String text = reader.read();
         if(text != null){
@@ -290,6 +339,7 @@ public class Default implements JsonCoder{
         return defaultValue;
     }
 
+    @Override
     public Email decode(JsonReader reader, Email defaultValue) {
         String text = reader.read();
         if(text != null){
@@ -298,6 +348,7 @@ public class Default implements JsonCoder{
         return defaultValue;
     }
 
+    @Override
     public GeoPt decode(JsonReader reader, GeoPt defaultValue) {
         String latitude = reader.readProperty("latitude");
         String longitude = reader.readProperty("longitude");
@@ -313,6 +364,7 @@ public class Default implements JsonCoder{
         return defaultValue;
     }
 
+    @Override
     public IMHandle decode(JsonReader reader, IMHandle defaultValue) {
         String address = reader.readProperty("address");
         String protocol = reader.readProperty("protocol");
@@ -333,6 +385,7 @@ public class Default implements JsonCoder{
         return defaultValue;
     }
 
+    @Override
     public Key decode(JsonReader reader, Key defaultValue) {
         String text = reader.read();
         if(text != null){
@@ -341,6 +394,7 @@ public class Default implements JsonCoder{
         return defaultValue;
     }
 
+    @Override
     public Link decode(JsonReader reader, Link defaultValue) {
         String text = reader.read();
         if(text != null){
@@ -349,6 +403,7 @@ public class Default implements JsonCoder{
         return defaultValue;
     }
 
+    @Override
     public PhoneNumber decode(JsonReader reader, PhoneNumber defaultValue) {
         String text = reader.read();
         if(text != null){
@@ -357,6 +412,7 @@ public class Default implements JsonCoder{
         return defaultValue;
     }
 
+    @Override
     public PostalAddress decode(JsonReader reader, PostalAddress defaultValue) {
         String text = reader.read();
         if(text != null){
@@ -365,6 +421,7 @@ public class Default implements JsonCoder{
         return defaultValue;
     }
 
+    @Override
     public Rating decode(JsonReader reader, Rating defaultValue) {
         String text = reader.read();
         if(text != null){
@@ -376,6 +433,7 @@ public class Default implements JsonCoder{
         return defaultValue;
     }
     
+    @Override
     public ShortBlob decode(JsonReader reader, ShortBlob defaultValue) {
         String text = reader.read();
         if(text != null){
@@ -387,6 +445,7 @@ public class Default implements JsonCoder{
         return defaultValue;
     }
     
+    @Override
     public Text decode(JsonReader reader, Text defaultValue) {
         String text = reader.read();
         if(text != null){
@@ -395,6 +454,7 @@ public class Default implements JsonCoder{
         return defaultValue;
     }
 
+    @Override
     public User decode(JsonReader reader, User defaultValue) {
         String authDomain = reader.readProperty("authDomain");
         String email = reader.readProperty("email");
@@ -412,6 +472,7 @@ public class Default implements JsonCoder{
         return defaultValue;
     }
     
+    @Override
     public <T> void decode(JsonReader reader, ModelRef<T> modelRef, int maxDepth, int currentDepth) {
         String text = reader.read();
         if(text != null){
@@ -429,6 +490,7 @@ public class Default implements JsonCoder{
         }
     }
 
+    @Override
     public <T> T decode(JsonReader reader, T defaultValue) {
         return defaultValue;
     }
