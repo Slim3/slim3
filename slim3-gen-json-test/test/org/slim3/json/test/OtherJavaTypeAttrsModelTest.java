@@ -25,7 +25,7 @@ public class OtherJavaTypeAttrsModelTest {
             .parse("2010-11-11 11:11:11"));
         m.setEnumAttr(WeekDay.Sun);
 
-        String json = OtherJavaTypeAttrsModelMeta.get().modelToJson(m);
+        String json = meta.modelToJson(m);
         System.out.println(json);
         JSON j = new JSON();
         j.setSuppressNull(true);
@@ -39,18 +39,41 @@ public class OtherJavaTypeAttrsModelTest {
     }
 
     @Test
+    public void modelsToJson() throws Exception {
+        Object[] models = new Object[]{
+            new OtherJavaTypeAttrsModel(){{
+                setStringAttr("hello");
+                setEncryptedStringAttr("world");
+                setDateAttr(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
+                    .parse("2010-11-11 11:11:11"));
+                setEnumAttr(WeekDay.Sun);
+            }}
+            , new OtherJavaTypeAttrsModel(){{
+                setStringAttr("hi");
+                setEncryptedStringAttr("there");
+                setEnumAttr(WeekDay.Fri);
+            }}
+        };
+        String json = meta.modelsToJson(models);
+        System.out.println(json);
+        Assert.assertEquals(
+                "[{\"dateAttr\":1289441471000,\"encryptedStringAttr\":\"mMB4qZAgtBKJq0d1LBGTCA==\"," +
+                "\"enumAttr\":\"Sun\",\"stringAttr\":\"hello\"}," +
+                "{\"encryptedStringAttr\":\"73qsqhU1P90KYsgZSQnedg==\",\"enumAttr\":\"Fri\"," +
+                "\"stringAttr\":\"hi\"}]",
+                json);
+    }
+
+    @Test
     public void modelToJson_null() {
         OtherJavaTypeAttrsModel m = new OtherJavaTypeAttrsModel();
-        String json = OtherJavaTypeAttrsModelMeta.get().modelToJson(m);
+        String json = meta.modelToJson(m);
         Assert.assertEquals("{}", json);
     }
 
     @Test
     public void jsonToModel() {
-        OtherJavaTypeAttrsModel m =
-            OtherJavaTypeAttrsModelMeta
-                .get()
-                .jsonToModel(
+        OtherJavaTypeAttrsModel m = meta.jsonToModel(
                     "{\"dateAttr\":1289441471000,\"encryptedStringAttr\":\"mMB4qZAgtBKJq0d1LBGTCA==\""
                         + ",\"enumAttr\":\"Sun\",\"stringAttr\":\"hello\"}");
         Assert.assertEquals("world", m.getEncryptedStringAttr());
@@ -69,15 +92,15 @@ public class OtherJavaTypeAttrsModelTest {
             m.setDateAttr(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
                 .parse("2010-11-11 11:11:11"));
             m.setEnumAttr(WeekDay.Sun);
-            json = OtherJavaTypeAttrsModelMeta.get().modelToJson(m);
+            json = meta.modelToJson(m);
         }
 
-        OtherJavaTypeAttrsModel m =
-            OtherJavaTypeAttrsModelMeta.get().jsonToModel(json);
+        OtherJavaTypeAttrsModel m = meta.jsonToModel(json);
         Assert.assertEquals("world", m.getEncryptedStringAttr());
         Assert.assertEquals("hello", m.getStringAttr());
         Assert.assertEquals(WeekDay.Sun, m.getEnumAttr());
         Assert.assertEquals(1289441471000L, m.getDateAttr().getTime());
     }
 
+    private OtherJavaTypeAttrsModelMeta meta = OtherJavaTypeAttrsModelMeta.get();
 }

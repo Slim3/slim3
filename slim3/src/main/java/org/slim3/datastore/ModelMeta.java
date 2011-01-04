@@ -207,6 +207,7 @@ public abstract class ModelMeta<M> {
     public String modelToJson(final Object model, int maxDepth){
         StringBuilder b = new StringBuilder();
         JsonWriter w = new JsonWriter(b, new ModelWriter() {
+            @Override
             public void write(JsonWriter writer, Object model, int maxDepth,
                     int currentDepth) {
                 invokeModelToJson(
@@ -218,6 +219,52 @@ public abstract class ModelMeta<M> {
         return b.toString();
     }
 
+    /**
+     * Converts the models to JSON string.
+     * 
+     * @param models
+     *            models
+     *
+     * @return JSON string
+     */
+    public String modelsToJson(final Object[] models){
+        return modelsToJson(models, 0);
+    }
+
+    /**
+     * Converts the models to JSON string.
+     * 
+     * @param models
+     *            models
+     * 
+     * @param maxDepth
+     *            the max depth of ModelRef expanding
+     *
+     * @return JSON string
+     */
+    public String modelsToJson(final Object[] models, int maxDepth){
+        int n = models.length;
+        if(n == 0) return "[]";
+        StringBuilder b = new StringBuilder();
+        JsonWriter w = new JsonWriter(b, new ModelWriter() {
+            @Override
+            public void write(JsonWriter writer, Object model, int maxDepth,
+                    int currentDepth) {
+                invokeModelToJson(
+                    Datastore.getModelMeta(model.getClass()),
+                    writer, model, maxDepth, currentDepth + 1);
+            }
+        });
+        b.append("[");
+        modelToJson(w, models[0], maxDepth, 0);
+        for(int i = 1; i < n; i++){
+            b.append(",");
+            modelToJson(w, models[i], maxDepth, 0);
+        }
+        b.append("]");
+        return b.toString();
+    }
+    
     /**
      * Converts the model to JSON string.
      * 
@@ -301,6 +348,7 @@ public abstract class ModelMeta<M> {
      */
     public M jsonToModel(String json, int maxDepth, int currentDepth){
         return jsonToModel(new JsonRootReader(json, new ModelReader() {
+            @Override
             public <T> T read(JsonReader reader, Class<T> modelClass, int maxDepth,
                     int currentDepth) {
                 return invokeJsonToModel(
