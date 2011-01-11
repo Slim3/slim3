@@ -17,6 +17,8 @@ package org.slim3.datastore.json;
 
 import java.util.Stack;
 
+import com.google.appengine.repackaged.org.json.JSONObject;
+
 /**
  * The JSON Writer.
  * 
@@ -127,7 +129,7 @@ public class JsonWriter {
         }
         checkPropertyName();
         writeCammaForValue();
-        builder.append("\"").append(value).append("\"");
+        builder.append(JSONObject.quote(value));
     }
     
     /**

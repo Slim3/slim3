@@ -8,7 +8,7 @@ public class NullAttrsModelTest {
     @Test
     public void modelToJson() throws Exception {
         Assert.assertEquals(
-            "{\"nullBlob\":null,\"nullBytesBlob\":null,\"nullString\":\"null\","
+            "{\"nullBlob\":null,\"nullBytesBlob\":null,\"nullString\":null,"
                 + "\"nullText\":null,\"nullValueText\":null}",
             meta.modelToJson(new NullAttrsModel()));
     }
