@@ -121,6 +121,10 @@ public class JsonWriter {
      * @param value value
      */
     public void writeString(String value){
+        if(value == null){
+            writeNull();
+            return;
+        }
         checkPropertyName();
         writeCammaForValue();
         builder.append("\"").append(value).append("\"");
@@ -131,6 +135,10 @@ public class JsonWriter {
      * @param value value.
      */
     public void writeValue(Object value){
+        if(value == null){
+            writeNull();
+            return;
+        }
         checkPropertyName();
         writeCammaForValue();
         builder.append(value);
