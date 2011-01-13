@@ -17,7 +17,7 @@
     <repository>
       <id>maven.seasar.org</id>
       <name>The Seasar Foundation Maven2 Repository</name>
-      <url>dav:https://www.seasar.org/maven/maven2</url>
+      <url>https://www.seasar.org/maven/maven2</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
@@ -30,7 +30,7 @@
     <pluginRepository>
       <id>maven.seasar.org</id>
       <name>The Seasar Foundation Maven2 Repository</name>
-      <url>dav:https://www.seasar.org/maven/maven2</url>
+      <url>https://www.seasar.org/maven/maven2</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
