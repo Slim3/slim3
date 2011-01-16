@@ -169,6 +169,9 @@ public class ModelMetaGenerator implements Generator {
      */
     protected void printAttributeListenerFields(Printer printer) {
         for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
+            if (!attr.isPersistent()) {
+                continue;
+            }
             if (attr.getAttributeListenerClassName() != null
                 && !attr.getAttributeListenerClassName().equals(
                     AttributeListener)) {
@@ -421,6 +424,9 @@ public class ModelMetaGenerator implements Generator {
         printer
             .println("protected boolean isCipherProperty(String propertyName) {");
         for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
+            if (!attr.isPersistent()) {
+                continue;
+            }
             if (attr.isCipher()) {
                 printer.println(
                     "    if (\"%1$s\".equals(propertyName)) return true;",
@@ -497,6 +503,9 @@ public class ModelMetaGenerator implements Generator {
             if (attr.getAttributeListenerClassName() != null
                 && !attr.getAttributeListenerClassName().equals(
                     AttributeListener)) {
+                if (!attr.isPersistent()) {
+                    continue;
+                }
                 if (first) {
                     printer.println("    %1$s m = (%1$s) model;", modelMetaDesc
                         .getModelClassName());
@@ -585,6 +594,9 @@ public class ModelMetaGenerator implements Generator {
         public void generate() {
             for (AttributeMetaDesc attr : modelMetaDesc
                 .getAttributeMetaDescList()) {
+                if (!attr.isPersistent()) {
+                    continue;
+                }
                 DataType dataType = attr.getDataType();
                 dataType.accept(this, attr);
             }
@@ -897,6 +909,9 @@ public class ModelMetaGenerator implements Generator {
                     .getModelClassName());
                 for (AttributeMetaDesc attr : modelMetaDesc
                     .getAttributeMetaDescList()) {
+                    if (!attr.isPersistent()) {
+                        continue;
+                    }
                     DataType dataType = attr.getDataType();
                     dataType.accept(this, attr);
                 }
@@ -1563,6 +1578,9 @@ public class ModelMetaGenerator implements Generator {
                 printer.println("}");
                 for (AttributeMetaDesc attr : modelMetaDesc
                     .getAttributeMetaDescList()) {
+                    if (!attr.isPersistent()) {
+                        continue;
+                    }
                     if (attr.isPrimaryKey()) {
                         continue;
                     }
@@ -1824,6 +1842,9 @@ public class ModelMetaGenerator implements Generator {
                 boolean found = false;
                 for (AttributeMetaDesc attr : modelMetaDesc
                     .getAttributeMetaDescList()) {
+                    if (!attr.isPersistent()) {
+                        continue;
+                    }
                     if (attr.getDataType() instanceof ModelRefType) {
                         found = true;
                         break;
@@ -1834,6 +1855,9 @@ public class ModelMetaGenerator implements Generator {
                         .getModelClassName());
                     for (AttributeMetaDesc attr : modelMetaDesc
                         .getAttributeMetaDescList()) {
+                        if (!attr.isPersistent()) {
+                            continue;
+                        }
                         if (attr.isPrimaryKey()) {
                             continue;
                         }

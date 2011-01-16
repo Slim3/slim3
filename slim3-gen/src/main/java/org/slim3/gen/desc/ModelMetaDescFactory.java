@@ -358,27 +358,26 @@ public class ModelMetaDescFactory {
                 modelMetaDesc.setError(true);
                 continue;
             }
-            if (!attributeMetaDesc.isPersistent()) {
-                continue;
+            if (attributeMetaDesc.isPersistent()) {
+                validatePrimaryKeyUniqueness(
+                    attributeMetaDesc,
+                    classDeclaration,
+                    modelMetaDesc);
+                validateVersionUniqueness(
+                    attributeMetaDesc,
+                    classDeclaration,
+                    modelMetaDesc);
+                validatePropertyNameUniqueness(
+                    propertyNames,
+                    attributeMetaDesc,
+                    classDeclaration,
+                    fieldDeclaration);
+                validateBooleanAttributeNameUniqueness(
+                    booleanAttributeNames,
+                    attributeMetaDesc,
+                    classDeclaration,
+                    fieldDeclaration);
             }
-            validatePrimaryKeyUniqueness(
-                attributeMetaDesc,
-                classDeclaration,
-                modelMetaDesc);
-            validateVersionUniqueness(
-                attributeMetaDesc,
-                classDeclaration,
-                modelMetaDesc);
-            validatePropertyNameUniqueness(
-                propertyNames,
-                attributeMetaDesc,
-                classDeclaration,
-                fieldDeclaration);
-            validateBooleanAttributeNameUniqueness(
-                booleanAttributeNames,
-                attributeMetaDesc,
-                classDeclaration,
-                fieldDeclaration);
             modelMetaDesc.addAttributeMetaDesc(attributeMetaDesc);
         }
         if (!modelMetaDesc.isError()
