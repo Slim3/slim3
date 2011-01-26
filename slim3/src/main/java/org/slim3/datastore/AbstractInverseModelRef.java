@@ -77,6 +77,36 @@ public abstract class AbstractInverseModelRef<M, O> extends AbstractModelRef<M> 
         this.owner = owner;
     }
 
+    @Override
+    public int hashCode() {
+        Key ownerKey = getOwnerKey();
+        if (ownerKey == null) {
+            return 0;
+        }
+        return ownerKey.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (other == null) {
+            return false;
+        }
+        if (getClass() != other.getClass()) {
+            return false;
+        }
+        Key ownerKey = getOwnerKey();
+        if (ownerKey == null) {
+            return false;
+        }
+        Key otherOwnerKey =
+            ((AbstractInverseModelRef<?, ?>) other).getOwnerKey();
+        return ownerKey.equals(otherOwnerKey);
+
+    }
+
     /**
      * Returns the key of owner.
      * 

@@ -23,6 +23,9 @@ import org.slim3.datastore.model.Bbb;
 import org.slim3.datastore.model.Hoge;
 import org.slim3.tester.AppEngineTestCase;
 
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+
 /**
  * @author higa
  * 
@@ -53,6 +56,32 @@ public class AbstInverseModelRefTest extends AppEngineTestCase {
         assertThat(ref.getOwnerKey(), is(nullValue()));
         hoge.setKey(Datastore.createKey(Hoge.class, 1));
         assertThat(ref.getOwnerKey(), is(hoge.getKey()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void testHashCode() throws Exception {
+        assertThat(ref.hashCode(), is(0));
+        Key key = KeyFactory.createKey("Hoge", 1);
+        hoge.setKey(key);
+        assertThat(ref.hashCode(), is(key.hashCode()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void testEquals() throws Exception {
+        MyInverseModelRef ref2 =
+            new MyInverseModelRef(Bbb.class, "hogeRef", hoge);
+        assertThat(ref.equals(null), is(false));
+        assertThat(ref.equals(ref), is(true));
+        assertThat(ref.equals(ref2), is(false));
+        Key key = KeyFactory.createKey("Hoge", 1);
+        hoge.setKey(key);
+        assertThat(ref.equals(ref2), is(true));
     }
 
     private static class MyInverseModelRef extends
