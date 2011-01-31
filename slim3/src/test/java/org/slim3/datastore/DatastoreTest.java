@@ -70,6 +70,15 @@ public class DatastoreTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void delegateClass() throws Exception {
+        Datastore.delegateClass(MyDelegate.class);
+        assertThat(Datastore.delegate(), is(MyDelegate.class));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void delegate() throws Exception {
         assertThat(Datastore.delegate(), is(sameInstance(Datastore.delegate())));
     }

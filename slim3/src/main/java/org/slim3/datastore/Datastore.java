@@ -46,7 +46,7 @@ public final class Datastore {
 
     private static DatastoreDelegate defaultDelegate;
 
-    private static Constructor<DatastoreDelegate> delegateConstructor;
+    private static Constructor<? extends DatastoreDelegate> delegateConstructor;
 
     static {
         initialize();
@@ -57,6 +57,23 @@ public final class Datastore {
             ClassUtil.forName(System.getProperty(
                 DELEGATE_KEY,
                 DatastoreDelegate.class.getName()));
+        delegateClass(clazz);
+    }
+
+    /**
+     * Sets the delegate class.
+     * 
+     * @param clazz
+     *            the delegate class
+     * @throws NullPointerException
+     *             if the clazz parameter is null
+     */
+    public static void delegateClass(Class<? extends DatastoreDelegate> clazz)
+            throws NullPointerException {
+        if (clazz == null) {
+            throw new NullPointerException(
+                "The clazz parameter must not be null.");
+        }
         try {
             delegateConstructor = clazz.getConstructor(Double.class);
         } catch (Throwable cause) {
