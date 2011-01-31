@@ -32,7 +32,7 @@ import org.slim3.datastore.json.Json;
  * 
  */
 @Target(ElementType.FIELD)
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.SOURCE)
 @Documented
 public @interface Attribute {
 
@@ -84,6 +84,5 @@ public @interface Attribute {
      * 
      * @since 1.0.6
      */
-    Json json() default @Json(ignore=false, ignoreNull=true, alias="",
-        coder=Default.class);
+    Json json() default @Json(ignore = false, ignoreNull = true, alias = "", coder = Default.class);
 }
