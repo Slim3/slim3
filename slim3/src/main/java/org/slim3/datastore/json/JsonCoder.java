@@ -421,7 +421,8 @@ public interface JsonCoder{
      * @param <T> the type of the object
      * @param reader the reader
      * @param defaultValue the default value
+     * @param clazz the class
      * @return the decoded Object
      */
-    <T> T decode(JsonReader reader, T defaultValue);
+    <T> T decode(JsonReader reader, T defaultValue, Class<T> clazz);
 }

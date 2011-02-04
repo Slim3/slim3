@@ -491,7 +491,7 @@ public class Default implements JsonCoder{
     }
 
     @Override
-    public <T> T decode(JsonReader reader, T defaultValue) {
+    public <T> T decode(JsonReader reader, T defaultValue, Class<T> clazz) {
         return defaultValue;
     }
 }

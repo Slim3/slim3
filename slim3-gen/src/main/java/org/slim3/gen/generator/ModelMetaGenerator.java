@@ -1957,11 +1957,6 @@ public class ModelMetaGenerator implements Generator {
                     if (ja.isIgnore())
                         continue;
                     DataType dataType = attr.getDataType();
-                    if (!isSupportedForJson(dataType)) {
-                        printer.println("// %s is not supported.", dataType
-                            .getClassName());
-                        continue;
-                    }
                     if (!(dataType instanceof CorePrimitiveType)
                         && ja.isIgnoreNull()) {
                         printer.print("if(%s != null", valueExp);
@@ -2238,11 +2233,6 @@ public class ModelMetaGenerator implements Generator {
                     if (ja.isIgnore())
                         continue;
                     DataType dt = attr.getDataType();
-                    if (!isSupportedForJson(dt)) {
-                        printer.println("// %s is not supported.", dt
-                            .getClassName());
-                        continue;
-                    }
                     String name = ja.getAlias();
                     if (name.length() == 0) {
                         name = attr.getAttributeName();
@@ -2266,19 +2256,30 @@ public class ModelMetaGenerator implements Generator {
         @Override
         protected Void defaultAction(DataType type, AttributeMetaDesc p)
                 throws RuntimeException {
+            if(ignoreNull){
+                printer.print("%s v = ", type.getClassName());
+            } else{
+                printer.print("%s(", setterExp);
+            }
+            if(isSupportedForJson(type)){
+                printer.printWithoutIndent(
+                    "decoder.decode(reader, %s)"
+                    , getterExp);
+            } else{
+                printer.printWithoutIndent(
+                    "decoder.decode(reader, %s, %s.class)"
+                    , getterExp
+                    , type.getClassName());
+            }
             if (ignoreNull) {
-                printer.println("%s v = decoder.decode(reader, %s);", type
-                    .getClassName(), getterExp);
+                printer.println(";");
                 printer.println("if(v != null){");
                 printer.indent();
                 printer.println("%s(v);", setterExp);
                 printer.unindent();
                 printer.println("}");
             } else {
-                printer.println(
-                    "%s(decoder.decode(reader, %s));",
-                    setterExp,
-                    getterExp);
+                printer.println(");");
             }
             return null;
         }
