@@ -36,12 +36,6 @@ public class ResourceBundleApplicationMessageDelegate implements
     protected ThreadLocal<ResourceBundle> bundles =
         new ThreadLocal<ResourceBundle>();
 
-    /**
-     * The resource bundles.
-     */
-    protected ThreadLocal<ResourceBundle> defaultBundles =
-        new ThreadLocal<ResourceBundle>();
-
     public void setBundle(String bundleName, Locale locale)
             throws NullPointerException {
         if (bundleName == null) {
@@ -50,18 +44,20 @@ public class ResourceBundleApplicationMessageDelegate implements
         if (locale == null) {
             throw new NullPointerException("The locale parameter is null.");
         }
-        bundles.set(ResourceBundle.getBundle(bundleName, locale, Thread
-            .currentThread()
-            .getContextClassLoader()));
-        defaultBundles.set(ResourceBundle.getBundle(
-            bundleName,
-            Locale.ENGLISH,
-            Thread.currentThread().getContextClassLoader()));
+        try {
+            bundles.set(ResourceBundle.getBundle(bundleName, locale, Thread
+                .currentThread()
+                .getContextClassLoader()));
+        } catch (MissingResourceException ignore) {
+            bundles.set(ResourceBundle.getBundle(
+                bundleName,
+                Locale.ENGLISH,
+                Thread.currentThread().getContextClassLoader()));
+        }
     }
 
     public void clearBundle() {
         bundles.set(null);
-        defaultBundles.set(null);
     }
 
     public String get(String key, Object... args)
@@ -71,17 +67,7 @@ public class ResourceBundleApplicationMessageDelegate implements
             throw new IllegalStateException(
                 "The bundle attached to the current thread is not found.");
         }
-        String pattern = null;
-        try {
-            pattern = bundle.getString(key);
-        } catch (MissingResourceException e) {
-            bundle = defaultBundles.get();
-            if (bundle == null) {
-                throw new IllegalStateException(
-                    "The bundle attached to the current thread is not found.");
-            }
-            pattern = bundle.getString(key);
-        }
+        String pattern = bundle.getString(key);
         return MessageFormat.format(pattern, args);
     }
 }
