@@ -10,18 +10,39 @@ Source:
 <ul>
 <li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/controller/ajax/IndexController.java">IndexController</a></li>
 <li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/controller/ajax/HelloController.java">HelloController</a></li>
+<li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/src/slim3/demo/controller/ajax/SendController.java">SendController</a></li>
 <li><a href="http://code.google.com/p/slim3/source/browse/trunk/slim3demo/war/ajax/index.html">index.html</a></li>
 </ul>
 <hr />
 <span id="ready"></span><br />
 <span id="message"></span><br />
 <input type="button" value="hello"
-    onclick="$('#message').load('hello');"/>
+    onclick="$('#message').load('hello');"/><br />
+<form id="form" method="post">
+Title<br />
+<input type="text" name="title"/><br />
+Content<br />
+<textarea name="content"></textarea><br />
+<input type="submit" value="Send"/>
+</form>
     
 <script src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
 <script type="text/javascript">
 $(function() {
     $('#ready').load('ready');
+    $("#form").submit(function(){
+        $.post(
+            "send",
+            $('#form').serialize(),
+            function(data,status){
+                if(status == 'success'){
+                    alert(data.title + ", " + data.content)
+                }
+            },
+            'json'
+        );
+        return false;
+    });
 });
 </script>
 </body>
