@@ -3,7 +3,7 @@
 <web-app xmlns="http://java.sun.com/xml/ns/javaee" version="2.5">
 	<context-param>
         <param-name>slim3.rootPackage</param-name>
-        <param-value>slim3.demo</param-value>
+        <param-value>slim3</param-value>
     </context-param>
     <context-param>
         <param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
@@ -21,7 +21,7 @@
     <filter>
         <filter-name>DatastoreFilter</filter-name>
         <filter-class>org.slim3.datastore.DatastoreFilter</filter-class>
-    </filter>
+    </filter>   
     <filter>
         <filter-name>FrontController</filter-name>
         <filter-class>org.slim3.controller.FrontController</filter-class>
@@ -31,12 +31,12 @@
         <filter-name>HotReloadingFilter</filter-name>
         <url-pattern>/*</url-pattern>
         <dispatcher>REQUEST</dispatcher>
-    </filter-mapping>
+    </filter-mapping>    
     <filter-mapping>
         <filter-name>DatastoreFilter</filter-name>
         <url-pattern>/*</url-pattern>
         <dispatcher>REQUEST</dispatcher>
-    </filter-mapping>    
+    </filter-mapping>
     <filter-mapping>
         <filter-name>FrontController</filter-name>
         <url-pattern>/*</url-pattern>
@@ -45,13 +45,13 @@
         <dispatcher>INCLUDE</dispatcher>
         <dispatcher>ERROR</dispatcher>
     </filter-mapping>
-
+    
     <servlet>
         <servlet-name>GlobalTransactionServlet</servlet-name>
         <servlet-class>org.slim3.datastore.GlobalTransactionServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
-
+    
     <servlet>
         <servlet-name>GWTServiceServlet</servlet-name>
         <servlet-class>org.slim3.gwt.server.rpc.GWTServiceServlet</servlet-class>
@@ -67,7 +67,7 @@
         <servlet-name>GlobalTransactionServlet</servlet-name>
         <url-pattern>/slim3/gtx</url-pattern>
     </servlet-mapping>
-
+    
     <servlet-mapping>
         <servlet-name>GWTServiceServlet</servlet-name>
         <url-pattern>*.s3gwt</url-pattern>
@@ -77,7 +77,7 @@
         <servlet-name>KtrWjrServiceServlet</servlet-name>
         <url-pattern>/ktrwjr/ktrwjr/ktrwjr.s3gwt</url-pattern>
     </servlet-mapping>
-
+    
     <security-constraint>
         <web-resource-collection>
             <url-pattern>*.jsp</url-pattern>
@@ -87,31 +87,7 @@
     </security-constraint>
     <security-constraint>
         <web-resource-collection>
-            <url-pattern>/performance/prepare</url-pattern>
-        </web-resource-collection>
-        <auth-constraint>
-            <role-name>admin</role-name>
-        </auth-constraint>
-    </security-constraint>
-    <security-constraint>
-        <web-resource-collection>
-            <url-pattern>/mail/receive</url-pattern>
-        </web-resource-collection>
-        <auth-constraint>
-            <role-name>admin</role-name>
-        </auth-constraint>
-    </security-constraint>
-    <security-constraint>
-        <web-resource-collection>
-            <url-pattern>/_ah/mail/*</url-pattern>
-        </web-resource-collection>
-        <auth-constraint>
-            <role-name>admin</role-name>
-        </auth-constraint>
-    </security-constraint>
-    <security-constraint>
-        <web-resource-collection>
-            <url-pattern>/slim3/gtx/*</url-pattern>
+            <url-pattern>/slim3/gtx</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <role-name>admin</role-name>
