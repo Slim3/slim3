@@ -203,7 +203,6 @@ public class Default implements JsonCoder{
 
     @Override
     public void encode(JsonWriter writer, Object value) {
-        writer.writeNull();
     }
 
     @Override
