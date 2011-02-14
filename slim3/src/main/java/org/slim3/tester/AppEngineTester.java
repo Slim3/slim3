@@ -599,6 +599,17 @@ public class AppEngineTester implements Delegate<Environment> {
         parentDelegate.log(env, rec);
     }
 
+    @Override
+    public void flushLogs(Environment env) {
+        parentDelegate.flushLogs(env);
+
+    }
+
+    @Override
+    public List<Thread> getRequestThreads(Environment env) {
+        return parentDelegate.getRequestThreads(env);
+    }
+
     /**
      * Sets {@link URLFetchHandler}.
      * 
