@@ -2213,7 +2213,7 @@ public class ModelMetaGenerator implements Generator {
             printer.println("@Override");
             printer
                 .println(
-                    "public %s jsonToModel(%s rootReader, int maxDepth, int currentDepth) {",
+                    "protected %s jsonToModel(%s rootReader, int maxDepth, int currentDepth) {",
                     modelMetaDesc.getModelClassName(),
                     JsonRootReader);
             printer.indent();

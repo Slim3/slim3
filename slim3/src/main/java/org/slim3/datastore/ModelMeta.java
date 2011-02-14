@@ -400,7 +400,7 @@ public abstract class ModelMeta<M> {
      *            
      * @return model
      */
-    public M jsonToModel(String json, int maxDepth, int currentDepth){
+    protected M jsonToModel(String json, int maxDepth, int currentDepth){
         return jsonToModel(new JsonRootReader(json, new ModelReader() {
             @Override
             public <T> T read(JsonReader reader, Class<T> modelClass, int maxDepth,
@@ -427,7 +427,7 @@ public abstract class ModelMeta<M> {
      *            
      * @return model
      */
-    public abstract M jsonToModel(JsonRootReader reader, int maxDepth, int currentDepth);
+    protected abstract M jsonToModel(JsonRootReader reader, int maxDepth, int currentDepth);
     
     /**
      * Converts the JSON string to model.
