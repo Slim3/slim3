@@ -15,6 +15,7 @@
  */
 package org.slim3.datastore;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,6 +37,8 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.ShortBlob;
 import com.google.appengine.api.datastore.Text;
+import com.google.appengine.repackaged.org.json.JSONArray;
+import com.google.appengine.repackaged.org.json.JSONException;
 
 /**
  * A meta data of model.
@@ -332,6 +335,57 @@ public abstract class ModelMeta<M> {
         return jsonToModel(json, maxDepth, 0);
     }
 
+    /**
+     * Converts the JSON string to model array.
+     * 
+     * @param json
+     *            the JSON string
+     *            
+     * @return model array
+     */
+    public M[] jsonToModels(String json){
+        return jsonToModels(json, 0);
+    }
+
+    /**
+     * Converts the JSON string to model array.
+     * 
+     * @param json
+     *            the JSON string
+     *            
+     * @param maxDepth
+     *            the max depth
+     *            
+     * @return model array
+     */
+    @SuppressWarnings("unchecked")
+    public M[] jsonToModels(String json, int maxDepth){
+        JSONArray array = null;
+        try{
+            array = new JSONArray(json);
+        } catch(JSONException e){
+            return (M[])Array.newInstance(getModelClass(), 0);
+        }
+        ModelReader mr = new ModelReader() {
+            @Override
+            public <T> T read(JsonReader reader, Class<T> modelClass, int maxDepth,
+                    int currentDepth) {
+                return invokeJsonToModel(
+                    Datastore.getModelMeta(modelClass),
+                    reader, maxDepth, currentDepth + 1);
+            }
+        };
+        M[] ret = (M[])Array.newInstance(this.getModelClass(), array.length());
+        for(int i = 0; i < array.length(); i++){
+            try{
+                JsonRootReader rr = new JsonRootReader(array.getJSONObject(i), mr);
+                ret[i] = jsonToModel(rr, maxDepth, 0);
+            } catch(JSONException e){
+            }
+        }
+        return ret;
+    }
+    
     /**
      * Converts the JSON string to model.
      * 
