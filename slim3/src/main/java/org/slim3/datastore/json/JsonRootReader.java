@@ -45,6 +45,17 @@ public class JsonRootReader {
     }
 
     /**
+     * The constructor.
+     * 
+     * @param jsonObject the JSON Object
+     * @param modelReader the model reader
+     */
+    public JsonRootReader(JSONObject jsonObject, ModelReader modelReader){
+        this.jsonObject = jsonObject;
+        this.modelReader = modelReader;
+    }
+
+    /**
      * Gets the model reader.
      * 
      * @return model reader
