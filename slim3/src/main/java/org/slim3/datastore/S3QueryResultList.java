@@ -74,6 +74,22 @@ public class S3QueryResultList<T> implements List<T>, Serializable {
      * 
      * @param delegate
      *            the delegate
+     * @throws NullPointerException
+     *             if the delegate parameter is null
+     */
+    protected S3QueryResultList(List<T> delegate) throws NullPointerException {
+        if (delegate == null) {
+            throw new NullPointerException(
+                "The delegate parameter must not be null.");
+        }
+        this.delegate = delegate;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param delegate
+     *            the delegate
      * @param encodedCursor
      *            the cursor
      * @param encodedFilters

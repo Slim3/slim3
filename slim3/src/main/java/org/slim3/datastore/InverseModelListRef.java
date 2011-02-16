@@ -195,5 +195,22 @@ public class InverseModelListRef<M, O> extends AbstractInverseModelRef<M, O> {
             }
             return modelList;
         }
+
+        /**
+         * Returns a query result list.
+         * 
+         * @return a query result list
+         */
+        public S3QueryResultList<M> asQueryResultList() {
+            Key key = getOwnerKey();
+            if (key == null) {
+                return new S3QueryResultList<M>(new ArrayList<M>());
+            }
+            query.filter(mappedPropertyName, FilterOperator.EQUAL, key);
+            if (!sortsSet) {
+                query.sort(defaultSorts);
+            }
+            return query.asQueryResultList();
+        }
     }
 }

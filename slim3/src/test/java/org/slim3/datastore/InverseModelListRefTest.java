@@ -91,6 +91,27 @@ public class InverseModelListRefTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void asQueryResultList() throws Exception {
+        Datastore.put(hoge);
+        Bbb bbb = new Bbb();
+        bbb.getHoge2Ref().setModel(hoge);
+        Datastore.put(bbb);
+        Bbb bbb2 = new Bbb();
+        bbb2.getHoge2Ref().setModel(hoge);
+        Datastore.put(bbb2);
+        S3QueryResultList<Bbb> list = ref.query().asQueryResultList();
+        assertThat(list.size(), is(2));
+        assertThat(list.get(0).getKey(), is(bbb.getKey()));
+        assertThat(list.get(1).getKey(), is(bbb2.getKey()));
+        assertThat(list.getEncodedCursor(), is(notNullValue()));
+        assertThat(list.getEncodedFilters(), is(notNullValue()));
+        assertThat(list.getEncodedSorts(), is(notNullValue()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void queryWithSort() throws Exception {
         Datastore.put(hoge);
         Bbb bbb = new Bbb();
