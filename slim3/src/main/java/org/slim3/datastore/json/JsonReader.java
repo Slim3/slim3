@@ -50,6 +50,15 @@ public abstract class JsonReader {
     public abstract String readProperty(String name);
 
     /**
+     * Get the model reader
+     * 
+     * @return model reader
+     */
+    ModelReader getModelReader(){
+        return modelReader;
+    }
+
+    /**
      * Read the model.
      * 
      * @param <T> the type of model

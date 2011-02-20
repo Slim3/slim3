@@ -50,7 +50,7 @@ public class JsonRootReader {
      * @param jsonObject the JSON Object
      * @param modelReader the model reader
      */
-    public JsonRootReader(JSONObject jsonObject, ModelReader modelReader){
+    JsonRootReader(JSONObject jsonObject, ModelReader modelReader){
         this.jsonObject = jsonObject;
         this.modelReader = modelReader;
     }
@@ -83,6 +83,6 @@ public class JsonRootReader {
     public JsonArrayReader newArrayReader(String propertyName){
         JSONArray array = jsonObject.optJSONArray(propertyName);
         if(array == null) return null;
-        return new JsonArrayReader(array, 0, modelReader);
+        return new JsonArrayReader(array, modelReader);
     }
 }

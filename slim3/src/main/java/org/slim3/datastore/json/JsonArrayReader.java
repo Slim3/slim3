@@ -16,6 +16,7 @@
 package org.slim3.datastore.json;
 
 import com.google.appengine.repackaged.org.json.JSONArray;
+import com.google.appengine.repackaged.org.json.JSONException;
 import com.google.appengine.repackaged.org.json.JSONObject;
 
 /**
@@ -29,14 +30,26 @@ public class JsonArrayReader extends JsonReader {
     /**
      * The constructor.
      * 
-     * @param array the JSON array
-     * @param index the index
+     * @param json the JSON string
      * @param modelReader the model reader
      */
-    public JsonArrayReader(JSONArray array, int index, ModelReader modelReader){
+    public JsonArrayReader(String json, ModelReader modelReader){
+        super(modelReader);
+        try{
+            this.array = new JSONArray(json);
+        } catch(JSONException e){
+        }
+    }
+
+    /**
+     * The constructor.
+     * 
+     * @param array the JSON array
+     * @param modelReader the model reader
+     */
+    JsonArrayReader(JSONArray array, ModelReader modelReader){
         super(modelReader);
         this.array = array;
-        this.index = index;
     }
 
     /**
@@ -45,6 +58,7 @@ public class JsonArrayReader extends JsonReader {
      * @return length
      */
     public int length(){
+        if(array == null) return 0;
         return array.length();
     }
 
@@ -59,14 +73,27 @@ public class JsonArrayReader extends JsonReader {
 
     @Override
     public String read(){
+        if(array == null) return null;
         return array.optString(index, null);
     }
 
     @Override
     public String readProperty(String name){
+        if(array == null) return null;
         JSONObject o = array.optJSONObject(index);
         if(o == null) return null;
         return o.optString(name, null);
+    }
+
+    /**
+     * Create the new JSONRootReader on the current index.
+     *
+     * @return JSONRootReader
+     */
+    public JsonRootReader newRootReader(){
+        JSONObject o = array.optJSONObject(index);
+        if(o == null) return null;
+        return new JsonRootReader(o, getModelReader());
     }
 
     private JSONArray array;
