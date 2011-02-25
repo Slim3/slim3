@@ -7,8 +7,8 @@
   <packaging>war</packaging>
   <version>${version}</version>
   <properties>
-    <slim3.version>1.0.6</slim3.version>
-    <appengine.version>1.4.0</appengine.version>
+    <slim3.version>1.0.7</slim3.version>
+    <appengine.version>1.4.2</appengine.version>
     <generated.src>.apt_generated</generated.src>
     <generated.war>war</generated.war>
     <eclipse.lib>eclipse.lib</eclipse.lib>
