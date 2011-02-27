@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.slim3.datastore.Attribute;
 import org.slim3.datastore.Datastore;
+import org.slim3.datastore.InverseModelRef;
 import org.slim3.datastore.Model;
 import org.slim3.datastore.ModelRef;
 import org.slim3.datastore.json.Expanded;
@@ -62,6 +63,10 @@ public class ModelRefAttrModel {
         this.refList = refList2;
     }
 
+    public InverseModelRef<ModelRefAttrModel, ModelRefAttrModel> getInvRef() {
+        return invRef;
+    }
+
     @Attribute(primaryKey = true)
     private Key key;
     private String name;
@@ -70,6 +75,10 @@ public class ModelRefAttrModel {
         new ModelRef<ModelRefAttrModel>(ModelRefAttrModel.class);
     private ModelRef<ModelRefAttrModel> ref = new ModelRef<ModelRefAttrModel>(
         ModelRefAttrModel.class);
+    @Attribute(persistent = false)
+    private InverseModelRef<ModelRefAttrModel, ModelRefAttrModel> invRef
+        = new InverseModelRef<ModelRefAttrModel, ModelRefAttrModel>(
+                ModelRefAttrModel.class, "invRef", this);
     @Attribute(json = @Json(coder = Expanded.class))
     private List<ModelRef<ModelRefAttrModel>> expandedRefList =
         new ArrayList<ModelRef<ModelRefAttrModel>>();
