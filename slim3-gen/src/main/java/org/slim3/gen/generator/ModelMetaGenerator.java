@@ -2242,11 +2242,11 @@ public class ModelMetaGenerator implements Generator {
                         name);
                     printer.println("decoder = new %s();", ja
                         .getCoderClassName());
-                    setterExp = "m." + attr.getWriteMethodName();
+                    setterExp = attr.getWriteMethodName() != null ?
+                        "m." + attr.getWriteMethodName() : null;
                     getterExp = "m." + attr.getReadMethodName() + "()";
                     dt.accept(this, attr);
                 }
-                printer.unindent();
                 printer.println("return m;");
             }
             printer.unindent();
@@ -2256,6 +2256,7 @@ public class ModelMetaGenerator implements Generator {
         @Override
         protected Void defaultAction(DataType type, AttributeMetaDesc p)
                 throws RuntimeException {
+            if(setterExp == null) return null;
             if(ignoreNull){
                 printer.print("%s v = ", type.getClassName());
             } else{
@@ -2279,7 +2280,7 @@ public class ModelMetaGenerator implements Generator {
                 printer.unindent();
                 printer.println("}");
             } else {
-                printer.println(");");
+                printer.printlnWithoutIndent(");");
             }
             return null;
         }
