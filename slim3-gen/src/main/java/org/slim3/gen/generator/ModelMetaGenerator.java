@@ -19,8 +19,10 @@ import static org.slim3.gen.ClassConstants.*;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.slim3.gen.ClassConstants;
@@ -1951,6 +1953,7 @@ public class ModelMetaGenerator implements Generator {
                 printer.println("%s encoder = null;", JsonCoder);
                 for (AttributeMetaDesc attr : modelMetaDesc
                     .getAttributeMetaDescList()) {
+                    if(attr.getReadMethodName() == null) continue;
                     valueExp = "m." + attr.getReadMethodName() + "()";
                     indent = 0;
                     JsonAnnotation ja = attr.getJson();
@@ -2244,7 +2247,9 @@ public class ModelMetaGenerator implements Generator {
                         .getCoderClassName());
                     setterExp = attr.getWriteMethodName() != null ?
                         "m." + attr.getWriteMethodName() : null;
-                    getterExp = "m." + attr.getReadMethodName() + "()";
+                    getterExp = attr.getReadMethodName() != null ?
+                        "m." + attr.getReadMethodName() + "()" :
+                            getDefaultValue(attr.getDataType().getClassName());
                     dt.accept(this, attr);
                 }
                 printer.println("return m;");
@@ -2288,6 +2293,7 @@ public class ModelMetaGenerator implements Generator {
         @Override
         public Void visitEnumType(EnumType type, AttributeMetaDesc p)
                 throws RuntimeException {
+            if(setterExp == null) return null;
             printer.println(
                 "%s(decoder.decode(reader, %s, %s.class));",
                 setterExp,
@@ -2299,6 +2305,7 @@ public class ModelMetaGenerator implements Generator {
         @Override
         public Void visitStringType(StringType type, AttributeMetaDesc p)
                 throws RuntimeException {
+            if(setterExp == null) return null;
             if (p.isCipher()) {
                 printer.println("if(reader.read() != null){");
                 printer.indent();
@@ -2315,6 +2322,7 @@ public class ModelMetaGenerator implements Generator {
         @Override
         public Void visitTextType(TextType type, AttributeMetaDesc p)
                 throws RuntimeException {
+            if(setterExp == null) return null;
             if (p.isCipher()) {
                 printer.println("if(reader.read() != null){");
                 printer.indent();
@@ -2331,6 +2339,7 @@ public class ModelMetaGenerator implements Generator {
         @Override
         public Void visitCollectionType(CollectionType type, AttributeMetaDesc p)
                 throws RuntimeException {
+            if(setterExp == null) return null;
             DataType et = type.getElementType();
             if (!isSupportedForJson(et)) {
                 return null;
@@ -2393,6 +2402,7 @@ public class ModelMetaGenerator implements Generator {
         @Override
         public Void visitArrayType(ArrayType type, AttributeMetaDesc p)
                 throws RuntimeException {
+            if(setterExp == null) return null;
             DataType et = type.getComponentType();
             if(!isSupportedForJson(et)){
                 printer.println("// %s(%s) is not supported.",
@@ -2432,6 +2442,14 @@ public class ModelMetaGenerator implements Generator {
                 getterExp);
             return null;
         }
+        
+        private String getDefaultValue(String className){
+            String def = defaultsOfPrimitives.get(className);
+            if(def != null){
+                return def;
+            }
+            return "(" + className + ")null";
+        }
     }
 
     private boolean isSupportedForJson(DataType dataType) {
@@ -2450,8 +2468,16 @@ public class ModelMetaGenerator implements Generator {
         return false;
     }
 
+    private static final Map<String, String> defaultsOfPrimitives = new HashMap<String, String>();
     private static final Set<String> jsonSupportedTypes = new HashSet<String>();
     static {
+        defaultsOfPrimitives.put("boolean", "false");
+        defaultsOfPrimitives.put("char", "(char)0");
+        defaultsOfPrimitives.put("short", "(short)0");
+        defaultsOfPrimitives.put("int", "0");
+        defaultsOfPrimitives.put("long", "0L");
+        defaultsOfPrimitives.put("float", "0f");
+        defaultsOfPrimitives.put("double", "0.0");
         jsonSupportedTypes.addAll(Arrays.asList(
             Boolean,
             Short,
