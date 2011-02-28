@@ -370,6 +370,7 @@ public abstract class ModelMeta<M> {
         });
         M[] ret = (M[])Array.newInstance(this.getModelClass(), ar.length());
         for(int i = 0; i < ar.length(); i++){
+            ar.setIndex(i);
             ret[i] = jsonToModel(ar.newRootReader(), maxDepth, 0);
         }
         return ret;
