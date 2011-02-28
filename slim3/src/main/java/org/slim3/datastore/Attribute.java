@@ -32,7 +32,7 @@ import org.slim3.datastore.json.Json;
  * 
  */
 @Target(ElementType.FIELD)
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Attribute {
 
