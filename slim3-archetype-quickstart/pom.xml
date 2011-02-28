@@ -3,7 +3,7 @@
   <packaging>maven-archetype</packaging>
   <groupId>org.slim3</groupId>
   <artifactId>slim3-archetype-quickstart</artifactId>
-  <version>1.0.7</version>
+  <version>1.0.8</version>
   <name>Archetype - slim3-archetype-quickstart</name>
   <build>
     <extensions>
