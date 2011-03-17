@@ -44,6 +44,14 @@ public class DaoBaseTest extends AppEngineTestCase {
         assertThat(dao4.getModelClass().getName(), is(Aaa.class.getName()));
     }
 
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void getModelMeta() throws Exception {
+        assertThat(dao.getModelMeta(), is(notNullValue()));
+    }
+
     private static class MyDao extends DaoBase<Aaa> {
 
     }

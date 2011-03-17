@@ -43,6 +43,11 @@ public abstract class DaoBase<T> {
     protected Class<T> modelClass;
 
     /**
+     * The meta data of model.
+     */
+    protected ModelMeta<T> m;
+
+    /**
      * Constructor.
      */
     @SuppressWarnings("unchecked")
@@ -56,6 +61,10 @@ public abstract class DaoBase<T> {
                 break;
             }
         }
+        if (modelClass == null) {
+            throw new IllegalStateException("No model class is found.");
+        }
+        m = DatastoreUtil.getModelMeta(modelClass);
     }
 
     /**
@@ -65,6 +74,15 @@ public abstract class DaoBase<T> {
      */
     public Class<T> getModelClass() {
         return modelClass;
+    }
+
+    /**
+     * Returns a meta data of model.
+     * 
+     * @return a meta data of model
+     */
+    public ModelMeta<T> getModelMeta() {
+        return m;
     }
 
     /**
@@ -239,5 +257,26 @@ public abstract class DaoBase<T> {
      */
     public Future<Void> deleteAsync(List<Key> keys) {
         return Datastore.deleteAsync(keys);
+    }
+
+    /**
+     * Returns a {@link ModelQuery}.
+     * 
+     * @return a {@link ModelQuery}
+     */
+    protected ModelQuery<T> query() {
+        return Datastore.query(m);
+    }
+
+    /**
+     * Returns a {@link ModelQuery}.
+     * 
+     * @param ancestorKey
+     *            the ancestor key
+     * 
+     * @return a {@link ModelQuery}
+     */
+    protected ModelQuery<T> query(Key ancestorKey) {
+        return Datastore.query(m, ancestorKey);
     }
 }
