@@ -35,7 +35,7 @@ import com.google.appengine.api.datastore.Key;
  * @since 1.0.10
  * 
  */
-public class DaoBase<T> {
+public abstract class DaoBase<T> {
 
     /**
      * The model class.
