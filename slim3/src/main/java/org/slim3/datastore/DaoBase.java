@@ -16,6 +16,7 @@
 package org.slim3.datastore;
 
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -46,9 +47,15 @@ public class DaoBase<T> {
      */
     @SuppressWarnings("unchecked")
     public DaoBase() {
-        modelClass =
-            ((Class) ((ParameterizedType) getClass().getGenericSuperclass())
-                .getActualTypeArguments()[0]);
+        for (Class<?> c = getClass(); c != Object.class; c = c.getSuperclass()) {
+            Type type = c.getGenericSuperclass();
+            if (type instanceof ParameterizedType) {
+                modelClass =
+                    ((Class) ((ParameterizedType) type)
+                        .getActualTypeArguments()[0]);
+                break;
+            }
+        }
     }
 
     /**
