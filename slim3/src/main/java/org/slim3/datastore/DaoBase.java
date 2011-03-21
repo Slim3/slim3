@@ -130,6 +130,17 @@ public abstract class DaoBase<T> {
     }
 
     /**
+     * Determines if a model identified by the key exists
+     * 
+     * @param key
+     *            the key
+     * @return whether a model identified by the key exists
+     */
+    public boolean exists(Key key) {
+        return getOrNull(key) != null;
+    }
+
+    /**
      * Returns models.
      * 
      * @param keys
