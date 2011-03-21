@@ -19,7 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * This class is a container of items.
+ * 
  * @author higayasuo
+ * @since 1.0.0
  * 
  */
 public class Items {

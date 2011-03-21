@@ -9,6 +9,13 @@ import com.google.appengine.api.datastore.Key;
 
 import coordinate.enums.Category;
 
+/**
+ * This class represents a closet item.
+ * 
+ * @author higayasuo
+ * @since 1.0.0
+ * 
+ */
 @Model(schemaVersion = 1)
 public class Item implements Serializable {
 
@@ -61,7 +68,8 @@ public class Item implements Serializable {
     }
 
     /**
-     * @param category the category to set
+     * @param category
+     *            the category to set
      */
     public void setCategory(Category category) {
         this.category = category;

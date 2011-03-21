@@ -2,11 +2,18 @@ package coordinate.model;
 
 import java.io.Serializable;
 
-import com.google.appengine.api.datastore.Key;
-
 import org.slim3.datastore.Attribute;
 import org.slim3.datastore.Model;
 
+import com.google.appengine.api.datastore.Key;
+
+/**
+ * This class has a coordinate result.
+ * 
+ * @author higayasuo
+ * @since 1.0.0
+ * 
+ */
 @Model(schemaVersion = 1)
 public class Coordinate implements Serializable {
 
@@ -20,7 +27,7 @@ public class Coordinate implements Serializable {
 
     /**
      * Returns the key.
-     *
+     * 
      * @return the key
      */
     public Key getKey() {
@@ -29,7 +36,7 @@ public class Coordinate implements Serializable {
 
     /**
      * Sets the key.
-     *
+     * 
      * @param key
      *            the key
      */
@@ -39,7 +46,7 @@ public class Coordinate implements Serializable {
 
     /**
      * Returns the version.
-     *
+     * 
      * @return the version
      */
     public Long getVersion() {
@@ -48,7 +55,7 @@ public class Coordinate implements Serializable {
 
     /**
      * Sets the version.
-     *
+     * 
      * @param version
      *            the version
      */

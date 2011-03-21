@@ -16,31 +16,56 @@
 package coordinate.enums;
 
 /**
+ * This enum represents a category of item.
+ * 
  * @author higayasuo
+ * @since 1.0.0
  * 
  */
 public enum Category {
 
-    //
+    /**
+     * The tops.
+     */
     TOPS,
-    //
+    /**
+     * The bottoms.
+     */
     BOTTOMS,
-    //
+    /**
+     * The one-piece.
+     */
     ONEPIECE,
-    //
+    /**
+     * The outer.
+     */
     OUTER,
-    //
+    /**
+     * The shoes.
+     */
     SHOES,
-    //
+    /**
+     * The bag.
+     */
     BAG,
-    //
+    /**
+     * The inner.
+     */
     INNER,
-    //
+    /**
+     * The hat.
+     */
     HAT,
-    //
-    ACCESSARY,
-    //
+    /**
+     * The accessory.
+     */
+    ACCESSORY,
+    /**
+     * The glasses.
+     */
     GLASSES,
-    //
+    /**
+     * The other.
+     */
     OTHER
 }

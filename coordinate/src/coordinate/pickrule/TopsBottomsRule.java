@@ -13,39 +13,26 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package coordinate.enums;
+package coordinate.pickrule;
+
+import coordinate.model.Item;
 
 /**
- * This class represents a silhouette of item.
- * 
  * @author higayasuo
- * @since 1.0.0
  * 
  */
-public enum Silhouette {
+public class TopsBottomsRule implements Rule {
 
-    /**
-     * The skinny.
-     */
-    SKINNY,
-    /**
-     * The straight.
-     */
-    STRAIGHT,
-    /**
-     * The baggy.
-     */
-    BAGGY,
-    /**
-     * The bell-bottoms.
-     */
-    BELLBOTTOMS,
-    /**
-     * The boots-cut.
-     */
-    BOOTSCUT,
-    /**
-     * The sarouel.
-     */
-    SAROUEL
+    public boolean isTarget(Item first, Item second) {
+        if (first == null) {
+            throw new NullPointerException(
+                "The first parameter must not be null.");
+        }
+        if (first == null) {
+            throw new NullPointerException(
+                "The second parameter must not be null.");
+        }
+        return false;
+    }
+
 }
