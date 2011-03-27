@@ -40,6 +40,52 @@ public class OnepieceBottomsRule extends AbstractRule {
                 "The second item must be a bottoms, but the actual one is "
                     + second.getCategory());
         }
-        return second.getVariety() != Variety.SKIRT;
+        if (isSecondSkirt(second)) {
+            return false;
+        }
+        if (isFirstOnepieceSkirt(first)) {
+            if (!isOnepieceSkirtShorterThanPants(first, second)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Determines if the second item is a skirt.
+     * 
+     * @param second
+     *            the second item
+     * @return whether the second item is a skirt
+     */
+    protected boolean isSecondSkirt(Item second) {
+        return second.getVariety() == Variety.SKIRT;
+    }
+
+    /**
+     * Determines if the first item is a one-piece skirt.
+     * 
+     * @param first
+     *            the first item
+     * @return whether the first item is a one-piece skirt
+     */
+    protected boolean isFirstOnepieceSkirt(Item first) {
+        return first.getVariety() == Variety.ONEPIECESKIRT;
+    }
+
+    /**
+     * Determines if the first item is a one-piece skirt.
+     * 
+     * @param onepieceSkirt
+     *            the one-piece skirt
+     * @param pants
+     *            the pants
+     * @return whether the one-piece skirt is shorter than a pants
+     */
+    protected boolean isOnepieceSkirtShorterThanPants(Item onepieceSkirt,
+            Item pants) {
+        return onepieceSkirt.getLength().ordinal() < pants
+            .getLength()
+            .ordinal();
     }
 }

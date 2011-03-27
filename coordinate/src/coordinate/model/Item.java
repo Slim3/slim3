@@ -23,6 +23,7 @@ import org.slim3.datastore.Model;
 import com.google.appengine.api.datastore.Key;
 
 import coordinate.enums.Category;
+import coordinate.enums.Length;
 import coordinate.enums.Variety;
 
 /**
@@ -46,6 +47,8 @@ public class Item implements Serializable {
     private Category category;
 
     private Variety variety;
+
+    private Length length;
 
     /**
      * Returns the key.
@@ -113,6 +116,21 @@ public class Item implements Serializable {
      */
     public void setVariety(Variety variety) {
         this.variety = variety;
+    }
+
+    /**
+     * @return the length
+     */
+    public Length getLength() {
+        return length;
+    }
+
+    /**
+     * @param length
+     *            the length to set
+     */
+    public void setLength(Length length) {
+        this.length = length;
     }
 
     @Override

@@ -89,9 +89,9 @@ public enum Variety {
      */
     ALLINONE,
     /**
-     * The one-piece.
+     * The one-piece skirt.
      */
-    ONEPIECE,
+    ONEPIECESKIRT,
     /**
      * The pumps.
      */

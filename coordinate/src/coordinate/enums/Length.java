@@ -37,11 +37,19 @@ public enum Length {
      */
     HAlF,
     /**
+     * The short.
+     */
+    SHORT,
+    /**
      * The knee.
      */
     KNEE,
     /**
      * The below-knee.
      */
-    BELOWKNEE
+    BELOWKNEE,
+    /**
+     * The full.
+     */
+    FULL
 }
