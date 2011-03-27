@@ -13,26 +13,35 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package coordinate.pickrule;
-
-import coordinate.model.Item;
+package coordinate.enums;
 
 /**
+ * This enum represents a length of item.
+ * 
  * @author higayasuo
+ * @since 1.0.0
  * 
  */
-public class TopsBottomsRule implements Rule {
+public enum Length {
 
-    public boolean isSuitable(Item first, Item second) {
-        if (first == null) {
-            throw new NullPointerException(
-                "The first parameter must not be null.");
-        }
-        if (second == null) {
-            throw new NullPointerException(
-                "The second parameter must not be null.");
-        }
-        return false;
-    }
-
+    /**
+     * The bolero.
+     */
+    BOLERO,
+    /**
+     * The waist.
+     */
+    WAIST,
+    /**
+     * The half.
+     */
+    HAlF,
+    /**
+     * The knee.
+     */
+    KNEE,
+    /**
+     * The below-knee.
+     */
+    BELOWKNEE
 }
