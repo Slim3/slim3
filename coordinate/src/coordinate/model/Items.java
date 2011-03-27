@@ -27,25 +27,57 @@ import java.util.List;
  */
 public class Items {
 
+    /**
+     * The list of tops.
+     */
     protected List<Item> topsList = new ArrayList<Item>();
 
+    /**
+     * The list of bottoms.
+     */
     protected List<Item> bottomsList = new ArrayList<Item>();
 
+    /**
+     * The list of one-piece.
+     */
     protected List<Item> onepieceList = new ArrayList<Item>();
 
+    /**
+     * Returns the list of tops.
+     * 
+     * @return the list of tops
+     */
     public List<Item> getTopsList() {
         return topsList;
     }
 
+    /**
+     * Returns the list of bottoms.
+     * 
+     * @return the list of bottoms
+     */
     public List<Item> getBottomsList() {
         return bottomsList;
     }
 
+    /**
+     * Returns the list of one-piece.
+     * 
+     * @return the list of one-piece
+     */
     public List<Item> getOnepieceList() {
         return onepieceList;
     }
 
-    public void add(Item item) {
+    /**
+     * Adds the item.
+     * 
+     * @param item
+     *            the item
+     * @throws IllegalStateException
+     *             if the item is unexpected
+     */
+    public void add(Item item) throws IllegalStateException {
         switch (item.getCategory()) {
         case TOPS:
             topsList.add(item);

@@ -23,7 +23,7 @@ import coordinate.model.Item;
  */
 public class TopsBottomsRule implements Rule {
 
-    public boolean isTarget(Item first, Item second) {
+    public boolean isSuitable(Item first, Item second) {
         if (first == null) {
             throw new NullPointerException(
                 "The first parameter must not be null.");

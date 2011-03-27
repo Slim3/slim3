@@ -7,8 +7,15 @@ import org.junit.Test;
 
 import coordinate.enums.Category;
 
+/**
+ * @author higayasuo
+ * 
+ */
 public class ItemsTest {
 
+    /**
+     * @throws Exception
+     */
     @Test
     public void addForTops() throws Exception {
         Items items = new Items();
@@ -20,6 +27,9 @@ public class ItemsTest {
         assertThat(items.getOnepieceList().size(), is(0));
     }
 
+    /**
+     * @throws Exception
+     */
     @Test
     public void addForBottoms() throws Exception {
         Items items = new Items();
@@ -31,6 +41,9 @@ public class ItemsTest {
         assertThat(items.getOnepieceList().size(), is(0));
     }
 
+    /**
+     * @throws Exception
+     */
     @Test
     public void addForOnepiece() throws Exception {
         Items items = new Items();

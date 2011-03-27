@@ -18,10 +18,23 @@ package coordinate.pickrule;
 import coordinate.model.Item;
 
 /**
+ * This interface represents a rule of item combination
+ * 
  * @author higayasuo
+ * @since 1.0.0
  * 
  */
 public interface Rule {
 
-    boolean isTarget(Item first, Item second);
+    /**
+     * Determines if the combination of first item and second one is suitable.
+     * Returns true if its combination is suitable.
+     * 
+     * @param first
+     *            the first item
+     * @param second
+     *            the second item
+     * @return whether the combination of first item and second one is suitable.
+     */
+    boolean isSuitable(Item first, Item second);
 }
