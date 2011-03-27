@@ -8,6 +8,7 @@ import org.slim3.datastore.Model;
 import com.google.appengine.api.datastore.Key;
 
 import coordinate.enums.Category;
+import coordinate.enums.Variety;
 
 /**
  * This class represents a closet item.
@@ -28,6 +29,8 @@ public class Item implements Serializable {
     private Long version;
 
     private Category category;
+
+    private Variety variety;
 
     /**
      * Returns the key.
@@ -68,6 +71,13 @@ public class Item implements Serializable {
     }
 
     /**
+     * @return the category
+     */
+    public Category getCategory() {
+        return category;
+    }
+
+    /**
      * @param category
      *            the category to set
      */
@@ -76,10 +86,18 @@ public class Item implements Serializable {
     }
 
     /**
-     * @return the category
+     * @return the kind
      */
-    public Category getCategory() {
-        return category;
+    public Variety getVariety() {
+        return variety;
+    }
+
+    /**
+     * @param variety
+     *            the kind to set
+     */
+    public void setVariety(Variety variety) {
+        this.variety = variety;
     }
 
     @Override

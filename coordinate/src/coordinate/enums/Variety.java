@@ -22,7 +22,7 @@ package coordinate.enums;
  * @since 1.0.0
  * 
  */
-public enum Kind {
+public enum Variety {
 
     /**
      * The T-shirts.

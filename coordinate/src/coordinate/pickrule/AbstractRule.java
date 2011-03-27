@@ -18,10 +18,12 @@ package coordinate.pickrule;
 import coordinate.model.Item;
 
 /**
+ * An abstract {@link Rule}.
+ * 
  * @author higayasuo
  * 
  */
-public class TopsBottomsRule implements Rule {
+public abstract class AbstractRule implements Rule {
 
     public boolean isSuitable(Item first, Item second) {
         if (first == null) {
@@ -32,7 +34,17 @@ public class TopsBottomsRule implements Rule {
             throw new NullPointerException(
                 "The second parameter must not be null.");
         }
-        return false;
+        return doIsSuitable(first, second);
     }
 
+    /**
+     * A template method for {@link #isSuitable(Item, Item)}.
+     * 
+     * @param first
+     *            the first item
+     * @param second
+     *            the second item
+     * @return whether the combination of first item and second one is suitable.
+     */
+    protected abstract boolean doIsSuitable(Item first, Item second);
 }
