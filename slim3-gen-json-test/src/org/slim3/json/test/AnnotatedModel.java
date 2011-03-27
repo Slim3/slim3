@@ -52,6 +52,14 @@ public class AnnotatedModel {
         this.aliasedStringAttr = aliasedStringAttr;
     }
 
+    public String getAliasedStringAttr2() {
+        return aliasedStringAttr2;
+    }
+
+    public void setAliasedStringAttr2(String aliasedStringAttr2) {
+        this.aliasedStringAttr2 = aliasedStringAttr2;
+    }
+
     static class HelloCoder extends Default implements JsonCoder {
         public HelloCoder() {
         }
@@ -79,4 +87,6 @@ public class AnnotatedModel {
     private String ignoredStringAttr;
     @Attribute(json = @Json(alias = "alias"))
     private String aliasedStringAttr;
+    @Attribute(json = @Json(alias = "alias.name"))
+    private String aliasedStringAttr2;
 }
