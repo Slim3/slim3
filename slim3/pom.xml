@@ -9,7 +9,7 @@
   <!-- The Basics -->
   <groupId>org.slim3</groupId>
   <artifactId>slim3</artifactId>
-  <version>1.0.9</version>
+  <version>1.0.10</version>
   <packaging>jar</packaging>
 
   <!-- More Project Information -->
@@ -206,35 +206,35 @@
     <dependency>
       <groupId>com.google.appengine</groupId>
       <artifactId>appengine-api-1.0-sdk</artifactId>
-      <version>1.4.2</version>
+      <version>1.4.3</version>
     </dependency>
     <dependency>
       <groupId>com.google.appengine</groupId>
       <artifactId>appengine-api-labs</artifactId>
-      <version>1.4.2</version>
+      <version>1.4.3</version>
     </dependency>
     <dependency>
       <groupId>com.google.appengine</groupId>
       <artifactId>appengine-local-runtime</artifactId>
-      <version>1.4.2</version>
+      <version>1.4.3</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.google.appengine</groupId>
       <artifactId>appengine-api-stubs</artifactId>
-      <version>1.4.2</version>
+      <version>1.4.3</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-servlet</artifactId>
-      <version>2.1.1</version>
+      <version>2.2.0</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
-      <version>2.1.1</version>
+      <version>2.2.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
