@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
 	<application>slim3demo</application>
-	<version>109</version>
+	<version>1010</version>
 	
 	<static-files>
     </static-files>
@@ -22,4 +22,5 @@
 	    <property name="java.util.logging.config.file" value="WEB-INF/classes/logging.properties"/>
 	</system-properties>
 	<sessions-enabled>true</sessions-enabled>
+	<threadsafe>true</threadsafe>
 </appengine-web-app>
