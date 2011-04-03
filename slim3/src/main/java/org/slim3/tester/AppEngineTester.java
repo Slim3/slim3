@@ -186,6 +186,12 @@ public class AppEngineTester implements Delegate<Environment> {
     protected static final String FETCH_METHOD = "Fetch";
 
     /**
+     * The path of local_db.bin.
+     */
+    protected static final String LOCAL_DB_BIN_PATH =
+        "build/test-classes/WEB-INF/appengine-generated/local_db.bin";
+
+    /**
      * The ApiProxyLocalImpl instance.
      */
     protected static Delegate<Environment> apiProxyLocalImpl;
@@ -435,6 +441,16 @@ public class AppEngineTester implements Delegate<Environment> {
         mailMessages.clear();
         NamespaceManager.set(null);
         ApiProxy.setDelegate(originalDelegate);
+        if (!AppEngineUtil.isProduction()) {
+            ClassLoader loader = loadLibraries();
+            Class<?> apiProxyLocalImplClass =
+                loader.loadClass(API_PROXY_LOCAL_IMPL_CLASS_NAME);
+            Method stopMethod = apiProxyLocalImplClass.getMethod("stop");
+            stopMethod.setAccessible(true);
+            stopMethod.invoke(apiProxyLocalImpl);
+            ApiProxy.setEnvironmentForCurrentThread(originalEnvironment);
+            // new File(LOCAL_DB_BIN_PATH).delete();
+        }
     }
 
     public byte[] makeSyncCall(Environment env, String service, String method,
@@ -464,7 +480,8 @@ public class AppEngineTester implements Delegate<Environment> {
                 new TaskQueueBulkAddResponse();
             for (int i = 0; i < taskPb.addRequestSize(); i++) {
                 tasks.add(taskPb.getAddRequest(i));
-                responsePb.addTaskResult();
+                responsePb.addTaskResult().setChosenTaskName(
+                    "task" + String.valueOf(System.nanoTime()));
             }
             return responsePb.toByteArray();
         } else if (MEMCACHE_SERVICE.equals(service)) {

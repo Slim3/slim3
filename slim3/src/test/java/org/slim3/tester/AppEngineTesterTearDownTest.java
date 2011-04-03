@@ -153,6 +153,7 @@ public class AppEngineTesterTearDownTest {
         tester.setUp();
         NamespaceManager.set("aaa");
         tester.tearDown();
+        tester.setUp();
         assertThat(NamespaceManager.get(), is(nullValue()));
     }
 }
