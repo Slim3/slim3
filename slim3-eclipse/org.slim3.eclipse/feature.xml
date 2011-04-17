@@ -2,7 +2,7 @@
 <feature
       id="org.slim3.eclipse"
       label="Slim3 Project"
-      version="1.0.9.qualifier"
+      version="1.0.10.qualifier"
       provider-name="slim3"
       plugin="org.slim3.eclipse.core">
 

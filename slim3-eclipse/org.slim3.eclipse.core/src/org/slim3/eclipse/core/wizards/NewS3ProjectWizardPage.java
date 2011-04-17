@@ -319,6 +319,7 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 				generateFrontPage(projectHandle, rootPackage, monitor);
 				generateAppUrls(projectHandle, rootPackage, monitor);
 			}
+			updateProjectName(projectHandle, monitor);
 		} catch(Exception ex) {
 			throw new InvocationTargetException(ex);
 		}
@@ -414,11 +415,11 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 	}
 
 	private String getGenJarFileName(IProject projectHandle, IProgressMonitor monitor) throws CoreException {
-		return ResourceUtil.getFilePath(projectHandle, new Path("lib"), "slim3-gen-.\\..\\..\\.jar", monitor).toString();
+		return ResourceUtil.getFilePath(projectHandle, new Path("lib"), "slim3-gen-[0-9]+\\.[0-9]+\\.[0-9]+\\.jar", monitor).toString();
 	}
 	
 	private IPath getScenic3JarFilePath(IProject projectHandle, IProgressMonitor monitor) throws CoreException {
-		return ResourceUtil.getFilePath(projectHandle, new Path("war/WEB-INF/lib"), "scenic3-.\\..\\..\\.jar", monitor);
+		return ResourceUtil.getFilePath(projectHandle, new Path("war/WEB-INF/lib"), "scenic3-[0-9]+\\.[0-9]+\\.[0-9]+\\.jar", monitor);
 	}
 	
 	private String getScenic3JarFileName(IProject projectHandle, IProgressMonitor monitor) throws CoreException {
@@ -426,7 +427,7 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 	}
 	
 	private IPath getScenic3SourceJarFilePath(IProject projectHandle, IProgressMonitor monitor) throws CoreException {
-		return ResourceUtil.getFilePath(projectHandle, new Path("libsrc"), "scenic3-.\\..\\..-sources.jar", monitor);
+		return ResourceUtil.getFilePath(projectHandle, new Path("libsrc"), "scenic3-[0-9]+\\.[0-9]+\\.[0-9]+-sources.jar", monitor);
 	}
 
 	private void changeGenSrcDir(IProject projectHandle, String rootPackageName, boolean isScenic3Project, IProgressMonitor monitor) throws CoreException {
@@ -625,5 +626,44 @@ public class NewS3ProjectWizardPage extends  NewContainerWizardPage implements I
 					null);
 		}
 		project.setRawClasspath(newClassPaths, monitor);
+	}
+	
+	private void updateProjectName(IProject projectHandle, IProgressMonitor monitor) throws CoreException {
+		IFile project = projectHandle.getFile(".project");
+		if(project.exists()) {
+			InputStream is = project.getContents();
+			InputStreamReader ir = new InputStreamReader(is);
+			BufferedReader br = new BufferedReader(ir);
+			StringBuilder sb = new StringBuilder();
+			String line;
+			try {
+				while((line = br.readLine()) != null) {
+					if(line.contains("<name>slim3-blank</name>")) {
+						sb.append("\t<name>");
+						sb.append(projectHandle.getName());
+						sb.append("</name>\r\n");
+					} else {
+						sb.append(line);
+						sb.append("\r\n");
+					}
+				}
+				ByteArrayInputStream source = new ByteArrayInputStream(sb.toString().getBytes());
+				project.setContents(source, true, true, monitor);
+			} catch (IOException e) {
+				throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Cannot read .settings/org.eclipse.jdt.apt.core.prefs"));
+			} finally {
+				try {
+					is.close();
+					ir.close();
+					br.close();
+				} catch (IOException e) {
+				}
+				is = null;
+				ir = null;
+				br = null;
+			}
+		} else {
+			throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, "Not found .settings/org.eclipse.jdt.apt.core.prefs"));
+		}
 	}
 }
