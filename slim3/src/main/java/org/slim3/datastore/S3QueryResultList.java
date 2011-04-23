@@ -99,9 +99,8 @@ public class S3QueryResultList<T> implements List<T>, Serializable {
      * @param hasNext
      *            whether a next element exists
      * @throws NullPointerException
-     *             if the delegate parameter is null or if the encodedCursor
-     *             parameter is null or if the encodedFilters parameter is null
-     *             or if the encodedSorts parameter is null
+     *             if the delegate parameter is null or if the encodedFilters
+     *             parameter is null or if the encodedSorts parameter is null
      */
     public S3QueryResultList(List<T> delegate, String encodedCursor,
             String encodedFilters, String encodedSorts, boolean hasNext)
@@ -109,10 +108,6 @@ public class S3QueryResultList<T> implements List<T>, Serializable {
         if (delegate == null) {
             throw new NullPointerException(
                 "The delegate parameter must not be null.");
-        }
-        if (encodedCursor == null) {
-            throw new NullPointerException(
-                "The encodedCursor parameter must not be null.");
         }
         if (encodedFilters == null) {
             throw new NullPointerException(

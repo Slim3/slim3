@@ -292,9 +292,11 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
                 modelList.add(mm.entityToModel(e));
             }
         }
+        String cursorWebSafeString =
+            cursor == null ? null : cursor.toWebSafeString();
         return new S3QueryResultList<M>(
             modelList,
-            cursor.toWebSafeString(),
+            cursorWebSafeString,
             getEncodedFilters(),
             getEncodedSorts(),
             hasNext);

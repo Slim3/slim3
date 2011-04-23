@@ -308,6 +308,18 @@ public class ModelQueryTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void asQueryResultListForIn() throws Exception {
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(ds, meta);
+        assertThat(query
+            .filter(meta.myString.in("aaa", "bbb"))
+            .asQueryResultList()
+            .size(), is(0));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void asSingle() throws Exception {
         DatastoreUtil.put(ds, null, new Entity("Hoge"));
         ModelQuery<Hoge> query = new ModelQuery<Hoge>(ds, meta);
