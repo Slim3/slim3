@@ -482,6 +482,7 @@ public class MockHttpServletResponse implements HttpServletResponse {
      *             if {@link IOException} is encountered
      */
     public byte[] getOutputAsByteArray() throws IOException {
+        flushBuffer();
         return sourceOutput.toByteArray();
     }
 
