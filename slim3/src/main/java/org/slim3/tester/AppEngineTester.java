@@ -367,6 +367,9 @@ public class AppEngineTester implements Delegate<Environment> {
                     if (method.getName().equals("getPort")) {
                         return 0;
                     }
+                    if (method.getName().equals("enforceApiDeadlines")) {
+                        return true;
+                    }
                     return null;
                 }
             };
