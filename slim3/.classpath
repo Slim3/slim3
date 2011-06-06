@@ -6,8 +6,8 @@
 	<classpathentry kind="src" output="build/test-classes" path="src/test/resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/junit-4.7.jar"/>
-	<classpathentry kind="lib" path="C:/user/program/eclipse/plugins/com.google.appengine.eclipse.sdkbundle_1.5.0.r35v201105092302/appengine-java-sdk-1.5.0/lib/impl/appengine-local-runtime.jar"/>
 	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
 	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
-	<classpathentry kind="output" path="www-test/WEB-INF/classes"/>
+	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER/gwt-2.3.0"/>
+	<classpathentry kind="output" path="build/classes"/>
 </classpath>

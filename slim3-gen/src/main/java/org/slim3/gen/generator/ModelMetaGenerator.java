@@ -120,9 +120,11 @@ public class ModelMetaGenerator implements Generator {
                 ProductInfo.getVersion(),
                 new Date());
         printer.println("/** */");
-        printer.println("public final class %s extends %s<%s> {", modelMetaDesc
-            .getSimpleName(), ClassConstants.ModelMeta, modelMetaDesc
-            .getModelClassName());
+        printer.println(
+            "public final class %s extends %s<%s> {",
+            modelMetaDesc.getSimpleName(),
+            ClassConstants.ModelMeta,
+            modelMetaDesc.getModelClassName());
         printer.println();
         printer.indent();
         printAttributeMetaFields(printer);
@@ -210,8 +212,10 @@ public class ModelMetaGenerator implements Generator {
         printer.println("/** */");
         printer.println("public %s() {", modelMetaDesc.getSimpleName());
         if (modelMetaDesc.getClassHierarchyList().isEmpty()) {
-            printer.println("    super(\"%1$s\", %2$s.class);", modelMetaDesc
-                .getKind(), modelMetaDesc.getModelClassName());
+            printer.println(
+                "    super(\"%1$s\", %2$s.class);",
+                modelMetaDesc.getKind(),
+                modelMetaDesc.getModelClassName());
         } else {
             printer.print(
                 "    super(\"%1$s\", %2$s.class, %3$s.asList(",
@@ -240,8 +244,9 @@ public class ModelMetaGenerator implements Generator {
         printer.println("/**");
         printer.println(" * @return the singleton");
         printer.println(" */");
-        printer.println("public static %1$s get() {", modelMetaDesc
-            .getSimpleName());
+        printer.println(
+            "public static %1$s get() {",
+            modelMetaDesc.getSimpleName());
         printer.println("   return slim3_singleton;");
         printer.println("}");
         printer.println();
@@ -288,8 +293,9 @@ public class ModelMetaGenerator implements Generator {
                     "    throw new IllegalStateException(\"The version property of the model(%1$s) is not defined.\");",
                     modelMetaDesc.getModelClassName());
         } else {
-            printer.println("    %1$s m = (%1$s) model;", modelMetaDesc
-                .getModelClassName());
+            printer.println(
+                "    %1$s m = (%1$s) model;",
+                modelMetaDesc.getModelClassName());
             DataType dataType = attr.getDataType();
             dataType.accept(
                 new SimpleDataTypeVisitor<Void, Void, RuntimeException>() {
@@ -307,8 +313,9 @@ public class ModelMetaGenerator implements Generator {
                     @Override
                     public Void visitPrimitiveLongType(PrimitiveLongType type,
                             Void p) throws RuntimeException {
-                        printer.println("    return m.%1$s();", attr
-                            .getReadMethodName());
+                        printer.println(
+                            "    return m.%1$s();",
+                            attr.getReadMethodName());
                         return null;
                     }
 
@@ -341,8 +348,9 @@ public class ModelMetaGenerator implements Generator {
         final AttributeMetaDesc attr =
             modelMetaDesc.getVersionAttributeMetaDesc();
         if (attr != null) {
-            printer.println("    %1$s m = (%1$s) model;", modelMetaDesc
-                .getModelClassName());
+            printer.println(
+                "    %1$s m = (%1$s) model;",
+                modelMetaDesc.getModelClassName());
             DataType dataType = attr.getDataType();
             dataType.accept(
                 new SimpleDataTypeVisitor<Void, Void, RuntimeException>() {
@@ -360,8 +368,10 @@ public class ModelMetaGenerator implements Generator {
                     @Override
                     public Void visitPrimitiveLongType(PrimitiveLongType type,
                             Void p) throws RuntimeException {
-                        printer.println("    m.%1$s(m.%2$s() + 1L);", attr
-                            .getWriteMethodName(), attr.getReadMethodName());
+                        printer.println(
+                            "    m.%1$s(m.%2$s() + 1L);",
+                            attr.getWriteMethodName(),
+                            attr.getReadMethodName());
                         return null;
                     }
 
@@ -394,8 +404,9 @@ public class ModelMetaGenerator implements Generator {
     protected void printGetSchemaVersionName(final Printer printer) {
         printer.println("@Override");
         printer.println("public String getSchemaVersionName() {");
-        printer.println("    return \"%1$s\";", modelMetaDesc
-            .getSchemaVersionName());
+        printer.println(
+            "    return \"%1$s\";",
+            modelMetaDesc.getSchemaVersionName());
         printer.println("}");
         printer.println();
     }
@@ -409,8 +420,9 @@ public class ModelMetaGenerator implements Generator {
     protected void printGetClassHierarchyListName(final Printer printer) {
         printer.println("@Override");
         printer.println("public String getClassHierarchyListName() {");
-        printer.println("    return \"%1$s\";", modelMetaDesc
-            .getClassHierarchyListName());
+        printer.println(
+            "    return \"%1$s\";",
+            modelMetaDesc.getClassHierarchyListName());
         printer.println("}");
         printer.println();
     }
@@ -457,8 +469,9 @@ public class ModelMetaGenerator implements Generator {
                     "    throw new IllegalStateException(\"The key property of the model(%1$s) is not defined.\");",
                     modelMetaDesc.getModelClassName());
         } else {
-            printer.println("    %1$s m = (%1$s) model;", modelMetaDesc
-                .getModelClassName());
+            printer.println(
+                "    %1$s m = (%1$s) model;",
+                modelMetaDesc.getModelClassName());
             printer.println("    return m.%1$s();", attr.getReadMethodName());
         }
         printer.println("}");
@@ -483,8 +496,9 @@ public class ModelMetaGenerator implements Generator {
                     modelMetaDesc.getModelClassName());
         } else {
             printer.println("    validateKey(key);");
-            printer.println("    %1$s m = (%1$s) model;", modelMetaDesc
-                .getModelClassName());
+            printer.println(
+                "    %1$s m = (%1$s) model;",
+                modelMetaDesc.getModelClassName());
             printer.println("    m.%1$s(key);", attr.getWriteMethodName());
         }
         printer.println("}");
@@ -509,8 +523,9 @@ public class ModelMetaGenerator implements Generator {
                     continue;
                 }
                 if (first) {
-                    printer.println("    %1$s m = (%1$s) model;", modelMetaDesc
-                        .getModelClassName());
+                    printer.println(
+                        "    %1$s m = (%1$s) model;",
+                        modelMetaDesc.getModelClassName());
                     first = false;
                 }
                 printer
@@ -907,8 +922,9 @@ public class ModelMetaGenerator implements Generator {
                     UnsupportedOperationException.class.getName(),
                     modelMetaDesc.getModelClassName());
             } else {
-                printer.println("%1$s model = new %1$s();", modelMetaDesc
-                    .getModelClassName());
+                printer.println(
+                    "%1$s model = new %1$s();",
+                    modelMetaDesc.getModelClassName());
                 for (AttributeMetaDesc attr : modelMetaDesc
                     .getAttributeMetaDescList()) {
                     if (!attr.isPersistent()) {
@@ -934,8 +950,10 @@ public class ModelMetaGenerator implements Generator {
                     p.getAttributeName(),
                     Blob,
                     p.getName());
-            printer.println("model.%1$s(_%2$s);", p.getWriteMethodName(), p
-                .getAttributeName());
+            printer.println(
+                "model.%1$s(_%2$s);",
+                p.getWriteMethodName(),
+                p.getAttributeName());
             return null;
         }
 
@@ -1122,8 +1140,9 @@ public class ModelMetaGenerator implements Generator {
         public Void visitKeyType(KeyType type, AttributeMetaDesc p)
                 throws RuntimeException {
             if (p.isPrimaryKey()) {
-                printer.println("model.%1$s(entity.getKey());", p
-                    .getWriteMethodName());
+                printer.println(
+                    "model.%1$s(entity.getKey());",
+                    p.getWriteMethodName());
             } else {
                 printer.println(
                     "model.%1$s((%2$s) entity.getProperty(\"%3$s\"));",
@@ -1137,8 +1156,9 @@ public class ModelMetaGenerator implements Generator {
         @Override
         public Void visitModelRefType(ModelRefType type, AttributeMetaDesc p)
                 throws RuntimeException {
-            printer.println("if (model.%1$s() == null) {", p
-                .getReadMethodName());
+            printer.println(
+                "if (model.%1$s() == null) {",
+                p.getReadMethodName());
             printer
                 .println(
                     "    throw new NullPointerException(\"The property(%1$s) is null.\");",
@@ -1246,6 +1266,17 @@ public class ModelMetaGenerator implements Generator {
                             return true;
                         }
 
+                        @Override
+                        public Boolean visitEnumType(EnumType type, Void p)
+                                throws RuntimeException {
+                            printer
+                                .println(
+                                    "model.%1$s(stringListToEnumList(%2$s.class, entity.getProperty(\"%3$s\")));",
+                                    attr.getWriteMethodName(),
+                                    type.getTypeName(),
+                                    attr.getName());
+                            return true;
+                        }
                     },
                     null);
             return handled ? null : super.visitListType(collectionType, attr);
@@ -1313,6 +1344,18 @@ public class ModelMetaGenerator implements Generator {
                             return true;
                         }
 
+                        @Override
+                        public Boolean visitEnumType(EnumType type, Void p)
+                                throws RuntimeException {
+                            printer
+                                .println(
+                                    "model.%1$s(new %4$s<%2$s>(stringListToEnumList(%2$s.class, entity.getProperty(\"%3$s\"))));",
+                                    attr.getWriteMethodName(),
+                                    type.getTypeName(),
+                                    attr.getName(),
+                                    LinkedList);
+                            return true;
+                        }
                     },
                     null);
             return handled ? null : super.visitListType(collectionType, attr);
@@ -1380,6 +1423,18 @@ public class ModelMetaGenerator implements Generator {
                             return true;
                         }
 
+                        @Override
+                        public Boolean visitEnumType(EnumType type, Void p)
+                                throws RuntimeException {
+                            printer
+                                .println(
+                                    "model.%1$s(new %4$s<%2$s>(stringListToEnumList(%2$s.class, entity.getProperty(\"%3$s\"))));",
+                                    attr.getWriteMethodName(),
+                                    type.getTypeName(),
+                                    attr.getName(),
+                                    HashSet);
+                            return true;
+                        }
                     },
                     null);
             return handled ? null : super.visitSetType(collectionType, attr);
@@ -1448,6 +1503,18 @@ public class ModelMetaGenerator implements Generator {
                             return true;
                         }
 
+                        @Override
+                        public Boolean visitEnumType(EnumType type, Void p)
+                                throws RuntimeException {
+                            printer
+                                .println(
+                                    "model.%1$s(new %4$s<%2$s>(stringListToEnumList(%2$s.class, entity.getProperty(\"%3$s\"))));",
+                                    attr.getWriteMethodName(),
+                                    type.getTypeName(),
+                                    attr.getName(),
+                                    LinkedHashSet);
+                            return true;
+                        }
                     },
                     null);
             return handled ? null : super.visitSetType(collectionType, attr);
@@ -1515,6 +1582,18 @@ public class ModelMetaGenerator implements Generator {
                             return true;
                         }
 
+                        @Override
+                        public Boolean visitEnumType(EnumType type, Void p)
+                                throws RuntimeException {
+                            printer
+                                .println(
+                                    "model.%1$s(new %4$s<%2$s>(stringListToEnumList(%2$s.class, entity.getProperty(\"%3$s\"))));",
+                                    attr.getWriteMethodName(),
+                                    type.getTypeName(),
+                                    attr.getName(),
+                                    TreeSet);
+                            return true;
+                        }
                     },
                     null);
             return handled ? null : super.visitSortedSetType(
@@ -1562,8 +1641,9 @@ public class ModelMetaGenerator implements Generator {
                     UnsupportedOperationException.class.getName(),
                     modelMetaDesc.getModelClassName());
             } else {
-                printer.println("%1$s m = (%1$s) model;", modelMetaDesc
-                    .getModelClassName());
+                printer.println(
+                    "%1$s m = (%1$s) model;",
+                    modelMetaDesc.getModelClassName());
                 printer.println("%1$s entity = null;", Entity);
                 printer.println("if (m.%1$s() != null) {", modelMetaDesc
                     .getKeyAttributeMetaDesc()
@@ -1628,8 +1708,10 @@ public class ModelMetaGenerator implements Generator {
                     p.getName(),
                     p.getReadMethodName());
             } else {
-                printer.println("entity.setProperty(\"%1$s\", m.%2$s());", p
-                    .getName(), p.getReadMethodName());
+                printer.println(
+                    "entity.setProperty(\"%1$s\", m.%2$s());",
+                    p.getName(),
+                    p.getReadMethodName());
             }
             return null;
         }
@@ -1643,8 +1725,10 @@ public class ModelMetaGenerator implements Generator {
                     p.getName(),
                     p.getReadMethodName());
             } else {
-                printer.println("entity.setProperty(\"%1$s\", m.%2$s());", p
-                    .getName(), p.getReadMethodName());
+                printer.println(
+                    "entity.setProperty(\"%1$s\", m.%2$s());",
+                    p.getName(),
+                    p.getReadMethodName());
             }
             return null;
         }
@@ -1783,8 +1867,8 @@ public class ModelMetaGenerator implements Generator {
         }
 
         @Override
-        public Void visitCollectionType(CollectionType type,
-                final AttributeMetaDesc attr) throws RuntimeException {
+        public Void visitListType(ListType type, final AttributeMetaDesc attr)
+                throws RuntimeException {
             if (attr.isLob()) {
                 return super.visitCollectionType(type, attr);
             }
@@ -1800,7 +1884,7 @@ public class ModelMetaGenerator implements Generator {
                             if (attr.isUnindexed()) {
                                 printer
                                     .println(
-                                        "entity.setUnindexedProperty(\"%1$s\", enumListToStringListm.%2$s()));",
+                                        "entity.setUnindexedProperty(\"%1$s\", enumListToStringList(m.%2$s()));",
                                         attr.getName(),
                                         attr.getReadMethodName());
                             } else {
@@ -1823,8 +1907,63 @@ public class ModelMetaGenerator implements Generator {
                     attr.getName(),
                     attr.getReadMethodName());
             } else {
-                printer.println("entity.setProperty(\"%1$s\", m.%2$s());", attr
-                    .getName(), attr.getReadMethodName());
+                printer.println(
+                    "entity.setProperty(\"%1$s\", m.%2$s());",
+                    attr.getName(),
+                    attr.getReadMethodName());
+            }
+            return null;
+        }
+
+        @Override
+        public Void visitCollectionType(CollectionType type,
+                final AttributeMetaDesc attr) throws RuntimeException {
+            if (attr.isLob()) {
+                return super.visitCollectionType(type, attr);
+            }
+            DataType componentType = type.getElementType();
+            boolean accepted =
+                componentType.accept(
+                    new SimpleDataTypeVisitor<Boolean, Void, RuntimeException>(
+                        false) {
+
+                        @Override
+                        public Boolean visitEnumType(EnumType type, Void p)
+                                throws RuntimeException {
+                            if (attr.isUnindexed()) {
+                                printer
+                                    .println(
+                                        "entity.setUnindexedProperty(\"%1$s\", enumListToStringList(new %3$s<%4$s>(m.%2$s())));",
+                                        attr.getName(),
+                                        attr.getReadMethodName(),
+                                        ArrayList,
+                                        type.getTypeName());
+                            } else {
+                                printer
+                                    .println(
+                                        "entity.setProperty(\"%1$s\", enumListToStringList(new %3$s<%4$s>(m.%2$s())));",
+                                        attr.getName(),
+                                        attr.getReadMethodName(),
+                                        ArrayList,
+                                        type.getTypeName());
+                            }
+                            return true;
+                        }
+                    },
+                    null);
+            if (accepted) {
+                return null;
+            }
+            if (attr.isUnindexed()) {
+                printer.println(
+                    "entity.setUnindexedProperty(\"%1$s\", m.%2$s());",
+                    attr.getName(),
+                    attr.getReadMethodName());
+            } else {
+                printer.println(
+                    "entity.setProperty(\"%1$s\", m.%2$s());",
+                    attr.getName(),
+                    attr.getReadMethodName());
             }
             return null;
         }
@@ -1882,8 +2021,9 @@ public class ModelMetaGenerator implements Generator {
                     }
                 }
                 if (found) {
-                    printer.println("%1$s m = (%1$s) model;", modelMetaDesc
-                        .getModelClassName());
+                    printer.println(
+                        "%1$s m = (%1$s) model;",
+                        modelMetaDesc.getModelClassName());
                     for (AttributeMetaDesc attr : modelMetaDesc
                         .getAttributeMetaDescList()) {
                         if (!attr.isPersistent()) {
@@ -1917,8 +2057,9 @@ public class ModelMetaGenerator implements Generator {
                     "    throw new NullPointerException(\"The property(%1$s) must not be null.\");",
                     p.getAttributeName());
             printer.println("}");
-            printer.println("m.%1$s().assignKeyIfNecessary(ds);", p
-                .getReadMethodName());
+            printer.println(
+                "m.%1$s().assignKeyIfNecessary(ds);",
+                p.getReadMethodName());
             return null;
         }
     }
@@ -1957,7 +2098,8 @@ public class ModelMetaGenerator implements Generator {
          * @param coderExp
          *            the coder expression
          */
-        public ModelToJsonMethodGenerator(Printer printer, String coderExp, String valueExp) {
+        public ModelToJsonMethodGenerator(Printer printer, String coderExp,
+                String valueExp) {
             this.printer = printer;
             this.valueExp = valueExp;
             this.coderExp = coderExp;
@@ -1981,10 +2123,13 @@ public class ModelMetaGenerator implements Generator {
                     modelMetaDesc.getModelClassName());
             } else {
                 Map<String, String> encoders = new HashMap<String, String>();
-                printer.println("%s m = (%1$s) model;", modelMetaDesc
-                    .getModelClassName());
+                printer.println(
+                    "%s m = (%1$s) model;",
+                    modelMetaDesc.getModelClassName());
                 printer.println("writer.beginObject();");
-                printer.println("%s encoder0 = new %1$s();", "org.slim3.datastore.json.Default");
+                printer.println(
+                    "%s encoder0 = new %1$s();",
+                    "org.slim3.datastore.json.Default");
                 encoders.put("org.slim3.datastore.json.Default", "encoder0");
                 for (AttributeMetaDesc attr : modelMetaDesc
                     .getAttributeMetaDescList()) {
@@ -1997,11 +2142,10 @@ public class ModelMetaGenerator implements Generator {
                         continue;
                     String cn = ja.getCoderClassName();
                     coderExp = encoders.get(cn);
-                    if(coderExp == null){
+                    if (coderExp == null) {
                         String vn = "encoder" + encoders.size();
                         coderExp = vn;
-                        printer.println("%s %s = new %1$s();"
-                            , cn, vn);
+                        printer.println("%s %s = new %1$s();", cn, vn);
                         encoders.put(cn, vn);
                     }
                     DataType dataType = attr.getDataType();
@@ -2078,14 +2222,20 @@ public class ModelMetaGenerator implements Generator {
                         "if(%s == null || %1$s.getValue() == null){",
                         valueExp);
                     printer.indent();
-                    printer.println("%s.encode(writer, %s);", coderExp, valueExp);
+                    printer.println(
+                        "%s.encode(writer, %s);",
+                        coderExp,
+                        valueExp);
                     printer.unindent();
                     printer.println("} else{");
                     printer.indent();
                     indent++;
                 }
-                printer.println("%s.encode(writer, "
-                    + "new %s(encrypt(%s.getValue())));", coderExp, Text, valueExp);
+                printer.println(
+                    "%s.encode(writer, " + "new %s(encrypt(%s.getValue())));",
+                    coderExp,
+                    Text,
+                    valueExp);
                 return null;
             }
             return super.visitTextType(type, p);
@@ -2098,14 +2248,18 @@ public class ModelMetaGenerator implements Generator {
                 if (!p.getJson().isIgnoreNull()) {
                     printer.println("if(%s == null){", valueExp);
                     printer.indent();
-                    printer.println("%s.encode(writer, %s);", coderExp, valueExp);
+                    printer.println(
+                        "%s.encode(writer, %s);",
+                        coderExp,
+                        valueExp);
                     printer.unindent();
                     printer.println("} else{");
                     printer.indent();
                     indent++;
                 }
                 printer.println(
-                    "%s.encode(writer, encrypt(%s));", coderExp,
+                    "%s.encode(writer, encrypt(%s));",
+                    coderExp,
                     valueExp);
                 return null;
             }
@@ -2150,8 +2304,10 @@ public class ModelMetaGenerator implements Generator {
                 throws RuntimeException {
             DataType et = type.getComponentType();
             if (!isSupportedForJson(et)) {
-                printer.println("// %s(%s) is not supported.", et
-                    .getClassName(), et.getTypeName());
+                printer.println(
+                    "// %s(%s) is not supported.",
+                    et.getClassName(),
+                    et.getTypeName());
                 return null;
             }
             if (et.getClassName().equals("byte")) {
@@ -2176,7 +2332,8 @@ public class ModelMetaGenerator implements Generator {
                 if (!p.getJson().isIgnoreNull()) {
                     printer.println("if(%s == null){", valueExp);
                     printer.indent();
-                    printer.println("%s.encode(writer, (%s));",
+                    printer.println(
+                        "%s.encode(writer, (%s));",
                         coderExp,
                         valueExp);
                     printer.unindent();
@@ -2278,10 +2435,13 @@ public class ModelMetaGenerator implements Generator {
                     modelMetaDesc.getModelClassName());
             } else {
                 Map<String, String> decoders = new HashMap<String, String>();
-                printer.println("%1$s m = new %1$s();", modelMetaDesc
-                    .getModelClassName());
+                printer.println(
+                    "%1$s m = new %1$s();",
+                    modelMetaDesc.getModelClassName());
                 printer.println("%s reader = null;", JsonReader);
-                printer.println("%s decoder0 = new %1$s();", "org.slim3.datastore.json.Default");
+                printer.println(
+                    "%s decoder0 = new %1$s();",
+                    "org.slim3.datastore.json.Default");
                 decoders.put("org.slim3.datastore.json.Default", "decoder0");
                 for (AttributeMetaDesc attr : modelMetaDesc
                     .getAttributeMetaDescList()) {
@@ -2298,11 +2458,10 @@ public class ModelMetaGenerator implements Generator {
                         name);
                     String cn = ja.getCoderClassName();
                     coderExp = decoders.get(cn);
-                    if(coderExp == null){
+                    if (coderExp == null) {
                         String vn = "decoder" + decoders.size();
                         coderExp = vn;
-                        printer.println("%s %s = new %1$s();"
-                            , cn, vn);
+                        printer.println("%s %s = new %1$s();", cn, vn);
                         decoders.put(cn, vn);
                     }
                     setterExp =
@@ -2335,11 +2494,13 @@ public class ModelMetaGenerator implements Generator {
             if (isSupportedForJson(type)) {
                 printer.printWithoutIndent(
                     "%s.decode(reader, %s)",
-                    coderExp, getterExp);
+                    coderExp,
+                    getterExp);
             } else {
                 printer.printWithoutIndent(
                     "%s.decode(reader, %s, %s.class)",
-                    coderExp, getterExp,
+                    coderExp,
+                    getterExp,
                     type.getClassName());
             }
             if (ignoreNull) {
@@ -2415,10 +2576,13 @@ public class ModelMetaGenerator implements Generator {
                 return null;
             }
             String container = ArrayList;
-            if (type instanceof SortedSetType)
+            if (type instanceof SortedSetType) {
                 container = TreeSet;
-            else if (type instanceof SetType)
+            } else if (type instanceof SetType) {
                 container = HashSet;
+            } else if (type instanceof LinkedListType) {
+                container = LinkedList;
+            }
             printer.println("{");
             printer.indent();
             printer.println(
@@ -2437,9 +2601,10 @@ public class ModelMetaGenerator implements Generator {
             printer.indent();
             printer.println("r.setIndex(i);");
             if (et instanceof ModelRefType) {
-                printer.println("%s ref = new %1$s(%s.class);", et
-                    .getTypeName(), ((ModelRefType) et)
-                    .getReferenceModelTypeName());
+                printer.println(
+                    "%s ref = new %1$s(%s.class);",
+                    et.getTypeName(),
+                    ((ModelRefType) et).getReferenceModelTypeName());
                 type.getElementType().accept(
                     new JsonToModelMethodGenerator(
                         printer,
@@ -2477,8 +2642,10 @@ public class ModelMetaGenerator implements Generator {
                 return null;
             DataType et = type.getComponentType();
             if (!isSupportedForJson(et)) {
-                printer.println("// %s(%s) is not supported.", et
-                    .getClassName(), et.getTypeName());
+                printer.println(
+                    "// %s(%s) is not supported.",
+                    et.getClassName(),
+                    et.getTypeName());
                 return null;
             }
             if (et.getClassName().equals("byte")) {
