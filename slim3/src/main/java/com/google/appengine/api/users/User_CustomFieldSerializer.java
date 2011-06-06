@@ -47,7 +47,10 @@ public final class User_CustomFieldSerializer {
         String email = streamReader.readString();
         String federatedIdentity = streamReader.readString();
         String userId = streamReader.readString();
-        return new User(email, authDomain, userId, federatedIdentity);
+        if (federatedIdentity != null) {
+            return new User(email, authDomain, userId, federatedIdentity);
+        }
+        return new User(email, authDomain, userId);
     }
 
     /**
