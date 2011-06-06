@@ -68,11 +68,9 @@ public class Validators {
      *            the parameters
      * @throws NullPointerException
      *             if the parameters parameter is null
-     * @throws IllegalStateException
-     *             if the errors is not found in parameters
      */
     public Validators(Map<String, Object> parameters)
-            throws NullPointerException, IllegalStateException {
+            throws NullPointerException {
         if (parameters == null) {
             throw new NullPointerException(
                 "The parameters parameter must not be null.");
@@ -80,8 +78,8 @@ public class Validators {
         this.parameters = parameters;
         errors = (Errors) parameters.get(ControllerConstants.ERRORS_KEY);
         if (errors == null) {
-            throw new IllegalStateException(
-                "The errors is not found in parameters.");
+            errors = new Errors();
+            parameters.put(ControllerConstants.ERRORS_KEY, errors);
         }
     }
 

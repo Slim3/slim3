@@ -18,6 +18,7 @@ package org.slim3.controller.validator;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -63,6 +64,15 @@ public class ValidatorsTest {
     @After
     public void tearDown() throws Exception {
         ApplicationMessage.clearBundle();
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void constructorWithoutErrors() throws Exception {
+        Validators v2 = new Validators(new HashMap<String, Object>());
+        assertThat(v2.getErrors(), is(notNullValue()));
     }
 
     /**
