@@ -23,7 +23,11 @@ public class PerformanceService {
         DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
         Query q = new Query("Bar");
         PreparedQuery pq = ds.prepare(q);
-        return pq.asList(FetchOptions.Builder.withOffset(0));
+        List<Entity> list =
+            pq.asList(FetchOptions.Builder.withOffset(0).limit(
+                Integer.MAX_VALUE));
+        list.size();
+        return list;
     }
 
     public List<Bar> getBarListUsingSlim3() {
