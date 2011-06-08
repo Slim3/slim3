@@ -19,22 +19,11 @@ public final class User implements Serializable {
     }
 
     public User(String email, String authDomain, String userId) {
-        if (email == null)
-            throw new NullPointerException("email must be specified");
-        if (authDomain == null) {
-            throw new NullPointerException("authDomain must be specified");
-        } else {
-            this.email = email;
-            this.authDomain = authDomain;
-            this.userId = userId;
-            return;
-        }
+        this(email, authDomain, null, null);
     }
 
     public User(String email, String authDomain, String userId,
             String federatedIdentity) {
-        if (federatedIdentity == null)
-            throw new NullPointerException("Identity must be specified");
         if (authDomain == null)
             this.authDomain = "";
         else
