@@ -1,6 +1,8 @@
 package slim3.demo.model;
 
 import org.junit.Test;
+
+import slim3.demo.cool.model.Bar;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 

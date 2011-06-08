@@ -1,4 +1,4 @@
-package slim3.demo.model;
+package slim3.demo.cool.model;
 
 import java.io.Serializable;
 

@@ -5,15 +5,15 @@ import org.slim3.controller.Navigation;
 
 import slim3.demo.cool.service.PerformanceService;
 
-public class GetJDOController extends Controller {
+public class GetObjectifyController extends Controller {
 
     private PerformanceService service = new PerformanceService();
 
     @Override
     public Navigation run() throws Exception {
         long start = System.currentTimeMillis();
-        service.getBarListUsingJDO();
-        sessionScope("getJDO", System.currentTimeMillis() - start);
+        service.getBarListUsingObjectify();
+        sessionScope("getObjectify", System.currentTimeMillis() - start);
         return redirect(basePath);
     }
 }

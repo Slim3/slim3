@@ -3,7 +3,7 @@ package slim3.demo.controller.performance;
 import org.slim3.controller.Controller;
 import org.slim3.controller.Navigation;
 
-import slim3.demo.service.PerformanceService;
+import slim3.demo.cool.service.PerformanceService;
 
 public class GetSlim3Controller extends Controller {
 
