@@ -33,7 +33,6 @@ public class PerformanceService {
         List<Entity> list =
             pq.asList(FetchOptions.Builder.withOffset(0).limit(
                 Integer.MAX_VALUE));
-        list.size();
         return list;
     }
 

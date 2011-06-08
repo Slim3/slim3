@@ -5,6 +5,8 @@ import org.slim3.controller.Navigation;
 
 import slim3.demo.cool.service.PerformanceService;
 
+import com.google.appengine.api.datastore.Entity;
+
 public class GetLLController extends Controller {
 
     private PerformanceService service = new PerformanceService();
@@ -12,7 +14,10 @@ public class GetLLController extends Controller {
     @Override
     public Navigation run() throws Exception {
         long start = System.currentTimeMillis();
-        service.getBarListUsingLL();
+        for (Entity e : service.getBarListUsingLL()) {
+            e.getKey();
+            e.getProperty("sortValue");
+        }
         sessionScope("getLL", System.currentTimeMillis() - start);
         return redirect(basePath);
     }

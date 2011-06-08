@@ -3,6 +3,7 @@ package slim3.demo.controller.performance;
 import org.slim3.controller.Controller;
 import org.slim3.controller.Navigation;
 
+import slim3.demo.cool.model.BarObjectify;
 import slim3.demo.cool.service.PerformanceService;
 
 public class GetObjectifyController extends Controller {
@@ -12,7 +13,10 @@ public class GetObjectifyController extends Controller {
     @Override
     public Navigation run() throws Exception {
         long start = System.currentTimeMillis();
-        service.getBarListUsingObjectify();
+        for (BarObjectify bar : service.getBarListUsingObjectify()) {
+            bar.getKey();
+            bar.getSortValue();
+        }
         sessionScope("getObjectify", System.currentTimeMillis() - start);
         return redirect(basePath);
     }
