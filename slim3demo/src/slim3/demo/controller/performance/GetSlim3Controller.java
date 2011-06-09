@@ -10,17 +10,21 @@ import slim3.demo.cool.service.PerformanceService;
 
 public class GetSlim3Controller extends Controller {
 
+    private static final int COUNT = 5;
+
     private PerformanceService service = new PerformanceService();
 
     @Override
     public Navigation run() throws Exception {
         long start = System.currentTimeMillis();
-        for (Iterator<Bar> i = service.getBarsUsingSlim3(); i.hasNext();) {
-            Bar bar = i.next();
-            bar.getKey();
-            bar.getSortValue();
+        for (int i = 0; i < COUNT; i++) {
+            for (Iterator<Bar> ite = service.getBarsUsingSlim3(); ite.hasNext();) {
+                Bar bar = ite.next();
+                bar.getKey();
+                bar.getSortValue();
+            }
         }
-        sessionScope("getSlim3", System.currentTimeMillis() - start);
+        sessionScope("getSlim3", (System.currentTimeMillis() - start) / COUNT);
         return redirect(basePath);
     }
 }

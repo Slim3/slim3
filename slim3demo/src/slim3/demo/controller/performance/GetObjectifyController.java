@@ -10,18 +10,23 @@ import slim3.demo.cool.service.PerformanceService;
 
 public class GetObjectifyController extends Controller {
 
+    private static final int COUNT = 5;
+
     private PerformanceService service = new PerformanceService();
 
     @Override
     public Navigation run() throws Exception {
         long start = System.currentTimeMillis();
-        for (Iterator<BarObjectify> i = service.getBarsUsingObjectify(); i
-            .hasNext();) {
-            BarObjectify bar = i.next();
-            bar.getKey();
-            bar.getSortValue();
+        for (int i = 0; i < COUNT; i++) {
+            for (Iterator<BarObjectify> ite = service.getBarsUsingObjectify(); ite
+                .hasNext();) {
+                BarObjectify bar = ite.next();
+                bar.getKey();
+                bar.getSortValue();
+            }
         }
-        sessionScope("getObjectify", System.currentTimeMillis() - start);
+        sessionScope("getObjectify", (System.currentTimeMillis() - start)
+            / COUNT);
         return redirect(basePath);
     }
 }
