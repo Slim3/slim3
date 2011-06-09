@@ -1,5 +1,7 @@
 package slim3.demo.controller.performance;
 
+import java.util.Iterator;
+
 import org.slim3.controller.Controller;
 import org.slim3.controller.Navigation;
 
@@ -14,7 +16,8 @@ public class GetLLController extends Controller {
     @Override
     public Navigation run() throws Exception {
         long start = System.currentTimeMillis();
-        for (Entity e : service.getBarListUsingLL()) {
+        for (Iterator<Entity> i = service.getBarsUsingLL(); i.hasNext();) {
+            Entity e = i.next();
             e.getKey();
             e.getProperty("sortValue");
         }

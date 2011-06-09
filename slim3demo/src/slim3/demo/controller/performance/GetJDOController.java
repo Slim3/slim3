@@ -13,7 +13,7 @@ public class GetJDOController extends Controller {
     @Override
     public Navigation run() throws Exception {
         long start = System.currentTimeMillis();
-        for (BarJDO bar : service.getBarListUsingJDO()) {
+        for (BarJDO bar : service.getBarsUsingJDO()) {
             bar.getKey();
             bar.getSortValue();
         }

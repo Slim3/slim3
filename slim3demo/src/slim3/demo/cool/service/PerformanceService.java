@@ -1,5 +1,6 @@
 package slim3.demo.cool.service;
 
+import java.util.Iterator;
 import java.util.List;
 
 import javax.jdo.PersistenceManager;
@@ -26,33 +27,26 @@ public class PerformanceService {
         ObjectifyService.register(BarObjectify.class);
     }
 
-    public List<Entity> getBarListUsingLL() {
+    public Iterator<Entity> getBarsUsingLL() {
         AsyncDatastoreService ds =
             DatastoreServiceFactory.getAsyncDatastoreService();
         Query q = new Query("Bar");
         PreparedQuery pq = ds.prepare(q);
-        List<Entity> list =
-            pq.asList(FetchOptions.Builder.withDefaults().limit(
-                Integer.MAX_VALUE));
-        list.size();
-        return list;
+        return pq.asIterator(FetchOptions.Builder.withDefaults().limit(
+            Integer.MAX_VALUE));
     }
 
-    public List<Bar> getBarListUsingSlim3() {
-        List<Bar> list = Datastore.query(Bar.class).asList();
-        list.size();
-        return list;
+    public Iterator<Bar> getBarsUsingSlim3() {
+        return Datastore.query(Bar.class).asIterator();
     }
 
-    public List<BarObjectify> getBarListUsingObjectify() {
+    public Iterator<BarObjectify> getBarsUsingObjectify() {
         Objectify ofy = ObjectifyService.begin();
-        List<BarObjectify> list = ofy.query(BarObjectify.class).list();
-        list.size();
-        return list;
+        return ofy.query(BarObjectify.class).iterator();
     }
 
     @SuppressWarnings("unchecked")
-    public List<BarJDO> getBarListUsingJDO() {
+    public List<BarJDO> getBarsUsingJDO() {
         List<BarJDO> list = null;
         PersistenceManager pm = PMF.get().getPersistenceManager();
         try {
@@ -62,7 +56,6 @@ public class PerformanceService {
         } finally {
             pm.close();
         }
-        list.size();
         return list;
     }
 }

@@ -1,5 +1,7 @@
 package slim3.demo.controller.performance;
 
+import java.util.Iterator;
+
 import org.slim3.controller.Controller;
 import org.slim3.controller.Navigation;
 
@@ -13,7 +15,9 @@ public class GetObjectifyController extends Controller {
     @Override
     public Navigation run() throws Exception {
         long start = System.currentTimeMillis();
-        for (BarObjectify bar : service.getBarListUsingObjectify()) {
+        for (Iterator<BarObjectify> i = service.getBarsUsingObjectify(); i
+            .hasNext();) {
+            BarObjectify bar = i.next();
             bar.getKey();
             bar.getSortValue();
         }
