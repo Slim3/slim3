@@ -11,7 +11,7 @@ import slim3.demo.cool.model.Bar;
 import slim3.demo.cool.model.BarJDO;
 import slim3.demo.cool.model.BarObjectify;
 
-import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
@@ -27,22 +27,28 @@ public class PerformanceService {
     }
 
     public List<Entity> getBarListUsingLL() {
-        DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+        AsyncDatastoreService ds =
+            DatastoreServiceFactory.getAsyncDatastoreService();
         Query q = new Query("Bar");
         PreparedQuery pq = ds.prepare(q);
         List<Entity> list =
-            pq.asList(FetchOptions.Builder.withOffset(0).limit(
+            pq.asList(FetchOptions.Builder.withDefaults().limit(
                 Integer.MAX_VALUE));
+        list.size();
         return list;
     }
 
     public List<Bar> getBarListUsingSlim3() {
-        return Datastore.query(Bar.class).asList();
+        List<Bar> list = Datastore.query(Bar.class).asList();
+        list.size();
+        return list;
     }
 
     public List<BarObjectify> getBarListUsingObjectify() {
         Objectify ofy = ObjectifyService.begin();
-        return ofy.query(BarObjectify.class).list();
+        List<BarObjectify> list = ofy.query(BarObjectify.class).list();
+        list.size();
+        return list;
     }
 
     @SuppressWarnings("unchecked")
@@ -56,6 +62,7 @@ public class PerformanceService {
         } finally {
             pm.close();
         }
+        list.size();
         return list;
     }
 }
