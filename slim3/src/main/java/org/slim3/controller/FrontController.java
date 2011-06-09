@@ -17,13 +17,9 @@ package org.slim3.controller;
 
 import java.io.IOException;
 import java.lang.reflect.Modifier;
-import java.net.URL;
-import java.util.Enumeration;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -40,7 +36,6 @@ import javax.servlet.http.HttpSession;
 import org.slim3.controller.router.Router;
 import org.slim3.controller.router.RouterFactory;
 import org.slim3.controller.validator.Errors;
-import org.slim3.util.AppEngineUtil;
 import org.slim3.util.ApplicationMessage;
 import org.slim3.util.CipherFactory;
 import org.slim3.util.ClassUtil;
@@ -53,9 +48,6 @@ import org.slim3.util.ServletContextLocator;
 import org.slim3.util.StringUtil;
 import org.slim3.util.ThrowableUtil;
 import org.slim3.util.TimeZoneLocator;
-import org.slim3.util.WrapRuntimeException;
-
-import com.google.apphosting.api.ApiProxy;
 
 /**
  * The front controller of Slim3.
@@ -65,12 +57,6 @@ import com.google.apphosting.api.ApiProxy;
  * 
  */
 public class FrontController implements Filter {
-
-    /**
-     * The logger.
-     */
-    protected static final Logger logger =
-        Logger.getLogger(FrontController.class.getName());
 
     /**
      * The character set.
@@ -119,69 +105,12 @@ public class FrontController implements Filter {
     }
 
     public void init(FilterConfig config) throws ServletException {
-        checkDuplicateClasses();
         initServletContext(config);
         initCharset();
         initBundleName();
         initDefaultLocale();
         initDefaultTimeZone();
         initRootPackageName();
-        if (AppEngineUtil.isProduction() && logger.isLoggable(Level.INFO)) {
-            logger.log(Level.INFO, "Initialized FrontController(UUID:"
-                + uuid
-                + ")");
-        }
-    }
-
-    /**
-     * Checks if multiple front controllers are registered in the classpath. If
-     * so, {@link IllegalStateException} is thrown.
-     * 
-     * @throws IllegalStateException
-     *             if multiple front controllers are registered in the classpath
-     */
-    protected void checkDuplicateClasses() throws IllegalStateException {
-        if (AppEngineUtil.isDevelopment()) {
-            try {
-                Enumeration<URL> resources =
-                    Thread
-                        .currentThread()
-                        .getContextClassLoader()
-                        .getResources(
-                            getClass().getName().replace('.', '/') + ".class");
-                int count = 0;
-                while (resources.hasMoreElements()) {
-                    resources.nextElement();
-                    count++;
-                }
-                if (count > 1) {
-                    throw new IllegalStateException(
-                        "slim3-xxx.jar files are duplicate in the classpath.");
-                }
-            } catch (IOException e) {
-                throw new WrapRuntimeException(e);
-            }
-            try {
-                Enumeration<URL> resources =
-                    Thread
-                        .currentThread()
-                        .getContextClassLoader()
-                        .getResources(
-                            ApiProxy.class.getName().replace('.', '/')
-                                + ".class");
-                int count = 0;
-                while (resources.hasMoreElements()) {
-                    resources.nextElement();
-                    count++;
-                }
-                if (count > 1) {
-                    throw new IllegalStateException(
-                        "appengine-api-1.0-sdk-xxx.jar files are duplicate in the classpath.");
-                }
-            } catch (IOException e) {
-                throw new WrapRuntimeException(e);
-            }
-        }
     }
 
     /**
@@ -484,13 +413,6 @@ public class FrontController implements Filter {
             return null;
         }
         if (!Controller.class.isAssignableFrom(clazz)) {
-            if (AppEngineUtil.isDevelopment()) {
-                System.out.println("The class("
-                    + className
-                    + ") does not extend \""
-                    + Controller.class.getName()
-                    + "\".");
-            }
             return null;
         }
         if (Modifier.isAbstract(clazz.getModifiers())) {
