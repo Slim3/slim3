@@ -362,14 +362,42 @@ public class AppEngineTester implements Delegate<Environment> {
                 public Object invoke(Object proxy, Method method, Object[] args)
                         throws Throwable {
                     if (method.getName().equals("getAppDir")) {
-                        return new File("build/test-classes");
+                        // return new File("build/test-classes");
+                        return new File("www-test");
                     }
                     if (method.getName().equals("getPort")) {
                         return 0;
                     }
-                    if (method.getName().equals("enforceApiDeadlines")) {
-                        return true;
+                    Class<?> clazz = method.getReturnType();
+                    if (clazz.isPrimitive()) {
+                        if (clazz == boolean.class) {
+                            return true;
+                        }
+                        if (clazz == char.class) {
+                            return '\0';
+                        }
+                        if (clazz == byte.class) {
+                            return (byte) 0;
+                        }
+                        if (clazz == short.class) {
+                            return (short) 0;
+                        }
+                        if (clazz == int.class) {
+                            return 0;
+                        }
+                        if (clazz == long.class) {
+                            return (long) 0;
+                        }
+                        if (clazz == float.class) {
+                            return (float) 0;
+                        }
+                        if (clazz == double.class) {
+                            return (double) 0;
+                        }
                     }
+                    // if (method.getName().equals("enforceApiDeadlines")) {
+                    // return true;
+                    // }
                     return null;
                 }
             };
