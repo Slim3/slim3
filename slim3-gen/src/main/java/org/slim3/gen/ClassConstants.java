@@ -17,10 +17,10 @@ package org.slim3.gen;
 
 /**
  * The collection of constants of class.
- * 
+ *
  * @author taedium
  * @since 1.0.0
- * 
+ *
  */
 public final class ClassConstants {
 
@@ -267,6 +267,10 @@ public final class ClassConstants {
     /** {@code org.slim3.datastore.AttributeListener} */
     public static final String AttributeListener =
         "org.slim3.datastore.AttributeListener";
+
+    /** {@code org.slim3.datastore.DaoBase} */
+    public static final String DaoBase =
+        "org.slim3.datastore.DaoBase";
 
     /** {@code org.slim3.datastore.json.JsonDecoder} */
     public static final String JsonCoder = "org.slim3.datastore.json.JsonCoder";

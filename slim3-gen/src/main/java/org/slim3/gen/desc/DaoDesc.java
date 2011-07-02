@@ -19,7 +19,7 @@ import org.slim3.gen.util.ClassUtil;
 
 /**
  * Represents a dao description.
- * 
+ *
  * @author taedium
  * @since 1.0.0
  */
@@ -31,21 +31,15 @@ public class DaoDesc implements ClassDesc {
     /** the simpleName */
     protected String simpleName;
 
-    /** the superclassName */
-    protected String superclassName;
-
     /** the testCaseSuperclassName */
     protected String testCaseSuperclassName;
 
     /** the modelClassName */
     protected String modelClassName;
 
-    /** the modelMetaClassName */
-    protected String modelMetaClassName;
-
     /**
      * Returns the packageName.
-     * 
+     *
      * @return the packageName
      */
     public String getPackageName() {
@@ -54,7 +48,7 @@ public class DaoDesc implements ClassDesc {
 
     /**
      * Sets the packageName.
-     * 
+     *
      * @param packageName
      *            the packageName to set
      */
@@ -64,7 +58,7 @@ public class DaoDesc implements ClassDesc {
 
     /**
      * Returns the simpleName.
-     * 
+     *
      * @return the simpleName
      */
     public String getSimpleName() {
@@ -73,7 +67,7 @@ public class DaoDesc implements ClassDesc {
 
     /**
      * Sets the simpleName.
-     * 
+     *
      * @param simpleName
      *            the simpleName to set
      */
@@ -86,27 +80,8 @@ public class DaoDesc implements ClassDesc {
     }
 
     /**
-     * Returns the superclassName.
-     * 
-     * @return the superclassName
-     */
-    public String getSuperclassName() {
-        return superclassName;
-    }
-
-    /**
-     * Set the superclassName.
-     * 
-     * @param superclassName
-     *            the superclassName to set
-     */
-    public void setSuperclassName(String superclassName) {
-        this.superclassName = superclassName;
-    }
-
-    /**
      * Returns the testCaseSuperclassName.
-     * 
+     *
      * @return the testCaseSuperclassName
      */
     public String getTestCaseSuperclassName() {
@@ -115,7 +90,7 @@ public class DaoDesc implements ClassDesc {
 
     /**
      * Sets the testCaseSuperclassName.
-     * 
+     *
      * @param testCaseSuperclassName
      *            the testCaseSuperclassName to set
      */
@@ -125,7 +100,7 @@ public class DaoDesc implements ClassDesc {
 
     /**
      * Returns the modelClassName
-     * 
+     *
      * @return the modelClassName
      */
     public String getModelClassName() {
@@ -134,27 +109,11 @@ public class DaoDesc implements ClassDesc {
 
     /**
      * Sets the modelClassName.
-     * 
+     *
      * @param modelClassName
      *            the modelClassName to set
      */
     public void setModelClassName(String modelClassName) {
         this.modelClassName = modelClassName;
     }
-
-    /**
-     * @return the modelMetaClassName
-     */
-    public String getModelMetaClassName() {
-        return modelMetaClassName;
-    }
-
-    /**
-     * @param modelMetaClassName
-     *            the modelMetaClassName to set
-     */
-    public void setModelMetaClassName(String modelMetaClassName) {
-        this.modelMetaClassName = modelMetaClassName;
-    }
-
 }
