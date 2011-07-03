@@ -11,6 +11,5 @@
 		</accessrules>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="C:/Program Files/Java/jdk1.6.0_25/lib/tools.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
