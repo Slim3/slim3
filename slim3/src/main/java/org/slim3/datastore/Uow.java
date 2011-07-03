@@ -50,8 +50,9 @@ public final class Uow {
      * @throws NullPointerException
      *             if the uow parameter is null
      */
+    @SuppressWarnings("unchecked")
     public static final <T> T run(AbstractUow uow) throws NullPointerException {
-        return run(uow, DEFAULT_MAX_RETRIES, DEFAULT_SLEEP_TIME);
+        return (T) run(uow, DEFAULT_MAX_RETRIES, DEFAULT_SLEEP_TIME);
     }
 
     /**
@@ -67,9 +68,10 @@ public final class Uow {
      * @throws NullPointerException
      *             if the uow parameter is null
      */
+    @SuppressWarnings("unchecked")
     public static final <T> T run(AbstractUow uow, int maxRetries)
             throws NullPointerException {
-        return run(uow, maxRetries, DEFAULT_SLEEP_TIME);
+        return (T) run(uow, maxRetries, DEFAULT_SLEEP_TIME);
     }
 
     /**
