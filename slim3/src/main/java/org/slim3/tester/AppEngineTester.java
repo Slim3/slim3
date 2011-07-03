@@ -473,12 +473,14 @@ public class AppEngineTester implements Delegate<Environment> {
         NamespaceManager.set(null);
         ApiProxy.setDelegate(originalDelegate);
         if (!AppEngineUtil.isProduction()) {
-            ClassLoader loader = loadLibraries();
-            Class<?> apiProxyLocalImplClass =
-                loader.loadClass(API_PROXY_LOCAL_IMPL_CLASS_NAME);
-            Method stopMethod = apiProxyLocalImplClass.getMethod("stop");
-            stopMethod.setAccessible(true);
-            stopMethod.invoke(apiProxyLocalImpl);
+            /*
+             * ClassLoader loader = loadLibraries(); Class<?>
+             * apiProxyLocalImplClass =
+             * loader.loadClass(API_PROXY_LOCAL_IMPL_CLASS_NAME); Method
+             * stopMethod = apiProxyLocalImplClass.getMethod("stop");
+             * stopMethod.setAccessible(true);
+             * stopMethod.invoke(apiProxyLocalImpl);
+             */
             ApiProxy.setEnvironmentForCurrentThread(originalEnvironment);
             // new File(LOCAL_DB_BIN_PATH).delete();
         }
