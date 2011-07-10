@@ -14,6 +14,7 @@
     </path>
 
     <taskdef name="gen-model" classname="org.slim3.gen.task.GenModelTask" classpathref="classpath"/>
+    <taskdef name="gen-dao" classname="org.slim3.gen.task.GenDaoTask" classpathref="classpath"/>
     <taskdef name="gen-view" classname="org.slim3.gen.task.GenViewTask" classpathref="classpath"/>
 	<taskdef name="gen-service" classname="org.slim3.gen.task.GenServiceTask" classpathref="classpath"/>
 	<taskdef name="gen-controller" classname="org.slim3.gen.task.GenControllerTask" classpathref="classpath"/>
@@ -38,7 +39,13 @@
         <gen-model srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" modelDefinition="${modelDefinition}" modelClassNameProperty="modelClassName"/>
     </target>
 
-    <target name="gen-service">
+    <target name="gen-model-with-dao">
+        <input message="Input a model name. (ex.  Foo -> root.model.Foo,  bar.Foo -> root.model.bar.Foo). Sub-model extends Super-model." addproperty="modelDefinition"/>
+        <gen-model srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" modelDefinition="${modelDefinition}" modelClassNameProperty="modelClassName"/>
+        <gen-dao srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" modelDefinition="${modelDefinition}" daoClassNameProperty="daoClassName"/>
+    </target>
+
+	<target name="gen-service">
         <input message="Input a service name. (ex.  FooService -> root.service.FooService,  bar.FooService -> root.service.bar.FooService)" addproperty="serviceDefinition"/>
         <gen-service srcdir="${srcDir}" testdir="${testDir}" wardir="${warDir}" serviceDefinition="${serviceDefinition}"/>
     </target>

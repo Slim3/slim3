@@ -3,8 +3,8 @@
    <description name="Slim3 Update Site" url="https://slim3.googlecode.com/svn/updates">
       Slim3 Eclipse Plugin Update Sit
    </description>
-   <feature url="features/org.slim3.eclipse_1.0.11.201105151313.jar" id="org.slim3.eclipse" version="1.0.11.201105151313">
-      <category name="new_category_1"/>
+   <feature url="features/org.slim3.eclipse_1.0.12.201107101223.jar" id="org.slim3.eclipse" version="1.0.12.201107101223">
+      <category name="new_category_2"/>
    </feature>
-   <category-def name="new_category_1" label="Slim3"/>
+   <category-def name="new_category_2" label="Slim3"/>
 </site>
