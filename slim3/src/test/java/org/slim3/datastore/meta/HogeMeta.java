@@ -615,4 +615,9 @@ public class HogeMeta extends ModelMeta<Hoge> {
     public Hoge jsonToModel(JsonRootReader reader, int maxDepth, int currentDepth) {
         return null;
     }
+    
+    @Override
+    protected void postGet(Object model) {
+        return;
+    }
 }

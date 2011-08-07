@@ -161,4 +161,9 @@ public final class CccMeta extends
     public Ccc jsonToModel(JsonRootReader reader, int maxDepth, int currentDepth) {
         return null;
     }
+    
+    @Override
+    protected void postGet(Object model) {
+        return;
+    }
 }

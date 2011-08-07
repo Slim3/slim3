@@ -207,4 +207,9 @@ public final class BbbMeta extends
     public Bbb jsonToModel(JsonRootReader reader, int maxDepth, int currentDepth) {
         return null;
     }
+    
+    @Override
+    protected void postGet(Object model) {
+        return;
+    }
 }

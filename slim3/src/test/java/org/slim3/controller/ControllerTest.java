@@ -23,6 +23,7 @@ import java.util.Date;
 import org.junit.Test;
 import org.slim3.controller.upload.FileUpload;
 import org.slim3.tester.ControllerTestCase;
+import org.slim3.util.RequestMap;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -284,7 +285,21 @@ public class ControllerTest extends ControllerTestCase {
     public void asKeyForKeyIsNull() throws Exception {
         assertThat(controller.asKey("key"), is(nullValue()));
     }
-
+    
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
+    public void asMap() throws Exception {
+        tester.request.setAttribute("aaa", "aiueo");
+        tester.request.setAttribute("bbb", "12345");
+        RequestMap map = controller.asMap();
+        assertThat(map.keySet().size(), is(2));
+        assertThat((String)map.get("aaa"), is("aiueo"));
+        assertThat((String)map.get("bbb"), is("12345"));
+    }
+    
     /**
      * @throws Exception
      * 

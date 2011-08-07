@@ -93,6 +93,11 @@ public class StringCollectionUnindexedAttributeMetaTest {
                 int currentDepth) {
             return null;
         }
+        
+        @Override
+        protected void postGet(Object model) {
+            return;
+        }
     };
 
     private StringCollectionUnindexedAttributeMeta<Hoge, List<String>> myStringList =

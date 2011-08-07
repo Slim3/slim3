@@ -24,6 +24,7 @@ import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,6 +43,7 @@ import org.slim3.util.FloatUtil;
 import org.slim3.util.IntegerUtil;
 import org.slim3.util.LongUtil;
 import org.slim3.util.NumberUtil;
+import org.slim3.util.RequestMap;
 import org.slim3.util.ShortUtil;
 import org.slim3.util.StringUtil;
 import org.slim3.util.ThrowableUtil;
@@ -491,6 +493,15 @@ public abstract class Controller {
             return (Key) key;
         }
         return KeyFactory.stringToKey(key.toString());
+    }
+    
+    /**
+     * Returns the request attribute value as {@link Map}.
+     * 
+     * @return the request attribute values as {@link Map}
+     */
+    protected RequestMap asMap() {
+        return new RequestMap(request);
     }
 
     /**

@@ -468,6 +468,14 @@ public abstract class ModelMeta<M> {
      *            the model
      */
     protected abstract void prePut(Object model);
+    
+    /**
+     * This method is called after a model is get from datastore.
+     * 
+     * @param model
+     *            the model
+     */
+    protected abstract void postGet(Object model);
 
     /**
      * Returns a key of the model.

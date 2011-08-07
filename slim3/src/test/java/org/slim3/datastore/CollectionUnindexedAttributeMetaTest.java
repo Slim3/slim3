@@ -94,6 +94,11 @@ public class CollectionUnindexedAttributeMetaTest {
                 int currentDepth) {
             return null;
         }
+        
+        @Override
+        protected void postGet(Object model) {
+            return;
+        }
     };
 
     private CollectionUnindexedAttributeMeta<Hoge, List<Integer>, Integer> myIntegerList =

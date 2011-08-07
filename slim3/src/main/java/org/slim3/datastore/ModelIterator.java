@@ -72,7 +72,9 @@ public class ModelIterator<M> implements Iterator<M> {
     public M next() {
         Entity entity = entityIterator.next();
         ModelMeta<M> mm = DatastoreUtil.getModelMeta(modelMeta, entity);
-        return mm.entityToModel(entity);
+        M model = mm.entityToModel(entity);
+        mm.postGet(model);
+        return model;
     }
 
     public void remove() {

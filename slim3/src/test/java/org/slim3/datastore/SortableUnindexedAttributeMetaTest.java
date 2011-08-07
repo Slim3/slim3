@@ -91,6 +91,11 @@ public class SortableUnindexedAttributeMetaTest {
                 int currentDepth) {
             return null;
         }
+        
+        @Override
+        protected void postGet(Object model) {
+            return;
+        }
     };
 
     /**

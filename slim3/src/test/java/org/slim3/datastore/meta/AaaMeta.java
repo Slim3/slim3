@@ -156,4 +156,9 @@ public final class AaaMeta extends
     public Aaa jsonToModel(JsonRootReader reader, int maxDepth, int currentDepth) {
         return null;
     }
+
+    @Override
+    protected void postGet(Object model) {
+        return;
+    }
 }

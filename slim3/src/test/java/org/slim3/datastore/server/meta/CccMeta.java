@@ -151,4 +151,9 @@ public final class CccMeta extends
     public org.slim3.datastore.shared.model.Ccc jsonToModel(JsonRootReader reader, int maxDepth, int currentDepth) {
         return null;
     }
+    
+    @Override
+    protected void postGet(Object model) {
+        return;
+    }
 }

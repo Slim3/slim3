@@ -315,6 +315,67 @@ public class ModelQueryTest extends AppEngineTestCase {
             .asQueryResultList()
             .size(), is(0));
     }
+    
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asQueryResultIterator() throws Exception {
+        Hoge hoge = new Hoge();
+        hoge.setMyInteger(1);
+        DatastoreUtil.put(ds, null, meta.modelToEntity(hoge));
+        hoge = new Hoge();
+        hoge.setMyInteger(2);
+        DatastoreUtil.put(ds, null, meta.modelToEntity(hoge));
+        hoge = new Hoge();
+        hoge.setMyInteger(3);
+        DatastoreUtil.put(ds, null, meta.modelToEntity(hoge));
+        
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(ds, meta);
+        S3QueryResultIterator<Hoge> iterator =
+            query.limit(1).sort(meta.myInteger.asc).asQueryResultIterator();
+        String encodedCursor = iterator.getEncodedCursor();
+        String encodedFilters = iterator.getEncodedFilters();
+        String encodedSorts = iterator.getEncodedSorts();
+        assertThat(iterator.hasNext(), is(true));
+        assertThat(encodedCursor, is(notNullValue()));
+        assertThat(encodedFilters, is(notNullValue()));
+        assertThat(encodedSorts, is(notNullValue()));
+        assertThat(iterator.next(), is(notNullValue()));
+        assertThat(iterator.hasNext(), is(false));
+        assertThat(iterator.getEncodedCursor(), is(not(encodedCursor)));
+        
+        ModelQuery<Hoge> query2 = new ModelQuery<Hoge>(ds, meta);
+        S3QueryResultIterator<Hoge> iterator2 =
+            query2.sort(meta.myInteger.asc).asQueryResultIterator();
+        Hoge hoge2 = iterator2.next();
+        assertThat(hoge2.getMyInteger(), is(1));
+        assertThat(iterator2.hasNext(), is(true));
+        
+        ModelQuery<Hoge> query3 = new ModelQuery<Hoge>(ds, meta);
+        S3QueryResultIterator<Hoge> iterator3 =
+            query3
+            .encodedStartCursor(iterator2.getEncodedCursor())
+            .encodedFilters(iterator2.getEncodedFilters())
+            .encodedSorts(iterator2.getEncodedSorts())
+            .asQueryResultIterator();
+        Hoge hoge3 = iterator3.next();
+        assertThat(iterator3.hasNext(), is(true));
+        assertThat(hoge3.getMyInteger(), is(2));
+        
+    }
+    
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void asQueryResultIterable() throws Exception {
+        DatastoreUtil.put(ds, null, new Entity("Hoge"));
+        ModelQuery<Hoge> query = new ModelQuery<Hoge>(ds, meta);
+        S3QueryResultIterable<Hoge> iterable = query.asQueryResultIterable();
+        assertThat(iterable.iterator(), is(notNullValue()));
+    }
+    
 
     /**
      * @throws Exception

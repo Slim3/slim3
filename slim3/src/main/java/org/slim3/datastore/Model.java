@@ -53,4 +53,10 @@ public @interface Model {
      * The name of classHierarchyListName property.
      */
     String classHierarchyListName() default "slim3.classHierarchyList";
+
+    /**
+     * The model listener.
+     */
+    @SuppressWarnings("unchecked")
+    Class<? extends ModelListener> listener() default ModelListener.class;
 }

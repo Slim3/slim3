@@ -1076,7 +1076,9 @@ public final class DatastoreUtil {
             }
             ModelMeta<M> mm = getModelMeta(modelMeta, entity);
             mm.validateKey(key);
-            list.add(mm.entityToModel(entity));
+            M model = mm.entityToModel(entity);
+            mm.postGet(model);
+            list.add(model);
         }
         return list;
     }
@@ -1110,7 +1112,9 @@ public final class DatastoreUtil {
             Entity entity = map.get(key);
             ModelMeta<M> mm = getModelMeta(modelMeta, entity);
             mm.validateKey(key);
-            modelMap.put(key, mm.entityToModel(entity));
+            M model = mm.entityToModel(entity);
+            mm.postGet(model);
+            modelMap.put(key, model);
         }
         return modelMap;
     }

@@ -213,6 +213,11 @@ public final class BeanMeta extends org.slim3.datastore.ModelMeta<Bean> {
         reader = rootReader.newObjectReader("s");
         decoder = new org.slim3.datastore.json.Default();
         m.setS(decoder.decode(reader, m.getS()));
-    return m;
-}
+        return m;
+    }
+    
+    @Override
+    protected void postGet(Object model) {
+        return;
+    }
 }

@@ -91,6 +91,11 @@ public class StringUnindexedAttributeMetaTest {
                 int currentDepth) {
             return null;
         }
+        
+        @Override
+        protected void postGet(Object model) {
+            return;
+        }
     };
 
     private StringUnindexedAttributeMeta<Hoge> myString =

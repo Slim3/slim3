@@ -549,7 +549,9 @@ public class GlobalTransaction {
         Entity entity = get(key);
         ModelMeta<M> mm = DatastoreUtil.getModelMeta(modelMeta, entity);
         mm.validateKey(key);
-        return mm.entityToModel(entity);
+        M model = mm.entityToModel(entity);
+        mm.postGet(model);
+        return model;
     }
 
     /**
@@ -609,6 +611,7 @@ public class GlobalTransaction {
         ModelMeta<M> mm = DatastoreUtil.getModelMeta(modelMeta, entity);
         mm.validateKey(key);
         M model = mm.entityToModel(entity);
+        mm.postGet(model);
         if (version != modelMeta.getVersion(model)) {
             throw new ConcurrentModificationException(
                 "Failed optimistic lock by key("
@@ -701,7 +704,9 @@ public class GlobalTransaction {
         }
         ModelMeta<M> mm = DatastoreUtil.getModelMeta(modelMeta, entity);
         mm.validateKey(key);
-        return mm.entityToModel(entity);
+        M model = mm.entityToModel(entity);
+        mm.postGet(model);
+        return model;
     }
 
     /**

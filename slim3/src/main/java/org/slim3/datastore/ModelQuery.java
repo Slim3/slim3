@@ -244,7 +244,9 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
         List<M> ret = new ArrayList<M>(entityList.size());
         for (Entity e : entityList) {
             ModelMeta<M> mm = DatastoreUtil.getModelMeta(modelMeta, e);
-            ret.add(mm.entityToModel(e));
+            M model = mm.entityToModel(e);
+            mm.postGet(model);
+            ret.add(model);
         }
         ret = DatastoreUtil.filterInMemory(ret, inMemoryFilterCriteria);
         return DatastoreUtil.sortInMemory(ret, inMemorySortCriteria);
@@ -273,7 +275,9 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
             modelList = new ArrayList<M>(entityList.size());
             for (Entity e : entityList) {
                 ModelMeta<M> mm = DatastoreUtil.getModelMeta(modelMeta, e);
-                modelList.add(mm.entityToModel(e));
+                M model = mm.entityToModel(e);
+                mm.postGet(model);
+                modelList.add(model);
             }
             cursor = entityList.getCursor();
         } else {
@@ -289,7 +293,9 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
                 }
                 Entity e = ite.next();
                 ModelMeta<M> mm = DatastoreUtil.getModelMeta(modelMeta, e);
-                modelList.add(mm.entityToModel(e));
+                M model = mm.entityToModel(e);
+                mm.postGet(model);
+                modelList.add(model);
             }
         }
         String cursorWebSafeString =
@@ -301,7 +307,29 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
             getEncodedSorts(),
             hasNext);
     }
-
+    
+    /**
+     * Returns a query result iterator.
+     * 
+     * @return a query result iterator
+     */
+    public S3QueryResultIterator<M> asQueryResultIterator() {
+        QueryResultIterator<Entity> iterator = asQueryResultEntityIterator();
+        return new S3QueryResultIterator<M>(iterator, modelMeta,
+                getEncodedFilters(),
+                getEncodedSorts());
+    }
+    
+    /**
+     * Returns a query result iterable.
+     * 
+     * @return a query result iterable
+     */
+    public S3QueryResultIterable<M> asQueryResultIterable() {
+        S3QueryResultIterator<M> iterable = asQueryResultIterator();
+        return new S3QueryResultIterable<M>(iterable);
+    }
+    
     /**
      * Returns the single result or null if no entities match.
      * 

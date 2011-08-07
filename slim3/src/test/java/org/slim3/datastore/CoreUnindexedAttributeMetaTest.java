@@ -93,6 +93,11 @@ public class CoreUnindexedAttributeMetaTest {
                 int currentDepth) {
             return null;
         }
+        
+        @Override
+        protected void postGet(Object model) {
+            return;
+        }
     };
 
     private CoreUnindexedAttributeMeta<Hoge, String> myString =

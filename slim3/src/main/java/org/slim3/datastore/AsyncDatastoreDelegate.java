@@ -624,7 +624,9 @@ public class AsyncDatastoreDelegate {
             protected M wrap(Entity entity) throws Exception {
                 ModelMeta<M> mm = DatastoreUtil.getModelMeta(modelMeta, entity);
                 mm.validateKey(key);
-                return mm.entityToModel(entity);
+                M model = mm.entityToModel(entity);
+                mm.postGet(model);
+                return model;
             }
         };
     }
@@ -724,7 +726,9 @@ public class AsyncDatastoreDelegate {
                 }
                 ModelMeta<M> mm = DatastoreUtil.getModelMeta(modelMeta, entity);
                 mm.validateKey(key);
-                return mm.entityToModel(entity);
+                M model = mm.entityToModel(entity);
+                mm.postGet(model);
+                return model;
             }
         };
     }
@@ -801,6 +805,7 @@ public class AsyncDatastoreDelegate {
                 ModelMeta<M> mm = DatastoreUtil.getModelMeta(modelMeta, entity);
                 mm.validateKey(key);
                 M model = mm.entityToModel(entity);
+                mm.postGet(model);
                 if (version != mm.getVersion(model)) {
                     throw new ConcurrentModificationException(
                         "Failed optimistic lock by key("
