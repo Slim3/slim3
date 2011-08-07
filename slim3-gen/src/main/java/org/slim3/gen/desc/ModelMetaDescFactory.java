@@ -33,6 +33,7 @@ import org.slim3.gen.processor.ValidationException;
 import org.slim3.gen.util.AnnotationMirrorUtil;
 import org.slim3.gen.util.DeclarationUtil;
 import org.slim3.gen.util.StringUtil;
+import org.slim3.gen.util.TypeUtil;
 
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.declaration.AnnotationMirror;
@@ -41,7 +42,9 @@ import com.sun.mirror.declaration.FieldDeclaration;
 import com.sun.mirror.declaration.InterfaceDeclaration;
 import com.sun.mirror.declaration.MethodDeclaration;
 import com.sun.mirror.declaration.Modifier;
+import com.sun.mirror.type.ClassType;
 import com.sun.mirror.type.InterfaceType;
+import com.sun.mirror.type.TypeMirror;
 
 /**
  * Creates a model meta description.
@@ -149,6 +152,7 @@ public class ModelMetaDescFactory {
                 schemaVersion.intValue(),
                 classHierarchyListName,
                 classHierarchyList);
+        handleModelListener(modelMetaDesc, classDeclaration, model);
         handleAttributes(classDeclaration, modelMetaDesc);
         return modelMetaDesc;
     }
@@ -388,7 +392,58 @@ public class ModelMetaDescFactory {
                 classDeclaration.getPosition());
         }
     }
-
+    
+    /**
+     * Handles the model listener.
+     * 
+     * @param modelMetaDesc
+     *            the model meta description
+     * @param classDeclaration
+     *            the model class declaration
+     * @param model
+     *            the annotation mirror for Model
+     */
+    protected void handleModelListener(ModelMetaDesc modelMetaDesc,
+            ClassDeclaration classDeclaration, AnnotationMirror model) {
+        Object listener =
+            AnnotationMirrorUtil.getElementValue(
+                model,
+                AnnotationConstants.listener);
+        if (listener == null) {
+            return;
+        }
+        if (listener instanceof InterfaceType) {
+            throw new ValidationException(
+                MessageCode.SLIM3GEN1052,
+                env,
+                classDeclaration.getPosition());
+        }
+        ClassType listenerClassType =
+            TypeUtil.toClassType((TypeMirror) listener);
+        if (listenerClassType == null) {
+            return;
+        }
+        ClassDeclaration listenerClassDeclaration =
+            listenerClassType.getDeclaration();
+        if (listenerClassDeclaration == null) {
+            throw new UnknownDeclarationException(
+                env,
+                listenerClassDeclaration,
+                listenerClassType);
+        }
+        if (!DeclarationUtil
+            .hasPublicDefaultConstructor(listenerClassDeclaration)) {
+                throw new ValidationException(
+                    MessageCode.SLIM3GEN1050,
+                    env,
+                    classDeclaration.getPosition(),
+                    listenerClassDeclaration.getQualifiedName());
+        }
+        modelMetaDesc
+            .setModelListenerClassName(listenerClassDeclaration
+                .getQualifiedName());
+    }
+    
     /**
      * Creates property name set which contains reserved property names.
      * 

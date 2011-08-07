@@ -267,6 +267,10 @@ public final class ClassConstants {
     /** {@code org.slim3.datastore.AttributeListener} */
     public static final String AttributeListener =
         "org.slim3.datastore.AttributeListener";
+    
+    /** {@code org.slim3.datastore.ModelListener} */
+    public static final String ModelListener =
+        "org.slim3.datastore.ModelListener";
 
     /** {@code org.slim3.datastore.DaoBase} */
     public static final String DaoBase =

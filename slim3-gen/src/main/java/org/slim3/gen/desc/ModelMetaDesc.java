@@ -74,6 +74,9 @@ public class ModelMetaDesc implements ClassDesc {
 
     /** {@code true} if this instance state is error */
     protected boolean error;
+    
+    /** the modelListenerClassName */
+    protected String modelListenerClassName;
 
     /**
      * Creates a new {@link ModelMetaDesc}.
@@ -304,5 +307,21 @@ public class ModelMetaDesc implements ClassDesc {
      */
     public void setData(String key, Object value) {
         dataMap.put(key, value);
+    }
+    
+    /**
+     * Returns the modelListenerClassName.
+     * @return the modelListenerClassName
+     */
+    public String getModelListenerClassName() {
+        return modelListenerClassName;
+    }
+
+    /**
+     * Sets the modelListenerClassName
+     * @param modelListenerClassName the modelListenerClassName to set
+     */
+    public void setModelListenerClassName(String modelListenerClassName) {
+        this.modelListenerClassName = modelListenerClassName;
     }
 }

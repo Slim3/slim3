@@ -127,6 +127,7 @@ public class ModelMetaGenerator implements Generator {
             modelMetaDesc.getModelClassName());
         printer.println();
         printer.indent();
+        printModelListenerFields(printer);
         printAttributeMetaFields(printer);
         printAttributeListenerFields(printer);
         printSingletonField(printer);
@@ -143,6 +144,7 @@ public class ModelMetaGenerator implements Generator {
         printAssignKeyToModelRefIfNecessaryMethod(printer);
         printIncrementVersionMethod(printer);
         printPrePutMethod(printer);
+        printPostGetMethod(printer);
         printGetSchemaVersionName(printer);
         printGetClassHierarchyListName(printer);
         printIsCipherProperty(printer);
@@ -186,6 +188,24 @@ public class ModelMetaGenerator implements Generator {
                         attr.getAttributeName());
                 printer.println();
             }
+        }
+    }
+    
+    /**
+     * Generates model listener fields.
+     * 
+     * @param printer
+     *            the printer
+     */
+    protected void printModelListenerFields(Printer printer) {
+        String modelListenerClassName =
+            modelMetaDesc.getModelListenerClassName();
+        if (modelListenerClassName != null
+            && !modelListenerClassName.equals(ModelListener)) {
+            printer.println(
+                "private static final %1$s slim3_modelListener = new %1$s();",
+                modelListenerClassName);
+            printer.println();
         }
     }
 
@@ -514,6 +534,7 @@ public class ModelMetaGenerator implements Generator {
     protected void printPrePutMethod(final Printer printer) {
         printer.println("@Override");
         printer.println("protected void prePut(Object model) {");
+        
         boolean first = true;
         for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
             if (attr.getAttributeListenerClassName() != null
@@ -536,6 +557,35 @@ public class ModelMetaGenerator implements Generator {
                         attr.getReadMethodName());
             }
         }
+        
+        String modelListenerClassName = modelMetaDesc.getModelListenerClassName();
+        if(modelListenerClassName != null && !modelListenerClassName.equals(ModelListener)){
+            printer.println(
+                "    slim3_modelListener.prePut((%1$s) model);",
+                modelMetaDesc.getModelClassName());
+        }
+        
+        printer.println("}");
+        printer.println();
+    }
+    
+    /**
+     * Generates the {@code postGet} method.
+     * 
+     * @param printer
+     *            the printer
+     */
+    protected void printPostGetMethod(final Printer printer) {
+        printer.println("@Override");
+        printer.println("protected void postGet(Object model) {");
+        
+        String modelListenerClassName = modelMetaDesc.getModelListenerClassName();
+        if(modelListenerClassName != null && !modelListenerClassName.equals(ModelListener)){
+            printer.println(
+                "    slim3_modelListener.postGet((%1$s) model);",
+                modelMetaDesc.getModelClassName());
+        }
+        
         printer.println("}");
         printer.println();
     }
