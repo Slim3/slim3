@@ -196,6 +196,86 @@ public class InverseModelListRefTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void queryWithLimit() throws Exception {
+        Datastore.put(hoge);
+        Bbb bbb = new Bbb();
+        bbb.getHoge2Ref().setModel(hoge);
+        Datastore.put(bbb);
+        Bbb bbb2 = new Bbb();
+        bbb2.getHoge2Ref().setModel(hoge);
+        Datastore.put(bbb2);
+        List<Bbb> models = ref.query().limit(1).getModelList();
+        assertThat(models.size(), is(1));
+        assertThat(models.get(0).getKey(), is(bbb.getKey()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void queryWithOffset() throws Exception {
+        Datastore.put(hoge);
+        Bbb bbb = new Bbb();
+        bbb.getHoge2Ref().setModel(hoge);
+        Datastore.put(bbb);
+        Bbb bbb2 = new Bbb();
+        bbb2.getHoge2Ref().setModel(hoge);
+        Datastore.put(bbb2);
+        List<Bbb> models = ref.query().offset(1).getModelList();
+        assertThat(models.size(), is(1));
+        assertThat(models.get(0).getKey(), is(bbb2.getKey()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void queryWithEncodedStartCursor() throws Exception {
+        Datastore.put(hoge);
+        Bbb bbb = new Bbb();
+        bbb.getHoge2Ref().setModel(hoge);
+        Datastore.put(bbb);
+        Bbb bbb2 = new Bbb();
+        bbb2.getHoge2Ref().setModel(hoge);
+        Datastore.put(bbb2);
+        S3QueryResultList<Bbb> models =
+            ref.query().limit(1).asQueryResultList();
+        S3QueryResultList<Bbb> models2 =
+            ref
+                .query()
+                .encodedStartCursor(models.getEncodedCursor())
+                .asQueryResultList();
+        assertThat(models2.size(), is(1));
+        assertThat(models2.get(0).getKey(), is(bbb2.getKey()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void queryWithEncodedEndCursor() throws Exception {
+        Datastore.put(hoge);
+        Bbb bbb = new Bbb();
+        bbb.getHoge2Ref().setModel(hoge);
+        Datastore.put(bbb);
+        Bbb bbb2 = new Bbb();
+        bbb2.getHoge2Ref().setModel(hoge);
+        Datastore.put(bbb2);
+        S3QueryResultList<Bbb> models =
+            ref.query().limit(1).asQueryResultList();
+        S3QueryResultList<Bbb> models2 =
+            ref
+                .query()
+                .encodedEndCursor(models.getEncodedCursor())
+                .asQueryResultList();
+        assertThat(models2.size(), is(1));
+        assertThat(models2.get(0).getKey(), is(bbb.getKey()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void clear() throws Exception {
         Datastore.put(hoge);
         Bbb bbb = new Bbb();

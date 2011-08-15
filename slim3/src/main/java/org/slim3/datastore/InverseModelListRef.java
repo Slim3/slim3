@@ -178,6 +178,92 @@ public class InverseModelListRef<M, O> extends AbstractInverseModelRef<M, O> {
         }
 
         /**
+         * Specifies the offset.
+         * 
+         * @param offset
+         *            the offset
+         * @return this instance
+         */
+        public ModelListQuery offset(int offset) {
+            query.offset(offset);
+            return this;
+        }
+
+        /**
+         * Specifies the limit.
+         * 
+         * @param limit
+         *            the limit
+         * @return this instance
+         */
+        public ModelListQuery limit(int limit) {
+            query.limit(limit);
+            return this;
+        }
+
+        /**
+         * Specifies the size of prefetch.
+         * 
+         * @param prefetchSize
+         *            the size of prefetch
+         * @return this instance
+         */
+        public ModelListQuery prefetchSize(int prefetchSize) {
+            query.prefetchSize(prefetchSize);
+            return this;
+        }
+
+        /**
+         * Specifies the size of chunk.
+         * 
+         * @param chunkSize
+         *            the size of chunk
+         * @return this instance
+         */
+        public ModelListQuery chunkSize(int chunkSize) {
+            query.chunkSize(chunkSize);
+            return this;
+        }
+
+        /**
+         * Specifies the encoded start cursor.
+         * 
+         * @param encodedCursor
+         *            the encoded cursor
+         * @return this instance
+         * @throws NullPointerException
+         *             if the encodedCursor parameter is null
+         */
+        public ModelListQuery encodedStartCursor(String encodedCursor)
+                throws NullPointerException {
+            if (encodedCursor == null) {
+                throw new NullPointerException(
+                    "The encodedCursor parameter must not be null.");
+            }
+            query.encodedStartCursor(encodedCursor);
+            return this;
+        }
+
+        /**
+         * Specifies the encoded end cursor.
+         * 
+         * @param encodedCursor
+         *            the encoded cursor
+         * @return this instance
+         * @throws NullPointerException
+         *             if the encodedCursor parameter is null
+         */
+        public ModelListQuery encodedEndCursor(String encodedCursor)
+                throws NullPointerException {
+            if (encodedCursor == null) {
+                throw new NullPointerException(
+                    "The encodedCursor parameter must not be null.");
+            }
+            query.encodedEndCursor(encodedCursor);
+            return this;
+        }
+
+        /**
          * Returns models.
          * 
          * @return models

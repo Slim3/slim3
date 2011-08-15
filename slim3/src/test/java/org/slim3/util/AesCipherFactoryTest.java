@@ -19,6 +19,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -30,10 +31,21 @@ public class AesCipherFactoryTest {
     /**
      * 
      */
+    @Before
+    public void setUp() {
+        System.clearProperty(AesCipherFactory.GLOBAL_KEY_KEY);
+        AesCipherFactory.globalKey = null;
+        AesCipherFactory.keys.set(null);
+    }
+
+    /**
+     * 
+     */
     @After
     public void tearDown() {
         System.clearProperty(AesCipherFactory.GLOBAL_KEY_KEY);
         AesCipherFactory.globalKey = null;
+        AesCipherFactory.keys.set(null);
     }
 
     /**
