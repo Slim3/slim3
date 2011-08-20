@@ -3,7 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/junit-4.7.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/slim3-1.0.12.jar" sourcepath="libsrc/slim3-1.0.12-sources.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/slim3-1.0.13.jar" sourcepath="libsrc/slim3-1.0.13-sources.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
