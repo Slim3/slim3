@@ -9,7 +9,7 @@
   <!-- The Basics -->
   <groupId>org.slim3</groupId>
   <artifactId>slim3-gen</artifactId>
-  <version>1.0.12</version>
+  <version>1.0.13</version>
   <packaging>jar</packaging>
 
   <!-- More Project Information -->
