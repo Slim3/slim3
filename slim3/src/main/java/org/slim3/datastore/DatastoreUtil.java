@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 
-import org.slim3.util.AppEngineUtil;
 import org.slim3.util.ClassUtil;
 import org.slim3.util.Cleanable;
 import org.slim3.util.Cleaner;
@@ -40,9 +39,6 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.KeyRange;
 import com.google.appengine.api.datastore.KeyUtil;
 import com.google.appengine.api.datastore.Transaction;
-import com.google.apphosting.api.ApiProxy;
-import com.google.apphosting.api.DatastorePb.GetSchemaRequest;
-import com.google.apphosting.api.DatastorePb.Schema;
 import com.google.storage.onestore.v3.OnestoreEntity.EntityProto;
 import com.google.storage.onestore.v3.OnestoreEntity.Reference;
 import com.google.storage.onestore.v3.OnestoreEntity.Path.Element;
@@ -72,10 +68,6 @@ public final class DatastoreUtil {
     public static final int EXTRA_SIZE = 200;
 
     private static final int KEY_CACHE_SIZE = 50;
-
-    private static final String DATASTORE_SERVICE = "datastore_v3";
-
-    private static final String GET_SCHEMA_METHOD = "GetSchema";
 
     /**
      * The cache for {@link ModelMeta}.
@@ -1139,61 +1131,6 @@ public final class DatastoreUtil {
             key = parent;
         }
         return key;
-    }
-
-    /**
-     * Returns a schema.
-     * 
-     * @return a schema
-     * @throws IllegalStateException
-     *             if this method is called on production server
-     */
-    public static Schema getSchema() throws IllegalStateException {
-        if (AppEngineUtil.isProduction()) {
-            throw new IllegalStateException(
-                "This method does not work on production server.");
-        }
-        GetSchemaRequest req = new GetSchemaRequest();
-        req.setApp(ApiProxy.getCurrentEnvironment().getAppId());
-        byte[] resBuf =
-            ApiProxy.makeSyncCall(DATASTORE_SERVICE, GET_SCHEMA_METHOD, req
-                .toByteArray());
-        Schema schema = new Schema();
-        schema.mergeFrom(resBuf);
-        return schema;
-    }
-
-    /**
-     * Returns a list of kinds.
-     * 
-     * @return a list of kinds
-     * @throws IllegalStateException
-     *             if this method is called on production server
-     */
-    public static List<String> getKinds() throws IllegalStateException {
-        if (AppEngineUtil.isProduction()) {
-            throw new IllegalStateException(
-                "This method does not work on production server.");
-        }
-        Schema schema = getSchema();
-        List<EntityProto> entityProtoList = schema.kinds();
-        List<String> kindList = new ArrayList<String>(entityProtoList.size());
-        for (EntityProto entityProto : entityProtoList) {
-            kindList.add(getKind(entityProto.getKey()));
-        }
-        return kindList;
-    }
-
-    /**
-     * Returns a leaf kind.
-     * 
-     * @param key
-     *            the key
-     * @return a list of kinds
-     */
-    public static String getKind(Reference key) {
-        List<Element> elements = key.getPath().elements();
-        return elements.get(elements.size() - 1).getType();
     }
 
     private DatastoreUtil() {

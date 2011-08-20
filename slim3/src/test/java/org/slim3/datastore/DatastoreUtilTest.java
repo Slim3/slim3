@@ -44,7 +44,6 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.KeyRange;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query.SortDirection;
-import com.google.apphosting.api.DatastorePb.Schema;
 import com.google.storage.onestore.v3.OnestoreEntity.Path;
 import com.google.storage.onestore.v3.OnestoreEntity.Reference;
 import com.google.storage.onestore.v3.OnestoreEntity.Path.Element;
@@ -747,49 +746,5 @@ public class DatastoreUtilTest extends AppEngineTestCase {
         assertThat(DatastoreUtil.getRoot(parentKey), is(parentKey));
         assertThat(DatastoreUtil.getRoot(childKey), is(parentKey));
         assertThat(DatastoreUtil.getRoot(grandChildKey), is(parentKey));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void getSchema() throws Exception {
-        Schema schema = DatastoreUtil.getSchema();
-        assertThat(schema, is(notNullValue()));
-        assertThat(schema.kindSize(), is(0));
-        ds.put(new Entity("Hoge"));
-        schema = DatastoreUtil.getSchema();
-        assertThat(schema.kindSize(), is(1));
-        List<?> path = schema.getKind(0).getKey().getPath().elements();
-        Element element = (Element) path.get(path.size() - 1);
-        assertThat(element.getType(), is("Hoge"));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void getKinds() throws Exception {
-        ds.put(new Entity("Hoge"));
-        List<String> kinds = DatastoreUtil.getKinds();
-        assertThat(kinds.size(), is(1));
-        assertThat(kinds.get(0), is("Hoge"));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void getKind() throws Exception {
-        Reference key = new Reference();
-        Path path = new Path();
-        key.setPath(path);
-        Element element = path.addElement();
-        element.setType("Parent");
-        element.setId(1);
-        element = path.addElement();
-        element.setType("Child");
-        element.setId(1);
-        assertThat(DatastoreUtil.getKind(key), is("Child"));
     }
 }

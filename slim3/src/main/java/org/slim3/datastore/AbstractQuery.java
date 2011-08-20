@@ -15,6 +15,14 @@
  */
 package org.slim3.datastore;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.slim3.util.AppEngineUtil;
+import org.slim3.util.ByteUtil;
+import org.slim3.util.ThrowableUtil;
+
 import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Entity;
@@ -22,24 +30,16 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
-import com.google.appengine.api.datastore.Query.SortDirection;
-import com.google.appengine.api.datastore.Query.SortPredicate;
 import com.google.appengine.api.datastore.QueryResultIterable;
 import com.google.appengine.api.datastore.QueryResultIterator;
 import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.datastore.Query.SortPredicate;
 import com.google.appengine.repackaged.com.google.common.util.Base64;
 import com.google.appengine.repackaged.com.google.common.util.Base64DecoderException;
-
-import org.slim3.util.AppEngineUtil;
-import org.slim3.util.ByteUtil;
-import org.slim3.util.ThrowableUtil;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * An abstract query.
@@ -614,23 +614,6 @@ public abstract class AbstractQuery<SUB> {
      * @return entities as list
      */
     public List<Entity> asEntityList() {
-        if (!AppEngineUtil.isProduction() && query.getKind() == null) {
-            List<Entity> list = new ArrayList<Entity>();
-            List<String> kinds = DatastoreUtil.getKinds();
-            Key ancestor = query.getAncestor();
-            if (ancestor != null) {
-                for (String kind : kinds) {
-                    Query q = new Query(kind, ancestor);
-                    list.addAll(asEntityList(q));
-                }
-            } else {
-                for (String kind : kinds) {
-                    Query q = new Query(kind);
-                    list.addAll(asEntityList(q));
-                }
-            }
-            return list;
-        }
         return asEntityList(query);
     }
 
@@ -710,7 +693,7 @@ public abstract class AbstractQuery<SUB> {
         }
         return ret;
     }
-    
+
     /**
      * Returns key iterator.
      * 
@@ -723,11 +706,11 @@ public abstract class AbstractQuery<SUB> {
             public void remove() {
                 entityIterator.remove();
             }
-            
+
             public Key next() {
                 return entityIterator.next().getKey();
             }
-            
+
             public boolean hasNext() {
                 return entityIterator.hasNext();
             }
