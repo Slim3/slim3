@@ -40,8 +40,8 @@ import com.google.appengine.api.datastore.KeyRange;
 import com.google.appengine.api.datastore.KeyUtil;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.storage.onestore.v3.OnestoreEntity.EntityProto;
-import com.google.storage.onestore.v3.OnestoreEntity.Reference;
 import com.google.storage.onestore.v3.OnestoreEntity.Path.Element;
+import com.google.storage.onestore.v3.OnestoreEntity.Reference;
 
 /**
  * A utility for {@link DatastoreService}.
@@ -102,6 +102,13 @@ public final class DatastoreUtil {
      */
     public static void clearActiveGlobalTransactions() {
         GlobalTransaction.clearActiveTransactions();
+    }
+
+    /**
+     * Clears the keys cache.
+     */
+    public static void clearKeysCache() {
+        keysCache.clear();
     }
 
     /**
@@ -756,8 +763,8 @@ public final class DatastoreUtil {
             return modelMeta;
         }
         Class<M> subModelClass =
-            ClassUtil.forName(classHierarchyList
-                .get(classHierarchyList.size() - 1));
+            ClassUtil
+                .forName(classHierarchyList.get(classHierarchyList.size() - 1));
         if (!modelMeta.getModelClass().isAssignableFrom(subModelClass)) {
             throw new IllegalArgumentException("The model class("
                 + modelMeta.getModelClass().getName()
