@@ -268,6 +268,54 @@ public abstract class ModelMeta<M> {
     }
     
     /**
+     * Converts the models to JSON string.
+     * 
+     * @param models
+     *            models
+     *
+     * @return JSON string
+     */
+    public String modelsToJson(Iterable<?> models){
+        return modelsToJson(models, 0);
+    }
+
+    /**
+     * Converts the models to JSON string.
+     * 
+     * @param models
+     *            models
+     * 
+     * @param maxDepth
+     *            the max depth of ModelRef expanding
+     *
+     * @return JSON string
+     */
+    public String modelsToJson(final Iterable<?> models, int maxDepth){
+        StringBuilder b = new StringBuilder();
+        JsonWriter w = new JsonWriter(b, new ModelWriter() {
+            @Override
+            public void write(JsonWriter writer, Object model, int maxDepth,
+                    int currentDepth) {
+                invokeModelToJson(
+                    Datastore.getModelMeta(model.getClass()),
+                    writer, model, maxDepth, currentDepth + 1);
+            }
+        });
+        b.append("[");
+        boolean first = true;
+        for(Object o : models){
+            if(first){
+                first = false;
+            } else{
+                b.append(",");
+            }
+            modelToJson(w, o, maxDepth, 0);
+        }
+        b.append("]");
+        return b.toString();
+    }
+    
+    /**
      * Converts the model to JSON string.
      * 
      * @param writer
