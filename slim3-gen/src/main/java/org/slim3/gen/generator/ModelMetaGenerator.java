@@ -2517,6 +2517,8 @@ public class ModelMetaGenerator implements Generator {
                     if (ja.isIgnore())
                         continue;
                     DataType dt = attr.getDataType();
+                    if(dt instanceof InverseModelRefType)
+                        continue;
                     String name = ja.getAlias();
                     if (name.length() == 0) {
                         name = attr.getAttributeName();
