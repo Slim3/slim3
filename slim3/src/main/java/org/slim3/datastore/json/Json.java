@@ -15,6 +15,8 @@
  */
 package org.slim3.datastore.json;
 
+import java.lang.annotation.Target;
+
 /**
  * The Json annotation.
  * 
@@ -22,6 +24,7 @@ package org.slim3.datastore.json;
  *
  * @since 1.0.6
  */
+@Target({})
 public @interface Json {
     /**
      * Determines whether the attribute is ignored when encoding and decoding JSON.
