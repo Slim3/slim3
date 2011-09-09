@@ -20,6 +20,8 @@ import java.net.URL;
 import java.util.Date;
 
 import org.slim3.datastore.Datastore;
+import org.slim3.datastore.InverseModelListRef;
+import org.slim3.datastore.InverseModelRef;
 import org.slim3.datastore.ModelRef;
 
 import com.google.appengine.api.blobstore.BlobKey;
@@ -199,6 +201,16 @@ public class Default implements JsonCoder{
         } else{
             writer.writeNull();
         }
+    }
+
+    @Override
+    public void encode(JsonWriter writer, InverseModelRef<?, ?> value,
+            int maxDepth, int currentDepth) {
+    }
+
+    @Override
+    public void encode(JsonWriter writer, InverseModelListRef<?, ?> value,
+            int maxDepth, int currentDepth) {
     }
 
     @Override

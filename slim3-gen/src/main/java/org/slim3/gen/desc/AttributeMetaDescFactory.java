@@ -549,7 +549,7 @@ public class AttributeMetaDescFactory {
             ClassDeclaration classDeclaration,
             FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
         AnnotationMirror json =
-            AnnotationMirrorUtil.getElementValueWithDefault(
+            AnnotationMirrorUtil.getElementValue(
                 attribute,
                 AnnotationConstants.json);
         JsonAnnotation anno = new JsonAnnotation();

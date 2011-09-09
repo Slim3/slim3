@@ -17,6 +17,8 @@ package org.slim3.datastore.json;
 
 import java.util.Date;
 
+import org.slim3.datastore.InverseModelListRef;
+import org.slim3.datastore.InverseModelRef;
 import org.slim3.datastore.ModelRef;
 
 import com.google.appengine.api.blobstore.BlobKey;
@@ -211,6 +213,24 @@ public interface JsonCoder{
      * @param currentDepth the current depth
      */
     void encode(JsonWriter writer, ModelRef<?> value, int maxDepth, int currentDepth);
+
+    /**
+     * Encode value to JSON.
+     * @param writer the writer
+     * @param value the value
+     * @param maxDepth the max depth
+     * @param currentDepth the current depth
+     */
+    void encode(JsonWriter writer, InverseModelRef<?, ?> value, int maxDepth, int currentDepth);
+
+    /**
+     * Encode value to JSON.
+     * @param writer the writer
+     * @param value the value
+     * @param maxDepth the max depth
+     * @param currentDepth the current depth
+     */
+    void encode(JsonWriter writer, InverseModelListRef<?, ?> value, int maxDepth, int currentDepth);
 
     /**
      * Encode value to JSON.
@@ -415,7 +435,7 @@ public interface JsonCoder{
      * @param currentDepth the current depth
      */
     <T> void decode(JsonReader reader, ModelRef<T> modelRef, int maxDepth, int currentDepth);
-    
+
     /**
      * Decode json object.
      * @param <T> the type of the object

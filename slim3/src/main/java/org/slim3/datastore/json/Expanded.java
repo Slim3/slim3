@@ -15,6 +15,8 @@
  */
 package org.slim3.datastore.json;
 
+import org.slim3.datastore.InverseModelListRef;
+import org.slim3.datastore.InverseModelRef;
 import org.slim3.datastore.ModelRef;
 
 import com.google.appengine.api.datastore.Key;
@@ -45,6 +47,33 @@ public class Expanded extends Default{
             return;
         }
         writer.writeNull();
+    }
+
+    @Override
+    public void encode(JsonWriter writer, InverseModelRef<?, ?> value, int maxDepth, int currentDepth) {
+        if(currentDepth == maxDepth){
+            super.encode(writer, value, maxDepth, currentDepth);
+            return;
+        }
+        Object model = value.getModel();
+        if(model != null){
+            writer.writeModel(model, maxDepth, currentDepth);
+        } else{
+            writer.writeNull();
+        }
+    }
+
+    @Override
+    public void encode(JsonWriter writer, InverseModelListRef<?, ?> value, int maxDepth, int currentDepth) {
+        if(currentDepth == maxDepth){
+            super.encode(writer, value, maxDepth, currentDepth);
+            return;
+        }
+        writer.beginArray();
+        for(Object model : value.getModelList()){
+            writer.writeModel(model, maxDepth, currentDepth);
+        }
+        writer.endArray();
     }
 
     @Override

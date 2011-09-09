@@ -21,6 +21,7 @@ package org.slim3.gen.desc;
  */
 public class JsonAnnotation {
     private boolean ignore;
+    private boolean hasIgnore;
     private boolean ignoreNull = true;
     private String alias = "";
     private String coderClassName = "org.slim3.datastore.json.Default";
@@ -37,6 +38,14 @@ public class JsonAnnotation {
      */
     public void setIgnore(boolean ignore) {
         this.ignore = ignore;
+        this.hasIgnore = true;
+    }
+
+    /**
+     * @return true if ignore set(true or false).
+     */
+    public boolean hasIgnore(){
+        return hasIgnore;
     }
 
     /**

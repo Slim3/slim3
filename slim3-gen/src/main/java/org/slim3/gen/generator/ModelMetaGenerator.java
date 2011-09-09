@@ -36,6 +36,7 @@ import org.slim3.gen.datastore.DataType;
 import org.slim3.gen.datastore.EnumType;
 import org.slim3.gen.datastore.FloatType;
 import org.slim3.gen.datastore.IntegerType;
+import org.slim3.gen.datastore.InverseModelRefType;
 import org.slim3.gen.datastore.KeyType;
 import org.slim3.gen.datastore.LinkedHashSetType;
 import org.slim3.gen.datastore.LinkedListType;
@@ -2190,6 +2191,10 @@ public class ModelMetaGenerator implements Generator {
                     JsonAnnotation ja = attr.getJson();
                     if (ja.isIgnore())
                         continue;
+                    DataType dataType = attr.getDataType();
+                    if(dataType instanceof InverseModelRefType && !ja.hasIgnore()){
+                        continue;
+                    }
                     String cn = ja.getCoderClassName();
                     coderExp = encoders.get(cn);
                     if (coderExp == null) {
@@ -2198,7 +2203,6 @@ public class ModelMetaGenerator implements Generator {
                         printer.println("%s %s = new %1$s();", cn, vn);
                         encoders.put(cn, vn);
                     }
-                    DataType dataType = attr.getDataType();
                     if (!(dataType instanceof CorePrimitiveType)
                         && ja.isIgnoreNull()) {
                         printer.print("if(%s != null", valueExp);
@@ -2214,6 +2218,10 @@ public class ModelMetaGenerator implements Generator {
                             printer.printWithoutIndent(
                                 " && %s.getKey() != null",
                                 valueExp);
+                        } else if (dataType instanceof InverseModelRefType) {
+                            printer.printWithoutIndent(
+                                " && getKey(m) != null"
+                                );
                         }
                         printer.printlnWithoutIndent("){");
                         printer.indent();
@@ -2410,6 +2418,16 @@ public class ModelMetaGenerator implements Generator {
 
         @Override
         public Void visitModelRefType(ModelRefType type, AttributeMetaDesc p)
+                throws RuntimeException {
+            printer.println(
+                "%s.encode(writer, %s, maxDepth, currentDepth);",
+                coderExp,
+                valueExp);
+            return null;
+        }
+
+        @Override
+        public Void visitInverseModelRefType(InverseModelRefType type, AttributeMetaDesc p)
                 throws RuntimeException {
             printer.println(
                 "%s.encode(writer, %s, maxDepth, currentDepth);",
