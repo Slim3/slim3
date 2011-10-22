@@ -20,11 +20,22 @@ Local Transaction test code:<br />
 <pre>
 long start = System.currentTimeMillis();
 for (int i = 0; i < entityGroups; i++) {
-    Transaction tx = Datastore.beginTransaction();
-    Datastore.put(tx, new Entity("Hoge"));
+    Transaction tx = ds.beginTransaction();
+    ds.put(new Entity("Hoge"));
     tx.commit();
 }
 long time = System.currentTimeMillis() - start;
+</pre>
+XG Transaction test code:<br />
+<pre>
+TransactionOptions xgops = TransactionOptions.Builder.withXG(true);
+start = System.currentTimeMillis();
+Transaction xg = ds.beginTransaction(xgops);
+for (int i = 0; i < entityGroups; i++) {
+    ds.put(new Entity("Hoge"));
+}
+xg.commit();
+time = System.currentTimeMillis() - start;
 </pre>
 Global Transaction test code:<br />
 <pre>
@@ -38,11 +49,11 @@ time = System.currentTimeMillis() - start;
 </pre>
 <table border="1">
 <thead>
-<tr><th>Entity Groups</th><th>Local Transaction(millis)</th><th>Global Transaction(millis)</th></tr>
+<tr><th>Entity Groups</th><th>Local Transaction(millis)</th><th>XG Transaction(millis)</th><th>Global Transaction(millis)</th></tr>
 </thead>
 <tbody>
 <c:forEach var="v" varStatus="s" items="${gtxResultList}">
-<tr><td>${s.count}</td><td>${v.tx}</td><td>${v.gtx}</td></tr>
+<tr><td>${s.count}</td><td>${v.tx}</td><td>${v.xg}</td><td>${v.gtx}</td></tr>
 </c:forEach>
 </tbody>
 </table>
