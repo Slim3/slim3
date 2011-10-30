@@ -60,6 +60,9 @@ public class RequestHandler {
         for (Enumeration<String> e = request.getParameterNames(); e
             .hasMoreElements();) {
             String name = e.nextElement();
+            if (request.getAttribute(name) != null) {
+                continue;
+            }
             if (name.endsWith(ARRAY_SUFFIX)) {
                 request.setAttribute(name, normalizeValues(request
                     .getParameterValues(name)));

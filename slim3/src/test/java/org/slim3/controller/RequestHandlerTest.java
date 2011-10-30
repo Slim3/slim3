@@ -55,6 +55,19 @@ public class RequestHandlerTest {
      * 
      */
     @Test
+    public void handleOverrideRequestScope() throws Exception {
+        request.setAttribute("aaa", "222");
+        request.setParameter("aaa", "111");
+        RequestHandler handler = new RequestHandler(request);
+        handler.handle();
+        assertThat((String) request.getAttribute("aaa"), is("222"));
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    @Test
     public void normalizeValue() throws Exception {
         RequestHandler handler = new RequestHandler(request);
         assertThat(handler.normalizeValue(null), is(nullValue()));
