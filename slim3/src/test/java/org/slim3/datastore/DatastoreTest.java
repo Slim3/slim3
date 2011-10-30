@@ -124,14 +124,6 @@ public class DatastoreTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void beginGlobalTransaction() throws Exception {
-        assertThat(Datastore.beginGlobalTransaction(), is(notNullValue()));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
     public void allocateId() throws Exception {
         assertThat(Datastore.allocateId("Hoge"), is(not(nullValue())));
         assertThat(Datastore.allocateId(Hoge.class), is(not(nullValue())));

@@ -63,6 +63,7 @@ public class ModelRefTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    @SuppressWarnings("deprecation")
     public void getModelInGtx() throws Exception {
         Hoge hoge = new Hoge();
         Datastore.putWithoutTx(hoge);

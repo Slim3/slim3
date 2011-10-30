@@ -47,6 +47,7 @@ public class DatastoreFilter implements Filter {
     public void destroy() {
     }
 
+    @SuppressWarnings("deprecation")
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
         try {

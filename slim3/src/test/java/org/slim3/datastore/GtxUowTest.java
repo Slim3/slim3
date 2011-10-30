@@ -28,6 +28,7 @@ import com.google.appengine.api.datastore.Key;
  * @author higa
  * 
  */
+@SuppressWarnings("deprecation")
 public class GtxUowTest extends AppEngineTestCase {
 
     /**

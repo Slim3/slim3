@@ -123,7 +123,8 @@ public final class Datastore {
     }
 
     /**
-     * Begins a transaction.
+     * Begins a transaction. If you use HRD this method starts XG transaction
+     * automatically.
      * 
      * @return a begun transaction
      */
@@ -172,10 +173,11 @@ public final class Datastore {
     }
 
     /**
-     * Begins a global transaction.
+     * Use {@link #beginTransaction()}.
      * 
      * @return a begun global transaction
      */
+    @Deprecated
     public static GlobalTransaction beginGlobalTransaction() {
         return delegate().beginGlobalTransaction();
     }
@@ -185,6 +187,7 @@ public final class Datastore {
      * 
      * @return the active global transactions
      */
+    @Deprecated
     public static Collection<GlobalTransaction> getActiveGlobalTransactions() {
         return delegate().getActiveGlobalTransactions();
     }
@@ -195,6 +198,7 @@ public final class Datastore {
      * 
      * @return the current global transaction
      */
+    @Deprecated
     public static GlobalTransaction getCurrentGlobalTransaction() {
         return delegate().getCurrentGlobalTransaction();
     }
