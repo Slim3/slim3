@@ -43,14 +43,15 @@ public class DatastoreDelegateTest extends AppEngineTestCase {
 
     private HogeMeta meta = new HogeMeta();
 
-    private AsyncDatastoreService ds =
-        DatastoreServiceFactory.getAsyncDatastoreService();
+    private AsyncDatastoreService ds;
 
-    private DatastoreDelegate delegate = new DatastoreDelegate();
+    private DatastoreDelegate delegate;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        ds = DatastoreServiceFactory.getAsyncDatastoreService();
+        delegate = new DatastoreDelegate();
         CipherFactory.getFactory().setGlobalKey("xxxxxxxxxxxxxxxx");
     }
 

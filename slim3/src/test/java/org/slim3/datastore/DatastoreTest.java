@@ -49,11 +49,11 @@ public class DatastoreTest extends AppEngineTestCase {
 
     @Override
     public void tearDown() throws Exception {
-        super.tearDown();
         CipherFactory.getFactory().clearGlobalKey();
         System.setProperty(Datastore.DELEGATE_KEY, DatastoreDelegate.class
             .getName());
         Datastore.initialize();
+        super.tearDown();
     }
 
     /**

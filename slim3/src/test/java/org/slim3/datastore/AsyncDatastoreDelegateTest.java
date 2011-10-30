@@ -50,11 +50,12 @@ public class AsyncDatastoreDelegateTest extends AppEngineTestCase {
     private AsyncDatastoreService ds =
         DatastoreServiceFactory.getAsyncDatastoreService();
 
-    private AsyncDatastoreDelegate delegate = new AsyncDatastoreDelegate();
+    private AsyncDatastoreDelegate delegate;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        delegate = new AsyncDatastoreDelegate();
         CipherFactory.getFactory().setGlobalKey("xxxxxxxxxxxxxxxx");
     }
 
@@ -105,6 +106,7 @@ public class AsyncDatastoreDelegateTest extends AppEngineTestCase {
         AsyncDatastoreDelegate del = new AsyncDatastoreDelegate(deadline);
         assertThat(del.getAsyncDatastoreService(), is(notNullValue()));
         assertThat(del.dsConfig, is(notNullValue()));
+        assertThat(del.txOps, is(notNullValue()));
         assertThat(del.dsConfig.getDeadline(), is(deadline));
     }
 

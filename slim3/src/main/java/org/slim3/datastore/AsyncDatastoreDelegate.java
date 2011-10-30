@@ -22,14 +22,17 @@ import java.util.Map;
 import java.util.concurrent.Future;
 
 import org.slim3.util.DoubleUtil;
+import org.slim3.util.FutureUtil;
 
 import com.google.appengine.api.datastore.AsyncDatastoreService;
+import com.google.appengine.api.datastore.DatastoreAttributes;
 import com.google.appengine.api.datastore.DatastoreServiceConfig;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyRange;
 import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.datastore.TransactionOptions;
 import com.google.appengine.api.utils.FutureWrapper;
 
 /**
@@ -60,6 +63,11 @@ public class AsyncDatastoreDelegate {
      * The datastore service configuration.
      */
     protected DatastoreServiceConfig dsConfig;
+
+    /**
+     * The transaction options.
+     */
+    protected TransactionOptions txOps;
 
     /**
      * Constructor.
@@ -110,6 +118,13 @@ public class AsyncDatastoreDelegate {
             dsConfig.deadline(deadline);
         }
         ds = DatastoreServiceFactory.getAsyncDatastoreService(dsConfig);
+        if (FutureUtil
+            .getQuietly(ds.getDatastoreAttributes())
+            .getDatastoreType() == DatastoreAttributes.DatastoreType.HIGH_REPLICATION) {
+            txOps = TransactionOptions.Builder.withXG(true);
+        } else {
+            txOps = TransactionOptions.Builder.withDefaults();
+        }
     }
 
     /**
@@ -118,7 +133,7 @@ public class AsyncDatastoreDelegate {
      * @return a begun transaction represented as {@link Future}
      */
     public Future<Transaction> beginTransactionAsync() {
-        return ds.beginTransaction();
+        return ds.beginTransaction(txOps);
     }
 
     /**
