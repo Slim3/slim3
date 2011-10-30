@@ -20,6 +20,7 @@ public class IndexController extends Controller {
 
     private static int COUNT = 5;
 
+    @SuppressWarnings("deprecation")
     @Override
     public Navigation run() throws Exception {
         List<Map<String, Long>> list = new ArrayList<Map<String, Long>>(COUNT);
