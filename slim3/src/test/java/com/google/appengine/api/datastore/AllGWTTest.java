@@ -15,15 +15,18 @@
  */
 package com.google.appengine.api.datastore;
 
-import com.google.gwt.junit.tools.GWTTestSuite;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.junit.Ignore;
+
+import com.google.gwt.junit.tools.GWTTestSuite;
+
 /**
  * @author galdolber
- *
+ * 
  */
+@Ignore
 public class AllGWTTest extends GWTTestSuite {
 
     /**
@@ -31,11 +34,11 @@ public class AllGWTTest extends GWTTestSuite {
      */
     public static Test suite() {
         TestSuite suite = new TestSuite(AllGWTTest.class.getName());
-        //$JUnit-BEGIN$
+        // $JUnit-BEGIN$
         suite.addTestSuite(RpcSerializationGWTTest.class);
         suite.addTestSuite(KeyGWTTest.class);
         suite.addTestSuite(KeyFactoryGWTTest.class);
-        //$JUnit-END$
+        // $JUnit-END$
         return suite;
     }
 

@@ -22,10 +22,8 @@ import java.util.Map;
 import java.util.concurrent.Future;
 
 import org.slim3.util.DoubleUtil;
-import org.slim3.util.FutureUtil;
 
 import com.google.appengine.api.datastore.AsyncDatastoreService;
-import com.google.appengine.api.datastore.DatastoreAttributes;
 import com.google.appengine.api.datastore.DatastoreServiceConfig;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -48,6 +46,11 @@ public class AsyncDatastoreDelegate {
      * The key of deadline.
      */
     public static final String DEADLINE = "slim3.datastoreDeadline";
+
+    /**
+     * The key of useXG.
+     */
+    public static final String USE_XGTX = "slim3.useXGTX";
 
     /**
      * The deadline(seconds).
@@ -118,9 +121,7 @@ public class AsyncDatastoreDelegate {
             dsConfig.deadline(deadline);
         }
         ds = DatastoreServiceFactory.getAsyncDatastoreService(dsConfig);
-        if (FutureUtil
-            .getQuietly(ds.getDatastoreAttributes())
-            .getDatastoreType() == DatastoreAttributes.DatastoreType.HIGH_REPLICATION) {
+        if (Boolean.valueOf(System.getProperty(USE_XGTX))) {
             txOps = TransactionOptions.Builder.withXG(true);
         } else {
             txOps = TransactionOptions.Builder.withDefaults();

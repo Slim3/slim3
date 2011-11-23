@@ -21,13 +21,14 @@ import java.lang.annotation.Target;
  * The Json annotation.
  * 
  * @author Takao Nakaguchi
- *
+ * 
  * @since 1.0.6
  */
-@Target({})
+@Target( {})
 public @interface Json {
     /**
-     * Determines whether the attribute is ignored when encoding and decoding JSON.
+     * Determines whether the attribute is ignored when encoding and decoding
+     * JSON.
      * 
      * @return true if the attribute is ignored
      */
@@ -52,5 +53,5 @@ public @interface Json {
      * 
      * @return the coder class
      */
-    Class<? extends JsonCoder> coder() default Default.class;
+    Class<?> coder() default Default.class;
 }

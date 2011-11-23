@@ -15,12 +15,15 @@
  */
 package com.google.appengine.api.datastore;
 
+import org.junit.Ignore;
+
 import com.google.gwt.junit.client.GWTTestCase;
 
 /**
  * @author galdolber
- *
+ * 
  */
+@Ignore
 public class KeyGWTTest extends GWTTestCase {
 
     private final String kind = "Kind";
@@ -42,7 +45,7 @@ public class KeyGWTTest extends GWTTestCase {
         assertNull(key.getParent());
         assertEquals(0L, key.getId());
     }
-    
+
     /**
      * Test key from kind and parent.
      */
@@ -54,7 +57,7 @@ public class KeyGWTTest extends GWTTestCase {
         assertEquals(parent, key.getParent());
         assertEquals(0L, key.getId());
     }
-    
+
     /**
      * Test key from kind and name.
      */
@@ -65,19 +68,19 @@ public class KeyGWTTest extends GWTTestCase {
         assertNull(key.getParent());
         assertEquals(0L, key.getId());
     }
-    
+
     /**
      * Test key from kind, parent and id.
      */
     public void testKeyFromKindParentAndId() {
         Key parent = new Key(kind);
-        Key key = new Key(kind,parent, id);
+        Key key = new Key(kind, parent, id);
         assertEquals(kind, key.getKind());
         assertNull(key.getName());
         assertEquals(id, key.getId());
         assertEquals(parent, key.getParent());
     }
-    
+
     /**
      * Test key from kind, parent and name.
      */
@@ -89,54 +92,54 @@ public class KeyGWTTest extends GWTTestCase {
         assertEquals(parent, key.getParent());
         assertEquals(0L, key.getId());
     }
-    
+
     /**
      * Test hashCode.
      */
     public void testKeyHashCode() {
         Key key1;
         Key key2;
-        
+
         Key parent = new Key(kind);
-        
+
         key1 = new Key(kind);
         key2 = new Key(kind);
         assertEquals(key1.hashCode(), key2.hashCode());
-        
+
         key1 = new Key(kind, parent);
         key2 = new Key(kind, parent);
         assertEquals(key1.hashCode(), key2.hashCode());
-        
+
         key1 = new Key(kind, parent, id);
         key2 = new Key(kind, parent, id);
         assertEquals(key1.hashCode(), key2.hashCode());
-        
+
         key1 = new Key(kind, parent, name);
         key2 = new Key(kind, parent, name);
         assertEquals(key1.hashCode(), key2.hashCode());
     }
-    
+
     /**
      * Test equals.
      */
     public void testKeyEquals() {
         Key key1;
         Key key2;
-        
+
         Key parent = new Key(kind);
-        
+
         key1 = new Key(kind);
         key2 = new Key(kind);
         assertEquals(key1, key2);
-        
+
         key1 = new Key(kind, parent);
         key2 = new Key(kind, parent);
         assertEquals(key1, key2);
-        
+
         key1 = new Key(kind, parent, id);
         key2 = new Key(kind, parent, id);
         assertEquals(key1, key2);
-        
+
         key1 = new Key(kind, parent, name);
         key2 = new Key(kind, parent, name);
         assertEquals(key1, key2);

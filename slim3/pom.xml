@@ -9,7 +9,7 @@
   <!-- The Basics -->
   <groupId>org.slim3</groupId>
   <artifactId>slim3</artifactId>
-  <version>1.0.14</version>
+  <version>1.0.15</version>
   <packaging>jar</packaging>
 
   <!-- More Project Information -->
@@ -105,8 +105,8 @@
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
           <configuration>
-            <source>1.5</source>
-            <target>1.5</target>
+            <source>1.6</source>
+            <target>1.6</target>
             <encoding>UTF-8</encoding>
           </configuration>
         </plugin>
@@ -206,23 +206,23 @@
     <dependency>
       <groupId>com.google.appengine</groupId>
       <artifactId>appengine-api-1.0-sdk</artifactId>
-      <version>1.5.5</version>
+      <version>1.6.0</version>
     </dependency>
     <dependency>
       <groupId>com.google.appengine</groupId>
       <artifactId>appengine-api-labs</artifactId>
-      <version>1.5.5</version>
+      <version>1.6.0</version>
     </dependency>
     <dependency>
       <groupId>com.google.appengine</groupId>
       <artifactId>appengine-local-runtime</artifactId>
-      <version>1.5.5</version>
+      <version>1.6.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.google.appengine</groupId>
       <artifactId>appengine-api-stubs</artifactId>
-      <version>1.5.5</version>
+      <version>1.6.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>

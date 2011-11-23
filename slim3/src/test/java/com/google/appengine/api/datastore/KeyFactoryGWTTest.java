@@ -15,12 +15,15 @@
  */
 package com.google.appengine.api.datastore;
 
+import org.junit.Ignore;
+
 import com.google.gwt.junit.client.GWTTestCase;
 
 /**
  * @author galdolber
- *
+ * 
  */
+@Ignore
 public class KeyFactoryGWTTest extends GWTTestCase {
 
     @Override
@@ -31,7 +34,7 @@ public class KeyFactoryGWTTest extends GWTTestCase {
     long id = 3;
     String name = "3";
     String kind = "Product";
-    
+
     /**
      * Test create key with name.
      */
@@ -41,7 +44,7 @@ public class KeyFactoryGWTTest extends GWTTestCase {
         assertEquals(kind, key.getKind());
         assertEquals(0L, key.getId());
     }
-    
+
     /**
      * Test create key with id.
      */
@@ -51,7 +54,7 @@ public class KeyFactoryGWTTest extends GWTTestCase {
         assertEquals(kind, key.getKind());
         assertEquals(id, key.getId());
     }
-    
+
     /**
      * Test create key with parent and id.
      */
@@ -63,7 +66,7 @@ public class KeyFactoryGWTTest extends GWTTestCase {
         assertEquals(id, key.getId());
         assertEquals(parent, key.getParent());
     }
-    
+
     /**
      * Test create key with parent and name.
      */
@@ -75,7 +78,7 @@ public class KeyFactoryGWTTest extends GWTTestCase {
         assertEquals(0L, key.getId());
         assertEquals(parent, key.getParent());
     }
-    
+
     /**
      * Test create key string with id.
      */
@@ -87,7 +90,7 @@ public class KeyFactoryGWTTest extends GWTTestCase {
         }
         fail();
     }
-    
+
     /**
      * Test create key string with name.
      */
@@ -99,25 +102,31 @@ public class KeyFactoryGWTTest extends GWTTestCase {
         }
         fail();
     }
-    
+
     /**
      * Test create key string with parent and id.
      */
     public void testCreateKeyStringWithParentAndId() {
         try {
-            KeyFactory.createKeyString(KeyFactory.createKey(kind, name), kind, id);
+            KeyFactory.createKeyString(
+                KeyFactory.createKey(kind, name),
+                kind,
+                id);
         } catch (IllegalStateException e) {
             return;
         }
         fail();
     }
-    
+
     /**
      * Test create key string with parent and name.
      */
     public void testCreateKeyStringWithParentAndName() {
         try {
-            KeyFactory.createKeyString(KeyFactory.createKey(kind, name), kind, name);
+            KeyFactory.createKeyString(
+                KeyFactory.createKey(kind, name),
+                kind,
+                name);
         } catch (IllegalStateException e) {
             return;
         }
