@@ -31,11 +31,8 @@ public class InverseModelRefAttrModelTest extends AppEngineTestCase{
         JSON.decode(json);
 
         assertEquals(
-            "{\"expandedRef\":\"aglzbGltMy1nZW5yJQsSEU1vZGVsUmVmQXR0ck1vZGVsIg5leHBhbmRlZCBjaGlsZAw\","
-                + "\"expandedRefList\":[],"
-                + "\"key\":\"aglzbGltMy1nZW5yHQsSEU1vZGVsUmVmQXR0ck1vZGVsIgZwYXJlbnQM\","
-                + "\"name\":\"parent\",\"ref\":\"aglzbGltMy1nZW5yKgsSEU1vZGVsUmVmQXR0ck1vZGVsIhNjaGlsZChub3QgZXhwYW5kZWQpDA\","
-                + "\"refList\":[]}",
+            "{\"invListRef\":[{\"name\":\"child1\"},{\"name\":\"child2\"}]" +
+            ",\"name\":\"parent\",\"ref\":\"" + Datastore.keyToString(parent.getRef().getKey()) + "\"}",
             json);
     }
 

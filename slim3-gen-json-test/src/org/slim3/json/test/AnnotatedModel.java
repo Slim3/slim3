@@ -81,12 +81,12 @@ public class AnnotatedModel {
     @Attribute(primaryKey = true)
     private Key key;
     private String stringAttr;
-    @Attribute(json = @Json(coder = HelloCoder.class))
+    @Json(coder = HelloCoder.class)
     private String helloStringAttr;
-    @Attribute(json = @Json(ignore = true))
+    @Json(ignore = true)
     private String ignoredStringAttr;
-    @Attribute(json = @Json(alias = "alias"))
+    @Json(alias = "alias")
     private String aliasedStringAttr;
-    @Attribute(json = @Json(alias = "alias.name"))
+    @Json(alias = "alias.name")
     private String aliasedStringAttr2;
 }

@@ -70,7 +70,7 @@ public class ModelRefAttrModel {
     @Attribute(primaryKey = true)
     private Key key;
     private String name;
-    @Attribute(json = @Json(coder = Expanded.class))
+    @Json(coder = Expanded.class)
     private ModelRef<ModelRefAttrModel> expandedRef =
         new ModelRef<ModelRefAttrModel>(ModelRefAttrModel.class);
     private ModelRef<ModelRefAttrModel> ref = new ModelRef<ModelRefAttrModel>(
@@ -79,7 +79,7 @@ public class ModelRefAttrModel {
     private InverseModelRef<ModelRefAttrModel, ModelRefAttrModel> invRef
         = new InverseModelRef<ModelRefAttrModel, ModelRefAttrModel>(
                 ModelRefAttrModel.class, "invRef", this);
-    @Attribute(json = @Json(coder = Expanded.class))
+    @Json(coder = Expanded.class)
     private List<ModelRef<ModelRefAttrModel>> expandedRefList =
         new ArrayList<ModelRef<ModelRefAttrModel>>();
     private List<ModelRef<ModelRefAttrModel>> refList =

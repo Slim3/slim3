@@ -38,10 +38,11 @@ public class ChildModel {
         return parent;
     }
 
-    @Attribute(primaryKey = true, json=@Json(ignore=true))
+    @Attribute(primaryKey = true)
+    @Json(ignore=true)
     private Key key;
     private String name;
-    @Attribute(json=@Json(ignore=true))
+    @Json(ignore=true)
     private ModelRef<ParentModel> parent
         = new ModelRef<ParentModel>(ParentModel.class);
 }

@@ -1,6 +1,5 @@
 package org.slim3.json.test;
 
-import java.util.Date;
 import java.util.List;
 
 import org.slim3.datastore.Attribute;

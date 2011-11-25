@@ -60,14 +60,14 @@ public class NullAttrsModel {
 
     @Attribute(primaryKey = true)
     private Key key;
-    @Attribute(json = @Json(ignoreNull = false))
+    @Json(ignoreNull = false)
     private String nullString;
-    @Attribute(json = @Json(ignoreNull = false))
+    @Json(ignoreNull = false)
     private Blob nullBlob;
-    @Attribute(json = @Json(ignoreNull = false))
+    @Json(ignoreNull = false)
     private Blob nullBytesBlob = new Blob(null);
-    @Attribute(json = @Json(ignoreNull = false))
+    @Json(ignoreNull = false)
     private Text nullText;
-    @Attribute(json = @Json(ignoreNull = false))
+    @Json(ignoreNull = false)
     private Text nullValueText = new Text(null);
 }

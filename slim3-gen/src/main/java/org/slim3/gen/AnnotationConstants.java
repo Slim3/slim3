@@ -72,9 +72,9 @@ public final class AnnotationConstants {
     /** the name of cipher element */
     public static final String cipher = "cipher";
     
-    /** the name of json element */
-    public static final String json = "json";
-    
+    /** {@code org.slim3.datastore.json.Json} */
+    public static final String Json = "org.slim3.datastore.json.Json";
+
     /** the name of ignore element of @Json */
     public static final String ignore = "ignore";
     

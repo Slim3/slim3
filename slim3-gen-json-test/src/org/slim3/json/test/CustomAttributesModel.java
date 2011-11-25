@@ -39,11 +39,12 @@ public class CustomAttributesModel {
 
     @Attribute(primaryKey = true)
     private Key key;
-    @Attribute(persistent = false, json=@Json(coder=CustomAttributesModelCoder.class))
+    @Json(coder=CustomAttributesModelCoder.class)
+    @Attribute(persistent = false)
     private Point pt;
     @Attribute(persistent = false)
     private Color color;
-    @Attribute(persistent = false,
-        json=@Json(alias="point2d", coder=CustomAttributesModelCoder.class))
+    @Attribute(persistent = false)
+    @Json(alias="point2d", coder=CustomAttributesModelCoder.class)
     private Point2D pt2d;
 }

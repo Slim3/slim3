@@ -39,11 +39,13 @@ public class ParentModel {
         return children;
     }
 
-    @Attribute(primaryKey = true, json=@Json(ignore=true))
+    @Attribute(primaryKey = true)
+    @Json(ignore = true)
     private Key key;
     private String name;
 
-    @Attribute(persistent=false, json=@Json(ignore=false, coder=Expanded.class))
+    @Attribute(persistent=false)
+    @Json(ignore=false, coder=Expanded.class)
     private InverseModelListRef<ChildModel, ParentModel> children
         = new InverseModelListRef<ChildModel, ParentModel>(ChildModel.class, "parent", this);
 }

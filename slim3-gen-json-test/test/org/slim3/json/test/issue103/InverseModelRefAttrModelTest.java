@@ -22,10 +22,8 @@ public class InverseModelRefAttrModelTest extends AppEngineTestCase{
         ParentModel parent2 = new ParentModel();
         parent2.setKey(parent.getKey());
         String json = ParentModelMeta.get().modelToJson(parent2, 1);
-        System.out.println(json);
         assertEquals(
-            "{\"children\":[{\"name\":\"child1\"},{\"name\":\"child2\"}]" +
-            ",\"name\":\"parent\"}",
+            "{\"children\":[{\"name\":\"child1\"},{\"name\":\"child2\"}]}",
             json);
     }
 }
