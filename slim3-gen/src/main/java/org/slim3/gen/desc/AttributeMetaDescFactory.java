@@ -548,6 +548,8 @@ public class AttributeMetaDescFactory {
     protected void handleJson(AttributeMetaDesc attributeMetaDesc,
             ClassDeclaration classDeclaration,
             FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
+        JsonAnnotation anno = new JsonAnnotation();
+        attributeMetaDesc.setJson(anno);
         AnnotationMirror json =
                 DeclarationUtil.getAnnotationMirror(
                     env,
@@ -556,8 +558,6 @@ public class AttributeMetaDescFactory {
         if(json == null){
             return;
         }
-        JsonAnnotation anno = new JsonAnnotation();
-        attributeMetaDesc.setJson(anno);
         for(Map.Entry<AnnotationTypeElementDeclaration, AnnotationValue> entry
                 : json.getElementValues().entrySet()){
             String sn = entry.getKey().getSimpleName();
