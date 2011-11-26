@@ -73,6 +73,5 @@ public @interface Attribute {
     /**
      * The attribute listener.
      */
-    @SuppressWarnings("unchecked")
-    Class<? extends AttributeListener> listener() default AttributeListener.class;
+    Class<?> listener() default AttributeListener.class;
 }

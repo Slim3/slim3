@@ -57,6 +57,5 @@ public @interface Model {
     /**
      * The model listener.
      */
-    @SuppressWarnings("unchecked")
-    Class<? extends ModelListener> listener() default ModelListener.class;
+    Class<?> listener() default ModelListener.class;
 }
