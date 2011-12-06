@@ -20,7 +20,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-
 /**
  * A utility class for {@link Date}.
  * 
@@ -261,7 +260,8 @@ public final class DateUtil {
         if (value == null) {
             return null;
         }
-        SimpleDateFormat df = new SimpleDateFormat(pattern);
+        SimpleDateFormat df =
+            new SimpleDateFormat(pattern, LocaleLocator.get());
         df.setTimeZone(TimeZoneLocator.get());
         return df.format(value);
     }

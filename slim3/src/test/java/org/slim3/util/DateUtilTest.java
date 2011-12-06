@@ -20,6 +20,7 @@ import static org.junit.Assert.*;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import org.junit.After;
@@ -46,6 +47,7 @@ public class DateUtilTest {
     @After
     public void tearDown() throws Exception {
         TimeZoneLocator.set(null);
+        LocaleLocator.set(null);
     }
 
     /**
@@ -251,6 +253,24 @@ public class DateUtilTest {
         assertThat(
             DateUtil.toString(new Date(0), "MM/dd/yyyy"),
             is("01/01/1970"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void testToStringWithLocaleEnglish() throws Exception {
+        LocaleLocator.set(Locale.ENGLISH);
+        assertThat(DateUtil.toString(new Date(0), "EEE"), is("Thu"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void testToStringWithLocaleJapan() throws Exception {
+        LocaleLocator.set(Locale.JAPAN);
+        assertThat(DateUtil.toString(new Date(0), "EEE"), is("木"));
     }
 
     /**
