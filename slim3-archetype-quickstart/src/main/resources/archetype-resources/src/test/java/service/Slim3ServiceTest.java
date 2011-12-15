@@ -3,29 +3,39 @@ package ${package}.service;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.slim3.tester.AppEngineTester;
+import org.slim3.tester.AppEngineTestCase;
 
-public class Slim3ServiceTest {
+import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
+import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.shin1ogawa.model.Slim3Model;
 
-	@Test
-	public void slim3test1() {
-		Slim3Service.newAndPut("abc");
-		assertThat(Slim3Service.queryAll().size(), is(equalTo(1)));
-	}
+public class Slim3ServiceTest extends AppEngineTestCase {
 
-	private static AppEngineTester testHelper;
+  @Test
+  public void slim3test1() {
+    int beforeCount = tester.count(Slim3Model.class);
 
-	@Before
-	public void setUp() throws Exception {
-		testHelper = new AppEngineTester();
-		testHelper.setUp();
-	}
+    Slim3Service.newAndPut("abc");
 
-	@After
-	public void tearDown() throws Exception {
-		testHelper.tearDown();
-	}
+    assertThat(tester.count(Slim3Model.class), is(equalTo(beforeCount + 1)));
+  }
+
+  LocalServiceTestHelper helper;
+
+  @Override
+  public void setUp() throws Exception {
+    LocalDatastoreServiceTestConfig dsConfig = new LocalDatastoreServiceTestConfig();
+    dsConfig.setNoStorage(true);
+    dsConfig.setNoIndexAutoGen(true);
+    helper = new LocalServiceTestHelper(dsConfig);
+    helper.setUp();
+    super.setUp();
+  }
+
+  @Override
+  public void tearDown() throws Exception {
+    super.tearDown();
+    helper.tearDown();
+  }
 }

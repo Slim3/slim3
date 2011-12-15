@@ -7,8 +7,8 @@
   <packaging>war</packaging>
   <version>${version}</version>
   <properties>
-    <slim3.version>1.0.12</slim3.version>
-    <appengine.version>1.5.1</appengine.version>
+    <slim3.version>1.0.15</slim3.version>
+    <appengine.version>1.6.1</appengine.version>
     <generated.src>.apt_generated</generated.src>
     <generated.war>war</generated.war>
     <eclipse.lib>eclipse.lib</eclipse.lib>
@@ -96,18 +96,10 @@
     </dependency>
     <dependency>
       <groupId>com.google.appengine</groupId>
-      <artifactId>appengine-local-runtime</artifactId>
+      <artifactId>appengine-testing</artifactId>
       <version>${dollar}${lcurly}appengine.version}</version>
       <scope>test</scope>
     </dependency>
-    <!--
-    <dependency>
-    <groupId>com.google.appengine</groupId>
-    <artifactId>appengine-testing</artifactId>
-    <version>${dollar}${lcurly}appengine.version}</version>
-    <scope>test</scope>
-    </dependency>
-    -->
   </dependencies>
   <build>
     <finalName>slim3-maven</finalName>
@@ -246,7 +238,6 @@
             <exclude>org.slim3:slim3-gen</exclude>
             <exclude>com.google.appengine:appengine-api-1.0-sdk</exclude>
             <exclude>com.google.appengine:appengine-api-labs</exclude>
-            <exclude>com.google.appengine:appengine-api-stubs</exclude>
             <exclude>com.google.appengine:appengine-local-runtime</exclude>
           </excludes>
           <additionalProjectnatures>

@@ -5,16 +5,16 @@
     <archetype>
       <groupId>org.slim3</groupId>
       <artifactId>slim3-archetype-quickstart</artifactId>
-      <version>1.0.12</version>
+      <version>1.0.15</version>
       <repository>http://slim3.googlecode.com/svn/trunk/repository/</repository>
-      <description>Archetype - slim3-archetype-quickstart(slim3-1.0.12,appengine-1.5.1)</description>
+      <description>Archetype - slim3-archetype-quickstart(slim3-1.0.15,appengine-1.6.1)</description>
     </archetype>
     <archetype>
       <groupId>org.slim3</groupId>
       <artifactId>slim3-archetype-kotori-quickstart</artifactId>
-      <version>1.0.12</version>
+      <version>1.0.15</version>
       <repository>http://slim3.googlecode.com/svn/trunk/repository/</repository>
-      <description>Archetype - slim3-archetype-kotori-quickstart(slim3-1.0.12,appengine-1.5.1)</description>
+      <description>Archetype - slim3-archetype-kotori-quickstart(slim3-1.0.15,appengine-1.6.1)</description>
     </archetype>
   </archetypes>
 </archetype-catalog>
