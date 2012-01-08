@@ -8,7 +8,7 @@ import org.slim3.tester.AppEngineTestCase;
 
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-import com.shin1ogawa.model.Slim3Model;
+import ${package}.model.Slim3Model;
 
 public class Slim3ServiceTest extends AppEngineTestCase {
 
