@@ -26,6 +26,7 @@ import java.lang.annotation.Target;
  * The Json annotation.
  * 
  * @author Takao Nakaguchi
+ * @author oyama
  * 
  * @since 1.0.6
  */
@@ -55,6 +56,13 @@ public @interface Json {
      */
     String alias() default "";
 
+    /**
+     * The order of the attribute in JSON.
+     * 
+     * @return the order
+     */
+    int order() default Integer.MAX_VALUE;
+    
     /**
      * The encoder class which is responsible for encoding and decoding JSON.
      * 
