@@ -20,6 +20,7 @@ package org.slim3.gen;
  * 
  * @author taedium
  * @author higa
+ * @author oyama
  * @since 1.0.0
  * 
  */
@@ -87,6 +88,9 @@ public final class AnnotationConstants {
     /** the name of coder element of @Json */
     public static final String coder = "coder";
     
+    /** the name of order element of @Json */
+    public static final String order = "order";
+
     /** {@code org.junit.Test} */
     public static final String Test = "org.junit.Test";
 }

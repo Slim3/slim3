@@ -55,6 +55,7 @@ import com.sun.mirror.util.SimpleTypeVisitor;
  * Represents an attribute meta description factory.
  * 
  * @author taedium
+ * @author oyama
  * @since 1.0.0
  * 
  */
@@ -577,6 +578,10 @@ public class AttributeMetaDescFactory {
                 anno.setCoderClassName(getClassNameOfClassParameter(
                     entry.getKey(), entry.getValue()
                     ));
+            } else if(sn.equals(AnnotationConstants.order)){
+                anno.setOrder(entry.getValue() != null ?
+                    (Integer)entry.getValue().getValue()
+                    : Integer.MAX_VALUE);
             }
         }
     }

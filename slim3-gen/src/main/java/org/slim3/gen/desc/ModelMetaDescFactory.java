@@ -50,6 +50,7 @@ import com.sun.mirror.type.TypeMirror;
  * Creates a model meta description.
  * 
  * @author taedium
+ * @author oyama
  * @since 1.0.0
  * 
  */
@@ -391,6 +392,7 @@ public class ModelMetaDescFactory {
                 env,
                 classDeclaration.getPosition());
         }
+        modelMetaDesc.createJsonAttributeMetaDescList();
     }
     
     /**

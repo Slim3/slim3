@@ -65,6 +65,7 @@ import org.slim3.gen.printer.Printer;
  * Generates a model meta java file.
  * 
  * @author taedium
+ * @author oyama
  * @since 1.0.0
  * 
  */
@@ -2183,7 +2184,7 @@ public class ModelMetaGenerator implements Generator {
                     "org.slim3.datastore.json.Default");
                 encoders.put("org.slim3.datastore.json.Default", "encoder0");
                 for (AttributeMetaDesc attr : modelMetaDesc
-                    .getAttributeMetaDescList()) {
+                    .getJsonAttributeMetaDescList()) {
                     if (attr.getReadMethodName() == null)
                         continue;
                     valueExp = "m." + attr.getReadMethodName() + "()";

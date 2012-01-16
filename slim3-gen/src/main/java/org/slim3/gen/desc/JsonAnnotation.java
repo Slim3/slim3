@@ -17,7 +17,7 @@ package org.slim3.gen.desc;
 
 /**
  * @author nakaguchi
- *
+ * @author oyama
  */
 public class JsonAnnotation {
     private boolean ignore;
@@ -25,6 +25,7 @@ public class JsonAnnotation {
     private boolean ignoreNull = true;
     private String alias = "";
     private String coderClassName = "org.slim3.datastore.json.Default";
+    private int order;
 
     /**
      * @return the ignore
@@ -88,5 +89,19 @@ public class JsonAnnotation {
      */
     public void setCoderClassName(String coderClassName) {
         this.coderClassName = coderClassName;
+    }
+
+    /**
+     * @return the order
+     */
+    public int getOrder() {
+        return order;
+    }
+
+    /**
+     * @param order the order to set
+     */
+    public void setOrder(int order) {
+        this.order = order;
     }
 }
