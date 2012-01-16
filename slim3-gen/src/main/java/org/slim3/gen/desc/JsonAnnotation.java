@@ -25,7 +25,7 @@ public class JsonAnnotation {
     private boolean ignoreNull = true;
     private String alias = "";
     private String coderClassName = "org.slim3.datastore.json.Default";
-    private int order;
+    private int order = Integer.MAX_VALUE;
 
     /**
      * @return the ignore
