@@ -16,12 +16,13 @@
     </path>
 
     <taskdef name="gen-model" classname="org.slim3.gen.task.GenModelTask" classpathref="classpath"/>
+    <taskdef name="gen-dao" classname="org.slim3.gen.task.GenDaoTask" classpathref="classpath"/>
     <taskdef name="gen-view" classname="org.slim3.gen.task.GenViewTask" classpathref="classpath"/>
 	<taskdef name="gen-service" classname="org.slim3.gen.task.GenServiceTask" classpathref="classpath"/>
 	<taskdef name="gen-controller" classname="org.slim3.gen.task.GenControllerTask" classpathref="classpath"/>
     <taskdef name="gen-gwt-service" classname="org.slim3.gen.task.GenGWTServiceTask" classpathref="classpath"/>
     <taskdef name="gen-gwt-service-impl" classname="org.slim3.gen.task.GenGWTServiceImplTask" classpathref="classpath"/>
-    
+
     <target name="gen-controller">
         <input message="Input a controller path." addproperty="controllerPath"/>
         <gen-controller srcdir="${dollar}${lcurly}srcDir}" testdir="${dollar}${lcurly}testDir}" wardir="${dollar}${lcurly}warDir}" controllerpath="${dollar}${lcurly}controllerPath}"
@@ -40,17 +41,23 @@
         <gen-model srcdir="${dollar}${lcurly}srcDir}" testdir="${dollar}${lcurly}testDir}" wardir="${dollar}${lcurly}warDir}" modelDefinition="${dollar}${lcurly}modelDefinition}" modelClassNameProperty="modelClassName"/>
     </target>
 
+    <target name="gen-model-with-dao">
+        <input message="Input a model name. (ex.  Foo -> root.model.Foo,  bar.Foo -> root.model.bar.Foo). Sub-model extends Super-model." addproperty="modelDefinition"/>
+        <gen-model srcdir="${dollar}${lcurly}srcDir}" testdir="${dollar}${lcurly}testDir}" wardir="${dollar}${lcurly}warDir}" modelDefinition="${dollar}${lcurly}modelDefinition}" modelClassNameProperty="modelClassName"/>
+        <gen-dao srcdir="${dollar}${lcurly}srcDir}" testdir="${dollar}${lcurly}testDir}" wardir="${dollar}${lcurly}warDir}" modelDefinition="${dollar}${lcurly}modelDefinition}" daoClassNameProperty="daoClassName"/>
+    </target>
+
     <target name="gen-service">
         <input message="Input a service name. (ex.  FooService -> root.service.FooService,  bar.FooService -> root.service.bar.FooService)" addproperty="serviceDefinition"/>
         <gen-service srcdir="${dollar}${lcurly}srcDir}" testdir="${dollar}${lcurly}testDir}" wardir="${dollar}${lcurly}warDir}" serviceDefinition="${dollar}${lcurly}serviceDefinition}"/>
     </target>
-   
+
 	<target name="gen-gwt-service">
         <input message="Input a GWT service name. (ex.  FooService -> root.client.service.FooService,  bar.FooService -> root.client.service.bar.FooService)" addproperty="serviceDefinition"/>
         <gen-gwt-service srcdir="${dollar}${lcurly}srcDir}" testdir="${dollar}${lcurly}testDir}" wardir="${dollar}${lcurly}warDir}" serviceDefinition="${dollar}${lcurly}serviceDefinition}" serviceClassNameProperty="serviceClassName"/>
         <gen-gwt-service-impl srcdir="${dollar}${lcurly}srcDir}" testdir="${dollar}${lcurly}testDir}" wardir="${dollar}${lcurly}warDir}" serviceDefinition="${dollar}${lcurly}serviceDefinition}" serviceClassName="${dollar}${lcurly}serviceClassName}"/>
     </target>
-    
+
     <target name="copy">
         <copy todir="war/WEB-INF/lib" file="../slim3/target/slim3-${dollar}${lcurly}ver}.jar"/>
         <copy todir="libsrc" file="../slim3/target/slim3-${dollar}${lcurly}ver}-sources.jar"/>
