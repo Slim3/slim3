@@ -15,7 +15,7 @@
  */
 package org.slim3.datastore.json;
 
-import com.google.appengine.repackaged.org.json.JSONObject;
+import org.slim3.repackaged.org.json.JSONObject;
 
 /**
  * JSON object reader.

@@ -17,7 +17,7 @@ package org.slim3.datastore.json;
 
 import java.util.Stack;
 
-import com.google.appengine.repackaged.org.json.JSONObject;
+import org.slim3.repackaged.org.json.JSONObject;
 
 /**
  * The JSON Writer.

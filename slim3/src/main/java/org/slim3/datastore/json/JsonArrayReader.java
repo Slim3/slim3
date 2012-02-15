@@ -15,9 +15,9 @@
  */
 package org.slim3.datastore.json;
 
-import com.google.appengine.repackaged.org.json.JSONArray;
-import com.google.appengine.repackaged.org.json.JSONException;
-import com.google.appengine.repackaged.org.json.JSONObject;
+import org.slim3.repackaged.org.json.JSONArray;
+import org.slim3.repackaged.org.json.JSONException;
+import org.slim3.repackaged.org.json.JSONObject;
 
 /**
  * JSON array reader.
