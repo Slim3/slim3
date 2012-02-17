@@ -23,6 +23,8 @@ import org.slim3.datastore.Datastore;
 import org.slim3.datastore.InverseModelListRef;
 import org.slim3.datastore.InverseModelRef;
 import org.slim3.datastore.ModelRef;
+import org.slim3.repackaged.com.google.gdata.util.common.util.Base64;
+import org.slim3.repackaged.com.google.gdata.util.common.util.Base64DecoderException;
 
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.datastore.Blob;
@@ -30,6 +32,7 @@ import com.google.appengine.api.datastore.Category;
 import com.google.appengine.api.datastore.Email;
 import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.datastore.IMHandle;
+import com.google.appengine.api.datastore.IMHandle.Scheme;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Link;
@@ -38,10 +41,7 @@ import com.google.appengine.api.datastore.PostalAddress;
 import com.google.appengine.api.datastore.Rating;
 import com.google.appengine.api.datastore.ShortBlob;
 import com.google.appengine.api.datastore.Text;
-import com.google.appengine.api.datastore.IMHandle.Scheme;
 import com.google.appengine.api.users.User;
-import com.google.appengine.repackaged.com.google.common.util.Base64;
-import com.google.appengine.repackaged.com.google.common.util.Base64DecoderException;
 
 /**
  * The Default JSON encoder.

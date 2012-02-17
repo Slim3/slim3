@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.slim3.repackaged.com.google.gdata.util.common.util.Base64;
+import org.slim3.repackaged.com.google.gdata.util.common.util.Base64DecoderException;
 import org.slim3.util.AppEngineUtil;
 import org.slim3.util.ByteUtil;
 import org.slim3.util.ThrowableUtil;
@@ -30,16 +32,14 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.QueryResultIterable;
-import com.google.appengine.api.datastore.QueryResultIterator;
-import com.google.appengine.api.datastore.QueryResultList;
-import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.Query.SortPredicate;
-import com.google.appengine.repackaged.com.google.common.util.Base64;
-import com.google.appengine.repackaged.com.google.common.util.Base64DecoderException;
+import com.google.appengine.api.datastore.QueryResultIterable;
+import com.google.appengine.api.datastore.QueryResultIterator;
+import com.google.appengine.api.datastore.QueryResultList;
+import com.google.appengine.api.datastore.Transaction;
 
 /**
  * An abstract query.

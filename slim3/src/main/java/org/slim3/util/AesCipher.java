@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import com.google.appengine.repackaged.com.google.common.util.Base64;
+import org.slim3.repackaged.com.google.gdata.util.common.util.Base64;
 
 /**
  * A class to cipher using the AES algorithm.
