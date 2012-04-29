@@ -15,6 +15,6 @@ public class IndexControllerTest extends ControllerTestCase {
         assertThat(controller, is(notNullValue()));
         assertThat(tester.isRedirect(), is(false));
         assertThat(tester.getDestinationPath(), is("/checkbox/index.jsp"));
-        assertThat(tester.asString("aaa"), is("on"));
+        assertThat(tester.asString("aaa"), is("ON"));
     }
 }
