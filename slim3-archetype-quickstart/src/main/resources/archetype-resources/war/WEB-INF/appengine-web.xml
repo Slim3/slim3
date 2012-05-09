@@ -6,8 +6,18 @@
   <static-files>
     <include path="/**.*"/>
   </static-files>
-
+  
+  <precompilation-enabled>true</precompilation-enabled>
+    
   <system-properties>
+    <property name="slim3.hotReloading" value="true"/>
+    <!--
+    <property name="slim3.datastoreDeadline" value="8"/>
+    <property name="slim3.uploadSizeMax" value="1000000"/>
+    <property name="slim3.uploadFileSizeMax" value="100000"/>
+    -->
     <property name="java.util.logging.config.file" value="WEB-INF/classes/logging.properties"/>
   </system-properties>
+  <sessions-enabled>false</sessions-enabled>
+  <threadsafe>true</threadsafe>
 </appengine-web-app>
