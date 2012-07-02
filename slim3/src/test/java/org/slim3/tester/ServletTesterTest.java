@@ -263,7 +263,7 @@ public class ServletTesterTest {
         BlobstoreService bs = BlobstoreServiceFactory.getBlobstoreService();
         tester.addBlobKey(name, value);
         assertThat(
-            bs.getUploadedBlobs(tester.request).get(name),
+            bs.getUploads(tester.request).get(name).get(0),
             is(new BlobKey(value)));
         tester.servletContext.getRequestDispatcher("/").forward(
             tester.request,

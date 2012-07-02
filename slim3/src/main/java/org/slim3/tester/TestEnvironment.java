@@ -60,6 +60,11 @@ public class TestEnvironment implements ApiProxy.Environment {
     protected boolean admin = false;
 
     /**
+     * The remaining millisecond.
+     */
+    protected long remainingMillis;
+    
+    /**
      * The environment attributes.
      */
     protected Map<String, Object> attributes = new HashMap<String, Object>();
@@ -226,5 +231,19 @@ public class TestEnvironment implements ApiProxy.Environment {
             throw new IllegalStateException(
                 "This feature is not supported on production server.");
         }
+    }
+
+    @Override
+    public long getRemainingMillis() {
+        return remainingMillis;
+    }
+    
+    /**
+     * Sets the remaining millisecond.
+     * 
+     * @param remainingMillis the remaining millisecond
+     */
+    public void setRemainingMillis(long remainingMillis) {
+        this.remainingMillis = remainingMillis;
     }
 }

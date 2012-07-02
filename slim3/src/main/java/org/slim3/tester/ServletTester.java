@@ -17,8 +17,10 @@ package org.slim3.tester;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
@@ -644,11 +646,16 @@ public class ServletTester extends AppEngineTester {
             throw new NullPointerException(
                 "The value parameter must not be null.");
         }
-        Map<String, String> blobKeys = requestScope(BLOBKEYS_KEY);
+        Map<String, List<String>> blobKeys = requestScope(BLOBKEYS_KEY);
         if (blobKeys == null) {
-            blobKeys = new HashMap<String, String>();
+            blobKeys = new HashMap<String, List<String>>();
             requestScope(BLOBKEYS_KEY, blobKeys);
         }
-        blobKeys.put(name, value);
+        List<String> keys = blobKeys.get(name);
+        if (keys == null) {
+            keys = new ArrayList<String>();
+            blobKeys.put(name, keys);
+        }
+        keys.add(value);
     }
 }
