@@ -15,6 +15,7 @@
  */
 package org.slim3.datastore;
 
+import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 
 /**
@@ -30,7 +31,7 @@ public class LessThanCriterion extends InMemoryLessThanCriterion implements
     /**
      * The array of {@link Filter}s.
      */
-    protected Filter[] filters;
+    protected Query.Filter[] filters;
 
     /**
      * Constructor.
@@ -46,13 +47,14 @@ public class LessThanCriterion extends InMemoryLessThanCriterion implements
             Object value) throws NullPointerException {
         super(attributeMeta, value);
         filters =
-            new Filter[] { new Filter(
+            new Query.Filter[] { new Query.FilterPredicate(
                 attributeMeta.getName(),
                 FilterOperator.LESS_THAN,
                 this.value) };
     }
 
-    public Filter[] getFilters() {
+    @Override
+    public Query.Filter[] getFilters() {
         return filters;
     }
 }

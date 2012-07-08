@@ -39,6 +39,9 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.QueryResultIterable;
@@ -52,8 +55,8 @@ import com.google.appengine.api.datastore.Transaction;
  */
 public class AbstQueryTest extends AppEngineTestCase {
 
-    private AsyncDatastoreService ds =
-        DatastoreServiceFactory.getAsyncDatastoreService();
+    private AsyncDatastoreService ds = DatastoreServiceFactory
+        .getAsyncDatastoreService();
 
     /**
      * @throws Exception
@@ -142,6 +145,68 @@ public class AbstQueryTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
+    public void applyFilterForSingleFilter() throws Exception {
+        MyQuery query = new MyQuery(ds, "Hoge");
+        query.filter("myString", FilterOperator.EQUAL, "aaa");
+        query.applyFilter();
+        Query.Filter filter = query.getFilter();
+        assertThat(filter, is(Query.FilterPredicate.class));
+        Query.FilterPredicate fp = (Query.FilterPredicate) filter;
+        assertThat(fp.getPropertyName(), is("myString"));
+        assertThat(fp.getOperator(), is(FilterOperator.EQUAL));
+        assertThat((String) fp.getValue(), is("aaa"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void applyFilterForMultipleFilters() throws Exception {
+        MyQuery query = new MyQuery(ds, "Hoge");
+        query.filter("myString", FilterOperator.EQUAL, "aaa");
+        query.filter("myInteger", FilterOperator.EQUAL, 1);
+        query.applyFilter();
+        Query.Filter filter = query.getFilter();
+        assertThat(filter, is(Query.CompositeFilter.class));
+        Query.CompositeFilter f = (Query.CompositeFilter) filter;
+        assertThat(f.getOperator(), is(Query.CompositeFilterOperator.AND));
+        List<Filter> subFilters = f.getSubFilters();
+        assertThat(subFilters.size(), is(2));
+        Query.Filter sub = subFilters.get(0);
+        Query.Filter sub2 = subFilters.get(1);
+        assertThat(sub, is(Query.FilterPredicate.class));
+        Query.FilterPredicate fp = (Query.FilterPredicate) sub;
+        assertThat(fp.getPropertyName(), is("myString"));
+        assertThat(fp.getOperator(), is(FilterOperator.EQUAL));
+        assertThat((String) fp.getValue(), is("aaa"));
+        assertThat(sub2, is(Query.FilterPredicate.class));
+        Query.FilterPredicate fp2 = (Query.FilterPredicate) sub2;
+        assertThat(fp2.getPropertyName(), is("myInteger"));
+        assertThat(fp2.getOperator(), is(FilterOperator.EQUAL));
+        assertThat((Integer) fp2.getValue(), is(1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void prepareQuery() throws Exception {
+        MyQuery query = new MyQuery(ds, "Hoge");
+        query.filter("myString", FilterOperator.EQUAL, "aaa");
+        PreparedQuery pq = query.prepareQuery();
+        assertThat(pq, is(notNullValue()));
+        Query.Filter filter = query.getFilter();
+        assertThat(filter, is(Query.FilterPredicate.class));
+        Query.FilterPredicate fp = (Query.FilterPredicate) filter;
+        assertThat(fp.getPropertyName(), is("myString"));
+        assertThat(fp.getOperator(), is(FilterOperator.EQUAL));
+        assertThat((String) fp.getValue(), is("aaa"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
     public void asEntityList() throws Exception {
         ds.put(new Entity("Hoge"));
         MyQuery query = new MyQuery(ds, "Hoge");
@@ -170,17 +235,6 @@ public class AbstQueryTest extends AppEngineTestCase {
         MyQuery query = new MyQuery(ds, parentKey);
         List<Entity> list = query.asEntityList();
         assertThat(list.size(), is(2));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void asEntityListInternally() throws Exception {
-        ds.put(new Entity("Hoge"));
-        MyQuery query = new MyQuery(ds, "Hoge");
-        List<Entity> list = query.asEntityList(query.query);
-        assertThat(list.size(), is(1));
     }
 
     /**
@@ -288,39 +342,25 @@ public class AbstQueryTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void filterWithPropertyNameAndOperatorAndValue() throws Exception {
+    public void filter() throws Exception {
         MyQuery query = new MyQuery(ds, "Hoge");
-        assertThat(
-            query.filter("myString", FilterOperator.EQUAL, "aaa"),
-            is(sameInstance(query)));
-        assertThat(query.query.getFilterPredicates().size(), is(1));
+        Query.Filter filter =
+            new Query.FilterPredicate("myString", FilterOperator.EQUAL, "aaa");
+        query.filter(filter);
+        assertThat(query.filters.get(0), is(sameInstance(filter)));
     }
 
     /**
      * @throws Exception
      */
     @Test
-    public void filterWithFilter() throws Exception {
+    public void encodedFilter() throws Exception {
         MyQuery query = new MyQuery(ds, "Hoge");
-        assertThat(query.filter(new Filter(
-            "myString",
-            FilterOperator.EQUAL,
-            "aaa")), is(sameInstance(query)));
-        assertThat(query.query.getFilterPredicates().size(), is(1));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void encodedFilters() throws Exception {
-        MyQuery query = new MyQuery(ds, "Hoge");
-        query.filter(new Filter("myString", FilterOperator.EQUAL, "aaa"));
-        MyQuery query2 = new MyQuery(ds, "Hoge");
-        assertThat(
-            query2.encodedFilters(query.getEncodedFilters()),
-            is(sameInstance(query2)));
-        assertThat(query2.query.getFilterPredicates().size(), is(1));
+        Query.Filter filter =
+            new Query.FilterPredicate("myString", FilterOperator.EQUAL, "aaa");
+        String encodedFilter = Base64.encode(ByteUtil.toByteArray(filter));
+        query.encodedFilter(encodedFilter);
+        assertThat(query.filters.get(0), is(filter));
     }
 
     /**
@@ -522,37 +562,14 @@ public class AbstQueryTest extends AppEngineTestCase {
      * @throws Exception
      */
     @Test
-    public void getFilters() throws Exception {
+    public void getEncodedFilter() throws Exception {
         MyQuery query = new MyQuery(ds, "Hoge");
-        query.query.addFilter("aaa", FilterOperator.EQUAL, "111");
-        query.query.addFilter("bbb", FilterOperator.EQUAL, "222");
-        Filter[] filters = query.getFilters();
-        assertThat(filters.length, is(2));
-        assertThat(filters[0].getPropertyName(), is("aaa"));
-        assertThat(filters[0].getOperator(), is(FilterOperator.EQUAL));
-        assertThat((String) filters[0].getValue(), is("111"));
-        assertThat(filters[1].getPropertyName(), is("bbb"));
-        assertThat(filters[1].getOperator(), is(FilterOperator.EQUAL));
-        assertThat((String) filters[1].getValue(), is("222"));
-    }
-
-    /**
-     * @throws Exception
-     */
-    @Test
-    public void getEncodedFilters() throws Exception {
-        MyQuery query = new MyQuery(ds, "Hoge");
-        query.query.addFilter("aaa", FilterOperator.EQUAL, "111");
-        query.query.addFilter("bbb", FilterOperator.EQUAL, "222");
-        String encodedFilters = query.getEncodedFilters();
-        Filter[] filters = ByteUtil.toObject(Base64.decode(encodedFilters));
-        assertThat(filters.length, is(2));
-        assertThat(filters[0].getPropertyName(), is("aaa"));
-        assertThat(filters[0].getOperator(), is(FilterOperator.EQUAL));
-        assertThat((String) filters[0].getValue(), is("111"));
-        assertThat(filters[1].getPropertyName(), is("bbb"));
-        assertThat(filters[1].getOperator(), is(FilterOperator.EQUAL));
-        assertThat((String) filters[1].getValue(), is("222"));
+        Query.Filter filter =
+            new Query.FilterPredicate("myString", FilterOperator.EQUAL, "aaa");
+        String encodedFilter = Base64.encode(ByteUtil.toByteArray(filter));
+        query.filter(filter);
+        query.applyFilter();
+        assertThat(query.getEncodedFilter(), is(encodedFilter));
     }
 
     /**

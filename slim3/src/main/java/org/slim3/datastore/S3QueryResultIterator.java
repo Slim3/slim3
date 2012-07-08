@@ -24,7 +24,8 @@ import com.google.appengine.api.datastore.QueryResultIterator;
  * An {@link QueryResultIterator} for a model.
  * 
  * @author @kissrobber
- * @param <M> the model type
+ * @param <M>
+ *            the model type
  * @since 1.0.13
  */
 public class S3QueryResultIterator<M> extends ModelIterator<M> implements
@@ -41,9 +42,9 @@ public class S3QueryResultIterator<M> extends ModelIterator<M> implements
     protected QueryResultIterator<Entity> delegate;
 
     /**
-     * The array of filters as encoded string.
+     * The encoded filter.
      */
-    protected String encodedFilters;
+    protected String encodedFilter;
 
     /**
      * The array of sorts as encoded string.
@@ -57,16 +58,16 @@ public class S3QueryResultIterator<M> extends ModelIterator<M> implements
      *            the delegate
      * @param modelMeta
      *            the meta data of the model
-     * @param encodedFilters
-     *            the array of filters
+     * @param encodedFilter
+     *            the encoded filter
      * @param encodedSorts
      *            the array of sorts
      */
     public S3QueryResultIterator(QueryResultIterator<Entity> delegate,
-            ModelMeta<M> modelMeta, String encodedFilters, String encodedSorts) {
+            ModelMeta<M> modelMeta, String encodedFilter, String encodedSorts) {
         super(delegate, modelMeta);
         this.delegate = delegate;
-        this.encodedFilters = encodedFilters;
+        this.encodedFilter = encodedFilter;
         this.encodedSorts = encodedSorts;
     }
 
@@ -80,12 +81,12 @@ public class S3QueryResultIterator<M> extends ModelIterator<M> implements
     }
 
     /**
-     * Returns the encoded filters.
+     * Returns the encoded filter.
      * 
-     * @return the encoded filters
+     * @return the encoded filter
      */
-    public String getEncodedFilters() {
-        return encodedFilters;
+    public String getEncodedFilter() {
+        return encodedFilter;
     }
 
     /**

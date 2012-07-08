@@ -32,8 +32,8 @@ import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.Query.SortPredicate;
 import com.google.appengine.api.datastore.QueryResultIterable;
@@ -71,6 +71,11 @@ public abstract class AbstractQuery<SUB> {
      * Whether the transaction was set.
      */
     protected boolean txSet = false;
+
+    /**
+     * The filters.
+     */
+    protected List<Query.Filter> filters = new ArrayList<Query.Filter>();
 
     /**
      * The fetch options.
@@ -406,16 +411,14 @@ public abstract class AbstractQuery<SUB> {
      * @param propertyName
      *            the property name
      * @param operator
-     *            the {@link FilterOperator}
+     *            the filter operator
      * @param value
      *            the value
-     * 
      * @return this instance
      * @throws NullPointerException
      *             if the propertyName parameter is null or if the operator
      *             parameter is null
      */
-    @SuppressWarnings("unchecked")
     public SUB filter(String propertyName, FilterOperator operator, Object value)
             throws NullPointerException {
         if (propertyName == null) {
@@ -426,50 +429,48 @@ public abstract class AbstractQuery<SUB> {
             throw new NullPointerException(
                 "The operator parameter must not be null.");
         }
-        query.addFilter(propertyName, operator, value);
-        return (SUB) this;
+        return filter(new Query.FilterPredicate(propertyName, operator, value));
     }
 
     /**
-     * Adds the filters.
+     * Adds the filter.
      * 
-     * @param filters
+     * @param filtersArg
      *            the filters
      * @return this instance
      * @throws NullPointerException
-     *             if the element of the filters parameter is null
+     *             if the element of filtersArg parameter is null
      */
     @SuppressWarnings("unchecked")
-    public SUB filter(Filter... filters) throws NullPointerException {
-        for (Filter f : filters) {
+    public SUB filter(Query.Filter... filtersArg) throws NullPointerException {
+        for (Query.Filter f : filtersArg) {
             if (f == null) {
                 throw new NullPointerException(
-                    "The element of the filters parameter must not be null.");
+                    "The element of the filtersArg parameter must not be null.");
             }
-            query.addFilter(f.getPropertyName(), f.getOperator(), f.getValue());
+            filters.add(f);
         }
         return (SUB) this;
     }
 
     /**
-     * Specifies the encoded filters.
+     * Specifies the encoded filter.
      * 
-     * @param encodedFilters
-     *            the encoded filters
+     * @param encodedFilter
+     *            the encoded filter
      * @return this instance
      * @throws NullPointerException
-     *             if the encodedFilters parameter is null
+     *             if the encodedFilter parameter is null
      */
-    public SUB encodedFilters(String encodedFilters)
-            throws NullPointerException {
-        if (encodedFilters == null) {
+    public SUB encodedFilter(String encodedFilter) throws NullPointerException {
+        if (encodedFilter == null) {
             throw new NullPointerException(
-                "The encodedFilters parameter must not be null.");
+                "The encodedFilter parameter must not be null.");
         }
         try {
-            Filter[] filters =
-                (Filter[]) ByteUtil.toObject(Base64.decode(encodedFilters));
-            return filter(filters);
+            Query.Filter filter =
+                (Query.Filter) ByteUtil.toObject(Base64.decode(encodedFilter));
+            return filter(filter);
         } catch (Base64DecoderException e) {
             throw ThrowableUtil.wrap(e);
         }
@@ -560,28 +561,25 @@ public abstract class AbstractQuery<SUB> {
     }
 
     /**
-     * Returns the filters.
+     * Returns the filter.
      * 
-     * @return the filters
+     * @return the filter
      */
-    public Filter[] getFilters() {
-        List<FilterPredicate> list = query.getFilterPredicates();
-        Filter[] filters = new Filter[list.size()];
-        for (int i = 0; i < list.size(); i++) {
-            FilterPredicate f = list.get(i);
-            filters[i] =
-                new Filter(f.getPropertyName(), f.getOperator(), f.getValue());
-        }
-        return filters;
+    public Query.Filter getFilter() {
+        return query.getFilter();
     }
 
     /**
-     * Returns the encoded filters.
+     * Returns the encoded filter.
      * 
-     * @return the encoded filters
+     * @return the encoded filter
      */
-    public String getEncodedFilters() {
-        return Base64.encode(ByteUtil.toByteArray(getFilters()));
+    public String getEncodedFilter() {
+        Query.Filter filter = getFilter();
+        if (filter != null) {
+            return Base64.encode(ByteUtil.toByteArray(filter));
+        }
+        return null;
     }
 
     /**
@@ -609,23 +607,22 @@ public abstract class AbstractQuery<SUB> {
     }
 
     /**
-     * Returns entities as list.
+     * Prepares the query.
      * 
-     * @return entities as list
+     * @return the prepared query
      */
-    public List<Entity> asEntityList() {
-        return asEntityList(query);
+    protected PreparedQuery prepareQuery() {
+        applyFilter();
+        return txSet ? ds.prepare(tx, query) : ds.prepare(query);
     }
 
     /**
      * Returns entities as list.
      * 
-     * @param qry
-     *            the query
      * @return entities as list
      */
-    protected List<Entity> asEntityList(Query qry) {
-        PreparedQuery pq = txSet ? ds.prepare(tx, qry) : ds.prepare(qry);
+    public List<Entity> asEntityList() {
+        PreparedQuery pq = prepareQuery();
         return pq.asList(fetchOptions);
     }
 
@@ -635,7 +632,7 @@ public abstract class AbstractQuery<SUB> {
      * @return entities as query result list
      */
     public QueryResultList<Entity> asQueryResultEntityList() {
-        PreparedQuery pq = txSet ? ds.prepare(tx, query) : ds.prepare(query);
+        PreparedQuery pq = prepareQuery();
         return pq.asQueryResultList(fetchOptions);
     }
 
@@ -645,7 +642,7 @@ public abstract class AbstractQuery<SUB> {
      * @return entities as query result iterator
      */
     protected QueryResultIterator<Entity> asQueryResultEntityIterator() {
-        PreparedQuery pq = txSet ? ds.prepare(tx, query) : ds.prepare(query);
+        PreparedQuery pq = prepareQuery();
         return pq.asQueryResultIterator(fetchOptions);
     }
 
@@ -655,7 +652,7 @@ public abstract class AbstractQuery<SUB> {
      * @return entities as query result iterable
      */
     public QueryResultIterable<Entity> asQueryResultEntityIterable() {
-        PreparedQuery pq = txSet ? ds.prepare(tx, query) : ds.prepare(query);
+        PreparedQuery pq = prepareQuery();
         return pq.asQueryResultIterable(fetchOptions);
     }
 
@@ -675,7 +672,7 @@ public abstract class AbstractQuery<SUB> {
             }
             return list.get(0);
         }
-        PreparedQuery pq = txSet ? ds.prepare(tx, query) : ds.prepare(query);
+        PreparedQuery pq = prepareQuery();
         return pq.asSingleEntity();
     }
 
@@ -703,14 +700,17 @@ public abstract class AbstractQuery<SUB> {
         query.setKeysOnly();
         final Iterator<Entity> entityIterator = asEntityIterator();
         return new Iterator<Key>() {
+            @Override
             public void remove() {
                 entityIterator.remove();
             }
 
+            @Override
             public Key next() {
                 return entityIterator.next().getKey();
             }
 
+            @Override
             public boolean hasNext() {
                 return entityIterator.hasNext();
             }
@@ -723,7 +723,7 @@ public abstract class AbstractQuery<SUB> {
      * @return the number of entities
      */
     public int count() {
-        PreparedQuery pq = txSet ? ds.prepare(tx, query) : ds.prepare(query);
+        PreparedQuery pq = prepareQuery();
         if (fetchOptions.getLimit() == null) {
             fetchOptions.limit(Integer.MAX_VALUE);
         }
@@ -757,8 +757,8 @@ public abstract class AbstractQuery<SUB> {
             throw new NullPointerException(
                 "The propertyName parameter must not be null.");
         }
-        query.addFilter(propertyName, FilterOperator.GREATER_THAN, null);
-        query.addSort(propertyName, SortDirection.ASCENDING);
+        filter(propertyName, FilterOperator.GREATER_THAN, null);
+        sort(propertyName, SortDirection.ASCENDING);
         fetchOptions.offset(0).limit(1);
         List<Entity> list = asEntityList();
         if (list.size() == 0) {
@@ -784,7 +784,7 @@ public abstract class AbstractQuery<SUB> {
             throw new NullPointerException(
                 "The propertyName parameter must not be null.");
         }
-        query.addSort(propertyName, SortDirection.DESCENDING);
+        sort(propertyName, SortDirection.DESCENDING);
         fetchOptions.offset(0).limit(1);
         List<Entity> list = asEntityList();
         if (list.size() == 0) {
@@ -799,7 +799,7 @@ public abstract class AbstractQuery<SUB> {
      * @return entities as {@link Iterable}
      */
     public Iterable<Entity> asIterableEntities() {
-        PreparedQuery pq = txSet ? ds.prepare(tx, query) : ds.prepare(query);
+        PreparedQuery pq = prepareQuery();
         return pq.asIterable(fetchOptions);
     }
 
@@ -809,7 +809,21 @@ public abstract class AbstractQuery<SUB> {
      * @return entities as {@link Iterator}
      */
     public Iterator<Entity> asEntityIterator() {
-        PreparedQuery pq = txSet ? ds.prepare(tx, query) : ds.prepare(query);
+        PreparedQuery pq = prepareQuery();
         return pq.asIterator(fetchOptions);
+    }
+
+    /**
+     * Applies the filter to query.
+     * 
+     */
+    protected void applyFilter() {
+        if (filters.size() == 1) {
+            query.setFilter(filters.get(0));
+        } else if (filters.size() > 1) {
+            query.setFilter(new Query.CompositeFilter(
+                CompositeFilterOperator.AND,
+                filters));
+        }
     }
 }

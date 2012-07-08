@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.tester.AppEngineTestCase;
 
+import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 
 /**
@@ -39,15 +40,18 @@ public class StartsWithCriterionTest extends AppEngineTestCase {
     @Test
     public void getFilters() throws Exception {
         StartsWithCriterion c = new StartsWithCriterion(meta.myString, "aaa");
-        Filter[] filters = c.getFilters();
+        Query.Filter[] filters = c.getFilters();
         assertThat(filters.length, is(2));
-        assertThat(filters[0].getPropertyName(), is("myString"));
+        assertThat(filters[0], is(Query.FilterPredicate.class));
+        Query.FilterPredicate filter = (Query.FilterPredicate) filters[0];
+        Query.FilterPredicate filter2 = (Query.FilterPredicate) filters[1];
+        assertThat(filter.getPropertyName(), is("myString"));
         assertThat(
-            filters[0].getOperator(),
+            filter.getOperator(),
             is(FilterOperator.GREATER_THAN_OR_EQUAL));
-        assertThat((String) filters[0].getValue(), is("aaa"));
-        assertThat(filters[1].getPropertyName(), is("myString"));
-        assertThat(filters[1].getOperator(), is(FilterOperator.LESS_THAN));
-        assertThat((String) filters[1].getValue(), is("aaa" + "\ufffd"));
+        assertThat((String) filter.getValue(), is("aaa"));
+        assertThat(filter2.getPropertyName(), is("myString"));
+        assertThat(filter2.getOperator(), is(FilterOperator.LESS_THAN));
+        assertThat((String) filter2.getValue(), is("aaa" + "\ufffd"));
     }
 }

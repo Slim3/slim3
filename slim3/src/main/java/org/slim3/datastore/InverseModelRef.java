@@ -87,10 +87,10 @@ public class InverseModelRef<M, O> extends AbstractInverseModelRef<M, O> {
             return null;
         }
         model =
-            Datastore.query(getModelMeta()).filter(
-                mappedPropertyName,
-                FilterOperator.EQUAL,
-                key).asSingle();
+            Datastore
+                .query(getModelMeta())
+                .filter(mappedPropertyName, FilterOperator.EQUAL, key)
+                .asSingle();
         return model;
     }
 

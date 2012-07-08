@@ -49,9 +49,9 @@ public class S3QueryResultList<T> implements List<T>, Serializable {
     protected String encodedCursor;
 
     /**
-     * The array of filters as encoded string.
+     * The filter as encoded string.
      */
-    protected String encodedFilters;
+    protected String encodedFilter;
 
     /**
      * The array of sorts as encoded string.
@@ -91,27 +91,23 @@ public class S3QueryResultList<T> implements List<T>, Serializable {
      * @param delegate
      *            the delegate
      * @param encodedCursor
-     *            the cursor
-     * @param encodedFilters
-     *            the array of filters
+     *            the cursor as encoded string
+     * @param encodedFilter
+     *            the filter as encoded string
      * @param encodedSorts
-     *            the array of sorts
+     *            the array of sorts as encoded string
      * @param hasNext
      *            whether a next element exists
      * @throws NullPointerException
-     *             if the delegate parameter is null or if the encodedFilters
-     *             parameter is null or if the encodedSorts parameter is null
+     *             if the delegate parameter is null or if the encodedSorts
+     *             parameter is null
      */
     public S3QueryResultList(List<T> delegate, String encodedCursor,
-            String encodedFilters, String encodedSorts, boolean hasNext)
+            String encodedFilter, String encodedSorts, boolean hasNext)
             throws NullPointerException {
         if (delegate == null) {
             throw new NullPointerException(
                 "The delegate parameter must not be null.");
-        }
-        if (encodedFilters == null) {
-            throw new NullPointerException(
-                "The encodedFilters parameter must not be null.");
         }
         if (encodedSorts == null) {
             throw new NullPointerException(
@@ -119,7 +115,7 @@ public class S3QueryResultList<T> implements List<T>, Serializable {
         }
         this.delegate = delegate;
         this.encodedCursor = encodedCursor;
-        this.encodedFilters = encodedFilters;
+        this.encodedFilter = encodedFilter;
         this.encodedSorts = encodedSorts;
         this.hasNext = hasNext;
     }
@@ -134,12 +130,12 @@ public class S3QueryResultList<T> implements List<T>, Serializable {
     }
 
     /**
-     * Returns the encoded filters.
+     * Returns the encoded filter.
      * 
-     * @return the encoded filters
+     * @return the encoded filter
      */
-    public String getEncodedFilters() {
-        return encodedFilters;
+    public String getEncodedFilter() {
+        return encodedFilter;
     }
 
     /**

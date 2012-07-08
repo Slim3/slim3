@@ -25,6 +25,7 @@ import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 
@@ -189,9 +190,10 @@ public class Lock {
                 "The globalTransactionKey parameter must not be null.");
         }
         return new EntityQuery(ds, KIND).filter(
+            new Query.FilterPredicate(
             GLOBAL_TRANSACTION_KEY_PROPERTY,
             FilterOperator.EQUAL,
-            globalTransactionKey).asKeyList();
+            globalTransactionKey)).asKeyList();
     }
 
     /**

@@ -15,8 +15,8 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.slim3.tester.AppEngineTestCase;
@@ -25,6 +25,7 @@ import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.QueryResultList;
 
 /**
@@ -33,8 +34,8 @@ import com.google.appengine.api.datastore.QueryResultList;
  */
 public class S3QueryResultListTest extends AppEngineTestCase {
 
-    private AsyncDatastoreService ds =
-        DatastoreServiceFactory.getAsyncDatastoreService();
+    private AsyncDatastoreService ds = DatastoreServiceFactory
+        .getAsyncDatastoreService();
 
     /**
      * @throws Exception
@@ -43,13 +44,20 @@ public class S3QueryResultListTest extends AppEngineTestCase {
     public void constructor() throws Exception {
         DatastoreUtil.put(ds, null, new Entity("Hoge"));
         EntityQuery q = new EntityQuery(ds, "Hoge");
-        QueryResultList<Entity> qrList = q.asQueryResultList();
+        QueryResultList<Entity> qrList =
+            q
+                .filter("myString", FilterOperator.EQUAL, "aaa")
+                .asQueryResultList();
         Cursor cursor = qrList.getCursor();
         S3QueryResultList<Entity> list =
-            new S3QueryResultList<Entity>(qrList, cursor.toWebSafeString(), q
-                .getEncodedFilters(), q.getEncodedSorts(), true);
+            new S3QueryResultList<Entity>(
+                qrList,
+                cursor.toWebSafeString(),
+                q.getEncodedFilter(),
+                q.getEncodedSorts(),
+                true);
         assertThat(list.getEncodedCursor(), is(cursor.toWebSafeString()));
-        assertThat(list.getEncodedFilters(), is(q.getEncodedFilters()));
+        assertThat(list.getEncodedFilter(), is(q.getEncodedFilter()));
         assertThat(list.getEncodedSorts(), is(q.getEncodedSorts()));
         assertThat(list.hasNext(), is(true));
     }

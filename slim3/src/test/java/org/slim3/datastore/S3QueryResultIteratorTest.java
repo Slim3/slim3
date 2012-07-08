@@ -15,8 +15,9 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
@@ -34,8 +35,8 @@ import com.google.appengine.api.datastore.QueryResultIterator;
  */
 public class S3QueryResultIteratorTest extends AppEngineTestCase {
 
-    private AsyncDatastoreService ds =
-        DatastoreServiceFactory.getAsyncDatastoreService();
+    private AsyncDatastoreService ds = DatastoreServiceFactory
+        .getAsyncDatastoreService();
 
     private HogeMeta meta = new HogeMeta();
 
@@ -44,17 +45,19 @@ public class S3QueryResultIteratorTest extends AppEngineTestCase {
      */
     @Test
     public void getCursor() throws Exception {
-        DatastoreUtil.put(ds, null, new Entity("Hoge"));
         ModelQuery<Hoge> query = new ModelQuery<Hoge>(ds, meta);
         QueryResultIterator<Entity> iterator =
-            query.asQueryResultEntityIterator();
+            query
+                .filter(meta.myString.equal("aaa"))
+                .asQueryResultEntityIterator();
         S3QueryResultIterator<Hoge> s3QueryResultIterator =
-            new S3QueryResultIterator<Hoge>(iterator, meta, query
-                .getEncodedFilters(), query.getEncodedSorts());
+            new S3QueryResultIterator<Hoge>(
+                iterator,
+                meta,
+                query.getEncodedFilter(),
+                query.getEncodedSorts());
         assertThat(s3QueryResultIterator.getEncodedCursor(), is(notNullValue()));
-        assertThat(
-            s3QueryResultIterator.getEncodedFilters(),
-            is(notNullValue()));
+        assertThat(s3QueryResultIterator.getEncodedFilter(), is(notNullValue()));
         assertThat(s3QueryResultIterator.getEncodedSorts(), is(notNullValue()));
     }
 

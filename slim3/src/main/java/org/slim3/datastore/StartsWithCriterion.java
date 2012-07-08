@@ -15,6 +15,7 @@
  */
 package org.slim3.datastore;
 
+import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 
 /**
@@ -28,9 +29,9 @@ public class StartsWithCriterion extends InMemoryStartsWithCriterion implements
         FilterCriterion {
 
     /**
-     * The array of {@link Filter}s.
+     * The array of filters.
      */
-    protected Filter[] filters;
+    protected Query.Filter[] filters;
 
     /**
      * Constructor.
@@ -46,18 +47,19 @@ public class StartsWithCriterion extends InMemoryStartsWithCriterion implements
             String value) throws NullPointerException {
         super(attributeMeta, value);
         filters =
-            new Filter[] {
-                new Filter(
+            new Query.Filter[] {
+                new Query.FilterPredicate(
                     attributeMeta.getName(),
                     FilterOperator.GREATER_THAN_OR_EQUAL,
                     this.value),
-                new Filter(
+                new Query.FilterPredicate(
                     attributeMeta.getName(),
                     FilterOperator.LESS_THAN,
                     highValue) };
     }
 
-    public Filter[] getFilters() {
+    @Override
+    public Query.Filter[] getFilters() {
         return filters;
     }
 }

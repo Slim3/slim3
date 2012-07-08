@@ -15,6 +15,8 @@
  */
 package org.slim3.datastore;
 
+import com.google.appengine.api.datastore.Query;
+
 /**
  * A criterion interface for filter.
  * 
@@ -25,9 +27,9 @@ package org.slim3.datastore;
 public interface FilterCriterion {
 
     /**
-     * Returns array of {@link Filter}s.
+     * Returns array of filters.
      * 
-     * @return array of {@link Filter}s
+     * @return array of filters
      */
-    Filter[] getFilters();
+    Query.Filter[] getFilters();
 }

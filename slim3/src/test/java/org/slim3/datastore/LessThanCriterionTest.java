@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.tester.AppEngineTestCase;
 
+import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
@@ -41,11 +42,13 @@ public class LessThanCriterionTest extends AppEngineTestCase {
     @Test
     public void getFilters() throws Exception {
         LessThanCriterion c = new LessThanCriterion(meta.myString, "aaa");
-        Filter[] filters = c.getFilters();
+        Query.Filter[] filters = c.getFilters();
         assertThat(filters.length, is(1));
-        assertThat(filters[0].getPropertyName(), is("myString"));
-        assertThat(filters[0].getOperator(), is(FilterOperator.LESS_THAN));
-        assertThat((String) filters[0].getValue(), is("aaa"));
+        assertThat(filters[0], is(Query.FilterPredicate.class));
+        Query.FilterPredicate filter = (Query.FilterPredicate) filters[0];
+        assertThat(filter.getPropertyName(), is("myString"));
+        assertThat(filter.getOperator(), is(FilterOperator.LESS_THAN));
+        assertThat((String) filter.getValue(), is("aaa"));
     }
 
     /**
@@ -56,11 +59,13 @@ public class LessThanCriterionTest extends AppEngineTestCase {
     public void getFiltersForEnum() throws Exception {
         LessThanCriterion c =
             new LessThanCriterion(meta.myEnum, SortDirection.ASCENDING);
-        Filter[] filters = c.getFilters();
+        Query.Filter[] filters = c.getFilters();
         assertThat(filters.length, is(1));
-        assertThat(filters[0].getPropertyName(), is("myEnum"));
-        assertThat(filters[0].getOperator(), is(FilterOperator.LESS_THAN));
-        assertThat((String) filters[0].getValue(), is("ASCENDING"));
+        assertThat(filters[0], is(Query.FilterPredicate.class));
+        Query.FilterPredicate filter = (Query.FilterPredicate) filters[0];
+        assertThat(filter.getPropertyName(), is("myEnum"));
+        assertThat(filter.getOperator(), is(FilterOperator.LESS_THAN));
+        assertThat((String) filter.getValue(), is("ASCENDING"));
     }
 
     /**
@@ -70,10 +75,12 @@ public class LessThanCriterionTest extends AppEngineTestCase {
     @Test
     public void getFiltersForNull() throws Exception {
         LessThanCriterion c = new LessThanCriterion(meta.myString, null);
-        Filter[] filters = c.getFilters();
+        Query.Filter[] filters = c.getFilters();
         assertThat(filters.length, is(1));
-        assertThat(filters[0].getPropertyName(), is("myString"));
-        assertThat(filters[0].getOperator(), is(FilterOperator.LESS_THAN));
-        assertThat(filters[0].getValue(), is(nullValue()));
+        assertThat(filters[0], is(Query.FilterPredicate.class));
+        Query.FilterPredicate filter = (Query.FilterPredicate) filters[0];
+        assertThat(filter.getPropertyName(), is("myString"));
+        assertThat(filter.getOperator(), is(FilterOperator.LESS_THAN));
+        assertThat(filter.getValue(), is(nullValue()));
     }
 }

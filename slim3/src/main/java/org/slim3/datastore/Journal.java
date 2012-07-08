@@ -24,6 +24,8 @@ import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityTranslator;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.apphosting.api.DatastorePb.PutRequest;
@@ -83,9 +85,10 @@ public class Journal {
         }
         List<Entity> entities =
             new EntityQuery(ds, KIND).filter(
+                new Query.FilterPredicate(
                 GLOBAL_TRANSACTION_KEY_PROPERTY,
                 FilterOperator.EQUAL,
-                globalTransactionKey).asList();
+                globalTransactionKey)).asList();
         apply(ds, entities);
     }
 
@@ -290,9 +293,10 @@ public class Journal {
                 "The globalTransactionKey parameter must not be null.");
         }
         return new EntityQuery(ds, KIND).filter(
+            new Query.FilterPredicate(
             GLOBAL_TRANSACTION_KEY_PROPERTY,
             FilterOperator.EQUAL,
-            globalTransactionKey).asKeyList();
+            globalTransactionKey)).asKeyList();
     }
 
     /**

@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.tester.AppEngineTestCase;
 
+import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
@@ -60,11 +61,13 @@ public class InCriterionTest extends AppEngineTestCase {
     public void getFilters() throws Exception {
         InCriterion c =
             new InCriterion(meta.myString, Arrays.asList("aaa", "bbb"));
-        Filter[] filters = c.getFilters();
+        Query.Filter[] filters = c.getFilters();
         assertThat(filters.length, is(1));
-        assertThat(filters[0].getPropertyName(), is("myString"));
-        assertThat(filters[0].getOperator(), is(FilterOperator.IN));
-        assertThat((List<String>) filters[0].getValue(), hasItems("aaa", "bbb"));
+        assertThat(filters[0], is(Query.FilterPredicate.class));
+        Query.FilterPredicate filter = (Query.FilterPredicate) filters[0];
+        assertThat(filter.getPropertyName(), is("myString"));
+        assertThat(filter.getOperator(), is(FilterOperator.IN));
+        assertThat((List<String>) filter.getValue(), hasItems("aaa", "bbb"));
     }
 
     /**
@@ -76,10 +79,12 @@ public class InCriterionTest extends AppEngineTestCase {
     public void getFiltersForEnum() throws Exception {
         InCriterion c =
             new InCriterion(meta.myEnum, Arrays.asList(SortDirection.ASCENDING));
-        Filter[] filters = c.getFilters();
+        Query.Filter[] filters = c.getFilters();
         assertThat(filters.length, is(1));
-        assertThat(filters[0].getPropertyName(), is("myEnum"));
-        assertThat(filters[0].getOperator(), is(FilterOperator.IN));
-        assertThat((List<String>) filters[0].getValue(), hasItem("ASCENDING"));
+        assertThat(filters[0], is(Query.FilterPredicate.class));
+        Query.FilterPredicate filter = (Query.FilterPredicate) filters[0];
+        assertThat(filter.getPropertyName(), is("myEnum"));
+        assertThat(filter.getOperator(), is(FilterOperator.IN));
+        assertThat((List<String>) filter.getValue(), hasItem("ASCENDING"));
     }
 }

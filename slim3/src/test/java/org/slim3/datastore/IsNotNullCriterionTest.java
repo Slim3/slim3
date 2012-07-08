@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.tester.AppEngineTestCase;
 
+import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 
 /**
@@ -40,10 +41,12 @@ public class IsNotNullCriterionTest extends AppEngineTestCase {
     @Test
     public void getFilters() throws Exception {
         IsNotNullCriterion c = new IsNotNullCriterion(meta.myString);
-        Filter[] filters = c.getFilters();
+        Query.Filter[] filters = c.getFilters();
         assertThat(filters.length, is(1));
-        assertThat(filters[0].getPropertyName(), is("myString"));
-        assertThat(filters[0].getOperator(), is(FilterOperator.GREATER_THAN));
-        assertThat(filters[0].getValue(), is(nullValue()));
+        assertThat(filters[0], is(Query.FilterPredicate.class));
+        Query.FilterPredicate filter = (Query.FilterPredicate) filters[0];
+        assertThat(filter.getPropertyName(), is("myString"));
+        assertThat(filter.getOperator(), is(FilterOperator.GREATER_THAN));
+        assertThat(filter.getValue(), is(nullValue()));
     }
 }

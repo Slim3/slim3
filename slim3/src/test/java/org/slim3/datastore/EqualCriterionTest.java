@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.slim3.datastore.meta.HogeMeta;
 import org.slim3.tester.AppEngineTestCase;
 
+import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
@@ -62,11 +63,13 @@ public class EqualCriterionTest extends AppEngineTestCase {
     @Test
     public void getFilters() throws Exception {
         EqualCriterion c = new EqualCriterion(meta.myString, "aaa");
-        Filter[] filters = c.getFilters();
+        Query.Filter[] filters = c.getFilters();
         assertThat(filters.length, is(1));
-        assertThat(filters[0].getPropertyName(), is("myString"));
-        assertThat(filters[0].getOperator(), is(FilterOperator.EQUAL));
-        assertThat((String) filters[0].getValue(), is("aaa"));
+        assertThat(filters[0], is(Query.FilterPredicate.class));
+        Query.FilterPredicate filter = (Query.FilterPredicate) filters[0];
+        assertThat(filter.getPropertyName(), is("myString"));
+        assertThat(filter.getOperator(), is(FilterOperator.EQUAL));
+        assertThat((String) filter.getValue(), is("aaa"));
     }
 
     /**
@@ -77,11 +80,13 @@ public class EqualCriterionTest extends AppEngineTestCase {
     public void getFiltersForEnum() throws Exception {
         EqualCriterion c =
             new EqualCriterion(meta.myEnum, SortDirection.ASCENDING);
-        Filter[] filters = c.getFilters();
+        Query.Filter[] filters = c.getFilters();
         assertThat(filters.length, is(1));
-        assertThat(filters[0].getPropertyName(), is("myEnum"));
-        assertThat(filters[0].getOperator(), is(FilterOperator.EQUAL));
-        assertThat((String) filters[0].getValue(), is("ASCENDING"));
+        assertThat(filters[0], is(Query.FilterPredicate.class));
+        Query.FilterPredicate filter = (Query.FilterPredicate) filters[0];
+        assertThat(filter.getPropertyName(), is("myEnum"));
+        assertThat(filter.getOperator(), is(FilterOperator.EQUAL));
+        assertThat((String) filter.getValue(), is("ASCENDING"));
     }
 
     /**
@@ -91,10 +96,12 @@ public class EqualCriterionTest extends AppEngineTestCase {
     @Test
     public void getFiltersForNull() throws Exception {
         EqualCriterion c = new EqualCriterion(meta.myString, null);
-        Filter[] filters = c.getFilters();
+        Query.Filter[] filters = c.getFilters();
         assertThat(filters.length, is(1));
-        assertThat(filters[0].getPropertyName(), is("myString"));
-        assertThat(filters[0].getOperator(), is(FilterOperator.EQUAL));
-        assertThat(filters[0].getValue(), is(nullValue()));
+        assertThat(filters[0], is(Query.FilterPredicate.class));
+        Query.FilterPredicate filter = (Query.FilterPredicate) filters[0];
+        assertThat(filter.getPropertyName(), is("myString"));
+        assertThat(filter.getOperator(), is(FilterOperator.EQUAL));
+        assertThat(filter.getValue(), is(nullValue()));
     }
 }

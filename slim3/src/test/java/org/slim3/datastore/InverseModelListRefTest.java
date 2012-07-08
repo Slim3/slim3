@@ -15,8 +15,11 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.junit.Assert.assertThat;
 
 import java.util.List;
 
@@ -104,7 +107,7 @@ public class InverseModelListRefTest extends AppEngineTestCase {
         assertThat(list.get(0).getKey(), is(bbb.getKey()));
         assertThat(list.get(1).getKey(), is(bbb2.getKey()));
         assertThat(list.getEncodedCursor(), is(notNullValue()));
-        assertThat(list.getEncodedFilters(), is(notNullValue()));
+        assertThat(list.getEncodedFilter(), is(notNullValue()));
         assertThat(list.getEncodedSorts(), is(notNullValue()));
     }
 

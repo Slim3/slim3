@@ -27,11 +27,12 @@ import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.QueryResultIterator;
 import com.google.appengine.api.datastore.QueryResultList;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Transaction;
-import com.google.appengine.api.datastore.Query.FilterOperator;
 
 /**
  * A query class for select.
@@ -145,7 +146,8 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
      *            the filter criteria
      * @return this instance
      * @throws NullPointerException
-     *             if the element of the criteria parameter is null
+     *             if the element of criteria is null
+     * 
      */
     public ModelQuery<M> filter(FilterCriterion... criteria)
             throws NullPointerException {
@@ -154,16 +156,24 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
                 throw new NullPointerException(
                     "The element of the criteria parameter must not be null.");
             }
-            for (Filter f : c.getFilters()) {
-                Object value = f.getValue();
-                if (modelMeta.isCipherProperty(f.getPropertyName())) {
-                    if (value instanceof String) {
-                        value = modelMeta.encrypt((String) value);
-                    } else if (value instanceof Text) {
-                        value = modelMeta.encrypt((Text) value);
+            for (Query.Filter f : c.getFilters()) {
+                if (f instanceof Query.FilterPredicate) {
+                    Query.FilterPredicate fp = (Query.FilterPredicate) f;
+                    Object value = fp.getValue();
+                    if (modelMeta.isCipherProperty(fp.getPropertyName())) {
+                        if (value instanceof String) {
+                            value = modelMeta.encrypt((String) value);
+                        } else if (value instanceof Text) {
+                            value = modelMeta.encrypt((Text) value);
+                        }
+                        f =
+                            new Query.FilterPredicate(
+                                fp.getPropertyName(),
+                                fp.getOperator(),
+                                value);
                     }
                 }
-                query.addFilter(f.getPropertyName(), f.getOperator(), value);
+                filters.add(f);
             }
         }
         return this;
@@ -239,7 +249,7 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
      * @return the result as a list
      */
     public List<M> asList() {
-        addFilterIfPolyModel();
+        applyPolyModelFilter();
         List<Entity> entityList = asEntityList();
         List<M> ret = new ArrayList<M>(entityList.size());
         for (Entity e : entityList) {
@@ -266,7 +276,7 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
             throw new IllegalStateException(
                 "In case of asQueryResultList(), you cannot specify sortInMemory().");
         }
-        addFilterIfPolyModel();
+        applyPolyModelFilter();
         List<M> modelList = null;
         boolean hasNext = false;
         Cursor cursor = null;
@@ -303,11 +313,11 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
         return new S3QueryResultList<M>(
             modelList,
             cursorWebSafeString,
-            getEncodedFilters(),
+            getEncodedFilter(),
             getEncodedSorts(),
             hasNext);
     }
-    
+
     /**
      * Returns a query result iterator.
      * 
@@ -315,11 +325,13 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
      */
     public S3QueryResultIterator<M> asQueryResultIterator() {
         QueryResultIterator<Entity> iterator = asQueryResultEntityIterator();
-        return new S3QueryResultIterator<M>(iterator, modelMeta,
-                getEncodedFilters(),
-                getEncodedSorts());
+        return new S3QueryResultIterator<M>(
+            iterator,
+            modelMeta,
+            getEncodedFilter(),
+            getEncodedSorts());
     }
-    
+
     /**
      * Returns a query result iterable.
      * 
@@ -329,7 +341,7 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
         S3QueryResultIterator<M> iterable = asQueryResultIterator();
         return new S3QueryResultIterable<M>(iterable);
     }
-    
+
     /**
      * Returns the single result or null if no entities match.
      * 
@@ -362,7 +374,7 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
             throw new IllegalStateException(
                 "In the case of asKeyList(), you cannot specify filterInMemory().");
         }
-        addFilterIfPolyModel();
+        applyPolyModelFilter();
         List<Key> keys = super.asKeyList();
         if (inMemorySortCriteria.size() > 0 && inMemorySortCriteria.size() == 1) {
             InMemorySortCriterion c = inMemorySortCriteria.get(0);
@@ -400,7 +412,7 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
             throw new IllegalStateException(
                 "In case of asIterator(), you cannot specify sortInMemory().");
         }
-        addFilterIfPolyModel();
+        applyPolyModelFilter();
         Iterator<Entity> entityIterator = asEntityIterator();
         return new ModelIterator<M>(entityIterator, modelMeta);
     }
@@ -454,10 +466,11 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
             throw new IllegalStateException(
                 "In case of min(), you cannot specify sortInMemory().");
         }
-        addFilterIfPolyModel();
+        applyPolyModelFilter();
         Object value = super.min(attributeMeta.getName());
-        return (A) ConversionUtil.convert(value, attributeMeta
-            .getAttributeClass());
+        return (A) ConversionUtil.convert(
+            value,
+            attributeMeta.getAttributeClass());
     }
 
     /**
@@ -489,10 +502,11 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
             throw new IllegalStateException(
                 "In case of max(), you cannot specify sortInMemory().");
         }
-        addFilterIfPolyModel();
+        applyPolyModelFilter();
         Object value = super.max(attributeMeta.getName());
-        return (A) ConversionUtil.convert(value, attributeMeta
-            .getAttributeClass());
+        return (A) ConversionUtil.convert(
+            value,
+            attributeMeta.getAttributeClass());
     }
 
     /**
@@ -503,7 +517,7 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
     @Override
     public int count() {
         inMemorySortCriteria.clear();
-        addFilterIfPolyModel();
+        applyPolyModelFilter();
         if (inMemoryFilterCriteria.size() > 0) {
             return asList().size();
         }
@@ -511,15 +525,17 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
     }
 
     /**
-     * Adds a filter for polymorphic model.
+     * Applies the criteria.
+     * 
+     * @throws NullPointerException
+     *             if the criterion is null
      */
-    protected void addFilterIfPolyModel() {
-        if (modelMeta.getClassHierarchyList().isEmpty()) {
-            return;
+    protected void applyPolyModelFilter() throws NullPointerException {
+        if (!modelMeta.getClassHierarchyList().isEmpty()) {
+            filter(new Query.FilterPredicate(
+                modelMeta.getClassHierarchyListName(),
+                FilterOperator.EQUAL,
+                modelMeta.getModelClass().getName()));
         }
-        query.addFilter(
-            modelMeta.getClassHierarchyListName(),
-            FilterOperator.EQUAL,
-            modelMeta.getModelClass().getName());
     }
 }
