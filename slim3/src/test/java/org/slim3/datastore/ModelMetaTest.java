@@ -38,6 +38,7 @@ import org.slim3.util.ByteUtil;
 import org.slim3.util.CipherFactory;
 
 import com.google.appengine.api.datastore.Blob;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.ShortBlob;
 import com.google.appengine.api.datastore.Text;
@@ -267,9 +268,10 @@ public class ModelMetaTest {
      */
     @Test
     public void blobToSerializable() throws Exception {
-        assertThat((String) meta
-            .blobToSerializable(new com.google.appengine.api.datastore.Blob(
-                ByteUtil.toByteArray("aaa"))), is("aaa"));
+        assertThat(
+            (String) meta.blobToSerializable(new com.google.appengine.api.datastore.Blob(
+                ByteUtil.toByteArray("aaa"))),
+            is("aaa"));
         assertThat(meta.blobToSerializable(null), is(nullValue()));
     }
 
@@ -379,7 +381,7 @@ public class ModelMetaTest {
         assertThat(meta.encrypt(text), not(text));
         assertThat(meta.decrypt(meta.encrypt(text)), is(text));
     }
-    
+
     /**
      * @throws Exception
      */
@@ -389,5 +391,27 @@ public class ModelMetaTest {
         Text text = new Text("hoge");
         assertThat(meta.encrypt(text), not(text));
         assertThat(meta.decrypt(meta.encrypt(text)), is(text));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void and() throws Exception {
+        FilterCriterion criterion = meta.and(meta.myString.equal("aaa"));
+        assertThat(criterion, is(CompositeCriterion.class));
+        CompositeCriterion cc = (CompositeCriterion) criterion;
+        assertThat(cc.getOperator(), is(CompositeFilterOperator.AND));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void or() throws Exception {
+        FilterCriterion criterion = meta.or(meta.myString.equal("aaa"));
+        assertThat(criterion, is(CompositeCriterion.class));
+        CompositeCriterion cc = (CompositeCriterion) criterion;
+        assertThat(cc.getOperator(), is(CompositeFilterOperator.OR));
     }
 }

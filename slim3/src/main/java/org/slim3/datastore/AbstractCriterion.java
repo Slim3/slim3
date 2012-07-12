@@ -46,7 +46,7 @@ public abstract class AbstractCriterion {
             throws NullPointerException {
         if (attributeMeta == null) {
             throw new NullPointerException(
-                "The attributeMeta parameter is null.");
+                "The attributeMeta parameter must not be null.");
         }
         this.attributeMeta = attributeMeta;
     }

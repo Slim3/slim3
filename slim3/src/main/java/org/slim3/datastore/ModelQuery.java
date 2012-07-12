@@ -31,7 +31,6 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.QueryResultIterator;
 import com.google.appengine.api.datastore.QueryResultList;
-import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Transaction;
 
 /**
@@ -151,31 +150,7 @@ public class ModelQuery<M> extends AbstractQuery<ModelQuery<M>> {
      */
     public ModelQuery<M> filter(FilterCriterion... criteria)
             throws NullPointerException {
-        for (FilterCriterion c : criteria) {
-            if (c == null) {
-                throw new NullPointerException(
-                    "The element of the criteria parameter must not be null.");
-            }
-            for (Query.Filter f : c.getFilters()) {
-                if (f instanceof Query.FilterPredicate) {
-                    Query.FilterPredicate fp = (Query.FilterPredicate) f;
-                    Object value = fp.getValue();
-                    if (modelMeta.isCipherProperty(fp.getPropertyName())) {
-                        if (value instanceof String) {
-                            value = modelMeta.encrypt((String) value);
-                        } else if (value instanceof Text) {
-                            value = modelMeta.encrypt((Text) value);
-                        }
-                        f =
-                            new Query.FilterPredicate(
-                                fp.getPropertyName(),
-                                fp.getOperator(),
-                                value);
-                    }
-                }
-                filters.add(f);
-            }
-        }
+        filters.addAll(DatastoreUtil.toFilters(modelMeta, criteria));
         return this;
     }
 

@@ -36,6 +36,7 @@ import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.ShortBlob;
 import com.google.appengine.api.datastore.Text;
 
@@ -152,6 +153,34 @@ public abstract class ModelMeta<M> {
     }
 
     /**
+     * Returns the AND criterion.
+     * 
+     * @param criteria
+     *            the filter criteria
+     * @return the AND criterion
+     */
+    public FilterCriterion and(FilterCriterion... criteria) {
+        return new CompositeCriterion(
+            this,
+            CompositeFilterOperator.AND,
+            criteria);
+    }
+
+    /**
+     * Returns the OR criterion.
+     * 
+     * @param criteria
+     *            the filter criteria
+     * @return the OR criterion
+     */
+    public FilterCriterion or(FilterCriterion... criteria) {
+        return new CompositeCriterion(
+            this,
+            CompositeFilterOperator.OR,
+            criteria);
+    }
+
+    /**
      * Returns the schemaVersion property name.
      * 
      * @return the schemaVersion property name
@@ -188,10 +217,10 @@ public abstract class ModelMeta<M> {
      * 
      * @param model
      *            the model
-     *
+     * 
      * @return JSON string
      */
-    public String modelToJson(Object model){
+    public String modelToJson(Object model) {
         return modelToJson(model, 0);
     }
 
@@ -203,10 +232,10 @@ public abstract class ModelMeta<M> {
      * 
      * @param maxDepth
      *            the max depth of ModelRef expanding
-     *
+     * 
      * @return JSON string
      */
-    public String modelToJson(final Object model, int maxDepth){
+    public String modelToJson(final Object model, int maxDepth) {
         StringBuilder b = new StringBuilder();
         JsonWriter w = new JsonWriter(b, new ModelWriter() {
             @Override
@@ -214,7 +243,10 @@ public abstract class ModelMeta<M> {
                     int currentDepth) {
                 invokeModelToJson(
                     Datastore.getModelMeta(model.getClass()),
-                    writer, model, maxDepth, currentDepth + 1);
+                    writer,
+                    model,
+                    maxDepth,
+                    currentDepth + 1);
             }
         });
         modelToJson(w, model, maxDepth, 0);
@@ -226,10 +258,10 @@ public abstract class ModelMeta<M> {
      * 
      * @param models
      *            models
-     *
+     * 
      * @return JSON string
      */
-    public String modelsToJson(final Object[] models){
+    public String modelsToJson(final Object[] models) {
         return modelsToJson(models, 0);
     }
 
@@ -241,12 +273,13 @@ public abstract class ModelMeta<M> {
      * 
      * @param maxDepth
      *            the max depth of ModelRef expanding
-     *
+     * 
      * @return JSON string
      */
-    public String modelsToJson(final Object[] models, int maxDepth){
+    public String modelsToJson(final Object[] models, int maxDepth) {
         int n = models.length;
-        if(n == 0) return "[]";
+        if (n == 0)
+            return "[]";
         StringBuilder b = new StringBuilder();
         JsonWriter w = new JsonWriter(b, new ModelWriter() {
             @Override
@@ -254,28 +287,31 @@ public abstract class ModelMeta<M> {
                     int currentDepth) {
                 invokeModelToJson(
                     Datastore.getModelMeta(model.getClass()),
-                    writer, model, maxDepth, currentDepth + 1);
+                    writer,
+                    model,
+                    maxDepth,
+                    currentDepth + 1);
             }
         });
         b.append("[");
         modelToJson(w, models[0], maxDepth, 0);
-        for(int i = 1; i < n; i++){
+        for (int i = 1; i < n; i++) {
             b.append(",");
             modelToJson(w, models[i], maxDepth, 0);
         }
         b.append("]");
         return b.toString();
     }
-    
+
     /**
      * Converts the models to JSON string.
      * 
      * @param models
      *            models
-     *
+     * 
      * @return JSON string
      */
-    public String modelsToJson(Iterable<?> models){
+    public String modelsToJson(Iterable<?> models) {
         return modelsToJson(models, 0);
     }
 
@@ -287,10 +323,10 @@ public abstract class ModelMeta<M> {
      * 
      * @param maxDepth
      *            the max depth of ModelRef expanding
-     *
+     * 
      * @return JSON string
      */
-    public String modelsToJson(final Iterable<?> models, int maxDepth){
+    public String modelsToJson(final Iterable<?> models, int maxDepth) {
         StringBuilder b = new StringBuilder();
         JsonWriter w = new JsonWriter(b, new ModelWriter() {
             @Override
@@ -298,15 +334,18 @@ public abstract class ModelMeta<M> {
                     int currentDepth) {
                 invokeModelToJson(
                     Datastore.getModelMeta(model.getClass()),
-                    writer, model, maxDepth, currentDepth + 1);
+                    writer,
+                    model,
+                    maxDepth,
+                    currentDepth + 1);
             }
         });
         b.append("[");
         boolean first = true;
-        for(Object o : models){
-            if(first){
+        for (Object o : models) {
+            if (first) {
                 first = false;
-            } else{
+            } else {
                 b.append(",");
             }
             modelToJson(w, o, maxDepth, 0);
@@ -314,7 +353,7 @@ public abstract class ModelMeta<M> {
         b.append("]");
         return b.toString();
     }
-    
+
     /**
      * Converts the model to JSON string.
      * 
@@ -323,35 +362,36 @@ public abstract class ModelMeta<M> {
      * 
      * @param model
      *            the model
-     *            
+     * 
      * @param maxDepth
      *            the max depth
-     *
+     * 
      * @param currentDepth
      *            the current depth
      */
-    protected abstract void modelToJson(JsonWriter writer, Object model, int maxDepth, int currentDepth);
+    protected abstract void modelToJson(JsonWriter writer, Object model,
+            int maxDepth, int currentDepth);
 
     /**
      * Invoke the modelToJson method.
      * 
      * @param meta
      *            the meta
-     *
+     * 
      * @param writer
      *            the writer
      * 
      * @param model
      *            the model
-     *            
+     * 
      * @param maxDepth
      *            the max depth
-     *
+     * 
      * @param currentDepth
      *            the current depth
      */
-    protected void invokeModelToJson(ModelMeta<?> meta, JsonWriter writer
-            , Object model, int maxDepth, int currentDepth){
+    protected void invokeModelToJson(ModelMeta<?> meta, JsonWriter writer,
+            Object model, int maxDepth, int currentDepth) {
         meta.modelToJson(writer, model, maxDepth, currentDepth);
     }
 
@@ -360,25 +400,25 @@ public abstract class ModelMeta<M> {
      * 
      * @param json
      *            the JSON string
-     *
+     * 
      * @return model
      */
-    public M jsonToModel(String json){
+    public M jsonToModel(String json) {
         return jsonToModel(json, 0);
     }
-    
+
     /**
      * Converts the JSON string to model.
      * 
      * @param json
      *            the JSON string
-     *            
+     * 
      * @param maxDepth
      *            the max depth
-     *            
+     * 
      * @return model
      */
-    public M jsonToModel(String json, int maxDepth){
+    public M jsonToModel(String json, int maxDepth) {
         return jsonToModel(json, maxDepth, 0);
     }
 
@@ -387,10 +427,10 @@ public abstract class ModelMeta<M> {
      * 
      * @param json
      *            the JSON string
-     *            
+     * 
      * @return model array
      */
-    public M[] jsonToModels(String json){
+    public M[] jsonToModels(String json) {
         return jsonToModels(json, 0);
     }
 
@@ -399,56 +439,61 @@ public abstract class ModelMeta<M> {
      * 
      * @param json
      *            the JSON string
-     *            
+     * 
      * @param maxDepth
      *            the max depth
-     *            
+     * 
      * @return model array
      */
     @SuppressWarnings("unchecked")
-    public M[] jsonToModels(String json, int maxDepth){
+    public M[] jsonToModels(String json, int maxDepth) {
         JsonArrayReader ar = new JsonArrayReader(json, new ModelReader() {
             @Override
-            public <T> T read(JsonReader reader, Class<T> modelClass, int maxDepth,
-                    int currentDepth) {
+            public <T> T read(JsonReader reader, Class<T> modelClass,
+                    int maxDepth, int currentDepth) {
                 return invokeJsonToModel(
                     Datastore.getModelMeta(modelClass),
-                    reader, maxDepth, currentDepth + 1);
+                    reader,
+                    maxDepth,
+                    currentDepth + 1);
             }
         });
-        M[] ret = (M[])Array.newInstance(this.getModelClass(), ar.length());
-        for(int i = 0; i < ar.length(); i++){
+        M[] ret = (M[]) Array.newInstance(this.getModelClass(), ar.length());
+        for (int i = 0; i < ar.length(); i++) {
             ar.setIndex(i);
             ret[i] = jsonToModel(ar.newRootReader(), maxDepth, 0);
         }
         return ret;
     }
-    
+
     /**
      * Converts the JSON string to model.
      * 
      * @param json
      *            the JSON string
-     *            
+     * 
      * @param maxDepth
      *            the max depth
-     *            
+     * 
      * @param currentDepth
      *            the current depth
-     *            
+     * 
      * @return model
      */
-    protected M jsonToModel(String json, int maxDepth, int currentDepth){
+    protected M jsonToModel(String json, int maxDepth, int currentDepth) {
         return jsonToModel(new JsonRootReader(json, new ModelReader() {
             @Override
-            public <T> T read(JsonReader reader, Class<T> modelClass, int maxDepth,
-                    int currentDepth) {
+            public <T> T read(JsonReader reader, Class<T> modelClass,
+                    int maxDepth, int currentDepth) {
                 return invokeJsonToModel(
                     Datastore.getModelMeta(modelClass),
-                    reader, maxDepth, currentDepth + 1);
+                    reader,
+                    maxDepth,
+                    currentDepth + 1);
             }
-        })
-        , maxDepth, currentDepth);
+        }),
+            maxDepth,
+            currentDepth);
     }
 
     /**
@@ -456,39 +501,40 @@ public abstract class ModelMeta<M> {
      * 
      * @param reader
      *            the JSON reader
-     *            
+     * 
      * @param maxDepth
      *            the max depth
-     *            
+     * 
      * @param currentDepth
      *            the current depth
-     *            
+     * 
      * @return model
      */
-    protected abstract M jsonToModel(JsonRootReader reader, int maxDepth, int currentDepth);
-    
+    protected abstract M jsonToModel(JsonRootReader reader, int maxDepth,
+            int currentDepth);
+
     /**
      * Converts the JSON string to model.
      * 
      * @param <T>
      *            the type of model
-     *            
+     * 
      * @param meta
      *            the model meta
-     *            
+     * 
      * @param reader
      *            the JSON reader
-     *            
+     * 
      * @param maxDepth
      *            the max depth
-     *            
+     * 
      * @param currentDepth
      *            the current depth
-     *            
+     * 
      * @return model
      */
-    protected <T> T invokeJsonToModel(ModelMeta<T> meta, JsonReader reader
-            , int maxDepth, int currentDepth){
+    protected <T> T invokeJsonToModel(ModelMeta<T> meta, JsonReader reader,
+            int maxDepth, int currentDepth) {
         return meta.jsonToModel(reader.read(), maxDepth, currentDepth);
     }
 
@@ -516,7 +562,7 @@ public abstract class ModelMeta<M> {
      *            the model
      */
     protected abstract void prePut(Object model);
-    
+
     /**
      * This method is called after a model is get from datastore.
      * 

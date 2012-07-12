@@ -15,8 +15,12 @@
  */
 package org.slim3.datastore;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,11 +46,13 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.KeyRange;
-import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.datastore.Transaction;
 import com.google.storage.onestore.v3.OnestoreEntity.Path;
-import com.google.storage.onestore.v3.OnestoreEntity.Reference;
 import com.google.storage.onestore.v3.OnestoreEntity.Path.Element;
+import com.google.storage.onestore.v3.OnestoreEntity.Reference;
 
 /**
  * @author higa
@@ -54,8 +60,8 @@ import com.google.storage.onestore.v3.OnestoreEntity.Path.Element;
  */
 public class DatastoreUtilTest extends AppEngineTestCase {
 
-    private AsyncDatastoreService ds =
-        DatastoreServiceFactory.getAsyncDatastoreService();
+    private AsyncDatastoreService ds = DatastoreServiceFactory
+        .getAsyncDatastoreService();
 
     private HogeMeta meta = new HogeMeta();
 
@@ -183,9 +189,10 @@ public class DatastoreUtilTest extends AppEngineTestCase {
     @Test
     public void getOrNullNoEntityIsFound() throws Exception {
         Transaction tx = ds.beginTransaction().get();
-        assertThat(DatastoreUtil.getOrNull(ds, tx, KeyFactory.createKey(
-            "Hoge",
-            "xxx")), is(nullValue()));
+        assertThat(DatastoreUtil.getOrNull(
+            ds,
+            tx,
+            KeyFactory.createKey("Hoge", "xxx")), is(nullValue()));
     }
 
     /**
@@ -368,8 +375,9 @@ public class DatastoreUtilTest extends AppEngineTestCase {
         list.add(hoge);
 
         List<Hoge> filtered =
-            DatastoreUtil.filterInMemory(list, Arrays.asList(meta.myEnum
-                .equal(SortDirection.ASCENDING)));
+            DatastoreUtil.filterInMemory(
+                list,
+                Arrays.asList(meta.myEnum.equal(SortDirection.ASCENDING)));
         assertThat(filtered.size(), is(1));
         assertThat(filtered.get(0).getMyEnum(), is(SortDirection.ASCENDING));
     }
@@ -391,8 +399,9 @@ public class DatastoreUtilTest extends AppEngineTestCase {
         list.add(hoge);
 
         List<Hoge> sorted =
-            DatastoreUtil.sortInMemory(list, Arrays
-                .asList((InMemorySortCriterion) meta.myInteger.desc));
+            DatastoreUtil.sortInMemory(
+                list,
+                Arrays.asList((InMemorySortCriterion) meta.myInteger.desc));
         assertThat(sorted.size(), is(3));
         assertThat(sorted.get(0).getMyInteger(), is(3));
         assertThat(sorted.get(1).getMyInteger(), is(2));
@@ -413,8 +422,9 @@ public class DatastoreUtilTest extends AppEngineTestCase {
         list.add(hoge);
 
         List<Hoge> sorted =
-            DatastoreUtil.sortInMemory(list, Arrays
-                .asList((InMemorySortCriterion) meta.myEnum.asc));
+            DatastoreUtil.sortInMemory(
+                list,
+                Arrays.asList((InMemorySortCriterion) meta.myEnum.asc));
         assertThat(sorted.size(), is(2));
         assertThat(sorted.get(0).getMyEnum(), is(SortDirection.ASCENDING));
         assertThat(sorted.get(1).getMyEnum(), is(SortDirection.DESCENDING));
@@ -434,8 +444,9 @@ public class DatastoreUtilTest extends AppEngineTestCase {
         list.add(hoge);
 
         List<Hoge> sorted =
-            DatastoreUtil.sortInMemory(list, Arrays
-                .asList((InMemorySortCriterion) meta.myEnum.desc));
+            DatastoreUtil.sortInMemory(
+                list,
+                Arrays.asList((InMemorySortCriterion) meta.myEnum.desc));
         assertThat(sorted.size(), is(2));
         assertThat(sorted.get(0).getMyEnum(), is(SortDirection.DESCENDING));
         assertThat(sorted.get(1).getMyEnum(), is(SortDirection.ASCENDING));
@@ -449,8 +460,9 @@ public class DatastoreUtilTest extends AppEngineTestCase {
     public void getModelMeta() throws Exception {
         ModelMeta<Hoge> modelMeta = DatastoreUtil.getModelMeta(Hoge.class);
         assertThat(modelMeta, is(notNullValue()));
-        assertThat(modelMeta, is(sameInstance((ModelMeta) Datastore
-            .getModelMeta(Hoge.class))));
+        assertThat(
+            modelMeta,
+            is(sameInstance((ModelMeta) Datastore.getModelMeta(Hoge.class))));
     }
 
     /**
@@ -460,8 +472,9 @@ public class DatastoreUtilTest extends AppEngineTestCase {
     public void getModelMetaWithEntity() throws Exception {
         AaaMeta aaaMeta = new AaaMeta();
         Entity entity = new Entity("Aaa");
-        entity.setProperty(aaaMeta.getClassHierarchyListName(), Arrays
-            .asList(Bbb.class.getName()));
+        entity.setProperty(
+            aaaMeta.getClassHierarchyListName(),
+            Arrays.asList(Bbb.class.getName()));
         ModelMeta<Aaa> modelMeta = DatastoreUtil.getModelMeta(aaaMeta, entity);
         assertThat(modelMeta, is(notNullValue()));
         assertThat(modelMeta.getModelClass().getName(), is(Bbb.class.getName()));
@@ -474,8 +487,9 @@ public class DatastoreUtilTest extends AppEngineTestCase {
     public void getModelMetaWithEntityForIllegalClass() throws Exception {
         AaaMeta aaaMeta = new AaaMeta();
         Entity entity = new Entity("Aaa");
-        entity.setProperty(aaaMeta.getClassHierarchyListName(), Arrays
-            .asList(Bbb.class.getName()));
+        entity.setProperty(
+            aaaMeta.getClassHierarchyListName(),
+            Arrays.asList(Bbb.class.getName()));
         DatastoreUtil.getModelMeta(meta, entity);
     }
 
@@ -501,16 +515,16 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      */
     @Test
     public void replacePackageName() throws Exception {
-        assertThat(DatastoreUtil.replacePackageName(
-            "abc.model.Hoge",
-            "model",
-            "meta"), is("abc.meta.Hoge"));
+        assertThat(
+            DatastoreUtil.replacePackageName("abc.model.Hoge", "model", "meta"),
+            is("abc.meta.Hoge"));
         assertThat(DatastoreUtil.replacePackageName(
             "abc.model.xxx.model.Hoge",
             "model",
             "meta"), is("abc.model.xxx.meta.Hoge"));
-        assertThat(DatastoreUtil
-            .replacePackageName("abc.Hoge", "model", "meta"), is("abc.Hoge"));
+        assertThat(
+            DatastoreUtil.replacePackageName("abc.Hoge", "model", "meta"),
+            is("abc.Hoge"));
     }
 
     /**
@@ -620,10 +634,10 @@ public class DatastoreUtilTest extends AppEngineTestCase {
         map.put(key2, entity2);
         map.put(key, entity);
         List<Hoge> list =
-            DatastoreUtil.entityMapToModelList(meta, Arrays.asList(
-                key,
-                key2,
-                key3), map);
+            DatastoreUtil.entityMapToModelList(
+                meta,
+                Arrays.asList(key, key2, key3),
+                map);
         assertThat(list.size(), is(3));
         assertThat(list.get(0).getKey(), is(key));
         assertThat(list.get(1).getKey(), is(key2));
@@ -746,5 +760,16 @@ public class DatastoreUtilTest extends AppEngineTestCase {
         assertThat(DatastoreUtil.getRoot(parentKey), is(parentKey));
         assertThat(DatastoreUtil.getRoot(childKey), is(parentKey));
         assertThat(DatastoreUtil.getRoot(grandChildKey), is(parentKey));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void toFilters() throws Exception {
+        List<Filter> filters =
+            DatastoreUtil.toFilters(meta, meta.myString.equal("aaa"));
+        assertThat(filters.size(), is(1));
+        assertThat(filters.get(0), is(Query.FilterPredicate.class));
     }
 }

@@ -38,6 +38,10 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.KeyRange;
 import com.google.appengine.api.datastore.KeyUtil;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.storage.onestore.v3.OnestoreEntity.EntityProto;
 import com.google.storage.onestore.v3.OnestoreEntity.Path.Element;
@@ -1141,5 +1145,45 @@ public final class DatastoreUtil {
     }
 
     private DatastoreUtil() {
+    }
+
+    /**
+     * Converts the array of filter criterion to the list of filter.
+     * 
+     * @param modelMeta
+     *            the model meta
+     * @param criteria
+     *            the filter criteria
+     * @return the list of filter
+     */
+    protected static List<Filter> toFilters(ModelMeta<?> modelMeta,
+            FilterCriterion... criteria) {
+        List<Filter> list = new ArrayList<Filter>(criteria.length);
+        for (FilterCriterion c : criteria) {
+            if (c == null) {
+                throw new NullPointerException(
+                    "The element of the criteria parameter must not be null.");
+            }
+            for (Query.Filter f : c.getFilters()) {
+                if (f instanceof Query.FilterPredicate) {
+                    Query.FilterPredicate fp = (Query.FilterPredicate) f;
+                    Object value = fp.getValue();
+                    if (modelMeta.isCipherProperty(fp.getPropertyName())) {
+                        if (value instanceof String) {
+                            value = modelMeta.encrypt((String) value);
+                        } else if (value instanceof Text) {
+                            value = modelMeta.encrypt((Text) value);
+                        }
+                        f =
+                            new Query.FilterPredicate(
+                                fp.getPropertyName(),
+                                fp.getOperator(),
+                                value);
+                    }
+                }
+                list.add(f);
+            }
+        }
+        return list;
     }
 }

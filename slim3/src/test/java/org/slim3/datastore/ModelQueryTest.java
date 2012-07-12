@@ -80,7 +80,7 @@ public class ModelQueryTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     @Test
     public void constructor() throws Exception {
         ModelQuery<Hoge> query = new ModelQuery<Hoge>(ds, meta);
@@ -90,7 +90,7 @@ public class ModelQueryTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     @Test
     public void constructorUsingModelMetaAndAncestorKey() throws Exception {
         Key ancestorKey = KeyFactory.createKey("Ancestor", 1);
@@ -102,7 +102,7 @@ public class ModelQueryTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     @Test
     public void constructorUsingTxAndModelMetaAndAncestorKey() throws Exception {
         Key ancestorKey = KeyFactory.createKey("Ancestor", 1);
@@ -2085,5 +2085,61 @@ public class ModelQueryTest extends AppEngineTestCase {
         assertThat(list.get(0).getMyCipherText().getValue(), is("1102"));
         assertThat(list.get(1).getMyCipherText().getValue(), is("1103"));
         assertThat(list.get(2).getMyCipherText().getValue(), is("1104"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void and() throws Exception {
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyString("aaa");
+        hoge2.setMyString("aaa");
+        hoge3.setMyString("bbb");
+        hoge1.setMyInteger(1);
+        hoge2.setMyInteger(2);
+        hoge3.setMyInteger(3);
+        DatastoreUtil.put(ds, null, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil.put(ds, null, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil.put(ds, null, DatastoreUtil.modelToEntity(ds, hoge3));
+        List<Hoge> list =
+            new ModelQuery<Hoge>(ds, meta)
+                .filter(
+                    meta.and(
+                        meta.myString.equal("aaa"),
+                        meta.myInteger.equal(1)))
+                .asList();
+        assertThat(list.size(), is(1));
+        assertThat(list.get(0).getMyString(), is("aaa"));
+        assertThat(list.get(0).getMyInteger(), is(1));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void or() throws Exception {
+        Hoge hoge1 = new Hoge();
+        Hoge hoge2 = new Hoge();
+        Hoge hoge3 = new Hoge();
+        hoge1.setMyString("aaa");
+        hoge2.setMyString("aaa");
+        hoge3.setMyString("bbb");
+        hoge1.setMyInteger(1);
+        hoge2.setMyInteger(2);
+        hoge3.setMyInteger(3);
+        DatastoreUtil.put(ds, null, DatastoreUtil.modelToEntity(ds, hoge1));
+        DatastoreUtil.put(ds, null, DatastoreUtil.modelToEntity(ds, hoge2));
+        DatastoreUtil.put(ds, null, DatastoreUtil.modelToEntity(ds, hoge3));
+        List<Hoge> list =
+            new ModelQuery<Hoge>(ds, meta)
+                .filter(
+                    meta.or(
+                        meta.myString.equal("aaa"),
+                        meta.myString.equal("bbb")))
+                .asList();
+        assertThat(list.size(), is(3));
     }
 }
