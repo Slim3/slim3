@@ -11,11 +11,6 @@
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>com.google.appengine.eclipse.core.enhancerbuilder</name>
-			<arguments>
-			</arguments>
-		</buildCommand>
-		<buildCommand>
 			<name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
 			<triggers>full,incremental,</triggers>
 			<arguments>
@@ -33,6 +28,11 @@
 					<key>LaunchConfigHandle</key>
 					<value>&lt;project&gt;/.externalToolBuilders/com.google.gdt.eclipse.core.webAppProjectValidator.launch</value>
 				</dictionary>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
+			<name>com.google.appengine.eclipse.core.enhancerbuilder</name>
+			<arguments>
 			</arguments>
 		</buildCommand>
 	</buildSpec>
