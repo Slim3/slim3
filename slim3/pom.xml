@@ -62,7 +62,7 @@
     </mailingList>
   </mailingLists>
   <scm>
-    <connection>scm:svn:https://slim3.googlecode.com/svn/</connection>
+    <connection>scm:svn:http://slim3.googlecode.com/svn/</connection>
     <developerConnection>scm:svn:https://slim3.googlecode.com/svn/</developerConnection>
     <url>http://code.google.com/p/slim3/source/browse#svn/trunk</url>
   </scm>
@@ -70,12 +70,12 @@
     <repository>
       <id>maven.seasar.org</id>
       <name>The Seasar Foundation Maven2 Repository</name>
-      <url>http://maven.seasar.org/maven2</url>
+      <url>https://maven.seasar.org/maven2</url>
     </repository>
     <repository>
       <id>maven.snapshot.seasar.org</id>
       <name>The Seasar Foundation Maven2 Snapshot Repository</name>
-      <url>http://maven.seasar.org/maven2-snapshot</url>
+      <url>https://maven.seasar.org/maven2-snapshot</url>
     </repository>
   </repositories>
   <distributionManagement>
@@ -196,7 +196,8 @@
     <extensions>
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-webdav</artifactId>
+        <!--  <artifactId>wagon-webdav</artifactId>-->
+        <artifactId>wagon-webdav-jackrabbit</artifactId>
       </extension>
     </extensions>
   </build>
