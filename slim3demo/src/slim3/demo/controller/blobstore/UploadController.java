@@ -1,5 +1,6 @@
 package slim3.demo.controller.blobstore;
 
+import java.util.List;
 import java.util.Map;
 
 import org.slim3.controller.Controller;
@@ -18,11 +19,13 @@ public class UploadController extends Controller {
     @Override
     public Navigation run() throws Exception {
         BlobstoreService bs = BlobstoreServiceFactory.getBlobstoreService();
-        Map<String, BlobKey> blobs = bs.getUploadedBlobs(request);
-        BlobKey blobKey = blobs.get("formFile");
-        if (blobKey != null) {
+        Map<String, List<BlobKey>> blobs = bs.getUploads(request);
+        List<BlobKey> blobKeyList = blobs.get("formFile");
+        if (blobKeyList != null && blobKeyList.size() > 0) {
             Key key =
-                Datastore.createKey(Blobstore.class, blobKey.getKeyString());
+                Datastore.createKey(Blobstore.class, blobKeyList
+                    .get(0)
+                    .getKeyString());
             Blobstore blobstore = new Blobstore();
             blobstore.setKey(key);
             Datastore.put(blobstore);
