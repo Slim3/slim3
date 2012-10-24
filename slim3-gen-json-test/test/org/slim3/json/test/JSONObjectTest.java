@@ -5,14 +5,14 @@ import java.net.URL;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slim3.repackaged.org.json.JSONArray;
+import org.slim3.repackaged.org.json.JSONException;
+import org.slim3.repackaged.org.json.JSONObject;
 
 import com.google.appengine.api.datastore.IMHandle;
 import com.google.appengine.api.users.User;
 import com.google.appengine.repackaged.com.google.common.util.Base64;
 import com.google.appengine.repackaged.com.google.common.util.Base64DecoderException;
-import com.google.appengine.repackaged.org.json.JSONArray;
-import com.google.appengine.repackaged.org.json.JSONException;
-import com.google.appengine.repackaged.org.json.JSONObject;
 
 public class JSONObjectTest {
     @Test
