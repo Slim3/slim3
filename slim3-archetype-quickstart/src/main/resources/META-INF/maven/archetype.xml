@@ -10,9 +10,9 @@
     <resource>build.properties</resource>
     <resource>build.xml</resource>
     <resource>src/main/resources/logging.properties</resource>
-    <resource>war/WEB-INF/appengine-web.xml</resource>
-    <resource>war/WEB-INF/web.xml</resource>
-    <resource>war/WEB-INF/queue.xml</resource>
+    <resource>src/main/webapp/WEB-INF/appengine-web.xml</resource>
+    <resource>src/main/webapp/WEB-INF/web.xml</resource>
+    <resource>src/main/webapp/WEB-INF/queue.xml</resource>
   </resources>
   <testSources>
 	  <source>src/test/java/service/Slim3ServiceTest.java</source>
