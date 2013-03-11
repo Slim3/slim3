@@ -10,7 +10,7 @@
     <slim3.version>1.0.16</slim3.version>
     <appengine.version>1.7.5</appengine.version>
     <generated.src>.apt_generated</generated.src>
-    <generated.war>war</generated.war>
+    <generated.war>src/main/webapp</generated.war>
     <eclipse.lib>eclipse.lib</eclipse.lib>
   </properties>
   <repositories>
@@ -124,6 +124,11 @@
             </dependency>
           </dependencies>
         </plugin>
+        <plugin>
+          <groupId>com.google.appengine</groupId>
+          <artifactId>appengine-maven-plugin</artifactId>
+          <version>${dollar}${lcurly}appengine.version}</version>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
@@ -233,9 +238,13 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
-          <webXml>war/WEB-INF/web.xml</webXml>
+          <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
           <warSourceExcludes>.gwt-tmp/**</warSourceExcludes>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.google.appengine</groupId>
+        <artifactId>appengine-maven-plugin</artifactId>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -288,7 +297,7 @@ org.eclipse.jdt.apt.reconcileEnabled=false
                 <![CDATA[
 eclipse.preferences.version=1
 jarsExcludedFromWebInfLib=
-warSrcDir=war
+warSrcDir=${dollar}${lcurly}generated.war}
 warSrcDirIsOutput=false
                ]]>
               </content>
