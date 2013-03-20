@@ -15,7 +15,7 @@
  */
 package org.slim3.memcache;
 
-import com.google.appengine.api.memcache.ErrorHandler;
+import com.google.appengine.api.memcache.ConsistentErrorHandler;
 import com.google.appengine.api.memcache.InvalidValueException;
 import com.google.appengine.api.memcache.MemcacheServiceException;
 import com.google.apphosting.api.ApiProxy.CapabilityDisabledException;
@@ -25,8 +25,7 @@ import com.google.apphosting.api.ApiProxy.CapabilityDisabledException;
  * @since 1.0.1
  * 
  */
-@SuppressWarnings("deprecation")
-public class S3ErrorHandler implements ErrorHandler {
+public class S3ErrorHandler implements ConsistentErrorHandler {
 
     /**
      * Constructor.
