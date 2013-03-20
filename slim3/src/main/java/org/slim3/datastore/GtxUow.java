@@ -22,7 +22,6 @@ package org.slim3.datastore;
  * @since 1.0.12
  * 
  */
-@SuppressWarnings("deprecation")
 @Deprecated
 public abstract class GtxUow extends AbstractUow {
 

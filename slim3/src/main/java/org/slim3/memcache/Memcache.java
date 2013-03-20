@@ -34,6 +34,7 @@ import com.google.apphosting.api.ApiProxy.CapabilityDisabledException;
  * @since 1.0.0
  * 
  */
+@SuppressWarnings("deprecation")
 public final class Memcache {
 
     private static Class<? extends MemcacheDelegate> delegateClass =

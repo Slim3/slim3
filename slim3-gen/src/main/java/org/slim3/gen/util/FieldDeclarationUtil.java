@@ -26,6 +26,7 @@ import com.sun.mirror.type.PrimitiveType.Kind;
  * @author taedium
  * 
  */
+@SuppressWarnings("deprecation")
 public final class FieldDeclarationUtil {
 
     private static Pattern isPrefixedFieldPattern =

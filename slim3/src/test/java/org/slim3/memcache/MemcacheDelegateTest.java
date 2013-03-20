@@ -37,6 +37,7 @@ import com.google.appengine.api.memcache.MemcacheService.SetPolicy;
  * @author higa
  * 
  */
+@SuppressWarnings("deprecation")
 public class MemcacheDelegateTest extends AppEngineTestCase {
 
     /**

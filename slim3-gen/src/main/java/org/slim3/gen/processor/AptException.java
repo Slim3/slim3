@@ -28,6 +28,7 @@ import com.sun.mirror.util.SourcePosition;
  * @since 1.0.0
  * 
  */
+@SuppressWarnings("deprecation")
 public class AptException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;

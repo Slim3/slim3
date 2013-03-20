@@ -455,7 +455,7 @@ public class DatastoreUtilTest extends AppEngineTestCase {
     /**
      * @throws Exception
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes" })
     @Test
     public void getModelMeta() throws Exception {
         ModelMeta<Hoge> modelMeta = DatastoreUtil.getModelMeta(Hoge.class);

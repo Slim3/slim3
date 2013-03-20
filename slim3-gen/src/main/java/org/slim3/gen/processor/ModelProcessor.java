@@ -39,6 +39,7 @@ import com.sun.mirror.util.DeclarationFilter;
  * @since 1.0.0
  * 
  */
+@SuppressWarnings("deprecation")
 public class ModelProcessor implements AnnotationProcessor {
 
     /** the set of annotation type declaration */
