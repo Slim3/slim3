@@ -54,6 +54,7 @@ import com.sun.mirror.type.TypeMirror;
  * @since 1.0.0
  * 
  */
+@SuppressWarnings("deprecation")
 public class ModelMetaDescFactory {
 
     /** the environment */

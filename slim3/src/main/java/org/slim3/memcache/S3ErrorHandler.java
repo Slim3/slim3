@@ -25,6 +25,7 @@ import com.google.apphosting.api.ApiProxy.CapabilityDisabledException;
  * @since 1.0.1
  * 
  */
+@SuppressWarnings("deprecation")
 public class S3ErrorHandler implements ErrorHandler {
 
     /**

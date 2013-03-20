@@ -35,6 +35,7 @@ import com.sun.mirror.declaration.AnnotationTypeDeclaration;
  * @since 1.0.0
  * 
  */
+@SuppressWarnings("deprecation")
 public class ModelProcessorFactory implements AnnotationProcessorFactory {
 
     /** the supported annotations */

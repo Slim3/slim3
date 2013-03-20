@@ -64,7 +64,7 @@ public abstract class AbstractCriterion {
      * @throws IllegalStateException
      *             if the attribute value is not comparable
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected int compareValue(Object v1, Object v2) {
         if (v1 == null && v2 == null) {
             return 0;
@@ -115,7 +115,7 @@ public abstract class AbstractCriterion {
      *            the value
      * @return a converted value for datastore
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected List<?> convertValueForDatastore(Iterable<?> value) {
         if (value == null) {
             return null;

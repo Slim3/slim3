@@ -59,6 +59,7 @@ import com.sun.mirror.util.SimpleTypeVisitor;
  * @since 1.0.0
  * 
  */
+@SuppressWarnings("deprecation")
 public class AttributeMetaDescFactory {
 
     /** the environment */

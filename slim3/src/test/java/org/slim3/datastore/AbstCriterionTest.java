@@ -46,7 +46,7 @@ public class AbstCriterionTest extends AppEngineTestCase {
      * @throws Exception
      * 
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes" })
     @Test
     public void constructor() throws Exception {
         MyCriterion criterion = new MyCriterion(meta.myInteger);

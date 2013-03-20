@@ -33,6 +33,7 @@ import com.sun.mirror.apt.Filer;
  * @since 1.0.0
  * 
  */
+@SuppressWarnings("deprecation")
 public class GenerateSupport {
 
     /** the environment */

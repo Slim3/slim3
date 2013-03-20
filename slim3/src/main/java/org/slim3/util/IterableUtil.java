@@ -42,7 +42,7 @@ public final class IterableUtil {
      * @throws IllegalArgumentException
      *             if the size parameter is less than 1
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> List<Iterable<T>> split(Iterable<T> list, int size)
             throws NullPointerException, IllegalArgumentException {
         if (list == null) {

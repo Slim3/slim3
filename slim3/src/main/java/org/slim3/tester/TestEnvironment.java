@@ -151,7 +151,6 @@ public class TestEnvironment implements ApiProxy.Environment {
         this.versionId = versionId;
     }
 
-    @SuppressWarnings("deprecation")
     public String getRequestNamespace() {
         return NamespaceManager.get();
     }

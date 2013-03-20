@@ -50,7 +50,7 @@ public abstract class DaoBase<T> {
     /**
      * Constructor.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public DaoBase() {
         for (Class<?> c = getClass(); c != Object.class; c = c.getSuperclass()) {
             Type type = c.getGenericSuperclass();

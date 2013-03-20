@@ -50,6 +50,7 @@ import com.google.apphosting.api.ApiProxy.CapabilityDisabledException;
  * @since 1.0.0
  * 
  */
+@SuppressWarnings("deprecation")
 public class MemcacheDelegate {
 
     private static final Logger logger =
@@ -308,7 +309,7 @@ public class MemcacheDelegate {
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected Map<Object, Object> getAllInternal(Iterable<?> keys)
             throws NullPointerException, IllegalArgumentException {
         if (keys == null) {
