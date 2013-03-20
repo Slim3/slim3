@@ -20,6 +20,7 @@ import static javax.lang.model.util.ElementFilter.*;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
@@ -28,6 +29,8 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
 import org.slim3.datastore.Model;
+import org.slim3.gen.message.MessageCode;
+import org.slim3.gen.message.MessageFormatter;
 import org.slim3.gen.processor.AptException;
 
 /**
@@ -42,6 +45,14 @@ import org.slim3.gen.processor.AptException;
 public class ModelProcessor extends AbstractProcessor {
 
     @Override
+    public synchronized void init(ProcessingEnvironment processingEnv) {
+        super.init(processingEnv);
+        Logger.init(processingEnv.getMessager());
+
+        Logger.debug("init ModelProcessor");
+    }
+
+    @Override
     public boolean process(Set<? extends TypeElement> annotations,
             RoundEnvironment roundEnv) {
         for (Element element : typesIn(roundEnv
@@ -51,11 +62,10 @@ public class ModelProcessor extends AbstractProcessor {
             } catch (AptException e) {
                 e.sendError();
             } catch (RuntimeException e) {
-                /*
-                 * Logger.error(env, element.getPosition(), MessageFormatter
-                 * .getMessage( MessageCode.SLIM3GEN0001,
-                 * annotation.getQualifiedName())); throw e;
-                 */
+                Logger.error(element, MessageFormatter.getMessage(
+                    MessageCode.SLIM3GEN0001,
+                    Model.class.getCanonicalName()));
+                throw e;
             }
         }
         return true;
