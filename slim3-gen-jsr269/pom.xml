@@ -120,6 +120,25 @@
       <systemPath>${java.home}/../lib/tools.jar</systemPath>
       <optional>true</optional>
     </dependency>
+
+    <dependency>
+      <groupId>org.slim3</groupId>
+      <artifactId>slim3</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.seasar.aptina</groupId>
+      <artifactId>aptina-commons</artifactId>
+      <version>1.0.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.seasar.aptina</groupId>
+      <artifactId>aptina-unit</artifactId>
+      <version>1.0.0</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <!-- Build Settings -->
