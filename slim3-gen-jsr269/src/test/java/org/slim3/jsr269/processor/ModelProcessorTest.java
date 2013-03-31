@@ -18,16 +18,19 @@ package org.slim3.jsr269.processor;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.seasar.aptina.unit.AptinaTestCase;
+import org.seasar.aptina.unit.SourceNotGeneratedException;
+import org.slim3.test.model.AttributeNotSupportedSampleModel;
 import org.slim3.test.model.BasicModel;
+import org.slim3.test.model.AttributeSampleModel;
+import org.slim3.test.model.RefAModel;
+import org.slim3.test.model.RefBModel;
 
 /**
  * @author vvakame
  * 
  */
-@Ignore("Not implemented")
 public class ModelProcessorTest extends AptinaTestCase {
 
     /**
@@ -44,11 +47,83 @@ public class ModelProcessorTest extends AptinaTestCase {
 
         compile();
         {
+            String sourceName = "org.slim3.test.meta.BasicModelMeta";
             @SuppressWarnings("unused")
-            String source =
-                getGeneratedSource(BasicModel.class.getName() + "Meta");
+            String source = getGeneratedSource(sourceName);
         }
         assertThat(getCompiledResult(), is(true));
+    }
+
+    /**
+     * Test for generate Meta class of {@link AttributeSampleModel}.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testForAttributePrimitive() throws Exception {
+        ModelProcessor processor = new ModelProcessor();
+        addProcessor(processor);
+
+        addCompilationUnit(AttributeSampleModel.class);
+
+        compile();
+        {
+            String sourceName = "org.slim3.test.meta.AttributeSampleModelMeta";
+            @SuppressWarnings("unused")
+            String source = getGeneratedSource(sourceName);
+        }
+        assertThat(getCompiledResult(), is(true));
+    }
+
+    /**
+     * Test for generate Meta class of {@link AttributeSampleModel}.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testForAttributeNotSupported() throws Exception {
+        ModelProcessor processor = new ModelProcessor();
+        addProcessor(processor);
+
+        addCompilationUnit(AttributeNotSupportedSampleModel.class);
+
+        compile();
+        {
+            String sourceName =
+                "org.slim3.test.meta.AttributeNotSupportedSampleModelMeta";
+            try {
+                @SuppressWarnings("unused")
+                String source = getGeneratedSource(sourceName);
+                fail();
+            } catch (SourceNotGeneratedException e) {
+            }
+        }
+    }
+
+    /**
+     * Test for generate Meta class of {@link RefAModel} and {@link RefBModel}.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testForRefs() throws Exception {
+        ModelProcessor processor = new ModelProcessor();
+        addProcessor(processor);
+
+        addCompilationUnit(RefAModel.class);
+        addCompilationUnit(RefBModel.class);
+
+        compile();
+        {
+            String sourceName = "org.slim3.test.meta.RefAModelMeta";
+            @SuppressWarnings("unused")
+            String source = getGeneratedSource(sourceName);
+        }
+        {
+            String sourceName = "org.slim3.test.meta.RefBModelMeta";
+            @SuppressWarnings("unused")
+            String source = getGeneratedSource(sourceName);
+        }
     }
 
     @Override

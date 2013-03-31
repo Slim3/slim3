@@ -192,7 +192,7 @@ public class ModelMetaGenerator implements Generator {
             }
         }
     }
-    
+
     /**
      * Generates model listener fields.
      * 
@@ -536,7 +536,7 @@ public class ModelMetaGenerator implements Generator {
     protected void printPrePutMethod(final Printer printer) {
         printer.println("@Override");
         printer.println("protected void prePut(Object model) {");
-        
+
         boolean first = true;
         for (AttributeMetaDesc attr : modelMetaDesc.getAttributeMetaDescList()) {
             if (attr.getAttributeListenerClassName() != null
@@ -559,18 +559,20 @@ public class ModelMetaGenerator implements Generator {
                         attr.getReadMethodName());
             }
         }
-        
-        String modelListenerClassName = modelMetaDesc.getModelListenerClassName();
-        if(modelListenerClassName != null && !modelListenerClassName.equals(ModelListener)){
+
+        String modelListenerClassName =
+            modelMetaDesc.getModelListenerClassName();
+        if (modelListenerClassName != null
+            && !modelListenerClassName.equals(ModelListener)) {
             printer.println(
                 "    slim3_modelListener.prePut((%1$s) model);",
                 modelMetaDesc.getModelClassName());
         }
-        
+
         printer.println("}");
         printer.println();
     }
-    
+
     /**
      * Generates the {@code postGet} method.
      * 
@@ -580,14 +582,16 @@ public class ModelMetaGenerator implements Generator {
     protected void printPostGetMethod(final Printer printer) {
         printer.println("@Override");
         printer.println("protected void postGet(Object model) {");
-        
-        String modelListenerClassName = modelMetaDesc.getModelListenerClassName();
-        if(modelListenerClassName != null && !modelListenerClassName.equals(ModelListener)){
+
+        String modelListenerClassName =
+            modelMetaDesc.getModelListenerClassName();
+        if (modelListenerClassName != null
+            && !modelListenerClassName.equals(ModelListener)) {
             printer.println(
                 "    slim3_modelListener.postGet((%1$s) model);",
                 modelMetaDesc.getModelClassName());
         }
-        
+
         printer.println("}");
         printer.println();
     }
@@ -2193,7 +2197,8 @@ public class ModelMetaGenerator implements Generator {
                     if (ja.isIgnore())
                         continue;
                     DataType dataType = attr.getDataType();
-                    if(dataType instanceof InverseModelRefType && !ja.hasIgnore()){
+                    if (dataType instanceof InverseModelRefType
+                        && !ja.hasIgnore()) {
                         continue;
                     }
                     String cn = ja.getCoderClassName();
@@ -2220,9 +2225,7 @@ public class ModelMetaGenerator implements Generator {
                                 " && %s.getKey() != null",
                                 valueExp);
                         } else if (dataType instanceof InverseModelRefType) {
-                            printer.printWithoutIndent(
-                                " && getKey(m) != null"
-                                );
+                            printer.printWithoutIndent(" && getKey(m) != null");
                         }
                         printer.printlnWithoutIndent("){");
                         printer.indent();
@@ -2428,8 +2431,8 @@ public class ModelMetaGenerator implements Generator {
         }
 
         @Override
-        public Void visitInverseModelRefType(InverseModelRefType type, AttributeMetaDesc p)
-                throws RuntimeException {
+        public Void visitInverseModelRefType(InverseModelRefType type,
+                AttributeMetaDesc p) throws RuntimeException {
             printer.println(
                 "%s.encode(writer, %s, maxDepth, currentDepth);",
                 coderExp,
@@ -2518,7 +2521,7 @@ public class ModelMetaGenerator implements Generator {
                     if (ja.isIgnore())
                         continue;
                     DataType dt = attr.getDataType();
-                    if(dt instanceof InverseModelRefType)
+                    if (dt instanceof InverseModelRefType)
                         continue;
                     String name = ja.getAlias();
                     if (name.length() == 0) {
@@ -2649,6 +2652,8 @@ public class ModelMetaGenerator implements Generator {
             String container = ArrayList;
             if (type instanceof SortedSetType) {
                 container = TreeSet;
+            } else if (type instanceof LinkedHashSetType) {
+                container = LinkedHashSet;
             } else if (type instanceof SetType) {
                 container = HashSet;
             } else if (type instanceof LinkedListType) {

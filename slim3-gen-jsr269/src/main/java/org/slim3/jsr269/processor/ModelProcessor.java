@@ -25,13 +25,18 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
 import org.slim3.datastore.Model;
+import org.slim3.gen.desc.ModelMetaDesc;
+import org.slim3.gen.generator.Generator;
+import org.slim3.gen.generator.ModelMetaGenerator;
 import org.slim3.gen.message.MessageCode;
 import org.slim3.gen.message.MessageFormatter;
-import org.slim3.gen.processor.AptException;
+import org.slim3.jsr269.desc.AttributeMetaDescFactory;
+import org.slim3.jsr269.desc.ModelMetaDescFactory;
+import org.slim3.jsr269.util.FieldDeclarationUtil;
+import org.slim3.jsr269.util.TypeUtil;
 
 /**
  * Represents a {@code ModelProcessor} factory.
@@ -44,21 +49,32 @@ import org.slim3.gen.processor.AptException;
 @SupportedAnnotationTypes("org.slim3.datastore.Model")
 public class ModelProcessor extends AbstractProcessor {
 
+    RoundEnvironment roundEnv;
+
+    /** the support for generating */
+    protected GenerateSupport generateSupport;
+
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
         Logger.init(processingEnv.getMessager());
+        FieldDeclarationUtil.init(processingEnv);
+        TypeUtil.init(processingEnv);
 
         Logger.debug("init ModelProcessor");
+        this.generateSupport = new GenerateSupport(processingEnv);
     }
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations,
             RoundEnvironment roundEnv) {
-        for (Element element : typesIn(roundEnv
+
+        this.roundEnv = roundEnv;
+
+        for (TypeElement element : typesIn(roundEnv
             .getElementsAnnotatedWith(Model.class))) {
             try {
-                System.out.println(element.toString());
+                handleClassDeclaration(element);
             } catch (AptException e) {
                 e.sendError();
             } catch (RuntimeException e) {
@@ -69,5 +85,64 @@ public class ModelProcessor extends AbstractProcessor {
             }
         }
         return true;
+    }
+
+    /**
+     * Handles a class declaration represents a JDO model class.
+     * 
+     * @param classElement
+     *            the declaration represents a JDO model class.
+     */
+    protected void handleClassDeclaration(TypeElement classElement) {
+        AttributeMetaDescFactory attributeMetaDescFactory =
+            createAttributeMetaDescFactory();
+        ModelMetaDescFactory modelMetaDescFactory =
+            createModelMetaDescFactory(attributeMetaDescFactory);
+        ModelMetaDesc modelMetaDesc =
+            modelMetaDescFactory.createModelMetaDesc(classElement);
+        if (!modelMetaDesc.isError()) {
+            Generator modelMetaGenerator =
+                createModelMetaGenerator(modelMetaDesc);
+            generateSupport.generate(
+                modelMetaGenerator,
+                modelMetaDesc,
+                classElement);
+        }
+    }
+
+    /**
+     * Creates an attribute meta description factory.
+     * 
+     * @return an attribute meta description factory
+     */
+    protected AttributeMetaDescFactory createAttributeMetaDescFactory() {
+        return new AttributeMetaDescFactory(processingEnv, roundEnv);
+    }
+
+    /**
+     * Creates a model meta description factory.
+     * 
+     * @param attributeMetaDescFactory
+     *            the attribute meta description factory.
+     * @return a model meta description factory
+     */
+    protected ModelMetaDescFactory createModelMetaDescFactory(
+            AttributeMetaDescFactory attributeMetaDescFactory) {
+        return new ModelMetaDescFactory(
+            processingEnv,
+            roundEnv,
+            attributeMetaDescFactory);
+    }
+
+    /**
+     * Creates a model meta generator object.
+     * 
+     * @param modelMetaDesc
+     *            the model meta description.
+     * @return a model meta generator object.
+     */
+    protected ModelMetaGenerator createModelMetaGenerator(
+            ModelMetaDesc modelMetaDesc) {
+        return new ModelMetaGenerator(modelMetaDesc);
     }
 }

@@ -28,4 +28,19 @@ import com.google.appengine.api.datastore.Key;
 public class BasicModel {
     @Attribute(primaryKey = true)
     Key key;
+
+    /**
+     * @return the key
+     */
+    public Key getKey() {
+        return key;
+    }
+
+    /**
+     * @param key
+     *            the key to set
+     */
+    public void setKey(Key key) {
+        this.key = key;
+    }
 }
