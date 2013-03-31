@@ -2649,6 +2649,8 @@ public class ModelMetaGenerator implements Generator {
             String container = ArrayList;
             if (type instanceof SortedSetType) {
                 container = TreeSet;
+            } else if (type instanceof LinkedHashSetType) {
+                container = LinkedHashSet;
             } else if (type instanceof SetType) {
                 container = HashSet;
             } else if (type instanceof LinkedListType) {
