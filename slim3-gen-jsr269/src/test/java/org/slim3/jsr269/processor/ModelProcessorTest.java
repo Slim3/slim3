@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.seasar.aptina.unit.AptinaTestCase;
 import org.seasar.aptina.unit.SourceNotGeneratedException;
 import org.slim3.test.model.AttributeNotSupportedSampleModel;
+import org.slim3.test.model.AttributeParameterSampleModel;
 import org.slim3.test.model.BasicModel;
 import org.slim3.test.model.AttributeSampleModel;
 import org.slim3.test.model.RefAModel;
@@ -121,6 +122,27 @@ public class ModelProcessorTest extends AptinaTestCase {
         }
         {
             String sourceName = "org.slim3.test.meta.RefBModelMeta";
+            @SuppressWarnings("unused")
+            String source = getGeneratedSource(sourceName);
+        }
+    }
+
+    /**
+     * Test for generate Meta class of {@link AttributeParameterSampleModel}.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testForAttributeParametered() throws Exception {
+        ModelProcessor processor = new ModelProcessor();
+        addProcessor(processor);
+
+        addCompilationUnit(AttributeParameterSampleModel.class);
+
+        compile();
+        {
+            String sourceName =
+                "org.slim3.test.meta.AttributeParameterSampleModelMeta";
             @SuppressWarnings("unused")
             String source = getGeneratedSource(sourceName);
         }

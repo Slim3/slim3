@@ -428,14 +428,9 @@ public class AttributeMetaDescFactory {
                 AnnotationConstants.lob,
                 AnnotationConstants.persistent + " = false");
         }
-        if (!attribute.unindexed()) {
-            throwExceptionForConflictedElements(
-                classElement,
-                fieldElement,
-                attribute,
-                AnnotationConstants.lob,
-                AnnotationConstants.unindexed + " = false");
-        }
+        // memo: remove conflict check with "unindeded".
+        // JSR269 can't detect true value from 'set' or 'default'.
+
         DataType dataType = attributeMetaDesc.getDataType();
         if (dataType instanceof CoreReferenceType
             && !ClassConstants.String.equals(dataType.getClassName())) {
@@ -651,7 +646,8 @@ public class AttributeMetaDescFactory {
             return;
         }
         TypeElement listenerClassType =
-            processingEnv.getElementUtils().getTypeElement(listener.toString());
+            processingEnv.getElementUtils().getTypeElement(
+                listener.getValue().toString());
         if (listenerClassType == null) {
             return;
         }
@@ -661,13 +657,7 @@ public class AttributeMetaDescFactory {
                 fieldElement);
         }
 
-        TypeElement listenerClassDeclaration =
-            (TypeElement) listenerClassType.getEnclosingElement();
-        if (listenerClassDeclaration == null) {
-            throw new UnknownDeclarationException(
-                listenerClassDeclaration,
-                listenerClassType);
-        }
+        TypeElement listenerClassDeclaration = listenerClassType;
         if (!validateAttributeListenerParameter(
             attributeMetaDesc,
             classElement,
@@ -724,7 +714,8 @@ public class AttributeMetaDescFactory {
             return true;
         }
         TypeElement superclass =
-            (TypeElement) listenerClassType.getEnclosingElement();
+            (TypeElement) processingEnv.getTypeUtils().asElement(
+                listenerClassType.getSuperclass());
         if (superclass != null) {
             if (validateAttributeListenerParameter(
                 attributeMetaDesc,
@@ -735,13 +726,52 @@ public class AttributeMetaDescFactory {
             }
         }
         for (TypeMirror superInterfaceType : listenerClassType.getInterfaces()) {
-            if (validateAttributeListenerParameter(
-                attributeMetaDesc,
-                classElement,
-                fieldElement,
-                (TypeElement) processingEnv.getTypeUtils().asElement(
-                    superInterfaceType))) {
-                return true;
+            if (superInterfaceType.getKind() == TypeKind.DECLARED) {
+                DeclaredType declaredType = (DeclaredType) superInterfaceType;
+                if (validateAttributeListenerParameter(
+                    attributeMetaDesc,
+                    classElement,
+                    fieldElement,
+                    declaredType)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Handles the attribute listener generics parameter.
+     * 
+     * @param attributeMetaDesc
+     *            the attribute meta description
+     * @param classElement
+     *            the model class declaration
+     * @param fieldElement
+     *            the field declaration
+     * @param interfaceType
+     *            the interface type
+     * @return whether the validation is OK
+     */
+    protected boolean validateAttributeListenerParameter(
+            AttributeMetaDesc attributeMetaDesc, TypeElement classElement,
+            VariableElement fieldElement, DeclaredType interfaceType) {
+        if (interfaceType.getTypeArguments().size() == 1
+            && processingEnv.getTypeUtils().isSameType(
+                interfaceType.getTypeArguments().get(0),
+                fieldElement.asType())) {
+            return true;
+        }
+        TypeElement interfaceElement = (TypeElement) interfaceType.asElement();
+        for (TypeMirror superInterfaceType : interfaceElement.getInterfaces()) {
+            if (superInterfaceType.getKind() == TypeKind.DECLARED) {
+                if (validateAttributeListenerParameter(
+                    attributeMetaDesc,
+                    classElement,
+                    fieldElement,
+                    (DeclaredType) superInterfaceType)) {
+                    return true;
+                }
             }
         }
         return false;
