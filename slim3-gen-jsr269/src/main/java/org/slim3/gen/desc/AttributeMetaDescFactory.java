@@ -15,10 +15,28 @@
  */
 package org.slim3.gen.desc;
 
+import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.SimpleTypeVisitor6;
+
+import org.slim3.datastore.Attribute;
+import org.slim3.datastore.AttributeListener;
+import org.slim3.datastore.Model;
+import org.slim3.datastore.json.Json;
 import org.slim3.gen.AnnotationConstants;
 import org.slim3.gen.ClassConstants;
 import org.slim3.gen.datastore.ArrayType;
@@ -32,24 +50,9 @@ import org.slim3.gen.datastore.OtherReferenceType;
 import org.slim3.gen.message.MessageCode;
 import org.slim3.gen.processor.UnknownDeclarationException;
 import org.slim3.gen.processor.ValidationException;
-import org.slim3.gen.util.AnnotationMirrorUtil;
 import org.slim3.gen.util.DeclarationUtil;
 import org.slim3.gen.util.FieldDeclarationUtil;
 import org.slim3.gen.util.TypeUtil;
-
-import com.sun.mirror.apt.AnnotationProcessorEnvironment;
-import com.sun.mirror.declaration.AnnotationMirror;
-import com.sun.mirror.declaration.AnnotationTypeElementDeclaration;
-import com.sun.mirror.declaration.AnnotationValue;
-import com.sun.mirror.declaration.ClassDeclaration;
-import com.sun.mirror.declaration.FieldDeclaration;
-import com.sun.mirror.declaration.MethodDeclaration;
-import com.sun.mirror.declaration.TypeDeclaration;
-import com.sun.mirror.type.ClassType;
-import com.sun.mirror.type.DeclaredType;
-import com.sun.mirror.type.InterfaceType;
-import com.sun.mirror.type.TypeMirror;
-import com.sun.mirror.util.SimpleTypeVisitor;
 
 /**
  * Represents an attribute meta description factory.
@@ -59,41 +62,47 @@ import com.sun.mirror.util.SimpleTypeVisitor;
  * @since 1.0.0
  * 
  */
-@SuppressWarnings("deprecation")
 public class AttributeMetaDescFactory {
 
-    /** the environment */
-    protected final AnnotationProcessorEnvironment env;
+    final ProcessingEnvironment processingEnv;
+    final RoundEnvironment roundEnv;
 
     /**
      * Creates a new {@link AttributeMetaDescFactory}.
      * 
-     * @param env
+     * @param processingEnv
      *            the processing environment
+     * @param roundEnv
+     *            the round environment
      */
-    public AttributeMetaDescFactory(AnnotationProcessorEnvironment env) {
-        if (env == null) {
-            throw new NullPointerException("The env parameter is null.");
+    public AttributeMetaDescFactory(ProcessingEnvironment processingEnv,
+            RoundEnvironment roundEnv) {
+        if (processingEnv == null) {
+            throw new NullPointerException(
+                "The processingEnv parameter is null.");
         }
-        this.env = env;
+        if (roundEnv == null) {
+            throw new NullPointerException("The roundEnv parameter is null.");
+        }
+        this.processingEnv = processingEnv;
+        this.roundEnv = roundEnv;
     }
 
     /**
      * Creates a new {@link AttributeMetaDesc}
      * 
-     * @param classDeclaration
+     * @param classElement
      *            the model class declaration
-     * @param fieldDeclaration
+     * @param fieldElement
      *            the field declaration
      * @param methodDeclarations
      *            the method declarations
      * @return an attribute meta description
      */
-    public AttributeMetaDesc createAttributeMetaDesc(
-            ClassDeclaration classDeclaration,
-            FieldDeclaration fieldDeclaration,
-            List<MethodDeclaration> methodDeclarations) {
-        if (fieldDeclaration == null) {
+    public AttributeMetaDesc createAttributeMetaDesc(TypeElement classElement,
+            VariableElement fieldElement,
+            List<ExecutableElement> methodDeclarations) {
+        if (fieldElement == null) {
             throw new NullPointerException(
                 "The fieldDeclaration parameter is null.");
         }
@@ -102,37 +111,25 @@ public class AttributeMetaDescFactory {
                 "The methodDeclarations parameter is null.");
         }
         String attributeName =
-            FieldDeclarationUtil.getPropertyName(fieldDeclaration);
+            FieldDeclarationUtil.getPropertyName(fieldElement);
         String name = attributeName;
-        AnnotationMirror attribute =
-            DeclarationUtil.getAnnotationMirror(
-                env,
-                fieldDeclaration,
-                AnnotationConstants.Attribute);
+        Attribute attribute = fieldElement.getAnnotation(Attribute.class);
         if (attribute != null) {
-            String value =
-                AnnotationMirrorUtil.getElementValue(
-                    attribute,
-                    AnnotationConstants.name);
+            String value = attribute.name();
             if (value != null && value.length() > 0) {
                 name = value;
             }
         }
         DataTypeFactory dataTypeFactory = creaetDataTypeFactory();
         DataType dataType =
-            dataTypeFactory.createDataType(fieldDeclaration, fieldDeclaration
-                .getType());
+            dataTypeFactory.createDataType(fieldElement, fieldElement.asType());
         AttributeMetaDesc attributeMetaDesc =
             new AttributeMetaDesc(name, attributeName, dataType);
-        handleField(
-            attributeMetaDesc,
-            classDeclaration,
-            fieldDeclaration,
-            attribute);
+        handleField(attributeMetaDesc, classElement, fieldElement, attribute);
         handleMethod(
             attributeMetaDesc,
-            classDeclaration,
-            fieldDeclaration,
+            classElement,
+            fieldElement,
             methodDeclarations);
         return attributeMetaDesc;
     }
@@ -142,105 +139,122 @@ public class AttributeMetaDescFactory {
      * 
      * @param attributeMetaDesc
      *            the attribute meta description
-     * @param classDeclaration
+     * @param classElement
      *            the model class declaration
-     * @param fieldDeclaration
+     * @param fieldElement
      *            the field declaration
      * @param attribute
      *            the Attribute annotation.
      */
     protected void handleField(AttributeMetaDesc attributeMetaDesc,
-            ClassDeclaration classDeclaration,
-            FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
-        if (AnnotationMirrorUtil.getElementValue(
-            attribute,
-            AnnotationConstants.primaryKey) == Boolean.TRUE) {
+            TypeElement classElement, VariableElement fieldElement,
+            Attribute attribute) {
+        if (attribute == null) {
+            attribute = new Attribute() {
+
+                public String name() {
+                    return "";
+                }
+
+                public boolean persistent() {
+                    return true;
+                }
+
+                public boolean primaryKey() {
+                    return false;
+                }
+
+                public boolean version() {
+                    return false;
+                }
+
+                public boolean lob() {
+                    return false;
+                }
+
+                public boolean unindexed() {
+                    return false;
+                }
+
+                public boolean cipher() {
+                    return false;
+                }
+
+                public Class<?> listener() {
+                    return AttributeListener.class;
+                }
+
+                public Class<? extends Annotation> annotationType() {
+                    return null;
+                }
+            };
+        }
+        if (attribute.primaryKey()) {
             handlePrimaryKey(
                 attributeMetaDesc,
-                classDeclaration,
-                fieldDeclaration,
+                classElement,
+                fieldElement,
                 attribute);
         }
-        if (AnnotationMirrorUtil.getElementValue(
-            attribute,
-            AnnotationConstants.version) == Boolean.TRUE) {
+        if (attribute.version()) {
             handleVersion(
                 attributeMetaDesc,
-                classDeclaration,
-                fieldDeclaration,
+                classElement,
+                fieldElement,
                 attribute);
         }
-        if (AnnotationMirrorUtil.getElementValue(
-            attribute,
-            AnnotationConstants.lob) == Boolean.TRUE) {
-            handleLob(
-                attributeMetaDesc,
-                classDeclaration,
-                fieldDeclaration,
-                attribute);
+        if (attribute.lob()) {
+            handleLob(attributeMetaDesc, classElement, fieldElement, attribute);
         }
-        if (AnnotationMirrorUtil.getElementValue(
-            attribute,
-            AnnotationConstants.unindexed) == Boolean.TRUE) {
+        if (attribute.unindexed()) {
             handleUnindexed(
                 attributeMetaDesc,
-                classDeclaration,
-                fieldDeclaration,
+                classElement,
+                fieldElement,
                 attribute);
         }
-        if (AnnotationMirrorUtil.getElementValue(
-            attribute,
-            AnnotationConstants.persistent) == Boolean.FALSE) {
-            handleNotPersistent(attributeMetaDesc, fieldDeclaration);
+        if (!attribute.persistent()) {
+            handleNotPersistent(attributeMetaDesc, fieldElement);
         }
-        if (AnnotationMirrorUtil.getElementValue(
-                attribute,
-                AnnotationConstants.cipher) == Boolean.TRUE) {
-                handleCipher(
-                    attributeMetaDesc,
-                    classDeclaration,
-                    fieldDeclaration,
-                    attribute);
-            }
-        handleJson(
-            attributeMetaDesc,
-            classDeclaration,
-            fieldDeclaration,
-            attribute);
+        if (attribute.cipher()) {
+            handleCipher(
+                attributeMetaDesc,
+                classElement,
+                fieldElement,
+                attribute);
+        }
+        handleJson(attributeMetaDesc, classElement, fieldElement, attribute);
         handleAttributeListener(
             attributeMetaDesc,
-            classDeclaration,
-            fieldDeclaration,
+            classElement,
+            fieldElement,
             attribute);
         if (attributeMetaDesc.isPersistent()) {
             DataType dataType = attributeMetaDesc.getDataType();
             if (dataType instanceof InverseModelRefType) {
-                if (classDeclaration
-                    .equals(fieldDeclaration.getDeclaringType())) {
+                if (classElement.equals(fieldElement.getEnclosingElement())) {
                     throw new ValidationException(
                         MessageCode.SLIM3GEN1035,
-                        env,
-                        fieldDeclaration.getPosition());
+                        fieldElement);
                 }
                 throw new ValidationException(
                     MessageCode.SLIM3GEN1036,
-                    env,
-                    classDeclaration.getPosition(),
-                    fieldDeclaration.getSimpleName(),
-                    fieldDeclaration.getDeclaringType().getQualifiedName());
+                    classElement,
+                    fieldElement.getSimpleName(),
+                    fieldElement.getEnclosingElement().toString());
             }
             if (!attributeMetaDesc.isLob()) {
                 if (dataType instanceof OtherReferenceType) {
                     throwExceptionForNonCoreType(
-                        classDeclaration,
-                        fieldDeclaration,
+                        classElement,
+                        fieldElement,
                         attribute);
                 }
                 if (dataType instanceof CollectionType
                     && CollectionType.class.cast(dataType).getElementType() instanceof OtherReferenceType) {
                     throwExceptionForNonCoreType(
-                        classDeclaration,
-                        fieldDeclaration,
+                        classElement,
+                        fieldElement,
                         attribute);
                 }
                 if (dataType instanceof ArrayType
@@ -250,8 +264,8 @@ public class AttributeMetaDescFactory {
                         .getClassName()
                         .equals(ClassConstants.primitive_byte)) {
                     throwExceptionForNonCoreType(
-                        classDeclaration,
-                        fieldDeclaration,
+                        classElement,
+                        fieldElement,
                         attribute);
                 }
             }
@@ -259,8 +273,8 @@ public class AttributeMetaDescFactory {
         if (attributeMetaDesc.getDataType() instanceof ModelRefType) {
             validateModelRefTypeArgument(
                 attributeMetaDesc,
-                classDeclaration,
-                fieldDeclaration);
+                classElement,
+                fieldElement);
         }
     }
 
@@ -269,11 +283,11 @@ public class AttributeMetaDescFactory {
      * 
      * @param attributeMetaDesc
      *            the attribute meta description
-     * @param fieldDeclaration
+     * @param fieldElement
      *            the field declaration
      */
     protected void handleNotPersistent(AttributeMetaDesc attributeMetaDesc,
-            FieldDeclaration fieldDeclaration) {
+            VariableElement fieldElement) {
         attributeMetaDesc.setPersistent(false);
     }
 
@@ -282,52 +296,44 @@ public class AttributeMetaDescFactory {
      * 
      * @param attributeMetaDesc
      *            the attribute meta description
-     * @param classDeclaration
+     * @param classElement
      *            the model class declaration
-     * @param fieldDeclaration
+     * @param fieldElement
      *            the field declaration
      * @param attribute
      *            the Attribute annotation mirror
      */
     protected void handlePrimaryKey(AttributeMetaDesc attributeMetaDesc,
-            ClassDeclaration classDeclaration,
-            FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
-        if (AnnotationMirrorUtil.getElementValue(
-            attribute,
-            AnnotationConstants.version) == Boolean.TRUE) {
+            TypeElement classElement, VariableElement fieldElement,
+            Attribute attribute) {
+        if (attribute.version()) {
             throwExceptionForConflictedElements(
-                classDeclaration,
-                fieldDeclaration,
+                classElement,
+                fieldElement,
                 attribute,
                 AnnotationConstants.primaryKey,
                 AnnotationConstants.version);
         }
-        if (AnnotationMirrorUtil.getElementValue(
-            attribute,
-            AnnotationConstants.lob) == Boolean.TRUE) {
+        if (attribute.lob()) {
             throwExceptionForConflictedElements(
-                classDeclaration,
-                fieldDeclaration,
+                classElement,
+                fieldElement,
                 attribute,
                 AnnotationConstants.primaryKey,
                 AnnotationConstants.lob);
         }
-        if (AnnotationMirrorUtil.getElementValue(
-            attribute,
-            AnnotationConstants.unindexed) == Boolean.TRUE) {
+        if (attribute.unindexed()) {
             throwExceptionForConflictedElements(
-                classDeclaration,
-                fieldDeclaration,
+                classElement,
+                fieldElement,
                 attribute,
                 AnnotationConstants.primaryKey,
                 AnnotationConstants.unindexed);
         }
-        if (AnnotationMirrorUtil.getElementValue(
-            attribute,
-            AnnotationConstants.persistent) == Boolean.FALSE) {
+        if (!attribute.persistent()) {
             throwExceptionForConflictedElements(
-                classDeclaration,
-                fieldDeclaration,
+                classElement,
+                fieldElement,
                 attribute,
                 AnnotationConstants.primaryKey,
                 AnnotationConstants.persistent + " = false");
@@ -335,18 +341,16 @@ public class AttributeMetaDescFactory {
         if (!ClassConstants.Key.equals(attributeMetaDesc
             .getDataType()
             .getClassName())) {
-            if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
+            if (classElement.equals(fieldElement.getEnclosingElement())) {
                 throw new ValidationException(
                     MessageCode.SLIM3GEN1007,
-                    env,
-                    fieldDeclaration.getPosition());
+                    fieldElement);
             }
             throw new ValidationException(
                 MessageCode.SLIM3GEN1029,
-                env,
-                classDeclaration.getPosition(),
-                fieldDeclaration.getSimpleName(),
-                fieldDeclaration.getDeclaringType().getQualifiedName());
+                classElement,
+                fieldElement.getSimpleName(),
+                fieldElement.getEnclosingElement().toString());
         }
         attributeMetaDesc.setPrimaryKey(true);
     }
@@ -356,32 +360,28 @@ public class AttributeMetaDescFactory {
      * 
      * @param attributeMetaDesc
      *            the attribute meta description
-     * @param classDeclaration
+     * @param classElement
      *            the model class declaration
-     * @param fieldDeclaration
+     * @param fieldElement
      *            the field declaration
      * @param attribute
      *            the attribute annotation mirror
      */
     protected void handleVersion(AttributeMetaDesc attributeMetaDesc,
-            ClassDeclaration classDeclaration,
-            FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
-        if (AnnotationMirrorUtil.getElementValue(
-            attribute,
-            AnnotationConstants.lob) == Boolean.TRUE) {
+            TypeElement classElement, VariableElement fieldElement,
+            Attribute attribute) {
+        if (attribute.lob()) {
             throwExceptionForConflictedElements(
-                classDeclaration,
-                fieldDeclaration,
+                classElement,
+                fieldElement,
                 attribute,
                 AnnotationConstants.version,
                 AnnotationConstants.lob);
         }
-        if (AnnotationMirrorUtil.getElementValue(
-            attribute,
-            AnnotationConstants.persistent) == Boolean.FALSE) {
+        if (!attribute.persistent()) {
             throwExceptionForConflictedElements(
-                classDeclaration,
-                fieldDeclaration,
+                classElement,
+                fieldElement,
                 attribute,
                 AnnotationConstants.version,
                 AnnotationConstants.persistent + " = false");
@@ -389,18 +389,16 @@ public class AttributeMetaDescFactory {
         String className = attributeMetaDesc.getDataType().getClassName();
         if (!ClassConstants.Long.equals(className)
             && !ClassConstants.primitive_long.equals(className)) {
-            if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
+            if (classElement.equals(fieldElement.getEnclosingElement())) {
                 throw new ValidationException(
                     MessageCode.SLIM3GEN1008,
-                    env,
-                    fieldDeclaration.getPosition());
+                    fieldElement);
             }
             throw new ValidationException(
                 MessageCode.SLIM3GEN1030,
-                env,
-                classDeclaration.getPosition(),
-                fieldDeclaration.getSimpleName(),
-                fieldDeclaration.getDeclaringType().getQualifiedName());
+                classElement,
+                fieldElement.getSimpleName(),
+                fieldElement.getEnclosingElement().toString());
         }
         attributeMetaDesc.setVersion(true);
     }
@@ -410,64 +408,53 @@ public class AttributeMetaDescFactory {
      * 
      * @param attributeMetaDesc
      *            the attribute meta description
-     * @param classDeclaration
+     * @param classElement
      *            the model class declaration
-     * @param fieldDeclaration
+     * @param fieldElement
      *            the field declaration
      * @param attribute
      *            the Attribute annotation mirror
      */
     protected void handleLob(AttributeMetaDesc attributeMetaDesc,
-            ClassDeclaration classDeclaration,
-            FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
-        if (AnnotationMirrorUtil.getElementValue(
-            attribute,
-            AnnotationConstants.persistent) == Boolean.FALSE) {
+            TypeElement classElement, VariableElement fieldElement,
+            Attribute attribute) {
+        if (!attribute.persistent()) {
             throwExceptionForConflictedElements(
-                classDeclaration,
-                fieldDeclaration,
+                classElement,
+                fieldElement,
                 attribute,
                 AnnotationConstants.lob,
                 AnnotationConstants.persistent + " = false");
         }
-        if (AnnotationMirrorUtil.getElementValue(
-            attribute,
-            AnnotationConstants.unindexed) == Boolean.FALSE) {
-            throwExceptionForConflictedElements(
-                classDeclaration,
-                fieldDeclaration,
-                attribute,
-                AnnotationConstants.lob,
-                AnnotationConstants.unindexed + " = false");
-        }
+        // memo: remove conflict check with "unindeded".
+        // JSR269 can't detect true value from 'set' or 'default'.
+
         DataType dataType = attributeMetaDesc.getDataType();
         if (dataType instanceof CoreReferenceType
             && !ClassConstants.String.equals(dataType.getClassName())) {
             throwExceptionForLobUnsupportedType(
-                classDeclaration,
-                fieldDeclaration,
+                classElement,
+                fieldElement,
                 attribute);
         }
         if (dataType instanceof CollectionType
             && CollectionType.class.cast(dataType).getElementType() instanceof CoreReferenceType) {
             throwExceptionForLobUnsupportedType(
-                classDeclaration,
-                fieldDeclaration,
+                classElement,
+                fieldElement,
                 attribute);
         }
         if (dataType instanceof ModelRefType) {
-            if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
+            if (classElement.equals(fieldElement.getEnclosingElement())) {
                 throw new ValidationException(
                     MessageCode.SLIM3GEN1009,
-                    env,
-                    fieldDeclaration.getPosition());
+                    fieldElement);
             }
             throw new ValidationException(
                 MessageCode.SLIM3GEN1028,
-                env,
-                classDeclaration.getPosition(),
-                fieldDeclaration.getSimpleName(),
-                fieldDeclaration.getDeclaringType().getQualifiedName());
+                classElement,
+                fieldElement.getSimpleName(),
+                fieldElement.getEnclosingElement().toString());
         }
         attributeMetaDesc.setLob(true);
     }
@@ -477,22 +464,20 @@ public class AttributeMetaDescFactory {
      * 
      * @param attributeMetaDesc
      *            the attribute meta description
-     * @param classDeclaration
+     * @param classElement
      *            the model class declaration
-     * @param fieldDeclaration
+     * @param fieldElement
      *            the field declaration
      * @param attribute
      *            the annotation mirror for Attribute
      */
     protected void handleUnindexed(AttributeMetaDesc attributeMetaDesc,
-            ClassDeclaration classDeclaration,
-            FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
-        if (AnnotationMirrorUtil.getElementValue(
-            attribute,
-            AnnotationConstants.persistent) == Boolean.FALSE) {
+            TypeElement classElement, VariableElement fieldElement,
+            Attribute attribute) {
+        if (!attribute.persistent()) {
             throwExceptionForConflictedElements(
-                classDeclaration,
-                fieldDeclaration,
+                classElement,
+                fieldElement,
                 attribute,
                 AnnotationConstants.unindexed,
                 AnnotationConstants.persistent + " = false");
@@ -505,32 +490,30 @@ public class AttributeMetaDescFactory {
      * 
      * @param attributeMetaDesc
      *            the attribute meta description
-     * @param classDeclaration
+     * @param classElement
      *            the model class declaration
-     * @param fieldDeclaration
+     * @param fieldElement
      *            the field declaration
      * @param attribute
      *            the annotation mirror for Attribute
      */
     protected void handleCipher(AttributeMetaDesc attributeMetaDesc,
-            ClassDeclaration classDeclaration,
-            FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
-        if (AnnotationMirrorUtil.getElementValue(
-            attribute,
-            AnnotationConstants.persistent) == Boolean.FALSE) {
+            TypeElement classElement, VariableElement fieldElement,
+            Attribute attribute) {
+        if (!attribute.persistent()) {
             throwExceptionForConflictedElements(
-                classDeclaration,
-                fieldDeclaration,
+                classElement,
+                fieldElement,
                 attribute,
                 AnnotationConstants.cipher,
                 AnnotationConstants.persistent + " = false");
         }
         String type = attributeMetaDesc.getDataType().getTypeName();
-        if (!type.equals(ClassConstants.String) && !type.equals(ClassConstants.Text)) {
+        if (!type.equals(ClassConstants.String)
+            && !type.equals(ClassConstants.Text)) {
             throw new ValidationException(
                 MessageCode.SLIM3GEN1053,
-                env,
-                attribute.getPosition());
+                fieldElement);
         }
         attributeMetaDesc.setCipher(true);
     }
@@ -540,170 +523,170 @@ public class AttributeMetaDescFactory {
      * 
      * @param attributeMetaDesc
      *            the attribute meta description
-     * @param classDeclaration
+     * @param classElement
      *            the model class declaration
-     * @param fieldDeclaration
+     * @param fieldElement
      *            the field declaration
      * @param attribute
      *            the annotation mirror for Attribute
      */
     protected void handleJson(AttributeMetaDesc attributeMetaDesc,
-            ClassDeclaration classDeclaration,
-            FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
+            TypeElement classElement, VariableElement fieldElement,
+            Attribute attribute) {
         JsonAnnotation anno = new JsonAnnotation();
         attributeMetaDesc.setJson(anno);
-        AnnotationMirror json =
-                DeclarationUtil.getAnnotationMirror(
-                    env,
-                    fieldDeclaration,
-                    AnnotationConstants.Json);
-        if(json == null){
+        Json json = fieldElement.getAnnotation(Json.class);
+        if (json == null) {
             return;
         }
-        for(Map.Entry<AnnotationTypeElementDeclaration, AnnotationValue> entry
-                : json.getElementValues().entrySet()){
-            String sn = entry.getKey().getSimpleName();
-            if(sn.equals(AnnotationConstants.ignore)) {
-                anno.setIgnore(entry.getValue() != null ?
-                    (Boolean)entry.getValue().getValue()
-                    : false);
-            } else if(sn.equals(AnnotationConstants.ignoreNull)){
-                anno.setIgnoreNull(entry.getValue() != null ?
-                    (Boolean)entry.getValue().getValue()
-                    : false);
-            } else if(sn.equals(AnnotationConstants.alias)){
-                anno.setAlias(entry.getValue() != null ?
-                    (String)entry.getValue().getValue()
-                    : "");
-            } else if(sn.equals(AnnotationConstants.coder)){
-                anno.setCoderClassName(getClassNameOfClassParameter(
-                    entry.getKey(), entry.getValue()
-                    ));
-            } else if(sn.equals(AnnotationConstants.order)){
-                anno.setOrder(entry.getValue() != null ?
-                    (Integer)entry.getValue().getValue()
-                    : Integer.MAX_VALUE);
+        anno.setIgnore(json.ignore());
+        anno.setIgnoreNull(json.ignoreNull());
+        anno.setAlias(json.alias());
+        ExecutableElement coderMethod = null;
+        AnnotationValue coder = null;
+        for (AnnotationMirror mirror : fieldElement.getAnnotationMirrors()) {
+            Map<? extends ExecutableElement, ? extends AnnotationValue> elementValues =
+                mirror.getElementValues();
+            for (ExecutableElement e : elementValues.keySet()) {
+                if (AnnotationConstants.coder.equals(e
+                    .getSimpleName()
+                    .toString())) {
+                    coderMethod = e;
+                    coder = elementValues.get(e);
+                }
             }
         }
+        if (coder == null) {
+            return;
+        }
+        String classNameOfClassParameter =
+            getClassNameOfClassParameter(coderMethod, coder);
+        anno.setCoderClassName(classNameOfClassParameter);
+
+        anno.setOrder(json.order());
     }
 
     /**
      * Gets the class name of the class parameter.
-     * @param declaration the declaration
-     * @param value the value
+     * 
+     * @param declaration
+     *            the declaration
+     * @param value
+     *            the value
      * @return the class name
      */
     protected String getClassNameOfClassParameter(
-            AnnotationTypeElementDeclaration declaration, AnnotationValue value){
-        String className = TypeUtil.toClassType(
-            (TypeMirror)declaration.getDefaultValue().getValue()
-            ).getDeclaration().getQualifiedName();
-        TypeMirror mirror = (TypeMirror)value.getValue();
-        if(mirror == null){
+            ExecutableElement declaration, AnnotationValue value) {
+        String className =
+            TypeUtil
+                .toClassType(
+                    (TypeMirror) declaration.getDefaultValue().getValue())
+                .getEnclosingType()
+                .toString();
+        TypeMirror mirror = (TypeMirror) value.getValue();
+        if (mirror == null) {
             return className;
         }
-        if (value instanceof InterfaceType) {
-            throw new ValidationException(
-                MessageCode.SLIM3GEN1055,
-                env,
-                declaration.getPosition());
+        if (mirror.getKind() == TypeKind.DECLARED) {
+
         }
-        ClassType coderClassType = TypeUtil.toClassType(mirror);
-        if(coderClassType == null) return className;
-        ClassDeclaration coderClassDeclaration =
-            coderClassType.getDeclaration();
+        if (processingEnv.getTypeUtils().asElement(mirror).getKind() == ElementKind.INTERFACE) {
+            throw new ValidationException(MessageCode.SLIM3GEN1055, declaration);
+        }
+        DeclaredType coderClassType = TypeUtil.toClassType(mirror);
+        if (coderClassType == null)
+            return className;
+        TypeElement coderClassDeclaration =
+            (TypeElement) coderClassType.asElement();
         if (coderClassDeclaration == null) {
             throw new UnknownDeclarationException(
-                env,
                 coderClassDeclaration,
-                coderClassType);
+                coderClassType.asElement());
         }
-        className = coderClassDeclaration.getQualifiedName();
-        if (!DeclarationUtil
-                .hasPublicDefaultConstructor(coderClassDeclaration)) {
-                throw new ValidationException(
-                    MessageCode.SLIM3GEN1054,
-                    env,
-                    declaration.getPosition(),
-                    className);
+        className = coderClassDeclaration.getQualifiedName().toString();
+        if (!DeclarationUtil.hasPublicDefaultConstructor(coderClassDeclaration)) {
+            throw new ValidationException(
+                MessageCode.SLIM3GEN1054,
+                declaration,
+                className);
         }
         return className;
     }
-    
+
     /**
      * Handles the attribute listener.
      * 
      * @param attributeMetaDesc
      *            the attribute meta description
-     * @param classDeclaration
+     * @param classElement
      *            the model class declaration
-     * @param fieldDeclaration
+     * @param fieldElement
      *            the field declaration
      * @param attribute
      *            the annotation mirror for Attribute
      */
     protected void handleAttributeListener(AttributeMetaDesc attributeMetaDesc,
-            ClassDeclaration classDeclaration,
-            FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
-        Object listener =
-            AnnotationMirrorUtil.getElementValue(
-                attribute,
-                AnnotationConstants.listener);
+            TypeElement classElement, VariableElement fieldElement,
+            Attribute attribute) {
+        AnnotationValue listener = null;
+        for (AnnotationMirror mirror : fieldElement.getAnnotationMirrors()) {
+            Map<? extends ExecutableElement, ? extends AnnotationValue> elementValues =
+                mirror.getElementValues();
+            for (ExecutableElement e : elementValues.keySet()) {
+                if (AnnotationConstants.listener.equals(e
+                    .getSimpleName()
+                    .toString())) {
+                    listener = elementValues.get(e);
+                }
+            }
+        }
         if (listener == null) {
             return;
         }
-        if (listener instanceof InterfaceType) {
-            throw new ValidationException(
-                MessageCode.SLIM3GEN1052,
-                env,
-                fieldDeclaration.getPosition());
-        }
-        ClassType listenerClassType =
-            TypeUtil.toClassType((TypeMirror) listener);
+        TypeElement listenerClassType =
+            processingEnv.getElementUtils().getTypeElement(
+                listener.getValue().toString());
         if (listenerClassType == null) {
             return;
         }
-        ClassDeclaration listenerClassDeclaration =
-            listenerClassType.getDeclaration();
-        if (listenerClassDeclaration == null) {
-            throw new UnknownDeclarationException(
-                env,
-                listenerClassDeclaration,
-                listenerClassType);
+        if (listenerClassType.getKind() == ElementKind.INTERFACE) {
+            throw new ValidationException(
+                MessageCode.SLIM3GEN1052,
+                fieldElement);
         }
+
+        TypeElement listenerClassDeclaration = listenerClassType;
         if (!validateAttributeListenerParameter(
             attributeMetaDesc,
-            classDeclaration,
-            fieldDeclaration,
+            classElement,
+            fieldElement,
             listenerClassType)) {
             throw new ValidationException(
                 MessageCode.SLIM3GEN1051,
-                env,
-                fieldDeclaration.getPosition(),
+                fieldElement,
                 listenerClassDeclaration.getQualifiedName(),
                 TypeUtil
-                    .toClassType(fieldDeclaration.getType())
-                    .getDeclaration()
-                    .getQualifiedName());
+                    .toClassType(fieldElement.asType())
+                    .getEnclosingType()
+                    .toString());
         }
         if (!DeclarationUtil
             .hasPublicDefaultConstructor(listenerClassDeclaration)) {
-            if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
+            if (classElement.equals(fieldElement.getEnclosingElement())) {
                 throw new ValidationException(
                     MessageCode.SLIM3GEN1050,
-                    env,
-                    fieldDeclaration.getPosition(),
+                    fieldElement,
                     listenerClassDeclaration.getQualifiedName());
             }
             throw new ValidationException(
                 MessageCode.SLIM3GEN1045,
-                env,
-                classDeclaration.getPosition(),
+                classElement,
                 listenerClassDeclaration.getQualifiedName());
         }
         attributeMetaDesc
             .setAttributeListenerClassName(listenerClassDeclaration
-                .getQualifiedName());
+                .getQualifiedName()
+                .toString());
     }
 
     /**
@@ -711,40 +694,45 @@ public class AttributeMetaDescFactory {
      * 
      * @param attributeMetaDesc
      *            the attribute meta description
-     * @param classDeclaration
+     * @param classElement
      *            the model class declaration
-     * @param fieldDeclaration
+     * @param fieldElement
      *            the field declaration
-     * @param classType
+     * @param listenerClassType
+     * 
      *            the class type
      * @return whether the validation is OK
      */
     protected boolean validateAttributeListenerParameter(
-            AttributeMetaDesc attributeMetaDesc,
-            ClassDeclaration classDeclaration,
-            FieldDeclaration fieldDeclaration, ClassType classType) {
-        if (classType.getActualTypeArguments().size() == 1
-            && classType.getActualTypeArguments().contains(
-                fieldDeclaration.getType())) {
+            AttributeMetaDesc attributeMetaDesc, TypeElement classElement,
+            VariableElement fieldElement, TypeElement listenerClassType) {
+        if (listenerClassType.getTypeParameters().size() == 1
+            && listenerClassType.getTypeParameters().contains(
+                fieldElement.asType())) {
             return true;
         }
-        ClassType superclass = classType.getSuperclass();
+        TypeElement superclass =
+            (TypeElement) processingEnv.getTypeUtils().asElement(
+                listenerClassType.getSuperclass());
         if (superclass != null) {
             if (validateAttributeListenerParameter(
                 attributeMetaDesc,
-                classDeclaration,
-                fieldDeclaration,
+                classElement,
+                fieldElement,
                 superclass)) {
                 return true;
             }
         }
-        for (InterfaceType superInterfaceType : classType.getSuperinterfaces()) {
-            if (validateAttributeListenerParameter(
-                attributeMetaDesc,
-                classDeclaration,
-                fieldDeclaration,
-                superInterfaceType)) {
-                return true;
+        for (TypeMirror superInterfaceType : listenerClassType.getInterfaces()) {
+            if (superInterfaceType.getKind() == TypeKind.DECLARED) {
+                DeclaredType declaredType = (DeclaredType) superInterfaceType;
+                if (validateAttributeListenerParameter(
+                    attributeMetaDesc,
+                    classElement,
+                    fieldElement,
+                    declaredType)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -755,35 +743,36 @@ public class AttributeMetaDescFactory {
      * 
      * @param attributeMetaDesc
      *            the attribute meta description
-     * @param classDeclaration
+     * @param classElement
      *            the model class declaration
-     * @param fieldDeclaration
+     * @param fieldElement
      *            the field declaration
      * @param interfaceType
      *            the interface type
      * @return whether the validation is OK
      */
     protected boolean validateAttributeListenerParameter(
-            AttributeMetaDesc attributeMetaDesc,
-            ClassDeclaration classDeclaration,
-            FieldDeclaration fieldDeclaration, InterfaceType interfaceType) {
-        if (interfaceType.getActualTypeArguments().size() == 1
-            && interfaceType.getActualTypeArguments().contains(
-                fieldDeclaration.getType())) {
+            AttributeMetaDesc attributeMetaDesc, TypeElement classElement,
+            VariableElement fieldElement, DeclaredType interfaceType) {
+        if (interfaceType.getTypeArguments().size() == 1
+            && processingEnv.getTypeUtils().isSameType(
+                interfaceType.getTypeArguments().get(0),
+                fieldElement.asType())) {
             return true;
         }
-        for (InterfaceType superInterfaceType : interfaceType
-            .getSuperinterfaces()) {
-            if (validateAttributeListenerParameter(
-                attributeMetaDesc,
-                classDeclaration,
-                fieldDeclaration,
-                superInterfaceType)) {
-                return true;
+        TypeElement interfaceElement = (TypeElement) interfaceType.asElement();
+        for (TypeMirror superInterfaceType : interfaceElement.getInterfaces()) {
+            if (superInterfaceType.getKind() == TypeKind.DECLARED) {
+                if (validateAttributeListenerParameter(
+                    attributeMetaDesc,
+                    classElement,
+                    fieldElement,
+                    (DeclaredType) superInterfaceType)) {
+                    return true;
+                }
             }
         }
         return false;
-
     }
 
     /**
@@ -791,72 +780,66 @@ public class AttributeMetaDescFactory {
      * 
      * @param attributeMetaDesc
      *            the attribute meta description
-     * @param classDeclaration
+     * @param classElement
      *            the model class declaration
-     * @param fieldDeclaration
+     * @param fieldElement
      *            the field declaration
      */
     protected void validateModelRefTypeArgument(
             AttributeMetaDesc attributeMetaDesc,
-            final ClassDeclaration classDeclaration,
-            final FieldDeclaration fieldDeclaration) {
-        fieldDeclaration.getType().accept(new SimpleTypeVisitor() {
+            final TypeElement classElement, final VariableElement fieldElement) {
+        fieldElement.asType().accept(new SimpleTypeVisitor6<Void, Void>() {
+
             @Override
-            public void visitClassType(ClassType classType) {
+            public Void visitDeclared(DeclaredType classType, Void p) {
+                if (classType.getKind() != TypeKind.DECLARED) {
+                    return super.visitDeclared(classType, p);
+                }
+
                 if (ClassConstants.ModelRef.equals(classType
-                    .getDeclaration()
-                    .getQualifiedName())) {
-                    Collection<TypeMirror> typeArgs =
-                        classType.getActualTypeArguments();
+                    .asElement()
+                    .toString())) {
+                    Collection<? extends TypeMirror> typeArgs =
+                        classType.getTypeArguments();
                     if (typeArgs.isEmpty()) {
-                        if (classDeclaration.equals(fieldDeclaration
-                            .getDeclaringType())) {
+                        if (classElement.equals(fieldElement
+                            .getEnclosingElement())) {
                             throw new ValidationException(
                                 MessageCode.SLIM3GEN1033,
-                                env,
-                                fieldDeclaration.getPosition());
+                                fieldElement);
                         }
                         throw new ValidationException(
                             MessageCode.SLIM3GEN1034,
-                            env,
-                            classDeclaration.getPosition(),
-                            fieldDeclaration.getSimpleName(),
-                            fieldDeclaration
-                                .getDeclaringType()
-                                .getQualifiedName());
+                            classElement,
+                            fieldElement.getSimpleName(),
+                            fieldElement.getEnclosingElement().toString());
                     }
                     DeclaredType declaredType =
                         TypeUtil.toDeclaredType(typeArgs.iterator().next());
                     if (declaredType == null) {
                         throwExceptionForModelRefTypeArgument(
-                            classDeclaration,
-                            fieldDeclaration);
+                            classElement,
+                            fieldElement);
                     }
-                    TypeDeclaration typeDeclaration =
-                        declaredType.getDeclaration();
-                    if (typeDeclaration == null) {
+                    Model model =
+                        processingEnv
+                            .getTypeUtils()
+                            .asElement(declaredType)
+                            .getAnnotation(Model.class);
+                    if (model == null) {
                         throwExceptionForModelRefTypeArgument(
-                            classDeclaration,
-                            fieldDeclaration);
-                    }
-                    AnnotationMirror annotationMirror =
-                        DeclarationUtil.getAnnotationMirror(
-                            env,
-                            typeDeclaration,
-                            AnnotationConstants.Model);
-                    if (annotationMirror == null) {
-                        throwExceptionForModelRefTypeArgument(
-                            classDeclaration,
-                            fieldDeclaration);
+                            classElement,
+                            fieldElement);
                     }
                 }
-                ClassType superclassType = classType.getSuperclass();
+                TypeMirror superclassType = classType.getEnclosingType();
                 if (superclassType != null) {
-                    superclassType.accept(this);
+                    superclassType.accept(this, null);
                 }
+                return null;
             }
-
-        });
+        },
+            null);
     }
 
     /**
@@ -864,29 +847,32 @@ public class AttributeMetaDescFactory {
      * 
      * @param attributeMetaDesc
      *            the attribute meta description
-     * @param classDeclaration
+     * @param classElement
      *            the class declaration
-     * @param fieldDeclaration
+     * @param fieldElement
      *            the field declaration
      * @param methodDeclarations
      *            the method declaration
      */
     protected void handleMethod(AttributeMetaDesc attributeMetaDesc,
-            ClassDeclaration classDeclaration,
-            FieldDeclaration fieldDeclaration,
-            List<MethodDeclaration> methodDeclarations) {
-        MethodDeclaration readMethodDeclaration = null;
-        MethodDeclaration wirteMethodDeclaration = null;
-        for (MethodDeclaration m : methodDeclarations) {
-            if (isReadMethod(m, attributeMetaDesc, fieldDeclaration)) {
+            TypeElement classElement, VariableElement fieldElement,
+            List<ExecutableElement> methodDeclarations) {
+        ExecutableElement readMethodDeclaration = null;
+        ExecutableElement wirteMethodDeclaration = null;
+        for (ExecutableElement m : methodDeclarations) {
+            if (isReadMethod(m, attributeMetaDesc, fieldElement)) {
                 readMethodDeclaration = m;
-                attributeMetaDesc.setReadMethodName(m.getSimpleName());
+                attributeMetaDesc.setReadMethodName(m
+                    .getSimpleName()
+                    .toString());
                 if (attributeMetaDesc.getWriteMethodName() != null) {
                     break;
                 }
-            } else if (isWriteMethod(m, attributeMetaDesc, fieldDeclaration)) {
+            } else if (isWriteMethod(m, attributeMetaDesc, fieldElement)) {
                 wirteMethodDeclaration = m;
-                attributeMetaDesc.setWriteMethodName(m.getSimpleName());
+                attributeMetaDesc.setWriteMethodName(m
+                    .getSimpleName()
+                    .toString());
                 if (attributeMetaDesc.getReadMethodName() != null) {
                     break;
                 }
@@ -898,15 +884,15 @@ public class AttributeMetaDescFactory {
                 validateReadMethodOnly(
                     attributeMetaDesc,
                     (ModelRefType) dataType,
-                    classDeclaration,
-                    fieldDeclaration,
+                    classElement,
+                    fieldElement,
                     readMethodDeclaration,
                     wirteMethodDeclaration);
             } else {
                 validateReadAndWriteMethods(
                     attributeMetaDesc,
-                    classDeclaration,
-                    fieldDeclaration,
+                    classElement,
+                    fieldElement,
                     readMethodDeclaration,
                     wirteMethodDeclaration);
             }
@@ -915,8 +901,8 @@ public class AttributeMetaDescFactory {
             validateReadMethodOnly(
                 attributeMetaDesc,
                 (InverseModelRefType) dataType,
-                classDeclaration,
-                fieldDeclaration,
+                classElement,
+                fieldElement,
                 readMethodDeclaration,
                 wirteMethodDeclaration);
         }
@@ -927,56 +913,51 @@ public class AttributeMetaDescFactory {
      * 
      * @param attributeMetaDesc
      *            the attribute mete description
-     * @param classDeclaration
+     * @param classElement
      *            the model declaration
-     * @param fieldDeclaration
+     * @param fieldElement
      *            the field declaration
      * @param readMethodDeclaration
      *            the read method declaration
-     * @param writeMethodDeclaration
+     * @param wirteMethodDeclaration
      *            the write method declaration
      */
     protected void validateReadAndWriteMethods(
-            AttributeMetaDesc attributeMetaDesc,
-            ClassDeclaration classDeclaration,
-            FieldDeclaration fieldDeclaration,
-            MethodDeclaration readMethodDeclaration,
-            MethodDeclaration writeMethodDeclaration) {
+            AttributeMetaDesc attributeMetaDesc, TypeElement classElement,
+            VariableElement fieldElement,
+            ExecutableElement readMethodDeclaration,
+            ExecutableElement wirteMethodDeclaration) {
         if (readMethodDeclaration == null) {
             String expectedReadMethodName =
-                FieldDeclarationUtil.getReadMethodName(fieldDeclaration);
-            if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
+                FieldDeclarationUtil.getReadMethodName(fieldElement);
+            if (classElement.equals(fieldElement.getEnclosingElement())) {
                 throw new ValidationException(
                     MessageCode.SLIM3GEN1011,
-                    env,
-                    fieldDeclaration.getPosition(),
+                    fieldElement,
                     expectedReadMethodName);
             }
             throw new ValidationException(
                 MessageCode.SLIM3GEN1024,
-                env,
-                classDeclaration.getPosition(),
+                classElement,
                 expectedReadMethodName,
-                fieldDeclaration.getSimpleName(),
-                fieldDeclaration.getDeclaringType().getQualifiedName());
+                fieldElement.getSimpleName(),
+                fieldElement.getEnclosingElement().toString());
         }
-        if (writeMethodDeclaration == null) {
+        if (wirteMethodDeclaration == null) {
             String expectedWriteMethodName =
-                FieldDeclarationUtil.getWriteMethodName(fieldDeclaration);
-            if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
+                FieldDeclarationUtil.getWriteMethodName(fieldElement);
+            if (classElement.equals(fieldElement.getEnclosingElement())) {
                 throw new ValidationException(
                     MessageCode.SLIM3GEN1012,
-                    env,
-                    fieldDeclaration.getPosition(),
+                    fieldElement,
                     expectedWriteMethodName);
             }
             throw new ValidationException(
                 MessageCode.SLIM3GEN1025,
-                env,
-                classDeclaration.getPosition(),
+                classElement,
                 expectedWriteMethodName,
-                fieldDeclaration.getSimpleName(),
-                fieldDeclaration.getDeclaringType().getQualifiedName());
+                fieldElement.getSimpleName(),
+                fieldElement.getEnclosingElement().toString());
         }
     }
 
@@ -988,9 +969,9 @@ public class AttributeMetaDescFactory {
      *            the attribute mete description
      * @param modelRefType
      *            the model reference type
-     * @param classDeclaration
+     * @param classElement
      *            the model declaration
-     * @param fieldDeclaration
+     * @param fieldElement
      *            the field declaration
      * @param readMethodDeclaration
      *            the read method declaration
@@ -998,49 +979,45 @@ public class AttributeMetaDescFactory {
      *            the write method declaration
      */
     protected void validateReadMethodOnly(AttributeMetaDesc attributeMetaDesc,
-            ModelRefType modelRefType, ClassDeclaration classDeclaration,
-            FieldDeclaration fieldDeclaration,
-            MethodDeclaration readMethodDeclaration,
-            MethodDeclaration writeMethodDeclaration) {
+            ModelRefType modelRefType, TypeElement classElement,
+            VariableElement fieldElement,
+            ExecutableElement readMethodDeclaration,
+            ExecutableElement writeMethodDeclaration) {
         if (readMethodDeclaration == null) {
             String expectedReadMethodName =
-                FieldDeclarationUtil.getReadMethodName(fieldDeclaration);
-            if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
+                FieldDeclarationUtil.getReadMethodName(fieldElement);
+            if (classElement.equals(fieldElement.getEnclosingElement())) {
                 throw new ValidationException(
                     MessageCode.SLIM3GEN1011,
-                    env,
-                    fieldDeclaration.getPosition(),
+                    fieldElement,
                     expectedReadMethodName);
             }
             throw new ValidationException(
                 MessageCode.SLIM3GEN1024,
-                env,
-                classDeclaration.getPosition(),
+                classElement,
                 expectedReadMethodName,
-                fieldDeclaration.getSimpleName(),
-                fieldDeclaration.getDeclaringType().getQualifiedName());
+                fieldElement.getSimpleName(),
+                fieldElement.getEnclosingElement().toString());
         }
         if (writeMethodDeclaration != null) {
             String fieldDefinition =
                 String.format(
                     "%1$s %2$s = new %1$s(%3$s.class);",
-                    fieldDeclaration.getType(),
-                    fieldDeclaration.getSimpleName(),
+                    fieldElement.asType(),
+                    fieldElement.getSimpleName(),
                     modelRefType.getReferenceModelClassName());
-            if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
+            if (classElement.equals(fieldElement.getEnclosingElement())) {
                 throw new ValidationException(
                     MessageCode.SLIM3GEN1041,
-                    env,
-                    writeMethodDeclaration.getPosition(),
-                    fieldDeclaration.getSimpleName(),
+                    writeMethodDeclaration,
+                    fieldElement.getSimpleName(),
                     fieldDefinition);
             }
             throw new ValidationException(
                 MessageCode.SLIM3GEN1042,
-                env,
-                classDeclaration.getPosition(),
-                fieldDeclaration.getSimpleName(),
-                fieldDeclaration.getDeclaringType().getQualifiedName(),
+                classElement,
+                fieldElement.getSimpleName(),
+                fieldElement.getEnclosingElement().toString(),
                 fieldDefinition);
         }
     }
@@ -1053,9 +1030,9 @@ public class AttributeMetaDescFactory {
      *            the attribute mete description
      * @param inverseModelRefType
      *            the inverse model ref type
-     * @param classDeclaration
+     * @param classElement
      *            the model declaration
-     * @param fieldDeclaration
+     * @param fieldElement
      *            the field declaration
      * @param readMethodDeclaration
      *            the read method declaration
@@ -1063,54 +1040,49 @@ public class AttributeMetaDescFactory {
      *            the write method declaration
      */
     protected void validateReadMethodOnly(AttributeMetaDesc attributeMetaDesc,
-            InverseModelRefType inverseModelRefType,
-            ClassDeclaration classDeclaration,
-            FieldDeclaration fieldDeclaration,
-            MethodDeclaration readMethodDeclaration,
-            MethodDeclaration writeMethodDeclaration) {
+            InverseModelRefType inverseModelRefType, TypeElement classElement,
+            VariableElement fieldElement,
+            ExecutableElement readMethodDeclaration,
+            ExecutableElement writeMethodDeclaration) {
         if (readMethodDeclaration == null) {
             String expectedReadMethodName =
-                FieldDeclarationUtil.getReadMethodName(fieldDeclaration);
-            if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
+                FieldDeclarationUtil.getReadMethodName(fieldElement);
+            if (classElement.equals(fieldElement.getEnclosingElement())) {
                 throw new ValidationException(
                     MessageCode.SLIM3GEN1011,
-                    env,
-                    fieldDeclaration.getPosition(),
+                    fieldElement,
                     expectedReadMethodName);
             }
             throw new ValidationException(
                 MessageCode.SLIM3GEN1024,
-                env,
-                classDeclaration.getPosition(),
+                classElement,
                 expectedReadMethodName,
-                fieldDeclaration.getSimpleName(),
-                fieldDeclaration.getDeclaringType().getQualifiedName());
+                fieldElement.getSimpleName(),
+                fieldElement.getEnclosingElement().toString());
         }
         if (writeMethodDeclaration != null) {
             String fieldDefinition =
                 String.format(
                     "%1$s %2$s = new %1$s(%3$s.class, \"xxx\", this);",
-                    fieldDeclaration.getType(),
-                    fieldDeclaration.getSimpleName(),
+                    fieldElement.asType(),
+                    fieldElement.getSimpleName(),
                     inverseModelRefType.getReferenceModelClassName());
-            if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
+            if (classElement.equals(fieldElement.getEnclosingElement())) {
                 throw new ValidationException(
                     MessageCode.SLIM3GEN1039,
-                    env,
-                    writeMethodDeclaration.getPosition(),
-                    fieldDeclaration.getSimpleName(),
+                    writeMethodDeclaration,
+                    fieldElement.getSimpleName(),
                     fieldDefinition,
-                    classDeclaration.getSimpleName(),
+                    classElement.getSimpleName(),
                     inverseModelRefType.getReferenceModelClassName());
             }
             throw new ValidationException(
                 MessageCode.SLIM3GEN1040,
-                env,
-                classDeclaration.getPosition(),
-                fieldDeclaration.getSimpleName(),
-                fieldDeclaration.getDeclaringType().getQualifiedName(),
+                classElement,
+                fieldElement.getSimpleName(),
+                fieldElement.getEnclosingElement().toString(),
                 fieldDefinition,
-                classDeclaration.getSimpleName(),
+                classElement.getSimpleName(),
                 inverseModelRefType.getReferenceModelClassName());
         }
     }
@@ -1122,21 +1094,22 @@ public class AttributeMetaDescFactory {
      *            the method declaration
      * @param attributeMetaDesc
      *            the attribute meta description
-     * @param fieldDeclaration
+     * @param fieldElement
      *            the field declaration
      * @return {@code true} if method is getter method
      */
-    protected boolean isReadMethod(MethodDeclaration m,
-            AttributeMetaDesc attributeMetaDesc,
-            FieldDeclaration fieldDeclaration) {
+    protected boolean isReadMethod(ExecutableElement m,
+            AttributeMetaDesc attributeMetaDesc, VariableElement fieldElement) {
         if (TypeUtil.isVoid(m.getReturnType())
             || m.getParameters().size() != 0
-            || !m.getReturnType().equals(fieldDeclaration.getType())) {
+            || !processingEnv.getTypeUtils().isSameType(
+                m.getReturnType(),
+                fieldElement.asType())) {
             return false;
         }
-        String methodName = m.getSimpleName();
+        String methodName = m.getSimpleName().toString();
         for (String candidateReadMethodName : FieldDeclarationUtil
-            .getReadMethodNames(fieldDeclaration)) {
+            .getReadMethodNames(fieldElement)) {
             if (methodName.equals(candidateReadMethodName)) {
                 return true;
             }
@@ -1151,26 +1124,27 @@ public class AttributeMetaDescFactory {
      *            the method declaration
      * @param attributeMetaDesc
      *            the attribute meta description
-     * @param fieldDeclaration
+     * @param fieldElement
      *            the field type
      * @return {@code true} if method is setter method
      */
-    protected boolean isWriteMethod(MethodDeclaration m,
-            AttributeMetaDesc attributeMetaDesc,
-            FieldDeclaration fieldDeclaration) {
-        String methodName = m.getSimpleName();
+    protected boolean isWriteMethod(ExecutableElement m,
+            AttributeMetaDesc attributeMetaDesc, VariableElement fieldElement) {
+        String methodName = m.getSimpleName().toString();
         if (!methodName.startsWith("set")
             || !TypeUtil.isVoid(m.getReturnType())
             || m.getParameters().size() != 1) {
             return false;
         }
         TypeMirror parameterTypeMirror =
-            m.getParameters().iterator().next().getType();
-        if (!parameterTypeMirror.equals(fieldDeclaration.getType())) {
+            m.getParameters().iterator().next().asType();
+        if (!processingEnv.getTypeUtils().isSameType(
+            parameterTypeMirror,
+            fieldElement.asType())) {
             return false;
         }
         return methodName.equals(FieldDeclarationUtil
-            .getWriteMethodName(fieldDeclaration));
+            .getWriteMethodName(fieldElement));
     }
 
     /**
@@ -1179,42 +1153,39 @@ public class AttributeMetaDescFactory {
      * @return a data type factory
      */
     protected DataTypeFactory creaetDataTypeFactory() {
-        return new DataTypeFactory(env);
+        return new DataTypeFactory(processingEnv, roundEnv);
     }
 
     /**
      * Throws {@link ValidationException} for non core type.
      * 
-     * @param classDeclaration
+     * @param classElement
      *            the model class declaration
-     * @param fieldDeclaration
+     * @param fieldElement
      *            the field declaration
      * @param attribute
      *            the annotation mirror for Attribute
      */
-    protected void throwExceptionForNonCoreType(
-            ClassDeclaration classDeclaration,
-            FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
-        if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
+    protected void throwExceptionForNonCoreType(TypeElement classElement,
+            VariableElement fieldElement, Attribute attribute) {
+        if (classElement.equals(fieldElement.getEnclosingElement())) {
             throw new ValidationException(
                 MessageCode.SLIM3GEN1005,
-                env,
-                fieldDeclaration.getPosition());
+                fieldElement);
         }
         throw new ValidationException(
             MessageCode.SLIM3GEN1026,
-            env,
-            classDeclaration.getPosition(),
-            fieldDeclaration.getSimpleName(),
-            fieldDeclaration.getDeclaringType().getQualifiedName());
+            classElement,
+            fieldElement.getSimpleName(),
+            fieldElement.getEnclosingElement().toString());
     }
 
     /**
      * Throws {@link ValidationException} for conflicted annotation elements.
      * 
-     * @param classDeclaration
+     * @param classElement
      *            the model class declaration
-     * @param fieldDeclaration
+     * @param fieldElement
      *            the field declaration
      * @param attribute
      *            the annotation mirror for Attribute
@@ -1224,76 +1195,68 @@ public class AttributeMetaDescFactory {
      *            conflicted element
      */
     protected void throwExceptionForConflictedElements(
-            ClassDeclaration classDeclaration,
-            FieldDeclaration fieldDeclaration, AnnotationMirror attribute,
-            String element1, String element2) {
-        if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
+            TypeElement classElement, VariableElement fieldElement,
+            Attribute attribute, String element1, String element2) {
+        if (classElement.equals(fieldElement.getEnclosingElement())) {
             throw new ValidationException(
                 MessageCode.SLIM3GEN1021,
-                env,
-                attribute.getPosition(),
+                fieldElement,
                 element1,
                 element2);
         }
         throw new ValidationException(
             MessageCode.SLIM3GEN1027,
-            env,
-            classDeclaration.getPosition(),
+            classElement,
             element1,
             element2,
-            fieldDeclaration.getSimpleName(),
-            fieldDeclaration.getDeclaringType().getQualifiedName());
+            fieldElement.getSimpleName(),
+            fieldElement.getEnclosingElement().toString());
     }
 
     /**
      * Throws {@link ValidationException} for Lob unsupported type.
      * 
-     * @param classDeclaration
+     * @param classElement
      *            the model class declaration
-     * @param fieldDeclaration
+     * @param fieldElement
      *            the field declaration
      * @param attribute
      *            the annotation mirror for Attribute
      */
     protected void throwExceptionForLobUnsupportedType(
-            ClassDeclaration classDeclaration,
-            FieldDeclaration fieldDeclaration, AnnotationMirror attribute) {
-        if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
+            TypeElement classElement, VariableElement fieldElement,
+            Attribute attribute) {
+        if (classElement.equals(fieldElement.getEnclosingElement())) {
             throw new ValidationException(
                 MessageCode.SLIM3GEN1045,
-                env,
-                fieldDeclaration.getPosition());
+                fieldElement);
         }
         throw new ValidationException(
             MessageCode.SLIM3GEN1046,
-            env,
-            classDeclaration.getPosition(),
-            fieldDeclaration.getSimpleName(),
-            fieldDeclaration.getDeclaringType().getQualifiedName());
+            classElement,
+            fieldElement.getSimpleName(),
+            fieldElement.getEnclosingElement().toString());
     }
 
     /**
      * hrows {@link ValidationException} for ModelRef type argument.
      * 
-     * @param classDeclaration
+     * @param classElement
      *            the model class declaration
-     * @param fieldDeclaration
+     * @param fieldElement
      *            the field declaration
      */
     protected void throwExceptionForModelRefTypeArgument(
-            ClassDeclaration classDeclaration, FieldDeclaration fieldDeclaration) {
-        if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
+            TypeElement classElement, VariableElement fieldElement) {
+        if (classElement.equals(fieldElement.getEnclosingElement())) {
             throw new ValidationException(
                 MessageCode.SLIM3GEN1031,
-                env,
-                fieldDeclaration.getPosition());
+                fieldElement);
         }
         throw new ValidationException(
             MessageCode.SLIM3GEN1032,
-            env,
-            classDeclaration.getPosition(),
-            fieldDeclaration.getSimpleName(),
-            fieldDeclaration.getDeclaringType().getQualifiedName());
+            classElement,
+            fieldElement.getSimpleName(),
+            fieldElement.getEnclosingElement().toString());
     }
-
 }

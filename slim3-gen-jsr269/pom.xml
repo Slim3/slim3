@@ -112,14 +112,6 @@
       <version>1.7.0</version>
       <type>jar</type>
     </dependency>
-    <dependency>
-      <groupId>com.sun</groupId>
-      <artifactId>tools</artifactId>
-      <version>${java.version}</version>
-      <scope>system</scope>
-      <systemPath>${java.home}/../lib/tools.jar</systemPath>
-      <optional>true</optional>
-    </dependency>
 
     <dependency>
       <groupId>org.slim3</groupId>

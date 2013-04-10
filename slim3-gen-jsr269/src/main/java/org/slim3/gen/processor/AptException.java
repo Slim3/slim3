@@ -15,11 +15,10 @@
  */
 package org.slim3.gen.processor;
 
+import javax.lang.model.element.Element;
+
 import org.slim3.gen.message.MessageCode;
 import org.slim3.gen.message.MessageFormatter;
-
-import com.sun.mirror.apt.AnnotationProcessorEnvironment;
-import com.sun.mirror.util.SourcePosition;
 
 /**
  * Thrown when annotation processing is failed.
@@ -28,36 +27,29 @@ import com.sun.mirror.util.SourcePosition;
  * @since 1.0.0
  * 
  */
-@SuppressWarnings("deprecation")
 public class AptException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
-    /** the environment */
-    protected final AnnotationProcessorEnvironment env;
+    /** the element */
+    protected final Element element;
 
     /** the message code */
     protected final MessageCode messageCode;
-
-    /** the source position */
-    protected final SourcePosition sourcePosition;
 
     /**
      * Creates a new {@link AptException}.
      * 
      * @param messageCode
      *            the message code
-     * @param env
-     *            the environment
-     * @param sourcePosition
-     *            the send target
+     * @param element
+     *            the message target
      * @param args
      *            arguments
      */
-    public AptException(MessageCode messageCode,
-            AnnotationProcessorEnvironment env, SourcePosition sourcePosition,
+    public AptException(MessageCode messageCode, Element element,
             Object... args) {
-        this(messageCode, env, sourcePosition, null, args);
+        this(messageCode, element, null, args);
     }
 
     /**
@@ -65,28 +57,24 @@ public class AptException extends RuntimeException {
      * 
      * @param messageCode
      *            the message code
-     * @param env
-     *            the environment
-     * @param sourcePosition
-     *            the send target
+     * @param element
+     *            the message target
      * @param cause
      *            the cause
      * @param args
      *            arguments
      */
-    public AptException(MessageCode messageCode,
-            AnnotationProcessorEnvironment env, SourcePosition sourcePosition,
+    public AptException(MessageCode messageCode, Element element,
             Throwable cause, Object... args) {
         super(MessageFormatter.getMessage(messageCode, args), cause);
-        this.env = env;
+        this.element = element;
         this.messageCode = messageCode;
-        this.sourcePosition = sourcePosition;
     }
 
     /**
      * Sends error message.
      */
     public void sendError() {
-        Logger.error(env, sourcePosition, getMessage());
+        Logger.error(element, getMessage());
     }
 }

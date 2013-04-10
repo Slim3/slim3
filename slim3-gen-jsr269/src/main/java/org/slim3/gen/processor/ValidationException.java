@@ -15,10 +15,9 @@
  */
 package org.slim3.gen.processor;
 
-import org.slim3.gen.message.MessageCode;
+import javax.lang.model.element.Element;
 
-import com.sun.mirror.apt.AnnotationProcessorEnvironment;
-import com.sun.mirror.util.SourcePosition;
+import org.slim3.gen.message.MessageCode;
 
 /**
  * Thrown when validation in annotation processing is failed.
@@ -27,7 +26,6 @@ import com.sun.mirror.util.SourcePosition;
  * @since 1.0.0
  * 
  */
-@SuppressWarnings("deprecation")
 public class ValidationException extends AptException {
 
     private static final long serialVersionUID = 1L;
@@ -37,17 +35,14 @@ public class ValidationException extends AptException {
      * 
      * @param messageCode
      *            the message code
-     * @param env
-     *            the environment
-     * @param sourcePosition
-     *            the send target
+     * @param element
+     *            the element
      * @param args
      *            arguments
      */
-    public ValidationException(MessageCode messageCode,
-            AnnotationProcessorEnvironment env, SourcePosition sourcePosition,
+    public ValidationException(MessageCode messageCode, Element element,
             Object... args) {
-        this(messageCode, env, sourcePosition, null, args);
+        this(messageCode, element, null, args);
     }
 
     /**
@@ -55,18 +50,15 @@ public class ValidationException extends AptException {
      * 
      * @param messageCode
      *            the message code
-     * @param env
-     *            the environment
-     * @param sourcePosition
-     *            the send target
+     * @param element
+     *            the element
      * @param cause
      *            the cause
      * @param args
      *            arguments
      */
-    public ValidationException(MessageCode messageCode,
-            AnnotationProcessorEnvironment env, SourcePosition sourcePosition,
+    public ValidationException(MessageCode messageCode, Element element,
             Throwable cause, Object... args) {
-        super(messageCode, env, sourcePosition, cause, args);
+        super(messageCode, element, cause, args);
     }
 }

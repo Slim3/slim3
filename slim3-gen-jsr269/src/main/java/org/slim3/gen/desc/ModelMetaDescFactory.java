@@ -15,14 +15,30 @@
  */
 package org.slim3.gen.desc;
 
+import static javax.lang.model.util.ElementFilter.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeMirror;
+
+import org.slim3.datastore.Model;
 import org.slim3.gen.AnnotationConstants;
 import org.slim3.gen.datastore.PrimitiveBooleanType;
 import org.slim3.gen.message.MessageCode;
@@ -30,21 +46,8 @@ import org.slim3.gen.processor.AptException;
 import org.slim3.gen.processor.Options;
 import org.slim3.gen.processor.UnknownDeclarationException;
 import org.slim3.gen.processor.ValidationException;
-import org.slim3.gen.util.AnnotationMirrorUtil;
 import org.slim3.gen.util.DeclarationUtil;
 import org.slim3.gen.util.StringUtil;
-import org.slim3.gen.util.TypeUtil;
-
-import com.sun.mirror.apt.AnnotationProcessorEnvironment;
-import com.sun.mirror.declaration.AnnotationMirror;
-import com.sun.mirror.declaration.ClassDeclaration;
-import com.sun.mirror.declaration.FieldDeclaration;
-import com.sun.mirror.declaration.InterfaceDeclaration;
-import com.sun.mirror.declaration.MethodDeclaration;
-import com.sun.mirror.declaration.Modifier;
-import com.sun.mirror.type.ClassType;
-import com.sun.mirror.type.InterfaceType;
-import com.sun.mirror.type.TypeMirror;
 
 /**
  * Creates a model meta description.
@@ -54,135 +57,123 @@ import com.sun.mirror.type.TypeMirror;
  * @since 1.0.0
  * 
  */
-@SuppressWarnings("deprecation")
 public class ModelMetaDescFactory {
 
-    /** the environment */
-    protected final AnnotationProcessorEnvironment env;
-
+    /** the processing environment */
+    protected final ProcessingEnvironment processingEnv;
+    /** the round environment */
+    protected final RoundEnvironment roundEnv;
     /** the attribute meta description factory */
     protected final AttributeMetaDescFactory attributeMetaDescFactory;
 
     /**
      * Creates a new {@link ModelMetaDescFactory}.
      * 
-     * @param env
-     *            the environment
+     * @param processingEnv
+     *            the processing environment
+     * @param roundEnv
+     *            the round environment
      * @param attributeMetaDescFactory
      *            the attribute meta description factory
      */
-    public ModelMetaDescFactory(AnnotationProcessorEnvironment env,
+    public ModelMetaDescFactory(ProcessingEnvironment processingEnv,
+            RoundEnvironment roundEnv,
             AttributeMetaDescFactory attributeMetaDescFactory) {
-        if (env == null) {
-            throw new NullPointerException("The env parameter is null.");
+        if (processingEnv == null) {
+            throw new NullPointerException(
+                "The processingEnv parameter is null.");
+        }
+        if (roundEnv == null) {
+            throw new NullPointerException("The roundEnv parameter is null.");
         }
         if (attributeMetaDescFactory == null) {
             throw new NullPointerException(
                 "The attributeMetaDescFactory parameter is null.");
         }
-        this.env = env;
+        this.processingEnv = processingEnv;
+        this.roundEnv = roundEnv;
         this.attributeMetaDescFactory = attributeMetaDescFactory;
     }
 
     /**
      * Creates a model meta description.
      * 
-     * @param classDeclaration
+     * @param classElement
      *            the model declaration.
      * @return a model description
      */
-    public ModelMetaDesc createModelMetaDesc(ClassDeclaration classDeclaration) {
-        if (classDeclaration == null) {
-            throw new NullPointerException(
-                "The classDeclaration parameter is null.");
-        }
-        validateTopLevel(classDeclaration);
-        validatePublicModifier(classDeclaration);
-        validateNonGenericType(classDeclaration);
-        validateDefaultConstructor(classDeclaration);
+    public ModelMetaDesc createModelMetaDesc(TypeElement classElement) {
+        validateTopLevel(classElement);
+        validatePublicModifier(classElement);
+        validateNonGenericType(classElement);
+        validateDefaultConstructor(classElement);
 
-        AnnotationMirror model =
-            DeclarationUtil.getAnnotationMirror(
-                env,
-                classDeclaration,
-                AnnotationConstants.Model);
+        Model model = classElement.getAnnotation(Model.class);
+        classElement.getAnnotationMirrors();
         if (model == null) {
             throw new IllegalStateException(AnnotationConstants.Model
                 + " not found.");
         }
 
-        String modelClassName = classDeclaration.getQualifiedName().toString();
+        String modelClassName = classElement.getQualifiedName().toString();
         ModelMetaClassName modelMetaClassName =
             createModelMetaClassName(modelClassName);
 
         String kind = null;
         List<String> classHierarchyList = new ArrayList<String>();
-        PolyModelDesc polyModelDesc = createPolyModelDesc(classDeclaration);
+        PolyModelDesc polyModelDesc = createPolyModelDesc(classElement);
         if (polyModelDesc == null) {
             kind = getKind(model, modelMetaClassName.getKind());
         } else {
             kind = polyModelDesc.getKind();
             classHierarchyList = polyModelDesc.getClassHierarchyList();
-            validateKind(classDeclaration);
+            validateKind(classElement);
         }
 
-        String schemaVersionName =
-            AnnotationMirrorUtil.getElementValueWithDefault(
-                model,
-                AnnotationConstants.schemaVersionName);
-        validateSchemaVersionName(classDeclaration, schemaVersionName);
+        String schemaVersionName = model.schemaVersionName();
+        validateSchemaVersionName(classElement, schemaVersionName);
 
-        Integer schemaVersion =
-            AnnotationMirrorUtil.getElementValueWithDefault(
-                model,
-                AnnotationConstants.schemaVersion);
+        int schemaVersion = model.schemaVersion();
 
-        String classHierarchyListName =
-            AnnotationMirrorUtil.getElementValueWithDefault(
-                model,
-                AnnotationConstants.classHierarchyListName);
-        validateClassHierarchyListName(classDeclaration, classHierarchyListName);
+        String classHierarchyListName = model.classHierarchyListName();
+        validateClassHierarchyListName(classElement, classHierarchyListName);
 
         ModelMetaDesc modelMetaDesc =
             new ModelMetaDesc(
                 modelMetaClassName.getPackageName(),
                 modelMetaClassName.getSimpleName(),
-                classDeclaration.getModifiers().contains(Modifier.ABSTRACT),
+                classElement.getModifiers().contains(Modifier.ABSTRACT),
                 modelClassName,
                 kind,
                 schemaVersionName,
-                schemaVersion.intValue(),
+                schemaVersion,
                 classHierarchyListName,
                 classHierarchyList);
-        handleModelListener(modelMetaDesc, classDeclaration, model);
-        handleAttributes(classDeclaration, modelMetaDesc);
+        handleModelListener(modelMetaDesc, classElement, model);
+        handleAttributes(classElement, modelMetaDesc);
         return modelMetaDesc;
     }
 
     /**
      * Creates the poly model description.
      * 
-     * @param classDeclaration
+     * @param classElement
      *            the model declaration.
      * @return the poly model description.
      */
-    protected PolyModelDesc createPolyModelDesc(
-            ClassDeclaration classDeclaration) {
+    protected PolyModelDesc createPolyModelDesc(TypeElement classElement) {
         String kind = null;
         LinkedList<String> classHierarchyList = new LinkedList<String>();
-        for (ClassDeclaration c = classDeclaration; c != null
+        for (TypeElement c = classElement; c != null
             && !c.getQualifiedName().equals(Object.class.getName()); c =
-            c.getSuperclass().getDeclaration()) {
-            AnnotationMirror anno =
-                DeclarationUtil.getAnnotationMirror(
-                    env,
-                    c,
-                    AnnotationConstants.Model);
+            (TypeElement) processingEnv.getTypeUtils().asElement(
+                c.getSuperclass())) {
+            Model anno = c.getAnnotation(Model.class);
             if (anno != null) {
                 ModelMetaClassName modelMetaClassName =
                     createModelMetaClassName(c.getQualifiedName().toString());
                 kind = getKind(anno, modelMetaClassName.getKind());
-                classHierarchyList.addFirst(c.getQualifiedName());
+                classHierarchyList.addFirst(c.getQualifiedName().toString());
             }
         }
         if (classHierarchyList.size() <= 1) {
@@ -201,10 +192,8 @@ public class ModelMetaDescFactory {
      *            the default kind.
      * @return the kind
      */
-    protected String getKind(AnnotationMirror anno, String defaultKind) {
-        String value =
-            AnnotationMirrorUtil
-                .getElementValue(anno, AnnotationConstants.kind);
+    protected String getKind(Model anno, String defaultKind) {
+        String value = anno.kind();
         if (value != null && value.length() > 0) {
             return value;
         }
@@ -214,116 +203,105 @@ public class ModelMetaDescFactory {
     /**
      * Validates that nested level is top level.
      * 
-     * @param classDeclaration
+     * @param classElement
      *            the class declaration
      */
-    protected void validateTopLevel(ClassDeclaration classDeclaration) {
-        if (classDeclaration.getDeclaringType() != null) {
+    public static void validateTopLevel(TypeElement classElement) {
+        if (classElement.getEnclosingElement().getKind() != ElementKind.PACKAGE) {
             throw new ValidationException(
                 MessageCode.SLIM3GEN1019,
-                env,
-                classDeclaration.getPosition());
+                classElement);
         }
     }
 
     /**
      * Validates that modifier is public.
      * 
-     * @param classDeclaration
+     * @param classElement
      *            the class declaration
      */
-    protected void validatePublicModifier(ClassDeclaration classDeclaration) {
-        if (!classDeclaration.getModifiers().contains(Modifier.PUBLIC)) {
+    public static void validatePublicModifier(TypeElement classElement) {
+        if (!classElement.getModifiers().contains(Modifier.PUBLIC)) {
             throw new ValidationException(
                 MessageCode.SLIM3GEN1017,
-                env,
-                classDeclaration.getPosition());
+                classElement);
         }
     }
 
     /**
      * Validates that the class is not generic type.
      * 
-     * @param classDeclaration
+     * @param classElement
      */
-    protected void validateNonGenericType(ClassDeclaration classDeclaration) {
-        if (!classDeclaration.getFormalTypeParameters().isEmpty()) {
+    public static void validateNonGenericType(TypeElement classElement) {
+        if (!classElement.getTypeParameters().isEmpty()) {
             throw new ValidationException(
                 MessageCode.SLIM3GEN1020,
-                env,
-                classDeclaration.getPosition());
+                classElement);
         }
     }
 
     /**
      * Validates that the default constructor is existent.
      * 
-     * @param classDeclaration
+     * @param classElement
      *            the class declaration
      */
-    protected void validateDefaultConstructor(ClassDeclaration classDeclaration) {
-        if (!DeclarationUtil.hasPublicDefaultConstructor(classDeclaration)) {
+    public static void validateDefaultConstructor(TypeElement classElement) {
+        if (!DeclarationUtil.hasPublicDefaultConstructor(classElement)) {
             throw new ValidationException(
-                MessageCode.SLIM3GEN1018,
-                env,
-                classDeclaration.getPosition());
+                MessageCode.SLIM3GEN1020,
+                classElement);
         }
     }
 
     /**
      * Validates that the kind is unspecified.
      * 
-     * @param classDeclaration
+     * @param classElement
      *            the class declaration
      */
-    protected void validateKind(ClassDeclaration classDeclaration) {
-        AnnotationMirror anno =
-            DeclarationUtil.getAnnotationMirror(
-                env,
-                classDeclaration,
-                AnnotationConstants.Model);
+    protected void validateKind(TypeElement classElement) {
+        Model anno = classElement.getAnnotation(Model.class);
         if (anno == null) {
             throw new IllegalStateException(AnnotationConstants.Model
                 + " not found.");
         }
-        String value =
-            AnnotationMirrorUtil
-                .getElementValue(anno, AnnotationConstants.kind);
+        String value = anno.kind();
         if (value != null && value.length() > 0) {
-            throw new ValidationException(MessageCode.SLIM3GEN1022, env, anno
-                .getPosition());
+            throw new ValidationException(
+                MessageCode.SLIM3GEN1022,
+                classElement);
         }
     }
 
     /**
      * Validates that the schemaVersionName is not empty.
      * 
-     * @param classDeclaration
+     * @param classElement
      * @param schemaVersionName
      */
-    protected void validateSchemaVersionName(ClassDeclaration classDeclaration,
+    protected void validateSchemaVersionName(TypeElement classElement,
             String schemaVersionName) {
         if (StringUtil.isEmpty(schemaVersionName)) {
             throw new ValidationException(
                 MessageCode.SLIM3GEN1023,
-                env,
-                classDeclaration.getPosition());
+                classElement);
         }
     }
 
     /**
      * Validates that the classHierarchyListName is not empty.
      * 
-     * @param classDeclaration
+     * @param classElement
      * @param classHierarchyListName
      */
-    protected void validateClassHierarchyListName(
-            ClassDeclaration classDeclaration, String classHierarchyListName) {
+    protected void validateClassHierarchyListName(TypeElement classElement,
+            String classHierarchyListName) {
         if (StringUtil.isEmpty(classHierarchyListName)) {
             throw new ValidationException(
                 MessageCode.SLIM3GEN1049,
-                env,
-                classDeclaration.getPosition());
+                classElement);
         }
     }
 
@@ -335,29 +313,32 @@ public class ModelMetaDescFactory {
      * @return a model meta class name
      */
     protected ModelMetaClassName createModelMetaClassName(String modelClassName) {
-        return new ModelMetaClassName(modelClassName, Options
-            .getModelPackage(env), Options.getMetaPackage(env), Options
-            .getSharedPackage(env), Options.getServerPackage(env));
+        return new ModelMetaClassName(
+            modelClassName,
+            Options.getModelPackage(processingEnv),
+            Options.getMetaPackage(processingEnv),
+            Options.getSharedPackage(processingEnv),
+            Options.getServerPackage(processingEnv));
     }
 
     /**
      * Handles attributes.
      * 
-     * @param classDeclaration
+     * @param classElement
      *            the model declaration.
      * @param modelMetaDesc
      *            the model meta description
      */
-    protected void handleAttributes(ClassDeclaration classDeclaration,
+    protected void handleAttributes(TypeElement classElement,
             ModelMetaDesc modelMetaDesc) {
-        List<MethodDeclaration> methodDeclarations =
-            getMethodDeclarations(classDeclaration);
+        List<ExecutableElement> methodDeclarations =
+            getMethodDeclarations(classElement);
         Set<String> propertyNames = createPropertyNames(modelMetaDesc);
         Set<String> booleanAttributeNames = new HashSet<String>();
-        for (FieldDeclaration fieldDeclaration : getFieldDeclarations(classDeclaration)) {
+        for (VariableElement fieldDeclaration : getFieldDeclarations(classElement)) {
             AttributeMetaDesc attributeMetaDesc =
                 createAttributeMetaDesc(
-                    classDeclaration,
+                    classElement,
                     fieldDeclaration,
                     methodDeclarations);
             if (attributeMetaDesc == null) {
@@ -367,21 +348,21 @@ public class ModelMetaDescFactory {
             if (attributeMetaDesc.isPersistent()) {
                 validatePrimaryKeyUniqueness(
                     attributeMetaDesc,
-                    classDeclaration,
+                    classElement,
                     modelMetaDesc);
                 validateVersionUniqueness(
                     attributeMetaDesc,
-                    classDeclaration,
+                    classElement,
                     modelMetaDesc);
                 validatePropertyNameUniqueness(
                     propertyNames,
                     attributeMetaDesc,
-                    classDeclaration,
+                    classElement,
                     fieldDeclaration);
                 validateBooleanAttributeNameUniqueness(
                     booleanAttributeNames,
                     attributeMetaDesc,
-                    classDeclaration,
+                    classElement,
                     fieldDeclaration);
             }
             modelMetaDesc.addAttributeMetaDesc(attributeMetaDesc);
@@ -390,63 +371,61 @@ public class ModelMetaDescFactory {
             && modelMetaDesc.getKeyAttributeMetaDesc() == null) {
             throw new ValidationException(
                 MessageCode.SLIM3GEN1015,
-                env,
-                classDeclaration.getPosition());
+                classElement);
         }
         modelMetaDesc.createJsonAttributeMetaDescList();
     }
-    
+
     /**
      * Handles the model listener.
      * 
      * @param modelMetaDesc
      *            the model meta description
-     * @param classDeclaration
+     * @param classElement
      *            the model class declaration
      * @param model
      *            the annotation mirror for Model
      */
     protected void handleModelListener(ModelMetaDesc modelMetaDesc,
-            ClassDeclaration classDeclaration, AnnotationMirror model) {
-        Object listener =
-            AnnotationMirrorUtil.getElementValue(
-                model,
-                AnnotationConstants.listener);
+            TypeElement classElement, Model model) {
+        AnnotationValue listener = null;
+        for (AnnotationMirror mirror : classElement.getAnnotationMirrors()) {
+            Map<? extends ExecutableElement, ? extends AnnotationValue> elementValues =
+                mirror.getElementValues();
+            for (ExecutableElement e : elementValues.keySet()) {
+                if (AnnotationConstants.listener.equals(e
+                    .getSimpleName()
+                    .toString())) {
+                    listener = elementValues.get(e);
+                }
+            }
+        }
         if (listener == null) {
             return;
         }
-        if (listener instanceof InterfaceType) {
+        TypeElement listenerEl =
+            processingEnv.getElementUtils().getTypeElement(listener.toString());
+        if (listenerEl.getKind() == ElementKind.INTERFACE) {
             throw new ValidationException(
                 MessageCode.SLIM3GEN1052,
-                env,
-                classDeclaration.getPosition());
+                classElement);
         }
-        ClassType listenerClassType =
-            TypeUtil.toClassType((TypeMirror) listener);
-        if (listenerClassType == null) {
-            return;
+        boolean findConstructor = false;
+        for (ExecutableElement constructor : constructorsIn(listenerEl
+            .getEnclosedElements())) {
+            if (constructor.getParameters().size() == 0) {
+                findConstructor = true;
+            }
         }
-        ClassDeclaration listenerClassDeclaration =
-            listenerClassType.getDeclaration();
-        if (listenerClassDeclaration == null) {
-            throw new UnknownDeclarationException(
-                env,
-                listenerClassDeclaration,
-                listenerClassType);
+        if (!findConstructor) {
+            throw new ValidationException(
+                MessageCode.SLIM3GEN1050,
+                classElement,
+                listenerEl.toString());
         }
-        if (!DeclarationUtil
-            .hasPublicDefaultConstructor(listenerClassDeclaration)) {
-                throw new ValidationException(
-                    MessageCode.SLIM3GEN1050,
-                    env,
-                    classDeclaration.getPosition(),
-                    listenerClassDeclaration.getQualifiedName());
-        }
-        modelMetaDesc
-            .setModelListenerClassName(listenerClassDeclaration
-                .getQualifiedName());
+        modelMetaDesc.setModelListenerClassName(listenerEl.toString());
     }
-    
+
     /**
      * Creates property name set which contains reserved property names.
      * 
@@ -464,18 +443,17 @@ public class ModelMetaDescFactory {
      * Validates primary key uniqueness.
      * 
      * @param attributeMetaDesc
-     * @param classDeclaration
+     * @param classElement
      * @param modelMetaDesc
      */
     protected void validatePrimaryKeyUniqueness(
-            AttributeMetaDesc attributeMetaDesc,
-            ClassDeclaration classDeclaration, ModelMetaDesc modelMetaDesc) {
+            AttributeMetaDesc attributeMetaDesc, TypeElement classElement,
+            ModelMetaDesc modelMetaDesc) {
         if (attributeMetaDesc.isPrimaryKey()
             && modelMetaDesc.getKeyAttributeMetaDesc() != null) {
             throw new ValidationException(
                 MessageCode.SLIM3GEN1013,
-                env,
-                classDeclaration.getPosition());
+                classElement);
         }
     }
 
@@ -483,18 +461,17 @@ public class ModelMetaDescFactory {
      * Validates version uniqueness.
      * 
      * @param attributeMetaDesc
-     * @param classDeclaration
+     * @param classElement
      * @param modelMetaDesc
      */
     protected void validateVersionUniqueness(
-            AttributeMetaDesc attributeMetaDesc,
-            ClassDeclaration classDeclaration, ModelMetaDesc modelMetaDesc) {
+            AttributeMetaDesc attributeMetaDesc, TypeElement classElement,
+            ModelMetaDesc modelMetaDesc) {
         if (attributeMetaDesc.isVersion()
             && modelMetaDesc.getVersionAttributeMetaDesc() != null) {
             throw new ValidationException(
                 MessageCode.SLIM3GEN1014,
-                env,
-                classDeclaration.getPosition());
+                classElement);
         }
     }
 
@@ -503,28 +480,27 @@ public class ModelMetaDescFactory {
      * 
      * @param propertyNames
      * @param attributeMetaDesc
-     * @param classDeclaration
+     * @param classElement
      * @param fieldDeclaration
      */
     protected void validatePropertyNameUniqueness(Set<String> propertyNames,
-            AttributeMetaDesc attributeMetaDesc,
-            ClassDeclaration classDeclaration, FieldDeclaration fieldDeclaration) {
+            AttributeMetaDesc attributeMetaDesc, TypeElement classElement,
+            Element fieldDeclaration) {
         String propertyName = attributeMetaDesc.getName();
         if (propertyNames.contains(propertyName)) {
-            if (classDeclaration.equals(fieldDeclaration.getDeclaringType())) {
+            // TODO equalsで比較していいんだっけ…？
+            if (classElement.equals(fieldDeclaration.getEnclosingElement())) {
                 throw new ValidationException(
                     MessageCode.SLIM3GEN1047,
-                    env,
-                    fieldDeclaration.getPosition(),
+                    fieldDeclaration,
                     propertyName);
             }
             throw new ValidationException(
                 MessageCode.SLIM3GEN1048,
-                env,
-                classDeclaration.getPosition(),
+                classElement,
                 propertyName,
                 fieldDeclaration.getSimpleName(),
-                fieldDeclaration.getDeclaringType().getQualifiedName());
+                fieldDeclaration.getEnclosingElement().toString());
         }
         propertyNames.add(propertyName);
     }
@@ -534,30 +510,27 @@ public class ModelMetaDescFactory {
      * 
      * @param booleanAttributeNames
      * @param attributeMetaDesc
-     * @param classDeclaration
+     * @param classElement
      * @param fieldDeclaration
      */
     protected void validateBooleanAttributeNameUniqueness(
             Set<String> booleanAttributeNames,
-            AttributeMetaDesc attributeMetaDesc,
-            ClassDeclaration classDeclaration, FieldDeclaration fieldDeclaration) {
+            AttributeMetaDesc attributeMetaDesc, TypeElement classElement,
+            Element fieldDeclaration) {
         if (attributeMetaDesc.getDataType() instanceof PrimitiveBooleanType) {
             String attributeName = attributeMetaDesc.getAttributeName();
             if (booleanAttributeNames.contains(attributeName)) {
-                if (classDeclaration
-                    .equals(fieldDeclaration.getDeclaringType())) {
+                if (classElement.equals(fieldDeclaration.getEnclosingElement())) {
                     throw new ValidationException(
                         MessageCode.SLIM3GEN1043,
-                        env,
-                        fieldDeclaration.getPosition(),
+                        fieldDeclaration,
                         fieldDeclaration.getSimpleName());
                 }
                 throw new ValidationException(
                     MessageCode.SLIM3GEN1044,
-                    env,
-                    classDeclaration.getPosition(),
+                    classElement,
                     fieldDeclaration.getSimpleName(),
-                    fieldDeclaration.getDeclaringType().getQualifiedName());
+                    fieldDeclaration.getEnclosingElement().toString());
             }
             booleanAttributeNames.add(attributeName);
         }
@@ -566,19 +539,18 @@ public class ModelMetaDescFactory {
     /**
      * Creates a attribute meta description.
      * 
-     * @param classDeclaration
+     * @param classElement
      *            the model declaration
      * @param fieldDeclaration
      * @param methodDeclarations
      * @return a attribute meta description or {@code null} if error occured.
      */
     protected AttributeMetaDesc createAttributeMetaDesc(
-            ClassDeclaration classDeclaration,
-            FieldDeclaration fieldDeclaration,
-            List<MethodDeclaration> methodDeclarations) {
+            TypeElement classElement, VariableElement fieldDeclaration,
+            List<ExecutableElement> methodDeclarations) {
         try {
             return attributeMetaDescFactory.createAttributeMetaDesc(
-                classDeclaration,
+                classElement,
                 fieldDeclaration,
                 methodDeclarations);
         } catch (AptException e) {
@@ -590,30 +562,31 @@ public class ModelMetaDescFactory {
     /**
      * Returns field declarations.
      * 
-     * @param classDeclaration
+     * @param classElement
      *            the class declaration
      * @return field declarations
      */
-    protected List<FieldDeclaration> getFieldDeclarations(
-            ClassDeclaration classDeclaration) {
-        List<FieldDeclaration> results = new LinkedList<FieldDeclaration>();
-        for (ClassDeclaration c = classDeclaration; c != null
+    protected List<VariableElement> getFieldDeclarations(
+            TypeElement classElement) {
+        List<VariableElement> results = new LinkedList<VariableElement>();
+        for (TypeElement c = classElement; c != null
             && !c.getQualifiedName().equals(Object.class.getName()); c =
-            c.getSuperclass().getDeclaration()) {
-            for (FieldDeclaration field : c.getFields()) {
-                Collection<Modifier> modifiers = field.getModifiers();
+            (TypeElement) processingEnv.getTypeUtils().asElement(
+                c.getSuperclass())) {
+            for (VariableElement element : fieldsIn(c.getEnclosedElements())) {
+                Collection<Modifier> modifiers = element.getModifiers();
                 if (!modifiers.contains(Modifier.STATIC)) {
-                    results.add(field);
+                    results.add(element);
                 }
             }
         }
 
-        List<FieldDeclaration> hiderFieldDeclarations =
-            new LinkedList<FieldDeclaration>();
-        for (Iterator<FieldDeclaration> it = results.iterator(); it.hasNext();) {
-            FieldDeclaration hidden = it.next();
-            for (FieldDeclaration hider : hiderFieldDeclarations) {
-                if (env.getDeclarationUtils().hides(hider, hidden)) {
+        List<VariableElement> hiderFieldDeclarations =
+            new LinkedList<VariableElement>();
+        for (Iterator<VariableElement> it = results.iterator(); it.hasNext();) {
+            Element hidden = it.next();
+            for (Element hider : hiderFieldDeclarations) {
+                if (processingEnv.getElementUtils().hides(hider, hidden)) {
                     it.remove();
                 }
             }
@@ -624,38 +597,42 @@ public class ModelMetaDescFactory {
     /**
      * Returns method declarations.
      * 
-     * @param classDeclaration
+     * @param classElement
      *            the class declaration
      * @return method declarations
      */
-    protected List<MethodDeclaration> getMethodDeclarations(
-            ClassDeclaration classDeclaration) {
-        List<MethodDeclaration> results = new LinkedList<MethodDeclaration>();
-        for (ClassDeclaration c = classDeclaration; c != null
-            && !c.getQualifiedName().equals(Object.class.getName()); c =
-            c.getSuperclass().getDeclaration()) {
+    protected List<ExecutableElement> getMethodDeclarations(
+            TypeElement classElement) {
+        List<ExecutableElement> results = new LinkedList<ExecutableElement>();
+        for (TypeElement c = classElement; c != null
+            && !c.getQualifiedName().toString().equals(Object.class.getName()); c =
+            (TypeElement) processingEnv.getTypeUtils().asElement(
+                c.getSuperclass())) {
             gatherClassMethodDeclarations(c, results);
-            for (InterfaceType superinterfaceType : c.getSuperinterfaces()) {
-                InterfaceDeclaration superinterfaceDeclaration =
-                    superinterfaceType.getDeclaration();
-                if (superinterfaceDeclaration == null) {
-                    throw new UnknownDeclarationException(
-                        env,
-                        classDeclaration,
+            for (TypeMirror superinterfaceType : c.getInterfaces()) {
+                TypeElement el =
+                    (TypeElement) processingEnv.getTypeUtils().asElement(
                         superinterfaceType);
+                TypeMirror superinterfaceDeclaration = el.getSuperclass();
+                if (superinterfaceDeclaration == null) {
+                    throw new UnknownDeclarationException(classElement, el);
                 }
-                gatherInterfaceMethodDeclarations(
-                    superinterfaceDeclaration,
-                    results);
+                TypeElement superEl =
+                    (TypeElement) processingEnv.getTypeUtils().asElement(
+                        superinterfaceDeclaration);
+                gatherInterfaceMethodDeclarations(superEl, results);
             }
         }
 
-        List<MethodDeclaration> overriderMethodDeclarations =
-            new LinkedList<MethodDeclaration>();
-        for (Iterator<MethodDeclaration> it = results.iterator(); it.hasNext();) {
-            MethodDeclaration overriden = it.next();
-            for (MethodDeclaration overrider : overriderMethodDeclarations) {
-                if (env.getDeclarationUtils().overrides(overrider, overriden)) {
+        List<ExecutableElement> overriderMethodDeclarations =
+            new LinkedList<ExecutableElement>();
+        for (Iterator<ExecutableElement> it = results.iterator(); it.hasNext();) {
+            Element overriden = it.next();
+            for (Element overrider : overriderMethodDeclarations) {
+                if (processingEnv.getElementUtils().overrides(
+                    (ExecutableElement) overrider,
+                    (ExecutableElement) overriden,
+                    classElement)) {
                     it.remove();
                 }
             }
@@ -666,19 +643,19 @@ public class ModelMetaDescFactory {
     /**
      * Gather class method declarations.
      * 
-     * @param classDeclaration
+     * @param classElement
      *            the class declaration
      * @param methodDeclarations
      *            the list of method declarations
      */
-    protected void gatherClassMethodDeclarations(
-            ClassDeclaration classDeclaration,
-            List<MethodDeclaration> methodDeclarations) {
-        for (MethodDeclaration method : classDeclaration.getMethods()) {
-            Collection<Modifier> modifiers = method.getModifiers();
+    protected void gatherClassMethodDeclarations(TypeElement classElement,
+            List<ExecutableElement> methodDeclarations) {
+        for (ExecutableElement element : methodsIn(classElement
+            .getEnclosedElements())) {
+            Collection<Modifier> modifiers = element.getModifiers();
             if (modifiers.contains(Modifier.PUBLIC)
                 && !modifiers.contains(Modifier.STATIC)) {
-                methodDeclarations.add(method);
+                methodDeclarations.add(element);
             }
         }
     }
@@ -692,24 +669,26 @@ public class ModelMetaDescFactory {
      *            the list of method declarations
      */
     protected void gatherInterfaceMethodDeclarations(
-            InterfaceDeclaration interfaceDeclaration,
-            List<MethodDeclaration> methodDeclarations) {
-        for (MethodDeclaration method : interfaceDeclaration.getMethods()) {
+            TypeElement interfaceDeclaration,
+            List<ExecutableElement> methodDeclarations) {
+        for (ExecutableElement method : methodsIn(interfaceDeclaration
+            .getEnclosedElements())) {
             methodDeclarations.add(method);
         }
-        for (InterfaceType superinterfaceType : interfaceDeclaration
-            .getSuperinterfaces()) {
-            InterfaceDeclaration superInterfaceDeclaration =
-                superinterfaceType.getDeclaration();
-            if (superInterfaceDeclaration == null) {
-                throw new UnknownDeclarationException(
-                    env,
-                    interfaceDeclaration,
+        for (TypeMirror superinterfaceType : interfaceDeclaration
+            .getInterfaces()) {
+
+            TypeElement el =
+                (TypeElement) processingEnv.getTypeUtils().asElement(
                     superinterfaceType);
+            TypeMirror superInterfaceDeclaration = el.getSuperclass();
+            if (superInterfaceDeclaration == null) {
+                throw new UnknownDeclarationException(interfaceDeclaration, el);
             }
-            gatherInterfaceMethodDeclarations(
-                superInterfaceDeclaration,
-                methodDeclarations);
+            TypeElement superEl =
+                (TypeElement) processingEnv.getTypeUtils().asElement(
+                    superInterfaceDeclaration);
+            gatherInterfaceMethodDeclarations(superEl, methodDeclarations);
         }
     }
 
@@ -764,7 +743,5 @@ public class ModelMetaDescFactory {
         public List<String> getClassHierarchyList() {
             return classHierarchyList;
         }
-
     }
-
 }

@@ -17,50 +17,62 @@ package org.slim3.gen.util;
 
 import java.util.regex.Pattern;
 
-import com.sun.mirror.declaration.FieldDeclaration;
-import com.sun.mirror.type.PrimitiveType.Kind;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeKind;
+
 
 /**
- * A utility class for {@link FieldDeclaration}.
+ * A utility class for {@link VariableElement}.
  * 
  * @author taedium
  * 
  */
-@SuppressWarnings("deprecation")
 public final class FieldDeclarationUtil {
 
-    private static Pattern isPrefixedFieldPattern =
-        Pattern.compile("^is[A-Z].*");
+    private static Pattern isPrefixedFieldPattern = Pattern
+        .compile("^is[A-Z].*");
+
+    /** the processing environment */
+    @SuppressWarnings("unused")
+    private static ProcessingEnvironment processingEnv;
+
+    /**
+     * @param processingEnv
+     */
+    public static void init(ProcessingEnvironment processingEnv) {
+        FieldDeclarationUtil.processingEnv = processingEnv;
+    }
 
     /**
      * Get the read method name.
      * 
-     * @param fieldDeclaration
+     * @param fieldElement
      *            the field declaration
      * @return the read method name
      */
-    public static String getReadMethodName(FieldDeclaration fieldDeclaration) {
-        if (fieldDeclaration == null) {
+    public static String getReadMethodName(VariableElement fieldElement) {
+        if (fieldElement == null) {
             throw new NullPointerException(
                 "The fieldDeclaration parameter is null.");
         }
-        return getReadMethodNames(fieldDeclaration)[0];
+        return getReadMethodNames(fieldElement)[0];
     }
 
     /**
      * Get the read method names.
      * 
-     * @param fieldDeclaration
+     * @param fieldElement
      *            the field declaration
      * @return the read method names
      */
-    public static String[] getReadMethodNames(FieldDeclaration fieldDeclaration) {
-        if (fieldDeclaration == null) {
+    public static String[] getReadMethodNames(VariableElement fieldElement) {
+        if (fieldElement == null) {
             throw new NullPointerException(
                 "The fieldDeclaration parameter is null.");
         }
-        String fieldName = fieldDeclaration.getSimpleName();
-        if (TypeUtil.isPrimitive(fieldDeclaration.getType(), Kind.BOOLEAN)) {
+        String fieldName = fieldElement.getSimpleName().toString();
+        if (TypeUtil.isPrimitive(fieldElement.asType(), TypeKind.BOOLEAN)) {
             if (isPrefixedFieldPattern.matcher(fieldName).matches()) {
                 return new String[] { fieldName };
             }
@@ -73,17 +85,17 @@ public final class FieldDeclarationUtil {
     /**
      * Get the write method name.
      * 
-     * @param fieldDeclaration
+     * @param fieldElement
      *            the field declaration
      * @return the write method name
      */
-    public static String getWriteMethodName(FieldDeclaration fieldDeclaration) {
-        if (fieldDeclaration == null) {
+    public static String getWriteMethodName(VariableElement fieldElement) {
+        if (fieldElement == null) {
             throw new NullPointerException(
                 "The fieldDeclaration parameter is null.");
         }
-        String fieldName = fieldDeclaration.getSimpleName();
-        if (TypeUtil.isPrimitive(fieldDeclaration.getType(), Kind.BOOLEAN)) {
+        String fieldName = fieldElement.getSimpleName().toString();
+        if (TypeUtil.isPrimitive(fieldElement.asType(), TypeKind.BOOLEAN)) {
             if (isPrefixedFieldPattern.matcher(fieldName).matches()) {
                 return "set" + fieldName.substring(2);
             }
@@ -94,22 +106,21 @@ public final class FieldDeclarationUtil {
     /**
      * Returns JavaBeans property name.
      * 
-     * @param fieldDeclaration
+     * @param fieldElement
      *            the field declaration
      * @return JavaBeans property name
      */
-    public static String getPropertyName(FieldDeclaration fieldDeclaration) {
-        if (fieldDeclaration == null) {
+    public static String getPropertyName(VariableElement fieldElement) {
+        if (fieldElement == null) {
             throw new NullPointerException(
                 "The fieldDeclaration parameter is null.");
         }
-        String fieldName = fieldDeclaration.getSimpleName();
-        if (TypeUtil.isPrimitive(fieldDeclaration.getType(), Kind.BOOLEAN)) {
+        String fieldName = fieldElement.getSimpleName().toString();
+        if (TypeUtil.isPrimitive(fieldElement.asType(), TypeKind.BOOLEAN)) {
             if (isPrefixedFieldPattern.matcher(fieldName).matches()) {
                 return StringUtil.decapitalize(fieldName.substring(2));
             }
         }
         return fieldName;
     }
-
 }

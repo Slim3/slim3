@@ -21,21 +21,23 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.ArrayType;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.PrimitiveType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.SimpleTypeVisitor6;
+
 import org.slim3.gen.message.MessageCode;
 import org.slim3.gen.processor.UnknownDeclarationException;
 import org.slim3.gen.processor.ValidationException;
 import org.slim3.gen.util.TypeUtil;
-
-import com.sun.mirror.apt.AnnotationProcessorEnvironment;
-import com.sun.mirror.declaration.Declaration;
-import com.sun.mirror.declaration.TypeDeclaration;
-import com.sun.mirror.type.ArrayType;
-import com.sun.mirror.type.DeclaredType;
-import com.sun.mirror.type.EnumType;
-import com.sun.mirror.type.PrimitiveType;
-import com.sun.mirror.type.TypeMirror;
-import com.sun.mirror.type.PrimitiveType.Kind;
-import com.sun.mirror.util.SimpleTypeVisitor;
 
 /**
  * Represents a datastore data type factory.
@@ -44,19 +46,18 @@ import com.sun.mirror.util.SimpleTypeVisitor;
  * @since 1.0.0
  * 
  */
-@SuppressWarnings("deprecation")
 public class DataTypeFactory {
 
     /** the supported primitive types */
-    protected static final Map<Kind, CorePrimitiveType> CORE_PRIMITIVE_TYPES =
-        new HashMap<Kind, CorePrimitiveType>();
+    protected static final Map<TypeKind, CorePrimitiveType> CORE_PRIMITIVE_TYPES =
+        new HashMap<TypeKind, CorePrimitiveType>();
     static {
-        CORE_PRIMITIVE_TYPES.put(Kind.BOOLEAN, new PrimitiveBooleanType());
-        CORE_PRIMITIVE_TYPES.put(Kind.SHORT, new PrimitiveShortType());
-        CORE_PRIMITIVE_TYPES.put(Kind.INT, new PrimitiveIntType());
-        CORE_PRIMITIVE_TYPES.put(Kind.LONG, new PrimitiveLongType());
-        CORE_PRIMITIVE_TYPES.put(Kind.FLOAT, new PrimitiveFloatType());
-        CORE_PRIMITIVE_TYPES.put(Kind.DOUBLE, new PrimitiveDoubleType());
+        CORE_PRIMITIVE_TYPES.put(TypeKind.BOOLEAN, new PrimitiveBooleanType());
+        CORE_PRIMITIVE_TYPES.put(TypeKind.SHORT, new PrimitiveShortType());
+        CORE_PRIMITIVE_TYPES.put(TypeKind.INT, new PrimitiveIntType());
+        CORE_PRIMITIVE_TYPES.put(TypeKind.LONG, new PrimitiveLongType());
+        CORE_PRIMITIVE_TYPES.put(TypeKind.FLOAT, new PrimitiveFloatType());
+        CORE_PRIMITIVE_TYPES.put(TypeKind.DOUBLE, new PrimitiveDoubleType());
     }
 
     /** the supported value types */
@@ -88,50 +89,55 @@ public class DataTypeFactory {
     }
 
     /** the environment */
-    protected final AnnotationProcessorEnvironment env;
+    final ProcessingEnvironment processingEnv;
+    final RoundEnvironment roundEnv;
 
     /**
      * Creates a new {@link DataTypeFactory}.
      * 
-     * @param env
-     *            the environment
+     * @param processingEnv
+     *            the processing environment
+     * @param roundEnv
+     *            the round environment
      */
-    public DataTypeFactory(AnnotationProcessorEnvironment env) {
-        this.env = env;
+    public DataTypeFactory(ProcessingEnvironment processingEnv,
+            RoundEnvironment roundEnv) {
+        this.processingEnv = processingEnv;
+        this.roundEnv = roundEnv;
     }
 
     /**
      * Creates a new {@link DataType}.
      * 
-     * @param declaration
+     * @param fieldElement
      *            the declaration
      * @param typeMirror
      *            the typemirror
      * @return a new {@link DataType}
      */
-    public DataType createDataType(Declaration declaration,
+    public DataType createDataType(VariableElement fieldElement,
             TypeMirror typeMirror) {
-        if (declaration == null) {
+        if (fieldElement == null) {
             throw new NullPointerException("The declaration parameter is null.");
         }
         if (typeMirror == null) {
             throw new NullPointerException("The typeMirror parameter is null.");
         }
-        return createDataTypeInternal(declaration, typeMirror);
+        return createDataTypeInternal(fieldElement, typeMirror);
     }
 
     /**
      * Creates a new {@link DataType} internally.
      * 
-     * @param declaration
+     * @param fieldElement
      *            the declaration
      * @param typeMirror
      *            the typemirror
      * @return a new {@link DataType}
      */
-    protected DataType createDataTypeInternal(Declaration declaration,
+    protected DataType createDataTypeInternal(Element fieldElement,
             TypeMirror typeMirror) {
-        Builder builder = new Builder(declaration, typeMirror);
+        Builder builder = new Builder(fieldElement, typeMirror);
         return builder.build();
     }
 
@@ -142,10 +148,10 @@ public class DataTypeFactory {
      * @since 1.0.0
      * 
      */
-    protected class Builder extends SimpleTypeVisitor {
+    protected class Builder extends SimpleTypeVisitor6<Void, Void> {
 
         /** the declaration */
-        protected final Declaration declaration;
+        protected final Element declaration;
 
         /** the typemirror */
         protected final TypeMirror typeMirror;
@@ -156,13 +162,13 @@ public class DataTypeFactory {
         /**
          * Creates a new {@link Builder}
          * 
-         * @param declaration
+         * @param fieldElement
          *            the declaration
          * @param typeMirror
          *            the typemirror
          */
-        public Builder(Declaration declaration, TypeMirror typeMirror) {
-            this.declaration = declaration;
+        public Builder(Element fieldElement, TypeMirror typeMirror) {
+            this.declaration = fieldElement;
             this.typeMirror = typeMirror;
         }
 
@@ -172,31 +178,31 @@ public class DataTypeFactory {
          * @return a datastore type
          */
         public DataType build() {
-            typeMirror.accept(this);
+            typeMirror.accept(this, null);
             return dataType;
         }
 
         @Override
-        public void visitArrayType(final ArrayType arrayType) {
+        public Void visitArray(final ArrayType arrayType, Void p) {
             final TypeMirror componentType = arrayType.getComponentType();
-            componentType.accept(new SimpleTypeVisitor() {
+            componentType.accept(new SimpleTypeVisitor6<Void, Void>() {
 
                 @Override
-                public void visitPrimitiveType(PrimitiveType primitiveType) {
-                    Kind kind = primitiveType.getKind();
-                    if (kind == Kind.BYTE) {
+                public Void visitPrimitive(PrimitiveType primitiveType, Void p) {
+                    TypeKind kind = primitiveType.getKind();
+                    if (kind == TypeKind.BYTE) {
                         dataType =
                             new org.slim3.gen.datastore.ArrayType(
                                 primitive_byte + "[]",
                                 arrayType.toString(),
                                 new PrimitiveByteType());
-                        return;
+                        return null;
                     }
-                    super.visitPrimitiveType(primitiveType);
+                    return super.visitPrimitive(primitiveType, p);
                 }
 
                 @Override
-                public void visitTypeMirror(TypeMirror typemirror) {
+                protected Void defaultAction(TypeMirror typemirror, Void p) {
                     dataType =
                         new org.slim3.gen.datastore.ArrayType(
                             typeMirror.toString(),
@@ -204,73 +210,75 @@ public class DataTypeFactory {
                             new OtherReferenceType(
                                 typeMirror.toString(),
                                 typeMirror.toString()));
+                    return null;
                 }
-            });
+            },
+                null);
+            return null;
         }
 
         @Override
-        public void visitDeclaredType(DeclaredType declaredType) {
-            TypeDeclaration typeDeclaration = toTypeDeclaration(declaredType);
-            String className = typeDeclaration.getQualifiedName();
+        public Void visitDeclared(DeclaredType declaredType, Void p) {
+            TypeElement typeDeclaration = toTypeDeclaration(declaredType);
+            String className = typeDeclaration.getQualifiedName().toString();
             dataType = getCoreReferenceType(className, declaredType);
             if (dataType != null) {
-                return;
+                return null;
             }
             dataType = getModelRefType(className, declaredType);
             if (dataType != null) {
-                return;
+                return null;
             }
             dataType = getInverseModelRefType(className, declaredType);
             if (dataType != null) {
-                return;
+                return null;
             }
             dataType = getInverseModelListRefType(className, declaredType);
             if (dataType != null) {
-                return;
+                return null;
             }
             dataType = getCollectionType(className, declaredType);
             if (dataType != null) {
-                return;
+                return null;
             }
             dataType =
                 new OtherReferenceType(className, declaredType.toString());
+            return null;
         }
 
         @Override
-        public void visitPrimitiveType(PrimitiveType primitiveType) {
-            Kind kind = primitiveType.getKind();
+        public Void visitPrimitive(PrimitiveType primitiveType, Void p) {
+            TypeKind kind = primitiveType.getKind();
             dataType = getCorePrimitiveType(kind);
             if (dataType != null) {
-                return;
+                return null;
             }
             throw new ValidationException(
                 MessageCode.SLIM3GEN1002,
-                env,
-                declaration.getPosition(),
+                declaration,
                 kind.name().toLowerCase());
         }
 
         @Override
-        public void visitTypeMirror(TypeMirror typeMirror) {
+        protected Void defaultAction(TypeMirror typeMirror, Void p) {
             throw new AssertionError("unreachable");
         }
 
         /**
-         * Converts {@link DeclaredType} to {@link TypeDeclaration}.
+         * Converts {@link DeclaredType} to {@link TypeElement}.
          * 
          * @param declaredType
          *            the declared type
          * @return a type declaration
          */
-        protected TypeDeclaration toTypeDeclaration(DeclaredType declaredType) {
-            TypeDeclaration typeDeclaration = declaredType.getDeclaration();
-            if (typeDeclaration != null) {
-                return typeDeclaration;
+        protected TypeElement toTypeDeclaration(DeclaredType declaredType) {
+            TypeElement typeElement = (TypeElement) declaredType.asElement();
+            if (typeElement != null) {
+                return typeElement;
             }
             throw new UnknownDeclarationException(
-                env,
                 declaration,
-                declaredType);
+                declaredType.asElement());
         }
 
         /**
@@ -287,19 +295,10 @@ public class DataTypeFactory {
             if (CORE_REFERENCE_TYPES.containsKey(className)) {
                 return CORE_REFERENCE_TYPES.get(className);
             }
-            class Visitor extends SimpleTypeVisitor {
-
-                CoreReferenceType result;
-
-                @Override
-                public void visitEnumType(EnumType enumType) {
-                    this.result =
-                        new org.slim3.gen.datastore.EnumType(className);
-                }
+            if (declaredType.asElement().getKind() == ElementKind.ENUM) {
+                return new org.slim3.gen.datastore.EnumType(className);
             }
-            Visitor visitor = new Visitor();
-            declaredType.accept(visitor);
-            return visitor.result;
+            return null;
         }
 
         /**
@@ -318,12 +317,12 @@ public class DataTypeFactory {
             if (referenceModelType == null) {
                 return null;
             }
-            TypeDeclaration referenceModelDeclaration =
+            TypeElement referenceModelDeclaration =
                 toTypeDeclaration(referenceModelType);
             return new ModelRefType(
                 className,
                 declaredType.toString(),
-                referenceModelDeclaration.getQualifiedName(),
+                referenceModelDeclaration.getQualifiedName().toString(),
                 referenceModelType.toString());
         }
 
@@ -343,12 +342,12 @@ public class DataTypeFactory {
             if (referenceModelType == null) {
                 return null;
             }
-            TypeDeclaration referenceModelDeclaration =
+            TypeElement referenceModelDeclaration =
                 toTypeDeclaration(referenceModelType);
             return new InverseModelRefType(
                 className,
                 declaredType.toString(),
-                referenceModelDeclaration.getQualifiedName(),
+                referenceModelDeclaration.getQualifiedName().toString(),
                 referenceModelType.toString());
         }
 
@@ -371,12 +370,12 @@ public class DataTypeFactory {
             if (referenceModelType == null) {
                 return null;
             }
-            TypeDeclaration referenceModelDeclaration =
+            TypeElement referenceModelDeclaration =
                 toTypeDeclaration(referenceModelType);
             return new InverseModelListRefType(
                 className,
                 declaredType.toString(),
-                referenceModelDeclaration.getQualifiedName(),
+                referenceModelDeclaration.getQualifiedName().toString(),
                 referenceModelType.toString());
         }
 
@@ -394,14 +393,12 @@ public class DataTypeFactory {
         protected DeclaredType getReferenceModelType(String className,
                 DeclaredType declaredType, String superclassName) {
             DeclaredType supertype =
-                TypeUtil
-                    .getSuperDeclaredType(env, declaredType, superclassName);
-            if (supertype == null
-                || supertype.getActualTypeArguments().isEmpty()) {
+                TypeUtil.getSuperDeclaredType(declaredType, superclassName);
+            if (supertype == null || supertype.getTypeArguments().isEmpty()) {
                 return null;
             }
             return TypeUtil.toDeclaredType(supertype
-                .getActualTypeArguments()
+                .getTypeArguments()
                 .iterator()
                 .next());
         }
@@ -413,7 +410,7 @@ public class DataTypeFactory {
          *            the primitive kind
          * @return a core reference type
          */
-        protected CorePrimitiveType getCorePrimitiveType(Kind kind) {
+        protected CorePrimitiveType getCorePrimitiveType(TypeKind kind) {
             return CORE_PRIMITIVE_TYPES.get(kind);
         }
 
@@ -428,16 +425,21 @@ public class DataTypeFactory {
          */
         protected CollectionType getCollectionType(String className,
                 DeclaredType declaredType) {
-            if (!TypeUtil.isSubtype(env, declaredType, Collection.class)) {
+            if (!processingEnv.getTypeUtils().isSubtype(
+                processingEnv.getTypeUtils().erasure(declaredType),
+                processingEnv.getTypeUtils().erasure(
+                    processingEnv
+                        .getElementUtils()
+                        .getTypeElement(Collection.class.getCanonicalName())
+                        .asType()))) {
                 return null;
             }
-            Collection<TypeMirror> typeArgs =
-                declaredType.getActualTypeArguments();
+            Collection<? extends TypeMirror> typeArgs =
+                declaredType.getTypeArguments();
             if (typeArgs.isEmpty()) {
                 throw new ValidationException(
                     MessageCode.SLIM3GEN1004,
-                    env,
-                    declaration.getPosition(),
+                    declaration,
                     declaredType);
             }
             TypeMirror elementType = typeArgs.iterator().next();
@@ -446,16 +448,15 @@ public class DataTypeFactory {
             if (elementDeclaredType == null) {
                 throw new ValidationException(
                     MessageCode.SLIM3GEN1016,
-                    env,
-                    declaration.getPosition(),
+                    declaration,
                     elementType);
             }
-            TypeDeclaration elementDeclaration =
+            TypeElement elementDeclaration =
                 toTypeDeclaration(elementDeclaredType);
             CoreReferenceType elementCoreReferenceType =
-                getCoreReferenceType(
-                    elementDeclaration.getQualifiedName(),
-                    elementDeclaredType);
+                getCoreReferenceType(elementDeclaration
+                    .getQualifiedName()
+                    .toString(), elementDeclaredType);
             if (elementCoreReferenceType != null) {
                 return createCollectionType(
                     className,
@@ -509,11 +510,8 @@ public class DataTypeFactory {
             }
             throw new ValidationException(
                 MessageCode.SLIM3GEN1002,
-                env,
-                declaration.getPosition(),
+                declaration,
                 className);
         }
-
     }
-
 }

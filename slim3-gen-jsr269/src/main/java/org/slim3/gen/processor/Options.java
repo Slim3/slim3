@@ -15,18 +15,18 @@
  */
 package org.slim3.gen.processor;
 
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.ProcessingEnvironment;
+
 import org.slim3.gen.Constants;
 
-import com.sun.mirror.apt.AnnotationProcessor;
-import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 
 /**
- * Represents options for {@link AnnotationProcessor}.
+ * Represents options for {@link AbstractProcessor}.
  * 
  * @author taedium
  * @since 1.0.0
  */
-@SuppressWarnings("deprecation")
 public final class Options {
 
     private static final double javaVersion = getJavaVersion();
@@ -61,7 +61,7 @@ public final class Options {
      * @return {@code true} if the debug option enabled otherwirse {@code false}
      *         .
      */
-    public static boolean isDebugEnabled(AnnotationProcessorEnvironment env) {
+    public static boolean isDebugEnabled(ProcessingEnvironment env) {
         String debug = env.getOptions().get(Options.DEBUG);
         if (debug == null) {
             return false;
@@ -76,7 +76,7 @@ public final class Options {
      *            the environment.
      * @return java version
      */
-    public static double getJavaVersion(AnnotationProcessorEnvironment env) {
+    public static double getJavaVersion(ProcessingEnvironment env) {
         String version = env.getOptions().get(Options.JAVA_VERSION);
         if (version != null) {
             try {
@@ -94,7 +94,7 @@ public final class Options {
      *            the environment.
      * @return the model package.
      */
-    public static String getModelPackage(AnnotationProcessorEnvironment env) {
+    public static String getModelPackage(ProcessingEnvironment env) {
         String modelPackage = env.getOptions().get(Options.MODEL_PACKAGE);
         return modelPackage != null ? modelPackage : Constants.MODEL_PACKAGE;
     }
@@ -106,7 +106,7 @@ public final class Options {
      *            the environment.
      * @return the meta package.
      */
-    public static String getMetaPackage(AnnotationProcessorEnvironment env) {
+    public static String getMetaPackage(ProcessingEnvironment env) {
         String metaPackage = env.getOptions().get(Options.META_PACKAGE);
         return metaPackage != null ? metaPackage : Constants.META_PACKAGE;
     }
@@ -118,7 +118,7 @@ public final class Options {
      *            the environment.
      * @return the shared package.
      */
-    public static String getSharedPackage(AnnotationProcessorEnvironment env) {
+    public static String getSharedPackage(ProcessingEnvironment env) {
         String sharedPackage = env.getOptions().get(Options.SHARED_PACKAGE);
         return sharedPackage != null ? sharedPackage : Constants.SHARED_PACKAGE;
     }
@@ -130,7 +130,7 @@ public final class Options {
      *            the environment.
      * @return the server package.
      */
-    public static String getServerPackage(AnnotationProcessorEnvironment env) {
+    public static String getServerPackage(ProcessingEnvironment env) {
         String serverPackage = env.getOptions().get(Options.SERVER_PACKAGE);
         return serverPackage != null ? serverPackage : Constants.SERVER_PACKAGE;
     }

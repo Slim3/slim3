@@ -15,19 +15,20 @@
  */
 package org.slim3.gen.util;
 
+import static javax.lang.model.util.ElementFilter.*;
+
 import java.util.HashSet;
 import java.util.Set;
 
-import com.sun.mirror.apt.AnnotationProcessorEnvironment;
-import com.sun.mirror.declaration.TypeDeclaration;
-import com.sun.mirror.type.ClassType;
-import com.sun.mirror.type.DeclaredType;
-import com.sun.mirror.type.InterfaceType;
-import com.sun.mirror.type.PrimitiveType;
-import com.sun.mirror.type.TypeMirror;
-import com.sun.mirror.type.VoidType;
-import com.sun.mirror.type.PrimitiveType.Kind;
-import com.sun.mirror.util.SimpleTypeVisitor;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.NoType;
+import javax.lang.model.type.PrimitiveType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.SimpleTypeVisitor6;
 
 /**
  * A utility class for operationg typemirrors.
@@ -36,29 +37,35 @@ import com.sun.mirror.util.SimpleTypeVisitor;
  * @since 1.0.0
  * 
  */
-@SuppressWarnings("deprecation")
 public final class TypeUtil {
+
+    private static ProcessingEnvironment processingEnv;
+
+    /**
+     * @param processingEnv
+     */
+    public static void init(ProcessingEnvironment processingEnv) {
+        TypeUtil.processingEnv = processingEnv;
+    }
 
     /**
      * Returns {@code true} if a typeMirror represents void.
      * 
      * @param typeMirror
      *            the typemirror
-     * @return {@code true} if a typeMirror represents void, otherwise {@code
-     *         false}.
+     * @return {@code true} if a typeMirror represents void, otherwise
+     *         {@code false}.
      */
     public static boolean isVoid(TypeMirror typeMirror) {
-        class Visitor extends SimpleTypeVisitor {
-            boolean result;
-
+        class Visitor extends SimpleTypeVisitor6<Boolean, Void> {
             @Override
-            public void visitVoidType(VoidType voidtype) {
-                result = true;
+            public Boolean visitNoType(NoType t, Void p) {
+                return t.getKind() == TypeKind.VOID;
             }
         }
         Visitor visitor = new Visitor();
-        typeMirror.accept(visitor);
-        return visitor.result;
+        Boolean result = typeMirror.accept(visitor, null);
+        return result != null ? result : false;
     }
 
     /**
@@ -71,18 +78,16 @@ public final class TypeUtil {
      * @return {@code true} if a typeMirror represents primitive, otherwise
      *         {@code false}.
      */
-    public static boolean isPrimitive(TypeMirror typeMirror, final Kind kind) {
-        class Visitor extends SimpleTypeVisitor {
-            boolean result;
-
+    public static boolean isPrimitive(TypeMirror typeMirror, final TypeKind kind) {
+        class Visitor extends SimpleTypeVisitor6<Boolean, TypeKind> {
             @Override
-            public void visitPrimitiveType(PrimitiveType primitivetype) {
-                result = primitivetype.getKind() == kind;
+            public Boolean visitPrimitive(PrimitiveType t, TypeKind kind) {
+                return t.getKind() == kind;
             }
         }
         Visitor visitor = new Visitor();
-        typeMirror.accept(visitor);
-        return visitor.result;
+        Boolean result = typeMirror.accept(visitor, kind);
+        return result != null ? result : false;
     }
 
     /**
@@ -94,135 +99,118 @@ public final class TypeUtil {
      *         otherwise {@code null}.
      */
     public static DeclaredType toDeclaredType(TypeMirror typeMirror) {
-        class Visitor extends SimpleTypeVisitor {
-            DeclaredType result;
-
+        class Visitor extends SimpleTypeVisitor6<DeclaredType, Void> {
             @Override
-            public void visitDeclaredType(DeclaredType declaredtype) {
-                result = declaredtype;
+            public DeclaredType visitDeclared(DeclaredType t, Void p) {
+                return t;
             }
         }
         Visitor visitor = new Visitor();
-        typeMirror.accept(visitor);
-        return visitor.result;
+        return typeMirror.accept(visitor, null);
     }
 
     /**
-     * Returns {@code true} if a typeMirror represents {@link ClassType}.
+     * Returns {@code true} if a typeMirror represents {@link DeclaredType}.
      * 
      * @param typeMirror
      *            the typemirror
-     * @return {@code true} if a typeMirror represents {@link ClassType},
+     * @return {@code true} if a typeMirror represents {@link DeclaredType},
      *         otherwise {@code null}.
      */
-    public static ClassType toClassType(TypeMirror typeMirror) {
-        class Visitor extends SimpleTypeVisitor {
-            ClassType result;
-
+    public static DeclaredType toClassType(TypeMirror typeMirror) {
+        class Visitor extends SimpleTypeVisitor6<DeclaredType, Void> {
             @Override
-            public void visitClassType(ClassType classtype) {
-                result = classtype;
+            public DeclaredType visitDeclared(DeclaredType t, Void p) {
+                if (t.asElement().getKind() == ElementKind.CLASS) {
+                    return t;
+                }
+                return null;
             }
-
         }
         Visitor visitor = new Visitor();
-        typeMirror.accept(visitor);
-        return visitor.result;
+        return typeMirror.accept(visitor, null);
     }
 
     /**
      * Returns {@code true} if a {@code subtype} is subtype of {@code supertype}
      * .
      * 
-     * @param env
-     *            the environment
      * @param subtype
      *            the typemirror of subtype
      * @param supertype
      *            the supertype
-     * @return {@code true} if a {@code subtype} is subtype of {@code
-     *         superclass}, otherwise {@code false}.
+     * @return {@code true} if a {@code subtype} is subtype of
+     *         {@code superclass}, otherwise {@code false}.
      */
-    public static boolean isSubtype(AnnotationProcessorEnvironment env,
-            TypeMirror subtype, Class<?> supertype) {
-        TypeDeclaration supertypeDeclaration =
-            env.getTypeDeclaration(supertype.getName());
+    public static boolean isSubtype(TypeMirror subtype, Class<?> supertype) {
+
+        TypeElement supertypeDeclaration =
+            processingEnv.getElementUtils().getTypeElement(supertype.getName());
         if (supertypeDeclaration == null) {
             return false;
         }
-        TypeMirror t1 = env.getTypeUtils().getErasure(subtype);
-        TypeMirror t2 =
-            env.getTypeUtils().getDeclaredType(supertypeDeclaration);
-        return env.getTypeUtils().isSubtype(t1, t2);
+        TypeMirror t1 = processingEnv.getTypeUtils().erasure(subtype);
+        DeclaredType t2 =
+            processingEnv.getTypeUtils().getDeclaredType(supertypeDeclaration);
+        return processingEnv.getTypeUtils().isSubtype(t1, t2);
     }
 
     /**
      * Returns {@code true} if a {@code subtype} is subtype of {@code supertype}
      * .
      * 
-     * @param env
-     *            the environment
      * @param subtype
      *            the typemirror of subtype
      * @param supertype
      *            the supertype
-     * @return {@code true} if a {@code subtype} is subtype of {@code
-     *         superclass}, otherwise {@code false}.
+     * @return {@code true} if a {@code subtype} is subtype of
+     *         {@code superclass}, otherwise {@code false}.
      */
-    public static boolean isSubtype(AnnotationProcessorEnvironment env,
-            TypeMirror subtype, String supertype) {
-        return getSuperDeclaredType(env, subtype, supertype) != null;
+    public static boolean isSubtype(TypeMirror subtype, String supertype) {
+        return getSuperDeclaredType(subtype, supertype) != null;
     }
 
     /**
      * Returns super {@link DeclaredType} of {@code subtype}.
      * 
-     * @param env
-     *            the environment
      * @param subtype
      *            the typemirror of subtype
      * @param supertype
      *            the supertype
      * @return super {@link DeclaredType} of {@code subtype}
      */
-    public static DeclaredType getSuperDeclaredType(
-            AnnotationProcessorEnvironment env, TypeMirror subtype,
+    public static DeclaredType getSuperDeclaredType(TypeMirror subtype,
             String supertype) {
-        TypeDeclaration supertypeDeclaration =
-            env.getTypeDeclaration(supertype);
-        if (supertypeDeclaration == null) {
-            return null;
-        }
 
-        class Visitor extends SimpleTypeVisitor {
+        TypeElement supertypeDeclaration =
+            processingEnv.getElementUtils().getTypeElement(supertype);
+
+        class Visitor extends SimpleTypeVisitor6<Void, Void> {
 
             Set<DeclaredType> supertypes = new HashSet<DeclaredType>();
 
             @Override
-            public void visitDeclaredType(DeclaredType declaredType) {
+            public Void visitDeclared(DeclaredType declaredType, Void p) {
                 supertypes.add(declaredType);
-                for (InterfaceType supertype : declaredType
-                    .getSuperinterfaces()) {
-                    supertype.accept(this);
+                for (TypeElement superElement : typesIn(declaredType
+                    .asElement()
+                    .getEnclosedElements())) {
+                    if (superElement.getKind() == ElementKind.INTERFACE) {
+                        superElement.asType().accept(this, null);
+                    } else if (superElement.getKind() == ElementKind.CLASS) {
+                        superElement.asType().accept(this, null);
+                    }
                 }
+                return null;
             }
-
-            @Override
-            public void visitClassType(ClassType classType) {
-                supertypes.add(classType);
-                ClassType supertype = classType.getSuperclass();
-                if (supertype != null) {
-                    supertype.accept(this);
-                    super.visitClassType(classType);
-                }
-            }
-
         }
         Visitor visitor = new Visitor();
-        subtype.accept(visitor);
+        subtype.accept(visitor, null);
         for (DeclaredType type : visitor.supertypes) {
-            TypeDeclaration subtypeDeclaration = type.getDeclaration();
-            if (subtypeDeclaration.equals(supertypeDeclaration)) {
+            if (processingEnv.getTypeUtils().isSameType(
+                processingEnv.getTypeUtils().erasure(type),
+                processingEnv.getTypeUtils().erasure(
+                    supertypeDeclaration.asType()))) {
                 return type;
             }
         }

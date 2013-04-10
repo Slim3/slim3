@@ -15,10 +15,9 @@
  */
 package org.slim3.gen.processor;
 
-import com.sun.mirror.apt.AnnotationProcessorEnvironment;
-import com.sun.mirror.apt.Messager;
-import com.sun.mirror.declaration.Declaration;
-import com.sun.mirror.util.SourcePosition;
+import javax.annotation.processing.Messager;
+import javax.lang.model.element.Element;
+import javax.tools.Diagnostic;
 
 /**
  * Logs messages.
@@ -27,52 +26,52 @@ import com.sun.mirror.util.SourcePosition;
  * @since 1.0.0
  * 
  */
-@SuppressWarnings("deprecation")
 public final class Logger {
+
+    static Messager messager = null;
+
+    /**
+     * Initialization.
+     * 
+     * @param messager
+     * @author vvakame
+     */
+    public static void init(Messager messager) {
+        Logger.messager = messager;
+    }
 
     /**
      * Logs a debug message.
      * 
-     * @param env
-     *            the environment.
      * @param message
      *            the message.
      */
-    public static void debug(AnnotationProcessorEnvironment env, String message) {
-        Messager messager = env.getMessager();
-        messager.printNotice(message);
+    public static void debug(String message) {
+        messager.printMessage(Diagnostic.Kind.NOTE, message);
     }
 
     /**
      * Logs a warning message.
      * 
-     * @param env
-     *            the environment.
-     * @param declaration
-     *            the declaration to use as a position hint
+     * @param element
+     *            the element.
      * @param message
      *            the message.
      */
-    public static void warning(AnnotationProcessorEnvironment env,
-            Declaration declaration, String message) {
-        Messager messager = env.getMessager();
-        messager.printWarning(declaration.getPosition(), message);
+    public static void warning(Element element, String message) {
+        messager.printMessage(Diagnostic.Kind.WARNING, message, element);
     }
 
     /**
      * Logs an error message.
      * 
-     * @param env
-     *            the environment.
-     * @param sourcePosition
-     *            the source position.
+     * @param element
+     *            the element.
      * @param message
      *            the message.
      */
-    public static void error(AnnotationProcessorEnvironment env,
-            SourcePosition sourcePosition, String message) {
-        Messager messager = env.getMessager();
-        messager.printError(sourcePosition, message);
+    public static void error(Element element, String message) {
+        messager.printMessage(Diagnostic.Kind.ERROR, message, element);
     }
 
 }

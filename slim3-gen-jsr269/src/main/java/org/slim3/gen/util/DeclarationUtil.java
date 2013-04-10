@@ -15,15 +15,10 @@
  */
 package org.slim3.gen.util;
 
-import org.slim3.gen.processor.UnknownDeclarationException;
-
-import com.sun.mirror.apt.AnnotationProcessorEnvironment;
-import com.sun.mirror.declaration.AnnotationMirror;
-import com.sun.mirror.declaration.AnnotationTypeDeclaration;
-import com.sun.mirror.declaration.ClassDeclaration;
-import com.sun.mirror.declaration.ConstructorDeclaration;
-import com.sun.mirror.declaration.Declaration;
-import com.sun.mirror.declaration.Modifier;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
 
 /**
  * A utility class for operationg declarations.
@@ -32,55 +27,21 @@ import com.sun.mirror.declaration.Modifier;
  * @since 1.0.0
  * 
  */
-@SuppressWarnings("deprecation")
 public final class DeclarationUtil {
-
-    /**
-     * Returns {@code AnnotationMirror} if a declaration is annotated with a
-     * specified annotation and {@code null} otherwise.
-     * 
-     * @param env
-     *            the environment
-     * @param declaration
-     *            the declaration object to be checked.
-     * @param annotation
-     *            the fully qualified name of an annotation.
-     * @return {@code AnnotationMirror} if an declaration is annotated with a
-     *         specified annotation and {@code null} otherwise.
-     */
-    public static AnnotationMirror getAnnotationMirror(
-            AnnotationProcessorEnvironment env, Declaration declaration,
-            final String annotation) {
-        if (declaration == null) {
-            throw new NullPointerException("The declaration parameter is null.");
-        }
-        for (AnnotationMirror mirror : declaration.getAnnotationMirrors()) {
-            AnnotationTypeDeclaration annotationTypeDeclaration =
-                mirror.getAnnotationType().getDeclaration();
-            if (annotationTypeDeclaration == null) {
-                throw new UnknownDeclarationException(env, declaration, mirror);
-            }
-            if (annotationTypeDeclaration.getQualifiedName().equals(annotation)) {
-                return mirror;
-            }
-        }
-        return null;
-    }
 
     /**
      * Returns {@code true} if the class declaration has a public default
      * constructor.
      * 
-     * @param classDeclaration
+     * @param classElement
      *            the class declaration
      * @return if the class declaration has a public default constructor.
      */
-    public static boolean hasPublicDefaultConstructor(
-            ClassDeclaration classDeclaration) {
-        for (ConstructorDeclaration constructor : classDeclaration
-            .getConstructors()) {
-            if (constructor.getModifiers().contains(Modifier.PUBLIC)) {
-                if (constructor.getParameters().isEmpty()) {
+    public static boolean hasPublicDefaultConstructor(TypeElement classElement) {
+        for (Element el : classElement.getEnclosedElements()) {
+            if (el.getKind() == ElementKind.CONSTRUCTOR) {
+                ExecutableElement ex = (ExecutableElement) el;
+                if (ex.getParameters().isEmpty()) {
                     return true;
                 }
             }

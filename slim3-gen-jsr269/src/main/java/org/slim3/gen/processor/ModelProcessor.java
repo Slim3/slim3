@@ -15,8 +15,19 @@
  */
 package org.slim3.gen.processor;
 
+import static javax.lang.model.util.ElementFilter.*;
+
 import java.util.Set;
 
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedSourceVersion;
+import javax.lang.model.SourceVersion;
+import javax.lang.model.element.TypeElement;
+
+import org.slim3.datastore.Model;
 import org.slim3.gen.desc.AttributeMetaDescFactory;
 import org.slim3.gen.desc.ModelMetaDesc;
 import org.slim3.gen.desc.ModelMetaDescFactory;
@@ -24,93 +35,78 @@ import org.slim3.gen.generator.Generator;
 import org.slim3.gen.generator.ModelMetaGenerator;
 import org.slim3.gen.message.MessageCode;
 import org.slim3.gen.message.MessageFormatter;
-
-import com.sun.mirror.apt.AnnotationProcessor;
-import com.sun.mirror.apt.AnnotationProcessorEnvironment;
-import com.sun.mirror.declaration.AnnotationTypeDeclaration;
-import com.sun.mirror.declaration.ClassDeclaration;
-import com.sun.mirror.util.DeclarationFilter;
+import org.slim3.gen.util.FieldDeclarationUtil;
+import org.slim3.gen.util.TypeUtil;
 
 /**
- * Processes JDO model classes which annotated with the {@code
- * javax.jdo.annotations.PersistenceCapable} class.
+ * Represents a {@code ModelProcessor} factory.
  * 
  * @author taedium
  * @since 1.0.0
  * 
  */
-@SuppressWarnings("deprecation")
-public class ModelProcessor implements AnnotationProcessor {
+@SupportedSourceVersion(SourceVersion.RELEASE_6)
+@SupportedAnnotationTypes("org.slim3.datastore.Model")
+public class ModelProcessor extends AbstractProcessor {
 
-    /** the set of annotation type declaration */
-    protected final Set<AnnotationTypeDeclaration> annotationTypeDeclarations;
-
-    /** the environment */
-    protected final AnnotationProcessorEnvironment env;
+    RoundEnvironment roundEnv;
 
     /** the support for generating */
-    protected final GenerateSupport generateSupport;
+    protected GenerateSupport generateSupport;
 
-    /**
-     * Creates a new {@link ModelProcessor}.
-     * 
-     * @param annotationTypeDeclarations
-     *            the set of annotation type declaration
-     * @param env
-     *            the environment
-     */
-    public ModelProcessor(
-            Set<AnnotationTypeDeclaration> annotationTypeDeclarations,
-            AnnotationProcessorEnvironment env) {
-        if (annotationTypeDeclarations == null) {
-            throw new NullPointerException(
-                "The annotationTypeDeclarations parameter is null.");
-        }
-        if (env == null) {
-            throw new NullPointerException("The env parameter is null.");
-        }
-        this.annotationTypeDeclarations = annotationTypeDeclarations;
-        this.env = env;
-        this.generateSupport = new GenerateSupport(env);
+    @Override
+    public synchronized void init(ProcessingEnvironment processingEnv) {
+        super.init(processingEnv);
+        Logger.init(processingEnv.getMessager());
+        FieldDeclarationUtil.init(processingEnv);
+        TypeUtil.init(processingEnv);
+
+        Logger.debug("init ModelProcessor");
+        this.generateSupport = new GenerateSupport(processingEnv);
     }
 
-    public void process() {
-        for (AnnotationTypeDeclaration annotation : annotationTypeDeclarations) {
-            for (ClassDeclaration element : DeclarationFilter.getFilter(
-                ClassDeclaration.class).filter(
-                env.getDeclarationsAnnotatedWith(annotation),
-                ClassDeclaration.class)) {
-                try {
-                    handleClassDeclaration(element);
-                } catch (AptException e) {
-                    e.sendError();
-                } catch (RuntimeException e) {
-                    Logger.error(env, element.getPosition(), MessageFormatter
-                        .getMessage(MessageCode.SLIM3GEN0001, annotation
-                            .getQualifiedName()));
-                    throw e;
-                }
+    @Override
+    public boolean process(Set<? extends TypeElement> annotations,
+            RoundEnvironment roundEnv) {
+
+        this.roundEnv = roundEnv;
+
+        for (TypeElement element : typesIn(roundEnv
+            .getElementsAnnotatedWith(Model.class))) {
+            try {
+                handleClassDeclaration(element);
+            } catch (AptException e) {
+                e.sendError();
+            } catch (RuntimeException e) {
+                Logger.error(element, MessageFormatter.getMessage(
+                    MessageCode.SLIM3GEN0001,
+                    Model.class.getCanonicalName()));
+                throw e;
             }
         }
+        return true;
     }
 
     /**
      * Handles a class declaration represents a JDO model class.
      * 
-     * @param declaration
+     * @param classElement
      *            the declaration represents a JDO model class.
      */
-    protected void handleClassDeclaration(ClassDeclaration declaration) {
+    protected void handleClassDeclaration(TypeElement classElement) {
         AttributeMetaDescFactory attributeMetaDescFactory =
             createAttributeMetaDescFactory();
         ModelMetaDescFactory modelMetaDescFactory =
             createModelMetaDescFactory(attributeMetaDescFactory);
         ModelMetaDesc modelMetaDesc =
-            modelMetaDescFactory.createModelMetaDesc(declaration);
+            modelMetaDescFactory.createModelMetaDesc(classElement);
         if (!modelMetaDesc.isError()) {
             Generator modelMetaGenerator =
                 createModelMetaGenerator(modelMetaDesc);
-            generateSupport.generate(modelMetaGenerator, modelMetaDesc);
+            generateSupport.generate(
+                modelMetaGenerator,
+                modelMetaDesc,
+                classElement);
         }
     }
 
@@ -120,7 +116,7 @@ public class ModelProcessor implements AnnotationProcessor {
      * @return an attribute meta description factory
      */
     protected AttributeMetaDescFactory createAttributeMetaDescFactory() {
-        return new AttributeMetaDescFactory(env);
+        return new AttributeMetaDescFactory(processingEnv, roundEnv);
     }
 
     /**
@@ -132,7 +128,10 @@ public class ModelProcessor implements AnnotationProcessor {
      */
     protected ModelMetaDescFactory createModelMetaDescFactory(
             AttributeMetaDescFactory attributeMetaDescFactory) {
-        return new ModelMetaDescFactory(env, attributeMetaDescFactory);
+        return new ModelMetaDescFactory(
+            processingEnv,
+            roundEnv,
+            attributeMetaDescFactory);
     }
 
     /**
@@ -146,5 +145,4 @@ public class ModelProcessor implements AnnotationProcessor {
             ModelMetaDesc modelMetaDesc) {
         return new ModelMetaGenerator(modelMetaDesc);
     }
-
 }

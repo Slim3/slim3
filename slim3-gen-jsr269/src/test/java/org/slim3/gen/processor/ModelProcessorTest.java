@@ -13,7 +13,7 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package org.slim3.jsr269.processor;
+package org.slim3.gen.processor;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -21,6 +21,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.seasar.aptina.unit.AptinaTestCase;
 import org.seasar.aptina.unit.SourceNotGeneratedException;
+import org.slim3.gen.processor.ModelProcessor;
 import org.slim3.test.model.AttributeNotSupportedSampleModel;
 import org.slim3.test.model.AttributeParameterSampleModel;
 import org.slim3.test.model.BasicModel;

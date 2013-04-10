@@ -15,12 +15,9 @@
  */
 package org.slim3.gen.processor;
 
-import org.slim3.gen.message.MessageCode;
+import javax.lang.model.element.Element;
 
-import com.sun.mirror.apt.AnnotationProcessorEnvironment;
-import com.sun.mirror.declaration.AnnotationMirror;
-import com.sun.mirror.declaration.Declaration;
-import com.sun.mirror.type.TypeMirror;
+import org.slim3.gen.message.MessageCode;
 
 /**
  * Thrown when unknown declaration object is found.
@@ -29,7 +26,6 @@ import com.sun.mirror.type.TypeMirror;
  * @since 1.0.0
  * 
  */
-@SuppressWarnings("deprecation")
 public class UnknownDeclarationException extends AptException {
 
     private static final long serialVersionUID = 1L;
@@ -37,38 +33,12 @@ public class UnknownDeclarationException extends AptException {
     /**
      * Creates a new {@link ValidationException}.
      * 
-     * @param env
-     *            the environment
-     * @param declaration
+     * @param classElement
      *            the send target
-     * @param typeMirror
+     * @param el
      *            the typemirror corresponding to unknown declaration
      */
-    public UnknownDeclarationException(AnnotationProcessorEnvironment env,
-            Declaration declaration, TypeMirror typeMirror) {
-        super(
-            MessageCode.SLIM3GEN1001,
-            env,
-            declaration.getPosition(),
-            typeMirror);
-    }
-
-    /**
-     * Creates a new {@link ValidationException}.
-     * 
-     * @param env
-     *            the environment
-     * @param declaration
-     *            the send target
-     * @param annotationMirror
-     *            the annotationmirror corresponding to unknown declaration
-     */
-    public UnknownDeclarationException(AnnotationProcessorEnvironment env,
-            Declaration declaration, AnnotationMirror annotationMirror) {
-        super(
-            MessageCode.SLIM3GEN1001,
-            env,
-            declaration.getPosition(),
-            annotationMirror);
+    public UnknownDeclarationException(Element classElement, Element el) {
+        super(MessageCode.SLIM3GEN1001, classElement, el);
     }
 }
