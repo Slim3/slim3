@@ -1,2 +1,2 @@
-# Slim3 [![Build Status](https://travis-ci.org/sue445/slim3.png?branch=develop)](https://travis-ci.org/sue445/slim3)
+# Slim3 [![Build Status](https://travis-ci.org/Slim3/slim3.png?branch=master)](https://travis-ci.org/Slim3/slim3)
 
