@@ -40,6 +40,7 @@ import com.google.apphosting.api.ApiProxy;
  */
 public class UserLogin extends ExternalResource {
     private final String email;
+    private final String authDomain;
     private final boolean admin;
 
 
@@ -48,16 +49,18 @@ public class UserLogin extends ExternalResource {
      * @param email		login mail address
      */
     public UserLogin(String email){
-        this(email, false);
+        this(email, null, false);
     }
 
     /**
      * login with anonimous user
-     * @param email		login mail address
-     * @param admin		whether admin user
+     * @param email         login mail address
+     * @param authDomain    The authority domain.(if specified null, use default(gmail.com))
+     * @param admin         whether admin user
      */
-    public UserLogin(String email, boolean admin){
+    public UserLogin(String email, String authDomain, boolean admin){
         this.email = email;
+        this.authDomain = authDomain;
         this.admin = admin;
     }
 
@@ -77,6 +80,9 @@ public class UserLogin extends ExternalResource {
         }
         environment.setEmail(email);
         environment.setAdmin(admin);
+        if(authDomain != null){
+            environment.setAuthDomain(authDomain);
+        }
     }
 
 }

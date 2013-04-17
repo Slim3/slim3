@@ -37,6 +37,7 @@ import com.google.appengine.api.users.UserServiceFactory;
 @RunWith(Enclosed.class)
 public class UserLoginTest{
     private static final String TEST_EMAIL_ADDRESS = "hoge@foo.com";
+    private static final String TEST_AUTH_DOMAIN = "foo.com";
 
     /**
      *
@@ -60,6 +61,7 @@ public class UserLoginTest{
             UserService userService = UserServiceFactory.getUserService();
             assertThat(userService.isUserLoggedIn(), is(true));
             assertThat(userService.getCurrentUser().getEmail(), is(TEST_EMAIL_ADDRESS));
+            assertThat(userService.getCurrentUser().getAuthDomain(), is("gmail.com"));
             assertThat(userService.isUserAdmin(), is(false));
         }
     }
@@ -74,7 +76,7 @@ public class UserLoginTest{
          *
          */
         @Rule
-        public RuleChain ruleChain = RuleChain.outerRule(new AppEngineResource()).around(new UserLogin(TEST_EMAIL_ADDRESS, true));
+        public RuleChain ruleChain = RuleChain.outerRule(new AppEngineResource()).around(new UserLogin(TEST_EMAIL_ADDRESS, TEST_AUTH_DOMAIN, true));
 
         /**
          *
@@ -86,6 +88,7 @@ public class UserLoginTest{
             UserService userService = UserServiceFactory.getUserService();
             assertThat(userService.isUserLoggedIn(), is(true));
             assertThat(userService.getCurrentUser().getEmail(), is(TEST_EMAIL_ADDRESS));
+            assertThat(userService.getCurrentUser().getAuthDomain(), is(TEST_AUTH_DOMAIN));
             assertThat(userService.isUserAdmin(), is(true));
         }
     }
