@@ -36,13 +36,22 @@ import org.slim3.util.WrapRuntimeException;
  * @since 1.0.17
  */
 public class AppEngineResource extends ExternalResource{
+    /**
+     * The tester for appengine local services.
+     */
 	public AppEngineTester tester = new AppEngineTester();
 
+	/**
+	 * setup {@link AppEngineTester}
+	 */
 	@Override
 	protected void before() throws Throwable {
 		tester.setUp();
 	}
 
+    /**
+     * teardown {@link AppEngineTester}
+     */
 	@Override
 	protected void after() {
 		try {

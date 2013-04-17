@@ -19,10 +19,21 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.slim3.memcache.Memcache;
 
+/**
+ *
+ * @author sue445
+ *
+ */
 public class AppEngineResourceTest {
+    /**
+     *
+     */
 	@Rule
 	public AppEngineResource resource = new AppEngineResource();
 
+	/**
+	 *
+	 */
 	@Test
 	public void test() {
 		// if not initialized appengine, occured error

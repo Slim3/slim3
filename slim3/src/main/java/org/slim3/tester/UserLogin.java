@@ -61,6 +61,9 @@ public class UserLogin extends ExternalResource {
 		this.admin = admin;
 	}
 
+	/**
+	 * setup with spedified user
+	 */
 	@Override
 	protected void before() throws Throwable {
 		if(AppEngineUtil.isProduction()){
