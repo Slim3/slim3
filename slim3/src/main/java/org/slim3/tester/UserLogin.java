@@ -39,44 +39,44 @@ import com.google.apphosting.api.ApiProxy;
  * @since 1.0.17
  */
 public class UserLogin extends ExternalResource {
-	private final String email;
-	private final boolean admin;
+    private final String email;
+    private final boolean admin;
 
 
-	/**
-	 * login with anonimous user (not admin)
-	 * @param email		login mail address
-	 */
-	public UserLogin(String email){
-		this(email, false);
-	}
+    /**
+     * login with anonimous user (not admin)
+     * @param email		login mail address
+     */
+    public UserLogin(String email){
+        this(email, false);
+    }
 
-	/**
-	 * login with anonimous user
-	 * @param email		login mail address
-	 * @param admin		whether admin user
-	 */
-	public UserLogin(String email, boolean admin){
-		this.email = email;
-		this.admin = admin;
-	}
+    /**
+     * login with anonimous user
+     * @param email		login mail address
+     * @param admin		whether admin user
+     */
+    public UserLogin(String email, boolean admin){
+        this.email = email;
+        this.admin = admin;
+    }
 
-	/**
-	 * setup with spedified user
-	 */
-	@Override
-	protected void before() throws Throwable {
-		if(AppEngineUtil.isProduction()){
-			// not loaded TestEnvironment on production
-			return;
-		}
+    /**
+     * setup with spedified user
+     */
+    @Override
+    protected void before() throws Throwable {
+        if(AppEngineUtil.isProduction()){
+            // not loaded TestEnvironment on production
+            return;
+        }
 
-		TestEnvironment environment = (TestEnvironment) ApiProxy.getCurrentEnvironment();
-		if(environment == null){
-			throw new NullPointerException("Not initialized TestEnvironment. please use RuleChain");
-		}
-		environment.setEmail(email);
-		environment.setAdmin(admin);
-	}
+        TestEnvironment environment = (TestEnvironment) ApiProxy.getCurrentEnvironment();
+        if(environment == null){
+            throw new NullPointerException("Not initialized TestEnvironment. please use RuleChain");
+        }
+        environment.setEmail(email);
+        environment.setAdmin(admin);
+    }
 
 }

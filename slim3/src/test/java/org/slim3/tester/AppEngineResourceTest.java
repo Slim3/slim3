@@ -28,15 +28,15 @@ public class AppEngineResourceTest {
     /**
      *
      */
-	@Rule
-	public AppEngineResource resource = new AppEngineResource();
+    @Rule
+    public AppEngineResource resource = new AppEngineResource();
 
-	/**
-	 *
-	 */
-	@Test
-	public void test() {
-		// if not initialized appengine, occured error
-		Memcache.put("key", "value");
-	}
+    /**
+     *
+     */
+    @Test
+    public void test() {
+        // if not initialized appengine, occured error
+        Memcache.put("key", "value");
+    }
 }

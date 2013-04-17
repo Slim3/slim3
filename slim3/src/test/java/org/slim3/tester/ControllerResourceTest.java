@@ -28,16 +28,16 @@ public class ControllerResourceTest {
     /**
      *
      */
-	@Rule
-	public ControllerResource resource = new ControllerResource(ControllerResourceTest.class);
+    @Rule
+    public ControllerResource resource = new ControllerResource(ControllerResourceTest.class);
 
-	/**
-	 *
-	 */
-	@Test
-	public void test() {
-		// if not initialized appengine, occured error
-		Memcache.put("key", "value");
-	}
+    /**
+     *
+     */
+    @Test
+    public void test() {
+        // if not initialized appengine, occured error
+        Memcache.put("key", "value");
+    }
 
 }

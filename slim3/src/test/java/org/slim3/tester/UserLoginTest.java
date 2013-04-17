@@ -36,80 +36,80 @@ import com.google.appengine.api.users.UserServiceFactory;
  */
 @RunWith(Enclosed.class)
 public class UserLoginTest{
-	private static final String TEST_EMAIL_ADDRESS = "hoge@foo.com";
+    private static final String TEST_EMAIL_ADDRESS = "hoge@foo.com";
 
-	/**
-	 *
-	 * @author sue445
-	 *
-	 */
-	public static class WhenUserLogin{
-	    /**
-	     *
-	     */
-		@Rule
-		public RuleChain ruleChain = RuleChain.outerRule(new AppEngineResource()).around(new UserLogin(TEST_EMAIL_ADDRESS));
+    /**
+     *
+     * @author sue445
+     *
+     */
+    public static class WhenUserLogin{
+        /**
+         *
+         */
+        @Rule
+        public RuleChain ruleChain = RuleChain.outerRule(new AppEngineResource()).around(new UserLogin(TEST_EMAIL_ADDRESS));
 
-		/**
-		 *
-		 */
-		@Test
-		public void isLogin() {
-			assumeThat(AppEngineUtil.isProduction(), is(false));
+        /**
+         *
+         */
+        @Test
+        public void isLogin() {
+            assumeThat(AppEngineUtil.isProduction(), is(false));
 
-			UserService userService = UserServiceFactory.getUserService();
-			assertThat(userService.isUserLoggedIn(), is(true));
-			assertThat(userService.getCurrentUser().getEmail(), is(TEST_EMAIL_ADDRESS));
-			assertThat(userService.isUserAdmin(), is(false));
-		}
-	}
+            UserService userService = UserServiceFactory.getUserService();
+            assertThat(userService.isUserLoggedIn(), is(true));
+            assertThat(userService.getCurrentUser().getEmail(), is(TEST_EMAIL_ADDRESS));
+            assertThat(userService.isUserAdmin(), is(false));
+        }
+    }
 
-	/**
-	 *
-	 * @author sue445
-	 *
-	 */
-	public static class WhenAdminUserLogin{
-	    /**
-	     *
-	     */
-		@Rule
-		public RuleChain ruleChain = RuleChain.outerRule(new AppEngineResource()).around(new UserLogin(TEST_EMAIL_ADDRESS, true));
+    /**
+     *
+     * @author sue445
+     *
+     */
+    public static class WhenAdminUserLogin{
+        /**
+         *
+         */
+        @Rule
+        public RuleChain ruleChain = RuleChain.outerRule(new AppEngineResource()).around(new UserLogin(TEST_EMAIL_ADDRESS, true));
 
-		/**
-		 *
-		 */
-		@Test
-		public void isLogin() {
-			assumeThat(AppEngineUtil.isProduction(), is(false));
+        /**
+         *
+         */
+        @Test
+        public void isLogin() {
+            assumeThat(AppEngineUtil.isProduction(), is(false));
 
-			UserService userService = UserServiceFactory.getUserService();
-			assertThat(userService.isUserLoggedIn(), is(true));
-			assertThat(userService.getCurrentUser().getEmail(), is(TEST_EMAIL_ADDRESS));
-			assertThat(userService.isUserAdmin(), is(true));
-		}
-	}
+            UserService userService = UserServiceFactory.getUserService();
+            assertThat(userService.isUserLoggedIn(), is(true));
+            assertThat(userService.getCurrentUser().getEmail(), is(TEST_EMAIL_ADDRESS));
+            assertThat(userService.isUserAdmin(), is(true));
+        }
+    }
 
-	/**
-	 *
-	 * @author sue445
-	 *
-	 */
-	public static class WhenNotLogined{
-	    /**
-	     *
-	     */
-		@Rule
-		public AppEngineResource resource = new AppEngineResource();
+    /**
+     *
+     * @author sue445
+     *
+     */
+    public static class WhenNotLogined{
+        /**
+         *
+         */
+        @Rule
+        public AppEngineResource resource = new AppEngineResource();
 
-		/**
-		 *
-		 */
-		@Test
-		public void isLogin() {
-			UserService userService = UserServiceFactory.getUserService();
-			assertThat(userService.isUserLoggedIn(), is(false));
-		}
-	}
+        /**
+         *
+         */
+        @Test
+        public void isLogin() {
+            UserService userService = UserServiceFactory.getUserService();
+            assertThat(userService.isUserLoggedIn(), is(false));
+        }
+    }
 
 }
