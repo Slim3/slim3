@@ -124,7 +124,7 @@ public class CopyOptionsTest {
     /**
      * @throws Exception
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes" })
     @Test
     public void findConvererForDate() throws Exception {
         Converter converter =
@@ -138,7 +138,7 @@ public class CopyOptionsTest {
     /**
      * @throws Exception
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes" })
     @Test
     public void findConvererForNumber() throws Exception {
         Converter converter =

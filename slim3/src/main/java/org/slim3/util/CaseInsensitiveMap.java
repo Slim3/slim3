@@ -57,7 +57,7 @@ public final class CaseInsensitiveMap<V> extends ArrayMap<String, V> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public final void putAll(Map map) {
         for (Iterator<Map.Entry<String, V>> i = map.entrySet().iterator(); i
             .hasNext();) {

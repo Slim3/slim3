@@ -27,11 +27,11 @@ import java.util.logging.Level;
 import org.junit.Test;
 import org.slim3.tester.AppEngineTestCase;
 
-import com.google.appengine.api.memcache.ErrorHandler;
-import com.google.appengine.api.memcache.LogAndContinueErrorHandler;
+import com.google.appengine.api.memcache.ConsistentErrorHandler;
+import com.google.appengine.api.memcache.ConsistentLogAndContinueErrorHandler;
 import com.google.appengine.api.memcache.MemcacheService;
-import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.google.appengine.api.memcache.MemcacheService.SetPolicy;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
 
 /**
  * @author higa
@@ -289,8 +289,8 @@ public class MemcacheTest extends AppEngineTestCase {
      */
     @Test
     public void errorHandler() throws Exception {
-        ErrorHandler errorHandler =
-            new LogAndContinueErrorHandler(Level.WARNING);
+        ConsistentErrorHandler errorHandler =
+            new ConsistentLogAndContinueErrorHandler(Level.WARNING);
         MemcacheDelegate cache = Memcache.errorHandler(errorHandler);
         assertThat(cache, is(notNullValue()));
         assertThat(cache.errorHandler(), is(errorHandler));

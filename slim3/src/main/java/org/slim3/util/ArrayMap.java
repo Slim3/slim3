@@ -355,7 +355,7 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Map<K, V>,
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public final boolean equals(Object o) {
         if (!getClass().isInstance(o)) {
             return false;
@@ -398,7 +398,7 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Map<K, V>,
                 }
 
                 @Override
-                @SuppressWarnings("unchecked")
+                @SuppressWarnings({ "unchecked", "rawtypes" })
                 public boolean remove(Object o) {
                     if (!(o instanceof Entry)) {
                         return false;
@@ -656,7 +656,7 @@ public class ArrayMap<K, V> extends AbstractMap<K, V> implements Map<K, V>,
             s.writeObject(next);
         }
 
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({ "unchecked", "rawtypes" })
         public void readExternal(final ObjectInput s) throws IOException,
                 ClassNotFoundException {
 

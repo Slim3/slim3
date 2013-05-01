@@ -26,6 +26,7 @@ import com.sun.mirror.apt.AnnotationProcessorEnvironment;
  * @author taedium
  * @since 1.0.0
  */
+@SuppressWarnings("deprecation")
 public final class Options {
 
     private static final double javaVersion = getJavaVersion();

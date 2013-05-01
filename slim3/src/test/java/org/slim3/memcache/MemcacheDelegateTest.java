@@ -29,8 +29,8 @@ import org.junit.Test;
 import org.slim3.tester.AppEngineTestCase;
 
 import com.google.appengine.api.NamespaceManager;
-import com.google.appengine.api.memcache.ErrorHandler;
-import com.google.appengine.api.memcache.LogAndContinueErrorHandler;
+import com.google.appengine.api.memcache.ConsistentErrorHandler;
+import com.google.appengine.api.memcache.ConsistentLogAndContinueErrorHandler;
 import com.google.appengine.api.memcache.MemcacheService.SetPolicy;
 
 /**
@@ -340,8 +340,8 @@ public class MemcacheDelegateTest extends AppEngineTestCase {
     @Test
     public void setErrorHandler() throws Exception {
         MemcacheDelegate cache = new MemcacheDelegate();
-        ErrorHandler errorHandler =
-            new LogAndContinueErrorHandler(Level.WARNING);
+        ConsistentErrorHandler errorHandler =
+            new ConsistentLogAndContinueErrorHandler(Level.WARNING);
         assertThat(cache.errorHandler(errorHandler), is(cache));
         assertThat(cache.errorHandler(), is(errorHandler));
     }

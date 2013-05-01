@@ -32,6 +32,7 @@ import com.sun.mirror.declaration.Modifier;
  * @since 1.0.0
  * 
  */
+@SuppressWarnings("deprecation")
 public final class DeclarationUtil {
 
     /**

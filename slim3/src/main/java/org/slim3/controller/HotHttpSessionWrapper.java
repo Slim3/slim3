@@ -116,7 +116,6 @@ public class HotHttpSessionWrapper implements HttpSession, Cleanable {
         return originalSession.getSessionContext();
     }
 
-    @SuppressWarnings("deprecation")
     public Object getValue(String name) {
         return getAttribute(name);
     }
@@ -141,7 +140,6 @@ public class HotHttpSessionWrapper implements HttpSession, Cleanable {
         return originalSession.isNew();
     }
 
-    @SuppressWarnings("deprecation")
     public void putValue(String name, Object value) {
         setAttribute(name, value);
     }
@@ -150,7 +148,6 @@ public class HotHttpSessionWrapper implements HttpSession, Cleanable {
         originalSession.removeAttribute(name);
     }
 
-    @SuppressWarnings("deprecation")
     public void removeValue(String name) {
         removeAttribute(name);
     }

@@ -27,7 +27,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import com.google.appengine.api.NamespaceManager;
-import com.google.appengine.api.memcache.ErrorHandler;
+import com.google.appengine.api.memcache.ConsistentErrorHandler;
 import com.google.appengine.api.memcache.Expiration;
 import com.google.appengine.api.memcache.InvalidValueException;
 import com.google.appengine.api.memcache.MemcacheSerialization;
@@ -211,7 +211,8 @@ public class MemcacheDelegate {
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
      */
-    protected Object getInternal(Object key) {
+    @SuppressWarnings("deprecation")
+	protected Object getInternal(Object key) {
         MemcacheServicePb.MemcacheGetResponse.Builder response =
             MemcacheServicePb.MemcacheGetResponse.newBuilder();
         MemcacheServicePb.MemcacheGetRequest request;
@@ -308,7 +309,7 @@ public class MemcacheDelegate {
      * @throws IllegalArgumentException
      *             if the key cannot be serialized
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes", "deprecation" })
     protected Map<Object, Object> getAllInternal(Iterable<?> keys)
             throws NullPointerException, IllegalArgumentException {
         if (keys == null) {
@@ -696,8 +697,8 @@ public class MemcacheDelegate {
      * 
      * @return the current error handler.
      */
-    public ErrorHandler errorHandler() {
-        return ms.getErrorHandler();
+    public ConsistentErrorHandler errorHandler() {
+        return (ConsistentErrorHandler) ms.getErrorHandler();
     }
 
     /**
@@ -709,7 +710,7 @@ public class MemcacheDelegate {
      * @throws NullPointerException
      *             if the errorHandler parameter is null
      */
-    public MemcacheDelegate errorHandler(ErrorHandler errorHandler)
+    public MemcacheDelegate errorHandler(ConsistentErrorHandler errorHandler)
             throws NullPointerException {
         if (errorHandler == null) {
             throw new NullPointerException(
@@ -743,7 +744,8 @@ public class MemcacheDelegate {
      *            the error text.
      * @return whether this call succeeded
      */
-    protected boolean makeSyncCall(String methodName, Message request,
+    @SuppressWarnings("deprecation")
+	protected boolean makeSyncCall(String methodName, Message request,
             Message.Builder response, String errorText) {
         try {
             byte responseBytes[] =
