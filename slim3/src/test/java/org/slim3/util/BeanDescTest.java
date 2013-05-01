@@ -31,7 +31,7 @@ public class BeanDescTest {
     /**
      * 
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes" })
     @Test
     public void propertyDesc() {
         PropertyDesc pd = beanDesc.getPropertyDesc("aaa");
@@ -45,7 +45,7 @@ public class BeanDescTest {
     /**
      * 
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes" })
     @Test
     public void propertyDescForReadOnly() {
         PropertyDesc pd = beanDesc.getPropertyDesc("bbb");

@@ -148,7 +148,7 @@ public final class ConversionUtil {
             + destinationClass.getName());
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private static Enum<?> convertToEnum(Object value, Class destinationClass) {
         if (value.getClass() == String.class) {
             return Enum.valueOf(destinationClass, (String) value);

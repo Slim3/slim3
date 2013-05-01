@@ -28,7 +28,6 @@ import com.google.appengine.api.datastore.Key;
  * @author higa
  * 
  */
-@SuppressWarnings("deprecation")
 public class GtxUowTest extends AppEngineTestCase {
 
     /**
@@ -36,6 +35,7 @@ public class GtxUowTest extends AppEngineTestCase {
      * 
      */
     @Test
+    @SuppressWarnings("deprecation")
     public void run() throws Exception {
         Key[] keys = Uow.run(new GtxUow() {
 
@@ -56,6 +56,7 @@ public class GtxUowTest extends AppEngineTestCase {
      * 
      */
     @Test
+    @SuppressWarnings("deprecation")
     public void runForException() throws Exception {
         final Entity entity = new Entity("Hoge");
         final Entity entity2 = new Entity("Hoge");

@@ -33,6 +33,7 @@ import com.sun.mirror.type.AnnotationType;
  * @since 1.0.0
  * 
  */
+@SuppressWarnings("deprecation")
 public final class AnnotationMirrorUtil {
 
     /**

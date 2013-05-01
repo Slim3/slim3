@@ -20,7 +20,7 @@ import java.util.Set;
 
 import org.slim3.util.ClassUtil;
 
-import com.google.appengine.api.memcache.ErrorHandler;
+import com.google.appengine.api.memcache.ConsistentErrorHandler;
 import com.google.appengine.api.memcache.Expiration;
 import com.google.appengine.api.memcache.InvalidValueException;
 import com.google.appengine.api.memcache.Stats;
@@ -491,7 +491,7 @@ public final class Memcache {
      * @throws NullPointerException
      *             if the errorHandler parameter is null
      */
-    public static MemcacheDelegate errorHandler(ErrorHandler errorHandler)
+    public static MemcacheDelegate errorHandler(ConsistentErrorHandler errorHandler)
             throws NullPointerException {
         return delegate().errorHandler(errorHandler);
     }

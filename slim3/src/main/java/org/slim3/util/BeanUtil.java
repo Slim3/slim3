@@ -161,7 +161,7 @@ public final class BeanUtil {
      * @param dest
      *            the destination
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes" })
     public static void copy(Object src, Map dest) {
         copy(src, dest, DEFAULT_OPTIONS);
     }
@@ -182,7 +182,7 @@ public final class BeanUtil {
      *             if the src parameter is null or if the dest parameter is null
      *             or if the options parameter is null
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static void copy(Object src, Map dest, CopyOptions options)
             throws NullPointerException {
         if (src == null) {
@@ -223,7 +223,7 @@ public final class BeanUtil {
      * @param dest
      *            the destination
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes" })
     public static void copy(Map src, Object dest) {
         copy(src, dest, DEFAULT_OPTIONS);
     }
@@ -244,7 +244,7 @@ public final class BeanUtil {
      *             if the src parameter is null or if the dest parameter is null
      *             or if the options parameter is null
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static void copy(Map src, Object dest, CopyOptions options)
             throws NullPointerException {
         if (src == null) {
@@ -292,7 +292,7 @@ public final class BeanUtil {
      * @param dest
      *            the destination
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes" })
     public static void copy(Map src, Map dest) {
         copy(src, dest, DEFAULT_OPTIONS);
     }
@@ -313,7 +313,7 @@ public final class BeanUtil {
      *             if the src parameter is null or if the dest parameter is null
      *             or if the options parameter is null
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static void copy(Map src, Map dest, CopyOptions options)
             throws NullPointerException {
         if (src == null) {

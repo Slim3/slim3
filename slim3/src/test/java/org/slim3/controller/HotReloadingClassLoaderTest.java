@@ -63,8 +63,8 @@ public class HotReloadingClassLoaderTest {
      * 
      */
     @Test
+    @SuppressWarnings("rawtypes")
     public void loadClass() throws Exception {
-        @SuppressWarnings("unchecked")
         Class clazz = hotClassLoader.loadClass(CONTROLLER_CLASS_NAME);
         assertThat(clazz, is(not(nullValue())));
         assertThat(
