@@ -36,6 +36,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
 import org.slim3.datastore.Model;
@@ -613,8 +614,11 @@ public class ModelMetaDescFactory {
                 TypeElement el =
                     (TypeElement) processingEnv.getTypeUtils().asElement(
                         superinterfaceType);
-                TypeMirror superinterfaceDeclaration = el.getSuperclass();
-                if (superinterfaceDeclaration == null) {
+                TypeMirror superinterfaceDeclaration = el.asType();
+                if (processingEnv
+                    .getTypeUtils()
+                    .getNoType(TypeKind.NONE)
+                    .equals(superinterfaceDeclaration)) {
                     throw new UnknownDeclarationException(classElement, el);
                 }
                 TypeElement superEl =

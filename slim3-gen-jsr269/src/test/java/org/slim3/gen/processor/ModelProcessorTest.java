@@ -26,6 +26,7 @@ import org.slim3.test.model.AttributeNotSupportedSampleModel;
 import org.slim3.test.model.AttributeParameterSampleModel;
 import org.slim3.test.model.BasicModel;
 import org.slim3.test.model.AttributeSampleModel;
+import org.slim3.test.model.ImplementComparableModel;
 import org.slim3.test.model.RefAModel;
 import org.slim3.test.model.RefBModel;
 
@@ -144,6 +145,27 @@ public class ModelProcessorTest extends AptinaTestCase {
         {
             String sourceName =
                 "org.slim3.test.meta.AttributeParameterSampleModelMeta";
+            @SuppressWarnings("unused")
+            String source = getGeneratedSource(sourceName);
+        }
+    }
+
+    /**
+     * Test for generate Meta class of {@link ImplementComparableModel}.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testForHasInterfaceModel() throws Exception {
+        ModelProcessor processor = new ModelProcessor();
+        addProcessor(processor);
+
+        addCompilationUnit(ImplementComparableModel.class);
+
+        compile();
+        {
+            String sourceName =
+                "org.slim3.test.meta.ImplementComparableModelMeta";
             @SuppressWarnings("unused")
             String source = getGeneratedSource(sourceName);
         }
