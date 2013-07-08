@@ -1,0 +1,9 @@
+language: java
+jdk:
+  - oracjdk7
+  - openjdk6
+before_script:
+  - cd ./slim3/
+branches:
+  only:
+    - master
