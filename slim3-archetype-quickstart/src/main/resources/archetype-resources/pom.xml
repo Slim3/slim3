@@ -7,36 +7,38 @@
   <packaging>war</packaging>
   <version>${version}</version>
   <properties>
-    <slim3.version>1.0.16</slim3.version>
-    <appengine.version>1.7.5</appengine.version>
+    <slim3.version>1.0.17-SNAPSHOT</slim3.version>
+    <appengine.version>1.8.2</appengine.version>
     <generated.src>.apt_generated</generated.src>
     <generated.war>src/main/webapp</generated.war>
     <eclipse.lib>eclipse.lib</eclipse.lib>
   </properties>
   <repositories>
     <repository>
-      <id>maven.seasar.org</id>
-      <name>The Seasar Foundation Maven2 Repository</name>
-      <url>https://www.seasar.org/maven/maven2</url>
+      <id>slim3-snapshot-repo</id>
+      <url>http://slim3.github.com/slim3/</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </releases>
       <snapshots>
         <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
       </snapshots>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
     </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
-      <id>maven.seasar.org</id>
-      <name>The Seasar Foundation Maven2 Repository</name>
-      <url>https://www.seasar.org/maven/maven2</url>
+      <id>slim3-snapshot-repo</id>
+      <url>http://slim3.github.com/slim3/</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </releases>
       <snapshots>
         <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
       </snapshots>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
     </pluginRepository>
   </pluginRepositories>
   <dependencies>
@@ -67,7 +69,7 @@
     </dependency>
     <dependency>
       <groupId>org.slim3</groupId>
-      <artifactId>slim3-gen</artifactId>
+      <artifactId>slim3-gen-jsr269</artifactId>
       <version>${dollar}${lcurly}slim3.version}</version>
       <scope>provided</scope>
       <exclusions>
@@ -113,18 +115,6 @@
           <version>1.4</version>
         </plugin>
         <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>apt-maven-plugin</artifactId>
-          <version>1.0-alpha-5</version>
-          <dependencies>
-            <dependency>
-              <groupId>org.slim3</groupId>
-              <artifactId>slim3-gen</artifactId>
-              <version>${dollar}${lcurly}slim3.version}</version>
-            </dependency>
-          </dependencies>
-        </plugin>
-        <plugin>
           <groupId>com.google.appengine</groupId>
           <artifactId>appengine-maven-plugin</artifactId>
           <version>${dollar}${lcurly}appengine.version}</version>
@@ -158,22 +148,6 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>apt-maven-plugin</artifactId>
-        <configuration>
-          <encoding>utf-8</encoding>
-          <sourceOutputDirectory>${dollar}${lcurly}generated.src}</sourceOutputDirectory>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>process-sources</phase>
-            <goals>
-              <goal>process</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
@@ -198,7 +172,7 @@
             </goals>
             <configuration>
               <outputDirectory>${dollar}${lcurly}eclipse.lib}</outputDirectory>
-              <includeArtifactIds>slim3-gen</includeArtifactIds>
+              <includeArtifactIds>slim3-gen-jsr269</includeArtifactIds>
               <overWriteReleases>false</overWriteReleases>
               <overWriteSnapshots>true</overWriteSnapshots>
               <overWriteIfNewer>true</overWriteIfNewer>
@@ -227,7 +201,7 @@
             <fileset>
               <directory>${dollar}${lcurly}eclipse.lib}</directory>
               <includes>
-                <include>slim3-gen-*.jar</include>
+                <include>slim3-gen-jsr269-*.jar</include>
               </includes>
             </fileset>
 	    -->
@@ -251,7 +225,7 @@
         <artifactId>maven-eclipse-plugin</artifactId>
         <configuration>
           <excludes>
-            <exclude>org.slim3:slim3-gen</exclude>
+            <exclude>org.slim3:slim3-gen-jsr269</exclude>
             <exclude>com.google.appengine:appengine-api-1.0-sdk</exclude>
             <exclude>com.google.appengine:appengine-api-labs</exclude>
             <exclude>com.google.appengine:appengine-local-runtime</exclude>
@@ -275,7 +249,7 @@
               <content>
                 <![CDATA[
 <factorypath>
-  <factorypathentry kind="WKSPJAR" id="/${dollar}${lcurly}artifactId}/${dollar}${lcurly}eclipse.lib}/slim3-gen-${dollar}${lcurly}slim3.version}.jar" enabled="true" runInBatchMode="false"/>
+  <factorypathentry kind="WKSPJAR" id="/${dollar}${lcurly}artifactId}/${dollar}${lcurly}eclipse.lib}/slim3-gen-jsr269-${dollar}${lcurly}slim3.version}.jar" enabled="true" runInBatchMode="false"/>
 </factorypath>
                ]]>
               </content>

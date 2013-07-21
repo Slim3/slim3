@@ -4,10 +4,10 @@
     <property file="build.properties" />
 
     <path id="classpath">
-        <fileset dir="war/WEB-INF/classes">
+        <fileset dir="src/main/webapp/WEB-INF/classes">
             <include name="**/*.class" />
         </fileset>
-        <fileset dir="war/WEB-INF/lib">
+        <fileset dir="src/main/webapp">
             <include name="**/*.jar" />
         </fileset>
         <fileset dir="eclipse.lib">
@@ -59,7 +59,7 @@
     </target>
     
     <target name="copy">
-        <copy todir="war/WEB-INF/lib" file="../slim3/target/slim3-${dollar}${lcurly}ver}.jar"/>
+        <copy todir="src/main/webapp/WEB-INF/lib" file="../slim3/target/slim3-${dollar}${lcurly}ver}.jar"/>
         <copy todir="libsrc" file="../slim3/target/slim3-${dollar}${lcurly}ver}-sources.jar"/>
         <copy todir="lib" file="../slim3-gen/target/slim3-gen-${dollar}${lcurly}ver}.jar"/>
         <copy todir="libsrc" file="../slim3-gen/target/slim3-gen-${dollar}${lcurly}ver}-sources.jar"/>
@@ -75,7 +75,7 @@
         <zip zipfile="target/slim3-blank-${dollar}${lcurly}ver}.zip">
             <zipfileset prefix="slim3-blank" dir=".">
                 <exclude name="target/**"/>
-                <exclude name="war/WEB-INF/classes/**"/>
+                <exclude name="src/main/webapp/WEB-INF/classes/**"/>
             </zipfileset>
         </zip>
     </target>
