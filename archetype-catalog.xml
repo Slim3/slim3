@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<archetype-catalog  xmlns="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-catalog/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-catalog/1.0.0 http://maven.apache.org/xsd/archetype-catalog-1.0.0.xsd">
+  <archetypes>
+    <archetype>
+      <groupId>org.slim3</groupId>
+      <artifactId>slim3-archetype-quickstart</artifactId>
+      <version>1.0.17-SNAPSHOT</version>
+      <repository>http://slim3.github.com/slim3/</repository>
+      <description>Archetype - slim3-archetype-quickstart(slim3-1.0.17-SNAPSHOT,appengine-1.8.2)</description>
+    </archetype>
+    <archetype>
+      <groupId>org.slim3</groupId>
+      <artifactId>slim3-archetype-kotori-quickstart</artifactId>
+      <version>1.0.17-SNAPSHOT</version>
+      <repository>http://slim3.github.com/slim3/</repository>
+      <description>Archetype - slim3-archetype-kotori-quickstart(slim3-1.0.17-SNAPSHOT,appengine-1.8.2)</description>
+    </archetype>
+  </archetypes>
+</archetype-catalog>
