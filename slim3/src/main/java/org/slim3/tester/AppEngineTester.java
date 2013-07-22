@@ -57,6 +57,7 @@ import com.google.appengine.api.taskqueue.TaskQueuePb.TaskQueueBulkAddRequest;
 import com.google.appengine.api.taskqueue.TaskQueuePb.TaskQueueBulkAddResponse;
 import com.google.appengine.api.urlfetch.URLFetchServicePb.URLFetchRequest;
 import com.google.appengine.api.urlfetch.URLFetchServicePb.URLFetchResponse;
+import com.google.appengine.api.utils.FutureWrapper;
 import com.google.appengine.repackaged.com.google.protobuf.ByteString;
 import com.google.apphosting.api.ApiProxy;
 import com.google.apphosting.api.ApiProxy.ApiConfig;
@@ -644,6 +645,43 @@ public class AppEngineTester implements Delegate<Environment> {
             } catch (Exception e) {
                 ThrowableUtil.wrapAndThrow(e);
             }
+        } else if (service.equals(TASKQUEUE_SERVICE)
+                && method.equals(BULK_ADD_METHOD)) {
+            TaskQueueBulkAddRequest taskPb = new TaskQueueBulkAddRequest();
+            taskPb.mergeFrom(requestBuf);
+            TaskQueueBulkAddResponse responsePb =
+                new TaskQueueBulkAddResponse();
+            for (int i = 0; i < taskPb.addRequestSize(); i++) {
+                tasks.add(taskPb.getAddRequest(i));
+                responsePb.addTaskResult().setChosenTaskName(
+                    "task" + String.valueOf(System.nanoTime()));
+            }
+            final byte[] responseBuf = responsePb.toByteArray();
+            return new Future<byte[]>() {
+
+                public boolean cancel(boolean mayInterruptIfRunning) {
+                    return false;
+                }
+
+                public byte[] get() throws InterruptedException,
+                        ExecutionException {
+                    return responseBuf;
+                }
+
+                public byte[] get(long timeout, TimeUnit unit)
+                        throws InterruptedException, ExecutionException,
+                        TimeoutException {
+                    return get();
+                }
+
+                public boolean isCancelled() {
+                    return false;
+                }
+
+                public boolean isDone() {
+                    return true;
+                }
+            };
         }
         Future<byte[]> future =
             parentDelegate.makeAsyncCall(
