@@ -255,6 +255,17 @@
               </content>
             </file>
             <file>
+              <name>.settings/org.eclipse.jdt.core.prefs</name>
+              <content>
+                <![CDATA[
+eclipse.preferences.version=1
+org.eclipse.jdt.core.compiler.source=1.6
+org.eclipse.jdt.core.compiler.compliance=1.6
+org.eclipse.jdt.core.compiler.processAnnotations=enabled
+               ]]>
+              </content>
+            </file>
+            <file>
               <name>.settings/org.eclipse.jdt.apt.core.prefs</name>
               <content>
                 <![CDATA[
