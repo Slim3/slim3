@@ -70,19 +70,11 @@ public final class DatastoreUtil {
      */
     public static final int EXTRA_SIZE = 200;
 
-    private static final int KEY_CACHE_SIZE = 50;
-
     /**
      * The cache for {@link ModelMeta}.
      */
     protected static ConcurrentHashMap<String, ModelMeta<?>> modelMetaCache =
         new ConcurrentHashMap<String, ModelMeta<?>>(87);
-
-    /**
-     * The cache for the result of allocateIds().
-     */
-    protected static ConcurrentHashMap<String, Iterator<Key>> keysCache =
-        new ConcurrentHashMap<String, Iterator<Key>>(87);
 
     private static volatile boolean initialized = false;
 
@@ -105,13 +97,6 @@ public final class DatastoreUtil {
      */
     public static void clearActiveGlobalTransactions() {
         GlobalTransaction.clearActiveTransactions();
-    }
-
-    /**
-     * Clears the keys cache.
-     */
-    public static void clearKeysCache() {
-        keysCache.clear();
     }
 
     /**
@@ -148,15 +133,10 @@ public final class DatastoreUtil {
             throw new NullPointerException(
                 "The kind parameter must not be null.");
         }
-        Iterator<Key> keys = keysCache.get(kind);
-        if (keys != null && keys.hasNext()) {
-            return keys.next();
-        }
-        keys =
+        Iterator<Key> keys =
             FutureUtil
-                .getQuietly(allocateIdsAsync(ds, kind, KEY_CACHE_SIZE))
+                .getQuietly(allocateIdsAsync(ds, kind, 1))
                 .iterator();
-        keysCache.put(kind, keys);
         return keys.next();
     }
 

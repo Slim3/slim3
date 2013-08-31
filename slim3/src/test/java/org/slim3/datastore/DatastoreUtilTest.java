@@ -25,7 +25,6 @@ import static org.junit.Assert.assertThat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -113,21 +112,8 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      */
     @Test
     public void allocateId() throws Exception {
-        DatastoreUtil.keysCache.remove("Hoge");
         Key key = DatastoreUtil.allocateId(ds, "Hoge");
         assertThat(key, is(notNullValue()));
-        Iterator<Key> keys = DatastoreUtil.keysCache.get("Hoge");
-        assertThat(keys, is(notNullValue()));
-        for (int i = 0; i < 49; i++) {
-            DatastoreUtil.allocateId(ds, "Hoge");
-            assertThat(
-                DatastoreUtil.keysCache.get("Hoge"),
-                is(sameInstance(keys)));
-        }
-        DatastoreUtil.allocateId(ds, "Hoge");
-        assertThat(
-            DatastoreUtil.keysCache.get("Hoge"),
-            is(not(sameInstance(keys))));
     }
 
     /**
