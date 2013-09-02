@@ -25,7 +25,6 @@ import static org.junit.Assert.assertThat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -40,6 +39,7 @@ import org.slim3.datastore.shared.model.Ccc;
 import org.slim3.tester.AppEngineTestCase;
 import org.slim3.util.CipherFactory;
 
+import com.google.appengine.api.NamespaceManager;
 import com.google.appengine.api.datastore.AsyncDatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -112,21 +112,8 @@ public class DatastoreUtilTest extends AppEngineTestCase {
      */
     @Test
     public void allocateId() throws Exception {
-        DatastoreUtil.keysCache.remove("Hoge");
         Key key = DatastoreUtil.allocateId(ds, "Hoge");
         assertThat(key, is(notNullValue()));
-        Iterator<Key> keys = DatastoreUtil.keysCache.get("Hoge");
-        assertThat(keys, is(notNullValue()));
-        for (int i = 0; i < 49; i++) {
-            DatastoreUtil.allocateId(ds, "Hoge");
-            assertThat(
-                DatastoreUtil.keysCache.get("Hoge"),
-                is(sameInstance(keys)));
-        }
-        DatastoreUtil.allocateId(ds, "Hoge");
-        assertThat(
-            DatastoreUtil.keysCache.get("Hoge"),
-            is(not(sameInstance(keys))));
     }
 
     /**
@@ -138,6 +125,22 @@ public class DatastoreUtilTest extends AppEngineTestCase {
         Key key = DatastoreUtil.allocateId(ds, parentKey, "Child");
         assertThat(key, is(notNullValue()));
         assertThat(key.isComplete(), is(true));
+    }
+
+    /**
+     * @throws Exception
+     */
+    @Test
+    public void allocateIdForNamespace() throws Exception {
+        final String NAMESPACE_A = "A";
+        NamespaceManager.set(NAMESPACE_A);
+        Key keyA = DatastoreUtil.allocateId(ds, "Hoge");
+        assertThat(keyA.getNamespace(), is(NAMESPACE_A));
+
+        final String NAMESPACE_B = "B";
+        NamespaceManager.set(NAMESPACE_B);
+        Key keyB = DatastoreUtil.allocateId(ds, "Hoge");
+        assertThat(keyB.getNamespace(), is(NAMESPACE_B));
     }
 
     /**
