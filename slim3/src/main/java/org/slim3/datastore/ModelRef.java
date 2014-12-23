@@ -170,7 +170,7 @@ public class ModelRef<M> extends AbstractModelRef<M> {
         }
         Key otherKey = ((ModelRef<?>) obj).getKey();
         if (key == null) {
-            return false;
+            return otherKey == null;
         }
         return key.equals(otherKey);
     }

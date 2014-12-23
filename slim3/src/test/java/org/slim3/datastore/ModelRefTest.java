@@ -184,10 +184,13 @@ public class ModelRefTest extends AppEngineTestCase {
         Key key = Datastore.allocateId(Hoge.class);
         assertThat(ref.equals(ref), is(true));
         assertThat(ref.equals(null), is(false));
-        assertThat(ref.equals(other), is(false));
+        assertThat(ref.equals(other), is(true)); //Two ModelRefs with key==null should be equal
         ref.setKey(key);
+        assertThat(ref.equals(other), is(false));
+        assertThat(other.equals(ref), is(false));
         other.setKey(key);
         assertThat(ref.equals(other), is(true));
+        assertThat(other.equals(ref), is(true));
     }
 
     /**
