@@ -25,6 +25,7 @@ import org.slim3.gen.processor.ModelProcessor;
 import org.slim3.test.model.AttributeNotSupportedSampleModel;
 import org.slim3.test.model.AttributeParameterSampleModel;
 import org.slim3.test.model.BasicModel;
+import org.slim3.test.model.ListenerModel;
 import org.slim3.test.model.AttributeSampleModel;
 import org.slim3.test.model.ImplementComparableModel;
 import org.slim3.test.model.RefAModel;
@@ -51,6 +52,27 @@ public class ModelProcessorTest extends AptinaTestCase {
         compile();
         {
             String sourceName = "org.slim3.test.meta.BasicModelMeta";
+            @SuppressWarnings("unused")
+            String source = getGeneratedSource(sourceName);
+        }
+        assertThat(getCompiledResult(), is(true));
+    }
+
+        /**
+     * Test for generate Meta class of {@link ListenerModel}.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testForModelListener() throws Exception {
+        ModelProcessor processor = new ModelProcessor();
+        addProcessor(processor);
+
+        addCompilationUnit(ListenerModel.class);
+
+        compile();
+        {
+            String sourceName = "org.slim3.test.meta.ListenerModelMeta";
             @SuppressWarnings("unused")
             String source = getGeneratedSource(sourceName);
         }
