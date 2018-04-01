@@ -49,7 +49,7 @@ public class ModelRefAttributeMetaTest extends AppEngineTestCase {
      */
     @Test
     public void equal() throws Exception {
-        assertThat(meta.hogeRef.equal(key), is(EqualCriterion.class));
+        assertThat(meta.hogeRef.equal(key), instanceOf(EqualCriterion.class));
         assertThat(meta.hogeRef.equal(null), is(notNullValue()));
     }
 
@@ -59,7 +59,7 @@ public class ModelRefAttributeMetaTest extends AppEngineTestCase {
      */
     @Test
     public void lessThan() throws Exception {
-        assertThat(meta.hogeRef.lessThan(key), is(LessThanCriterion.class));
+        assertThat(meta.hogeRef.lessThan(key), instanceOf(LessThanCriterion.class));
         assertThat(meta.hogeRef.lessThan(null), is(notNullValue()));
     }
 
@@ -71,7 +71,7 @@ public class ModelRefAttributeMetaTest extends AppEngineTestCase {
     public void lessThanOrEqual() throws Exception {
         assertThat(
             meta.hogeRef.lessThanOrEqual(key),
-            is(LessThanOrEqualCriterion.class));
+            instanceOf(LessThanOrEqualCriterion.class));
         assertThat(meta.hogeRef.lessThanOrEqual(null), is(not(nullValue())));
     }
 
@@ -83,7 +83,7 @@ public class ModelRefAttributeMetaTest extends AppEngineTestCase {
     public void greaterThan() throws Exception {
         assertThat(
             meta.hogeRef.greaterThan(key),
-            is(GreaterThanCriterion.class));
+            instanceOf(GreaterThanCriterion.class));
         assertThat(meta.hogeRef.greaterThan(null), is(notNullValue()));
     }
 
@@ -95,7 +95,7 @@ public class ModelRefAttributeMetaTest extends AppEngineTestCase {
     public void greaterThanOrEqual() throws Exception {
         assertThat(
             meta.hogeRef.greaterThanOrEqual(key),
-            is(GreaterThanOrEqualCriterion.class));
+            instanceOf(GreaterThanOrEqualCriterion.class));
         assertThat(meta.hogeRef.greaterThanOrEqual(null), is(notNullValue()));
     }
 
@@ -105,6 +105,6 @@ public class ModelRefAttributeMetaTest extends AppEngineTestCase {
      */
     @Test
     public void isNotNull() throws Exception {
-        assertThat(meta.hogeRef.isNotNull(), is(IsNotNullCriterion.class));
+        assertThat(meta.hogeRef.isNotNull(), instanceOf(IsNotNullCriterion.class));
     }
 }

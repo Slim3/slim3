@@ -45,7 +45,7 @@ public class RouterFactoryTest extends ControllerTestCase {
     @Test
     public void getRouter() throws Exception {
         Router router = RouterFactory.getRouter();
-        assertThat(router, is(AppRouter.class));
+        assertThat(router, instanceOf(AppRouter.class));
         assertThat(RouterFactory.getRouter(), is(sameInstance(router)));
     }
 }

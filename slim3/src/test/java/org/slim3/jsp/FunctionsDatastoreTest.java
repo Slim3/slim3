@@ -15,9 +15,11 @@
  */
 package org.slim3.jsp;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slim3.tester.ServletTestCase;
 
@@ -28,6 +30,7 @@ import com.google.appengine.api.datastore.KeyFactory;
  * @author higa
  * 
  */
+@Ignore
 public class FunctionsDatastoreTest extends ServletTestCase {
 
     /**

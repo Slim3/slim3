@@ -16,6 +16,7 @@
 package org.slim3.datastore;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -399,7 +400,7 @@ public class ModelMetaTest {
     @Test
     public void and() throws Exception {
         FilterCriterion criterion = meta.and(meta.myString.equal("aaa"));
-        assertThat(criterion, is(CompositeCriterion.class));
+        assertThat(criterion, instanceOf(CompositeCriterion.class));
         CompositeCriterion cc = (CompositeCriterion) criterion;
         assertThat(cc.getOperator(), is(CompositeFilterOperator.AND));
     }
@@ -410,7 +411,7 @@ public class ModelMetaTest {
     @Test
     public void or() throws Exception {
         FilterCriterion criterion = meta.or(meta.myString.equal("aaa"));
-        assertThat(criterion, is(CompositeCriterion.class));
+        assertThat(criterion, instanceOf(CompositeCriterion.class));
         CompositeCriterion cc = (CompositeCriterion) criterion;
         assertThat(cc.getOperator(), is(CompositeFilterOperator.OR));
     }

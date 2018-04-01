@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slim3.controller.ControllerConstants;
 import org.slim3.tester.MockHttpServletRequest;
@@ -32,6 +33,8 @@ import org.slim3.tester.MockHttpServletResponse;
 import org.slim3.tester.MockServletContext;
 import org.slim3.util.RequestLocator;
 import org.slim3.util.ResponseLocator;
+
+import com.google.web.bindery.requestfactory.shared.SkipInterfaceValidation;
 
 /**
  * @author higa

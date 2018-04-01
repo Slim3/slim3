@@ -63,7 +63,7 @@ public class DatastoreTest extends AppEngineTestCase {
     public void initialize() throws Exception {
         System.setProperty(Datastore.DELEGATE_KEY, MyDelegate.class.getName());
         Datastore.initialize();
-        assertThat(Datastore.delegate(), is(MyDelegate.class));
+        assertThat(Datastore.delegate(), instanceOf(MyDelegate.class));
     }
 
     /**
@@ -72,7 +72,7 @@ public class DatastoreTest extends AppEngineTestCase {
     @Test
     public void delegateClass() throws Exception {
         Datastore.delegateClass(MyDelegate.class);
-        assertThat(Datastore.delegate(), is(MyDelegate.class));
+        assertThat(Datastore.delegate(), instanceOf(MyDelegate.class));
     }
 
     /**

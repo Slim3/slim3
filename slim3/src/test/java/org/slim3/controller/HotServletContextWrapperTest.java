@@ -40,6 +40,6 @@ public class HotServletContextWrapperTest {
     public void getRequestDispatcher() throws Exception {
         assertThat(
             servletContextWrapper.getRequestDispatcher("/index.jsp"),
-            is(HotRequestDispatcherWrapper.class));
+            instanceOf(HotRequestDispatcherWrapper.class));
     }
 }

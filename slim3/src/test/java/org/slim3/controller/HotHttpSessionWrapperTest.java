@@ -51,8 +51,8 @@ public class HotHttpSessionWrapperTest {
         Cleaner.cleanAll();
         assertThat(
             request.getSession().getAttribute("aaa"),
-            is(BytesHolder.class));
-        assertThat(request.getSession().getAttribute("__aaa"), is(String.class));
+            instanceOf(BytesHolder.class));
+        assertThat(request.getSession().getAttribute("__aaa"), instanceOf(String.class));
     }
 
     /**

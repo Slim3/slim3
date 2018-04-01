@@ -42,7 +42,7 @@ public class CipherFactoryTest {
     public void getFactory() throws Exception {
         CipherFactory factory = CipherFactory.getFactory();
         assertThat(factory, is(notNullValue()));
-        assertThat(factory, is(AesCipherFactory.class));
+        assertThat(factory, instanceOf(AesCipherFactory.class));
     }
 
     /**
@@ -55,7 +55,7 @@ public class CipherFactoryTest {
             MyCipherFactory.class.getName());
         CipherFactory factory = CipherFactory.getFactory();
         assertThat(factory, is(notNullValue()));
-        assertThat(factory, is(MyCipherFactory.class));
+        assertThat(factory, instanceOf(MyCipherFactory.class));
     }
 
     /**

@@ -50,7 +50,7 @@ public class ThrowableUtilTest {
     public void wrapForException() throws Exception {
         Exception ex = new Exception("Exception");
         RuntimeException wrapped = ThrowableUtil.wrap(ex);
-        assertThat(wrapped, is(WrapRuntimeException.class));
+        assertThat(wrapped, instanceOf(WrapRuntimeException.class));
         assertThat(wrapped.getCause(), is(sameInstance((Throwable) ex)));
     }
 

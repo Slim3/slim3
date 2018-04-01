@@ -59,7 +59,7 @@ public class ApplicationMessageSetDelegateClassTest {
      */
     @Test
     public void delegate() throws Exception {
-        assertThat(ApplicationMessage.delegate, is(MyDelegate.class));
+        assertThat(ApplicationMessage.delegate, instanceOf(MyDelegate.class));
     }
 
     /**
@@ -70,7 +70,7 @@ public class ApplicationMessageSetDelegateClassTest {
         System.setProperty(ApplicationMessage.DELEGATE_KEY, MyDelegate.class
             .getName());
         ApplicationMessage.initialize();
-        assertThat(ApplicationMessage.delegate, is(MyDelegate.class));
+        assertThat(ApplicationMessage.delegate, instanceOf(MyDelegate.class));
     }
 
     /**
