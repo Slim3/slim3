@@ -93,6 +93,6 @@ public class HotHttpServletRequestWrapperTest {
             new HotHttpServletRequestWrapper(request);
         assertThat(
             requestWrapper.getRequestDispatcher("/index.jsp"),
-            is(HotRequestDispatcherWrapper.class));
+            instanceOf(HotRequestDispatcherWrapper.class));
     }
 }

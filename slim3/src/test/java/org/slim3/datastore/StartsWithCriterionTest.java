@@ -15,6 +15,7 @@
  */
 package org.slim3.datastore;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -42,7 +43,7 @@ public class StartsWithCriterionTest extends AppEngineTestCase {
         StartsWithCriterion c = new StartsWithCriterion(meta.myString, "aaa");
         Query.Filter[] filters = c.getFilters();
         assertThat(filters.length, is(2));
-        assertThat(filters[0], is(Query.FilterPredicate.class));
+        assertThat(filters[0], instanceOf(Query.FilterPredicate.class));
         Query.FilterPredicate filter = (Query.FilterPredicate) filters[0];
         Query.FilterPredicate filter2 = (Query.FilterPredicate) filters[1];
         assertThat(filter.getPropertyName(), is("myString"));

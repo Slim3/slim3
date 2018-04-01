@@ -16,7 +16,7 @@
 package org.slim3.controller;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.slim3.controller.controller.HogeController;
@@ -105,7 +105,7 @@ public class FrontControllerTest extends ControllerTestCase {
         Controller controller =
             tester.frontController.createController("/hello/list");
         assertThat(controller, is(not(nullValue())));
-        assertThat(controller, is(ListController.class));
+        assertThat(controller, instanceOf(ListController.class));
     }
 
     /**
@@ -117,7 +117,7 @@ public class FrontControllerTest extends ControllerTestCase {
         Controller controller =
             tester.frontController.createController("/hoge");
         assertThat(controller, is(not(nullValue())));
-        assertThat(controller, is(HogeController.class));
+        assertThat(controller, instanceOf(HogeController.class));
     }
 
     /**
@@ -128,7 +128,7 @@ public class FrontControllerTest extends ControllerTestCase {
     public void createControllerForRootIndexController() throws Exception {
         Controller controller = tester.frontController.createController("/");
         assertThat(controller, is(not(nullValue())));
-        assertThat(controller, is(IndexController.class));
+        assertThat(controller, instanceOf(IndexController.class));
     }
 
     /**
@@ -142,7 +142,7 @@ public class FrontControllerTest extends ControllerTestCase {
         assertThat(controller, is(not(nullValue())));
         assertThat(
             controller,
-            is(org.slim3.controller.controller.hello.IndexController.class));
+            instanceOf(org.slim3.controller.controller.hello.IndexController.class));
     }
 
     /**
@@ -207,7 +207,7 @@ public class FrontControllerTest extends ControllerTestCase {
         assertThat(controller.basePath, is("/"));
         assertThat(controller, is(sameInstance(tester
             .requestScope(ControllerConstants.CONTROLLER_KEY))));
-        assertThat(controller.basePath, is(tester
+        assertThat(controller.basePath, is((String)tester
             .requestScope(ControllerConstants.BASE_PATH_KEY)));
         Errors errors = controller.errors;
         assertThat(errors, is(not(nullValue())));

@@ -15,6 +15,7 @@
  */
 package org.slim3.datastore;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -150,7 +151,7 @@ public class AbstQueryTest extends AppEngineTestCase {
         query.filter("myString", FilterOperator.EQUAL, "aaa");
         query.applyFilter();
         Query.Filter filter = query.getFilter();
-        assertThat(filter, is(Query.FilterPredicate.class));
+        assertThat(filter, instanceOf(Query.FilterPredicate.class));
         Query.FilterPredicate fp = (Query.FilterPredicate) filter;
         assertThat(fp.getPropertyName(), is("myString"));
         assertThat(fp.getOperator(), is(FilterOperator.EQUAL));
@@ -167,19 +168,19 @@ public class AbstQueryTest extends AppEngineTestCase {
         query.filter("myInteger", FilterOperator.EQUAL, 1);
         query.applyFilter();
         Query.Filter filter = query.getFilter();
-        assertThat(filter, is(Query.CompositeFilter.class));
+        assertThat(filter, instanceOf(Query.CompositeFilter.class));
         Query.CompositeFilter f = (Query.CompositeFilter) filter;
         assertThat(f.getOperator(), is(Query.CompositeFilterOperator.AND));
         List<Filter> subFilters = f.getSubFilters();
         assertThat(subFilters.size(), is(2));
         Query.Filter sub = subFilters.get(0);
         Query.Filter sub2 = subFilters.get(1);
-        assertThat(sub, is(Query.FilterPredicate.class));
+        assertThat(sub, instanceOf(Query.FilterPredicate.class));
         Query.FilterPredicate fp = (Query.FilterPredicate) sub;
         assertThat(fp.getPropertyName(), is("myString"));
         assertThat(fp.getOperator(), is(FilterOperator.EQUAL));
         assertThat((String) fp.getValue(), is("aaa"));
-        assertThat(sub2, is(Query.FilterPredicate.class));
+        assertThat(sub2, instanceOf(Query.FilterPredicate.class));
         Query.FilterPredicate fp2 = (Query.FilterPredicate) sub2;
         assertThat(fp2.getPropertyName(), is("myInteger"));
         assertThat(fp2.getOperator(), is(FilterOperator.EQUAL));
@@ -196,7 +197,7 @@ public class AbstQueryTest extends AppEngineTestCase {
         PreparedQuery pq = query.prepareQuery();
         assertThat(pq, is(notNullValue()));
         Query.Filter filter = query.getFilter();
-        assertThat(filter, is(Query.FilterPredicate.class));
+        assertThat(filter, instanceOf(Query.FilterPredicate.class));
         Query.FilterPredicate fp = (Query.FilterPredicate) filter;
         assertThat(fp.getPropertyName(), is("myString"));
         assertThat(fp.getOperator(), is(FilterOperator.EQUAL));

@@ -15,6 +15,7 @@
  */
 package org.slim3.datastore;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -63,7 +64,7 @@ public class InCriterionTest extends AppEngineTestCase {
             new InCriterion(meta.myString, Arrays.asList("aaa", "bbb"));
         Query.Filter[] filters = c.getFilters();
         assertThat(filters.length, is(1));
-        assertThat(filters[0], is(Query.FilterPredicate.class));
+        assertThat(filters[0], instanceOf(Query.FilterPredicate.class));
         Query.FilterPredicate filter = (Query.FilterPredicate) filters[0];
         assertThat(filter.getPropertyName(), is("myString"));
         assertThat(filter.getOperator(), is(FilterOperator.IN));
@@ -81,7 +82,7 @@ public class InCriterionTest extends AppEngineTestCase {
             new InCriterion(meta.myEnum, Arrays.asList(SortDirection.ASCENDING));
         Query.Filter[] filters = c.getFilters();
         assertThat(filters.length, is(1));
-        assertThat(filters[0], is(Query.FilterPredicate.class));
+        assertThat(filters[0], instanceOf(Query.FilterPredicate.class));
         Query.FilterPredicate filter = (Query.FilterPredicate) filters[0];
         assertThat(filter.getPropertyName(), is("myEnum"));
         assertThat(filter.getOperator(), is(FilterOperator.IN));

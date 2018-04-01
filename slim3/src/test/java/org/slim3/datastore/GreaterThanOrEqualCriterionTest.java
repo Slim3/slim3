@@ -15,6 +15,7 @@
  */
 package org.slim3.datastore;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -45,7 +46,7 @@ public class GreaterThanOrEqualCriterionTest extends AppEngineTestCase {
             new GreaterThanOrEqualCriterion(meta.myString, "aaa");
         Query.Filter[] filters = c.getFilters();
         assertThat(filters.length, is(1));
-        assertThat(filters[0], is(Query.FilterPredicate.class));
+        assertThat(filters[0], instanceOf(Query.FilterPredicate.class));
         Query.FilterPredicate filter = (Query.FilterPredicate) filters[0];
         assertThat(filter.getPropertyName(), is("myString"));
         assertThat(
@@ -66,7 +67,7 @@ public class GreaterThanOrEqualCriterionTest extends AppEngineTestCase {
                 SortDirection.ASCENDING);
         Query.Filter[] filters = c.getFilters();
         assertThat(filters.length, is(1));
-        assertThat(filters[0], is(Query.FilterPredicate.class));
+        assertThat(filters[0], instanceOf(Query.FilterPredicate.class));
         Query.FilterPredicate filter = (Query.FilterPredicate) filters[0];
         assertThat(filter.getPropertyName(), is("myEnum"));
         assertThat(
@@ -85,7 +86,7 @@ public class GreaterThanOrEqualCriterionTest extends AppEngineTestCase {
             new GreaterThanOrEqualCriterion(meta.myString, null);
         Query.Filter[] filters = c.getFilters();
         assertThat(filters.length, is(1));
-        assertThat(filters[0], is(Query.FilterPredicate.class));
+        assertThat(filters[0], instanceOf(Query.FilterPredicate.class));
         Query.FilterPredicate filter = (Query.FilterPredicate) filters[0];
         assertThat(filter.getPropertyName(), is("myString"));
         assertThat(
