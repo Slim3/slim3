@@ -38,6 +38,11 @@ public class TestEnvironment implements ApiProxy.Environment {
      * The application identifier.
      */
     protected String appId = "Unit Tests";
+    
+    /**
+     * The version identifier.
+     */
+    protected String moduleId = "default";
 
     /**
      * The version identifier.
@@ -246,9 +251,18 @@ public class TestEnvironment implements ApiProxy.Environment {
         this.remainingMillis = remainingMillis;
     }
 
+    /**
+     * @return the moduleId
+     */
     @Override
     public String getModuleId() {
-        // TODO Auto-generated method stub
-        return null;
+        return moduleId;
+    }
+
+    /**
+     * @param moduleId the moduleId to set
+     */
+    public void setModuleId(String moduleId) {
+        this.moduleId = moduleId;
     }
 }
