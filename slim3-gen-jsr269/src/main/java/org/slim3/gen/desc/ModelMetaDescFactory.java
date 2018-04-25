@@ -405,7 +405,7 @@ public class ModelMetaDescFactory {
             return;
         }
         TypeElement listenerEl =
-            processingEnv.getElementUtils().getTypeElement(listener.toString());
+            processingEnv.getElementUtils().getTypeElement(listener.getValue().toString());
         if (listenerEl.getKind() == ElementKind.INTERFACE) {
             throw new ValidationException(
                 MessageCode.SLIM3GEN1052,
