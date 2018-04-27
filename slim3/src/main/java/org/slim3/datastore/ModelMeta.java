@@ -62,9 +62,9 @@ public abstract class ModelMeta<M> {
     protected Class<M> modelClass;
 
     /**
-     * The list of class hierarchies. If you create polymorphic models such as A
-     * -> B -> C, the list of A is empty, the list of B is [B], the list of c
-     * is[B, C].
+     * The list of class hierarchies. If you create polymorphic models such as
+     * {@literal A -> B -> C}, the list of A is empty, the list of B is [B], the
+     * list of c is[B, C].
      */
     protected List<String> classHierarchyList;
 

@@ -23,7 +23,7 @@ import com.google.appengine.api.datastore.QueryResultIterator;
 /**
  * An {@link QueryResultIterator} for a model.
  * 
- * @author @kissrobber
+ * @author kissrobber
  * @param <M>
  *            the model type
  * @since 1.0.13

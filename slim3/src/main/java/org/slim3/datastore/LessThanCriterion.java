@@ -29,7 +29,7 @@ public class LessThanCriterion extends InMemoryLessThanCriterion implements
         FilterCriterion {
 
     /**
-     * The array of {@link Filter}s.
+     * The array of {@link com.google.appengine.api.datastore.Query.Filter}s.
      */
     protected Query.Filter[] filters;
 

@@ -115,13 +115,13 @@ public class MultipartStream {
 
     /**
      * The index of first valid character in the buffer. <br>
-     * 0 <= head < bufSize
+     * {@literal 0 <= head < bufSize}
      */
     protected int head;
 
     /**
      * The index of last valid characer in the buffer + 1. <br>
-     * 0 <= tail <= bufSize
+     * {@literal 0 <= tail <= bufSize}
      */
     protected int tail;
 
