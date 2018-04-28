@@ -18,8 +18,9 @@ package org.slim3.datastore;
 /**
  * A model listener for "Automatic Assigned Property".
  * 
- * @author @kissrobber
- * @param <M> the model type
+ * @author kissrobber
+ * @param <M>
+ *            the model type
  * @since 1.0.13
  */
 public interface ModelListener<M> {

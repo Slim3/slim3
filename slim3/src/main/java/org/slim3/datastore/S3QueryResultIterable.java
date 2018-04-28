@@ -21,8 +21,9 @@ import com.google.appengine.api.datastore.QueryResultIterable;
 /**
  * An {@link QueryResultIterable} for a model.
  * 
- * @author @kissrobber
- * @param <M> the model type
+ * @author kissrobber
+ * @param <M>
+ *            the model type
  * @since 1.0.13
  */
 public class S3QueryResultIterable<M> implements Serializable {
