@@ -4,8 +4,8 @@
   <artifactId>slim3-gen-jsr269</artifactId>
   <versioning>
     <versions>
-      <version>1.0.17-SNAPSHOT</version>
+      <version>1.0.18-SNAPSHOT</version>
     </versions>
-    <lastUpdated>20130902014729</lastUpdated>
+    <lastUpdated>20180508055133</lastUpdated>
   </versioning>
 </metadata>

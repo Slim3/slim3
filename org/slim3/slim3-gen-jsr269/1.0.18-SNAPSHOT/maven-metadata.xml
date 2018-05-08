@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata modelVersion="1.1.0">
+  <groupId>org.slim3</groupId>
+  <artifactId>slim3-gen-jsr269</artifactId>
+  <version>1.0.18-SNAPSHOT</version>
+  <versioning>
+    <snapshot>
+      <timestamp>20180508.055132</timestamp>
+      <buildNumber>1</buildNumber>
+    </snapshot>
+    <lastUpdated>20180508055132</lastUpdated>
+    <snapshotVersions>
+      <snapshotVersion>
+        <extension>jar</extension>
+        <value>1.0.18-20180508.055132-1</value>
+        <updated>20180508055132</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>1.0.18-20180508.055132-1</value>
+        <updated>20180508055132</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <classifier>sources</classifier>
+        <extension>jar</extension>
+        <value>1.0.18-20180508.055132-1</value>
+        <updated>20180508055132</updated>
+      </snapshotVersion>
+    </snapshotVersions>
+  </versioning>
+</metadata>
