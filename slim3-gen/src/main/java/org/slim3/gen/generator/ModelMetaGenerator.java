@@ -117,10 +117,9 @@ public class ModelMetaGenerator implements Generator {
     protected void printClass(Printer printer) {
         printer
             .println(
-                "//@javax.annotation.Generated(value = { \"%s\", \"%s\" }, date = \"%tF %<tT\")",
+                "//@javax.annotation.Generated(value = { \"%s\", \"%s\" })",
                 ProductInfo.getName(),
-                ProductInfo.getVersion(),
-                new Date());
+                ProductInfo.getVersion());
         printer.println("/** */");
         printer.println(
             "public final class %s extends %s<%s> {",
